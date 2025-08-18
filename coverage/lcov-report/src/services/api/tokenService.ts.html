@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">81.81% </span>
+                <span class="strong">27.27% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>18/22</span>
+                <span class='fraction'>6/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80% </span>
+                <span class="strong">20% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>4/5</span>
+                <span class='fraction'>1/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>1/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">81.81% </span>
+                <span class="strong">27.27% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>18/22</span>
+                <span class='fraction'>6/22</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -123,22 +123,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -146,17 +142,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import axios from 'axios';
@@ -177,16 +177,16 @@ export async function fetchTokenFromDB(): Promise&lt;string&gt; {
   }
 &nbsp;
   // API base URLを動的に取得（循環依存を避けるため）
-  const getTokenApiUrl = () =&gt; {
-    if (typeof window !== 'undefined') {
-      const hostname = window.location.hostname;
+  const getTokenApiUrl = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof window !== 'undefined') {</span>
+      const hostname = <span class="cstat-no" title="statement not covered" >window.location.hostname;</span>
 &nbsp;
-      if (hostname === 'work-time-tracker-5d9q.vercel.app') {
-        return 'https://work-time-tracker-5d9q.vercel.app/api';
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (hostname === 'work-time-tracker-5d9q.vercel.app') {</span>
+<span class="cstat-no" title="statement not covered" >        return 'https://work-time-tracker-5d9q.vercel.app/api';</span>
       }
 &nbsp;
-      if (hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/)) {
-        return 'https://work-time-tracker-5d9q.vercel.app/api';
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/)) {</span>
+<span class="cstat-no" title="statement not covered" >        return 'https://work-time-tracker-5d9q.vercel.app/api';</span>
       }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (hostname === 'localhost') {</span>
@@ -199,12 +199,12 @@ export async function fetchTokenFromDB(): Promise&lt;string&gt; {
 <span class="cstat-no" title="statement not covered" >    return 'http://localhost:3001/api';</span>
   };
 &nbsp;
-  try {
-    const response = await tokenApi.get(`${getTokenApiUrl()}/auth/token`);
-    return response.data.token;
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    const response = <span class="cstat-no" title="statement not covered" >await tokenApi.get(`${getTokenApiUrl()}/auth/token`);</span>
+<span class="cstat-no" title="statement not covered" >    return response.data.token;</span>
   } catch (error) {
-    console.error('Token fetch failed:', error);
-    throw error;
+<span class="cstat-no" title="statement not covered" >    console.error('Token fetch failed:', error);</span>
+<span class="cstat-no" title="statement not covered" >    throw error;</span>
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -214,7 +214,7 @@ export async function fetchTokenFromDB(): Promise&lt;string&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-18T17:38:35.019Z
+                at 2025-08-18T17:44:22.918Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

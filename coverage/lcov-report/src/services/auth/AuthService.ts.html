@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">43.28% </span>
+                <span class="strong">34.32% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>29/67</span>
+                <span class='fraction'>23/67</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">24.39% </span>
+                <span class="strong">12.19% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>10/41</span>
+                <span class='fraction'>5/41</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">42.1% </span>
+                <span class="strong">31.57% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>8/19</span>
+                <span class='fraction'>6/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">43.75% </span>
+                <span class="strong">34.37% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>28/64</span>
+                <span class='fraction'>22/64</span>
             </div>
         
             
@@ -476,19 +476,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -497,7 +486,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -602,11 +602,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -643,7 +641,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -770,9 +770,9 @@ class AuthService {
     };
   }
 &nbsp;
-  public async signUp(email: string, password: string, displayName: string): Promise&lt;AuthResponse&gt; {
-    try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+  public <span class="fstat-no" title="function not covered" >async </span>signUp(email: string, password: string, displayName: string): Promise&lt;AuthResponse&gt; {
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const { user } = <span class="cstat-no" title="statement not covered" >await createUserWithEmailAndPassword(auth, email, password);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      await updateProfile(user, { displayName });</span>
 &nbsp;
@@ -792,7 +792,7 @@ class AuthService {
         error: null,
       };
     } catch (error) {
-      return {
+<span class="cstat-no" title="statement not covered" >      return {</span>
         user: null,
         error: this.mapFirebaseError(error),
       };
@@ -896,10 +896,10 @@ class AuthService {
     };
   }
 &nbsp;
-  private mapFirebaseError(error: unknown): AuthError {
-    const firebaseError = error as { code?: string; message?: string };
+  private <span class="fstat-no" title="function not covered" >mapFirebaseError(</span>error: unknown): AuthError {
+    const firebaseError = <span class="cstat-no" title="statement not covered" >error as { code?: string; message?: string };</span>
 &nbsp;
-    const errorMap: Record&lt;string, AuthError&gt; = {
+    const errorMap: Record&lt;string, AuthError&gt; = <span class="cstat-no" title="statement not covered" >{</span>
       'auth/email-already-in-use': {
         code: 'EMAIL_EXISTS',
         message: 'このメールアドレスは既に使用されています',
@@ -938,10 +938,10 @@ class AuthService {
       },
     };
 &nbsp;
-    return (
+<span class="cstat-no" title="statement not covered" >    return (</span>
       errorMap[firebaseError.code || ''] || {
         code: 'UNKNOWN_ERROR',
-        message: firebaseError.message || <span class="branch-1 cbranch-no" title="branch not covered" >'予期しないエラーが発生しました',</span>
+        message: firebaseError.message || '予期しないエラーが発生しました',
       }
     );
   }
@@ -955,7 +955,7 @@ export default new AuthService();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-18T17:38:35.019Z
+                at 2025-08-18T17:44:22.918Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

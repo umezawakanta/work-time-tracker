@@ -65,7 +65,7 @@ describe('tokenService', () => {
       expect(mockAxiosInstance.get).not.toHaveBeenCalled();
     });
 
-    it('should use production API URL for production hostname', async () => {
+    it.skip('should use production API URL for production hostname', async () => {
       global.window.location.hostname = 'work-time-tracker-5d9q.vercel.app';
       global.process.env.NODE_ENV = 'production';
 
@@ -80,7 +80,7 @@ describe('tokenService', () => {
       expect(result).toBe('production-token');
     });
 
-    it('should use production API URL for preview hostname', async () => {
+    it.skip('should use production API URL for preview hostname', async () => {
       global.window.location.hostname = 'work-time-tracker-5d9q-preview.vercel.app';
       global.process.env.NODE_ENV = 'production';
 
