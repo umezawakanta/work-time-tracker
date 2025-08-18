@@ -43,7 +43,7 @@ jest.mock('../config/stripe', () => ({
 // Mock navigation
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+  const actual = jest.requireActual<typeof import('react-router-dom')>('react-router-dom');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
