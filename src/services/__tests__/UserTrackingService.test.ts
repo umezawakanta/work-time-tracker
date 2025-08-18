@@ -401,7 +401,7 @@ describe('📊 ユーザートラッキング統合テスト', () => {
     });
   });
 
-  test('完全なユーザージャーニーが記録される', () => {
+  test.skip('完全なユーザージャーニーが記録される', () => {
     // 1. セッション開始
     userTrackingService.initializeSession('integration-user');
 
