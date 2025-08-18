@@ -1,5 +1,5 @@
 // CRITICAL: Import and set React globally FIRST
-import React, { type ReactElement } from 'react';
+import React from 'react';
 
 // Make React available globally immediately
 global.React = React;
@@ -18,11 +18,13 @@ try {
       (URL as any).revokeObjectURL = jest.fn();
     }
   }
-} catch {}
+} catch (_err) {
+  // ignore benign setup error
+  void _err;
+}
 
 // Now import other dependencies
 import '@testing-library/jest-dom';
-import React from 'react';
 import { TextEncoder, TextDecoder } from 'util';
 import 'whatwg-fetch';
 
@@ -242,7 +244,10 @@ try {
       (URL as any).revokeObjectURL = jest.fn();
     }
   }
-} catch {}
+} catch (_err) {
+  // ignore benign setup error
+  void _err;
+}
 
 // ========================================
 // Environment Variables
@@ -311,13 +316,23 @@ global.IMPORT_META = importMeta;
 (globalThis as any).IMPORT_META = importMeta;
 
 // Mock BroadcastChannel for MSW compatibility
-global.BroadcastChannel = class BroadcastChannel {
-  constructor(public name: string) {}
-  postMessage(message: any) {}
-  addEventListener(type: string, listener: any) {}
-  removeEventListener(type: string, listener: any) {}
-  close() {}
-};
+class MockBroadcastChannel implements BroadcastChannel {
+  name: string;
+  onmessage: ((this: BroadcastChannel, ev: MessageEvent) => any) | null = null;
+  onmessageerror: ((this: BroadcastChannel, ev: MessageEvent) => any) | null = null;
+  constructor(name: string) {
+    this.name = name;
+  }
+  postMessage(_message: any): void {}
+  addEventListener(_type: string, _listener: EventListenerOrEventListenerObject | null): void {}
+  removeEventListener(_type: string, _listener: EventListenerOrEventListenerObject | null): void {}
+  dispatchEvent(_event: Event): boolean {
+    return true;
+  }
+  close(): void {}
+}
+
+global.BroadcastChannel = MockBroadcastChannel as unknown as typeof BroadcastChannel;
 
 // ========================================
 // Browser API Mocks
@@ -457,7 +472,9 @@ try {
       nav.clipboard.readText = jest.fn(() => Promise.resolve(''));
     }
   }
-} catch {}
+} catch (_err) {
+  void _err;
+}
 
 // ========================================
 // Storage Mocks
@@ -680,7 +697,6 @@ if (typeof EventTarget === 'undefined') {
 
 // Mock Radix UI components that cause issues in Jest
 jest.mock('@radix-ui/react-tabs', () => {
-  const React = require('react');
   return {
     Root: ({ children, ...props }: any) =>
       React.createElement('div', { 'data-testid': 'tabs-root', ...props }, children),
@@ -722,7 +738,6 @@ jest.mock('@radix-ui/react-tabs', () => {
 });
 
 jest.mock('@radix-ui/react-roving-focus', () => {
-  const React = require('react');
   return {
     createRovingFocusGroupScope: () => () => ({}),
     RovingFocusGroup: ({ children, ...props }: any) => React.createElement('div', props, children),
@@ -747,7 +762,6 @@ jest.mock('@radix-ui/react-popper', () => ({
 
 // Mock other problematic Radix UI components
 jest.mock('@radix-ui/react-select', () => {
-  const React = require('react');
   const mockComponent = (displayName: string, element = 'div') => {
     const Component = React.forwardRef(({ children, ...props }: any, ref: any) => {
       let roleProps: any = {};
@@ -803,8 +817,6 @@ jest.mock('@radix-ui/react-select', () => {
 
 // Mock Radix UI Popover
 jest.mock('@radix-ui/react-popover', () => {
-  const React = require('react');
-
   const Root = ({ children, ...props }: any) =>
     React.createElement('div', { 'data-testid': 'popover-root', ...props }, children);
 
@@ -835,7 +847,6 @@ jest.mock('@radix-ui/react-popover', () => {
 
 // Mock Radix UI Dropdown Menu
 jest.mock('@radix-ui/react-dropdown-menu', () => {
-  const React = require('react');
   return {
     Root: ({ children, ...props }: any) =>
       React.createElement('div', { 'data-testid': 'dropdown-root', ...props }, children),
@@ -930,7 +941,6 @@ jest.mock('firebase/auth', () => {
 
 // Mock Radix UI Portal for better test reliability
 jest.mock('@radix-ui/react-portal', () => {
-  const React = require('react');
   const Portal = React.forwardRef(({ children, asChild, ...props }: any, ref: any) =>
     React.createElement('div', { 'data-testid': 'radix-portal', ref, ...props }, children)
   );

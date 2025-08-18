@@ -115,7 +115,7 @@ ${todos.map((t) => `- ID: ${t._id}, タイトル: ${t.task}, 優先度: ${t.prio
     async (command: TaskCommand): Promise<string> => {
       try {
         switch (command.action) {
-          case 'create':
+          case 'create': {
             if (!command.task) {
               return 'タスクのタイトルが必要です。';
             }
@@ -131,6 +131,7 @@ ${todos.map((t) => `- ID: ${t._id}, タイトル: ${t.task}, 優先度: ${t.prio
             ).unwrap();
 
             return `✅ タスク「${command.task}」を作成しました（優先度: ${command.priority || 3}）`;
+          }
 
           case 'update':
             if (!command.taskId) {
@@ -168,7 +169,7 @@ ${todos.map((t) => `- ID: ${t._id}, タイトル: ${t.task}, 優先度: ${t.prio
 
             return `✅ タスクを完了にしました`;
 
-          case 'search':
+          case 'search': {
             const searchTerm = command.task?.toLowerCase() || '';
             const foundTasks = todos.filter((t) => t.task.toLowerCase().includes(searchTerm));
 
@@ -179,8 +180,9 @@ ${todos.map((t) => `- ID: ${t._id}, タイトル: ${t.task}, 優先度: ${t.prio
             return `🔍 ${foundTasks.length}件のタスクが見つかりました:\n${foundTasks
               .map((t) => `• ${t.task} (優先度: ${t.priority})`)
               .join('\n')}`;
+          }
 
-          case 'analyze':
+          case 'analyze': {
             const incompleteTasks = todos.filter((t) => !t.completed);
             const highPriorityTasks = incompleteTasks.filter((t) => t.priority >= 4);
 
@@ -191,6 +193,7 @@ ${todos.map((t) => `- ID: ${t._id}, タイトル: ${t.task}, 優先度: ${t.prio
 • 完了率: ${Math.round(((todos.length - incompleteTasks.length) / todos.length) * 100)}%
 
 ${highPriorityTasks.length > 0 ? `\n⚠️ 高優先度タスク:\n${highPriorityTasks.map((t) => `• ${t.task}`).join('\n')}` : ''}`;
+          }
 
           default:
             return 'サポートされていないコマンドです。';

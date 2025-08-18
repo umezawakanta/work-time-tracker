@@ -63,11 +63,11 @@ import TodoWBSIntegrationService from '@/services/integration/TodoWBSIntegration
 import { useAuth } from '@/hooks/useAuth';
 
 interface TodoItemProps {
-  readonly todo: TodoItem;
-  readonly onToggle?: (todo: TodoItem) => Promise<void> | void;
+  readonly todo: Todo;
+  readonly onToggle?: (todo: Todo) => Promise<void> | void;
   readonly onToggleComplete?: (todoId: string) => Promise<void> | void;
   readonly onDelete: (todoId: string) => Promise<void>;
-  readonly onUpdate: (todoId: string, updates: Partial<TodoItem>) => Promise<void>;
+  readonly onUpdate: (todoId: string, updates: Partial<Todo>) => Promise<void>;
   readonly isPremium?: boolean;
   readonly dragHandleProps?: Record<string, unknown> | null;
   readonly isHighPriority?: boolean;
@@ -97,16 +97,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   isHighPriority = false,
   isCompleted = false,
 }) => {
-  // 安全性チェック: todoオブジェクトの検証
-  if (!todo || !todo._id || (!todo.task && todo.task !== '')) {
-    console.warn('TodoItem: Invalid todo object', todo);
-    return (
-      <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-        <p className="text-red-600 text-sm">エラー: 無効なタスクデータです</p>
-      </div>
-    );
-  }
-
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -136,22 +126,29 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     category?: string;
     tags?: string;
     estimatedDuration?: number;
-  }>({
-    text: todo.task,
-    type: todo.type,
-    priority: todo.priority,
-    deadline: todo.deadline ? new Date(todo.deadline) : undefined,
-    category: todo.category || '',
-    tags: todo.tags?.join(', ') || '',
-    estimatedDuration: todo.estimatedDuration || undefined,
-  });
+  }>(() => ({
+    text: typeof (todo as any)?.task === 'string' ? (todo as any).task : '',
+    type: ((todo as any)?.type as 'input' | 'output') ?? 'output',
+    priority: typeof (todo as any)?.priority === 'number' ? (todo as any).priority : 3,
+    deadline: (todo as any)?.deadline ? new Date((todo as any).deadline) : undefined,
+    category: (todo as any)?.category || '',
+    tags: (todo as any)?.tags?.join(', ') || '',
+    estimatedDuration:
+      typeof (todo as any)?.estimatedDuration === 'number'
+        ? (todo as any).estimatedDuration
+        : undefined,
+  }));
+
+  // 安全性チェック: todoオブジェクトの検証（描画分岐に使用）
+  const isInvalidTodo =
+    !todo || !(todo as any)._id || (!(todo as any).task && (todo as any).task !== '');
 
   const handleToggle = useCallback(async (): Promise<void> => {
     if (isLoading) return;
     setIsLoading(true);
     try {
       const identifiable = todo as unknown as { _id?: string; id?: string };
-      const todoId = identifiable._id ?? identifiable.id;
+      const todoId = identifiable._id ?? (todo as any)._id;
 
       if (onToggle) {
         await onToggle(todo);
@@ -166,7 +163,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   const handleDelete = useCallback(async (): Promise<void> => {
     if (isLoading) return;
 
-    const todoId = todo._id || todo._id || todo.id;
+    const todoId = (todo as any)._id || (todo as any).id;
     if (!todoId) {
       toast.error('削除対象のタスクIDが見つかりません');
       return;
@@ -179,7 +176,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [todo._id, todo._id || todo.id, onDelete, isLoading]);
+  }, [todo, onDelete, isLoading]);
 
   const handleEdit = useCallback((): void => {
     // Reset form data when opening
@@ -200,10 +197,10 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     setIsLoading(true);
     try {
       const updates: Partial<Todo> = {
-        text: editFormData.text,
+        task: editFormData.text,
         type: editFormData.type,
         priority: editFormData.priority,
-        deadline: editFormData.deadline?.toISOString(),
+        deadline: editFormData.deadline ? editFormData.deadline.toISOString() : undefined,
         category: editFormData.category || undefined,
         tags: editFormData.tags
           ? editFormData.tags
@@ -211,15 +208,18 @@ export const TodoItem: React.FC<TodoItemProps> = ({
               .map((tag) => tag.trim())
               .filter(Boolean)
           : undefined,
-        estimatedDuration: editFormData.estimatedDuration || undefined,
-      };
+        estimatedDuration:
+          typeof editFormData.estimatedDuration === 'number'
+            ? editFormData.estimatedDuration
+            : undefined,
+      } as Partial<Todo>;
 
-      await onUpdate(todo._id || todo.id, updates);
+      await onUpdate(((todo as any)._id ?? (todo as any).id) as string, updates);
       setIsEditDialogOpen(false);
     } finally {
       setIsLoading(false);
     }
-  }, [todo._id || todo.id, editFormData, onUpdate, isLoading]);
+  }, [todo, editFormData, onUpdate, isLoading]);
 
   const formatDeadline = (deadline: string): string => {
     const date = new Date(deadline);
@@ -295,14 +295,14 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     setIsLoading(true);
     try {
       const updates: Partial<Todo> = {
-        text: aiAnalysisResult.improvedTitle || todo.task,
+        task: aiAnalysisResult.improvedTitle || (todo as any).task,
         category: aiAnalysisResult.category || 'サイト開発',
         tags: aiAnalysisResult.tags ? [...aiAnalysisResult.tags] : undefined,
         estimatedDuration: aiAnalysisResult.estimatedDuration,
         deadline: aiAnalysisResult.deadline,
       };
 
-      await onUpdate(todo._id || todo.id, updates);
+      await onUpdate(((todo as any)._id ?? (todo as any).id) as string, updates);
 
       // 成功時のフィードバック
       const updatedItems = [];
@@ -323,7 +323,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
       setIsLoading(false);
     }
   }, [
-    todo._id || todo.id,
+    (todo as any)._id || (todo as any).id,
     todo.task,
     todo.category,
     todo.tags,
@@ -386,16 +386,17 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         // 親タスクの完了もWBSに同期
         if (user) {
           await TodoWBSIntegrationService.syncTodoToWBS({
-            _id: todo._id || todo.id,
-            task: todo.task,
+            _id: (todo as any)._id || (todo as any).id,
+            id: (todo as any).id || (todo as any)._id,
+            task: (todo as any).task,
             completed: true,
-            priority: todo.priority,
-            type: todo.type,
+            priority: (todo as any).priority,
+            type: (todo as any).type,
             completedDate: new Date().toISOString(),
-            isPrioritized: todo.isPrioritized,
-            createdAt: todo.createdAt,
+            isPrioritized: (todo as any).isPrioritized,
+            createdAt: (todo as any).createdAt,
             updatedAt: new Date().toISOString(),
-          });
+          } as any);
         }
       }
 
@@ -431,7 +432,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             {/* Drag Handle */}
-            {dragHandleProps && (
+            {dragHandleProps && !isInvalidTodo && (
               <div
                 {...dragHandleProps}
                 className="flex-shrink-0 p-1 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
@@ -443,7 +444,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
             {/* Checkbox */}
             <div className="flex-shrink-0 pt-0.5">
               <Checkbox
-                checked={todo.completed}
+                checked={!isInvalidTodo && !!todo.completed}
                 onCheckedChange={handleToggle}
                 disabled={isLoading}
                 className="h-5 w-5"
@@ -467,8 +468,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                         : getTruncatedText(todo.task)}
                     </h4>
 
-                    {todo.description && (
-                      <p className="mt-1 text-xs text-gray-600">{todo.description}</p>
+                    {(todo as any).note && (
+                      <p className="mt-1 text-xs text-gray-600">{(todo as any).note}</p>
                     )}
 
                     {/* 展開/折りたたみボタン */}
@@ -585,7 +586,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                   </div>
 
                   {/* Tags */}
-                  {todo.tags && todo.tags.length > 0 && (
+                  {Array.isArray(todo.tags) && todo.tags.length > 0 && (
                     <div className="flex items-center gap-1 mt-2 flex-wrap">
                       {todo.tags.slice(0, 3).map((tag) => (
                         <Badge
@@ -605,10 +606,10 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                   )}
 
                   {/* Completion Time */}
-                  {todo.completed && todo.completedAt && (
+                  {todo.completed && (todo as any).completedAt && (
                     <p className="text-xs text-gray-500 mt-1">
                       完了:{' '}
-                      {new Date(todo.completedAt).toLocaleString('ja-JP', {
+                      {new Date((todo as any).completedAt).toLocaleString('ja-JP', {
                         month: 'short',
                         day: 'numeric',
                         hour: '2-digit',
@@ -647,7 +648,11 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
                     {!todo.isPrioritized && (
                       <DropdownMenuItem
-                        onClick={() => onUpdate(todo._id || todo.id, { isPrioritized: true })}
+                        onClick={() =>
+                          onUpdate(((todo as any)._id ?? (todo as any).id) as string, {
+                            isPrioritized: true,
+                          })
+                        }
                         aria-label="prioritize"
                         role="menuitem"
                       >
@@ -658,7 +663,11 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
                     {todo.isPrioritized && (
                       <DropdownMenuItem
-                        onClick={() => onUpdate(todo._id || todo.id, { isPrioritized: false })}
+                        onClick={() =>
+                          onUpdate(((todo as any)._id ?? (todo as any).id) as string, {
+                            isPrioritized: false,
+                          })
+                        }
                         aria-label="unprioritize"
                         role="menuitem"
                       >

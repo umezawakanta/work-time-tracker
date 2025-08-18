@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -69,11 +70,21 @@ interface DashboardData {
   }>;
 }
 
+interface DashboardUser {
+  id?: string;
+  uid?: string;
+  email?: string;
+  name?: string;
+  displayName?: string;
+  createdAt?: string;
+}
+
 export const CognitiveIntegratedDashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [cognitiveService] = useState(() => new CognitiveIntegrationService());
   const [currentTime, setCurrentTime] = useState(new Date());
+  const { user: authUser } = useAuth();
 
   useEffect(() => {
     // 現在時刻を1分ごとに更新
@@ -85,17 +96,12 @@ export const CognitiveIntegratedDashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    loadDashboardData();
-  }, []);
+    loadDashboardData(authUser);
+  }, [authUser]);
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = async (currentUser: DashboardUser | null | undefined) => {
     try {
       setIsLoading(true);
-
-      // 実際のユーザーIDを取得
-      const { useAuth } = await import('@/hooks/useAuth');
-      const authContext = useAuth();
-      const currentUser = authContext.user;
 
       if (!currentUser) {
         console.warn('ユーザーが認証されていません');
@@ -105,48 +111,53 @@ export const CognitiveIntegratedDashboard: React.FC = () => {
 
       const userId = currentUser.uid || currentUser.id;
 
-      // 既存の認知プロファイルを取得
-      let cognitiveProfile = await cognitiveService.getCognitiveProfile(userId);
-
-      // プロファイルが存在しない場合は初期化
-      if (!cognitiveProfile) {
-        cognitiveProfile = await cognitiveService.initializeCognitiveProfile(userId, {
-          assessmentDate: new Date(),
-          userMetadata: {
-            email: currentUser.email,
-            name: currentUser.name || currentUser.displayName,
-            registrationDate: currentUser.createdAt || new Date().toISOString(),
+      // プロファイル存在チェック（簡易: 既存設定の有無で判断）
+      const existingSettings = cognitiveService.getOptimizedSettings(userId);
+      if (!existingSettings) {
+        await cognitiveService.updateCognitiveProfile({
+          id: `${userId}-profile`,
+          userId,
+          date: new Date(),
+          verbalComprehension: 100,
+          perceptualReasoning: 100,
+          workingMemory: 100,
+          processingSpeed: 100,
+          executiveFunction: 100,
+          attentionalControl: 100,
+          sensoryProcessing: 100,
+          socialCognition: 100,
+          personalizedSettings: {
+            optimalTaskDuration: 60,
+            preferredBreakFrequency: 60,
+            visualComplexityLevel: 'medium',
+            auditoryProcessingPreference: 'moderate',
+            multitaskingCapacity: 'dual',
+            timeStructureNeed: 'flexible',
+            cognitiveLoadThreshold: 70,
+            distractionSensitivity: 'medium',
           },
-        });
+          strengths: ['計画性', '問題解決能力'],
+          challenges: ['気が散りやすい'],
+          recommendations: ['短い休憩を定期的に入れましょう'],
+        } as any);
       }
 
       // 統合ダッシュボードデータを生成
       const data = cognitiveService.generateUnifiedDashboard(userId);
-      setDashboardData(data);
+      if (data) {
+        setDashboardData(data as any);
+      } else {
+        setDashboardData(null);
+      }
 
       console.log('認知統合ダッシュボード読み込み完了:', {
         userId,
-        hasProfile: !!cognitiveProfile,
+        hasProfile: !!cognitiveService.getOptimizedSettings(userId),
       });
     } catch (error) {
       console.error('ダッシュボードデータ読み込みエラー:', error);
-      // エラー時は基本的なダッシュボードを表示
-      setDashboardData({
-        overview: {
-          currentScore: 0,
-          todayProgress: 0,
-          weeklyGoal: 100,
-          streakDays: 0,
-        },
-        cognitiveMetrics: {
-          focusLevel: 50,
-          energyLevel: 50,
-          stressLevel: 50,
-          productivityScore: 50,
-        },
-        recommendations: ['システムの初期化中です。しばらくお待ちください。'],
-        upcomingTasks: [],
-      });
+      // エラー時はダッシュボード非表示
+      setDashboardData(null);
     } finally {
       setIsLoading(false);
     }
