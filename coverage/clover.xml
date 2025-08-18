@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1755538533716" clover="3.2.0">
-  <project timestamp="1755538533716" name="All files">
-    <metrics statements="74644" coveredstatements="3154" conditionals="33864" coveredconditionals="928" methods="18763" coveredmethods="570" elements="127271" coveredelements="4652" complexity="0" loc="74644" ncloc="74644" packages="211" files="1067" classes="1067"/>
+<coverage generated="1755538719005" clover="3.2.0">
+  <project timestamp="1755538719006" name="All files">
+    <metrics statements="74644" coveredstatements="3151" conditionals="33864" coveredconditionals="928" methods="18763" coveredmethods="569" elements="127271" coveredelements="4648" complexity="0" loc="74644" ncloc="74644" packages="211" files="1067" classes="1067"/>
     <package name="src">
       <metrics statements="153" coveredstatements="0" conditionals="1" coveredconditionals="0" methods="146" coveredmethods="0"/>
       <file name="App.firebase.tsx" path="C:\Users\kanta\GitHub\work-time-tracker\src\App.firebase.tsx">
@@ -10552,8 +10552,8 @@
         <line num="112" count="864" type="stmt"/>
         <line num="113" count="864" type="stmt"/>
         <line num="114" count="864" type="cond" truecount="3" falsecount="0"/>
-        <line num="115" count="845" type="stmt"/>
-        <line num="116" count="845" type="stmt"/>
+        <line num="115" count="844" type="stmt"/>
+        <line num="116" count="844" type="stmt"/>
         <line num="120" count="144" type="cond" truecount="1" falsecount="0"/>
         <line num="121" count="144" type="stmt"/>
         <line num="125" count="24" type="stmt"/>
@@ -47716,7 +47716,7 @@
         <line num="279" count="150" type="stmt"/>
         <line num="289" count="44" type="stmt"/>
         <line num="290" count="40044" type="cond" truecount="2" falsecount="0"/>
-        <line num="291" count="44908" type="stmt"/>
+        <line num="291" count="45980" type="stmt"/>
         <line num="293" count="44" type="cond" truecount="1" falsecount="0"/>
         <line num="295" count="40" type="stmt"/>
         <line num="297" count="40" type="stmt"/>
@@ -58621,9 +58621,9 @@
       </file>
     </package>
     <package name="src.services.auth">
-      <metrics statements="487" coveredstatements="185" conditionals="230" coveredconditionals="45" methods="89" coveredmethods="32"/>
+      <metrics statements="487" coveredstatements="182" conditionals="230" coveredconditionals="45" methods="89" coveredmethods="31"/>
       <file name="AuthService.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\services\auth\AuthService.ts">
-        <metrics statements="64" coveredstatements="31" conditionals="41" coveredconditionals="10" methods="19" coveredmethods="9"/>
+        <metrics statements="64" coveredstatements="28" conditionals="41" coveredconditionals="10" methods="19" coveredmethods="8"/>
         <line num="2" count="2" type="stmt"/>
         <line num="3" count="2" type="stmt"/>
         <line num="15" count="2" type="stmt"/>
@@ -58654,19 +58654,19 @@
         <line num="78" count="0" type="stmt"/>
         <line num="80" count="0" type="stmt"/>
         <line num="105" count="1" type="stmt"/>
-        <line num="119" count="3" type="stmt"/>
-        <line num="120" count="3" type="stmt"/>
+        <line num="119" count="1" type="stmt"/>
+        <line num="120" count="1" type="stmt"/>
         <line num="122" count="0" type="stmt"/>
         <line num="124" count="0" type="stmt"/>
         <line num="133" count="0" type="stmt"/>
         <line num="135" count="0" type="stmt"/>
-        <line num="140" count="3" type="stmt"/>
-        <line num="148" count="2" type="stmt"/>
-        <line num="149" count="2" type="stmt"/>
+        <line num="140" count="1" type="stmt"/>
+        <line num="148" count="0" type="stmt"/>
+        <line num="149" count="0" type="stmt"/>
         <line num="151" count="0" type="stmt"/>
         <line num="155" count="0" type="stmt"/>
         <line num="157" count="0" type="stmt"/>
-        <line num="162" count="2" type="stmt"/>
+        <line num="162" count="0" type="stmt"/>
         <line num="170" count="0" type="stmt"/>
         <line num="171" count="0" type="stmt"/>
         <line num="173" count="0" type="stmt"/>
@@ -58684,9 +58684,9 @@
         <line num="219" count="2" type="stmt"/>
         <line num="220" count="2" type="cond" truecount="1" falsecount="0"/>
         <line num="222" count="1" type="stmt"/>
-        <line num="245" count="5" type="stmt"/>
-        <line num="247" count="5" type="stmt"/>
-        <line num="286" count="5" type="stmt"/>
+        <line num="245" count="1" type="stmt"/>
+        <line num="247" count="1" type="stmt"/>
+        <line num="286" count="1" type="stmt"/>
         <line num="295" count="2" type="stmt"/>
       </file>
       <file name="TokenManager.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\services\auth\TokenManager.ts">
