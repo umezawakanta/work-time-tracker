@@ -7,7 +7,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from '../context/AuthContext';
+import AuthContext, { AuthProvider } from '../context/AuthContext';
 import { store } from '../store';
 
 interface TestProvidersProps {
@@ -77,10 +77,10 @@ export const MockAuthProvider: React.FC<{
     loading: false,
     user: isAuthenticated ? mockUser : null,
     setUser: jest.fn(),
-    fetchUser: jest.fn(),
-    updateProfile: jest.fn(),
+    fetchUser: async (): Promise<void> => {},
+    updateProfile: async (_data: { name: string; email: string }): Promise<void> => {},
     sessionExpired: false,
-    refreshAuth: jest.fn(),
+    refreshAuth: async (): Promise<void> => {},
     sessionInfo: {
       isAuthenticated,
       expiresAt: new Date(Date.now() + 3600000), // 1時間後
@@ -89,9 +89,6 @@ export const MockAuthProvider: React.FC<{
       timeUntilRefreshExpiry: 7200,
     },
   };
-
-  // AuthContextを直接モック
-  const AuthContext = require('../context/AuthContext').default;
 
   return <AuthContext.Provider value={mockContextValue}>{children}</AuthContext.Provider>;
 };
