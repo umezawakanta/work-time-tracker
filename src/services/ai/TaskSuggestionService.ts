@@ -3,6 +3,7 @@
 
 import { TodoItem } from '@/types';
 import { TaskSuggestion, TaskPrediction } from '@/types/ai';
+import { multiAIIntegrationService } from './MultiAIIntegrationService';
 
 export interface TaskAnalysis {
   overallProductivity: number; // 0-100
@@ -19,8 +20,6 @@ export interface TaskAnalysis {
   };
 }
 
-
-
 class TaskSuggestionService {
   private isAIEnabled = true; // 実際のAI実装完了
 
@@ -31,8 +30,7 @@ class TaskSuggestionService {
   async analyzePriority(tasks: TodoItem[]): Promise<TaskSuggestion[]> {
     try {
       // 実際のAI分析の実行
-      const { MultiAIIntegrationService } = await import('./MultiAIIntegrationService');
-      const aiService = MultiAIIntegrationService.getInstance();
+      const aiService = multiAIIntegrationService;
 
       const taskAnalysisPrompt = `
 Task Priority Analysis Request:
@@ -49,11 +47,10 @@ Please analyze these tasks and provide priority suggestions based on:
 Respond with actionable priority recommendations.
 `;
 
-      const response = await aiService.processRequest({
+      const response = await aiService.processTask({
         prompt: taskAnalysisPrompt,
         taskType: 'analysis',
         priority: 'normal',
-        expectedResponseTime: 5000,
       });
 
       // AI応答を解析してTaskSuggestion形式に変換
@@ -70,8 +67,7 @@ Respond with actionable priority recommendations.
    */
   async predictCompletionTime(tasks: TodoItem[]): Promise<TaskPrediction[]> {
     try {
-      const { MultiAIIntegrationService } = await import('./MultiAIIntegrationService');
-      const aiService = MultiAIIntegrationService.getInstance();
+      const aiService = multiAIIntegrationService;
 
       const predictions: TaskPrediction[] = [];
 
@@ -93,11 +89,10 @@ Based on this task description, estimate:
 Provide a realistic time estimate.
 `;
 
-        const response = await aiService.processRequest({
+        const response = await aiService.processTask({
           prompt: predictionPrompt,
-          taskType: 'prediction',
+          taskType: 'analysis',
           priority: 'normal',
-          expectedResponseTime: 3000,
         });
 
         predictions.push(this.parseAIResponseToPrediction(response.content, task));

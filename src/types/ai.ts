@@ -65,7 +65,7 @@ export interface TaskSuggestion {
   impact: 'low' | 'medium' | 'high';
   effort: string;
   aiGenerated: boolean;
-  suggestedAction?: string;
+  suggestedAction?: string | SuggestedAction;
   reasoning?: string;
   estimatedTimeImpact?: number;
   metadata?: {
@@ -73,6 +73,12 @@ export interface TaskSuggestion {
     suggestedPriority?: number;
     reason?: string;
   };
+}
+
+export interface SuggestedAction {
+  action: string;
+  targetTaskId?: string;
+  newValues?: Record<string, unknown>;
 }
 
 export interface TaskPrediction {

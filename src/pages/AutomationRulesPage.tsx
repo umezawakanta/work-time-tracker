@@ -39,6 +39,7 @@ import {
   Globe,
   Lock,
 } from 'lucide-react';
+import { tokenManager } from '@/services/auth/TokenManager';
 
 const AutomationRulesPage: React.FC = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -75,7 +76,7 @@ const AutomationRulesPage: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${await user?.getIdToken()}`,
+          Authorization: `Bearer ${await tokenManager.getAccessToken()}`,
         },
         body: JSON.stringify({
           userId: user?.uid,
@@ -86,9 +87,7 @@ const AutomationRulesPage: React.FC = () => {
       if (result.ok) {
         console.log('✅ Automation started successfully');
         toast.success('自動化が開始されました');
-        // 統計データを更新
-        const newStats = getAutomationStats();
-        setAutomationStats(newStats);
+        // 統計データはレンダー時に取得
       } else {
         throw new Error('自動化の開始に失敗しました');
       }
@@ -109,7 +108,7 @@ const AutomationRulesPage: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${await user?.getIdToken()}`,
+          Authorization: `Bearer ${await tokenManager.getAccessToken()}`,
         },
         body: JSON.stringify({
           userId: user?.uid,
@@ -139,7 +138,7 @@ const AutomationRulesPage: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${await user?.getIdToken()}`,
+          Authorization: `Bearer ${await tokenManager.getAccessToken()}`,
         },
         body: JSON.stringify({
           userId: user?.uid,
