@@ -7,14 +7,14 @@
 if (typeof global !== 'undefined' && !global.TransformStream) {
   try {
     const { TransformStream, ReadableStream, WritableStream } = require('node:stream/web');
-    
+
     global.TransformStream = TransformStream;
-    global.ReadableStream = ReadableStream; 
+    global.ReadableStream = ReadableStream;
     global.WritableStream = WritableStream;
   } catch (error) {
     // Fallback for older Node.js versions
     console.warn('Web Streams API not available, using fallback implementation');
-    
+
     // Minimal fallback implementations
     global.TransformStream = class TransformStream {
       constructor() {
@@ -22,11 +22,11 @@ if (typeof global !== 'undefined' && !global.TransformStream) {
         this.writable = {};
       }
     };
-    
+
     global.ReadableStream = class ReadableStream {
       constructor() {}
     };
-    
+
     global.WritableStream = class WritableStream {
       constructor() {}
     };
