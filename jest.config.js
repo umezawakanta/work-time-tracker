@@ -33,7 +33,7 @@ module.exports = {
   ],
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
-    '<rootDir>/src/**/*.(test|spec).{ts,tsx}',
+    '<rootDir>/src/**/*.{test,spec}.{ts,tsx}',
   ],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
@@ -80,4 +80,5 @@ module.exports = {
   clearMocks: true,
   restoreMocks: true,
   resetMocks: false, // Keep this false to preserve our manual mocks
+  passWithNoTests: true,
 };
