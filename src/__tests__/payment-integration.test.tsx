@@ -4,7 +4,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { describe, it, beforeEach, jest } from '@jest/globals';
 import { configureStore } from '@reduxjs/toolkit';
 import { toast } from 'react-hot-toast';
 import '@testing-library/jest-dom';
