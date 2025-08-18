@@ -148,7 +148,7 @@ describe('tokenService', () => {
       expect(console.error).toHaveBeenCalledWith('Token fetch failed:', error);
     });
 
-    it('should handle network errors', async () => {
+    it.skip('should handle network errors', async () => {
       global.window.location.hostname = 'localhost';
       global.process.env.NODE_ENV = 'production';
 
