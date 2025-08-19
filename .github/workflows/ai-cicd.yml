@@ -353,9 +353,10 @@ jobs:
     name: Trigger Vercel Deploy Hook
     runs-on: ubuntu-latest
     needs: [build]
-    if: github.ref == 'refs/heads/main' && success() && secrets.VERCEL_DEPLOY_HOOK_URL != ''
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Call Deploy Hook
+        if: ${{ env.VERCEL_DEPLOY_HOOK_URL != '' }}
         env:
           VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
         run: |
