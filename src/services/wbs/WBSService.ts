@@ -2,9 +2,29 @@
 import { WBSNode, WBSProject, WBSActivity, WBSExportOptions } from '@/types/wbs';
 
 class WBSService {
-  private baseUrl = '/api/wbs';
-  private projectsUrl = '/api/wbs-projects';
-  private activitiesUrl = '/api/wbs-activities';
+  private apiBase: string;
+  private baseUrl: string;
+  private projectsUrl: string;
+  private activitiesUrl: string;
+
+  constructor() {
+    // Decide API base URL at runtime (dev server vs production)
+    const viteBase = (import.meta as any)?.env?.VITE_API_BASE_URL as string | undefined;
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+
+    if (viteBase && viteBase.startsWith('http')) {
+      this.apiBase = viteBase.replace(/\/$/, '');
+    } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      this.apiBase = 'http://localhost:3001';
+    } else {
+      // Same origin (Vercel Functions)
+      this.apiBase = '';
+    }
+
+    this.baseUrl = `${this.apiBase}/api/wbs`;
+    this.projectsUrl = `${this.apiBase}/api/wbs-projects`;
+    this.activitiesUrl = `${this.apiBase}/api/wbs-activities`;
+  }
 
   // プロジェクト管理
   async createProject(userId: string, projectData: Partial<WBSProject>): Promise<string> {

@@ -47,6 +47,29 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Simple server running' });
 });
 
+// --- Minimal WBS mock endpoints for local development ---
+// In production (Vercel), dedicated API routes should handle these.
+app.post('/api/wbs', (req, res) => {
+  console.log('🧱 POST /api/wbs (mock) called');
+  const id = 'wbs_' + Date.now().toString(36);
+  res.status(201).json({ _id: id, ...req.body });
+});
+
+app.get('/api/wbs/project/:projectId', (req, res) => {
+  console.log('🧱 GET /api/wbs/project/:projectId (mock) called');
+  res.json([]);
+});
+
+app.put('/api/wbs/:id', (req, res) => {
+  console.log('🧱 PUT /api/wbs/:id (mock) called');
+  res.json({ _id: req.params.id, ...req.body });
+});
+
+app.delete('/api/wbs/:id', (req, res) => {
+  console.log('🧱 DELETE /api/wbs/:id (mock) called');
+  res.json({ success: true });
+});
+
 // Authentication endpoints
 app.post('/api/auth/login', (req, res) => {
   console.log('✅ POST /api/auth/login called');
