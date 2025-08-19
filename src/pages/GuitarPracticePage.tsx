@@ -1032,6 +1032,14 @@ const GuitarPracticePage: React.FC = () => {
             <Award className="h-4 w-4" />
             <span>マイルストーン</span>
           </TabsTrigger>
+          <TabsTrigger value="plan" className="flex items-center gap-1">
+            <Clock className="h-4 w-4" />
+            <span>デイリープラン</span>
+          </TabsTrigger>
+          <TabsTrigger value="roadmap" className="flex items-center gap-1">
+            <Layers className="h-4 w-4" />
+            <span>ロードマップ</span>
+          </TabsTrigger>
           <TabsTrigger value="resources" className="flex items-center gap-1">
             <Music className="h-4 w-4" />
             <span>リソース</span>
@@ -1178,6 +1186,122 @@ const GuitarPracticePage: React.FC = () => {
                   </Dialog>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* デイリープラン */}
+        <TabsContent value="plan">
+          <Card className="w-full">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-purple-600" />
+                今日のデイリープラン
+              </CardTitle>
+              <CardDescription>
+                60分基準の推奨メニュー。完了にチェックすると記録へ自動反映できます。
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Button variant="outline" onClick={() => startNewPlan(45)}>
+                  45分プラン
+                </Button>
+                <Button variant="outline" onClick={() => startNewPlan(60)}>
+                  60分プラン
+                </Button>
+                <Button variant="outline" onClick={() => startNewPlan(90)}>
+                  90分プラン
+                </Button>
+              </div>
+              {todayPlan.length === 0 ? (
+                <div className="text-center text-gray-500">
+                  プランがありません。「60分プラン」を作成してください。
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {todayPlan.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between rounded-md border p-3"
+                    >
+                      <div>
+                        <div className="font-medium">{item.title}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {item.technique} ・ {item.minutes}分
+                          {item.bpm ? ` ・ ${item.bpm} BPM` : ''}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={item.done}
+                          onCheckedChange={() => togglePlanItem(item.id)}
+                        />
+                        <Label className="text-xs">完了</Label>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="flex justify-end gap-2 pt-2">
+                    <Button variant="outline" onClick={() => setTodayPlan([])}>
+                      プランをクリア
+                    </Button>
+                    <Button onClick={commitDoneItemsToLog}>完了分を記録</Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ロードマップ */}
+        <TabsContent value="roadmap">
+          <Card className="w-full">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Layers className="h-5 w-5 text-indigo-600" />
+                プロギタリスト・ロードマップ
+              </CardTitle>
+              <CardDescription>基礎→応用→実践→プロの4段階を順に制覇しましょう。</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {roadmap.map((level) => (
+                  <div key={level.id} className="rounded-lg border p-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold">{level.title}</h3>
+                      <div className="text-sm text-muted-foreground">
+                        進捗:{' '}
+                        {Math.round(
+                          (level.tasks.filter((t) => t.completed).length / level.tasks.length) * 100
+                        )}
+                        %
+                      </div>
+                    </div>
+                    <div className="mt-3 space-y-2">
+                      {level.tasks.map((t) => (
+                        <div
+                          key={t.id}
+                          className="flex items-center justify-between rounded-md border p-3"
+                        >
+                          <div>
+                            <div className="font-medium">{t.label}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {t.technique} ・ 合計 {t.minutes}分
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              checked={t.completed}
+                              onCheckedChange={() => toggleRoadmapTask(level.id, t.id)}
+                            />
+                            <Label className="text-xs">完了</Label>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
