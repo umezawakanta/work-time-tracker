@@ -688,6 +688,241 @@ const GuitarPracticePage: React.FC = () => {
   const [showMotivationTip, setShowMotivationTip] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
+  // === デイリープラン ===
+  type PracticePlanItem = {
+    id: string;
+    title: string;
+    technique: string;
+    minutes: number;
+    bpm?: number;
+    done: boolean;
+  };
+
+  const [todayPlan, setTodayPlan] = useState<PracticePlanItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('guitar_today_plan');
+      return saved ? (JSON.parse(saved) as PracticePlanItem[]) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('guitar_today_plan', JSON.stringify(todayPlan));
+  }, [todayPlan]);
+
+  const generateDailyPlan = (totalMinutes: number = 60): PracticePlanItem[] => {
+    const blocks: Array<[string, number]> = [
+      ['ウォームアップ', Math.max(10, Math.floor(totalMinutes * 0.15))],
+      ['スケール', Math.floor(totalMinutes * 0.2)],
+      ['ピッキング', Math.floor(totalMinutes * 0.15)],
+      ['コード', Math.floor(totalMinutes * 0.15)],
+      ['曲の練習', Math.floor(totalMinutes * 0.25)],
+      ['耳コピ/即興', 0],
+    ];
+    const allocated = blocks.slice(0, blocks.length - 1).reduce((s, [, m]) => s + m, 0);
+    blocks[blocks.length - 1][1] = Math.max(5, totalMinutes - allocated);
+
+    const newId = () => `plan_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    const bpm = (label: string) =>
+      label === 'スケール'
+        ? 70
+        : label === 'ピッキング'
+          ? 80
+          : label === '曲の練習'
+            ? 90
+            : undefined;
+    return blocks.map(([label, minutes]) => ({
+      id: newId(),
+      title: `${label}（メトロノーム推奨）`,
+      technique: label,
+      minutes,
+      bpm: bpm(label),
+      done: false,
+    }));
+  };
+
+  const startNewPlan = (minutes: number) => {
+    setTodayPlan(generateDailyPlan(minutes));
+    setActiveTab('plan');
+  };
+
+  const togglePlanItem = (id: string) =>
+    setTodayPlan((prev) => prev.map((p) => (p.id === id ? { ...p, done: !p.done } : p)));
+
+  const commitDoneItemsToLog = async () => {
+    const done = todayPlan.filter((i) => i.done);
+    for (const item of done) {
+      await dispatch(
+        addGuitarPractice({
+          date: new Date().toISOString(),
+          duration: item.minutes,
+          technique: item.technique,
+          song: item.technique === '曲の練習' ? 'セットリスト/課題曲' : '',
+          bpm: item.bpm,
+          difficulty: 3,
+          notes: 'デイリープランから自動記録',
+          satisfaction: 3,
+          isMilestone: false,
+        })
+      );
+    }
+    setTodayPlan((prev) => prev.filter((i) => !i.done));
+  };
+
+  // === ロードマップ ===
+  type RoadmapTask = {
+    id: string;
+    label: string;
+    technique: string;
+    minutes: number;
+    completed: boolean;
+  };
+  type RoadmapLevel = {
+    id: 'beginner' | 'intermediate' | 'advanced' | 'pro';
+    title: string;
+    tasks: RoadmapTask[];
+  };
+
+  const defaultRoadmap: RoadmapLevel[] = [
+    {
+      id: 'beginner',
+      title: 'Beginner 基礎固め',
+      tasks: [
+        {
+          id: 'b1',
+          label: 'C/G/D/Am 基本コード',
+          technique: 'コード',
+          minutes: 120,
+          completed: false,
+        },
+        {
+          id: 'b2',
+          label: 'メトロノーム 60-80bpm 8分音符',
+          technique: 'リズム',
+          minutes: 90,
+          completed: false,
+        },
+        {
+          id: 'b3',
+          label: 'ペンタトニック 5ポジション基礎',
+          technique: 'スケール',
+          minutes: 120,
+          completed: false,
+        },
+      ],
+    },
+    {
+      id: 'intermediate',
+      title: 'Intermediate 応用力',
+      tasks: [
+        {
+          id: 'i1',
+          label: 'オルタネイト/エコノミー',
+          technique: 'ピッキング',
+          minutes: 120,
+          completed: false,
+        },
+        {
+          id: 'i2',
+          label: 'バレーコード移行',
+          technique: 'コード',
+          minutes: 120,
+          completed: false,
+        },
+        {
+          id: 'i3',
+          label: '12小節ブルース即興',
+          technique: '即興',
+          minutes: 120,
+          completed: false,
+        },
+      ],
+    },
+    {
+      id: 'advanced',
+      title: 'Advanced 実践/表現',
+      tasks: [
+        {
+          id: 'a1',
+          label: '速弾き基礎 120→160bpm',
+          technique: 'ピッキング',
+          minutes: 150,
+          completed: false,
+        },
+        {
+          id: 'a2',
+          label: 'コードトーン・アウトライン',
+          technique: 'スケール',
+          minutes: 150,
+          completed: false,
+        },
+        {
+          id: 'a3',
+          label: '3曲レパートリー仕上げ',
+          technique: '曲の練習',
+          minutes: 240,
+          completed: false,
+        },
+      ],
+    },
+    {
+      id: 'pro',
+      title: 'Pro 現場対応/創作',
+      tasks: [
+        {
+          id: 'p1',
+          label: 'クリック/バンドでの安定演奏',
+          technique: 'リズム',
+          minutes: 180,
+          completed: false,
+        },
+        {
+          id: 'p2',
+          label: '週1オーディオ録音&自己レビュー',
+          technique: '録音',
+          minutes: 60,
+          completed: false,
+        },
+        {
+          id: 'p3',
+          label: 'オリジナル1曲アレンジ/公開',
+          technique: '作曲',
+          minutes: 240,
+          completed: false,
+        },
+      ],
+    },
+  ];
+
+  const [roadmap, setRoadmap] = useState<RoadmapLevel[]>(() => {
+    try {
+      const saved = localStorage.getItem('guitar_roadmap');
+      return saved ? (JSON.parse(saved) as RoadmapLevel[]) : defaultRoadmap;
+    } catch {
+      return defaultRoadmap;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('guitar_roadmap', JSON.stringify(roadmap));
+  }, [roadmap]);
+
+  const toggleRoadmapTask = (levelId: RoadmapLevel['id'], taskId: string) => {
+    setRoadmap((prev) =>
+      prev.map((lvl) =>
+        lvl.id !== levelId
+          ? lvl
+          : {
+              ...lvl,
+              tasks: lvl.tasks.map((t) =>
+                t.id === taskId ? { ...t, completed: !t.completed } : t
+              ),
+            }
+      )
+    );
+  };
+
   // 練習記録のモチベーションヒント
   const motivationTips = [
     '毎日少しずつの練習が大きな進歩につながります。15分でも継続が大切です。',
