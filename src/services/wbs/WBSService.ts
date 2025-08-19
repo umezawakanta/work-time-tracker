@@ -1,5 +1,6 @@
 // src/services/wbs/WBSService.ts
 import { WBSNode, WBSProject, WBSActivity, WBSExportOptions } from '@/types/wbs';
+import { getEnv } from '@/utils/env';
 
 class WBSService {
   private apiBase: string;
@@ -9,12 +10,16 @@ class WBSService {
 
   constructor() {
     // Decide API base URL at runtime (dev server vs production)
-    const viteBase = (import.meta as any)?.env?.VITE_API_BASE_URL as string | undefined;
+    const viteBase = getEnv('VITE_API_BASE_URL');
     const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
 
-    if (viteBase && viteBase.startsWith('http')) {
+    if (typeof viteBase === 'string' && viteBase.startsWith('http')) {
       this.apiBase = viteBase.replace(/\/$/, '');
-    } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    } else if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      (typeof process !== 'undefined' && process.env.NODE_ENV === 'test')
+    ) {
       this.apiBase = 'http://localhost:3001';
     } else {
       // Same origin (Vercel Functions)
