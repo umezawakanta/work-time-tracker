@@ -15,7 +15,7 @@ import { TodoItem as TodoItemType } from '@/types';
 import { renderWithAuth } from '@/test-utils/render';
 
 // テスト用のストア作成
-const createTestStore = (initialState = {}) => {
+const createTestStore = (initialState: { todo?: any } = {}) => {
   return configureStore({
     reducer: {
       todo: todoSlice,
@@ -23,8 +23,12 @@ const createTestStore = (initialState = {}) => {
     preloadedState: {
       todo: {
         items: [],
-        status: 'idle',
+        status: 'idle' as const,
         error: null,
+        todoHistory: {},
+        dailyHistory: [],
+        isPremium: false,
+        analysisSummary: null,
         ...initialState.todo,
       },
     },
@@ -32,7 +36,7 @@ const createTestStore = (initialState = {}) => {
 };
 
 // テストユーティリティ（AuthProvider付き）
-const renderWithRedux = (component: React.ReactElement, initialState = {}) => {
+const renderWithRedux = (component: React.ReactElement, initialState: { todo?: any } = {}) => {
   const store = createTestStore(initialState);
   return {
     ...renderWithAuth(<Provider store={store}>{component}</Provider>),
@@ -43,24 +47,18 @@ const renderWithRedux = (component: React.ReactElement, initialState = {}) => {
 describe('📝 TodoItem コンポーネント', () => {
   const mockTodo: TodoItemType = {
     _id: 'test-todo-1',
-    id: 'test-todo-1',
     task: 'テストタスク',
-    title: 'テストタスク',
-    description: 'これはテスト用のタスクです',
     completed: false,
     priority: 3,
-    type: 'task',
+    isPrioritized: false,
+    completedDate: null,
+    type: 'input' as const,
     category: 'personal',
     tags: ['test', 'important'],
     createdAt: '2024-01-01T00:00:00.000Z',
-    updatedAt: '2024-01-01T00:00:00.000Z',
     deadline: '2024-12-31T23:59:59.000Z',
-    estimatedMinutes: 30,
-    isPrioritized: false,
-    userId: 'test-user-1',
-    source: 'manual' as const,
-    context: [],
-    subtodos: [],
+    estimatedDuration: 30,
+    note: 'これはテスト用のタスクです',
   };
 
   const mockProps = {
@@ -301,7 +299,7 @@ describe('📝 TodoItem コンポーネント', () => {
       const longTextTodo = {
         ...mockTodo,
         task: 'A'.repeat(1000),
-        description: 'B'.repeat(2000),
+        note: 'B'.repeat(2000),
       };
       const props = { ...mockProps, todo: longTextTodo };
 
