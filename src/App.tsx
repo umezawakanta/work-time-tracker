@@ -79,7 +79,7 @@ const HomePage = lazy(() => import('./pages/Home'));
 const WorkTimeEntry = lazy(() => import('./pages/WorkTimeEntry'));
 const WorkTimeEntryForm = lazy(() => import('./components/forms/WorkTimeEntryForm'));
 const WorkTimeReports = lazy(() => import('./pages/WorkTimeReports'));
-const UserProfile = lazy(() => import('./pages/UserProfile'));
+// const UserProfile = lazy(() => import('./pages/UserProfile'));
 
 // 🔐 Authentication Pages
 const Login = lazy(() => import('./pages/Login'));
@@ -937,16 +937,7 @@ const App: React.FC = () => {
                                 </LayoutWrapper>
                               }
                             />
-                            <Route
-                              path="/profile"
-                              element={
-                                <LayoutWrapper>
-                                  <LazyWrapper>
-                                    <UserProfile />
-                                  </LazyWrapper>
-                                </LayoutWrapper>
-                              }
-                            />
+                            <Route path="/profile" element={<Navigate to="/settings?tab=account" replace />} />
 
                             {/* 🏆 Development & Gamification */}
                             <Route
