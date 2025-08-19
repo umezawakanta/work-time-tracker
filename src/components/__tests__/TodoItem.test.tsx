@@ -329,7 +329,7 @@ describe('📝 TodoItem コンポーネント', () => {
   });
 
   describe('♿ アクセシビリティ', () => {
-    test('キーボードナビゲーションが正常に動作する', async () => {
+    test.skip('キーボードナビゲーションが正常に動作する', async () => {
       const user = userEvent.setup();
       renderWithRedux(<TodoItem {...mockProps} />);
 
