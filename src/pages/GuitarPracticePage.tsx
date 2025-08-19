@@ -711,6 +711,43 @@ const GuitarPracticePage: React.FC = () => {
     localStorage.setItem('guitar_today_plan', JSON.stringify(todayPlan));
   }, [todayPlan]);
 
+  // === メトロノーム・コーチ（技術別推奨BPMの学習） ===
+  const [coachBpm, setCoachBpm] = useState<Record<string, number>>(() => {
+    try {
+      const saved = localStorage.getItem('guitar_bpm_coach');
+      return saved ? (JSON.parse(saved) as Record<string, number>) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const persistCoach = (next: Record<string, number>) => {
+    setCoachBpm(next);
+    try {
+      localStorage.setItem('guitar_bpm_coach', JSON.stringify(next));
+    } catch {
+      // ignore
+    }
+  };
+
+  const adjustBpm = (technique: string, delta: number) => {
+    const current =
+      coachBpm[technique] ??
+      (technique === 'スケール'
+        ? 70
+        : technique === 'ピッキング'
+          ? 80
+          : technique === '曲の練習'
+            ? 90
+            : 70);
+    const nextVal = Math.max(40, Math.min(240, current + delta));
+    persistCoach({ ...coachBpm, [technique]: nextVal });
+    // プラン内の同技術項目にも反映
+    setTodayPlan((prev) =>
+      prev.map((p) => (p.technique === technique ? { ...p, bpm: nextVal } : p))
+    );
+  };
+
   const generateDailyPlan = (totalMinutes: number = 60): PracticePlanItem[] => {
     const blocks: Array<[string, number]> = [
       ['ウォームアップ', Math.max(10, Math.floor(totalMinutes * 0.15))],
@@ -724,14 +761,17 @@ const GuitarPracticePage: React.FC = () => {
     blocks[blocks.length - 1][1] = Math.max(5, totalMinutes - allocated);
 
     const newId = () => `plan_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-    const bpm = (label: string) =>
-      label === 'スケール'
+    const bpm = (label: string) => {
+      const learned = coachBpm[label];
+      if (learned) return learned;
+      return label === 'スケール'
         ? 70
         : label === 'ピッキング'
           ? 80
           : label === '曲の練習'
             ? 90
             : undefined;
+    };
     return blocks.map(([label, minutes]) => ({
       id: newId(),
       title: `${label}（メトロノーム推奨）`,
@@ -921,6 +961,62 @@ const GuitarPracticePage: React.FC = () => {
             }
       )
     );
+  };
+
+  // === 週次ノルマと不足分の自動ブレンド ===
+  const weeklyGoals: Record<string, number> = {
+    スケール: 120,
+    ピッキング: 120,
+    コード: 90,
+    曲の練習: 180,
+    '耳コピ/即興': 60,
+  };
+
+  const last7DaysMinutesByTechnique = useMemo(() => {
+    const now = new Date();
+    const sevenDaysAgo = new Date(now);
+    sevenDaysAgo.setDate(now.getDate() - 6);
+    const acc: Record<string, number> = {};
+    for (const p of practices) {
+      const d = new Date(p.date);
+      if (isNaN(d.getTime())) continue;
+      if (d >= new Date(sevenDaysAgo.toDateString())) {
+        acc[p.technique] = (acc[p.technique] ?? 0) + p.duration;
+      }
+    }
+    return acc;
+  }, [practices]);
+
+  const deficits = useMemo(() => {
+    const res: Array<{ technique: string; deficit: number }> = [];
+    for (const [tech, goal] of Object.entries(weeklyGoals)) {
+      const done = last7DaysMinutesByTechnique[tech] ?? 0;
+      const def = Math.max(0, goal - done);
+      if (def > 0) res.push({ technique: tech, deficit: def });
+    }
+    return res.sort((a, b) => b.deficit - a.deficit);
+  }, [last7DaysMinutesByTechnique]);
+
+  const addDeficitsToPlan = () => {
+    if (deficits.length === 0) return;
+    const newItems: PracticePlanItem[] = deficits.flatMap(({ technique, deficit }) => {
+      const chunk = Math.max(10, Math.min(30, deficit));
+      const n = Math.ceil(deficit / chunk);
+      const arr: PracticePlanItem[] = [];
+      for (let i = 0; i < n; i++) {
+        arr.push({
+          id: `def_${technique}_${Date.now()}_${i}`,
+          title: `${technique}（不足分対応）`,
+          technique,
+          minutes: i === n - 1 ? Math.max(10, deficit - chunk * (n - 1)) : chunk,
+          bpm: coachBpm[technique],
+          done: false,
+        });
+      }
+      return arr;
+    });
+    setTodayPlan((prev) => [...prev, ...newItems]);
+    setActiveTab('plan');
   };
 
   // 練習記録のモチベーションヒント
