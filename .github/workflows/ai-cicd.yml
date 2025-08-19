@@ -334,7 +334,7 @@ jobs:
           echo "Deploying to production environment..."
           # Vercel CLI を使用したデプロイ（VERCEL_TOKEN が設定されている場合）
           if [ -n "${VERCEL_TOKEN:-}" ]; then
-            npx vercel --prod --confirm --token=$VERCEL_TOKEN
+            npx vercel --prod --yes --token=$VERCEL_TOKEN
           else
             echo "⚠️ VERCEL_TOKEN not set, skipping Vercel CLI deployment"
           fi

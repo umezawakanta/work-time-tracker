@@ -47,7 +47,7 @@
       ]
     },
     {
-      "source": "/(.*\\.(js|mjs))",
+      "source": "/(.*\\.js|.*\\.mjs)",
       "headers": [
         {
           "key": "Content-Type",
