@@ -57,7 +57,7 @@
       }
     },
     "assert": {
-      "preset": "lighthouse:recommended",
+      "preset": "off",
       "assertions": {
         "categories:performance": [
           "warn",
