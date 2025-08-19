@@ -1309,6 +1309,11 @@ const GuitarPracticePage: React.FC = () => {
                 <Button variant="outline" onClick={() => startNewPlan(90)}>
                   90分プラン
                 </Button>
+                {deficits.length > 0 && (
+                  <Button variant="secondary" onClick={addDeficitsToPlan}>
+                    不足分をプランに追加
+                  </Button>
+                )}
               </div>
               {todayPlan.length === 0 ? (
                 <div className="text-center text-gray-500">
@@ -1327,6 +1332,25 @@ const GuitarPracticePage: React.FC = () => {
                           {item.technique} ・ {item.minutes}分
                           {item.bpm ? ` ・ ${item.bpm} BPM` : ''}
                         </div>
+                        {(item.bpm ?? coachBpm[item.technique]) && (
+                          <div className="mt-2 flex items-center gap-2 text-xs">
+                            <span>推奨BPM: {item.bpm ?? coachBpm[item.technique]}</span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => adjustBpm(item.technique, -5)}
+                            >
+                              -5
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => adjustBpm(item.technique, 5)}
+                            >
+                              +5
+                            </Button>
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
                         <Switch
