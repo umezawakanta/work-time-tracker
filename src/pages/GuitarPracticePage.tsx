@@ -806,6 +806,10 @@ const GuitarPracticePage: React.FC = () => {
           isMilestone: false,
         })
       );
+      // 達成時は推奨BPMを微増して次回難易度を最適化
+      if (item.bpm || coachBpm[item.technique]) {
+        adjustBpm(item.technique, 5);
+      }
     }
     setTodayPlan((prev) => prev.filter((i) => !i.done));
   };
@@ -1143,6 +1147,33 @@ const GuitarPracticePage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* 上達HUD: ストリーク + 週次レビュー */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="text-base">上達HUD</CardTitle>
+          <CardDescription>連続練習と今週の要点</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="text-sm">
+              <span className="font-medium">現在のストリーク:</span> {streakDays} 日
+            </div>
+            <ul className="list-disc pl-5 text-sm text-muted-foreground">
+              {weeklyReview.map((l, i) => (
+                <li key={i}>{l}</li>
+              ))}
+            </ul>
+            {deficits.length > 0 && (
+              <div className="shrink-0">
+                <Button variant="secondary" onClick={addDeficitsToPlan}>
+                  不足分をプランに追加
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* メインのタブナビゲーション */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-8">
