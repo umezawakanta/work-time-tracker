@@ -107,7 +107,7 @@ jobs:
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
-        if: ${{ always() }}
+        if: always()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
@@ -184,8 +184,6 @@ jobs:
 
       - name: Run E2E tests
         run: pnpm run test:e2e
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
       - name: Upload E2E test results
         uses: actions/upload-artifact@v4
@@ -255,6 +253,7 @@ jobs:
         run: |
           # AI コードレビューの実行
           export ENABLE_AI_REVIEW=true
+          if [ -z "${ANTHROPIC_API_KEY:-}" ]; then echo "skip (no ANTHROPIC_API_KEY)"; exit 0; fi
           echo "Running AI-enhanced code review..."
           # カスタムAIレビュースクリプトがあれば実行
           if [ -f "scripts/ai-review.js" ]; then

@@ -199,8 +199,11 @@ describe('📢 SocialShareButton コンポーネント', () => {
 
       // window.location.hrefをモック
       const originalLocation = window.location;
-      delete (window as any).location;
-      window.location = { ...originalLocation, href: '' } as Location;
+      Object.defineProperty(window, 'location', {
+        value: { ...originalLocation, href: '' },
+        writable: true,
+        configurable: true,
+      });
 
       renderWithAuth(<SocialShareButton {...defaultProps} />);
 
@@ -215,7 +218,11 @@ describe('📢 SocialShareButton コンポーネント', () => {
       expect(window.location.href).toContain('body=Test%20Description');
 
       // location.hrefを復元
-      window.location = originalLocation;
+      Object.defineProperty(window, 'location', {
+        value: originalLocation,
+        writable: true,
+        configurable: true,
+      });
     });
   });
 
