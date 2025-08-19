@@ -105,18 +105,9 @@ jobs:
       - name: Run unit tests
         run: pnpm run test:ci
 
-      - name: Guard Codecov token
-        id: codecov_guard
-        run: |
-          if [ -n "${{ secrets.CODECOV_TOKEN }}" ]; then
-            echo "has_token=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_token=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
-        if: ${{ always() && steps.codecov_guard.outputs.has_token == 'true' }}
+        if: ${{ always() }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
