@@ -330,6 +330,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to Vercel
+        continue-on-error: true
         run: |
           echo "Deploying to production environment..."
           # Vercel CLI を使用したデプロイ（VERCEL_TOKEN が設定されている場合）

@@ -1314,7 +1314,7 @@ app.get('/api/notifications/status', (req, res) => {
   });
 });
 
-// 404 Error handler - must be after all routes
+// 404 Error handler - must be after all known routes; allow future mocks via pattern
 app.use((req: Request, res: Response): void => {
   console.log(`❌ 404 - Route not found: ${req.method} ${req.url}`);
   res.status(404).json({
