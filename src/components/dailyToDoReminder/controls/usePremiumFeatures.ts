@@ -35,13 +35,10 @@ export function usePremiumFeatures() {
 
   useEffect(() => {
     const checkStatus = async () => {
-      if (!user?.uid) {
-        setLoading(false);
-        return;
-      }
-
       // 特定のユーザーをPremiumとして扱う（開発用）
-      if (user.email === 'kanta13jp@gmail.com') {
+      // uid の有無に関わらず最優先で判定する
+      const email = user?.email?.trim().toLowerCase();
+      if (email === 'kanta13jp@gmail.com') {
         setIsPremium(true);
         setPremiumFeatures({
           dataExport: true,
@@ -55,6 +52,11 @@ export function usePremiumFeatures() {
         setExpiresAt(new Date('2025-12-31')); // 2025年末まで有効
         setLoading(false);
         console.log('✅ kanta13jp@gmail.com をPremiumユーザーとして設定しました');
+        return;
+      }
+
+      if (!user?.uid) {
+        setLoading(false);
         return;
       }
 

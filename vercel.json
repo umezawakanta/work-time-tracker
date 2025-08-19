@@ -9,11 +9,9 @@
       "runtime": "nodejs20.x"
     }
   },
-  "rewrites": [
-    {
-      "source": "/((?!api|assets|icons|images|fonts|favicon|manifest|sw\\.js|robots\\.txt|.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|webp|avif|json|xml)).*)",
-      "destination": "/index.html"
-    }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/.*", "dest": "/index.html" }
   ],
   "headers": [
     {
