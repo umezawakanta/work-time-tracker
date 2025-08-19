@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
 import { blogApi } from '@/services/api/blogApi';
-import { RootState } from './index';
+import type { RootState } from './index';
 
 export interface BlogPost {
   _id: string;

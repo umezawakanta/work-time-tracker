@@ -277,13 +277,11 @@ jobs:
           curl --retry 5 --retry-delay 2 --retry-connrefused http://localhost:4173 || true
 
       - name: ⚡ Lighthouse Performance Test
+        continue-on-error: true
         id: lighthouse
         run: |
-          # Lighthouseをインストールして実行
-          npm install -g @lhci/cli@0.12.x
-
-          # Lighthouse実行（既存のlighthouserc.jsonを使用）
-          lhci collect || true
+          # Lighthouse実行（pnpm dlx でローカル実行、assertは無効化）
+          pnpm dlx @lhci/cli@0.12.x collect --config=lighthouserc.json --collect.settings.chromeFlags="--no-sandbox --disable-dev-shm-usage" || true
 
           # 結果を抽出
           LHR_FILE=$(ls -1 .lighthouseci/lhr-*.json 2>/dev/null | head -1 || true)

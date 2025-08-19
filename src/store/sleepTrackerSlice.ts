@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { sleepTrackerApi } from '@/services/api/sleepTrackerApi';
-import { RootState } from './index';
+import type { RootState } from './index';
 
 export interface SleepRecord {
   _id: string;

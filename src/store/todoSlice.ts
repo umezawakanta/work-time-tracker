@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { RootState } from './index';
+import type { RootState } from './index';
 import { todoApi } from '@/services/api/todoApi';
 import { TodoItem } from '@/types';
 import anthropicService from '@/services/ai/anthropicService';
