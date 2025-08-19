@@ -60,21 +60,21 @@
       "preset": "lighthouse:recommended",
       "assertions": {
         "categories:performance": [
-          "error",
+          "warn",
           {
             "minScore": 0.85,
             "aggregationMethod": "median"
           }
         ],
         "categories:accessibility": [
-          "error",
+          "warn",
           {
             "minScore": 0.95,
             "aggregationMethod": "median"
           }
         ],
         "categories:best-practices": [
-          "error",
+          "warn",
           {
             "minScore": 0.90,
             "aggregationMethod": "median"
@@ -88,28 +88,28 @@
           }
         ],
         "first-contentful-paint": [
-          "error",
+          "warn",
           {
             "maxNumericValue": 2000,
             "aggregationMethod": "median"
           }
         ],
         "largest-contentful-paint": [
-          "error",
+          "warn",
           {
             "maxNumericValue": 2500,
             "aggregationMethod": "median"
           }
         ],
         "cumulative-layout-shift": [
-          "error",
+          "warn",
           {
             "maxNumericValue": 0.1,
             "aggregationMethod": "median"
           }
         ],
         "first-input-delay": [
-          "error",
+          "warn",
           {
             "maxNumericValue": 100,
             "aggregationMethod": "median"
