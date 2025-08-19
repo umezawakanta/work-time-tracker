@@ -107,7 +107,7 @@ jobs:
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
-        if: always() && vars.CODECOV_TOKEN != ''
+        if: ${{ always() && secrets.CODECOV_TOKEN != '' }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
