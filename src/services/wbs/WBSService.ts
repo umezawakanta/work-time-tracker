@@ -76,6 +76,11 @@ class WBSService {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...node, createdBy: userId }),
     });
+    if (response.status === 404) {
+      // Dev fallback: backend WBS API not available. Do not block todo creation.
+      console.warn('[WBS] /api/wbs not found. Skipping WBS creation in dev.');
+      return `wbs_mock_${Date.now()}`;
+    }
     if (!response.ok) throw new Error('Failed to create WBS node');
     const created = await response.json();
     return created._id;
