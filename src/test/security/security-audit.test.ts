@@ -191,7 +191,7 @@ describe('セキュリティ監査テスト', () => {
     });
 
     test.skip('ブルートフォース攻撃に対する保護', async () => {
-      let attemptCount = 0;
+      const attemptCount = 0;
       const maxAttempts = 5;
 
       /*
