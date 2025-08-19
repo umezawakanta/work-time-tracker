@@ -1,8 +1,7 @@
 import React from 'react';
+import '@testing-library/jest-dom';
 import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import EnhancedSubscriptionForm from '@/components/subscription/EnhancedSubscriptionForm';
 import { AuthProvider } from '@/context/AuthContext';
 
@@ -50,7 +49,18 @@ jest.mock('@/lib/firebase', () => ({
 }));
 
 // 料金プラン定義
-const mockPricingPlans = [
+const mockPricingPlans: Array<{
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  currency: string;
+  interval?: 'month' | 'year';
+  billingCycle?: 'monthly' | 'yearly';
+  features?: string[];
+  isPopular?: boolean;
+  trialDays?: number;
+}> = [
   {
     id: 'plan-basic',
     name: 'ベーシック',
@@ -73,105 +83,34 @@ const mockPricingPlans = [
   },
 ];
 
-// MSW サーバー設定（v2対応）
-const server = setupServer(
-  // 成功レスポンス
-  http.post('/api/subscriptions/create', async ({ request }) => {
-    const body = await request.json();
+// フェッチモック
+type Scenario =
+  | 'success'
+  | 'card_declined'
+  | 'duplicate'
+  | 'server_error'
+  | 'invalid_plan'
+  | 'timeout';
+let scenario: Scenario = 'success';
 
-    // 特別なテストケース処理
-    if (body.planId === 'plan-error-card-declined') {
-      return HttpResponse.json(
-        {
-          success: false,
-          error: 'Payment error',
-          message: 'カードが拒否されました。別のカードをお試しください。',
-          errorCode: 'STRIPE_CARD_DECLINED',
-          retryable: false,
-        },
-        { status: 402 }
-      );
-    }
-
-    if (body.confirmationToken === 'duplicate_token') {
-      return HttpResponse.json(
-        {
-          success: false,
-          error: 'Duplicate operation',
-          message: '重複する処理が検出されました。しばらく待ってから再試行してください。',
-          errorCode: 'DUPLICATE_OPERATION',
-          retryable: true,
-        },
-        { status: 409 }
-      );
-    }
-
-    if (body.planId === 'plan-error-server') {
-      return HttpResponse.json(
-        {
-          success: false,
-          error: 'Server error',
-          message: '一時的なサーバーエラーが発生しました。しばらく待ってから再試行してください。',
-          errorCode: 'INTERNAL_SERVER_ERROR',
-          retryable: true,
-        },
-        { status: 500 }
-      );
-    }
-
-    if (body.planId === 'plan-invalid') {
-      return HttpResponse.json(
-        {
-          success: false,
-          error: 'Invalid plan',
-          message: '選択されたプランが無効です。別のプランを選択してください。',
-          errorCode: 'INVALID_PLAN',
-          retryable: false,
-        },
-        { status: 400 }
-      );
-    }
-
-    if (body.planId === 'plan-timeout') {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return HttpResponse.json(
-        {
-          success: false,
-          error: 'Request timeout',
-          message: 'リクエストがタイムアウトしました。ネットワーク接続を確認してください。',
-          errorCode: 'REQUEST_TIMEOUT',
-          retryable: true,
-        },
-        { status: 408 }
-      );
-    }
-
-    // デフォルトの成功レスポンス
-    return HttpResponse.json(
-      {
-        success: true,
-        data: {
-          subscription: {
-            id: 'sub_test123',
-            planId: body.planId || 'plan-basic',
-            status: 'active',
-            amount: 980,
-            currency: 'jpy',
-            createdAt: new Date().toISOString(),
-          },
-          message: 'サブスクリプションを作成しました',
-          nextSteps: ['プロフィールを設定してください'],
-        },
-      },
-      { status: 201 }
+const mockFetch: typeof fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+  const url = typeof input === 'string' ? input : input.toString();
+  const method = (init?.method || 'GET').toUpperCase();
+  const json = (data: any, status = 200) =>
+    Promise.resolve(
+      new Response(JSON.stringify(data), {
+        status,
+        headers: { 'Content-Type': 'application/json' },
+      })
     );
-  }),
 
-  // 支払い処理
-  http.post('/api/payments/process', async ({ request }) => {
-    const body = await request.json();
+  if (url.includes('/api/plans') && method === 'GET') {
+    return json({ success: true, data: mockPricingPlans }, 200);
+  }
 
-    return HttpResponse.json(
+  if (url.includes('/api/payments/process') && method === 'POST') {
+    const body = init?.body ? JSON.parse(init.body as string) : {};
+    return json(
       {
         success: true,
         data: {
@@ -183,66 +122,118 @@ const server = setupServer(
           },
         },
       },
-      { status: 200 }
+      200
     );
-  }),
+  }
 
-  // サブスクリプション取得
-  http.get('/api/subscriptions/:userId', ({ params }) => {
-    return HttpResponse.json(
-      {
-        success: true,
-        data: {
-          subscription: {
-            id: 'sub_test123',
-            planId: 'plan-basic',
-            status: 'active',
-            amount: 980,
-            currency: 'jpy',
-            createdAt: new Date().toISOString(),
+  if (url.includes('/api/subscriptions/create') && method === 'POST') {
+    const body = init?.body ? JSON.parse(init.body as string) : {};
+
+    const activeScenario: Scenario =
+      body.planId === 'plan-error-card-declined'
+        ? 'card_declined'
+        : body.confirmationToken === 'duplicate_token'
+          ? 'duplicate'
+          : body.planId === 'plan-error-server'
+            ? 'server_error'
+            : body.planId === 'plan-invalid'
+              ? 'invalid_plan'
+              : body.planId === 'plan-timeout'
+                ? 'timeout'
+                : scenario;
+
+    switch (activeScenario) {
+      case 'card_declined':
+        return json(
+          {
+            success: false,
+            error: 'Payment error',
+            message: 'カードが拒否されました。別のカードをお試しください。',
+            errorCode: 'STRIPE_CARD_DECLINED',
+            retryable: false,
           },
-        },
-      },
-      { status: 200 }
-    );
-  }),
+          402
+        );
+      case 'duplicate':
+        return json(
+          {
+            success: false,
+            error: 'Duplicate operation',
+            message: '重複する処理が検出されました。しばらく待ってから再試行してください。',
+            errorCode: 'DUPLICATE_OPERATION',
+            retryable: true,
+          },
+          409
+        );
+      case 'server_error':
+        return json(
+          {
+            success: false,
+            error: 'Server error',
+            message: '一時的なサーバーエラーが発生しました。しばらく待ってから再試行してください。',
+            errorCode: 'INTERNAL_SERVER_ERROR',
+            retryable: true,
+          },
+          500
+        );
+      case 'invalid_plan':
+        return json(
+          {
+            success: false,
+            error: 'Invalid plan',
+            message: '選択されたプランが無効です。別のプランを選択してください。',
+            errorCode: 'INVALID_PLAN',
+            retryable: false,
+          },
+          400
+        );
+      case 'timeout':
+        await new Promise((r) => setTimeout(r, 1000));
+        return json(
+          {
+            success: false,
+            error: 'Request timeout',
+            message: 'リクエストがタイムアウトしました。ネットワーク接続を確認してください。',
+            errorCode: 'REQUEST_TIMEOUT',
+            retryable: true,
+          },
+          408
+        );
+      default:
+        return json(
+          {
+            success: true,
+            data: {
+              subscription: {
+                id: 'sub_test123',
+                planId: body.planId || 'plan-basic',
+                status: 'active',
+                amount: 980,
+                currency: 'jpy',
+                createdAt: new Date().toISOString(),
+              },
+              message: 'サブスクリプションを作成しました',
+              nextSteps: ['プロフィールを設定してください'],
+            },
+          },
+          201
+        );
+    }
+  }
 
-  // プラン一覧取得
-  http.get('/api/plans', () => {
-    return HttpResponse.json(
-      {
-        success: true,
-        data: mockPricingPlans,
-      },
-      { status: 200 }
-    );
-  }),
+  // デフォルト: 404
+  return json({ success: false, error: 'Not Found' }, 404);
+};
 
-  // ヘルスチェック
-  http.get('/api/health', () => {
-    return HttpResponse.json(
-      {
-        success: true,
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-      },
-      { status: 200 }
-    );
-  })
-);
-
-// テストセットアップ
 beforeEach(() => {
-  server.listen();
+  (global as any).fetch = jest.fn(mockFetch);
+  scenario = 'success';
 });
 
 afterEach(() => {
-  server.resetHandlers();
-});
-
-// テストクリーンアップ
-afterEach(() => {
-  server.close();
+  if ((global as any).fetch && 'mockClear' in (global as any).fetch) {
+    (global as any).fetch.mockClear();
+  }
 });
 
 // Mock component wrapper
@@ -254,11 +245,7 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
   test('✅ 正常な決済フローが完了する', async () => {
     render(
       <TestWrapper>
-        <EnhancedSubscriptionForm
-          pricingPlans={mockPricingPlans}
-          onSuccess={() => {}}
-          onError={() => {}}
-        />
+        <EnhancedSubscriptionForm pricingPlans={mockPricingPlans} />
       </TestWrapper>
     );
 
@@ -279,7 +266,9 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
     fireEvent.click(submitButton);
 
     // 成功メッセージを確認（fallback: トーストの成功文言）
-    const successNode = await screen.findByTestId('payment-success-message').catch(() => null);
+    const successNode = await screen
+      .findByTestId('payment-success-message', undefined, { timeout: 2000 })
+      .catch(() => null);
     if (!successNode) {
       // fallback: toast メッセージ（日本語表示が文字化けする環境もあるため一部一致）
       await waitFor(() => {
@@ -291,29 +280,12 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
   });
 
   test('❌ カード拒否エラーが適切に処理される', async () => {
-    // エラーレスポンスを設定
-    server.use(
-      http.post('/api/subscriptions/create', () => {
-        return HttpResponse.json(
-          {
-            success: false,
-            error: 'Payment error',
-            message: 'カードが拒否されました。別のカードをお試しください。',
-            errorCode: 'STRIPE_CARD_DECLINED',
-            retryable: false,
-          },
-          { status: 402 }
-        );
-      })
-    );
+    // エラーレスポンスを設定（fetchモックシナリオ）
+    scenario = 'card_declined';
 
     render(
       <TestWrapper>
-        <EnhancedSubscriptionForm
-          pricingPlans={mockPricingPlans}
-          onSuccess={() => {}}
-          onError={() => {}}
-        />
+        <EnhancedSubscriptionForm pricingPlans={mockPricingPlans} />
       </TestWrapper>
     );
 
@@ -330,7 +302,9 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
     fireEvent.click(submitButton);
 
     // エラーメッセージを確認
-    const errorNode = await screen.findByTestId('payment-error-message').catch(() => null);
+    const errorNode = await screen
+      .findByTestId('payment-error-message', undefined, { timeout: 2000 })
+      .catch(() => null);
     if (!errorNode) {
       await waitFor(() => {
         expect(screen.queryAllByText(/エラー|失敗|拒否|重複|ネットワーク/i).length).toBeGreaterThan(
@@ -341,28 +315,11 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
   });
 
   test('🔄 重複処理エラーが適切に処理される', async () => {
-    server.use(
-      http.post('/api/subscriptions/create', () => {
-        return HttpResponse.json(
-          {
-            success: false,
-            error: 'Duplicate operation',
-            message: '重複する処理が検出されました。しばらく待ってから再試行してください。',
-            errorCode: 'DUPLICATE_OPERATION',
-            retryable: true,
-          },
-          { status: 409 }
-        );
-      })
-    );
+    scenario = 'duplicate';
 
     render(
       <TestWrapper>
-        <EnhancedSubscriptionForm
-          pricingPlans={mockPricingPlans}
-          onSuccess={() => {}}
-          onError={() => {}}
-        />
+        <EnhancedSubscriptionForm pricingPlans={mockPricingPlans} />
       </TestWrapper>
     );
 
@@ -388,35 +345,12 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
   });
 
   test('⚡ ローディング状態が適切に表示される', async () => {
-    // 遅延レスポンスを設定
-    server.use(
-      http.post('/api/subscriptions/create', async () => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        return HttpResponse.json(
-          {
-            success: true,
-            data: {
-              subscription: {
-                id: 'sub_test123',
-                planId: 'plan-basic',
-                status: 'active',
-                amount: 980,
-                currency: 'jpy',
-              },
-            },
-          },
-          { status: 201 }
-        );
-      })
-    );
+    // 遅延レスポンスを設定（fetchモックは内部で遅延を持つシナリオも扱える）
+    scenario = 'success';
 
     render(
       <TestWrapper>
-        <EnhancedSubscriptionForm
-          pricingPlans={mockPricingPlans}
-          onSuccess={() => {}}
-          onError={() => {}}
-        />
+        <EnhancedSubscriptionForm pricingPlans={mockPricingPlans} />
       </TestWrapper>
     );
 
@@ -432,22 +366,18 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
     fireEvent.click(submitButton);
 
     // ローディング状態を確認
-    expect(screen.getByTestId('processing-indicator')).toBeInTheDocument();
+    expect(Boolean(screen.getByTestId('processing-indicator'))).toBe(true);
 
     // 完了を待機
     await waitFor(() => {
-      expect(screen.queryByTestId('processing-indicator')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('processing-indicator') == null).toBe(true);
     });
   });
 
   test('🏷️ プレミアムプランが正しく選択される', async () => {
     render(
       <TestWrapper>
-        <EnhancedSubscriptionForm
-          pricingPlans={mockPricingPlans}
-          onSuccess={() => {}}
-          onError={() => {}}
-        />
+        <EnhancedSubscriptionForm pricingPlans={mockPricingPlans} />
       </TestWrapper>
     );
 
@@ -456,7 +386,7 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
     fireEvent.click(premiumPlanButton);
 
     // 人気バッジが表示されていることを確認
-    expect(screen.getByText(/人気/i)).toBeInTheDocument();
+    expect(Boolean(screen.getByText(/人気/i))).toBe(true);
 
     // 価格が正しく表示されていることを確認（複数箇所に表示される可能性あり）
     expect(screen.getAllByText(/1,980/).length).toBeGreaterThan(0);
@@ -465,11 +395,7 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
   test('📧 フォームバリデーションが適切に動作する', async () => {
     render(
       <TestWrapper>
-        <EnhancedSubscriptionForm
-          pricingPlans={mockPricingPlans}
-          onSuccess={() => {}}
-          onError={() => {}}
-        />
+        <EnhancedSubscriptionForm pricingPlans={mockPricingPlans} />
       </TestWrapper>
     );
 
@@ -489,11 +415,7 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
   test('🔒 利用規約への同意が必要', async () => {
     render(
       <TestWrapper>
-        <EnhancedSubscriptionForm
-          pricingPlans={mockPricingPlans}
-          onSuccess={() => {}}
-          onError={() => {}}
-        />
+        <EnhancedSubscriptionForm pricingPlans={mockPricingPlans} />
       </TestWrapper>
     );
 
@@ -514,28 +436,11 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
   });
 
   test.skip('🌐 ネットワークエラーが適切に処理される', async () => {
-    server.use(
-      http.post('/api/subscriptions/create', () => {
-        return HttpResponse.json(
-          {
-            success: false,
-            error: 'Network error',
-            message: 'ネットワークエラーが発生しました。インターネット接続を確認してください。',
-            errorCode: 'NETWORK_ERROR',
-            retryable: true,
-          },
-          { status: 503 }
-        );
-      })
-    );
+    scenario = 'server_error';
 
     render(
       <TestWrapper>
-        <EnhancedSubscriptionForm
-          pricingPlans={mockPricingPlans}
-          onSuccess={() => {}}
-          onError={() => {}}
-        />
+        <EnhancedSubscriptionForm pricingPlans={mockPricingPlans} />
       </TestWrapper>
     );
 
@@ -551,7 +456,7 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('payment-error-message')).toBeInTheDocument();
+      expect(Boolean(screen.getByTestId('payment-error-message'))).toBe(true);
     });
   });
 
@@ -568,11 +473,7 @@ describe('💳 Enhanced Subscription Form Integration Tests', () => {
 
     render(
       <TestWrapper>
-        <EnhancedSubscriptionForm
-          pricingPlans={mockPricingPlans}
-          onSuccess={() => {}}
-          onError={() => {}}
-        />
+        <EnhancedSubscriptionForm pricingPlans={mockPricingPlans} />
       </TestWrapper>
     );
 

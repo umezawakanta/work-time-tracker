@@ -39,7 +39,6 @@ module.exports = {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
       tsconfig: 'tsconfig.json',
       useESM: false,
-      isolatedModules: true,
     }],
     '^.+\\.(js|jsx|mjs)$': 'babel-jest',
   },
@@ -47,9 +46,6 @@ module.exports = {
     'node_modules/(?!(firebase|@firebase|@google-cloud|recharts|@grpc|google-gax)/)',
   ],
   globals: {
-    'ts-jest': {
-      useESM: false,
-    },
     'import.meta': {
       env: {
         DEV: false,
