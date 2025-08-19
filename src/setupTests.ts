@@ -697,6 +697,7 @@ if (typeof EventTarget === 'undefined') {
 
 // Mock Radix UI components that cause issues in Jest
 jest.mock('@radix-ui/react-tabs', () => {
+  const React = jest.requireActual('react');
   return {
     Root: ({ children, ...props }: any) =>
       React.createElement('div', { 'data-testid': 'tabs-root', ...props }, children),
@@ -738,6 +739,7 @@ jest.mock('@radix-ui/react-tabs', () => {
 });
 
 jest.mock('@radix-ui/react-roving-focus', () => {
+  const React = jest.requireActual('react');
   return {
     createRovingFocusGroupScope: () => () => ({}),
     RovingFocusGroup: ({ children, ...props }: any) => React.createElement('div', props, children),
@@ -748,20 +750,24 @@ jest.mock('@radix-ui/react-roving-focus', () => {
 });
 
 // Mock Radix UI Popper to prevent infinite loops
-jest.mock('@radix-ui/react-popper', () => ({
-  createPopperScope: () => () => ({}),
-  Root: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'popper-root', ...props }, children),
-  Anchor: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'popper-anchor', ...props }, children),
-  Content: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'popper-content', ...props }, children),
-  Arrow: ({ ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'popper-arrow', ...props }),
-}));
+jest.mock('@radix-ui/react-popper', () => {
+  const React = jest.requireActual('react');
+  return {
+    createPopperScope: () => () => ({}),
+    Root: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'popper-root', ...props }, children),
+    Anchor: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'popper-anchor', ...props }, children),
+    Content: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'popper-content', ...props }, children),
+    Arrow: ({ ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'popper-arrow', ...props }),
+  };
+});
 
 // Mock other problematic Radix UI components
 jest.mock('@radix-ui/react-select', () => {
+  const React = jest.requireActual('react');
   const mockComponent = (displayName: string, element = 'div') => {
     const Component = React.forwardRef(({ children, ...props }: any, ref: any) => {
       let roleProps: any = {};
@@ -817,6 +823,7 @@ jest.mock('@radix-ui/react-select', () => {
 
 // Mock Radix UI Popover
 jest.mock('@radix-ui/react-popover', () => {
+  const React = jest.requireActual('react');
   const Root = ({ children, ...props }: any) =>
     React.createElement('div', { 'data-testid': 'popover-root', ...props }, children);
 
@@ -847,6 +854,7 @@ jest.mock('@radix-ui/react-popover', () => {
 
 // Mock Radix UI Dropdown Menu
 jest.mock('@radix-ui/react-dropdown-menu', () => {
+  const React = jest.requireActual('react');
   return {
     Root: ({ children, ...props }: any) =>
       React.createElement('div', { 'data-testid': 'dropdown-root', ...props }, children),
@@ -941,6 +949,7 @@ jest.mock('firebase/auth', () => {
 
 // Mock Radix UI Portal for better test reliability
 jest.mock('@radix-ui/react-portal', () => {
+  const React = jest.requireActual('react');
   const Portal = React.forwardRef(({ children, asChild, ...props }: any, ref: any) =>
     React.createElement('div', { 'data-testid': 'radix-portal', ref, ...props }, children)
   );
