@@ -107,10 +107,8 @@ jobs:
 
       - name: Guard Codecov token
         id: codecov_guard
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
-          if [ -n "${CODECOV_TOKEN:-}" ]; then
+          if [ -n "${{ secrets.CODECOV_TOKEN }}" ]; then
             echo "has_token=true" >> "$GITHUB_OUTPUT"
           else
             echo "has_token=false" >> "$GITHUB_OUTPUT"
