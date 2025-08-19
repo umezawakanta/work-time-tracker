@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/store';
-import axios from 'axios';
+import { api } from '@/services/api/apiConfig';
 
 // ギター練習のタイプ定義
 export interface GuitarPractice {
@@ -41,7 +41,7 @@ export const fetchGuitarPractices = createAsyncThunk<
   { rejectValue: string }
 >('guitarPractice/fetchAll', async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get('/api/guitar-practices');
+    const response = await api.get('/guitar-practices');
 
     // データ検証
     const data = response.data;
@@ -75,7 +75,7 @@ export const addGuitarPractice = createAsyncThunk<
   { rejectValue: string }
 >('guitarPractice/add', async (practice, { rejectWithValue }) => {
   try {
-    const response = await axios.post('/api/guitar-practices', practice);
+    const response = await api.post('/guitar-practices', practice);
     return response.data;
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : '練習記録の追加に失敗しました。';
@@ -90,7 +90,7 @@ export const updateGuitarPractice = createAsyncThunk<
   { rejectValue: string }
 >('guitarPractice/update', async (practice, { rejectWithValue }) => {
   try {
-    const response = await axios.put(`/api/guitar-practices/${practice._id}`, practice);
+    const response = await api.put(`/guitar-practices/${practice._id}`, practice);
     return response.data;
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : '練習記録の更新に失敗しました。';
@@ -103,7 +103,7 @@ export const deleteGuitarPractice = createAsyncThunk<string, string, { rejectVal
   'guitarPractice/delete',
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/guitar-practices/${id}`);
+      await api.delete(`/guitar-practices/${id}`);
       return id;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '練習記録の削除に失敗しました。';

@@ -937,7 +937,10 @@ const App: React.FC = () => {
                                 </LayoutWrapper>
                               }
                             />
-                            <Route path="/profile" element={<Navigate to="/settings?tab=account" replace />} />
+                            <Route
+                              path="/profile"
+                              element={<Navigate to="/settings?tab=account" replace />}
+                            />
 
                             {/* 🏆 Development & Gamification */}
                             <Route
