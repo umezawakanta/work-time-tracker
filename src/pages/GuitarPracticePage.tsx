@@ -1019,6 +1019,37 @@ const GuitarPracticePage: React.FC = () => {
     setActiveTab('plan');
   };
 
+  // === 連続練習ストリーク ===
+  const streakDays = useMemo(() => {
+    const dates = new Set(
+      practices
+        .filter((p) => isValidDate(p.date))
+        .map((p) => new Date(p.date).toISOString().substring(0, 10))
+    );
+    let count = 0;
+    const today = new Date();
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const key = d.toISOString().substring(0, 10);
+      if (dates.has(key)) count += 1;
+      else break;
+    }
+    return count;
+  }, [practices]);
+
+  // === 週次レビュー自動要約 ===
+  const weeklyReview = useMemo(() => {
+    const total = Object.values(last7DaysMinutesByTechnique).reduce((s, v) => s + v, 0);
+    const most = Object.entries(last7DaysMinutesByTechnique).sort((a, b) => b[1] - a[1])[0];
+    const weakest = deficits[0];
+    const lines: string[] = [];
+    lines.push(`合計 ${Math.floor(total / 60)}時間 ${total % 60}分`);
+    if (most) lines.push(`最も練習: ${most[0]}（${most[1]}分）`);
+    if (weakest) lines.push(`不足: ${weakest.technique}（残り${weakest.deficit}分）`);
+    return lines;
+  }, [last7DaysMinutesByTechnique, deficits]);
+
   // 練習記録のモチベーションヒント
   const motivationTips = [
     '毎日少しずつの練習が大きな進歩につながります。15分でも継続が大切です。',
