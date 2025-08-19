@@ -166,25 +166,29 @@ jobs:
       - name: 📊 Extract Quality Metrics
         id: quality
         run: |
-          # テストカバレッジを抽出
-          if [ -f "coverage/coverage-summary.json" ]; then
-            COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct // 0')
-            echo "test_coverage=$COVERAGE" >> $GITHUB_OUTPUT
-          else
-            echo "test_coverage=0" >> $GITHUB_OUTPUT
-          fi
+          set -euo pipefail
 
-          # TypeScriptエラー数をチェック
-          TS_ERRORS=$(pnpm run type-check 2>&1 | grep -c "error" || echo "0")
-          echo "ts_errors=$TS_ERRORS" >> $GITHUB_OUTPUT
+          # テストカバレッジを抽出（存在しない場合は0）
+          COVERAGE=$(jq -r '.total.lines.pct // 0' coverage/coverage-summary.json 2>/dev/null || echo 0)
+          COVERAGE=${COVERAGE:-0}
+          # 整数比較用に小数点以下を切り捨て
+          COVERAGE_INT=${COVERAGE%.*}
+          if ! [[ "$COVERAGE_INT" =~ ^[0-9]+$ ]]; then COVERAGE_INT=0; fi
+          printf "test_coverage=%s\n" "$COVERAGE" >> "$GITHUB_OUTPUT"
 
-          # ESLintエラー数をチェック
-          LINT_ERRORS=$(pnpm run lint 2>&1 | grep -c "error" || echo "0")
-          echo "lint_errors=$LINT_ERRORS" >> $GITHUB_OUTPUT
+          # TypeScriptエラー数（数値以外は0に）
+          TS_ERRORS=$(pnpm run type-check 2>&1 | grep -ci '\berror\b' || true)
+          if ! [[ "$TS_ERRORS" =~ ^[0-9]+$ ]]; then TS_ERRORS=0; fi
+          printf "ts_errors=%d\n" "$TS_ERRORS" >> "$GITHUB_OUTPUT"
 
-          # 品質スコアを計算
+          # ESLintエラー数（数値以外は0に）
+          LINT_ERRORS=$(pnpm run lint 2>&1 | grep -ci '\berror\b' || true)
+          if ! [[ "$LINT_ERRORS" =~ ^[0-9]+$ ]]; then LINT_ERRORS=0; fi
+          printf "lint_errors=%d\n" "$LINT_ERRORS" >> "$GITHUB_OUTPUT"
+
+          # 品質スコアを計算（Coverageは整数で比較）
           QUALITY_SCORE=75
-          if [ "$COVERAGE" -gt 80 ]; then
+          if [ "$COVERAGE_INT" -ge 80 ]; then
             QUALITY_SCORE=$((QUALITY_SCORE + 10))
           fi
           if [ "$TS_ERRORS" -eq 0 ]; then
@@ -193,8 +197,7 @@ jobs:
           if [ "$LINT_ERRORS" -eq 0 ]; then
             QUALITY_SCORE=$((QUALITY_SCORE + 5))
           fi
-
-          echo "quality_score=$QUALITY_SCORE" >> $GITHUB_OUTPUT
+          printf "quality_score=%d\n" "$QUALITY_SCORE" >> "$GITHUB_OUTPUT"
 
       - name: 📤 Send Quality Metrics
         run: |
