@@ -347,3 +347,17 @@ jobs:
           text: 'CI/CD Pipeline failed on ${{ github.ref }}'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ===== Immediate workaround: Trigger Vercel via Deploy Hook =====
+  vercel-deploy-hook:
+    name: Trigger Vercel Deploy Hook
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main' && success() && secrets.VERCEL_DEPLOY_HOOK_URL != ''
+    steps:
+      - name: Call Deploy Hook
+        env:
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          curl -sS -X POST -H "Content-Type: application/json" -d '{}' "$VERCEL_DEPLOY_HOOK_URL" \
+            --fail --retry 3 --retry-delay 2 && echo "✅ Triggered Vercel deploy hook"
