@@ -47,6 +47,94 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Simple server running' });
 });
 
+// =============================
+// Guitar Practices (In-memory)
+// =============================
+type GuitarPracticeDoc = {
+  id: string;
+  _id: string;
+  date: string; // ISO string
+  duration: number; // minutes
+  technique: string;
+  song?: string;
+  bpm?: number;
+  difficulty: number; // 1-5
+  notes?: string;
+  satisfaction: number; // 1-5
+  isMilestone: boolean;
+  createdAt: string;
+};
+
+const guitarPracticesStore: Map<string, GuitarPracticeDoc> = new Map();
+
+const createPracticeId = () => 'gpr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+
+app.get('/api/guitar-practices', (_req, res) => {
+  const all = Array.from(guitarPracticesStore.values()).sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+  res.json(all);
+});
+
+app.post('/api/guitar-practices', (req, res) => {
+  try {
+    const body = req.body || {};
+    const now = new Date().toISOString();
+    const id = createPracticeId();
+    const doc: GuitarPracticeDoc = {
+      id,
+      _id: id,
+      date: typeof body.date === 'string' ? body.date : now,
+      duration: Number(body.duration) || 0,
+      technique: String(body.technique || ''),
+      song: body.song ? String(body.song) : undefined,
+      bpm: body.bpm != null ? Number(body.bpm) : undefined,
+      difficulty: Number(body.difficulty) || 3,
+      notes: body.notes ? String(body.notes) : undefined,
+      satisfaction: Number(body.satisfaction) || 3,
+      isMilestone: Boolean(body.isMilestone),
+      createdAt: now,
+    };
+    guitarPracticesStore.set(id, doc);
+    res.status(201).json(doc);
+  } catch (error) {
+    console.error('Failed to create guitar practice:', error);
+    res.status(500).json({ success: false, message: 'Failed to create guitar practice' });
+  }
+});
+
+app.put('/api/guitar-practices/:id', (req, res) => {
+  const { id } = req.params;
+  if (!guitarPracticesStore.has(id)) {
+    return res.status(404).json({ success: false, message: 'Practice not found' });
+  }
+  const prev = guitarPracticesStore.get(id)!;
+  const body = req.body || {};
+  const next: GuitarPracticeDoc = {
+    ...prev,
+    date: typeof body.date === 'string' ? body.date : prev.date,
+    duration: body.duration != null ? Number(body.duration) : prev.duration,
+    technique: body.technique != null ? String(body.technique) : prev.technique,
+    song: body.song != null ? String(body.song) : prev.song,
+    bpm: body.bpm != null ? Number(body.bpm) : prev.bpm,
+    difficulty: body.difficulty != null ? Number(body.difficulty) : prev.difficulty,
+    notes: body.notes != null ? String(body.notes) : prev.notes,
+    satisfaction: body.satisfaction != null ? Number(body.satisfaction) : prev.satisfaction,
+    isMilestone: body.isMilestone != null ? Boolean(body.isMilestone) : prev.isMilestone,
+  };
+  guitarPracticesStore.set(id, next);
+  res.json(next);
+});
+
+app.delete('/api/guitar-practices/:id', (req, res) => {
+  const { id } = req.params;
+  if (!guitarPracticesStore.has(id)) {
+    return res.status(404).json({ success: false, message: 'Practice not found' });
+  }
+  guitarPracticesStore.delete(id);
+  res.json({ success: true, id });
+});
+
 // --- Minimal WBS mock endpoints for local development ---
 // In production (Vercel), dedicated API routes should handle these.
 app.post('/api/wbs', (req, res) => {
