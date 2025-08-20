@@ -6,7 +6,6 @@
   "devCommand": "pnpm run dev",
   "functions": {
     "api/**/*.ts": {
-      "runtime": "nodejs20.x",
       "includeFiles": "src/{services,server,types,utils}/**",
       "excludeFiles": "{src/components/**,src/pages/**,coverage/**,**/__tests__/**}"
     }
