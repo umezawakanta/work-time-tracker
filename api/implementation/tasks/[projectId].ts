@@ -1,5 +1,4 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectDB } from '../../../src/server/config/database';
 import { withAuth, AuthenticatedRequest } from '../../../src/middleware/auth';
 
 // Task interfaces
@@ -143,10 +142,7 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
       return;
     }
 
-    // Connect to database
-    await connectDB();
-
-    // TODO: Replace with actual database query
+    // TODO: Replace with actual database query when DB is available on production
     // const tasks = await TaskModel.find({ projectId, createdBy: req.user?.userId });
 
     // For now, use mock data but include user context

@@ -7,7 +7,6 @@ build/
 .next/
 
 # Development files
-src/server/
 *.local
 .env.local
 .env.development.local
