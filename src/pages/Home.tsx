@@ -45,6 +45,7 @@ import Hero from '@/components/hero/Hero';
 import Benefits from '@/components/hero/Benefits';
 import HowItWorks from '@/components/hero/HowItWorks';
 import WeeklyReportPreview from '@/components/home/WeeklyReportPreview';
+import UserStories from '@/components/home/UserStories';
 
 interface DashboardStats {
   tasksCompleted: number;
@@ -289,6 +290,9 @@ const Home: React.FC = () => {
       <HowItWorks />
       <div className="container mx-auto px-4 max-w-7xl mb-8">
         <WeeklyReportPreview />
+        <div className="mt-8">
+          <UserStories />
+        </div>
       </div>
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">

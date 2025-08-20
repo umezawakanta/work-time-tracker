@@ -92,3 +92,23 @@ export const WEEKLY_REPORT_COPY = {
 } as const;
 
 export type WeeklyReportCopy = typeof WEEKLY_REPORT_COPY;
+
+export const USER_STORIES_COPY = {
+  title: 'ユーザー事例',
+  items: [
+    {
+      name: '健太',
+      role: 'ソフトウェアエンジニア',
+      quote: '毎朝のAI提案で迷いが消え、深い集中が増えました。',
+      result: '週次レポートの改善提案を取り入れ、1ヶ月でアウトプット量+38%。',
+    },
+    {
+      name: '美咲',
+      role: '大学院生',
+      quote: '研究と私生活のバランスが整い、締切前でも落ち着いて取り組めます。',
+      result: '集中タイマーで学習時間が安定。計画倒れが激減しました。',
+    },
+  ],
+} as const;
+
+export type UserStoriesCopy = typeof USER_STORIES_COPY;
