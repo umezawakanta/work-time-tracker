@@ -136,6 +136,78 @@ app.delete('/api/guitar-practices/:id', (req, res) => {
 });
 
 // =============================
+// Debt (In-memory)
+// =============================
+type DebtRecord = {
+  _id: string;
+  date: string; // ISO
+  value: number;
+  description: string;
+  account: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+const debtStore: Map<string, DebtRecord> = new Map();
+const createDebtId = () => 'debt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+
+app.get('/api/debt', (_req, res) => {
+  const all = Array.from(debtStore.values()).sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+  res.json(all);
+});
+
+app.post('/api/debt', (req, res) => {
+  try {
+    const { date, value, description, account } = req.body || {};
+    if (!date || value == null || !description || !account) {
+      return res.status(400).json({ success: false, error: 'Missing required fields' });
+    }
+    const id = createDebtId();
+    const now = new Date().toISOString();
+    const rec: DebtRecord = {
+      _id: id,
+      date: String(date),
+      value: Number(value),
+      description: String(description),
+      account: String(account),
+      createdAt: now,
+      updatedAt: now,
+    };
+    debtStore.set(id, rec);
+    res.status(201).json({ message: '負債情報が正常に記録されました', debt: rec });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Failed to create debt entry' });
+  }
+});
+
+app.put('/api/debt/:id', (req, res) => {
+  const { id } = req.params;
+  const prev = debtStore.get(id);
+  if (!prev) return res.status(404).json({ success: false, error: 'Not found' });
+  const body = req.body || {};
+  const next: DebtRecord = {
+    ...prev,
+    date: body.date ? String(body.date) : prev.date,
+    value: body.value != null ? Number(body.value) : prev.value,
+    description: body.description != null ? String(body.description) : prev.description,
+    account: body.account != null ? String(body.account) : prev.account,
+    updatedAt: new Date().toISOString(),
+  };
+  debtStore.set(id, next);
+  res.json({ message: '負債情報が正常に更新されました', debt: next });
+});
+
+app.delete('/api/debt/:id', (req, res) => {
+  const { id } = req.params;
+  if (!debtStore.has(id)) return res.status(404).json({ success: false, error: 'Not found' });
+  const removed = debtStore.get(id)!;
+  debtStore.delete(id);
+  res.json({ message: '負債情報が正常に削除されました', debt: removed });
+});
+
+// =============================
 // Sleep Tracker (In-memory)
 // =============================
 type SleepRecord = {
@@ -155,9 +227,7 @@ const createSleepId = () => 'slp_' + Date.now() + '_' + Math.random().toString(3
 
 // GET all sleep records
 app.get('/api/sleep-records', (_req, res) => {
-  const all = Array.from(sleepRecordsStore.values()).sort((a, b) =>
-    a.date > b.date ? -1 : 1
-  );
+  const all = Array.from(sleepRecordsStore.values()).sort((a, b) => (a.date > b.date ? -1 : 1));
   res.json(all);
 });
 
