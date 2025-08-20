@@ -1,5 +1,6 @@
 // src/services/ai/AdvancedAIService.ts
 import { Todo, NewTodo, TodoAnalysisSummary } from '@/types/todo';
+import AIHistoryService, { AIInteractionRequest, AIInteractionResponse } from './AIHistoryService';
 
 export interface AIProvider {
   name: 'openai' | 'anthropic';
@@ -130,6 +131,7 @@ class AdvancedAIService {
   }
 
   private async callOpenAI(prompt: string): Promise<string> {
+    const startedAt = Date.now();
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -154,10 +156,23 @@ class AdvancedAIService {
     });
 
     const data = await response.json();
-    return data.choices[0].message.content;
+    const text = data.choices?.[0]?.message?.content ?? '';
+    try {
+      await AIHistoryService.saveInteraction({
+        provider: 'openai',
+        model: this.currentProvider!.model,
+        request: { prompt } as AIInteractionRequest,
+        response: { text, raw: data } as AIInteractionResponse,
+        createdAt: startedAt,
+        durationMs: Date.now() - startedAt,
+        context: { feature: 'AdvancedAIService.callOpenAI' },
+      });
+    } catch {}
+    return text;
   }
 
   private async callAnthropic(prompt: string): Promise<string> {
+    const startedAt = Date.now();
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -178,7 +193,19 @@ class AdvancedAIService {
     });
 
     const data = await response.json();
-    return data.content[0].text;
+    const text = data?.content?.[0]?.text ?? '';
+    try {
+      await AIHistoryService.saveInteraction({
+        provider: 'anthropic',
+        model: this.currentProvider!.model,
+        request: { prompt } as AIInteractionRequest,
+        response: { text, raw: data } as AIInteractionResponse,
+        createdAt: startedAt,
+        durationMs: Date.now() - startedAt,
+        context: { feature: 'AdvancedAIService.callAnthropic' },
+      });
+    } catch {}
+    return text;
   }
 
   private buildProductivityPrompt(todos: Todo[], summary: TodoAnalysisSummary): string {

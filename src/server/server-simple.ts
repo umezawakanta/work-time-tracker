@@ -1370,7 +1370,14 @@ app.get('/api/ai/health', (req, res) => {
 });
 
 // Blog API routes (MongoDB-backed)
+console.log('📚 Loading blog routes...');
 app.use('/api/blog', blogRoutes);
+console.log('✅ Blog routes loaded at /api/blog');
+
+// Silence dev HEAD check noise for tokens endpoint (used by TokenManager)
+app.head('/api/auth/tokens', (_req, res) => {
+  res.sendStatus(200);
+});
 
 console.log('\n🗺️  Registered Routes:');
 console.log('   GET  /api/health');
