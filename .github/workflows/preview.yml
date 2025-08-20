@@ -34,7 +34,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Build
-        run: pnpm run build
+        run: pnpm run vercel-build
 
       - name: Deploy to Vercel (Preview/Prod)
         uses: amondnet/vercel-action@v25

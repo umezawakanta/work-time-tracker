@@ -2,7 +2,7 @@
   "buildCommand": "pnpm run vercel-build",
   "outputDirectory": "dist",
   "framework": null,
-  "installCommand": "pnpm install",
+  "installCommand": "corepack enable && corepack prepare pnpm@8 --activate || npm i -g pnpm@8 && pnpm install --no-frozen-lockfile",
   "devCommand": "pnpm run dev",
   "routes": [
     {
