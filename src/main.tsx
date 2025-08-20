@@ -17,14 +17,17 @@ import PerformanceOptimizer from './lib/performanceOptimizer';
 setupGlobalErrorHandling();
 
 // 🚫 ServiceWorker完全無効化（デバッグのため）
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then((registrations: ServiceWorkerRegistration[]) => {
-    for (const registration of registrations) {
-      registration.unregister().then(function () {
-        console.log('🗑️ ServiceWorker unregistered:', registration.scope);
-      });
-    }
-  });
+if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+  navigator.serviceWorker
+    .getRegistrations()
+    .then((registrations: ServiceWorkerRegistration[]) => {
+      for (const registration of registrations) {
+        registration.unregister().then(function () {
+          console.log('🗑️ ServiceWorker unregistered:', registration.scope);
+        });
+      }
+    })
+    .catch(() => {});
 }
 
 // 🥷 パフォーマンス忍者: パフォーマンス監視の初期化

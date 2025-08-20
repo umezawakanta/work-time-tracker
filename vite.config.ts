@@ -1,5 +1,5 @@
 ﻿import { defineConfig, loadEnv } from 'vite';
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { VitePWA } from 'vite-plugin-pwa';
 import { visualizer } from 'rollup-plugin-visualizer';
@@ -204,17 +204,8 @@ export default defineConfig(({ command, mode }) => {
     // CDN統合のためのビルド設定
     build: {
       target: 'esnext',
-      minify: 'terser',
-      terserOptions: {
-        compress: {
-          drop_console: mode === 'production',
-          drop_debugger: mode === 'production',
-          pure_funcs: mode === 'production' ? ['console.log', 'console.info'] : [],
-        },
-        mangle: {
-          safari10: true,
-        },
-      },
+      minify: 'esbuild',
+      reportCompressedSize: false,
       rollupOptions: {
         output: {
           // ファイルハッシュ化でキャッシュ最適化
@@ -248,9 +239,8 @@ export default defineConfig(({ command, mode }) => {
               if (id.includes('date-fns') || id.includes('react-big-calendar')) {
                 return 'date-vendor';
               }
-              if (id.includes('mongoose') || id.includes('socket.io')) {
-                return 'data-vendor';
-              }
+              // Exclude heavy server-only libs from client bundle if accidentally imported
+              if (id.includes('mongoose') || id.includes('socket.io')) return 'void';
               return 'vendor';
             }
 
@@ -264,9 +254,8 @@ export default defineConfig(({ command, mode }) => {
             if (id.includes('/chart/') || id.includes('/analytics/')) {
               return 'analytics-features';
             }
-            if (id.includes('/testing/') || id.includes('/performance/')) {
-              return 'testing-features';
-            }
+            if (id.includes('/testing/') || id.includes('/performance/')) return 'testing-features';
+            return undefined;
           },
         },
 
@@ -275,18 +264,22 @@ export default defineConfig(({ command, mode }) => {
       },
 
       // チャンク分割の最適化
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 2000,
 
       // 静的アセット処理
       assetsDir: 'assets',
       assetsInlineLimit: 4096, // 4KB以下はインライン化
 
       // ソースマップの設定
-      sourcemap: mode === 'development' ? true : 'hidden',
+      sourcemap: mode === 'development' ? true : false,
 
       // 圧縮設定
       cssCodeSplit: true,
       cssMinify: true,
+    },
+
+    esbuild: {
+      drop: mode === 'production' ? ['console', 'debugger'] : [],
     },
 
     // エイリアス設定

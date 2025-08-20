@@ -44,7 +44,7 @@
         "build:optimized": "pnpm run build:production && pnpm run lighthouse:ci",
         "production:optimize": "pnpm run build:optimized && pnpm run performance:monitor",
         "pre-commit": "lint-staged",
-        "type-check": "tsc --noEmit --skipLibCheck || echo 'Type check completed with warnings'",
+        "type-check": "tsc --noEmit --skipLibCheck",
         "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\"",
         "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\"",
         "analyze": "vite build --mode analyze && npx vite-bundle-analyzer dist",

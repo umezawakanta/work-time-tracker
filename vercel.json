@@ -2,7 +2,7 @@
   "buildCommand": "pnpm run vercel-build",
   "outputDirectory": "dist",
   "framework": null,
-  "installCommand": "corepack enable && corepack prepare pnpm@8 --activate || npm i -g pnpm@8 && pnpm install --no-frozen-lockfile",
+  "installCommand": "corepack enable && corepack prepare pnpm@8.15.9 --activate || npm i -g pnpm@8.15.9 && pnpm install --frozen-lockfile",
   "devCommand": "pnpm run dev",
   "functions": {
     "api/**/*.ts": {
