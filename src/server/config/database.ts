@@ -32,11 +32,12 @@ export const connectDB = async () => {
     });
   } catch (error) {
     console.error('❌ MongoDB connection failed:', error);
-    // 開発環境では終了せず、エラーログのみ出力
-    if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
-    } else {
-      console.warn('⚠️ Development mode: Continuing without MongoDB');
+    // サーバーレス環境（Vercel）や本番環境ではプロセスを終了せず、呼び出し元に委ねる
+    // 呼び出し元（API Routesなど）でフォールバック処理や適切なHTTPレスポンスへ切り替えるため
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+      throw error;
     }
+    // 開発環境では続行（モック / ローカル機能を使用）
+    console.warn('⚠️ Development mode: Continuing without MongoDB');
   }
 };

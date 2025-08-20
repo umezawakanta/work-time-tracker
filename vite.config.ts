@@ -170,16 +170,16 @@ export default defineConfig(({ command, mode }) => {
         port: 3002, // Changed from 3001 to avoid conflict with backend API
         host: 'localhost',
       },
-      // Proxy disabled - frontend makes direct requests to backend
-      // proxy: {
-      //   '^/api/.*': {
-      //     target: 'http://127.0.0.1:3001',
-      //     changeOrigin: true,
-      //     secure: false,
-      //     ws: false,
-      //     logLevel: 'debug',
-      //   },
-      // },
+      // Forward local API calls to the Express backend in development
+      proxy: {
+        '^/api/.*': {
+          target: 'http://127.0.0.1:3001',
+          changeOrigin: true,
+          secure: false,
+          ws: false,
+          logLevel: 'debug',
+        },
+      },
       watch: {
         usePolling: false,
         interval: 100,

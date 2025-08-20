@@ -135,6 +135,87 @@ app.delete('/api/guitar-practices/:id', (req, res) => {
   res.json({ success: true, id });
 });
 
+// =============================
+// Sleep Tracker (In-memory)
+// =============================
+type SleepRecord = {
+  _id: string;
+  date: string; // YYYY-MM-DD
+  wakeUp: string | null; // HH:mm or null
+  bedtime: string | null; // HH:mm or null
+  quality?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+const sleepRecordsStore: Map<string, SleepRecord> = new Map();
+
+const createSleepId = () => 'slp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+
+// GET all sleep records
+app.get('/api/sleep-records', (_req, res) => {
+  const all = Array.from(sleepRecordsStore.values()).sort((a, b) =>
+    a.date > b.date ? -1 : 1
+  );
+  res.json(all);
+});
+
+// POST create sleep record
+app.post('/api/sleep-records', (req, res) => {
+  try {
+    const body = req.body || {};
+    const id = createSleepId();
+    const nowIso = new Date().toISOString();
+    const record: SleepRecord = {
+      _id: id,
+      date: typeof body.date === 'string' ? body.date : nowIso.split('T')[0],
+      wakeUp: body.wakeUp ?? null,
+      bedtime: body.bedtime ?? null,
+      quality: body.quality,
+      notes: body.notes,
+      createdAt: nowIso,
+      updatedAt: nowIso,
+    };
+    sleepRecordsStore.set(id, record);
+    res.status(201).json({ message: 'created', sleepRecord: record });
+  } catch (error) {
+    console.error('Failed to create sleep record:', error);
+    res.status(500).json({ success: false, message: 'Failed to create sleep record' });
+  }
+});
+
+// PUT update sleep record
+app.put('/api/sleep-records/:id', (req, res) => {
+  const { id } = req.params;
+  if (!sleepRecordsStore.has(id)) {
+    return res.status(404).json({ success: false, message: 'Record not found' });
+  }
+  const prev = sleepRecordsStore.get(id)!;
+  const body = req.body || {};
+  const next: SleepRecord = {
+    ...prev,
+    date: typeof body.date === 'string' ? body.date : prev.date,
+    wakeUp: body.wakeUp !== undefined ? body.wakeUp : prev.wakeUp,
+    bedtime: body.bedtime !== undefined ? body.bedtime : prev.bedtime,
+    quality: body.quality !== undefined ? body.quality : prev.quality,
+    notes: body.notes !== undefined ? body.notes : prev.notes,
+    updatedAt: new Date().toISOString(),
+  };
+  sleepRecordsStore.set(id, next);
+  res.json({ message: 'updated', sleepRecord: next });
+});
+
+// DELETE sleep record
+app.delete('/api/sleep-records/:id', (req, res) => {
+  const { id } = req.params;
+  if (!sleepRecordsStore.has(id)) {
+    return res.status(404).json({ success: false, message: 'Record not found' });
+  }
+  sleepRecordsStore.delete(id);
+  res.json({ success: true });
+});
+
 // --- Minimal WBS mock endpoints for local development ---
 // In production (Vercel), dedicated API routes should handle these.
 app.post('/api/wbs', (req, res) => {

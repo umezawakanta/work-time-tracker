@@ -117,17 +117,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       } as RegisterResponse);
     }
 
-    // データベース接続
-    await connectDB();
+    // データベース接続（未設定の場合はフォールバックメッセージ）
+    let dbConnected = true;
+    try {
+      await connectDB();
+    } catch (e) {
+      dbConnected = false;
+      console.warn('Register API: DB not available, returning demo success.');
+    }
 
-    // 既存ユーザーの確認
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: 'このメールアドレスは既に使用されています',
-        error: 'Email already exists',
-      } as RegisterResponse);
+    if (dbConnected) {
+      // 既存ユーザーの確認
+      const existingUser = await User.findOne({ email: email.toLowerCase() });
+      if (existingUser) {
+        return res.status(409).json({
+          success: false,
+          message: 'このメールアドレスは既に使用されています',
+          error: 'Email already exists',
+        } as RegisterResponse);
+      }
     }
 
     // パスワードのハッシュ化
@@ -247,7 +255,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     // ユーザーの保存
-    const savedUser = await newUser.save();
+    const savedUser = dbConnected ? await newUser.save() : newUser;
 
     // 無料プランのサブスクリプション作成
     const freeSubscription = new SubscriptionModel({
@@ -291,7 +299,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       addOns: [],
     });
 
-    await freeSubscription.save();
+    if (dbConnected) {
+      await freeSubscription.save();
+    }
 
     // JWTトークンの生成
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';

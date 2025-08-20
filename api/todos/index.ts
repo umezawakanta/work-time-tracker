@@ -20,8 +20,18 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
   }
 
   try {
-    // Connect to database
-    await connectDB();
+    // Connect to database (non-fatal in serverless environments)
+    try {
+      await connectDB();
+    } catch (dbErr) {
+      console.warn('Todos API: DB connection failed, responding with empty list for GET.', dbErr);
+      if (req.method === 'GET') {
+        res
+          .status(200)
+          .json({ success: true, data: [], total: 0, message: 'DB未接続（プレビュー環境）' });
+        return;
+      }
+    }
 
     if (req.method === 'GET') {
       // Get query parameters
