@@ -27,6 +27,15 @@ jobs:
         with:
           version: 8
 
+      - name: Ensure pnpm available
+        shell: bash
+        run: |
+          if ! command -v pnpm >/dev/null 2>&1; then
+            corepack enable || true
+            corepack prepare pnpm@8 --activate || npm i -g pnpm@8
+          fi
+          pnpm -v
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
