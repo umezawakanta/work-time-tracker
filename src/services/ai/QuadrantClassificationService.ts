@@ -2035,7 +2035,8 @@ JSON形式で回答してください:
     console.log(`🤖 ハイブリッドAI分析開始: "${task.title}"`);
 
     // 利用可能なプロバイダーを取得
-    const availableProviders = this.getAvailableProviders();
+    const providersInfo = await this.getAvailableProviders();
+    const availableProviders = providersInfo.filter((p) => p.available).map((p) => p.provider);
     const results: Map<AIProvider, TaskQuadrantClassification> = new Map();
     const errors: Map<AIProvider, string> = new Map();
 
