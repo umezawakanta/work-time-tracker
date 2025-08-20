@@ -1,8 +1,9 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "module": "NodeNext",       // ESNextからNodeNextに変更
+        "module": "NodeNext", // ESNextからNodeNextに変更
         "moduleResolution": "NodeNext", // nodeからNodeNextに変更
+        "jsx": "react-jsx",
         "outDir": "./dist",
         "noEmit": false,
         "esModuleInterop": true
