@@ -86,7 +86,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // ユーザーの検索 or フォールバック
-    let user = dbConnected
+    const user = dbConnected
       ? await User.findOne({ email: email.toLowerCase() })
       : ({
           id: 'demo-user',
