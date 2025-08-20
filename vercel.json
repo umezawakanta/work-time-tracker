@@ -7,18 +7,8 @@
   "functions": {
     "api/**/*.ts": {
       "runtime": "nodejs20.x",
-      "includeFiles": [
-        "src/services/**",
-        "src/server/**",
-        "src/types/**",
-        "src/utils/**"
-      ],
-      "excludeFiles": [
-        "src/components/**",
-        "src/pages/**",
-        "coverage/**",
-        "**/__tests__/**"
-      ]
+      "includeFiles": "src/{services,server,types,utils}/**",
+      "excludeFiles": "{src/components/**,src/pages/**,coverage/**,**/__tests__/**}"
     }
   },
   "routes": [
