@@ -13,6 +13,7 @@ import blogReducer from './blogSlice';
 import guitarPracticeReducer from './guitarPracticeSlice';
 import achievementReducer from './achievementSlice';
 import unifiedDataReducer from './unifiedDataSlice';
+import aiSuggestionReducer from './aiSuggestionSlice';
 
 const rootReducer = combineReducers({
   workTime: workTimeReducer,
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   guitarPractice: guitarPracticeReducer,
   achievements: achievementReducer,
   unifiedData: unifiedDataReducer,
+  aiSuggestion: aiSuggestionReducer,
 });
 
 export const store = configureStore({

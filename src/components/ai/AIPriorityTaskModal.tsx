@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Lightbulb } from 'lucide-react';
 import useAIAction from '@/hooks/useAIAction';
+import { useDispatch } from 'react-redux';
+import { setTodaySuggestion } from '@/store/aiSuggestionSlice';
 import AdvancedAIService from '@/services/ai/AdvancedAIService';
 import { ENV } from '@/utils/env';
 import { useNavigate } from 'react-router-dom';
@@ -34,6 +36,7 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
 }) => {
   const [context, setContext] = useState<string>(defaultContext || '');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const aiConfigured = Boolean(
     ENV.OPENAI_API_KEY() || ENV.ANTHROPIC_API_KEY() || ENV.GEMINI_API_KEY()
   );
@@ -81,7 +84,10 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
       params: { aiConfigured, contextLength: context.length },
     });
     if (!aiConfigured) return;
-    await ai.execute(prompt);
+    const result = await ai.execute(prompt);
+    if (result) {
+      dispatch(setTodaySuggestion({ task: result.task, reason: result.reason }));
+    }
   };
 
   return (
