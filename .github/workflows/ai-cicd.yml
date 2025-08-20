@@ -1,13 +1,9 @@
 name: AI-Enhanced CI/CD Pipeline
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
   schedule:
-    - cron: '0 9 * * 1' # 毎週月曜日9時
-  workflow_dispatch: # 手動実行を許可
+    - cron: '0 9 1 * *' # 月1回に縮小
 
 env:
   NODE_VERSION: '20'

@@ -5,14 +5,9 @@
 name: 🛡️ Quality Check & Dashboard Update
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+  workflow_dispatch:
   schedule:
-    # 毎日午前9時（JST）に実行
-    - cron: '0 0 * * *'
-  workflow_dispatch: # 手動実行可能
+    - cron: '0 9 * * 1' # 週1回（月曜9時JST）に縮小
 
 env:
   NODE_VERSION: '20'

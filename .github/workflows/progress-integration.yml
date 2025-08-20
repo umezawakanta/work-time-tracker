@@ -1,13 +1,7 @@
 name: 🚀 Progress Integration - CI/CD Auto Progress Tracking
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
-  workflow_run:
-    workflows: ['🛡️ Quality Check & Dashboard Update', 'AI-Enhanced CI/CD Pipeline']
-    types: [completed]
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '20'

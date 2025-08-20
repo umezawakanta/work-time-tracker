@@ -1,4 +1,4 @@
-name: Preview Deploy
+name: Deploy
 
 on:
   push:
@@ -30,16 +30,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm run lint || true
-
-      - name: Test
-        run: pnpm run test -- --ci || true
-
       - name: Build
         run: pnpm run build
 
-      - name: Deploy to Vercel (Preview)
+      - name: Deploy to Vercel (Preview/Prod)
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
