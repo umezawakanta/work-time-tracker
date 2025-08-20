@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectDB } from '../../../src/server/config/database';
-import { DebtEntry } from '../../../src/server/models/DebtEntry';
+import { connectDB } from '../../src/server/config/database';
+import { DebtEntry } from '../../src/server/models/DebtEntry';
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   // CORS
