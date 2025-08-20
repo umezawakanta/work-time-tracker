@@ -40,9 +40,7 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({ onGetStarted }) 
               </span>
             </h1>
             <p className="text-xl lg:text-2xl text-slate-300 mb-8 leading-relaxed max-w-3xl mx-auto">
-              あなたの生産性と効率性を最大限に引き出す
-              <br />
-              <span className="text-blue-300 font-semibold">次世代プラットフォーム</span>
+              AIパーソナル秘書が予定・集中・習慣を一元管理
             </p>
 
             {/* 特徴ポイント */}
