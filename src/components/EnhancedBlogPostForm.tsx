@@ -15,6 +15,10 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Loader2, Sparkles, Lightbulb, X } from 'lucide-react';
+import { toast } from 'react-hot-toast';
+import BlogTaskExtractionService from '@/services/ai/BlogTaskExtractionService';
+import { useDispatch } from 'react-redux';
+import { addMany } from '@/store/todoSlice';
 import {
   BlogAiService,
   BlogAnalysisResult,
@@ -60,6 +64,8 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   const [qaParsed, setQaParsed] = useState<{ question: string; answer: string } | null>(null);
   const [autoTitleFromQuestion, setAutoTitleFromQuestion] = useState(false);
   const [autoAddTags, setAutoAddTags] = useState(true);
+  const [isExtractingTasks, setIsExtractingTasks] = useState(false);
+  const dispatch = useDispatch();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,6 +184,33 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
       });
     } finally {
       setIsAnalyzing(false);
+    }
+  };
+
+  const handleExtractTasks = async () => {
+    if (!content || content.trim().length < 20) {
+      toast('本文が短いため、まず内容を追記してください');
+      return;
+    }
+    setIsExtractingTasks(true);
+    try {
+      const { tasks } = await BlogTaskExtractionService.extractFromContent(content, {
+        locale: 'ja',
+        maxTasks: 8,
+      });
+      if (!tasks || tasks.length === 0) {
+        toast('抽出できるタスクが見つかりませんでした');
+        return;
+      }
+      // 一括追加
+      // @ts-ignore dispatch typing is broader in app setup
+      await dispatch(addMany(tasks));
+      toast.success(`${tasks.length}件のタスクを抽出して追加しました`);
+    } catch (e) {
+      logger.error('Task extraction failed', String(e));
+      toast.error('AIでのタスク抽出に失敗しました');
+    } finally {
+      setIsExtractingTasks(false);
     }
   };
 
@@ -385,6 +418,22 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
                     <>
                       <Lightbulb className="h-4 w-4 mr-2" />
                       Analyze Content
+                    </>
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleExtractTasks}
+                  disabled={isExtractingTasks || content.length < 20}
+                  aria-label="AIでタスクを抽出"
+                >
+                  {isExtractingTasks ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" /> 抽出中...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-2" /> AIでタスク抽出
                     </>
                   )}
                 </Button>
