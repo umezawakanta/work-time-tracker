@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Clock, Sparkles, ArrowRight, Star, Zap, Target } from 'lucide-react';
+import { HERO_COPY } from '@/constants/copy';
 import { useNavigate } from 'react-router-dom';
 
 interface WelcomeSectionProps {
@@ -36,11 +37,11 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({ onGetStarted }) 
           <div className="space-y-6 mb-12">
             <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6">
               <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
-                人生の舵を、今日から握り直す。
+                {HERO_COPY.title}
               </span>
             </h1>
             <p className="text-xl lg:text-2xl text-slate-300 mb-8 leading-relaxed max-w-3xl mx-auto">
-              AIパーソナル秘書が予定・集中・習慣を一元管理
+              {HERO_COPY.subtitle}
             </p>
 
             {/* 特徴ポイント */}
@@ -68,7 +69,7 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({ onGetStarted }) 
               onClick={onGetStarted}
               className="text-lg px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
             >
-              今すぐ始める
+              {HERO_COPY.ctaPrimary}
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
             <Button
@@ -78,7 +79,7 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({ onGetStarted }) 
               onClick={() => navigate('/settings')}
             >
               <Sparkles className="mr-2 h-5 w-5" />
-              3分でセットアップ
+              {HERO_COPY.ctaSecondary}
             </Button>
           </div>
         </div>
