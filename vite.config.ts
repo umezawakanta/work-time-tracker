@@ -161,23 +161,24 @@ export default defineConfig(({ command, mode }) => {
         : []),
     ],
 
-    // Development server settings to fix WebSocket issues
+    // Development server settings
     server: {
       port: 3000,
       host: '0.0.0.0',
       strictPort: true,
+      // Let Vite use the same port for HMR as the dev server to avoid blocked 3002
       hmr: {
-        port: 3002, // Changed from 3001 to avoid conflict with backend API
+        port: 3000,
         host: 'localhost',
       },
       // Forward local API calls to the Express backend in development
       proxy: {
-        '^/api/.*': {
+        '/api': {
           target: 'http://127.0.0.1:3001',
           changeOrigin: true,
           secure: false,
-          ws: false,
-          logLevel: 'debug',
+          ws: true,
+          // No path rewrite needed because backend is mounted at /api/*
         },
       },
       watch: {
