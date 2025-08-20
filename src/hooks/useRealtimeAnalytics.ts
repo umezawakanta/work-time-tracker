@@ -84,6 +84,12 @@ export const useRealtimeAnalytics = (options: UseRealtimeAnalyticsOptions = {}) 
       };
 
       const wsUrl = getWebSocketUrl();
+      // In production, attempt only if same-origin wss is available
+      if (!wsUrl && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        console.warn('RealtimeAnalytics: Skipping WebSocket connect in production (no URL)');
+        setIsConnecting(false);
+        return;
+      }
       // サーバーが提供している /notifications パスを使用
       const ws = new WebSocket(`${wsUrl}/notifications`);
 

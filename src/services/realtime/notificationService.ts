@@ -42,7 +42,23 @@ class NotificationService {
     // API経由でトークン取得
     this.accessToken = await this.fetchAccessToken(userId);
 
-    this.socket = io(process.env.VITE_WEBSOCKET_URL || 'http://localhost:3001', {
+    // Decide WebSocket base URL
+    const envUrl = (typeof window !== 'undefined' ? (window as any).importMetaEnv?.VITE_WEBSOCKET_URL : undefined) ||
+      (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_WEBSOCKET_URL) ||
+      (typeof process !== 'undefined' ? (process as any).env?.VITE_WEBSOCKET_URL : undefined);
+
+    const isLocalhost = typeof window !== 'undefined' &&
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+    // In production, connect only if explicit URL is provided; otherwise skip to avoid localhost attempts
+    if (!envUrl && !isLocalhost) {
+      console.warn('NotificationService: Skipping WebSocket connect in production (no VITE_WEBSOCKET_URL set).');
+      return;
+    }
+
+    const baseUrl = envUrl || `http://${window.location.hostname}:3001`;
+
+    this.socket = io(baseUrl, {
       auth: {
         token: this.accessToken,
         userId,
