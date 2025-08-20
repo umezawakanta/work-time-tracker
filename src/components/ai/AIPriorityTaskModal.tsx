@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Lightbulb } from 'lucide-react';
 import useAIAction from '@/hooks/useAIAction';
 import AdvancedAIService from '@/services/ai/AdvancedAIService';
-import ENV from '@/utils/env';
+import { ENV } from '@/utils/env';
 import { useNavigate } from 'react-router-dom';
 
 export interface AIPriorityTaskModalProps {
@@ -42,7 +42,7 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
     return `${baseInstruction}\n\n状況:\n${context || '（特になし）'}`;
   }, [context]);
 
-  const ai = useAIAction<string, Suggestion>(
+  const ai = useAIAction<Suggestion, [string]>(
     async (p) => {
       try {
         const text = await AdvancedAIService.generateResponse(p);

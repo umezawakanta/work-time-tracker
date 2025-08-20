@@ -1,6 +1,6 @@
-import { GeminiService } from '../GeminiService';
 import { ENV } from '@/utils/env';
 import AIHistoryService from './AIHistoryService';
+import { GeminiGenerateContentResponse } from '@/types/ai';
 
 export interface BlogAnalysisResult {
   improvedTitle?: string;
@@ -21,6 +21,11 @@ export interface BlogContentAnalysis {
 }
 
 export const BlogAiService = {
+  // Narrower checker for sentiment field
+  _isSentiment(value: unknown): value is BlogContentAnalysis['sentiment'] {
+    return value === 'positive' || value === 'neutral' || value === 'negative';
+  },
+
   /**
    * ブログ投稿の内容を分析してAI提案を生成
    */
@@ -104,12 +109,12 @@ JSON形式:
         }
       );
 
-      const data = await response.json();
+      const data: GeminiGenerateContentResponse = await response.json();
       if (!response.ok) {
         console.warn('Gemini analyzeBlogPost non-OK:', response.status, data);
         return BlogAiService.fallbackAnalysis(title, content);
       }
-      const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text as string | undefined;
+      const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
       try {
         await AIHistoryService.saveInteraction({
           provider: 'gemini',
@@ -126,9 +131,13 @@ JSON形式:
       const jsonMatch = generatedText ? generatedText.match(/\{[\s\S]*\}/) : null;
 
       if (jsonMatch) {
-        const analysisResult = JSON.parse(jsonMatch[0]);
+        const analysisResult = JSON.parse(jsonMatch[0]) as Partial<BlogAnalysisResult> &
+          Record<string, unknown>;
         return {
-          improvedTitle: analysisResult.improvedTitle,
+          improvedTitle:
+            typeof analysisResult.improvedTitle === 'string'
+              ? analysisResult.improvedTitle
+              : undefined,
           suggestedTags: Array.isArray(analysisResult.suggestedTags)
             ? analysisResult.suggestedTags
             : [],
@@ -138,9 +147,16 @@ JSON形式:
           seoRecommendations: Array.isArray(analysisResult.seoRecommendations)
             ? analysisResult.seoRecommendations
             : [],
-          readabilityScore: analysisResult.readabilityScore || 50,
-          categoryRecommendation: analysisResult.categoryRecommendation || 'その他',
-          confidence: analysisResult.confidence || 0.5,
+          readabilityScore:
+            typeof analysisResult.readabilityScore === 'number'
+              ? analysisResult.readabilityScore
+              : 50,
+          categoryRecommendation:
+            typeof analysisResult.categoryRecommendation === 'string'
+              ? analysisResult.categoryRecommendation
+              : 'その他',
+          confidence:
+            typeof analysisResult.confidence === 'number' ? analysisResult.confidence : 0.5,
         };
       }
 
@@ -208,7 +224,7 @@ JSON形式:
         }
       );
 
-      const data = await response.json();
+      const data: GeminiGenerateContentResponse = await response.json();
       if (!response.ok) {
         console.warn('Gemini analyzeContent non-OK:', response.status, data);
         return {
@@ -219,7 +235,7 @@ JSON形式:
           targetAudience: '一般読者',
         } as BlogContentAnalysis;
       }
-      const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text as string | undefined;
+      const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
       try {
         await AIHistoryService.saveInteraction({
           provider: 'gemini',
@@ -236,13 +252,15 @@ JSON形式:
       const jsonMatch = generatedText ? generatedText.match(/\{[\s\S]*\}/) : null;
 
       if (jsonMatch) {
-        const result = JSON.parse(jsonMatch[0]);
+        const result = JSON.parse(jsonMatch[0]) as Partial<BlogContentAnalysis> &
+          Record<string, unknown>;
         return {
           wordCount,
           readingTimeMinutes,
-          keyTopics: Array.isArray(result.keyTopics) ? result.keyTopics : [],
-          sentiment: result.sentiment || 'neutral',
-          targetAudience: result.targetAudience || '一般読者',
+          keyTopics: Array.isArray(result.keyTopics) ? (result.keyTopics as string[]) : [],
+          sentiment: BlogAiService._isSentiment(result.sentiment) ? result.sentiment : 'neutral',
+          targetAudience:
+            typeof result.targetAudience === 'string' ? result.targetAudience : '一般読者',
         };
       }
     } catch (error) {

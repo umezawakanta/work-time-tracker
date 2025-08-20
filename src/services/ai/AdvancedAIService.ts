@@ -1,14 +1,13 @@
 // src/services/ai/AdvancedAIService.ts
 import { Todo, NewTodo, TodoAnalysisSummary } from '@/types/todo';
-import AIHistoryService, { AIInteractionRequest, AIInteractionResponse } from './AIHistoryService';
-
-export type ProviderName = 'openai' | 'anthropic' | 'gemini' | 'local';
-
-export interface AIProvider {
-  name: ProviderName;
-  model: string;
-  apiKey: string;
-}
+import AIHistoryService from './AIHistoryService';
+import { ENV } from '@/utils/env';
+import {
+  AIProvider,
+  ProviderName,
+  OpenAIChatCompletionResponse,
+  AnthropicMessageResponse,
+} from '@/types/ai';
 
 // 空実装のプロバイダー（将来の拡張用）
 export class PlaceholderAIProvider implements AIProvider {
@@ -61,21 +60,23 @@ class AdvancedAIService {
   }
 
   private initializeProviders(): void {
-    // OpenAI設定
-    if (process.env.NEXT_PUBLIC_OPENAI_API_KEY) {
+    // OpenAI 設定 (Vite env)
+    const openaiKey = ENV.OPENAI_API_KEY();
+    if (openaiKey) {
       this.providers.set('openai', {
         name: 'openai',
         model: 'gpt-4-turbo-preview',
-        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+        apiKey: openaiKey,
       });
     }
 
-    // Anthropic設定
-    if (process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY) {
+    // Anthropic 設定 (Vite env)
+    const anthropicKey = ENV.ANTHROPIC_API_KEY();
+    if (anthropicKey) {
       this.providers.set('anthropic', {
         name: 'anthropic',
         model: 'claude-3-opus-20240229',
-        apiKey: process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,
+        apiKey: anthropicKey,
       });
     }
 
@@ -170,14 +171,17 @@ class AdvancedAIService {
       }),
     });
 
-    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(`OpenAI request failed: ${response.status}`);
+    }
+    const data: OpenAIChatCompletionResponse = await response.json();
     const text = data.choices?.[0]?.message?.content ?? '';
     try {
       await AIHistoryService.saveInteraction({
         provider: 'openai',
         model: this.currentProvider!.model,
-        request: { prompt } as AIInteractionRequest,
-        response: { text, raw: data } as AIInteractionResponse,
+        request: { prompt },
+        response: { text, raw: data as unknown },
         createdAt: startedAt,
         durationMs: Date.now() - startedAt,
         context: { feature: 'AdvancedAIService.callOpenAI' },
@@ -210,14 +214,17 @@ class AdvancedAIService {
       }),
     });
 
-    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(`Anthropic request failed: ${response.status}`);
+    }
+    const data: AnthropicMessageResponse = await response.json();
     const text = data?.content?.[0]?.text ?? '';
     try {
       await AIHistoryService.saveInteraction({
         provider: 'anthropic',
         model: this.currentProvider!.model,
-        request: { prompt } as AIInteractionRequest,
-        response: { text, raw: data } as AIInteractionResponse,
+        request: { prompt },
+        response: { text, raw: data as unknown },
         createdAt: startedAt,
         durationMs: Date.now() - startedAt,
         context: { feature: 'AdvancedAIService.callAnthropic' },
@@ -432,8 +439,8 @@ ${recentTasks}
     return this.currentProvider;
   }
 
-  getAvailableProviders(): string[] {
-    return Array.from(this.providers.keys());
+  getAvailableProviders(): ProviderName[] {
+    return Array.from(this.providers.keys()) as ProviderName[];
   }
 
   async generateResponse(prompt: string): Promise<string> {

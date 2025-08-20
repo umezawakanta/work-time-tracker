@@ -1,4 +1,63 @@
-﻿export interface AIModel {
+﻿// Central AI-related types (providers and API responses)
+
+export type ProviderName = 'openai' | 'anthropic' | 'gemini' | 'local';
+
+export interface AIProvider {
+  name: ProviderName;
+  model: string;
+  apiKey: string;
+}
+
+// OpenAI Chat Completions (minimal fields used)
+export interface OpenAIChatChoiceMessage {
+  role: string;
+  content: string;
+}
+
+export interface OpenAIChatChoice {
+  index?: number;
+  message?: OpenAIChatChoiceMessage;
+  finish_reason?: string;
+}
+
+export interface OpenAIChatCompletionResponse {
+  id?: string;
+  object?: string;
+  created?: number;
+  model?: string;
+  choices?: OpenAIChatChoice[];
+}
+
+// Anthropic Messages (minimal fields used)
+export interface AnthropicMessageContentBlock {
+  type: 'text' | string;
+  text?: string;
+}
+
+export interface AnthropicMessageResponse {
+  id?: string;
+  model?: string;
+  content?: AnthropicMessageContentBlock[];
+}
+
+// Gemini generateContent (minimal fields used)
+export interface GeminiContentPart {
+  text?: string;
+}
+
+export interface GeminiContent {
+  parts?: GeminiContentPart[];
+}
+
+export interface GeminiCandidate {
+  content?: GeminiContent;
+}
+
+export interface GeminiGenerateContentResponse {
+  candidates?: GeminiCandidate[];
+}
+
+export interface AIModel {
   id: string;
   name: string;
   provider: string;
