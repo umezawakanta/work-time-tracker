@@ -668,6 +668,36 @@ export class QuadrantClassificationService {
   }
 
   /**
+   * 一時的にプロバイダーを切り替えて処理を実行
+   */
+  private async runWithProvider<T>(provider: AIProvider, taskRunner: () => Promise<T>): Promise<T> {
+    const previousProvider = this.currentProvider;
+    this.currentProvider = provider;
+    try {
+      return await taskRunner();
+    } finally {
+      this.currentProvider = previousProvider;
+    }
+  }
+
+  // 個別プロバイダー用の薄いラッパー
+  private async classifyWithGemini(task: UnifiedTaskData): Promise<TaskQuadrantClassification> {
+    return this.runWithProvider('gemini', () => this.classifyTask(task));
+  }
+
+  private async classifyWithClaude(task: UnifiedTaskData): Promise<TaskQuadrantClassification> {
+    return this.runWithProvider('claude', () => this.classifyTask(task));
+  }
+
+  private async classifyWithOpenAI(task: UnifiedTaskData): Promise<TaskQuadrantClassification> {
+    return this.runWithProvider('openai', () => this.classifyTask(task));
+  }
+
+  private async classifyWithOllama(task: UnifiedTaskData): Promise<TaskQuadrantClassification> {
+    return this.runWithProvider('ollama', () => this.classifyTask(task));
+  }
+
+  /**
    * タスクの期限を提案
    */
   public async suggestDeadline(task: {
