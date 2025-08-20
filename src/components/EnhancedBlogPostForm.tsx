@@ -55,6 +55,12 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   const [aiEnabled, setAiEnabled] = useState(true);
   const [autoAnalyze, setAutoAnalyze] = useState(false);
 
+  // AI Q&A Quick Add State
+  const [qaRaw, setQaRaw] = useState('');
+  const [qaParsed, setQaParsed] = useState<{ question: string; answer: string } | null>(null);
+  const [autoTitleFromQuestion, setAutoTitleFromQuestion] = useState(false);
+  const [autoAddTags, setAutoAddTags] = useState(true);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({ title, content, category, tags });
@@ -73,6 +79,74 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   const removeTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
   };
+
+  function extractFirstQA(raw: string): { question: string; answer: string } | null {
+    const text = raw.trim();
+    if (!text) return null;
+
+    // Common patterns: Q:/A:, 質問:/回答:, User:/Assistant:, Question:/Answer:
+    const patterns: Array<{ q: RegExp; a: RegExp }> = [
+      {
+        q: /(^|\n)\s*(Q:|Question:|質問[:：]|User:)/i,
+        a: /(^|\n)\s*(A:|Answer:|回答[:：]|Assistant:|AI:)/i,
+      },
+    ];
+
+    for (const p of patterns) {
+      const qMatch = p.q.exec(text);
+      const aMatch = p.a.exec(text);
+      if (qMatch && aMatch) {
+        const qStart = qMatch.index + qMatch[0].length;
+        const aStart = aMatch.index + aMatch[0].length;
+        const qStr = text.slice(qStart, aMatch.index).trim();
+        const aStr = text.slice(aStart).trim();
+        if (qStr && aStr) return { question: qStr, answer: aStr };
+      }
+    }
+
+    // Fallback: split first blank line
+    const parts = text.split(/\n\n+/);
+    if (parts.length >= 2) {
+      return { question: parts[0].trim(), answer: parts.slice(1).join('\n\n').trim() };
+    }
+    return { question: text, answer: '' };
+  }
+
+  function buildQaMarkdown(q: string, a: string): string {
+    const trimmedQ = q.trim();
+    const trimmedA = a.trim();
+    const titleLine = trimmedQ.length > 60 ? `${trimmedQ.slice(0, 57)}...` : trimmedQ;
+    return [
+      `## AI Q&A: ${titleLine}`,
+      '',
+      '### Question',
+      trimmedQ,
+      '',
+      '### Answer',
+      trimmedA,
+      '',
+    ].join('\n');
+  }
+
+  function onParseQa(): void {
+    const parsed = extractFirstQA(qaRaw);
+    setQaParsed(parsed);
+    if (parsed && autoTitleFromQuestion && !title) {
+      setTitle(
+        parsed.question.length > 64 ? `${parsed.question.slice(0, 61)}...` : parsed.question
+      );
+    }
+    if (parsed && autoAddTags) {
+      const merged = new Set([...tags, 'AI', 'Q&A', 'Cursor']);
+      setTags(Array.from(merged));
+    }
+  }
+
+  function onAppendQaToContent(): void {
+    if (!qaParsed) return;
+    const md = buildQaMarkdown(qaParsed.question, qaParsed.answer);
+    setContent((prev) => (prev ? `${prev}\n\n${md}` : md));
+  }
 
   const performAiAnalysis = async () => {
     if (!content.trim() || content.length < 100) {
@@ -195,6 +269,81 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
               {submitButtonText}
             </Button>
           </form>
+        </CardContent>
+      </Card>
+
+      {/* AI Q&A Quick Add */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5" />
+            AI Q&A Quick Add
+          </CardTitle>
+          <CardDescription>
+            Paste a Q&A (from Cursor or other AI) and append it to your post in markdown
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="qa-raw">Paste Q&A Transcript</Label>
+            <Textarea
+              id="qa-raw"
+              value={qaRaw}
+              onChange={(e) => setQaRaw(e.target.value)}
+              rows={8}
+              placeholder={
+                'Example:\nQ: 〇〇についてのベストプラクティスは？\nA: ...\n\nまたは\nUser: 質問...\nAssistant: 回答...'
+              }
+            />
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="auto-title"
+                  checked={autoTitleFromQuestion}
+                  onCheckedChange={setAutoTitleFromQuestion}
+                />
+                <Label htmlFor="auto-title" className="text-sm">
+                  Use question as title (if empty)
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch id="auto-tags" checked={autoAddTags} onCheckedChange={setAutoAddTags} />
+                <Label htmlFor="auto-tags" className="text-sm">
+                  Auto-add tags: AI, Q&A, Cursor
+                </Label>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={onParseQa} disabled={!qaRaw.trim()}>
+                Parse Q&A
+              </Button>
+              <Button
+                type="button"
+                onClick={onAppendQaToContent}
+                disabled={!qaParsed}
+                title={!qaParsed ? 'Parse first' : 'Append to content'}
+              >
+                Append to Content
+              </Button>
+            </div>
+          </div>
+
+          {qaParsed && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm text-neutral-500 mb-1">Parsed Question</div>
+                <pre className="text-xs bg-neutral-50 dark:bg-neutral-800 p-2 rounded whitespace-pre-wrap break-words max-h-48 overflow-auto">
+                  {qaParsed.question}
+                </pre>
+              </div>
+              <div>
+                <div className="text-sm text-neutral-500 mb-1">Parsed Answer</div>
+                <pre className="text-xs bg-neutral-50 dark:bg-neutral-800 p-2 rounded whitespace-pre-wrap break-words max-h-48 overflow-auto">
+                  {qaParsed.answer}
+                </pre>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
