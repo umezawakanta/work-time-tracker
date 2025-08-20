@@ -79,3 +79,16 @@ export const FAQ_COPY = {
 } as const;
 
 export type FaqCopy = typeof FAQ_COPY;
+
+export const WEEKLY_REPORT_COPY = {
+  title: '週次レポート',
+  description: '1週間の活動を自動集計。習慣スコアと改善点を提示し、翌週の時間配分を最適化します。',
+  points: [
+    '完了タスクの傾向と集中時間の可視化',
+    '習慣スコア（0-100）で定着度を把握',
+    '次週に向けた具体的な改善提案',
+  ],
+  placeholderAlt: '週次レポートのプレビュー',
+} as const;
+
+export type WeeklyReportCopy = typeof WEEKLY_REPORT_COPY;

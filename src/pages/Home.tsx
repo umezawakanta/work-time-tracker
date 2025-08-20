@@ -44,6 +44,7 @@ import { toast } from 'react-hot-toast';
 import Hero from '@/components/hero/Hero';
 import Benefits from '@/components/hero/Benefits';
 import HowItWorks from '@/components/hero/HowItWorks';
+import WeeklyReportPreview from '@/components/home/WeeklyReportPreview';
 
 interface DashboardStats {
   tasksCompleted: number;
@@ -286,6 +287,9 @@ const Home: React.FC = () => {
       />
       <Benefits />
       <HowItWorks />
+      <div className="container mx-auto px-4 max-w-7xl mb-8">
+        <WeeklyReportPreview />
+      </div>
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Header Section (subsequent heading after Hero's h1) */}
