@@ -24,10 +24,38 @@ export function trackCtaClick(payload: CtaClickPayload): void {
       page: payload.page,
       params: payload.params,
     });
+    // Also mark funnel step when relevant
+    if (payload.id === 'hero_primary_start_now' || payload.id === 'hero_secondary_setup_3min') {
+      userTrackingService.trackFunnel('cta_click', {
+        id: payload.id,
+        location: payload.location,
+        page: payload.page,
+      });
+    }
   } catch (e) {
     // Do not break UX on tracking failure
     if (import.meta?.env?.DEV) {
       console.debug('trackCtaClick failed:', (e as Error).message);
     }
   }
+}
+
+export function trackPageViewHome(): void {
+  try {
+    userTrackingService.trackFunnel('page_view_home', {
+      path: typeof window !== 'undefined' ? window.location.pathname : undefined,
+    });
+  } catch {}
+}
+
+export function trackAISuggestClick(meta?: Record<string, unknown>): void {
+  try {
+    userTrackingService.trackFunnel('ai_suggest_click', meta);
+  } catch {}
+}
+
+export function trackAISuccess(meta?: Record<string, unknown>): void {
+  try {
+    userTrackingService.trackFunnel('ai_success', meta);
+  } catch {}
 }

@@ -30,7 +30,15 @@ export interface PageView {
 }
 
 export interface UserInteraction {
-  type: 'click' | 'scroll' | 'form_submit' | 'download' | 'share' | 'ai_action' | 'cta_click';
+  type:
+    | 'click'
+    | 'scroll'
+    | 'form_submit'
+    | 'download'
+    | 'share'
+    | 'ai_action'
+    | 'cta_click'
+    | 'funnel_event';
   element?: string;
   value?: string;
   timestamp: Date;
@@ -191,6 +199,16 @@ class UserTrackingService {
       feature,
       success,
     });
+  }
+
+  /**
+   * 🧭 Funnel tracking (page_view(home) -> cta_click -> ai_suggest_click -> ai_success)
+   */
+  public trackFunnel(
+    event: 'page_view_home' | 'cta_click' | 'ai_suggest_click' | 'ai_success',
+    meta?: Record<string, any>
+  ): void {
+    this.trackInteraction('funnel_event', event, undefined, meta);
   }
 
   /**

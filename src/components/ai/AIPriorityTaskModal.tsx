@@ -86,6 +86,12 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
     if (!aiConfigured) return;
     const result = await ai.execute(prompt);
     if (result) {
+      try {
+        const { userTrackingService } = require('@/services/analytics/UserTrackingService');
+        userTrackingService.trackFunnel('ai_success', {
+          durationMs: ai.durationMs,
+        });
+      } catch {}
       dispatch(setTodaySuggestion({ task: result.task, reason: result.reason }));
     }
   };
@@ -175,7 +181,17 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
             </Button>
           ) : (
             <Button
-              onClick={handleExecute}
+              onClick={() => {
+                try {
+                  const {
+                    userTrackingService,
+                  } = require('@/services/analytics/UserTrackingService');
+                  userTrackingService.trackFunnel('ai_suggest_click', {
+                    contextLength: context.length,
+                  });
+                } catch {}
+                void handleExecute();
+              }}
               disabled={ai.isLoading || !aiConfigured}
               aria-label="提案を受ける"
             >

@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { trackPageViewHome } from '@/lib/track';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
@@ -86,6 +87,7 @@ const Home: React.FC = () => {
 
   // Initialize data
   useEffect(() => {
+    trackPageViewHome();
     if (isAuthenticated) {
       initializeDashboard();
     }
