@@ -3,10 +3,13 @@ import { Button } from '@/components/ui/button';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
+  // When variant is 'app', show AI-specific messaging if detected
+  variant?: 'default' | 'app';
 }
 
 interface ErrorBoundaryState {
   hasError: boolean;
+  error?: Error;
 }
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
@@ -15,8 +18,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(): ErrorBoundaryState {
-    return { hasError: true };
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -46,7 +49,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       // LocalStorage容量制限でエラーログを制限
       try {
         const existingLogs = localStorage.getItem('error_logs');
-        let logs: any[] = [];
+        let logs: unknown[] = [];
 
         if (existingLogs) {
           logs = JSON.parse(existingLogs);
@@ -91,14 +94,49 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     }
   };
 
+  private isAIError(error?: Error): boolean {
+    if (!error) return false;
+    const msg = (error.message || '').toLowerCase();
+    return (
+      msg.includes('openai') ||
+      msg.includes('anthropic') ||
+      msg.includes('gemini') ||
+      msg.includes('ai provider') ||
+      msg.includes('ai ') ||
+      msg.includes('ai-')
+    );
+  }
+
   render() {
     if (this.state.hasError) {
-      // カスタムのエラー表示UIをここでレンダリングできます
+      const aiError = this.props.variant === 'app' && this.isAIError(this.state.error);
       return (
-        <div className="container mx-auto px-4 py-8 text-center">
-          <h1 className="text-2xl font-bold mb-4">エラーが発生しました</h1>
-          <p className="mb-4">申し訳ありませんが、予期せぬエラーが発生しました。</p>
-          <p>ページを再読み込みするか、しばらくしてからもう一度お試しください。</p>
+        <div className="container mx-auto px-4 py-10 text-center">
+          <h1 className="text-2xl font-bold mb-3">
+            {aiError ? 'AI機能でエラーが発生しました' : 'エラーが発生しました'}
+          </h1>
+          <p className="mb-4 text-slate-700">
+            {aiError
+              ? 'APIキー・レート制限・ネットワーク状態をご確認ください。問題が続く場合は設定を見直してください。'
+              : '申し訳ありませんが、予期せぬエラーが発生しました。'}
+          </p>
+          <div className="flex gap-3 justify-center">
+            {aiError && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  try {
+                    window.location.assign('/settings');
+                  } catch {
+                    // noop
+                  }
+                }}
+              >
+                設定を開く
+              </Button>
+            )}
+            <Button onClick={() => window.location.reload()}>再読み込み</Button>
+          </div>
         </div>
       );
     }
