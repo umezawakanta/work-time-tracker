@@ -72,21 +72,41 @@ export class TokenManager {
    */
   private async initializeWithHealthCheck(): Promise<void> {
     try {
-      // まずAPI健全性をチェック
-      const response = await fetch(window.location.origin + '/api/auth/tokens', {
-        method: 'HEAD', // HEADリクエストでエンドポイントの存在を確認
-        signal: AbortSignal.timeout(5000), // 5秒タイムアウト
-      });
+      // まずAPI健全性をチェック（複数エンドポイントでフォールバック）
+      const checks: Array<{ url: string; method: 'HEAD' | 'GET' }> = [
+        { url: '/api/auth/tokens', method: 'HEAD' },
+        { url: '/api/auth/check', method: 'GET' },
+        { url: '/api/health', method: 'GET' },
+      ];
 
-      if (response.ok || response.status === 404) {
-        // 404は正常（まだトークンが保存されていない）
-        console.log('✅ API endpoint available, initializing TokenManager');
-        this.loadFromStorage();
-        this.setupAxiosInterceptors();
-      } else {
-        console.warn('⚠️ API endpoint returned unexpected status:', response.status);
-        this.handleApiUnavailable();
+      for (const check of checks) {
+        try {
+          const response = await fetch(window.location.origin + check.url, {
+            method: check.method,
+            signal: AbortSignal.timeout(3000),
+            headers: check.method === 'GET' ? { Accept: 'application/json' } : undefined,
+          });
+
+          if (response.ok || (check.method === 'HEAD' && response.status === 404)) {
+            // 200はもちろん、HEAD 404もOK（未保存状態）
+            console.log(
+              `✅ API health check OK: ${check.method} ${check.url} -> ${response.status}`
+            );
+            this.loadFromStorage();
+            this.setupAxiosInterceptors();
+            return;
+          }
+
+          console.warn(
+            `⚠️ API health check unexpected: ${check.method} ${check.url} -> ${response.status}`
+          );
+        } catch (e) {
+          console.warn(`⚠️ API health check failed: ${check.method} ${check.url}`, e);
+        }
       }
+
+      // すべて失敗した場合はフォールバック
+      this.handleApiUnavailable();
     } catch (error) {
       console.error('❌ API health check failed:', error);
       this.handleApiUnavailable();

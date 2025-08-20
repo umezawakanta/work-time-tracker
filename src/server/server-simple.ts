@@ -1376,9 +1376,8 @@ app.use('/api/blog', blogRoutes);
 console.log('✅ Blog routes loaded at /api/blog');
 
 // Silence dev HEAD check noise for tokens endpoint (used by TokenManager)
-app.head('/api/auth/tokens', (_req, res) => {
-  res.sendStatus(200);
-});
+app.head('/api/auth/tokens', (_req, res) => res.sendStatus(200));
+app.get('/api/auth/tokens', (_req, res) => res.sendStatus(200));
 
 // Fallback minimal handlers for blog in case route mounting fails in some envs
 app.get('/api/blog', async (req, res) => {
@@ -1616,24 +1615,29 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
 
 // Connect to database and start server
 const startServer = async () => {
+  let dbConnected = false;
   try {
     console.log('🔗 Connecting to database...');
     await connectDB();
+    dbConnected = true;
     console.log('✅ Database connected successfully');
-
-    app.listen(PORT, () => {
-      console.log(`\n✅ Enhanced server running on port ${PORT}`);
-      console.log(`📍 Health: http://localhost:${PORT}/api/health`);
-      console.log(`📍 Todos: http://localhost:${PORT}/api/todos`);
-      console.log(`📚 Books: http://localhost:${PORT}/api/books`);
-      console.log(`🤖 AI API: http://localhost:${PORT}/api/ai/anthropic`);
-      console.log(`   API Key configured: ${ANTHROPIC_API_KEY ? 'Yes ✅' : 'No ❌'}`);
-      console.log('🔍 Debug mode enabled - detailed logging active\n');
-    });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    process.exit(1);
+    console.warn(
+      '⚠️ Database connection failed. Running in degraded mode (mock auth, limited APIs).'
+    );
+    console.warn('   Set MONGODB_URI in .env.local to enable full features.');
   }
+
+  app.listen(PORT, () => {
+    console.log(`\n✅ Enhanced server running on port ${PORT}`);
+    console.log(`📍 Health: http://localhost:${PORT}/api/health`);
+    console.log(`📍 Todos: http://localhost:${PORT}/api/todos`);
+    console.log(`📚 Books: http://localhost:${PORT}/api/books`);
+    console.log(`🤖 AI API: http://localhost:${PORT}/api/ai/anthropic`);
+    console.log(`   API Key configured: ${ANTHROPIC_API_KEY ? 'Yes ✅' : 'No ❌'}`);
+    console.log(`   Database connected: ${dbConnected ? 'Yes ✅' : 'No ❌ (degraded mode)'}`);
+    console.log('🔍 Debug mode enabled - detailed logging active\n');
+  });
 };
 
 startServer();
