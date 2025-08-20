@@ -74,8 +74,13 @@ JSON形式:
 }`;
 
       const startedAt = Date.now();
+      const apiKey1 = ENV.GEMINI_API_KEY();
+      if (!apiKey1) {
+        console.warn('Gemini API key missing (VITE_GEMINI_API_KEY). Using fallback analysis.');
+        return BlogAiService.fallbackAnalysis(title, content);
+      }
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${ENV.GEMINI_API_KEY()}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey1}`,
         {
           method: 'POST',
           headers: {
@@ -100,7 +105,11 @@ JSON形式:
       );
 
       const data = await response.json();
-      const generatedText = data.candidates[0].content.parts[0].text;
+      if (!response.ok) {
+        console.warn('Gemini analyzeBlogPost non-OK:', response.status, data);
+        return BlogAiService.fallbackAnalysis(title, content);
+      }
+      const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text as string | undefined;
       try {
         await AIHistoryService.saveInteraction({
           provider: 'gemini',
@@ -114,7 +123,7 @@ JSON形式:
       } catch (e) {
         console.debug('AI history save (gemini analyzeBlogPost) skipped:', (e as Error).message);
       }
-      const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
+      const jsonMatch = generatedText ? generatedText.match(/\{[\s\S]*\}/) : null;
 
       if (jsonMatch) {
         const analysisResult = JSON.parse(jsonMatch[0]);
@@ -163,8 +172,19 @@ JSON形式:
 }`;
 
       const startedAt = Date.now();
+      const apiKey2 = ENV.GEMINI_API_KEY();
+      if (!apiKey2) {
+        console.warn('Gemini API key missing (VITE_GEMINI_API_KEY). Using simple content stats.');
+        return {
+          wordCount,
+          readingTimeMinutes,
+          keyTopics: [],
+          sentiment: 'neutral',
+          targetAudience: '一般読者',
+        } as BlogContentAnalysis;
+      }
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${ENV.GEMINI_API_KEY()}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey2}`,
         {
           method: 'POST',
           headers: {
@@ -189,7 +209,17 @@ JSON形式:
       );
 
       const data = await response.json();
-      const generatedText = data.candidates[0].content.parts[0].text;
+      if (!response.ok) {
+        console.warn('Gemini analyzeContent non-OK:', response.status, data);
+        return {
+          wordCount,
+          readingTimeMinutes,
+          keyTopics: [],
+          sentiment: 'neutral',
+          targetAudience: '一般読者',
+        } as BlogContentAnalysis;
+      }
+      const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text as string | undefined;
       try {
         await AIHistoryService.saveInteraction({
           provider: 'gemini',
@@ -203,7 +233,7 @@ JSON形式:
       } catch (e) {
         console.debug('AI history save (gemini analyzeContent) skipped:', (e as Error).message);
       }
-      const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
+      const jsonMatch = generatedText ? generatedText.match(/\{[\s\S]*\}/) : null;
 
       if (jsonMatch) {
         const result = JSON.parse(jsonMatch[0]);
