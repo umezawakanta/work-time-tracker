@@ -3,6 +3,7 @@ import type { RootState } from './index';
 import { todoApi } from '@/services/api/todoApi';
 import { TodoItem } from '@/types';
 import anthropicService from '@/services/ai/anthropicService';
+import { ExtractedTask } from '@/types/blogTask';
 
 // 分析サマリーの型定義
 interface AnalysisSummary {
@@ -236,6 +237,31 @@ export const addTodoItem = createAsyncThunk(
         throw apiError;
       }
     }
+  }
+);
+
+// 一括追加: 抽出タスク(ExtractedTask[])を既存の addTodoItem に流用して作成
+export const addMany = createAsyncThunk(
+  'todo/addMany',
+  async (tasks: ExtractedTask[], thunkApi) => {
+    const results: any[] = [];
+    for (const t of tasks) {
+      if (!t || typeof t.title !== 'string' || t.title.trim().length === 0) continue;
+      const action: any = await (thunkApi as any).dispatch(
+        addTodoItem({
+          task: t.title.trim(),
+          priority: typeof t.priority === 'number' ? t.priority : 3,
+          isPrioritized: false,
+          type: t.type || 'input',
+          deadline: t.dueDate,
+          createdAt: new Date().toISOString(),
+        })
+      );
+      if (action && action.payload && action.payload._id) {
+        results.push(action.payload);
+      }
+    }
+    return results;
   }
 );
 
@@ -611,6 +637,18 @@ const todoSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message || 'タスクの削除に失敗しました';
         console.error('❌ deleteTodoItem failed:', action.error);
+      })
+      // addMany (bulk) status handling
+      .addCase(addMany.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(addMany.fulfilled, (state) => {
+        state.status = 'succeeded';
+        state.error = null;
+      })
+      .addCase(addMany.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || 'タスクの一括追加に失敗しました';
       })
       .addCase(resetTodoList.pending, (state) => {
         state.status = 'loading';
