@@ -7,6 +7,17 @@
 
 React + TypeScript + Viteを使用した包括的な生産性管理プラットフォーム
 
+## 🎯 新コンセプト（Landing）
+
+**「人生の舵を、今日から握り直す。」**
+
+AIパーソナル秘書が予定・集中・習慣を一元管理し、毎日の意思決定と実行をサポートします。
+
+- ヒーローコピー: 「人生の舵を、今日から握り直す。」
+- サブコピー: 「AIパーソナル秘書が予定・集中・習慣を一元管理」
+- CTA: 「今すぐ始める」 / 「3分でセットアップ」
+- 追加CTA: 「今日の最重要タスクを提案」（AIモーダル）
+
 ## ✨ 主要機能
 
 ### 🎯 **統合ダッシュボード**
@@ -39,6 +50,30 @@ React + TypeScript + Viteを使用した包括的な生産性管理プラット�
 - 📝 **スマート提案**: AIがタスクの最適な処理方法を提案
 - 🎯 **自動タスク並び替え**: タスク追加時にAIが最適な実行順序に自動整理
 - 📧 **メール通知機能**: タスク追加・締切接近・デイリーダイジェストをメールで通知
+
+#### AI機能の概要（本プロジェクト拡張点）
+
+- 「今日の最重要タスクを提案」モーダル（`AIPriorityTaskModal`）
+  - 入力: 現在の状況
+  - 出力: 1件の優先タスク（理由付き）
+  - APIキー未設定時はガード表示と「設定を開く」導線
+- `useAIAction` フック
+  - 状態管理: `idle | loading | success | error`
+  - `execute`/`retry`/`cancel`/`reset`、計測（開始/終了/試行回数）
+- `AdvancedAIService`
+  - プロバイダー: `openai | anthropic | gemini | local`
+  - 厳密な型定義（レスポンス最小構造）と `response.ok` チェック
+  - ローカルフォールバック実装
+- `AIHistoryService`
+  - IndexedDB にAIリクエスト/レスポンスを保存（最新500件）
+  - `AIHistoryPanel` で参照可能
+- `BlogAiService`
+  - Gemini API によるブログ分析（タイトル改善/タグ/SEO提案など）
+  - 失敗時は安全にローカル分析へフォールバック
+- `ErrorBoundary`（`variant="app"`）
+  - AI系エラー検知時、APIキー/レート制限/ネットワーク確認のガイダンスと「設定を開く」を表示
+- 計測
+  - CTAクリック: `cta_click` を `trackCtaClick` で一元計測（ヒーロー/AIモーダル）
 
 ## 🏗️ アーキテクチャ
 
@@ -97,6 +132,29 @@ pnpm test
 pnpm lint
 pnpm type-check
 ```
+
+### ⚙️ 環境変数（.env）
+
+AI機能やAPI連携のため、`.env`（または `.env.local`）をプロジェクト直下に作成してください。以下は最小例です。
+
+```env
+# API
+VITE_API_BASE_URL=http://localhost:3001/api
+
+# AI Provider Keys（必要なもののみ設定）
+VITE_GEMINI_API_KEY=
+VITE_OPENAI_API_KEY=
+VITE_ANTHROPIC_API_KEY=
+
+# Optional flags
+VITE_ENABLE_ANALYTICS=false
+VITE_DEBUG=false
+```
+
+補足:
+
+- 開発は `pnpm dev`（フロント＋API）で起動します
+- APIキー未設定時でもアプリは動作し、AI機能はローカルフォールバックまたはガード表示になります
 
 ### 🤖 AI機能のセットアップ（オプション）
 
