@@ -14,6 +14,7 @@ import useAIAction from '@/hooks/useAIAction';
 import AdvancedAIService from '@/services/ai/AdvancedAIService';
 import { ENV } from '@/utils/env';
 import { useNavigate } from 'react-router-dom';
+import { trackCtaClick } from '@/lib/track';
 
 export interface AIPriorityTaskModalProps {
   open: boolean;
@@ -72,6 +73,13 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
   );
 
   const handleExecute = async () => {
+    trackCtaClick({
+      id: 'ai_suggest_execute',
+      label: '提案を受ける',
+      variant: 'primary',
+      location: 'ai_modal',
+      params: { aiConfigured, contextLength: context.length },
+    });
     if (!aiConfigured) return;
     await ai.execute(prompt);
   };
