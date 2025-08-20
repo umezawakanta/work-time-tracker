@@ -59,3 +59,27 @@ export function trackAISuccess(meta?: Record<string, unknown>): void {
     userTrackingService.trackFunnel('ai_success', meta);
   } catch {}
 }
+
+// Blog task extraction events
+export function trackAIExtractTasksClick(meta?: Record<string, unknown>): void {
+  try {
+    userTrackingService.trackInteraction('funnel_event', 'ai_extract_tasks_click', undefined, meta);
+  } catch {}
+}
+
+export function trackAIExtractTasksSuccess(meta?: Record<string, unknown>): void {
+  try {
+    userTrackingService.trackInteraction(
+      'funnel_event',
+      'ai_extract_tasks_success',
+      undefined,
+      meta
+    );
+  } catch {}
+}
+
+export function trackAIExtractTasksError(meta?: Record<string, unknown>): void {
+  try {
+    userTrackingService.trackInteraction('funnel_event', 'ai_extract_tasks_error', undefined, meta);
+  } catch {}
+}
