@@ -1001,7 +1001,18 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           </header>
 
           {/* ページコンテンツ */}
-          <div className="flex-1 p-6">{children}</div>
+          <div className="flex-1 p-6">
+            {children}
+            <div className="mt-12">
+              <div className="container mx-auto px-4">
+                <div className="rounded-xl border border-slate-200 bg-white dark:bg-slate-900 p-4 text-center">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    通信は暗号化。データの第三者提供は一切ありません。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </main>
       </div>
     </AccessibilityProvider>

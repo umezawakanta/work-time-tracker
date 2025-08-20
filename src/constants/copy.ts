@@ -54,3 +54,9 @@ export const HOW_IT_WORKS_COPY = {
 };
 
 export type HowItWorksCopy = typeof HOW_IT_WORKS_COPY;
+
+export const TRUST_COPY = {
+  line: '通信は暗号化。データの第三者提供は一切ありません。',
+};
+
+export type TrustCopy = typeof TRUST_COPY;
