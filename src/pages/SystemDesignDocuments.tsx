@@ -30,6 +30,7 @@ import {
   Copy,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import AIHistoryPanel from '@/components/ai/AIHistoryPanel';
 
 interface FeatureModule {
   id: string;
@@ -866,20 +867,7 @@ ${category.items.map((item) => `- ${item}`).join('\n')}
                     <p className="text-sm text-gray-600 mb-3">
                       各プロバイダーへの直近の問い合わせと応答（ローカル保存）。
                     </p>
-                    {(() => {
-                      try {
-                        // 動的requireでビルド時の循環やSSRを回避
-                        // eslint-disable-next-line @typescript-eslint/no-var-requires
-                        const Panel = require('../components/ai/AIHistoryPanel').AIHistoryPanel;
-                        return <Panel limit={20} />;
-                      } catch {
-                        return (
-                          <div className="text-xs text-neutral-500">
-                            History panel unavailable in this build.
-                          </div>
-                        );
-                      }
-                    })()}
+                    <AIHistoryPanel limit={20} />
                   </div>
 
                   {/* アーキテクチャ図（簡易版） */}
