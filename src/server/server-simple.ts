@@ -13,6 +13,7 @@ dotenv.config({ path: '.env' });
 // Import services
 import notificationService from './services/notificationService.js';
 import emailService from './services/emailService.js';
+import blogRoutes from './routes/blogRoutes.js';
 
 const app = express();
 const PORT = 3001;
@@ -1367,6 +1368,9 @@ app.get('/api/ai/health', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// Blog API routes (MongoDB-backed)
+app.use('/api/blog', blogRoutes);
 
 console.log('\n🗺️  Registered Routes:');
 console.log('   GET  /api/health');
