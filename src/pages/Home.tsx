@@ -288,15 +288,19 @@ const Home: React.FC = () => {
       <HowItWorks />
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Header Section */}
+        {/* Header Section (subsequent heading after Hero's h1) */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             {getWelcomeMessage()}, {user?.name || 'ユーザー'}さん！
-          </h1>
+          </h2>
           <p className="text-xl text-gray-600 mb-6">今日も生産性を向上させていきましょう</p>
 
           {/* Level badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-semibold shadow-lg">
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-semibold shadow-lg"
+            role="status"
+            aria-label="ユーザーレベル"
+          >
             <Crown className="w-5 h-5" />
             レベル {stats.currentLevel}
             <Sparkles className="w-4 h-4" />
