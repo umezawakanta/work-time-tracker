@@ -4,6 +4,23 @@
   "framework": null,
   "installCommand": "corepack enable && corepack prepare pnpm@8 --activate || npm i -g pnpm@8 && pnpm install --no-frozen-lockfile",
   "devCommand": "pnpm run dev",
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "nodejs20.x",
+      "includeFiles": [
+        "src/services/**",
+        "src/server/**",
+        "src/types/**",
+        "src/utils/**"
+      ],
+      "excludeFiles": [
+        "src/components/**",
+        "src/pages/**",
+        "coverage/**",
+        "**/__tests__/**"
+      ]
+    }
+  },
   "routes": [
     {
       "handle": "filesystem"

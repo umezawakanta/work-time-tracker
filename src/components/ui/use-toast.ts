@@ -11,6 +11,8 @@ type ToastProps = {
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: React.ReactElement;
+  variant?: 'default' | 'destructive';
+  duration?: number;
 };
 type ToastActionElement = React.ReactElement;
 
