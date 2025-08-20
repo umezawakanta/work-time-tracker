@@ -36,7 +36,7 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({ onGetStarted }) 
           <div className="space-y-6 mb-12">
             <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6">
               <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
-                LifeSync
+                人生の舵を、今日から握り直す。
               </span>
             </h1>
             <p className="text-xl lg:text-2xl text-slate-300 mb-8 leading-relaxed max-w-3xl mx-auto">
