@@ -175,8 +175,16 @@ export class TokenManager {
    * 🌍 本番環境判定を改善
    */
   private isProductionEnvironment(): boolean {
-    // 開発環境でもTokenManager機能を有効化
-    return true;
+    try {
+      if (typeof window === 'undefined') return false;
+      const host = window.location.hostname;
+      // 本番/プレビューのホストのみ true、それ以外は false
+      if (host === 'work-time-tracker-5d9q.vercel.app') return true;
+      if (/^work-time-tracker-5d9q-.*\.vercel\.app$/.test(host)) return true;
+      return false; // localhost / LAN などは常に開発扱い
+    } catch {
+      return false;
+    }
   }
 
   /**

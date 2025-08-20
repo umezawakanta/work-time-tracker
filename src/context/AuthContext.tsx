@@ -175,17 +175,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return false;
       }
 
-      // APIによる認証状態確認（タイムアウトを設定）
+      // 本番/プレビュー以外はサーバ確認をスキップ
+      const host = typeof window !== 'undefined' ? window.location.hostname : '';
+      const isTrustedHost =
+        host === 'work-time-tracker-5d9q.vercel.app' ||
+        /^work-time-tracker-5d9q-.*\.vercel\.app$/.test(host);
+
+      if (!isTrustedHost) {
+        console.log('🧪 Dev host detected - skipping server auth check');
+        return true;
+      }
+
       console.log('📡 Starting server auth check...');
       const timeoutPromise = new Promise<boolean>((_, reject) => {
-        setTimeout(() => reject(new Error('Auth check timeout')), 4000); // 4秒タイムアウト
+        setTimeout(() => reject(new Error('Auth check timeout')), 4000);
       });
-
-      const authCheckPromise = checkAuth();
-
-      const isValidOnServer = await Promise.race([authCheckPromise, timeoutPromise]);
+      const isValidOnServer = await Promise.race([checkAuth(), timeoutPromise]);
       console.log('📡 Server auth check result:', { isValidOnServer });
-
       if (!isValidOnServer) {
         console.log('❌ Server auth check failed');
         tokenManager.clearTokens();
@@ -193,7 +199,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(null);
         return false;
       }
-
       console.log('✅ Server auth check passed');
       return true;
     } catch (error) {
