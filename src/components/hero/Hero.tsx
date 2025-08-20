@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { HERO_COPY } from '@/constants/copy';
+import AIPriorityTaskModal from '@/components/ai/AIPriorityTaskModal';
 
 export interface HeroProps {
   title?: string;
@@ -22,6 +23,7 @@ export const Hero: React.FC<HeroProps> = ({
   onSecondaryClick,
   className,
 }) => {
+  const [openPriorityModal, setOpenPriorityModal] = useState(false);
   return (
     <section
       className={
@@ -73,8 +75,21 @@ export const Hero: React.FC<HeroProps> = ({
               {ctaSecondaryText}
             </Button>
           </div>
+
+          <div className="mt-6">
+            <Button
+              size="lg"
+              variant="secondary"
+              className="bg-white/90 text-slate-900 hover:bg-white"
+              onClick={() => setOpenPriorityModal(true)}
+            >
+              今日の最重要タスクを提案
+            </Button>
+          </div>
         </div>
       </div>
+
+      <AIPriorityTaskModal open={openPriorityModal} onOpenChange={setOpenPriorityModal} />
 
       {/* Wave divider */}
       <div aria-hidden className="absolute bottom-0 left-0 right-0">
