@@ -2,10 +2,25 @@
 import { Todo, NewTodo, TodoAnalysisSummary } from '@/types/todo';
 import AIHistoryService, { AIInteractionRequest, AIInteractionResponse } from './AIHistoryService';
 
+export type ProviderName = 'openai' | 'anthropic' | 'gemini' | 'local';
+
 export interface AIProvider {
-  name: 'openai' | 'anthropic';
+  name: ProviderName;
   model: string;
   apiKey: string;
+}
+
+// 空実装のプロバイダー（将来の拡張用）
+export class PlaceholderAIProvider implements AIProvider {
+  name: ProviderName;
+  model: string;
+  apiKey: string;
+
+  constructor(name: ProviderName, model = 'auto', apiKey = '') {
+    this.name = name;
+    this.model = model;
+    this.apiKey = apiKey;
+  }
 }
 
 export interface AIAnalysisResult {
