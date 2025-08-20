@@ -933,6 +933,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                   onClick={handleLogout}
                   variant="outline"
                   className="w-full justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950"
+                  aria-label="ログアウト"
                 >
                   <LogOut className="h-4 w-4" />
                   ログアウト
@@ -945,6 +946,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                 variant="ghost"
                 size="icon"
                 className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950"
+                aria-label="ログアウト"
               >
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -971,6 +973,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                   size="sm"
                   onClick={toggleTheme}
                   className="text-gray-600 dark:text-gray-300"
+                  aria-label={isDarkMode ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
                 >
                   {isDarkMode ? '☀️' : '🌙'}
                 </Button>
@@ -983,6 +986,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                     // 通知ページへの遷移（将来的に実装）
                     toast('通知機能は準備中です', { icon: '🔔' });
                   }}
+                  aria-label="通知"
                 >
                   <Bell className="h-4 w-4" />
                 </Button>

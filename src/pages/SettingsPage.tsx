@@ -197,10 +197,10 @@ const AISettingsForm: React.FC = () => {
       </div>
 
       <div className="pt-2 flex gap-2">
-        <Button onClick={handleSave}>
+        <Button onClick={handleSave} aria-label="API設定を保存">
           <Save className="w-4 h-4 mr-2" /> API設定を保存
         </Button>
-        <Button variant="outline" onClick={handleClear}>
+        <Button variant="outline" onClick={handleClear} aria-label="API設定をクリア">
           <Trash2 className="w-4 h-4 mr-2" /> クリア
         </Button>
       </div>
@@ -367,7 +367,9 @@ const SettingsPage: React.FC = () => {
                 </div>
 
                 <div className="pt-4">
-                  <Button onClick={handleSaveSettings}>プロフィールを更新</Button>
+                  <Button onClick={handleSaveSettings} aria-label="プロフィールを更新">
+                    プロフィールを更新
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -387,7 +389,11 @@ const SettingsPage: React.FC = () => {
                     <p className="text-sm text-gray-500">
                       すべてのタスク、設定、履歴データをJSON形式でダウンロードします
                     </p>
-                    <Button variant="outline" onClick={handleExportData}>
+                    <Button
+                      variant="outline"
+                      onClick={handleExportData}
+                      aria-label="データをエクスポート"
+                    >
                       データをエクスポート
                     </Button>
                   </div>
@@ -399,7 +405,11 @@ const SettingsPage: React.FC = () => {
                     <p className="text-sm text-gray-500">
                       アカウントを削除すると、すべてのデータが永久に失われます
                     </p>
-                    <Button variant="destructive" onClick={handleDeleteAccount}>
+                    <Button
+                      variant="destructive"
+                      onClick={handleDeleteAccount}
+                      aria-label="アカウントを削除"
+                    >
                       アカウントを削除
                     </Button>
                   </div>
@@ -478,7 +488,9 @@ const SettingsPage: React.FC = () => {
                 </div>
 
                 <div className="pt-4">
-                  <Button onClick={handleSaveSettings}>通知設定を保存</Button>
+                  <Button onClick={handleSaveSettings} aria-label="通知設定を保存">
+                    通知設定を保存
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -585,7 +597,10 @@ const SettingsPage: React.FC = () => {
                       </ul>
                     </div>
 
-                    <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500">
+                    <Button
+                      className="w-full bg-gradient-to-r from-amber-500 to-orange-500"
+                      aria-label="プレミアムにアップグレード"
+                    >
                       <Crown className="h-4 w-4 mr-2" />
                       プレミアムにアップグレード
                     </Button>

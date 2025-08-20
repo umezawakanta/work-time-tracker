@@ -97,6 +97,7 @@ export const Hero: React.FC<HeroProps> = ({
             <Button
               size="lg"
               variant="secondary"
+              aria-label="今日の最重要タスクの提案を開く"
               className="bg-white/90 text-slate-900 hover:bg-white"
               onClick={() => {
                 trackCtaClick({

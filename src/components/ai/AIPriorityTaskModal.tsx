@@ -108,7 +108,12 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
             <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
               AI APIキーが未設定です。設定からAPIキーを入力してください。
               <div className="mt-2">
-                <Button size="sm" variant="outline" onClick={() => navigate('/settings')}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => navigate('/settings')}
+                  aria-label="設定を開く"
+                >
                   設定を開く
                 </Button>
               </div>
@@ -160,11 +165,20 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
 
         <DialogFooter className="gap-2">
           {ai.isError ? (
-            <Button variant="outline" onClick={ai.retry} disabled={ai.isLoading}>
+            <Button
+              variant="outline"
+              onClick={ai.retry}
+              disabled={ai.isLoading}
+              aria-label="再試行"
+            >
               再試行
             </Button>
           ) : (
-            <Button onClick={handleExecute} disabled={ai.isLoading || !aiConfigured}>
+            <Button
+              onClick={handleExecute}
+              disabled={ai.isLoading || !aiConfigured}
+              aria-label="提案を受ける"
+            >
               {ai.isLoading
                 ? '生成中...'
                 : aiConfigured
@@ -172,7 +186,7 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
                   : 'APIキーを設定してください'}
             </Button>
           )}
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+          <Button variant="ghost" onClick={() => onOpenChange(false)} aria-label="モーダルを閉じる">
             閉じる
           </Button>
         </DialogFooter>

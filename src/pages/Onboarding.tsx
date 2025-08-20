@@ -26,10 +26,10 @@ const Onboarding: React.FC = () => {
             <Clock className="h-4 w-4 text-blue-600" />
           </div>
           <div className="pt-4 flex items-center justify-center gap-3">
-            <Button onClick={() => navigate('/')} variant="outline">
+            <Button onClick={() => navigate('/')} variant="outline" aria-label="ホームに戻る">
               ホームに戻る
             </Button>
-            <Button disabled className="inline-flex items-center">
+            <Button disabled className="inline-flex items-center" aria-label="開始（近日公開）">
               <Sparkles className="h-4 w-4 mr-2" />
               開始（近日公開）
             </Button>

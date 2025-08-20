@@ -67,6 +67,7 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({ onGetStarted }) 
             <Button
               size="lg"
               onClick={onGetStarted}
+              aria-label={HERO_COPY.ctaPrimary}
               className="text-lg px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
             >
               {HERO_COPY.ctaPrimary}
@@ -75,6 +76,7 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({ onGetStarted }) 
             <Button
               size="lg"
               variant="outline"
+              aria-label={HERO_COPY.ctaSecondary}
               className="text-lg px-8 py-4 border-2 border-white/30 text-white hover:bg-white hover:text-slate-900 backdrop-blur-sm transition-all duration-300"
               onClick={() => navigate('/settings')}
             >

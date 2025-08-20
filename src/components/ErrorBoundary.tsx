@@ -131,11 +131,14 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                     // noop
                   }
                 }}
+                aria-label="設定ページを開く"
               >
                 設定を開く
               </Button>
             )}
-            <Button onClick={() => window.location.reload()}>再読み込み</Button>
+            <Button onClick={() => window.location.reload()} aria-label="ページを再読み込み">
+              再読み込み
+            </Button>
           </div>
         </div>
       );
@@ -170,7 +173,9 @@ export class IntegratedDashboardErrorBoundary extends Component<
         <div className="p-8 text-center">
           <h2 className="text-xl font-bold mb-4">ダッシュボードでエラーが発生しました</h2>
           <p className="text-gray-600 mb-4">ページを再読み込みしてください</p>
-          <Button onClick={() => window.location.reload()}>再読み込み</Button>
+          <Button onClick={() => window.location.reload()} aria-label="ページを再読み込み">
+            再読み込み
+          </Button>
         </div>
       );
     }
@@ -208,7 +213,9 @@ export class GuitarPracticeErrorBoundary extends Component<
         <div className="p-8 text-center">
           <h2 className="text-xl font-semibold mb-4">データの読み込みでエラーが発生しました</h2>
           <p className="text-gray-600 mb-4">練習データに不正な値が含まれている可能性があります。</p>
-          <Button onClick={() => this.setState({ hasError: false })}>再試行</Button>
+          <Button onClick={() => this.setState({ hasError: false })} aria-label="再試行">
+            再試行
+          </Button>
         </div>
       );
     }
@@ -247,7 +254,9 @@ export class SubscriptionErrorBoundary extends Component<
             サブスクリプションデータの読み込みでエラーが発生しました
           </h2>
           <p className="text-gray-600 mb-4">データの形式に問題がある可能性があります。</p>
-          <Button onClick={() => this.setState({ hasError: false })}>再試行</Button>
+          <Button onClick={() => this.setState({ hasError: false })} aria-label="再試行">
+            再試行
+          </Button>
         </div>
       );
     }
