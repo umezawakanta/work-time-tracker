@@ -115,9 +115,9 @@ let tokenFetchPromise: Promise<string> | null = null;
 
 api.interceptors.request.use(
   async (config) => {
-    // 開発環境では本番でのトークン機能を無効化
-    if (getEnv('NODE_ENV') === 'development' || getEnv('NODE_ENV') === 'test') {
-      console.log('🚫 Development/Test: Token authentication disabled');
+    // 開発環境ではトークン取得・付与を完全無効化
+    if (isDev()) {
+      // console.log('🚫 Development: token auth disabled for requests');
       return config;
     }
 
@@ -126,11 +126,7 @@ api.interceptors.request.use(
       return config;
     }
 
-    // 開発モードではトークン取得をスキップ
-    if (process.env.NODE_ENV === 'development') {
-      // 開発モードではトークンなしで続行
-      return config;
-    }
+    // ここまで来るのは本番・プレビューのみ
 
     // トークンがキャッシュされていなければAPIから取得（重複リクエスト防止）
     if (!tokenCache && !tokenFetchPromise) {
