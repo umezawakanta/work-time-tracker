@@ -73,7 +73,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Handle Anthropic API errors
     if (!anthropicResponse.ok) {
-      const errorData = await anthropicResponse.json().catch(() => ({}));
+      type AnthropicError = { error?: { message?: string } };
+      const errorData: AnthropicError = (await anthropicResponse
+        .json()
+        .catch(() => ({}) as AnthropicError)) as AnthropicError;
 
       if (anthropicResponse.status === 429) {
         res.status(429).json({

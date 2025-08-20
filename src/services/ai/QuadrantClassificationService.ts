@@ -442,7 +442,7 @@ export class QuadrantClassificationService {
   /**
    * 次に利用可能なAIプロバイダーを取得
    */
-  public getNextAvailableProvider(): AIProvider | null {
+  public getNextAvailableProviderSync(): AIProvider | null {
     // ブラウザ環境でのClaude制限を考慮
     const isInBrowser = typeof window !== 'undefined';
 
@@ -492,7 +492,7 @@ export class QuadrantClassificationService {
   /**
    * 次の利用可能なプロバイダーを取得
    */
-  private async getNextAvailableProvider(
+  private async getNextAvailableProviderAsync(
     excludeProviders: AIProvider[] = []
   ): Promise<AIProvider | null> {
     const providers = await this.getAvailableProviders();
@@ -540,7 +540,7 @@ export class QuadrantClassificationService {
     }
 
     const failedProvider = this.currentProvider;
-    const nextProvider = await this.getNextAvailableProvider([failedProvider]);
+    const nextProvider = await this.getNextAvailableProviderAsync([failedProvider]);
 
     if (!nextProvider) {
       console.error('❌ 利用可能な代替プロバイダーがありません');
@@ -1982,7 +1982,7 @@ JSON形式で回答してください:
             `❌ ${this.currentProvider.toUpperCase()} API認証エラー: APIキーが無効です`
           );
           // 自動的に別のプロバイダーに切り替え
-          const nextProvider = this.getNextAvailableProvider();
+          const nextProvider = this.getNextAvailableProviderSync();
           if (nextProvider && nextProvider !== this.currentProvider) {
             console.log(`🔄 ${nextProvider.toUpperCase()}に自動切り替えします`);
             this.currentProvider = nextProvider;
@@ -2002,7 +2002,7 @@ JSON形式で回答してください:
       console.log('💡 ヒューリスティック分析で代替します（十分な精度があります）');
 
       // レート制限の場合も自動で別プロバイダーに切り替え
-      const nextProvider = this.getNextAvailableProvider();
+      const nextProvider = this.getNextAvailableProviderSync();
       if (nextProvider && nextProvider !== this.currentProvider) {
         console.log(`🔄 レート制限のため${nextProvider.toUpperCase()}に切り替えます`);
         this.currentProvider = nextProvider;
