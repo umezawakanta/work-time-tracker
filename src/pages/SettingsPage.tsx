@@ -37,7 +37,176 @@ import {
   Sun,
   Monitor,
   Info,
+  Eye,
+  EyeOff,
+  Save,
+  Trash2,
 } from 'lucide-react';
+import AISettingsStorage from '@/services/ai/AISettingsStorage';
+
+const AISettingsForm: React.FC = () => {
+  const saved = AISettingsStorage.load();
+  const [show, setShow] = useState<{ gemini: boolean; openai: boolean; anthropic: boolean }>({
+    gemini: false,
+    openai: false,
+    anthropic: false,
+  });
+  const [form, setForm] = useState({
+    geminiKey: saved.gemini?.apiKey || '',
+    geminiModel: saved.gemini?.model || 'gemini-2.0-flash',
+    openaiKey: saved.openai?.apiKey || '',
+    openaiModel: saved.openai?.model || 'gpt-4-turbo-preview',
+    anthropicKey: saved.anthropic?.apiKey || '',
+    anthropicModel: saved.anthropic?.model || 'claude-3-haiku-20240307',
+  });
+
+  const mask = AISettingsStorage.mask;
+
+  const handleSave = () => {
+    AISettingsStorage.save({
+      gemini: { apiKey: form.geminiKey, model: form.geminiModel },
+      openai: { apiKey: form.openaiKey, model: form.openaiModel },
+      anthropic: { apiKey: form.anthropicKey, model: form.anthropicModel },
+    });
+    import('sonner').then(({ toast }) => toast.success('AI設定を保存しました')).catch(() => {});
+  };
+
+  const handleClear = () => {
+    AISettingsStorage.clear();
+    setForm({
+      geminiKey: '',
+      geminiModel: 'gemini-2.0-flash',
+      openaiKey: '',
+      openaiModel: 'gpt-4-turbo-preview',
+      anthropicKey: '',
+      anthropicModel: 'claude-3-haiku-20240307',
+    });
+    import('sonner').then(({ toast }) => toast('AI設定をクリアしました')).catch(() => {});
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="gemini-key">Gemini API Key</Label>
+        <div className="flex gap-2">
+          <Input
+            id="gemini-key"
+            type={show.gemini ? 'text' : 'password'}
+            placeholder="AIzaSy..."
+            className="font-mono"
+            value={form.geminiKey}
+            onChange={(e) => setForm((f) => ({ ...f, geminiKey: e.target.value }))}
+          />
+          <Button
+            variant="outline"
+            onClick={() => setShow((s) => ({ ...s, gemini: !s.gemini }))}
+            aria-label="Geminiキーの表示切替"
+          >
+            {show.gemini ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </Button>
+        </div>
+        <p className="text-xs text-gray-500">Google AI Studioで取得したAPIキーを入力してください</p>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="gemini-model" className="text-sm">
+            モデル
+          </Label>
+          <Input
+            id="gemini-model"
+            value={form.geminiModel}
+            onChange={(e) => setForm((f) => ({ ...f, geminiModel: e.target.value }))}
+            className="font-mono"
+          />
+        </div>
+        {saved.gemini?.apiKey && (
+          <p className="text-xs text-gray-400">保存済み: {mask(saved.gemini.apiKey)}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="claude-key">Claude API Key</Label>
+        <div className="flex gap-2">
+          <Input
+            id="claude-key"
+            type={show.anthropic ? 'text' : 'password'}
+            placeholder="sk-ant-api03-..."
+            className="font-mono"
+            value={form.anthropicKey}
+            onChange={(e) => setForm((f) => ({ ...f, anthropicKey: e.target.value }))}
+          />
+          <Button
+            variant="outline"
+            onClick={() => setShow((s) => ({ ...s, anthropic: !s.anthropic }))}
+            aria-label="Claudeキーの表示切替"
+          >
+            {show.anthropic ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </Button>
+        </div>
+        <p className="text-xs text-gray-500">
+          Anthropic Consoleで取得したAPIキーを入力してください
+        </p>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="claude-model" className="text-sm">
+            モデル
+          </Label>
+          <Input
+            id="claude-model"
+            value={form.anthropicModel}
+            onChange={(e) => setForm((f) => ({ ...f, anthropicModel: e.target.value }))}
+            className="font-mono"
+          />
+        </div>
+        {saved.anthropic?.apiKey && (
+          <p className="text-xs text-gray-400">保存済み: {mask(saved.anthropic.apiKey)}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="openai-key">OpenAI API Key</Label>
+        <div className="flex gap-2">
+          <Input
+            id="openai-key"
+            type={show.openai ? 'text' : 'password'}
+            placeholder="sk-..."
+            className="font-mono"
+            value={form.openaiKey}
+            onChange={(e) => setForm((f) => ({ ...f, openaiKey: e.target.value }))}
+          />
+          <Button
+            variant="outline"
+            onClick={() => setShow((s) => ({ ...s, openai: !s.openai }))}
+            aria-label="OpenAIキーの表示切替"
+          >
+            {show.openai ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </Button>
+        </div>
+        <p className="text-xs text-gray-500">OpenAI Platformで取得したAPIキーを入力してください</p>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="openai-model" className="text-sm">
+            モデル
+          </Label>
+          <Input
+            id="openai-model"
+            value={form.openaiModel}
+            onChange={(e) => setForm((f) => ({ ...f, openaiModel: e.target.value }))}
+            className="font-mono"
+          />
+        </div>
+        {saved.openai?.apiKey && (
+          <p className="text-xs text-gray-400">保存済み: {mask(saved.openai.apiKey)}</p>
+        )}
+      </div>
+
+      <div className="pt-2 flex gap-2">
+        <Button onClick={handleSave}>
+          <Save className="w-4 h-4 mr-2" /> API設定を保存
+        </Button>
+        <Button variant="outline" onClick={handleClear}>
+          <Trash2 className="w-4 h-4 mr-2" /> クリア
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 const SettingsPage: React.FC = () => {
   const { user } = useAuth();
@@ -215,7 +384,7 @@ const SettingsPage: React.FC = () => {
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-medium mb-2">データエクスポート</h4>
-                    <p className="text-sm text-gray-500 mb-4">
+                    <p className="text-sm text-gray-500">
                       すべてのタスク、設定、履歴データをJSON形式でダウンロードします
                     </p>
                     <Button variant="outline" onClick={handleExportData}>
@@ -227,7 +396,7 @@ const SettingsPage: React.FC = () => {
 
                   <div>
                     <h4 className="font-medium mb-2 text-red-600">危険な操作</h4>
-                    <p className="text-sm text-gray-500 mb-4">
+                    <p className="text-sm text-gray-500">
                       アカウントを削除すると、すべてのデータが永久に失われます
                     </p>
                     <Button variant="destructive" onClick={handleDeleteAccount}>
@@ -333,50 +502,7 @@ const SettingsPage: React.FC = () => {
                   </AlertDescription>
                 </Alert>
 
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="gemini-key">Gemini API Key</Label>
-                    <Input
-                      id="gemini-key"
-                      type="password"
-                      placeholder="AIzaSy..."
-                      className="font-mono"
-                    />
-                    <p className="text-xs text-gray-500">
-                      Google AI Studioで取得したAPIキーを入力してください
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="claude-key">Claude API Key</Label>
-                    <Input
-                      id="claude-key"
-                      type="password"
-                      placeholder="sk-ant-api03-..."
-                      className="font-mono"
-                    />
-                    <p className="text-xs text-gray-500">
-                      Anthropic Consoleで取得したAPIキーを入力してください
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="openai-key">OpenAI API Key</Label>
-                    <Input
-                      id="openai-key"
-                      type="password"
-                      placeholder="sk-..."
-                      className="font-mono"
-                    />
-                    <p className="text-xs text-gray-500">
-                      OpenAI Platformで取得したAPIキーを入力してください
-                    </p>
-                  </div>
-                </div>
-
-                <div className="pt-4">
-                  <Button onClick={handleSaveSettings}>API設定を保存</Button>
-                </div>
+                <AISettingsForm />
               </CardContent>
             </Card>
           </TabsContent>
