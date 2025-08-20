@@ -495,6 +495,20 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
             </div>
           </CardHeader>
           <CardContent>
+            {!aiConfigured && (
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 mb-4">
+                AI APIキーが未設定です。設定からAPIキーを入力してください。
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="ml-2"
+                  onClick={() => navigate('/settings')}
+                  aria-label="設定を開く"
+                >
+                  設定を開く
+                </Button>
+              </div>
+            )}
             {!aiAnalysis && !isAnalyzing && (
               <Alert>
                 <Lightbulb className="h-4 w-4" />
