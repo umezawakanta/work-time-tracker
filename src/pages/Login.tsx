@@ -116,7 +116,7 @@ export default function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
 
     console.log('🔐 Login form submission started');
@@ -441,12 +441,7 @@ export default function Login() {
             )}
           </CardHeader>
 
-          <form
-            onSubmit={(e) => {
-              console.log('📝 Form submit event triggered');
-              handleSubmit(e);
-            }}
-          >
+          <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               {errors.general && (
                 <Alert className="border-red-200 bg-red-50">
@@ -543,10 +538,13 @@ export default function Login() {
 
             <CardFooter className="flex flex-col space-y-4">
               <Button
-                type="submit"
+                type="button"
                 className="w-full"
                 disabled={isSubmitting}
-                onClick={() => console.log('🖱️ Login button clicked')}
+                onClick={(e) => {
+                  console.log('🖱️ Login button clicked');
+                  handleSubmit(e);
+                }}
               >
                 {isSubmitting ? (
                   <>
