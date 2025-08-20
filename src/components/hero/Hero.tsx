@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { HERO_COPY } from '@/constants/copy';
 import HeroBackgroundImage from '@/components/hero/HeroBackgroundImage';
-import AIPriorityTaskModal from '@/components/ai/AIPriorityTaskModal';
+const AIPriorityTaskModal = lazy(() => import('@/components/ai/AIPriorityTaskModal'));
 import { trackCtaClick } from '@/lib/track';
 
 export interface HeroProps {
@@ -118,14 +118,20 @@ export const Hero: React.FC<HeroProps> = ({
                 });
                 setOpenPriorityModal(true);
               }}
+              onMouseEnter={() => {
+                import('@/components/ai/AIPriorityTaskModal');
+              }}
             >
               今日の最重要タスクを提案
             </Button>
           </div>
         </div>
       </div>
-
-      <AIPriorityTaskModal open={openPriorityModal} onOpenChange={setOpenPriorityModal} />
+      {openPriorityModal && (
+        <Suspense fallback={null}>
+          <AIPriorityTaskModal open={openPriorityModal} onOpenChange={setOpenPriorityModal} />
+        </Suspense>
+      )}
 
       {/* Wave divider */}
       <div aria-hidden className="absolute bottom-0 left-0 right-0">

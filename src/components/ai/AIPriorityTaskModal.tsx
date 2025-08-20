@@ -13,7 +13,6 @@ import { Loader2, Lightbulb } from 'lucide-react';
 import useAIAction from '@/hooks/useAIAction';
 import { useDispatch } from 'react-redux';
 import { setTodaySuggestion } from '@/store/aiSuggestionSlice';
-import AdvancedAIService from '@/services/ai/AdvancedAIService';
 import { ENV } from '@/utils/env';
 import { useNavigate, Link } from 'react-router-dom';
 import { trackCtaClick } from '@/lib/track';
@@ -49,6 +48,7 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
   const ai = useAIAction<Suggestion, [string]>(
     async (p) => {
       try {
+        const { default: AdvancedAIService } = await import('@/services/ai/AdvancedAIService');
         const text = await AdvancedAIService.generateResponse(p);
         // Try to parse JSON first
         const match = text.match(/\{[\s\S]*\}/);
