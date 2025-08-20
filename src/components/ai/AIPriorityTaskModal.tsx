@@ -15,7 +15,7 @@ import { useDispatch } from 'react-redux';
 import { setTodaySuggestion } from '@/store/aiSuggestionSlice';
 import AdvancedAIService from '@/services/ai/AdvancedAIService';
 import { ENV } from '@/utils/env';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { trackCtaClick } from '@/lib/track';
 
 export interface AIPriorityTaskModalProps {
@@ -122,6 +122,13 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
               rows={4}
               placeholder="例: 午後にミーティング2件。レポートの締切が明日。集中力は午前が高い。"
             />
+            <p className="text-xs text-slate-500">
+              送信データは最小限（この入力テキストのみ）。APIキーは端末に保存され、サーバーへ送信しません。詳しくは{' '}
+              <Link to="/privacy" className="underline">
+                プライバシーポリシー
+              </Link>
+              をご確認ください。
+            </p>
           </div>
 
           {ai.isLoading && (
