@@ -20,21 +20,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'pnpm'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: Ensure pnpm available
+      - name: Setup pnpm (via corepack)
         shell: bash
         run: |
-          if ! command -v pnpm >/dev/null 2>&1; then
-            corepack enable || true
-            corepack prepare pnpm@8 --activate || npm i -g pnpm@8
-          fi
+          corepack enable || true
+          corepack prepare pnpm@8 --activate || npm i -g pnpm@8
           pnpm -v
+
+      # no-op (pnpm is ready at this point)
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
