@@ -19,6 +19,20 @@
   transition: none !important;
 }
 
+/* Lightweight fade-in on scroll (performance-friendly) */
+.fade-in-on-scroll {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 300ms ease-out,
+    transform 300ms ease-out;
+}
+
+.fade-in-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* ==========================================================================
    アクセシビリティ向上のためのCSSスタイル
    ========================================================================== */

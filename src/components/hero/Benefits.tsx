@@ -1,5 +1,6 @@
 import React from 'react';
 import { BENEFITS_COPY } from '@/constants/copy';
+import useScrollFadeIn from '@/hooks/useScrollFadeIn';
 import { Lightbulb, Timer, BarChart3 } from 'lucide-react';
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -34,8 +35,13 @@ export interface BenefitsProps {
 }
 
 export const Benefits: React.FC<BenefitsProps> = ({ className }) => {
+  const sectionRef = useScrollFadeIn<HTMLElement>();
   return (
-    <section className={'py-12 bg-white ' + (className || '')} aria-label="Benefits section">
+    <section
+      ref={sectionRef as any}
+      className={'py-12 bg-white ' + (className || '')}
+      aria-label="Benefits section"
+    >
       <div className="container mx-auto px-4">
         <div className="grid gap-6 md:grid-cols-3">
           {BENEFITS_COPY.items.map((item) => (

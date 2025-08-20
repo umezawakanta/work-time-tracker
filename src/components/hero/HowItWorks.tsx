@@ -1,6 +1,7 @@
 import React from 'react';
 import { HOW_IT_WORKS_COPY } from '@/constants/copy';
 import { Target, ListChecks, CheckCircle2 } from 'lucide-react';
+import useScrollFadeIn from '@/hooks/useScrollFadeIn';
 
 const iconMap: Record<string, React.ReactNode> = {
   goal: <Target className="h-6 w-6 text-blue-600" aria-hidden />,
@@ -13,8 +14,13 @@ export interface HowItWorksProps {
 }
 
 export const HowItWorks: React.FC<HowItWorksProps> = ({ className }) => {
+  const sectionRef = useScrollFadeIn<HTMLElement>();
   return (
-    <section className={'py-12 bg-slate-50 ' + (className || '')} aria-label="How it works section">
+    <section
+      ref={sectionRef as any}
+      className={'py-12 bg-slate-50 ' + (className || '')}
+      aria-label="How it works section"
+    >
       <div className="container mx-auto px-4">
         <h2 className="text-2xl font-bold text-slate-900 text-center mb-8">
           {HOW_IT_WORKS_COPY.title}
