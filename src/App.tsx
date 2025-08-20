@@ -676,7 +676,7 @@ const App: React.FC = () => {
                               element={
                                 <LayoutWrapper>
                                   <LazyWrapper>
-                                    <EditBlogPost />
+                                    <NewBlogPost />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
