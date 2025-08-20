@@ -30,11 +30,11 @@ export interface PageView {
 }
 
 export interface UserInteraction {
-  type: 'click' | 'scroll' | 'form_submit' | 'download' | 'share' | 'ai_action';
+  type: 'click' | 'scroll' | 'form_submit' | 'download' | 'share' | 'ai_action' | 'cta_click';
   element?: string;
   value?: string;
   timestamp: Date;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface DeviceInfo {
@@ -190,6 +190,27 @@ class UserTrackingService {
       ...metadata,
       feature,
       success,
+    });
+  }
+
+  /**
+   * 🧭 CTAクリック追跡
+   */
+  public trackCTA(
+    id: string,
+    options?: {
+      label?: string;
+      variant?: string;
+      location?: string;
+      page?: string;
+      params?: Record<string, string | number | boolean | null>;
+    }
+  ): void {
+    this.trackInteraction('cta_click', id, options?.label ?? options?.variant, {
+      variant: options?.variant,
+      location: options?.location,
+      page: options?.page ?? (typeof window !== 'undefined' ? window.location.pathname : undefined),
+      params: options?.params,
     });
   }
 

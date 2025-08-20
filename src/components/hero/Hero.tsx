@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { HERO_COPY } from '@/constants/copy';
 import AIPriorityTaskModal from '@/components/ai/AIPriorityTaskModal';
+import { trackCtaClick } from '@/lib/track';
 
 export interface HeroProps {
   title?: string;
@@ -57,7 +58,15 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              onClick={onPrimaryClick}
+              onClick={() => {
+                trackCtaClick({
+                  id: 'hero_primary_start_now',
+                  label: ctaPrimaryText,
+                  variant: 'primary',
+                  location: 'hero',
+                });
+                onPrimaryClick?.();
+              }}
               aria-label={ctaPrimaryText}
               className="text-lg px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
             >
@@ -67,7 +76,15 @@ export const Hero: React.FC<HeroProps> = ({
             <Button
               size="lg"
               variant="outline"
-              onClick={onSecondaryClick}
+              onClick={() => {
+                trackCtaClick({
+                  id: 'hero_secondary_setup_3min',
+                  label: ctaSecondaryText,
+                  variant: 'secondary',
+                  location: 'hero',
+                });
+                onSecondaryClick?.();
+              }}
               aria-label={ctaSecondaryText}
               className="text-lg px-8 py-4 border-2 border-white/30 text-white hover:bg-white hover:text-slate-900 backdrop-blur-sm transition-all duration-300"
             >
@@ -81,7 +98,15 @@ export const Hero: React.FC<HeroProps> = ({
               size="lg"
               variant="secondary"
               className="bg-white/90 text-slate-900 hover:bg-white"
-              onClick={() => setOpenPriorityModal(true)}
+              onClick={() => {
+                trackCtaClick({
+                  id: 'hero_ai_suggest_today',
+                  label: '今日の最重要タスクを提案',
+                  variant: 'secondary',
+                  location: 'hero',
+                });
+                setOpenPriorityModal(true);
+              }}
             >
               今日の最重要タスクを提案
             </Button>
