@@ -18,27 +18,25 @@ declare global {
  * 環境変数を安全に取得
  */
 export function getEnv(key: string): string | undefined {
-  // Node.js環境（テスト含む）
-  if (typeof process !== 'undefined' && process.env) {
+  // 1) Vite runtime (browser) – use import.meta.env
+  try {
+    const viteEnv = (import.meta as any).env;
+    if (viteEnv && typeof viteEnv[key] !== 'undefined') {
+      return viteEnv[key];
+    }
+  } catch {
+    // ignore (e.g., non-Vite test environment)
+  }
+
+  // 2) Optional window-injected env (if your app sets it)
+  if (typeof window !== 'undefined' && (window as any).__VITE_ENV__) {
+    const viteEnv = (window as any).__VITE_ENV__ as Record<string, any>;
+    if (typeof viteEnv[key] !== 'undefined') return viteEnv[key];
+  }
+
+  // 3) Node.js / test env – use process.env
+  if (typeof process !== 'undefined' && process.env && typeof process.env[key] !== 'undefined') {
     return process.env[key];
-  }
-
-  // ブラウザ環境（Vite）
-  try {
-    if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
-      return (globalThis as any).import.meta.env[key];
-    }
-  } catch {
-    // 無視
-  }
-
-  // フォールバック
-  try {
-    if (typeof window !== 'undefined' && (window as any).import?.meta?.env) {
-      return (window as any).import.meta.env[key];
-    }
-  } catch {
-    // 無視
   }
 
   return undefined;
