@@ -52,7 +52,9 @@ const MAX_ENTRIES = 500; // 軽量ローカル保持の上限
 
 class AIHistoryServiceImpl {
   private dbPromise: Promise<IDBPDatabase> | null = null;
-  private enabled: boolean = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_AI_HISTORY_ENABLED !== 'false');
+  private enabled: boolean =
+    typeof import.meta !== 'undefined' &&
+    (import.meta as any).env?.VITE_AI_HISTORY_ENABLED !== 'false';
 
   private getDB(): Promise<IDBPDatabase> {
     if (!this.dbPromise) {
@@ -104,9 +106,7 @@ class AIHistoryServiceImpl {
 
     const all: AIInteractionEntry[] = await store.getAll();
 
-    const filtered = params?.provider
-      ? all.filter((e) => e.provider === params.provider)
-      : all;
+    const filtered = params?.provider ? all.filter((e) => e.provider === params.provider) : all;
 
     const sorted = filtered.sort((a, b) => b.createdAt - a.createdAt);
     const limited = params?.limit ? sorted.slice(0, params.limit) : sorted;
@@ -163,5 +163,3 @@ class AIHistoryServiceImpl {
 
 export const AIHistoryService = new AIHistoryServiceImpl();
 export default AIHistoryService;
-
-

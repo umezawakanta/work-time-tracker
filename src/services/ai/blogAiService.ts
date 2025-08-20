@@ -1,5 +1,6 @@
 import { GeminiService } from '../GeminiService';
 import { ENV } from '@/utils/env';
+import AIHistoryService from './AIHistoryService';
 
 export interface BlogAnalysisResult {
   improvedTitle?: string;
@@ -72,6 +73,7 @@ JSON形式:
   "confidence": 0.9
 }`;
 
+      const startedAt = Date.now();
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${ENV.GEMINI_API_KEY()}`,
         {
@@ -99,6 +101,19 @@ JSON形式:
 
       const data = await response.json();
       const generatedText = data.candidates[0].content.parts[0].text;
+      try {
+        await AIHistoryService.saveInteraction({
+          provider: 'gemini',
+          model: 'gemini-2.0-flash',
+          request: { prompt },
+          response: { text: generatedText, raw: data },
+          createdAt: startedAt,
+          durationMs: Date.now() - startedAt,
+          context: { feature: 'BlogAiService.analyzeBlogPost' },
+        });
+      } catch (e) {
+        console.debug('AI history save (gemini analyzeBlogPost) skipped:', (e as Error).message);
+      }
       const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
 
       if (jsonMatch) {
@@ -147,6 +162,7 @@ JSON形式:
   "targetAudience": "想定読者層の説明"
 }`;
 
+      const startedAt = Date.now();
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${ENV.GEMINI_API_KEY()}`,
         {
@@ -174,6 +190,19 @@ JSON形式:
 
       const data = await response.json();
       const generatedText = data.candidates[0].content.parts[0].text;
+      try {
+        await AIHistoryService.saveInteraction({
+          provider: 'gemini',
+          model: 'gemini-2.0-flash',
+          request: { prompt },
+          response: { text: generatedText, raw: data },
+          createdAt: startedAt,
+          durationMs: Date.now() - startedAt,
+          context: { feature: 'BlogAiService.analyzeContent' },
+        });
+      } catch (e) {
+        console.debug('AI history save (gemini analyzeContent) skipped:', (e as Error).message);
+      }
       const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
 
       if (jsonMatch) {

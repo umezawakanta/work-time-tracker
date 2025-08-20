@@ -860,6 +860,28 @@ ${category.items.map((item) => `- ${item}`).join('\n')}
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
+                  {/* 内部診断: AI履歴パネル */}
+                  <div className="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 className="font-semibold mb-2">AI Interaction History (Preview)</h3>
+                    <p className="text-sm text-gray-600 mb-3">
+                      各プロバイダーへの直近の問い合わせと応答（ローカル保存）。
+                    </p>
+                    {(() => {
+                      try {
+                        // 動的requireでビルド時の循環やSSRを回避
+                        // eslint-disable-next-line @typescript-eslint/no-var-requires
+                        const Panel = require('../components/ai/AIHistoryPanel').AIHistoryPanel;
+                        return <Panel limit={20} />;
+                      } catch {
+                        return (
+                          <div className="text-xs text-neutral-500">
+                            History panel unavailable in this build.
+                          </div>
+                        );
+                      }
+                    })()}
+                  </div>
+
                   {/* アーキテクチャ図（簡易版） */}
                   <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

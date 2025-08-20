@@ -167,7 +167,10 @@ class AdvancedAIService {
         durationMs: Date.now() - startedAt,
         context: { feature: 'AdvancedAIService.callOpenAI' },
       });
-    } catch {}
+    } catch (e) {
+      // Logging must not break user flow
+      console.debug('AI history save (openai) skipped:', (e as Error).message);
+    }
     return text;
   }
 
@@ -204,7 +207,9 @@ class AdvancedAIService {
         durationMs: Date.now() - startedAt,
         context: { feature: 'AdvancedAIService.callAnthropic' },
       });
-    } catch {}
+    } catch (e) {
+      console.debug('AI history save (anthropic) skipped:', (e as Error).message);
+    }
     return text;
   }
 
