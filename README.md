@@ -88,6 +88,7 @@ pnpm test
 ## CI/CD（プレビュー）
 
 - `.github/workflows/preview.yml` → Vercel へプレビュー/本番デプロイ
+- GitHub Secrets に `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` を設定（Vercel ダッシュボードの Team/Project から取得）
 
 ## セキュリティ/プライバシー
 
