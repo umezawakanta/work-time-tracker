@@ -1012,6 +1012,32 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                 </div>
               </div>
             </div>
+            <footer className="mt-6">
+              <div className="container mx-auto px-4">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+                  <Link
+                    to="/terms"
+                    className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
+                  >
+                    利用規約
+                  </Link>
+                  <span className="hidden sm:inline-block">·</span>
+                  <Link
+                    to="/privacy"
+                    className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
+                  >
+                    プライバシー
+                  </Link>
+                  <span className="hidden sm:inline-block">·</span>
+                  <Link
+                    to="/contact"
+                    className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
+                  >
+                    お問い合わせ
+                  </Link>
+                </div>
+              </div>
+            </footer>
           </div>
         </main>
       </div>
