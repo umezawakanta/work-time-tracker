@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Clock, Sparkles, ArrowRight, ShoppingBag, Star, Zap, Target } from 'lucide-react';
+import { Clock, Sparkles, ArrowRight, Star, Zap, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface WelcomeSectionProps {
@@ -75,10 +75,10 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({ onGetStarted }) 
               size="lg"
               variant="outline"
               className="text-lg px-8 py-4 border-2 border-white/30 text-white hover:bg-white hover:text-slate-900 backdrop-blur-sm transition-all duration-300"
-              onClick={() => navigate('/shop')}
+              onClick={() => navigate('/settings')}
             >
-              <ShoppingBag className="mr-2 h-5 w-5" />
-              ストアを見る
+              <Sparkles className="mr-2 h-5 w-5" />
+              3分でセットアップ
             </Button>
           </div>
         </div>
