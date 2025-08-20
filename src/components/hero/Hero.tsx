@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { HERO_COPY } from '@/constants/copy';
+import HeroBackgroundImage from '@/components/hero/HeroBackgroundImage';
 import AIPriorityTaskModal from '@/components/ai/AIPriorityTaskModal';
 import { trackCtaClick } from '@/lib/track';
 
@@ -33,8 +34,17 @@ export const Hero: React.FC<HeroProps> = ({
       }
       aria-label="Hero section"
     >
-      {/* Background effects */}
+      {/* Background image/effects (optimized) */}
       <div aria-hidden className="absolute inset-0">
+        {/* Optional hero background image (WebP + lazy) */}
+        <HeroBackgroundImage
+          webpSrc="/images/hero/gradient-bg.webp"
+          fallbackSrc="/images/hero/gradient-bg.jpg"
+          alt=""
+          priority="low"
+          className="absolute inset-0"
+        />
+        {/* Fallback decorative blobs (CSS only) */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/50" />
