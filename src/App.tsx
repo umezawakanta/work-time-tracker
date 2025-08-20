@@ -117,6 +117,7 @@ const DevelopmentBadgeShowcasePage = lazy(() =>
 const AIGamificationPage = lazy(() => import('./pages/AIGamificationPage'));
 const PricingPage = lazy(() => import('./pages/Pricing'));
 const OnboardingPage = lazy(() => import('./pages/Onboarding'));
+const PrivacyPage = lazy(() => import('./pages/Privacy'));
 
 // 🧠 ADHD/ASD specialized pages
 // const PomodoroPage = lazy(() => import('./pages/PomodoroPage'));
@@ -311,6 +312,16 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <PricingPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/privacy"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <PrivacyPage />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }
