@@ -9,3 +9,25 @@ export const HERO_COPY = {
 };
 
 export type HeroCopy = typeof HERO_COPY;
+
+export const BENEFITS_COPY = {
+  items: [
+    {
+      key: 'priorityTask',
+      title: '最重要タスク提案',
+      description: '履歴と目標から「今日の一歩」をAIが提案。迷わず着手できます。',
+    },
+    {
+      key: 'focusTimer',
+      title: '集中タイマー',
+      description: 'ポモドーロで集中と休憩を切り替え。分散を防ぎ、成果を最大化。',
+    },
+    {
+      key: 'weeklyReport',
+      title: '週次レポート',
+      description: '一週間の成果・傾向・改善点を可視化し、次週の時間配分を最適化。',
+    },
+  ],
+};
+
+export type BenefitsCopy = typeof BENEFITS_COPY;
