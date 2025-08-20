@@ -1,4 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import jwt from 'jsonwebtoken';
+import { connectDB } from '../src/server/config/database';
+import { Project as ProjectModel } from '../src/server/models/Project';
 
 interface ProjectHubProject {
   id: string;
@@ -45,85 +48,87 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end();
   }
 
-  if (req.method === 'GET') {
-    try {
-      // デモプロジェクトデータ
-      const projects: ProjectHubProject[] = [
-        {
-          id: 'proj-mvp',
-          name: 'MVP機能完成',
-          description: '勤怠管理アプリとして必要最低限の機能を実装',
-          type: 'improvement',
-          status: 'active',
-          priority: 'high',
-          phase: 'phase0',
-          startDate: '2024-02-01',
-          endDate: '2024-02-21',
-          estimatedDays: 20,
-          actualDays: 5,
-          progress: 85,
-          milestones: [
-            {
-              id: 'ms-1',
-              title: 'リアルタイム打刻機能完成',
-              description: 'ワンクリック出勤・退勤機能の実装',
-              dueDate: '2024-02-07',
-              completed: true,
-              dependencies: [],
-              deliverables: ['打刻コンポーネント', 'API実装', 'テスト'],
-            },
-            {
-              id: 'ms-2',
-              title: '認証システム実装完成',
-              description: 'JWT認証、ユーザー登録、データベース統合',
-              dueDate: '2024-02-14',
-              completed: true,
-              dependencies: ['ms-1'],
-              deliverables: ['認証API', 'データベース設計', 'セキュリティ実装'],
-            },
-            {
-              id: 'ms-3',
-              title: '課金システム統合完成',
-              description: 'Stripe課金システムとサブスクリプション管理',
-              dueDate: '2024-02-21',
-              completed: true,
-              dependencies: ['ms-2'],
-              deliverables: ['Stripe統合', 'プラン管理', '決済処理'],
-            },
-          ],
-          improvementItemId: 'production-system',
-          wbsProjectId: 'wbs-proj-1',
-          wbsNodes: ['wbs-node-1', 'wbs-node-2'],
-          todoIds: ['todo-1', 'todo-2', 'todo-3'],
-          category: 'feature',
-          tags: ['production', 'authentication', 'payment'],
-          assignees: ['system', 'ai-assistant'],
-          dependencies: [],
-          createdAt: '2024-02-01T09:00:00Z',
-          updatedAt: new Date().toISOString(),
-          createdBy: 'system',
-        },
-      ];
-
-      return res.status(200).json({
-        success: true,
-        data: projects,
-        message: 'Projects loaded successfully',
-      });
-    } catch (error) {
-      console.error('Error loading projects:', error);
-      return res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-        message: 'Failed to load projects',
-      });
-    }
+  if (req.method !== 'GET') {
+    return res.status(405).json({
+      success: false,
+      error: 'Method not allowed',
+      message: 'Only GET method is supported',
+    });
   }
 
-  // Method not allowed
-  return res.status(405).json({
-    success: false,
-    error: 'Method not allowed',
-    message: 'Only GET method is supported',
-  });
+  try {
+    // 認証ヘッダーからユーザーを判定
+    const authHeader = req.headers.authorization || '';
+    const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
+
+    let userId: string | null = null;
+    if (token) {
+      try {
+        const decoded: any = jwt.verify(
+          token,
+          process.env.JWT_SECRET || 'fallback-secret-for-development',
+          { issuer: 'work-time-tracker', audience: 'work-time-tracker-users' }
+        );
+        userId = decoded.userId || decoded.sub || null;
+      } catch (e) {
+        // トークン不正でも続行（全体/公開プロジェクトにフォールバック）
+        userId = null;
+      }
+    }
+
+    // DB接続を試行
+    let dbConnected = true;
+    try {
+      await connectDB();
+    } catch (e) {
+      dbConnected = false;
+    }
+
+    if (!dbConnected) {
+      // DB未接続: 実データは返せないため空配列（モックは返さない）
+      return res
+        .status(200)
+        .json({ success: true, data: [], message: 'DB未接続（プレビュー環境）' });
+    }
+
+    // ユーザーに紐づくプロジェクトを取得（userIdがなければ全件の上位N件）
+    const query: any = userId ? { userId } : {};
+    const docs = await ProjectModel.find(query).sort({ updatedAt: -1 }).limit(100);
+
+    const projects: ProjectHubProject[] = docs.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      description: '',
+      type: 'feature',
+      status: 'active',
+      priority: 'medium',
+      phase: 'phase0',
+      startDate: (p.createdAt instanceof Date ? p.createdAt : new Date(p.createdAt)).toISOString(),
+      endDate: (p.updatedAt instanceof Date ? p.updatedAt : new Date(p.updatedAt)).toISOString(),
+      estimatedDays: 0,
+      actualDays: 0,
+      progress: 0,
+      milestones: [],
+      improvementItemId: '',
+      wbsProjectId: '',
+      wbsNodes: [],
+      todoIds: [],
+      category: 'feature',
+      tags: [],
+      assignees: [p.userId],
+      dependencies: [],
+      createdAt: (p.createdAt instanceof Date ? p.createdAt : new Date(p.createdAt)).toISOString(),
+      updatedAt: (p.updatedAt instanceof Date ? p.updatedAt : new Date(p.updatedAt)).toISOString(),
+      createdBy: p.userId,
+    }));
+
+    return res.status(200).json({ success: true, data: projects, message: 'Projects loaded' });
+  } catch (error) {
+    console.error('Error loading projects:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'Failed to load projects',
+    });
+  }
 }
