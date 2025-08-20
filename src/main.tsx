@@ -1,9 +1,10 @@
+/// <reference lib="dom" />
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { store } from './store';
-import App from './App.tsx';
+import App from './App';
 import './styles/global.css';
 import './styles/accessibility.css';
 import './styles/adaptive-ui.css';
@@ -17,7 +18,7 @@ setupGlobalErrorHandling();
 
 // 🚫 ServiceWorker完全無効化（デバッグのため）
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function (registrations) {
+  navigator.serviceWorker.getRegistrations().then((registrations: ServiceWorkerRegistration[]) => {
     for (const registration of registrations) {
       registration.unregister().then(function () {
         console.log('🗑️ ServiceWorker unregistered:', registration.scope);
