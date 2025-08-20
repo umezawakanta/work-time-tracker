@@ -20,6 +20,8 @@ import BlogTaskExtractionService from '@/services/ai/BlogTaskExtractionService';
 import { useDispatch } from 'react-redux';
 import { addMany } from '@/store/todoSlice';
 import type { ExtractedTask } from '@/types/blogTask';
+import { ENV } from '@/utils/env';
+import { useNavigate } from 'react-router-dom';
 import {
   BlogAiService,
   BlogAnalysisResult,
@@ -70,6 +72,10 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   const [extractedTasks, setExtractedTasks] = useState<ExtractedTask[]>([]);
   const [selectedTaskIdx, setSelectedTaskIdx] = useState<Set<number>>(new Set());
   const [isAddingSelected, setIsAddingSelected] = useState(false);
+  const aiConfigured = Boolean(
+    ENV.OPENAI_API_KEY() || ENV.ANTHROPIC_API_KEY() || ENV.GEMINI_API_KEY()
+  );
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -192,6 +198,10 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   };
 
   const handleExtractTasks = async () => {
+    if (!aiConfigured) {
+      toast('AI APIキーを設定してください');
+      return;
+    }
     if (!content || content.trim().length < 20) {
       toast('本文が短いため、まず内容を追記してください');
       return;
