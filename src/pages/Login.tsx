@@ -137,11 +137,7 @@ export default function Login() {
 
       toast.success('ログインに成功しました');
 
-      // ユーザー情報を直接設定
-      if (loginResponse.user) {
-        console.log('🔄 Setting user data directly...');
-        setUser(loginResponse.user);
-      }
+      if (loginResponse.user) setUser(loginResponse.user);
 
       console.log('🔄 Setting authenticated state...');
       setIsAuthenticated(true);

@@ -18,6 +18,7 @@ import { toast } from 'react-hot-toast';
 import { api } from '@/services/api/apiConfig';
 import { AxiosError } from 'axios';
 import { Eye, EyeOff, CheckCircle, XCircle, AlertCircle, User, Mail, Lock } from 'lucide-react';
+import { tokenManager } from '@/services/auth/TokenManager';
 
 interface ValidationErrors {
   name?: string;
@@ -180,18 +181,17 @@ export default function Register() {
 
     try {
       const response = await api.post('/auth/register', {
-        name: formData.name.trim(),
+        displayName: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
-        confirmPassword: formData.confirmPassword,
+        acceptTerms: acceptTerms,
       });
 
       toast.success('アカウントが正常に作成されました');
 
       // 登録成功後の処理
       if (response.data.token) {
-        // 自動ログインする場合
-        localStorage.setItem('token', response.data.token);
+        await tokenManager.setTokens(response.data.token, response.data.token, 3600, 604800);
         navigate('/');
       } else {
         // ログインページに遷移する場合

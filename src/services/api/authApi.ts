@@ -13,9 +13,10 @@ declare global {
 }
 
 export interface RegisterData {
-  name: string;
+  displayName: string;
   email: string;
   password: string;
+  acceptTerms: boolean;
 }
 
 export interface LoginData {
