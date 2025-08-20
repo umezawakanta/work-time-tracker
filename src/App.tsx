@@ -115,6 +115,7 @@ const DevelopmentBadgeShowcasePage = lazy(() =>
 );
 const AIGamificationPage = lazy(() => import('./pages/AIGamificationPage'));
 const PricingPage = lazy(() => import('./pages/Pricing'));
+const OnboardingPage = lazy(() => import('./pages/Onboarding'));
 
 // 🧠 ADHD/ASD specialized pages
 // const PomodoroPage = lazy(() => import('./pages/PomodoroPage'));
@@ -308,6 +309,16 @@ const App: React.FC = () => {
                                 <LayoutWrapper>
                                   <LazyWrapper>
                                     <PricingPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/onboarding"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <OnboardingPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
