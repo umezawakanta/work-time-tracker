@@ -9,6 +9,12 @@ Analytics Dashboard 要件定義（Basic）
 - ai_suggest_click: AI提案モーダルの「提案を受ける」押下
 - ai_success: AI提案の成功（結果の提示完了）
 
+ブログ→タスク抽出の補助イベント（トラッキング）
+
+- ai_extract_tasks_click: 抽出ボタン押下（contentLength メタ付与）
+- ai_extract_tasks_success: 抽出成功（count メタ付与）
+- ai_extract_tasks_error: 抽出失敗（reason: no_key | too_short | no_tasks | exception）
+
 実装マッピング:
 
 - src/lib/track.ts
@@ -16,6 +22,9 @@ Analytics Dashboard 要件定義（Basic）
   - trackCtaClick() → cta_click（該当CTAは同時にファネル記録）
   - trackAISuggestClick() → ai_suggest_click
   - trackAISuccess() → ai_success
+  - trackAIExtractTasksClick() → ai_extract_tasks_click
+  - trackAIExtractTasksSuccess() → ai_extract_tasks_success
+  - trackAIExtractTasksError() → ai_extract_tasks_error
 - src/services/analytics/UserTrackingService.ts
   - trackFunnel(event, meta) により funnel_event として保存
   - 既存の trackCTA, trackAIUsage, trackPageView と併用可能
@@ -26,6 +35,9 @@ Analytics Dashboard 要件定義（Basic）
 - cta_click: { id, label, variant, location, page }
 - ai_suggest_click: { contextLength }
 - ai_success: { durationMs }
+- ai_extract_tasks_click: { contentLength }
+- ai_extract_tasks_success: { count }
+- ai_extract_tasks_error: { reason }
 
 ダッシュボードで可視化するKPI
 
