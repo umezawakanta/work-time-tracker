@@ -73,6 +73,9 @@ export default function Login() {
 
   // Remember Meの状態を復元
   useEffect(() => {
+    // Ensure submit button is not stuck disabled on hot-reload
+    setIsSubmitting(false);
+
     const savedEmail = localStorage.getItem('rememberedEmail');
     const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
 
@@ -438,7 +441,12 @@ export default function Login() {
             )}
           </CardHeader>
 
-          <form onSubmit={handleSubmit}>
+          <form
+            onSubmit={(e) => {
+              console.log('📝 Form submit event triggered');
+              handleSubmit(e);
+            }}
+          >
             <CardContent className="space-y-4">
               {errors.general && (
                 <Alert className="border-red-200 bg-red-50">
@@ -534,7 +542,12 @@ export default function Login() {
             </CardContent>
 
             <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isSubmitting}
+                onClick={() => console.log('🖱️ Login button clicked')}
+              >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
