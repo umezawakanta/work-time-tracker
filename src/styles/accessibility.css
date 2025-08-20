@@ -1,3 +1,24 @@
+/* Focus ring for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #2563eb; /* blue-600 */
+  outline-offset: 2px;
+}
+
+/* High contrast mode */
+.high-contrast * {
+  color: #000 !important;
+  background: #fff !important;
+  border-color: #000 !important;
+}
+
+/* Reduced motion */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
 /* ==========================================================================
    アクセシビリティ向上のためのCSSスタイル
    ========================================================================== */
