@@ -31,3 +31,26 @@ export const BENEFITS_COPY = {
 };
 
 export type BenefitsCopy = typeof BENEFITS_COPY;
+
+export const HOW_IT_WORKS_COPY = {
+  title: 'How It Works',
+  items: [
+    {
+      key: 'goal',
+      title: '目標を定める',
+      description: '達成したいゴールを明確化。優先度と締切で実行可能に。',
+    },
+    {
+      key: 'plan',
+      title: '計画に落とす',
+      description: 'AIが時間配分とタスクを提案。今日の行動計画へ。',
+    },
+    {
+      key: 'execute',
+      title: '実行・振り返り',
+      description: '集中タイマーで実行し、週次レポートで改善を継続。',
+    },
+  ],
+};
+
+export type HowItWorksCopy = typeof HOW_IT_WORKS_COPY;
