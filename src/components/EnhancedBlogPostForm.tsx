@@ -27,6 +27,11 @@ import {
   BlogAnalysisResult,
   BlogContentAnalysis,
 } from '../services/ai/blogAiService';
+import {
+  trackAIExtractTasksClick,
+  trackAIExtractTasksError,
+  trackAIExtractTasksSuccess,
+} from '@/lib/track';
 import { logger } from '@/utils/logger';
 
 interface EnhancedBlogPostFormProps {
@@ -198,12 +203,15 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   };
 
   const handleExtractTasks = async () => {
+    trackAIExtractTasksClick({ contentLength: content.length });
     if (!aiConfigured) {
       toast('AI APIキーを設定してください');
+      trackAIExtractTasksError({ reason: 'no_key' });
       return;
     }
     if (!content || content.trim().length < 20) {
       toast('本文が短いため、まず内容を追記してください');
+      trackAIExtractTasksError({ reason: 'too_short' });
       return;
     }
     setIsExtractingTasks(true);
@@ -214,6 +222,7 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
       });
       if (!tasks || tasks.length === 0) {
         toast('抽出できるタスクが見つかりませんでした');
+        trackAIExtractTasksError({ reason: 'no_tasks' });
         return;
       }
       setExtractedTasks(tasks);
@@ -222,9 +231,11 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
       toast.success(
         `${tasks.length}件のタスク候補を抽出しました。追加する項目を選択してください。`
       );
+      trackAIExtractTasksSuccess({ count: tasks.length });
     } catch (e) {
       logger.error('Task extraction failed', String(e));
       toast.error('AIでのタスク抽出に失敗しました');
+      trackAIExtractTasksError({ reason: 'exception' });
     } finally {
       setIsExtractingTasks(false);
     }
