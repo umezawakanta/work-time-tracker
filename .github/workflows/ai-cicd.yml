@@ -107,7 +107,7 @@ jobs:
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
-        if: always()
+        if: ${{ always() && secrets.CODECOV_TOKEN != '' }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
@@ -178,9 +178,6 @@ jobs:
 
       - name: Install Cypress binary
         run: pnpm exec cypress install
-
-      - name: Start preview server
-        run: pnpm run preview -- --port 4173 & npx wait-on http://localhost:4173
 
       - name: Run E2E tests
         run: pnpm run test:e2e
@@ -368,7 +365,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Call Deploy Hook
-        if: ${{ env.VERCEL_DEPLOY_HOOK_URL != '' }}
+        if: ${{ secrets.VERCEL_DEPLOY_HOOK_URL != '' }}
         env:
           VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
         run: |
