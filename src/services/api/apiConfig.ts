@@ -48,19 +48,14 @@ if (hostname === 'work-time-tracker-5d9q.vercel.app') {
   baseURL = 'https://work-time-tracker-5d9q.vercel.app/api';
   console.log('🔧 Preview: Using production API server:', baseURL);
 } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
-  // ローカル開発環境
+  // ローカル開発環境: Viteのプロキシを活用して同一オリジンで呼び出す
   const viteApiUrl = getEnv('VITE_API_BASE_URL');
   if (viteApiUrl?.includes('vercel.app') || viteApiUrl?.includes('railway.app')) {
     baseURL = viteApiUrl;
     console.log('🛰️ Development: Using remote API server:', baseURL);
   } else {
-    baseURL = 'http://localhost:3001/api';
-    if (isDev()) {
-      console.log('🛠️ Development: Using local dev server');
-      if (viteApiUrl) {
-        console.log('💡 Note: Ignoring VITE_API_BASE_URL for localhost development');
-      }
-    }
+    baseURL = '/api';
+    console.log('🛠️ Development: Using Vite proxy at /api → http://127.0.0.1:3001');
   }
 } else {
   baseURL = `${window.location.protocol}//${window.location.hostname}/api`;
