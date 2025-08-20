@@ -12,6 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Lightbulb } from 'lucide-react';
 import useAIAction from '@/hooks/useAIAction';
 import AdvancedAIService from '@/services/ai/AdvancedAIService';
+import ENV from '@/utils/env';
+import { useNavigate } from 'react-router-dom';
 
 export interface AIPriorityTaskModalProps {
   open: boolean;
@@ -30,6 +32,10 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
   defaultContext,
 }) => {
   const [context, setContext] = useState<string>(defaultContext || '');
+  const navigate = useNavigate();
+  const aiConfigured = Boolean(
+    ENV.OPENAI_API_KEY() || ENV.ANTHROPIC_API_KEY() || ENV.GEMINI_API_KEY()
+  );
 
   const prompt = useMemo(() => {
     const baseInstruction = `あなたは生産性コーチです。以下の状況を踏まえ、今日の「最重要タスク」を1つだけ提案してください。JSONで {"task": string, "reason": string} を返してください。`;
@@ -66,6 +72,7 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
   );
 
   const handleExecute = async () => {
+    if (!aiConfigured) return;
     await ai.execute(prompt);
   };
 
@@ -83,6 +90,16 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
         </DialogHeader>
 
         <div className="space-y-4">
+          {!aiConfigured && (
+            <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+              AI APIキーが未設定です。設定からAPIキーを入力してください。
+              <div className="mt-2">
+                <Button size="sm" variant="outline" onClick={() => navigate('/settings')}>
+                  設定を開く
+                </Button>
+              </div>
+            </div>
+          )}
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-700">今日の状況（任意）</label>
             <Textarea
@@ -126,8 +143,12 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
               再試行
             </Button>
           ) : (
-            <Button onClick={handleExecute} disabled={ai.isLoading}>
-              {ai.isLoading ? '生成中...' : '提案を受ける'}
+            <Button onClick={handleExecute} disabled={ai.isLoading || !aiConfigured}>
+              {ai.isLoading
+                ? '生成中...'
+                : aiConfigured
+                  ? '提案を受ける'
+                  : 'APIキーを設定してください'}
             </Button>
           )}
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
