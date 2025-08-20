@@ -46,6 +46,7 @@ import Benefits from '@/components/hero/Benefits';
 import HowItWorks from '@/components/hero/HowItWorks';
 import WeeklyReportPreview from '@/components/home/WeeklyReportPreview';
 import UserStories from '@/components/home/UserStories';
+import FocusTimerQuick from '@/components/home/FocusTimerQuick';
 
 interface DashboardStats {
   tasksCompleted: number;
@@ -292,6 +293,9 @@ const Home: React.FC = () => {
         <WeeklyReportPreview />
         <div className="mt-8">
           <UserStories />
+        </div>
+        <div className="mt-8">
+          <FocusTimerQuick />
         </div>
       </div>
 
