@@ -14,6 +14,7 @@ dotenv.config({ path: '.env' });
 import notificationService from './services/notificationService.js';
 import emailService from './services/emailService.js';
 import blogRoutes from './routes/blogRoutes.js';
+import { BlogPost } from './models/BlogPost.js';
 
 const app = express();
 const PORT = 3001;
@@ -1377,6 +1378,31 @@ console.log('✅ Blog routes loaded at /api/blog');
 // Silence dev HEAD check noise for tokens endpoint (used by TokenManager)
 app.head('/api/auth/tokens', (_req, res) => {
   res.sendStatus(200);
+});
+
+// Fallback minimal handlers for blog in case route mounting fails in some envs
+app.get('/api/blog', async (req, res) => {
+  try {
+    const posts = await BlogPost.find().populate('comments').sort({ createdAt: -1 });
+    return res.json(posts);
+  } catch (e) {
+    console.warn(
+      '⚠️ Fallback /api/blog used. Returning empty array.',
+      e instanceof Error ? e.message : e
+    );
+    return res.json([]);
+  }
+});
+
+app.get('/api/blog/:id', async (req, res) => {
+  try {
+    const post = await BlogPost.findById(req.params.id).populate('comments');
+    if (!post) return res.status(404).json({ success: false, message: 'Not found' });
+    return res.json(post);
+  } catch (e) {
+    console.error('❌ Error in fallback GET /api/blog/:id', e);
+    return res.status(500).json({ success: false, message: 'Internal error' });
+  }
 });
 
 console.log('\n🗺️  Registered Routes:');
