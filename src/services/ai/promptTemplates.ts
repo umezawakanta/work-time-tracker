@@ -185,11 +185,60 @@ export function buildTimeAllocationPrompt(input: TimeAllocationPromptInput): str
     .join('\n');
 }
 
+// =============== タスク抽出（Task Extraction from Blog Content） ===============
+export interface TaskExtractionPromptInput {
+  content: string; // 元のブログ本文（テキスト）
+  maxTasks?: number; // 上限（デフォルト5）
+  locale?: SupportedLocale;
+}
+
+export function buildTaskExtractionPrompt(input: TaskExtractionPromptInput): string {
+  const locale: SupportedLocale = input.locale ?? 'ja';
+  const maxTasks = input.maxTasks ?? 5;
+  const content = input.content?.trim() || '';
+
+  if (locale === 'en') {
+    return [
+      'You are an assistant that extracts actionable tasks from blog content.',
+      `Return ONLY valid JSON with this exact shape: {"tasks": Array<{"title": string, "type": "input"|"output", "priority"?: 1|2|3|4|5, "dueDate"?: string, "notes"?: string}>} (max ${maxTasks})`,
+      '',
+      'Extraction rules:',
+      '- Make each title actionable and concise',
+      '- Infer type as: input = learning/research/consumption, output = producing/sharing/completing',
+      '- If a clear deadline is mentioned, set ISO8601 string in dueDate',
+      '- Use notes for short context like origin heading or rationale',
+      '',
+      'Content:',
+      content,
+    ]
+      .filter(Boolean)
+      .join('\n');
+  }
+
+  // ja
+  return [
+    'あなたはブログ本文から「実行可能なタスク」を抽出するアシスタントです。',
+    `出力はJSONのみ。形式は厳密に次に従ってください: {"tasks": Array<{"title": string, "type": "input"|"output", "priority"?: 1|2|3|4|5, "dueDate"?: string, "notes"?: string}>}（最大 ${maxTasks} 件）`,
+    '',
+    '抽出ルール:',
+    '- 各titleは具体的・簡潔・実行可能にする',
+    '- typeは input（学習/調査/インプット系）または output（制作/共有/完了系）',
+    '- 明確な締切があれば ISO8601 文字列で dueDate に設定',
+    '- notes には元の見出しや簡単な根拠を短く付与',
+    '',
+    '本文:',
+    content,
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
 // =============== 集約エクスポート ===============
 export const PromptTemplates = {
   buildPriorityTaskPrompt,
   buildHabitSuggestionPrompt,
   buildTimeAllocationPrompt,
+  buildTaskExtractionPrompt,
 };
 
 export type PromptTemplateMap = typeof PromptTemplates;
