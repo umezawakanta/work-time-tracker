@@ -19,6 +19,7 @@ import { toast } from 'react-hot-toast';
 import BlogTaskExtractionService from '@/services/ai/BlogTaskExtractionService';
 import { useDispatch } from 'react-redux';
 import { addMany } from '@/store/todoSlice';
+import type { ExtractedTask } from '@/types/blogTask';
 import {
   BlogAiService,
   BlogAnalysisResult,
@@ -66,6 +67,9 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   const [autoAddTags, setAutoAddTags] = useState(true);
   const [isExtractingTasks, setIsExtractingTasks] = useState(false);
   const dispatch = useDispatch();
+  const [extractedTasks, setExtractedTasks] = useState<ExtractedTask[]>([]);
+  const [selectedTaskIdx, setSelectedTaskIdx] = useState<Set<number>>(new Set());
+  const [isAddingSelected, setIsAddingSelected] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -202,15 +206,55 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
         toast('抽出できるタスクが見つかりませんでした');
         return;
       }
-      // 一括追加
-      // @ts-ignore dispatch typing is broader in app setup
-      await dispatch(addMany(tasks));
-      toast.success(`${tasks.length}件のタスクを抽出して追加しました`);
+      setExtractedTasks(tasks);
+      // 既定で全選択
+      setSelectedTaskIdx(new Set(tasks.map((_, i) => i)));
+      toast.success(
+        `${tasks.length}件のタスク候補を抽出しました。追加する項目を選択してください。`
+      );
     } catch (e) {
       logger.error('Task extraction failed', String(e));
       toast.error('AIでのタスク抽出に失敗しました');
     } finally {
       setIsExtractingTasks(false);
+    }
+  };
+
+  const toggleTaskSelection = (idx: number) => {
+    setSelectedTaskIdx((prev) => {
+      const next = new Set(prev);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
+      return next;
+    });
+  };
+
+  const selectAllExtracted = () => {
+    setSelectedTaskIdx(new Set(extractedTasks.map((_, i) => i)));
+  };
+
+  const clearAllExtracted = () => {
+    setSelectedTaskIdx(new Set());
+  };
+
+  const handleAddSelectedTasks = async () => {
+    const selected = extractedTasks.filter((_, i) => selectedTaskIdx.has(i));
+    if (selected.length === 0) {
+      toast('追加するタスクを選択してください');
+      return;
+    }
+    setIsAddingSelected(true);
+    try {
+      // @ts-ignore
+      await dispatch(addMany(selected));
+      toast.success(`${selected.length}件のタスクを追加しました`);
+      // クリア
+      setExtractedTasks([]);
+      setSelectedTaskIdx(new Set());
+    } catch (e) {
+      toast.error('タスクの追加に失敗しました');
+    } finally {
+      setIsAddingSelected(false);
     }
   };
 
@@ -525,6 +569,83 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
                 </Accordion>
               </div>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* AI Task Extraction Preview */}
+      {extractedTasks.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5" /> 抽出タスクのプレビュー
+            </CardTitle>
+            <CardDescription>
+              追加したいタスクを選択して「選択したタスクを追加」を押してください
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2 mb-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={selectAllExtracted}
+                aria-label="全て選択"
+              >
+                全て選択
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={clearAllExtracted}
+                aria-label="全て解除"
+              >
+                全て解除
+              </Button>
+            </div>
+            <div className="space-y-2">
+              {extractedTasks.map((t, i) => (
+                <label
+                  key={`${t.title}-${i}`}
+                  className="flex items-start gap-3 p-3 border rounded-md"
+                >
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={selectedTaskIdx.has(i)}
+                    onChange={() => toggleTaskSelection(i)}
+                    aria-label={`タスクを選択: ${t.title}`}
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium text-slate-900">{t.title}</div>
+                    <div className="text-xs text-slate-600 mt-1 flex flex-wrap gap-2">
+                      <span>type: {t.type}</span>
+                      {typeof t.priority === 'number' && <span>priority: P{t.priority}</span>}
+                      {t.dueDate && <span>due: {new Date(t.dueDate).toLocaleString()}</span>}
+                      {t.notes && <span className="truncate max-w-[320px]">notes: {t.notes}</span>}
+                    </div>
+                  </div>
+                </label>
+              ))}
+            </div>
+            <div className="mt-4 flex justify-end">
+              <Button
+                type="button"
+                onClick={handleAddSelectedTasks}
+                disabled={isAddingSelected || selectedTaskIdx.size === 0}
+                aria-label="選択したタスクを追加"
+              >
+                {isAddingSelected ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" /> 追加中...
+                  </>
+                ) : (
+                  <>選択したタスクを追加</>
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}
