@@ -41,6 +41,9 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
+import Hero from '@/components/hero/Hero';
+import Benefits from '@/components/hero/Benefits';
+import HowItWorks from '@/components/hero/HowItWorks';
 
 interface DashboardStats {
   tasksCompleted: number;
@@ -276,6 +279,14 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Marketing sections */}
+      <Hero
+        onPrimaryClick={() => navigate('/tasks')}
+        onSecondaryClick={() => navigate('/settings')}
+      />
+      <Benefits />
+      <HowItWorks />
+
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Header Section */}
         <div className="text-center mb-12">
