@@ -85,6 +85,18 @@ export default function Login() {
   const validateForm = () => {
     const newErrors: typeof errors = {};
 
+    // Relaxed validation for local development to ensure requests are sent
+    const isDevHost =
+      typeof window !== 'undefined' &&
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    if (isDevHost) {
+      if (!formData.email.trim()) newErrors.email = 'メールアドレスを入力してください';
+      if (!formData.password || formData.password.length < 1)
+        newErrors.password = 'パスワードを入力してください';
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    }
+
     if (!formData.email.trim()) {
       newErrors.email = 'メールアドレスを入力してください';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -113,7 +125,7 @@ export default function Login() {
     console.log('  - Current URL:', window.location.href);
 
     if (!validateForm()) {
-      console.log('❌ Form validation failed');
+      console.log('❌ Form validation failed', errors, formData);
       return;
     }
 

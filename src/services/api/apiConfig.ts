@@ -58,8 +58,9 @@ if (hostname === 'work-time-tracker-5d9q.vercel.app') {
     console.log('🛠️ Development: Using Vite proxy at /api → http://127.0.0.1:3001');
   }
 } else {
-  baseURL = `${window.location.protocol}//${window.location.hostname}/api`;
-  console.log('🔧 Fallback: Dynamic API URL:', baseURL);
+  // 例: LANアクセス (http://192.168.x.x:3000) なども同一オリジン /api を利用
+  baseURL = '/api';
+  console.log('🔧 Fallback: Using same-origin /api');
 }
 
 console.log('🔗 Final API Base URL:', baseURL);
