@@ -1985,6 +1985,14 @@ JSON形式で回答してください:
           // 3回連続で失敗したら自動切り替え
           if (failureCount >= 3 && this.autoFallbackEnabled) {
             console.log(`⚠️ ${this.currentProvider} で連続3回レート制限に達しました`);
+            // 軽量通知（UIがある場合のみ）
+            if (typeof window !== 'undefined') {
+              import('@/lib/notify')
+                .then(({ notifyRateLimit }) =>
+                  notifyRateLimit(this.getProviderDisplayName(this.currentProvider))
+                )
+                .catch(() => {});
+            }
             const switched = await this.fallbackToNextProvider();
 
             if (switched) {
@@ -2001,6 +2009,14 @@ JSON形式で回答してください:
             console.warn(
               `⏳ レート制限に達しました。${delay / 1000}秒後にリトライします... (${retryCount}/${config.maxRetries})`
             );
+            // 一度だけユーザーに通知
+            if (retryCount === 1 && typeof window !== 'undefined') {
+              import('@/lib/notify')
+                .then(({ notifyRateLimit }) =>
+                  notifyRateLimit(this.getProviderDisplayName(this.currentProvider))
+                )
+                .catch(() => {});
+            }
             await sleep(delay);
             continue;
           }
@@ -2035,6 +2051,13 @@ JSON形式で回答してください:
       const nextProvider = this.getNextAvailableProviderSync();
       if (nextProvider && nextProvider !== this.currentProvider) {
         console.log(`🔄 レート制限のため${nextProvider.toUpperCase()}に切り替えます`);
+        if (typeof window !== 'undefined') {
+          import('@/lib/notify')
+            .then(({ notifyRateLimit }) =>
+              notifyRateLimit(this.getProviderDisplayName(this.currentProvider))
+            )
+            .catch(() => {});
+        }
         this.currentProvider = nextProvider;
         // 少し待ってから再試行
         await sleep(2000);
