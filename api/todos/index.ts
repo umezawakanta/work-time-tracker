@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { connectDB } from '../../src/server/config/database';
 import { TodoModel } from '../../src/server/models/Todo';
-import { withAuth, AuthenticatedRequest } from '../../src/middleware/auth';
+import { withAuth, AuthenticatedRequest, authMiddleware } from '../../src/middleware/auth';
 import { cors } from '../../lib/cors';
 
 // Helper function to create entity ID
@@ -20,6 +20,22 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
   }
 
   try {
+    const requestId = (req.headers['x-request-id'] as string) || undefined;
+    const allowGuestTodos = process.env.ALLOW_GUEST_TODOS === 'true';
+
+    // Attach user if Authorization header is present (optional auth)
+    const hasAuthHeader = typeof req.headers.authorization === 'string';
+    if (hasAuthHeader) {
+      await new Promise<void>((resolve) => authMiddleware(req, res, resolve));
+      if (res.headersSent) return; // authMiddleware already responded (e.g., invalid token)
+    }
+
+    console.log('📥 Todos request', {
+      requestId,
+      method: req.method,
+      userId: req.user?.userId || null,
+      guestAllowed: allowGuestTodos,
+    });
     // Connect to database (non-fatal in serverless environments)
     try {
       await connectDB();
@@ -34,6 +50,16 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
     }
 
     if (req.method === 'GET') {
+      // Guest quick path (no auth) when enabled
+      if (!req.user && allowGuestTodos) {
+        return res.status(200).json({ success: true, data: [], total: 0, message: 'guest mode' });
+      }
+
+      if (!req.user) {
+        return res
+          .status(401)
+          .json({ success: false, status: 401, code: 'UNAUTHORIZED', message: '認証が必要です' });
+      }
       // Get query parameters
       const {
         completed,
@@ -97,6 +123,11 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
         message: 'TODOを取得しました',
       });
     } else if (req.method === 'POST') {
+      if (!req.user) {
+        return res
+          .status(401)
+          .json({ success: false, status: 401, code: 'UNAUTHORIZED', message: '認証が必要です' });
+      }
       // Create new todo
       const {
         title,
@@ -161,10 +192,14 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
         message: 'TODOを作成しました',
       });
     } else {
-      res.status(405).json({
-        success: false,
-        error: 'Method not allowed',
-      });
+      res
+        .status(405)
+        .json({
+          success: false,
+          status: 405,
+          code: 'METHOD_NOT_ALLOWED',
+          message: '許可されていないメソッドです',
+        });
     }
   } catch (error) {
     console.error('❌ Todos API error:', error);
