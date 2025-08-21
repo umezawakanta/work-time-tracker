@@ -152,6 +152,20 @@ export default function Login() {
 
       toast.success('ログインに成功しました');
 
+      // Save token locally and reflect immediately for API client
+      if ((loginResponse as any)?.token) {
+        localStorage.setItem('access_token', (loginResponse as any).token);
+        try {
+          const { api } = await import('@/services/api/apiConfig');
+          (api.defaults.headers as any).common = (api.defaults.headers as any).common || {};
+          (api.defaults.headers as any).common.Authorization =
+            `Bearer ${(loginResponse as any).token}`;
+          console.log('🔗 Authorization header set for API client');
+        } catch (e) {
+          console.warn('Failed to set API default Authorization header:', e);
+        }
+      }
+
       if (loginResponse.user) setUser(loginResponse.user);
 
       console.log('🔄 Setting authenticated state...');
