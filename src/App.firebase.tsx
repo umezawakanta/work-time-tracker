@@ -39,7 +39,8 @@ import IntegratedDashboard from './pages/IntegratedDashboard';
 import WorkTimeEntry from './pages/WorkTimeEntry';
 import SubscriptionUpgradePage from './pages/subscription/SubscriptionUpgradePage';
 import BillingHistoryPage from './pages/subscription/BillingHistoryPage';
-import TaskManagementPage from './pages/TaskManagementPage';
+// TaskManagementPage is not present; route disabled for now
+// import TaskManagementPage from './pages/TaskManagementPage';
 import QuadrantDashboard from './pages/QuadrantDashboard';
 import SitemapPage from './pages/SitemapPage';
 
@@ -71,7 +72,7 @@ function App() {
                     <Route path="worktime-entry" element={<WorkTimeEntry />} />
                     <Route path="worktime-form" element={<WorkTimeEntryForm />} />
                     <Route path="reports" element={<WorkTimeReports />} />
-                    <Route path="task-management" element={<TaskManagementPage />} />
+                    {/* <Route path="task-management" element={<TaskManagementPage />} /> */}
                     <Route path="quadrant-dashboard" element={<QuadrantDashboard />} />
                     <Route path="sitemap" element={<SitemapPage />} />
                     <Route path="calendar" element={<CalendarPage />} />

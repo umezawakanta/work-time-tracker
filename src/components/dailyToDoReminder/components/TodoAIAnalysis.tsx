@@ -17,7 +17,8 @@ import {
   Check,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { TodoAnalysisResult, TaskRecommendation } from '@/services/ai/todoAnalysisService';
+import { TodoAnalysisResult } from '@/services/ai/todoAnalysisService';
+import type { TaskRecommendation } from '@/types/ai';
 
 interface TodoAIAnalysisProps {
   analysisResult: TodoAnalysisResult | null;

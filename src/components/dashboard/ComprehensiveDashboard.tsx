@@ -28,6 +28,7 @@ import {
   LineChart,
   Line,
 } from 'recharts';
+import { Legend } from 'recharts';
 import {
   Brain,
   Target,
@@ -46,7 +47,7 @@ import {
   Download,
   Share2,
   Filter,
-  Refresh,
+  RefreshCw as Refresh,
   Bell,
   DollarSign,
   UserCheck,
@@ -142,16 +143,16 @@ export const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
    */
   const loadAIAnalysis = async () => {
     try {
-      const tasksData = todos.map((todo) => ({
-        id: todo.id,
-        title: todo.title,
-        description: todo.description,
+      const tasksData = todos.map((todo: any) => ({
+        id: todo._id || todo.id,
+        title: todo.task || todo.title,
+        description: todo.note || todo.description || '',
         deadline: todo.deadline,
         priority: todo.priority,
         category: todo.category,
         tags: todo.tags,
-        estimatedTime: todo.estimatedTime,
-        status: todo.status,
+        estimatedTime: todo.estimatedDuration || todo.estimatedTime,
+        status: todo.completed ? 'completed' : 'active',
       }));
 
       const analysis = await geminiTaskClassifier.analyzeTasks(tasksData);
@@ -635,7 +636,7 @@ export const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                       {Object.entries(state.analytics.eventTypes || {}).map(([event, count]) => (
                         <div key={event} className="flex items-center justify-between">
                           <span className="font-medium">{event}</span>
-                          <Badge variant="secondary">{count}</Badge>
+                          <Badge variant="secondary">{String(count)}</Badge>
                         </div>
                       ))}
                     </div>

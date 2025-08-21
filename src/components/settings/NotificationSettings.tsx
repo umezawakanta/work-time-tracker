@@ -31,7 +31,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 
 const NotificationSettings: React.FC = () => {
-  const userId = useSelector((state: RootState) => state.user?.currentUser?.id) || 'demo-user';
+  const userId = useSelector((state: RootState) => (state as any).user?.id) || 'demo-user';
   const [settings, setSettings] = useState<NotificationSettingsType>({
     ...DEFAULT_NOTIFICATION_SETTINGS,
     userId,

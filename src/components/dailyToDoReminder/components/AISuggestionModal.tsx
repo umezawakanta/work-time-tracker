@@ -29,7 +29,7 @@ interface AISuggestionModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-interface LocalLocalTaskSuggestion {
+interface LocalTaskSuggestion {
   task: string;
   type: 'input' | 'output';
   priority: number;
@@ -225,7 +225,10 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
       console.log('Completed todos count:', completedTodos.length);
       console.log('Incomplete WBS tasks count:', incompleteWBSTasks.length);
 
-      const aiSuggestions = await AdvancedAIService.suggestNextTasks(todosForAI, currentGoals);
+      const aiSuggestions = await AdvancedAIService.suggestNextTasks(
+        todosForAI as unknown as any,
+        currentGoals
+      );
 
       console.log('AI suggestions received:', aiSuggestions.length);
       console.log('AI suggestions:', aiSuggestions);

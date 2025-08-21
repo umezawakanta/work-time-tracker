@@ -45,8 +45,8 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
     return `${baseInstruction}\n\n状況:\n${context || '（特になし）'}`;
   }, [context]);
 
-  const ai = useAIAction<Suggestion, [string]>(
-    async (p) => {
+  const ai = useAIAction<string, Suggestion>(
+    async (p, _opts) => {
       try {
         const { default: AdvancedAIService } = await import('@/services/ai/AdvancedAIService');
         const text = await AdvancedAIService.generateResponse(p);

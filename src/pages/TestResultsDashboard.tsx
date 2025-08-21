@@ -33,11 +33,9 @@ import {
   Filter,
   Calendar,
 } from 'lucide-react';
-import {
-  ComprehensiveTestingService,
+import ComprehensiveTestingService, {
   TestExecution,
   TestResult,
-  TestCase,
   TestSuite,
 } from '@/services/testing/ComprehensiveTestingService';
 import { toast } from 'react-hot-toast';
@@ -53,8 +51,8 @@ interface TestCategory {
 const TestResultsDashboard: React.FC = () => {
   const [testingService] = useState(() => ComprehensiveTestingService.getInstance());
   const [isRunning, setIsRunning] = useState(false);
-  const [currentExecution, setCurrentExecution] = useState<TestExecution | null>(null);
-  const [testHistory, setTestHistory] = useState<TestExecution[]>([]);
+  const [currentExecution, setCurrentExecution] = useState<any | null>(null);
+  const [testHistory, setTestHistory] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTab, setSelectedTab] = useState<string>('overview');
 

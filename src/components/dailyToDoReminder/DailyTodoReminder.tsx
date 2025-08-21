@@ -33,11 +33,8 @@ import { TodoItem } from '@/types';
 import './DailyTodoReminder.css';
 
 // Services
-import {
-  todoAnalysisService,
-  TodoAnalysisResult,
-  TaskRecommendation,
-} from '@/services/ai/todoAnalysisService';
+import { todoAnalysisService, TodoAnalysisResult } from '@/services/ai/todoAnalysisService';
+import type { TaskRecommendation } from '@/types/ai';
 
 interface DailyTodoReminderProps {
   readonly isPremium?: boolean;
@@ -75,8 +72,8 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
 
   // Custom hooks for state management
   const { selectedTab, setSelectedTab } = useTodoState();
-  const { streakCount, todoHistory, dailyHistory } = useTodoHistory(todos);
-  const { filteredTodos, filterControls } = useTodoFilters(todos);
+  const { streakCount, todoHistory, dailyHistory } = useTodoHistory(todos as any);
+  const { filteredTodos, filterControls } = useTodoFilters(todos as any);
   const { trackInteraction, trackAIUsage } = useUserTracking();
 
   // AI analysis related state
@@ -139,7 +136,7 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
     try {
       // 実際のToDoデータを分析用の形式にマッピング
       const tasksForAnalysis = todos
-        .filter((todo): todo is TodoItem => todo && todo._id)
+        .filter((todo): todo is TodoItem => Boolean((todo as any)?._id))
         .map((todo: TodoItem) => ({
           id: todo._id,
           task: todo.task,
@@ -397,7 +394,7 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
           <TodoTabs
             selectedTab={selectedTab}
             onTabChange={setSelectedTab}
-            todos={filteredTodos}
+            todos={filteredTodos as any}
             todoHistory={todoHistory}
             dailyHistory={dailyHistory}
             hasPremium={isPremium}

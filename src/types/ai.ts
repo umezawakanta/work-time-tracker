@@ -82,7 +82,8 @@ export interface AIModelSummary {
   requiresSubscription?: boolean;
 }
 
-export type AIProvider =
+// Distinct key type for providers to avoid name collision with the AIProvider interface above
+export type AIProviderKey =
   | 'openai'
   | 'claude'
   | 'gemini'
@@ -103,7 +104,7 @@ export interface AIProviderConfig {
 }
 
 export interface AIFeatureOptions {
-  provider: AIProvider;
+  provider: AIProviderKey;
   model: string;
   maxTokens?: number;
   temperature?: number;
@@ -162,6 +163,10 @@ export interface TaskRecommendation {
   confidence?: number;
   aiGenerated?: boolean;
   metadata?: Record<string, any>;
+  // Extended optional fields used across analysis components
+  reason?: string;
+  rewrittenTask?: string;
+  newTasks?: string[];
 }
 
 // =============================================================================

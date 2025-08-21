@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { loadStripe, Stripe as StripeJS } from '@stripe/stripe-js';
-import { ENV } from '@/utils/env';
+import { ENV, getEnv } from '@/utils/env';
 
 // Environment variables validation
 const validateStripeConfig = () => {
@@ -24,7 +24,7 @@ const validateStripeConfig = () => {
 
   // Client-side validation (browser environment)
   if (typeof window !== 'undefined') {
-    const missingClientKeys = requiredClientKeys.filter((key) => !ENV.getEnv(key));
+    const missingClientKeys = requiredClientKeys.filter((key) => !getEnv(key));
 
     if (missingClientKeys.length > 0) {
       if (ENV.isDev()) {

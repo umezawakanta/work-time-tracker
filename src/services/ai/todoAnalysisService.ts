@@ -107,16 +107,24 @@ class TodoAnalysisService {
 
       if (task.length < 10) {
         recommendations.push({
+          id: `${Date.now()}-del`,
+          title: '削除を検討',
           type: 'delete',
-          reason: '抽象的すぎて具体的なアクションが不明',
+          description: '抽象的すぎるため具体化または削除を推奨',
+          priority: 3,
           confidence: 85,
+          reason: '抽象的すぎて具体的なアクションが不明',
         });
       } else {
         recommendations.push({
+          id: `${Date.now()}-rw`,
+          title: '具体化を提案',
           type: 'rewrite',
+          description: '抽象的な表現を具体的なアクションに変換',
+          priority: 4,
+          confidence: 75,
           reason: '抽象的な表現を具体的なアクションに変換',
           rewrittenTask: this.makeTaskConcrete(task),
-          confidence: 75,
         });
       }
     }
@@ -125,7 +133,11 @@ class TodoAnalysisService {
       actionability -= 30;
       issues.push('タスクが複雑すぎます');
       recommendations.push({
+        id: `${Date.now()}-sp`,
+        title: '分割を提案',
         type: 'split',
+        description: '複雑なタスクを実行可能な小さなステップに分割',
+        priority: 4,
         reason: '複雑なタスクを実行可能な小さなステップに分割',
         newTasks: this.splitComplexTask(task),
         confidence: 80,
@@ -137,7 +149,11 @@ class TodoAnalysisService {
       actionability -= 20;
       issues.push('具体的なアクションが不明確');
       recommendations.push({
+        id: `${Date.now()}-cl`,
+        title: '明確化を提案',
         type: 'clarify',
+        description: '具体的な動詞を追加して明確化',
+        priority: 3,
         reason: '具体的な動詞を追加して明確化',
         rewrittenTask: this.addActionVerb(task),
         confidence: 70,

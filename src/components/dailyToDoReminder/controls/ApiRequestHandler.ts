@@ -45,7 +45,9 @@ export class ApiRequestHandler {
     this.axios.interceptors.request.use(
       (config) => {
         // タイムスタンプの追加
-        config.headers = config.headers || ({} as Record<string, string>);
+        if (!config.headers) {
+          config.headers = {} as any;
+        }
         config.headers['X-Request-Time'] = Date.now().toString();
 
         // プラン情報の追加

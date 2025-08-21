@@ -26,6 +26,7 @@ export const SocialShareButton: React.FC<SocialShareButtonProps> = ({
   variant = 'outline',
   size = 'default',
 }) => {
+  // Using globalThis.gtag if present; avoid TS 'declare' in block scope
   const shareData = {
     url: encodeURIComponent(url),
     title: encodeURIComponent(title),
@@ -102,8 +103,11 @@ export const SocialShareButton: React.FC<SocialShareButtonProps> = ({
     console.log(`📊 Share tracked: ${platform} - ${title}`);
 
     // Google Analytics があれば送信
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'share', {
+    const ga = (globalThis as any).gtag as
+      | ((event: string, action: string, params?: Record<string, unknown>) => void)
+      | undefined;
+    if (typeof ga === 'function') {
+      ga('event', 'share', {
         method: platform,
         content_type: 'webpage',
         item_id: url,

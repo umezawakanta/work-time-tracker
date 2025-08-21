@@ -16,8 +16,9 @@ type TimelineComponent = React.ForwardRefExoticComponent<
   }>;
 };
 
-const Timeline = React.forwardRef<HTMLOListElement, React.HTMLAttributes<HTMLOListElement>>(
-  ({ className, ...props }, ref) => <ol ref={ref} className={cn('', className)} {...props} />
+// Align forwardRef target and props both to HTMLDivElement to satisfy DOM types
+const Timeline = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => <div ref={ref} className={cn('', className)} {...props} />
 ) as TimelineComponent;
 Timeline.displayName = 'Timeline';
 
@@ -25,8 +26,8 @@ interface TimelineItemProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-const TimelineItem = React.forwardRef<HTMLLIElement, React.HTMLAttributes<HTMLLIElement>>(
-  ({ className, ...props }, ref) => <li ref={ref} className={cn('', className)} {...props} />
+const TimelineItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => <div ref={ref} className={cn('', className)} {...props} />
 );
 TimelineItem.displayName = 'TimelineItem';
 

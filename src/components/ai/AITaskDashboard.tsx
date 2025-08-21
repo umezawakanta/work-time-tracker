@@ -25,11 +25,8 @@ import {
   Loader2,
 } from 'lucide-react';
 import { RootState } from '@/store';
-import {
-  taskSuggestionService,
-  TaskAnalysis,
-  TaskSuggestion,
-} from '@/services/ai/TaskSuggestionService';
+import { taskSuggestionService, TaskAnalysis } from '@/services/ai/TaskSuggestionService';
+import type { TaskSuggestion } from '@/types/ai';
 import { toast } from 'react-hot-toast';
 
 interface AITaskDashboardProps {

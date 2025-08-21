@@ -287,7 +287,11 @@ const SubscriptionManagement: React.FC = () => {
   // 編集開始
   const handleEdit = (subscription: SubscriptionService) => {
     // billingDateを適切な形式に変換
-    const formattedBillingDate = formatBillingDate(subscription.billingDate);
+    const formattedBillingDate = formatBillingDate(
+      typeof subscription.billingDate === 'number'
+        ? subscription.billingDate.toString()
+        : (subscription.billingDate as any)
+    );
 
     // フォームデータの設定
     setFormData({

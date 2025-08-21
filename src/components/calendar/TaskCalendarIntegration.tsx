@@ -125,8 +125,8 @@ const TaskCalendarIntegration: React.FC<TaskCalendarIntegrationProps> = ({ heigh
       }
 
       // 完了済みタスクも表示（オプション）
-      if (todo.completed && todo.completedAt) {
-        const completedDate = new Date(todo.completedAt);
+      if (todo.completed && (todo as any).completedAt) {
+        const completedDate = new Date((todo as any).completedAt);
         events.push({
           id: `completed-${todo._id}`,
           title: `✅ ${todo.task}`,

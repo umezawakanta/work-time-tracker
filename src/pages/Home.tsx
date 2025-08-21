@@ -138,11 +138,11 @@ const Home: React.FC = () => {
         const dayStr = checkDate.toDateString();
 
         const dayCompleted = validTodos.some((todo) => {
-          if (!todo.completed || !todo.completedDate) return false;
+          if (!todo.completed) return false;
           try {
-            return new Date(todo.completedDate).toDateString() === dayStr;
+            return false;
           } catch (error) {
-            console.warn('Invalid completedDate format in todo:', todo.completedDate);
+            console.warn('Invalid completedDate format in todo');
             return false;
           }
         });

@@ -100,7 +100,6 @@ export const UnifiedAuthProvider: React.FC<UnifiedAuthProviderProps> = ({
   const loginWithDemo = async (): Promise<void> => {
     try {
       const result = await authHook.login({
-        provider: 'demo',
         email: 'demo@example.com',
         rememberMe: false,
       });
@@ -122,7 +121,6 @@ export const UnifiedAuthProvider: React.FC<UnifiedAuthProviderProps> = ({
   const loginAnonymous = async (): Promise<void> => {
     try {
       const result = await authHook.login({
-        provider: 'anonymous',
         rememberMe: false,
       });
 

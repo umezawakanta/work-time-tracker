@@ -127,6 +127,13 @@ export const EnhancedTaskManager: React.FC = () => {
   const [isImporterOpen, setIsImporterOpen] = useState(false);
 
   // AI State
+  interface LocalTaskSuggestion {
+    task: string;
+    type: 'input' | 'output';
+    priority: number;
+    estimatedDuration?: number;
+    reason?: string;
+  }
   const [taskSuggestions, setLocalTaskSuggestions] = useState<LocalTaskSuggestion[]>([]);
   const [taskGroups, setTaskGroups] = useState<TaskGroup[]>([]);
   const [priorityPredictions, setPriorityPredictions] = useState<PriorityPrediction[]>([]);
@@ -429,7 +436,7 @@ export const EnhancedTaskManager: React.FC = () => {
         })
       ).unwrap();
 
-      setLocalTaskSuggestions((prev) => prev.filter((s) => s.id !== suggestion.id));
+      setLocalTaskSuggestions((prev) => prev.filter((s) => s.task !== suggestion.task));
       toast.success('提案タスクを追加しました');
     } catch (error) {
       toast.error('タスクの追加に失敗しました');
@@ -857,7 +864,7 @@ export const EnhancedTaskManager: React.FC = () => {
             <div className="space-y-3">
               {taskSuggestions.map((suggestion) => (
                 <div
-                  key={suggestion.id}
+                  key={suggestion.task}
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                 >
                   <div className="flex-1">
@@ -880,7 +887,7 @@ export const EnhancedTaskManager: React.FC = () => {
                       variant="outline"
                       onClick={() =>
                         setLocalTaskSuggestions((prev) =>
-                          prev.filter((s) => s.id !== suggestion.id)
+                          prev.filter((s) => s.task !== suggestion.task)
                         )
                       }
                     >

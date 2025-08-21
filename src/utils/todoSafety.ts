@@ -24,8 +24,8 @@ export const safeTodoOperation = (todo: any): TodoItem | null => {
   }
 
   // idまたは_idを安全に取得
-  const todoId = todo.id || todo._id;
-  const todoTask = todo.task || todo.title || '';
+  const todoId = (todo as any).id || (todo as any)._id;
+  const todoTask = (todo as any).task || (todo as any).title || '';
 
   return {
     ...todo,
