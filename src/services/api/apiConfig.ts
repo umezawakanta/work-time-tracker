@@ -128,7 +128,16 @@ api.interceptors.request.use(
 
     // ここまで来るのは本番・プレビューのみ
 
-    // トークンがキャッシュされていなければAPIから取得（重複リクエスト防止）
+    // まずはフロントのログインで保存されたトークンを優先（localStorage / sessionStorage）
+    if (!tokenCache && typeof window !== 'undefined') {
+      const localToken =
+        localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+      if (localToken) {
+        tokenCache = localToken;
+      }
+    }
+
+    // トークンが未取得ならバックエンド由来のトークン取得を試行（重複リクエスト防止）
     if (!tokenCache && !tokenFetchPromise) {
       tokenFetchPromise = fetchTokenFromDB().finally(() => {
         tokenFetchPromise = null;
