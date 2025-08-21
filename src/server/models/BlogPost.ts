@@ -87,4 +87,7 @@ const blogPostSchema = new Schema(
   { timestamps: true }
 );
 
+// Compound index for author queries excluding soft-deleted posts
+blogPostSchema.index({ authorId: 1, deletedAt: 1 });
+
 export const BlogPost = mongoose.model<IBlogPost>('BlogPost', blogPostSchema);
