@@ -158,11 +158,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const storedPassword = (found?.value as string) || '';
     console.log('🔎 password hash source:', found?.source || 'none');
     if (!storedPassword) {
-      return res.status(422).json({
-        success: false,
-        message: 'パスワード再設定が必要です',
-        error: 'Password hash missing',
-      } as LoginResponse);
+      const allowFirstSetup = process.env.ALLOW_FIRST_HASH_SETUP === 'true';
+      const allowedEmails = (process.env.FIRST_HASH_EMAILS || '')
+        .split(',')
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean);
+      const isAllowedEmail = allowedEmails.includes((email || '').toLowerCase());
+      if (allowFirstSetup && isAllowedEmail && user && user.metadata) {
+        try {
+          const newHash = await bcrypt.hash(password, 12);
+          user.metadata.hashedPassword = newHash;
+          if (user.save) await user.save();
+          console.log('🛠 Initialized password hash via first-login claim');
+        } catch (e) {
+          console.warn('Failed to initialize password hash:', e);
+          return res.status(422).json({
+            success: false,
+            message: 'パスワード再設定が必要です',
+            error: 'Password hash missing',
+          } as LoginResponse);
+        }
+      } else {
+        return res.status(422).json({
+          success: false,
+          message: 'パスワード再設定が必要です',
+          error: 'Password hash missing',
+        } as LoginResponse);
+      }
     }
 
     const isPasswordValid = await bcrypt.compare(password, storedPassword);
