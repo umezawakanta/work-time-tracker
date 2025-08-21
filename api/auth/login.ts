@@ -157,6 +157,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
     const storedPassword = (found?.value as string) || '';
     console.log('🔎 password hash source:', found?.source || 'none');
+    let passwordToCompare = storedPassword;
     if (!storedPassword) {
       const allowFirstSetup = process.env.ALLOW_FIRST_HASH_SETUP === 'true';
       const allowedEmails = (process.env.FIRST_HASH_EMAILS || '')
@@ -167,8 +168,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (allowFirstSetup && isAllowedEmail && user && user.metadata) {
         try {
           const newHash = await bcrypt.hash(password, 12);
-          user.metadata.hashedPassword = newHash;
-          if (user.save) await user.save();
+          const userIdForUpdate = (user as any)?._id || (user as any)?.id;
+          if (!userIdForUpdate) throw new Error('Missing user id');
+          await User.updateOne(
+            { _id: userIdForUpdate },
+            { $set: { 'metadata.hashedPassword': newHash } },
+            { runValidators: false }
+          );
+          passwordToCompare = newHash;
           console.log('🛠 Initialized password hash via first-login claim');
         } catch (e) {
           console.warn('Failed to initialize password hash:', e);
@@ -187,7 +194,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    const isPasswordValid = await bcrypt.compare(password, storedPassword);
+    const isPasswordValid = await bcrypt.compare(password, passwordToCompare);
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
