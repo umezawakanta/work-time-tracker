@@ -145,14 +145,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       } as LoginResponse);
     }
 
-    // パスワードの確認
-    const storedPassword = user.metadata?.hashedPassword;
-    console.log('🔎 storedPassword exists:', Boolean(storedPassword));
+    // パスワードの確認（後方互換を考慮したフォールバック）
+    const passwordHashCandidates = [
+      { value: user?.metadata?.hashedPassword, source: 'metadata.hashedPassword' },
+      { value: (user as any)?.hashedPassword, source: 'hashedPassword' },
+      { value: (user as any)?.passwordHash, source: 'passwordHash' },
+      { value: (user as any)?.password, source: 'password' },
+    ];
+    const found = passwordHashCandidates.find(
+      (c) => typeof c.value === 'string' && (c.value as string).length > 0
+    );
+    const storedPassword = (found?.value as string) || '';
+    console.log('🔎 password hash source:', found?.source || 'none');
     if (!storedPassword) {
-      return res.status(401).json({
+      return res.status(422).json({
         success: false,
-        message: 'アカウントに問題があります。管理者にお問い合わせください',
-        error: 'Account configuration error',
+        message: 'パスワード再設定が必要です',
+        error: 'Password hash missing',
       } as LoginResponse);
     }
 
