@@ -23,6 +23,12 @@ function getAuth(req: VercelRequest): { userId: string | null; role: string | nu
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const sendError = (
+    r: VercelResponse,
+    status: number,
+    code: 'UNAUTHORIZED' | 'FORBIDDEN' | 'POST_NOT_FOUND' | string,
+    message: string
+  ) => r.status(status).json({ success: false, status, code, message });
   // CORS
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-5d9q.vercel.app'];
@@ -45,17 +51,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await connectDB();
 
     const post = await BlogPost.findById(postId);
-    if (!post) return res.status(404).json({ success: false, message: 'Post not found' });
+    if (!post) return sendError(res, 404, 'POST_NOT_FOUND', '投稿が見つかりません');
 
     // AuthN/AuthZ: allow owner or admin (admin check placeholder via header)
     const { userId, role } = getAuth(req);
     const isAdmin = role === 'admin';
-    if (!userId && !isAdmin) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
-    if (!isAdmin && post.author !== userId) {
-      return res.status(403).json({ success: false, message: 'Forbidden' });
-    }
+    if (!userId && !isAdmin) return sendError(res, 401, 'UNAUTHORIZED', '認証が必要です');
+    if (!isAdmin && post.author !== userId)
+      return sendError(res, 403, 'FORBIDDEN', 'この投稿を削除する権限がありません');
 
     await BlogPost.deleteOne({ _id: postId });
 
