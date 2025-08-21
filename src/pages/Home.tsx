@@ -286,8 +286,10 @@ const Home: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Marketing sections */}
       <Hero
-        onPrimaryClick={() => navigate('/tasks')}
-        onSecondaryClick={() => navigate('/settings')}
+        ctaPrimaryText="無料で始める"
+        ctaSecondaryText="仕組みを見る"
+        onPrimaryClick={() => navigate('/register')}
+        onSecondaryClick={() => navigate('/how-it-works')}
       />
       <Benefits />
       <HowItWorks />
