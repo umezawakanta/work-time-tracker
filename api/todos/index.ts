@@ -192,14 +192,12 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
         message: 'TODOを作成しました',
       });
     } else {
-      res
-        .status(405)
-        .json({
-          success: false,
-          status: 405,
-          code: 'METHOD_NOT_ALLOWED',
-          message: '許可されていないメソッドです',
-        });
+      res.status(405).json({
+        success: false,
+        status: 405,
+        code: 'METHOD_NOT_ALLOWED',
+        message: '許可されていないメソッドです',
+      });
     }
   } catch (error) {
     console.error('❌ Todos API error:', error);
