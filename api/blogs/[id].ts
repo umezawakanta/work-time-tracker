@@ -57,12 +57,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { userId, role } = getAuth(req);
     const isAdmin = role === 'admin';
     if (!userId && !isAdmin) return sendError(res, 401, 'UNAUTHORIZED', '認証が必要です');
-    if (!isAdmin && post.author !== userId)
+    const isOwner = (post as any).authorId
+      ? (post as any).authorId === userId
+      : post.author === userId;
+    if (!isAdmin && !isOwner)
       return sendError(res, 403, 'FORBIDDEN', 'この投稿を削除する権限がありません');
 
-    await BlogPost.deleteOne({ _id: postId });
+    // decide deletion mode: query -> header -> env -> default 'soft'
+    const qMode = (req.query.mode as string) || '';
+    const hMode = (req.headers['x-delete-mode'] as string) || '';
+    const eMode = process.env.BLOG_DELETE_MODE || '';
+    const rawMode = (qMode || hMode || eMode || 'soft').toLowerCase();
+    const mode = rawMode === 'hard' ? 'hard' : 'soft';
 
-    return res.status(200).json({ success: true, id: postId });
+    if (mode === 'hard') {
+      if (!isAdmin) return sendError(res, 403, 'FORBIDDEN', '管理者のみハード削除が可能です');
+      await BlogPost.deleteOne({ _id: postId });
+      return res.status(200).json({ success: true, id: postId, mode: 'hard' });
+    }
+
+    // soft delete (idempotent)
+    if ((post as any).status === 'deleted') {
+      return res.status(200).json({
+        success: true,
+        id: postId,
+        mode: 'soft',
+        deletedAt: (post as any).deletedAt || null,
+      });
+    }
+    const deletedAt = new Date();
+    await BlogPost.updateOne({ _id: postId }, { $set: { status: 'deleted', deletedAt } });
+    return res.status(200).json({ success: true, id: postId, mode: 'soft', deletedAt });
   } catch (error) {
     console.error('❌ Delete blog error:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
