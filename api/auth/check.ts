@@ -1,5 +1,57 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import jwt from 'jsonwebtoken';
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // CORS
+  const origin = req.headers.origin;
+  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-5d9q.vercel.app'];
+  const isPreview = origin && origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);
+  const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
+  res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin! : '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Request-Id');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
+  if (req.method !== 'GET') {
+    return res.status(405).json({
+      success: false,
+      status: 405,
+      code: 'METHOD_NOT_ALLOWED',
+      message: '許可されていないメソッドです',
+    });
+  }
+
+  const requestId = (req.headers['x-request-id'] as string) || undefined;
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+  if (!token) {
+    return res.status(200).json({ success: true, auth: false, requestId });
+  }
+
+  try {
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+    const decoded = jwt.verify(token, jwtSecret, {
+      issuer: 'work-time-tracker',
+      audience: 'work-time-tracker-users',
+    }) as any;
+
+    const user = {
+      userId: decoded.userId,
+      email: decoded.email,
+      role: decoded.role,
+      isVerified: decoded.isVerified,
+    };
+
+    return res.status(200).json({ success: true, auth: true, user, requestId });
+  } catch (e) {
+    return res.status(200).json({ success: true, auth: false, requestId });
+  }
+}
+
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import jwt from 'jsonwebtoken';
 import { connectDB } from '../../src/server/config/database';
 import { User } from '../../src/server/models/User';
 
