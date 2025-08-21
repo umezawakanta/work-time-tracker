@@ -31,6 +31,8 @@ export interface IBlogPost extends Document {
   tags: string[];
   likes: string[];
   comments: mongoose.Types.ObjectId[];
+  status: 'published' | 'draft' | 'deleted';
+  deletedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,6 +69,15 @@ const blogPostSchema = new Schema(
         ref: 'Comment',
       },
     ],
+    status: {
+      type: String,
+      enum: ['published', 'draft', 'deleted'],
+      default: 'published',
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
