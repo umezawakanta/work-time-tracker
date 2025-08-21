@@ -228,11 +228,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         })
       : ({ id: 'demo-sub', planType: 'free', status: 'active', limits: {} } as any);
 
-    // 最終ログイン時刻の更新
-    user.lastLoginAt = new Date();
-    user.lastActivityAt = new Date();
-    if (dbConnected && user.save) {
-      await user.save();
+    // 最終ログイン時刻の更新（バリデーション回避の部分更新）
+    try {
+      const userIdForUpdate = (user as any)?._id || (user as any)?.id;
+      if (dbConnected && userIdForUpdate) {
+        await User.updateOne(
+          { _id: userIdForUpdate },
+          { $set: { lastLoginAt: new Date(), lastActivityAt: new Date() } },
+          { runValidators: false }
+        );
+      }
+    } catch (e) {
+      console.warn('⚠️ Failed to update last login timestamps:', e);
     }
 
     // JWTトークンの生成
