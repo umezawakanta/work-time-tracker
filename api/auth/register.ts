@@ -47,6 +47,25 @@ interface RegisterResponse {
   error?: string;
 }
 
+// Robust JSON reader shared with login
+async function readJson(req: VercelRequest): Promise<any> {
+  try {
+    const existingBody: unknown = (req as any).body;
+    if (existingBody !== undefined) {
+      return typeof existingBody === 'string' ? JSON.parse(existingBody) : existingBody;
+    }
+    const raw: string = await new Promise((resolve, reject) => {
+      let data = '';
+      req.on('data', (chunk: Buffer) => (data += chunk.toString('utf8')));
+      req.on('end', () => resolve(data));
+      req.on('error', reject);
+    });
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    throw Object.assign(new Error('Invalid JSON'), { statusCode: 400 });
+  }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   const origin = req.headers.origin;
@@ -78,16 +97,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('🔐 User registration started');
 
     // リクエストボディの検証
-    const {
-      email,
-      password,
-      displayName,
-      firstName,
-      lastName,
-      acceptTerms,
-      subscribeNewsletter = false,
-      referralCode,
-    }: RegisterRequest = req.body;
+    const body: Partial<RegisterRequest> = await readJson(req);
+    const email = (body?.email as string) || '';
+    const password = (body?.password as string) || '';
+    const displayName = (body?.displayName as string) || '';
+    const firstName = (body?.firstName as string) || '';
+    const lastName = (body?.lastName as string) || '';
+    const acceptTerms = Boolean(body?.acceptTerms);
+    const subscribeNewsletter = Boolean(body?.subscribeNewsletter);
+    const referralCode = (body?.referralCode as string) || undefined;
 
     // 必須フィールドの検証
     if (!email || !password || !displayName || !acceptTerms) {

@@ -35,6 +35,27 @@ interface LoginResponse {
   error?: string;
 }
 
+// Robust JSON reader for Vercel Node (handles object, string, or raw stream)
+async function readJson(req: VercelRequest): Promise<any> {
+  try {
+    const existingBody: unknown = (req as any).body;
+    if (existingBody !== undefined) {
+      return typeof existingBody === 'string' ? JSON.parse(existingBody) : existingBody;
+    }
+    const raw: string = await new Promise((resolve, reject) => {
+      let data = '';
+      req.on('data', (chunk: Buffer) => {
+        data += chunk.toString('utf8');
+      });
+      req.on('end', () => resolve(data));
+      req.on('error', reject);
+    });
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    throw Object.assign(new Error('Invalid JSON'), { statusCode: 400 });
+  }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   const origin = req.headers.origin;
@@ -64,8 +85,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     console.log('🔐 User login started');
-
-    const { email, password, rememberMe = false }: LoginRequest = req.body;
+    // Read JSON body safely across environments
+    const body: Partial<LoginRequest> = await readJson(req);
+    console.log('📥 Login request meta', {
+      contentType: req.headers['content-type'],
+      contentLength: req.headers['content-length'],
+      bodyType: typeof body,
+      hasEmail: Boolean((body as any)?.email),
+    });
+    const {
+      email,
+      password,
+      rememberMe = false,
+    }: LoginRequest = {
+      email: body?.email as string,
+      password: body?.password as string,
+      rememberMe: Boolean(body?.rememberMe),
+    };
 
     // 必須フィールドの検証
     if (!email || !password) {
