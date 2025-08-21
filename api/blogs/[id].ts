@@ -1,11 +1,25 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { connectDB } from '../../src/server/config/database';
 import { BlogPost } from '../../src/server/models/BlogPost';
+import jwt from 'jsonwebtoken';
 
 // Minimal auth util (expects bearer token decoded upstream or user id via header in dev)
-function getUserId(req: VercelRequest): string | null {
+function getAuth(req: VercelRequest): { userId: string | null; role: string | null } {
+  try {
+    const auth = req.headers.authorization || '';
+    if (auth.startsWith('Bearer ')) {
+      const token = auth.slice(7);
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET || 'fallback-secret-for-development'
+      ) as any;
+      return { userId: decoded.userId || null, role: decoded.role || null };
+    }
+  } catch {}
+  // Dev fallback via headers
   const uid = (req.headers['x-user-id'] as string) || null;
-  return uid && typeof uid === 'string' ? uid : null;
+  const role = (req.headers['x-user-role'] as string) || null;
+  return { userId: uid, role };
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -34,8 +48,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!post) return res.status(404).json({ success: false, message: 'Post not found' });
 
     // AuthN/AuthZ: allow owner or admin (admin check placeholder via header)
-    const userId = getUserId(req);
-    const isAdmin = (req.headers['x-user-role'] as string) === 'admin';
+    const { userId, role } = getAuth(req);
+    const isAdmin = role === 'admin';
     if (!userId && !isAdmin) {
       return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
