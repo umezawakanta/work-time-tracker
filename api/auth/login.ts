@@ -147,6 +147,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // パスワードの確認
     const storedPassword = user.metadata?.hashedPassword;
+    console.log('🔎 storedPassword exists:', Boolean(storedPassword));
     if (!storedPassword) {
       return res.status(401).json({
         success: false,
