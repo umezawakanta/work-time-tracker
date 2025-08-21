@@ -141,10 +141,22 @@ export const EnhancedTaskManager: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<any>(null);
 
-  // Load tasks on mount
+  // Load tasks only after authentication
+  const { isAuthenticated } = ((): any => {
+    try {
+      // Lazy import to avoid circular deps
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const hook = require('@/hooks/useAuth');
+      return hook.useAuth();
+    } catch {
+      return { isAuthenticated: true };
+    }
+  })();
+
   useEffect(() => {
+    if (!isAuthenticated) return;
     dispatch(fetchTodoItems());
-  }, [dispatch]);
+  }, [dispatch, isAuthenticated]);
 
   // Convert TodoItem to Todo format for AI services
   const convertToTodoFormat = useCallback((todoItems: any[]) => {
