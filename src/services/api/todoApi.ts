@@ -27,8 +27,10 @@ export interface TodoHistoryItem {
 }
 
 export const todoApi = {
-  getAll: (): Promise<AxiosResponse<TodoItem[]>> => {
-    return api.get<TodoItem[]>('/todos');
+  getAll: async (): Promise<TodoItem[]> => {
+    const resp = await api.get('/todos');
+    const items = Array.isArray(resp.data) ? resp.data : (resp.data?.data ?? []);
+    return items as TodoItem[];
   },
 
   // createdAt パラメータを追加
@@ -70,11 +72,16 @@ export const todoApi = {
     return api.post<TodoApiResponse>(`/todos/${_id}/toggle-priority`);
   },
 
-  getHistory: (): Promise<AxiosResponse<TodoHistoryItem[]>> => {
-    return api.get<TodoHistoryItem[]>('/todos/history');
+  getHistory: async (): Promise<TodoHistoryItem[]> => {
+    const resp = await api.get('/todos/history');
+    return (Array.isArray(resp.data) ? resp.data : (resp.data?.data ?? [])) as TodoHistoryItem[];
   },
 
-  getDailyHistory: (): Promise<AxiosResponse<{ date: string; count: number }[]>> => {
-    return api.get<{ date: string; count: number }[]>('/todos/history/daily');
+  getDailyHistory: async (): Promise<{ date: string; count: number }[]> => {
+    const resp = await api.get('/todos/history/daily');
+    return (Array.isArray(resp.data) ? resp.data : (resp.data?.data ?? [])) as {
+      date: string;
+      count: number;
+    }[];
   },
 };
