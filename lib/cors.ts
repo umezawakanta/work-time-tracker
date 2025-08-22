@@ -5,7 +5,7 @@ export async function cors(req: VercelRequest, res: VercelResponse) {
   const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://work-time-tracker.vercel.app',
+    'https://work-time-tracker-5d9q.vercel.app',
     process.env.CORS_ALLOWED_ORIGINS || '',
   ].filter(Boolean);
 
@@ -14,7 +14,8 @@ export async function cors(req: VercelRequest, res: VercelResponse) {
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   } else {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    // Cookie送信があるケースではワイルドカード不可。既定は本番ドメインに固定。
+    res.setHeader('Access-Control-Allow-Origin', 'https://work-time-tracker-5d9q.vercel.app');
   }
 
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
