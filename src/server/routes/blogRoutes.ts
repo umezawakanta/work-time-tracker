@@ -90,13 +90,13 @@ router.delete('/:id', authMiddleware, async (req: Request, res: Response): Promi
     const userId = req.user?.id;
     const isAdmin = req.user?.role === 'admin';
     if (!userId && !isAdmin) {
-      res.status(401).json({ message: '認証が必要です' });
+      res.status(401).json({ success: false, message: '認証が必要です' });
       return;
     }
 
     const existing = await BlogPost.findById(id);
     if (!existing) {
-      res.status(404).json({ message: 'ブログ投稿が見つかりません' });
+      res.status(404).json({ success: false, message: 'ブログ投稿が見つかりません' });
       return;
     }
 
@@ -104,20 +104,45 @@ router.delete('/:id', authMiddleware, async (req: Request, res: Response): Promi
       ? (existing as any).authorId === userId
       : existing.author === userId;
     if (!isAdmin && !isOwner) {
-      res.status(403).json({ message: 'この投稿を削除する権限がありません' });
+      res.status(403).json({ success: false, message: 'この投稿を削除する権限がありません' });
       return;
     }
 
-    const deletedPost = await BlogPost.findByIdAndDelete(id);
-    if (!deletedPost) {
-      res.status(404).json({ message: 'ブログ投稿が見つかりません' });
+    // decide deletion mode: query -> header -> env -> default 'soft'
+    const qMode = (req.query.mode as string) || '';
+    const hMode = (req.headers['x-delete-mode'] as string) || '';
+    const eMode = process.env.BLOG_DELETE_MODE || '';
+    const rawMode = (qMode || hMode || eMode || 'soft').toLowerCase();
+    const mode = rawMode === 'hard' ? 'hard' : 'soft';
+
+    if (mode === 'hard') {
+      if (!isAdmin) {
+        res.status(403).json({ success: false, message: '管理者のみハード削除が可能です' });
+        return;
+      }
+      await BlogPost.deleteOne({ _id: id });
+      res.status(200).json({ success: true, id, mode: 'hard' });
       return;
     }
-    // 関連するコメントを削除
-    await Comment.deleteMany({ _id: { $in: deletedPost.comments } });
-    res.json({ message: 'ブログ投稿と関連するコメントが正常に削除されました' });
+
+    // soft delete (idempotent)
+    if ((existing as any).status === 'deleted') {
+      res.status(200).json({
+        success: true,
+        id,
+        mode: 'soft',
+        deletedAt: (existing as any).deletedAt || null,
+      });
+      return;
+    }
+
+    const deletedAt = new Date();
+    await BlogPost.updateOne({ _id: id }, { $set: { status: 'deleted', deletedAt } });
+    res.status(200).json({ success: true, id, mode: 'soft', deletedAt });
   } catch (error) {
-    res.status(500).json({ message: 'ブログ投稿の削除中にエラーが発生しました', error });
+    res
+      .status(500)
+      .json({ success: false, message: 'ブログ投稿の削除中にエラーが発生しました', error });
   }
 });
 
