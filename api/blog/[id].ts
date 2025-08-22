@@ -16,7 +16,9 @@ function getAuth(req: VercelRequest): { userId: string | null; role: string | nu
       ) as any;
       return { userId: decoded.userId || null, role: decoded.role || null };
     }
-  } catch {}
+  } catch (err) {
+    void err;
+  }
   const uid = (req.headers['x-user-id'] as string) || null;
   const role = (req.headers['x-user-role'] as string) || null;
   return { userId: uid, role };
@@ -55,7 +57,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'GET') {
       const post = await BlogPost.findOne({ _id: postId, status: { $ne: 'deleted' } });
       if (!post) return sendError(res, 404, 'POST_NOT_FOUND', '投稿が見つかりません');
-      return res.status(200).json({ success: true, post });
+      // Return plain post for frontend compatibility
+      return res.status(200).json(post);
     }
 
     const { userId, role } = getAuth(req);
@@ -124,12 +127,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res
       .status(405)
-      .json({
-        success: false,
-        status: 405,
-        code: 'METHOD_NOT_ALLOWED',
-        message: '許可されていないメソッドです',
-      });
+      .json({ success: false, status: 405, code: 'METHOD_NOT_ALLOWED', message: '許可されていないメソッドです' });
   } catch (error) {
     console.error('❌ Blog id API error:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });

@@ -17,7 +17,8 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
     if (req.method === 'GET') {
       const posts = await BlogPost.find({ status: { $ne: 'deleted' } }).sort({ createdAt: -1 });
       console.log('BLOG_LIST_OK', { total: posts.length });
-      res.status(200).json({ success: true, posts });
+      // Return plain array for frontend compatibility
+      res.status(200).json(posts);
       return;
     }
 
@@ -59,12 +60,7 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
       return;
     }
 
-    res.status(405).json({
-      success: false,
-      status: 405,
-      code: 'METHOD_NOT_ALLOWED',
-      message: '許可されていないメソッドです',
-    });
+    res.status(405).json({ success: false, status: 405, code: 'METHOD_NOT_ALLOWED', message: '許可されていないメソッドです' });
   } catch (error) {
     console.error('❌ Blog index API error:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
