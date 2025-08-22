@@ -365,7 +365,7 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
         <CardContent className="p-8 text-center">
           <p className="text-gray-700 text-lg mb-2">ToDoがありません</p>
           <p className="text-gray-500 mb-4">最初のタスクを作成して始めましょう</p>
-          <Link to="/tasks">
+          <Link to="/tasks?add=1">
             <Button className="bg-blue-600 hover:bg-blue-700 text-white">新規作成</Button>
           </Link>
         </CardContent>

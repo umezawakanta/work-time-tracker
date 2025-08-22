@@ -69,6 +69,16 @@ export const TodoTabs: React.FC<TodoTabsProps> = ({
   const [showAddForm, setShowAddForm] = React.useState<boolean>(false);
   const [autoAdjustEnabled, setAutoAdjustEnabled] = React.useState<boolean>(true);
 
+  // Auto-open AddTodoForm if URL has ?add=1
+  React.useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search);
+      if (q.get('add') === '1') {
+        setShowAddForm(true);
+      }
+    } catch {}
+  }, []);
+
   const handleAdjustPriorities = (): void => {
     // This will be implemented with actual priority adjustment logic
     console.log('Adjusting priorities...');
