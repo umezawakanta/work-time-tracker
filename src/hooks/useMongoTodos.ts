@@ -32,13 +32,13 @@ export const useMongoTodos = (): UseMongoTodosReturn => {
     try {
       setLoading(true);
       console.log('[useMongoTodos] 📡 ToDo取得開始');
-      const response = await todoApi.getAll();
-      setTodos(response.data);
+      const items = await todoApi.getAll();
+      setTodos(items);
       setError(null);
 
       console.log('[useMongoTodos] 📋 ToDo取得成功:', {
-        count: response.data.length,
-        todos: response.data.slice(0, 3).map((t) => ({
+        count: items.length,
+        todos: items.slice(0, 3).map((t) => ({
           id: t._id,
           task: t.task,
           completed: t.completed,
