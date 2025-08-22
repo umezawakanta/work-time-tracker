@@ -12,6 +12,15 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
+    // Development fallback: allow X-User-Id / X-User-Role when no Authorization header
+    if (process.env.NODE_ENV !== 'production') {
+      const devUserId = (req.headers['x-user-id'] as string) || '';
+      const devRole = (req.headers['x-user-role'] as string) || undefined;
+      if (devUserId) {
+        req.user = { id: devUserId, role: devRole };
+        return next();
+      }
+    }
     res.status(401).json({ message: '認証トークンがありません' });
     return;
   }

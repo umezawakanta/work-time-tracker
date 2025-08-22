@@ -116,9 +116,16 @@ let tokenFetchPromise: Promise<string> | null = null;
 
 api.interceptors.request.use(
   async (config) => {
-    // 開発環境ではトークン取得・付与を完全無効化
+    // 開発環境では、トークンが無い場合に dev ヘッダを自動付与
     if (isDev()) {
-      // console.log('🚫 Development: token auth disabled for requests');
+      const hasAuth = Boolean((config.headers as any)?.Authorization);
+      if (!hasAuth) {
+        // 任意の開発用ユーザーID（必要に応じて書き換え）
+        const devUserId = localStorage.getItem('dev_user_id') || 'dev-user';
+        const devRole = localStorage.getItem('dev_user_role') || 'user';
+        (config.headers as any)['X-User-Id'] = devUserId;
+        (config.headers as any)['X-User-Role'] = devRole;
+      }
       return config;
     }
 
@@ -173,7 +180,7 @@ api.interceptors.request.use(
 
     // 管理者APIの場合は特別なヘッダーを追加
     if (config.url?.includes('/admin/')) {
-      config.headers['X-Admin-Request'] = 'true';
+      (config.headers as any)['X-Admin-Request'] = 'true';
     }
 
     // 重複API呼び出しのログを抑制
