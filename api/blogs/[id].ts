@@ -27,8 +27,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     r: VercelResponse,
     status: number,
     code: 'UNAUTHORIZED' | 'FORBIDDEN' | 'POST_NOT_FOUND' | string,
-    message: string
-  ) => r.status(status).json({ success: false, status, code, message });
+    message: string,
+    extra?: Record<string, unknown>
+  ) => {
+    const { userId } = getAuth(req);
+    console.log('BLOG_DELETE_DENY', {
+      postId: req.query.id,
+      userId: userId || null,
+      reason: code,
+      ...(extra || {}),
+    });
+    return r.status(status).json({ success: false, status, code, message });
+  };
   // CORS
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-5d9q.vercel.app'];
@@ -59,7 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!userId && !isAdmin) return sendError(res, 401, 'UNAUTHORIZED', '認証が必要です');
     const isOwner = (post as any).authorId
       ? (post as any).authorId === userId
-      : post.author === userId;
+      : (post as any).author === userId;
     if (!isAdmin && !isOwner)
       return sendError(res, 403, 'FORBIDDEN', 'この投稿を削除する権限がありません');
 
@@ -73,11 +83,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (mode === 'hard') {
       if (!isAdmin) return sendError(res, 403, 'FORBIDDEN', '管理者のみハード削除が可能です');
       await BlogPost.deleteOne({ _id: postId });
+      console.log('BLOG_DELETE_OK', { postId, userId, mode: 'hard' });
       return res.status(200).json({ success: true, id: postId, mode: 'hard' });
     }
 
     // soft delete (idempotent)
     if ((post as any).status === 'deleted') {
+      console.log('BLOG_DELETE_OK', { postId, userId, mode: 'soft' });
       return res.status(200).json({
         success: true,
         id: postId,
@@ -87,6 +99,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     const deletedAt = new Date();
     await BlogPost.updateOne({ _id: postId }, { $set: { status: 'deleted', deletedAt } });
+    console.log('BLOG_DELETE_OK', { postId, userId, mode: 'soft' });
     return res.status(200).json({ success: true, id: postId, mode: 'soft', deletedAt });
   } catch (error) {
     console.error('❌ Delete blog error:', error);

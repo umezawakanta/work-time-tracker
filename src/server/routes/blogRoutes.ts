@@ -90,12 +90,22 @@ router.delete('/:id', authMiddleware, async (req: Request, res: Response): Promi
     const userId = req.user?.id;
     const isAdmin = req.user?.role === 'admin';
     if (!userId && !isAdmin) {
+      console.log('BLOG_DELETE_DENY', {
+        postId: id,
+        userId: userId || null,
+        reason: 'UNAUTHORIZED',
+      });
       res.status(401).json({ success: false, message: '認証が必要です' });
       return;
     }
 
     const existing = await BlogPost.findById(id);
     if (!existing) {
+      console.log('BLOG_DELETE_DENY', {
+        postId: id,
+        userId: userId || null,
+        reason: 'POST_NOT_FOUND',
+      });
       res.status(404).json({ success: false, message: 'ブログ投稿が見つかりません' });
       return;
     }
@@ -104,6 +114,7 @@ router.delete('/:id', authMiddleware, async (req: Request, res: Response): Promi
       ? (existing as any).authorId === userId
       : existing.author === userId;
     if (!isAdmin && !isOwner) {
+      console.log('BLOG_DELETE_DENY', { postId: id, userId, reason: 'FORBIDDEN' });
       res.status(403).json({ success: false, message: 'この投稿を削除する権限がありません' });
       return;
     }
@@ -117,16 +128,19 @@ router.delete('/:id', authMiddleware, async (req: Request, res: Response): Promi
 
     if (mode === 'hard') {
       if (!isAdmin) {
+        console.log('BLOG_DELETE_DENY', { postId: id, userId, reason: 'FORBIDDEN' });
         res.status(403).json({ success: false, message: '管理者のみハード削除が可能です' });
         return;
       }
       await BlogPost.deleteOne({ _id: id });
+      console.log('BLOG_DELETE_OK', { postId: id, userId, mode: 'hard' });
       res.status(200).json({ success: true, id, mode: 'hard' });
       return;
     }
 
     // soft delete (idempotent)
     if ((existing as any).status === 'deleted') {
+      console.log('BLOG_DELETE_OK', { postId: id, userId, mode: 'soft' });
       res.status(200).json({
         success: true,
         id,
@@ -138,6 +152,7 @@ router.delete('/:id', authMiddleware, async (req: Request, res: Response): Promi
 
     const deletedAt = new Date();
     await BlogPost.updateOne({ _id: id }, { $set: { status: 'deleted', deletedAt } });
+    console.log('BLOG_DELETE_OK', { postId: id, userId, mode: 'soft' });
     res.status(200).json({ success: true, id, mode: 'soft', deletedAt });
   } catch (error) {
     res
