@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { connectDB } from '../../src/server/config/database';
 import { BlogPost } from '../../src/server/models/BlogPost';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
 // Minimal auth util (expects bearer token decoded upstream or user id via header in dev)
 function getAuth(req: VercelRequest): { userId: string | null; role: string | null } {
@@ -57,6 +58,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const postId = req.query.id as string;
     if (!postId) return res.status(400).json({ success: false, message: 'Missing post id' });
+
+    // Return 404 for invalid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return sendError(res, 404, 'POST_NOT_FOUND', '投稿が見つかりません');
+    }
 
     await connectDB();
 
