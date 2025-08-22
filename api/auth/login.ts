@@ -4,6 +4,7 @@ import { User } from '../../src/server/models/User';
 import { SubscriptionModel } from '../../src/server/models/Subscription';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { serialize } from 'cookie';
 
 // Login request interface
 interface LoginRequest {
@@ -276,6 +277,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
       token: token,
     };
+
+    // Issue httpOnly cookie for cookie-based auth (in addition to returning token)
+    try {
+      res.setHeader(
+        'Set-Cookie',
+        serialize('access_token', token, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          path: '/',
+          maxAge: 60 * 60 * 24 * 7, // 7 days
+        })
+      );
+    } catch (e) {
+      console.warn('⚠️ Failed to set auth cookie:', e);
+    }
 
     // サブスクリプション情報を追加
     if (subscription) {
