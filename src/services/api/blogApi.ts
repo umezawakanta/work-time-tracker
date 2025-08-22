@@ -90,6 +90,45 @@ const mockBlogPosts: BlogPost[] = [
   },
 ];
 
+function coerceArray<T>(value: unknown, splitPattern: RegExp = /[\s,]+/): T[] {
+  if (Array.isArray(value)) return value as T[];
+  if (typeof value === 'string') {
+    const parts = value
+      .split(splitPattern)
+      .map((s) => s.trim())
+      .filter(Boolean) as unknown as T[];
+    return parts;
+  }
+  return [] as T[];
+}
+
+function normalizePost(raw: any): BlogPost {
+  const createdAt = raw?.createdAt
+    ? new Date(raw.createdAt).toISOString()
+    : new Date().toISOString();
+  const updatedAt = raw?.updatedAt ? new Date(raw.updatedAt).toISOString() : createdAt;
+  return {
+    _id: String(raw?._id ?? raw?.id ?? ''),
+    title: String(raw?.title ?? ''),
+    content: String(raw?.content ?? ''),
+    author: String(raw?.author ?? ''),
+    category: String(raw?.category ?? ''),
+    tags: coerceArray<string>(raw?.tags),
+    likes: coerceArray<string>(raw?.likes),
+    comments: Array.isArray(raw?.comments)
+      ? (raw.comments as Comment[]).map((c: any) => ({
+          _id: String(c?._id ?? c?.id ?? ''),
+          content: String(c?.content ?? ''),
+          author: String(c?.author ?? ''),
+          createdAt: c?.createdAt ? new Date(c.createdAt).toISOString() : createdAt,
+        }))
+      : [],
+    createdAt,
+    updatedAt,
+    status: raw?.status === 'draft' || raw?.status === 'published' ? raw.status : 'published',
+  };
+}
+
 export const blogApi = {
   getAll: (): Promise<AxiosResponse<BlogPost[]>> => {
     // モックモードの場合はモックデータを返す
@@ -127,12 +166,19 @@ export const blogApi = {
       console.log('🔄 API Call: GET /blog');
     }
     return api
-      .get<BlogPost[]>('/blog')
+      .get<BlogPost[] | { success?: boolean; posts?: any[] }>('/blog')
       .then((response) => {
-        if (getEnvVar('DEV') === 'true' || process.env.NODE_ENV === 'development') {
-          console.log('✅ Blog API Response:', response.status, response.data?.length, 'posts');
-        }
-        return response;
+        const payload = response.data as any;
+        const list: any[] = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload?.posts)
+            ? payload.posts
+            : [];
+        const normalized: BlogPost[] = list.map(normalizePost);
+        return {
+          ...response,
+          data: normalized,
+        } as AxiosResponse<BlogPost[]>;
       })
       .catch((error) => {
         console.error('❌ Blog API Error:', {
@@ -227,12 +273,12 @@ export const blogApi = {
     }
 
     return api
-      .get<BlogPost>(`/blog/${id}`)
+      .get<BlogPost | { success?: boolean; post?: any }>(`/blog/${id}`)
       .then((response) => {
-        if (getEnvVar('DEV') === 'true' || process.env.NODE_ENV === 'development') {
-          console.log('✅ Blog Post API Response:', response.status, response.data?.title);
-        }
-        return response;
+        const payload = response.data as any;
+        const raw = (payload && (payload.post ?? payload)) as any;
+        const normalized = normalizePost(raw);
+        return { ...response, data: normalized } as AxiosResponse<BlogPost>;
       })
       .catch((error) => {
         console.error('❌ Blog Post API Error:', error);

@@ -89,14 +89,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       if ((post as any).status === 'deleted') {
         console.log('BLOG_DELETE_OK', { postId, userId, mode: 'soft', reason: 'already_deleted' });
-        return res
-          .status(200)
-          .json({
-            success: true,
-            id: postId,
-            mode: 'soft',
-            deletedAt: (post as any).deletedAt || null,
-          });
+        return res.status(200).json({
+          success: true,
+          id: postId,
+          mode: 'soft',
+          deletedAt: (post as any).deletedAt || null,
+        });
       }
       const deletedAt = new Date();
       await BlogPost.updateOne({ _id: postId }, { $set: { status: 'deleted', deletedAt } });
@@ -125,9 +123,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json({ success: true, post: refreshed });
     }
 
-    return res
-      .status(405)
-      .json({ success: false, status: 405, code: 'METHOD_NOT_ALLOWED', message: '許可されていないメソッドです' });
+    return res.status(405).json({
+      success: false,
+      status: 405,
+      code: 'METHOD_NOT_ALLOWED',
+      message: '許可されていないメソッドです',
+    });
   } catch (error) {
     console.error('❌ Blog id API error:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
