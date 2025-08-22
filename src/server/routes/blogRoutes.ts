@@ -2,6 +2,7 @@ import * as express from 'express';
 import { Request, Response } from 'express';
 import { BlogPost, Comment } from '../models/BlogPost.js';
 import mongoose from 'mongoose';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -15,11 +16,25 @@ router.get('/', async (_req: Request, res: Response): Promise<void> => {
   }
 });
 
-// 新しいブログ投稿を作成
-router.post('/', async (req: Request, res: Response): Promise<void> => {
+// 新しいブログ投稿を作成（認証必須、authorIdをJWTから設定）
+router.post('/', authMiddleware, async (req: Request, res: Response): Promise<void> => {
   try {
     const { title, content, author, category, tags } = req.body;
-    const newPost = new BlogPost({ title, content, author, category, tags });
+
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: '認証が必要です' });
+      return;
+    }
+
+    const newPost = new BlogPost({
+      title,
+      content,
+      author,
+      authorId: userId,
+      category,
+      tags,
+    });
     const savedPost = await newPost.save();
     res.status(201).json({ message: 'ブログ投稿が正常に作成されました', post: savedPost });
   } catch (error) {
@@ -27,11 +42,33 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-// ブログ投稿を更新
-router.put('/:id', async (req: Request, res: Response): Promise<void> => {
+// ブログ投稿を更新（本人または管理者のみ）
+router.put('/:id', authMiddleware, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const updates = req.body;
+
+    const userId = req.user?.id;
+    const isAdmin = req.user?.role === 'admin';
+    if (!userId && !isAdmin) {
+      res.status(401).json({ message: '認証が必要です' });
+      return;
+    }
+
+    const existing = await BlogPost.findById(id);
+    if (!existing) {
+      res.status(404).json({ message: 'ブログ投稿が見つかりません' });
+      return;
+    }
+
+    const isOwner = (existing as any).authorId
+      ? (existing as any).authorId === userId
+      : existing.author === userId;
+    if (!isAdmin && !isOwner) {
+      res.status(403).json({ message: 'この投稿を更新する権限がありません' });
+      return;
+    }
+
     const updatedPost = await BlogPost.findByIdAndUpdate(id, updates, { new: true }).populate(
       'comments'
     );
@@ -45,10 +82,32 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-// ブログ投稿を削除
-router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
+// ブログ投稿を削除（本人または管理者のみ）
+router.delete('/:id', authMiddleware, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
+
+    const userId = req.user?.id;
+    const isAdmin = req.user?.role === 'admin';
+    if (!userId && !isAdmin) {
+      res.status(401).json({ message: '認証が必要です' });
+      return;
+    }
+
+    const existing = await BlogPost.findById(id);
+    if (!existing) {
+      res.status(404).json({ message: 'ブログ投稿が見つかりません' });
+      return;
+    }
+
+    const isOwner = (existing as any).authorId
+      ? (existing as any).authorId === userId
+      : existing.author === userId;
+    if (!isAdmin && !isOwner) {
+      res.status(403).json({ message: 'この投稿を削除する権限がありません' });
+      return;
+    }
+
     const deletedPost = await BlogPost.findByIdAndDelete(id);
     if (!deletedPost) {
       res.status(404).json({ message: 'ブログ投稿が見つかりません' });

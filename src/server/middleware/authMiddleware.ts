@@ -4,7 +4,7 @@ import 'express';
 
 declare module 'express' {
   interface Request {
-    user?: { id: string };
+    user?: { id: string; role?: string };
   }
 }
 
@@ -29,8 +29,23 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
-    req.user = { id: decoded.id };
+    interface DecodedToken {
+      id?: string;
+      userId?: string;
+      role?: string;
+      isAdmin?: boolean;
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as DecodedToken;
+    const normalizedId = decoded.id || decoded.userId || '';
+
+    if (!normalizedId) {
+      res.status(401).json({ message: '無効な認証トークンです' });
+      return;
+    }
+
+    const normalizedRole = decoded.role || (decoded.isAdmin ? 'admin' : undefined);
+    req.user = { id: normalizedId, role: normalizedRole };
     next();
   } catch (error) {
     console.error('Token verification error:', error);
