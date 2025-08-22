@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { toast } from 'react-hot-toast';
@@ -318,6 +319,21 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
           >
             再試行
           </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // 空配列の正常表示（空状態）
+  if (!loading && !error && todos.length === 0) {
+    return (
+      <Card className="w-full shadow-sm border border-gray-200">
+        <CardContent className="p-8 text-center">
+          <p className="text-gray-700 text-lg mb-2">ToDoがありません</p>
+          <p className="text-gray-500 mb-4">最初のタスクを作成して始めましょう</p>
+          <Link to="/tasks">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">新規作成</Button>
+          </Link>
         </CardContent>
       </Card>
     );
