@@ -21,7 +21,7 @@ export async function cors(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, X-Requested-With, stripe-signature'
+    'Content-Type, Authorization, X-Requested-With, stripe-signature, X-User-Id, X-User-Role'
   );
   res.setHeader('Access-Control-Allow-Credentials', 'true');
 }
