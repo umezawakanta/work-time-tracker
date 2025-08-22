@@ -16,7 +16,9 @@ function getAuth(req: VercelRequest): { userId: string | null; role: string | nu
       ) as any;
       return { userId: decoded.userId || null, role: decoded.role || null };
     }
-  } catch {}
+  } catch (err) {
+    void err; // ignore JWT parse/verify errors; fallback headers may provide identity
+  }
   // Dev fallback via headers
   const uid = (req.headers['x-user-id'] as string) || null;
   const role = (req.headers['x-user-role'] as string) || null;
@@ -47,7 +49,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
   res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin! : '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-User-Id');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-User-Id, X-User-Role, X-Delete-Mode'
+  );
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
