@@ -202,33 +202,40 @@ const BlogPage: React.FC = () => {
                         </CardTitle>
                         <CardDescription>{post.content.substring(0, 150)}...</CardDescription>
                       </div>
-                      {user?.isAdmin && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem asChild>
-                              <Link to={`/blog/edit/${post._id}`}>
-                                <Edit className="h-4 w-4 mr-2" />
-                                Edit
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setPostToDelete(post._id);
-                                setDeleteDialogOpen(true);
-                              }}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
+                      {(() => {
+                        const isOwner =
+                          (post as any).authorId && user?.id
+                            ? (post as any).authorId === user.id
+                            : false;
+                        const isAdmin = Boolean((user as any)?.isAdmin);
+                        return isOwner || isAdmin ? (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem asChild>
+                                <Link to={`/blog/edit/${post._id}`}>
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Edit
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setPostToDelete(post._id);
+                                  setDeleteDialogOpen(true);
+                                }}
+                                className="text-red-600"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        ) : null;
+                      })()}
                     </div>
                   </CardHeader>
                   <CardContent>

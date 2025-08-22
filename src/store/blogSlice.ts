@@ -14,6 +14,7 @@ export interface BlogPost {
   createdAt: string;
   updatedAt: string;
   status: 'draft' | 'published';
+  authorId?: string;
 }
 
 export interface Comment {
