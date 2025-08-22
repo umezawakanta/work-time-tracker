@@ -100,44 +100,23 @@ const initialState: TodoState = {
 
 export const fetchTodoItems = createAsyncThunk('todo/fetchTodoItems', async () => {
   try {
-    const response = await todoApi.getAll();
+    const items = await todoApi.getAll();
 
-    // HTTPステータスコードチェック
-    if (response.status < 200 || response.status >= 300) {
-      throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
-    }
-
-    // レスポンスの基本構造チェック
-    if (!response.data) {
-      throw new Error('APIからの空のレスポンスです');
-    }
-
-    // エラーレスポンスかどうかチェック（GET /todosはエラー時に{message, error}を返す）
-    if (response.data.error || (response.data.message && !Array.isArray(response.data))) {
-      const errorMsg = response.data.error || response.data.message || '不明なエラー';
-      throw new Error(`API操作エラー: ${errorMsg}`);
-    }
-
-    // 成功レスポンスの検証（GET /todosは直接配列を返す）
-    if (!Array.isArray(response.data)) {
-      console.error('🔍 Unexpected response structure:', response.data);
+    if (!Array.isArray(items)) {
+      console.error('🔍 Unexpected response structure (expected array):', items);
       throw new Error('APIレスポンスが期待される配列形式ではありません');
     }
 
-    console.log(`✅ Fetched ${response.data.length} todos successfully`);
-    return response.data;
+    console.log(`✅ Fetched ${items.length} todos successfully`);
+    return items;
   } catch (apiError: any) {
-    // ネットワークエラーやAxiosエラーの処理
     if (apiError.response) {
-      // サーバーがエラーレスポンスを返した場合
       const errorData = apiError.response.data;
       const errorMsg = errorData?.message || errorData?.error || 'サーバーエラーが発生しました';
       throw new Error(`API呼び出しエラー: ${errorMsg}`);
     } else if (apiError.request) {
-      // リクエストが送信されたが応答がない場合
       throw new Error('サーバーに接続できません。ネットワーク接続を確認してください。');
     } else {
-      // その他のエラー（既に投げたエラー含む）
       throw apiError;
     }
   }

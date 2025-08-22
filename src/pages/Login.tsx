@@ -24,6 +24,7 @@ declare global {
   interface Window {
     __VITE_USE_MOCK_DATA__?: string;
     __API_CONNECTION_FAILED__?: boolean;
+    __API_AUTH_HEADER__?: string;
   }
 }
 
@@ -160,7 +161,9 @@ export default function Login() {
           (api.defaults.headers as any).common = (api.defaults.headers as any).common || {};
           (api.defaults.headers as any).common.Authorization =
             `Bearer ${(loginResponse as any).token}`;
-          console.log('🔗 Authorization header set for API client');
+          const masked = `Bearer ${String((loginResponse as any).token).slice(0, 12)}...`;
+          (window as any).__API_AUTH_HEADER__ = masked;
+          console.log('🔗 Authorization header set for API client (masked):', masked);
         } catch (e) {
           console.warn('Failed to set API default Authorization header:', e);
         }

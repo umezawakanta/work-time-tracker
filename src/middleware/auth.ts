@@ -28,6 +28,8 @@ export const authMiddleware = (
     if (!token) {
       res.status(401).json({
         success: false,
+        status: 401,
+        code: 'UNAUTHORIZED',
         message: '認証トークンが必要です',
         error: 'No token provided',
       });
@@ -55,6 +57,8 @@ export const authMiddleware = (
 
       res.status(401).json({
         success: false,
+        status: 401,
+        code: 'UNAUTHORIZED',
         message: '無効な認証トークンです',
         error: 'Invalid token',
       });
@@ -78,6 +82,8 @@ export const requireRole = (allowedRoles: string[]) => {
     if (!req.user) {
       res.status(401).json({
         success: false,
+        status: 401,
+        code: 'UNAUTHORIZED',
         message: '認証が必要です',
         error: 'Authentication required',
       });
@@ -117,6 +123,8 @@ export const requireVerified = (
   if (!req.user) {
     res.status(401).json({
       success: false,
+      status: 401,
+      code: 'UNAUTHORIZED',
       message: '認証が必要です',
       error: 'Authentication required',
     });

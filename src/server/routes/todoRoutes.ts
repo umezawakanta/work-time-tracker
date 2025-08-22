@@ -3,12 +3,13 @@ import { Request, Response } from 'express';
 import { TodoItem, ITodoItem } from '../models/TodoItem.js';
 import { TodoHistory } from '../models/TodoHistory.js';
 import { TodoArchive } from '../models/TodoArchive.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 // import TodoWBSIntegrationService from '../../services/integration/TodoWBSIntegrationService.js';  // コメントアウト
 
 const router = express.Router();
 
-// GET all todos
-router.get('/', async (_req: Request, res: Response): Promise<void> => {
+// GET all todos (auth required)
+router.get('/', authMiddleware, async (req: Request, res: Response): Promise<void> => {
   try {
     // 🐛 エラーエリミネーター: 強化されたエラーハンドリング
     const todos = await TodoItem.find().sort({ completed: 1, isPrioritized: -1, priority: 1 });
@@ -42,8 +43,8 @@ router.get('/', async (_req: Request, res: Response): Promise<void> => {
   }
 });
 
-// POST new todo
-router.post('/', async (req: Request, res: Response): Promise<void> => {
+// POST new todo (auth required)
+router.post('/', authMiddleware, async (req: Request, res: Response): Promise<void> => {
   try {
     const { task, priority, isPrioritized, type, deadline, tags, category } = req.body;
     const newTodo = new TodoItem({
@@ -90,8 +91,8 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-// PUT update todo
-router.put('/:id', async (req: Request, res: Response): Promise<void> => {
+// PUT update todo (auth required)
+router.put('/:id', authMiddleware, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -128,8 +129,8 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-// DELETE todo
-router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
+// DELETE todo (auth required)
+router.delete('/:id', authMiddleware, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const deletedTodo = await TodoItem.findByIdAndDelete(id);
@@ -137,7 +138,7 @@ router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
       res.status(404).json({ message: 'Todo not found' });
       return;
     }
-    res.json({ message: 'Todo deleted successfully' });
+    res.json({ message: 'Todo deleted successfully', id });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting todo', error });
   }

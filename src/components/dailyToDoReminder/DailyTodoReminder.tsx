@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { toast } from 'react-hot-toast';
@@ -47,6 +47,7 @@ interface DailyTodoReminderProps {
  */
 const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   // Redux selectors with proper type safety
   const todos = useSelector(selectTodos);
@@ -86,6 +87,16 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
 
   // Initial data loading - run only once
   useEffect(() => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const authHeader = (window as any)?.__API_AUTH_HEADER__ || '';
+      console.log('[DailyTodoReminder] 🔑 Token presence:', Boolean(token));
+      console.log(
+        '[DailyTodoReminder] 🔐 Authorization header (masked):',
+        authHeader ? `${String(authHeader).slice(0, 12)}...` : '(not set)'
+      );
+    } catch {}
+
     console.log('[DailyTodoReminder] 🔄 初期化開始');
     dispatch(fetchTodoItems());
   }, [dispatch]);
@@ -107,7 +118,11 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
   useEffect(() => {
     if (error) {
       console.error('[DailyTodoReminder] ❌ ToDoデータエラー:', error);
-      toast.error(`ToDoデータの取得に失敗しました: ${error}`);
+      if (/401|認証|unauthorized/i.test(String(error))) {
+        toast.error('認証が必要です。ログインしてください');
+      } else {
+        toast.error(`ToDoデータの取得に失敗しました: ${error}`);
+      }
     }
   }, [error]);
 
@@ -305,20 +320,39 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
     );
   }
 
-  // エラー状態の表示を改善
+  // エラー状態の表示を改善（401ならログイン誘導）
   if (error) {
+    const isAuthError = /401|認証|unauthorized/i.test(String(error));
     return (
-      <Card className="w-full shadow-sm border border-red-200">
+      <Card
+        className={`w-full shadow-sm ${isAuthError ? 'border border-blue-200' : 'border border-red-200'}`}
+      >
         <CardContent className="p-4 text-center">
-          <p className="text-red-600">ToDoデータの読み込みに失敗しました</p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-2"
-            onClick={() => dispatch(fetchTodoItems())}
-          >
-            再試行
-          </Button>
+          {isAuthError ? (
+            <>
+              <p className="text-blue-700">ToDoデータの取得にはログインが必要です</p>
+              <div className="mt-3 flex justify-center gap-2">
+                <Link to="/login" state={{ from: { pathname: '/tasks' } }}>
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white">ログインへ</Button>
+                </Link>
+                <Button variant="outline" size="sm" onClick={() => dispatch(fetchTodoItems())}>
+                  再試行
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-red-600">ToDoデータの読み込みに失敗しました</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-2"
+                onClick={() => dispatch(fetchTodoItems())}
+              >
+                再試行
+              </Button>
+            </>
+          )}
         </CardContent>
       </Card>
     );

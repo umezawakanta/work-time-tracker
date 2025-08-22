@@ -8,6 +8,7 @@ declare global {
   interface Window {
     __VITE_USE_MOCK_DATA__?: string;
     __API_CONNECTION_FAILED__?: boolean;
+    __API_AUTH_HEADER__?: string;
   }
 }
 
@@ -161,6 +162,13 @@ api.interceptors.request.use(
     // トークンがあればヘッダーに追加
     if (tokenCache) {
       config.headers.Authorization = `Bearer ${tokenCache}`;
+      try {
+        if (typeof window !== 'undefined') {
+          const masked = `Bearer ${String(tokenCache).slice(0, 12)}...`;
+          window.__API_AUTH_HEADER__ = masked;
+          console.log('🔒 Authorization set (masked):', masked);
+        }
+      } catch {}
     }
 
     // 管理者APIの場合は特別なヘッダーを追加
