@@ -65,8 +65,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'DELETE') {
       const post = await BlogPost.findById(postId);
       if (!post) return sendError(res, 404, 'POST_NOT_FOUND', '投稿が見つかりません');
-      const isOwner = (post as any).authorId ? (post as any).authorId === userId : (post as any).author === userId;
-      if (!isAdmin && !isOwner) return sendError(res, 403, 'FORBIDDEN', 'この投稿を削除する権限がありません');
+      const isOwner = (post as any).authorId
+        ? (post as any).authorId === userId
+        : (post as any).author === userId;
+      if (!isAdmin && !isOwner)
+        return sendError(res, 403, 'FORBIDDEN', 'この投稿を削除する権限がありません');
 
       const qMode = (req.query.mode as string) || '';
       const hMode = (req.headers['x-delete-mode'] as string) || '';
@@ -85,7 +88,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         console.log('BLOG_DELETE_OK', { postId, userId, mode: 'soft', reason: 'already_deleted' });
         return res
           .status(200)
-          .json({ success: true, id: postId, mode: 'soft', deletedAt: (post as any).deletedAt || null });
+          .json({
+            success: true,
+            id: postId,
+            mode: 'soft',
+            deletedAt: (post as any).deletedAt || null,
+          });
       }
       const deletedAt = new Date();
       await BlogPost.updateOne({ _id: postId }, { $set: { status: 'deleted', deletedAt } });
@@ -97,8 +105,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const updates = req.body || {};
       const post = await BlogPost.findById(postId);
       if (!post) return sendError(res, 404, 'POST_NOT_FOUND', '投稿が見つかりません');
-      const isOwner = (post as any).authorId ? (post as any).authorId === userId : (post as any).author === userId;
-      if (!isAdmin && !isOwner) return sendError(res, 403, 'FORBIDDEN', 'この投稿を更新する権限がありません');
+      const isOwner = (post as any).authorId
+        ? (post as any).authorId === userId
+        : (post as any).author === userId;
+      if (!isAdmin && !isOwner)
+        return sendError(res, 403, 'FORBIDDEN', 'この投稿を更新する権限がありません');
 
       const allowed = ['title', 'content', 'category', 'tags', 'status'];
       const safeUpdates: Record<string, unknown> = {};
@@ -113,7 +124,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res
       .status(405)
-      .json({ success: false, status: 405, code: 'METHOD_NOT_ALLOWED', message: '許可されていないメソッドです' });
+      .json({
+        success: false,
+        status: 405,
+        code: 'METHOD_NOT_ALLOWED',
+        message: '許可されていないメソッドです',
+      });
   } catch (error) {
     console.error('❌ Blog id API error:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
