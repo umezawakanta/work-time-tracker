@@ -6,7 +6,7 @@
   "devCommand": "pnpm run dev",
   "functions": {
     "api/**/*.ts": {
-      "includeFiles": ["src/**", "lib/**"],
+      "includeFiles": "{src/**,lib/**}",
       "excludeFiles": "{src/components/**,src/pages/**,coverage/**,**/__tests__/**}"
     }
   },
