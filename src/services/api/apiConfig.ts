@@ -210,6 +210,20 @@ api.interceptors.response.use(
       console.warn('Authentication error detected, clearing token cache');
       tokenCache = null;
       tokenFetchPromise = null;
+
+      // 最小導線: 未ログインならログインページへ誘導（1ステップ）
+      try {
+        if (typeof window !== 'undefined') {
+          const path = window.location.pathname + window.location.search;
+          const onLoginPage = window.location.pathname.startsWith('/login');
+          if (!onLoginPage) {
+            try {
+              sessionStorage.setItem('post_login_redirect', path);
+            } catch {}
+            window.location.assign('/login');
+          }
+        }
+      } catch {}
     }
 
     // サーバー接続エラーの詳細情報をログに出力
