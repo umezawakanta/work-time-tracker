@@ -31,3 +31,11 @@ export function toPublicUser(raw: any): PublicUser {
 export function toPublicUsers(list: any[]): PublicUser[] {
   return (Array.isArray(list) ? list : []).map((u) => toPublicUser(u));
 }
+
+// Backward-compat wrapper name commonly used in routes
+export function sanitizeUser(raw: any): PublicUser {
+  return toPublicUser(raw);
+}
+export function sanitizeUsers(list: any[]): PublicUser[] {
+  return toPublicUsers(list);
+}
