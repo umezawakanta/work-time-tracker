@@ -2,21 +2,23 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export async function cors(req: VercelRequest, res: VercelResponse) {
   // 許可するオリジンを設定
+  const extra = (process.env.CORS_ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
   const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
     'https://work-time-tracker-5d9q.vercel.app',
-    process.env.CORS_ALLOWED_ORIGINS || '',
-  ].filter(Boolean);
+    ...extra,
+  ];
 
   const origin = req.headers.origin;
-
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  } else {
-    // Cookie送信があるケースではワイルドカード不可。既定は本番ドメインに固定。
-    res.setHeader('Access-Control-Allow-Origin', 'https://work-time-tracker-5d9q.vercel.app');
-  }
+  const isPreview = Boolean(
+    origin && /^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/.test(origin)
+  );
+  const isAllowed = Boolean(origin && (allowedOrigins.includes(origin) || isPreview));
+  if (isAllowed && origin) res.setHeader('Access-Control-Allow-Origin', origin);
 
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader(
@@ -24,4 +26,5 @@ export async function cors(req: VercelRequest, res: VercelResponse) {
     'Content-Type, Authorization, X-Requested-With, stripe-signature, X-User-Id, X-User-Role'
   );
   res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Vary', 'Origin');
 }
