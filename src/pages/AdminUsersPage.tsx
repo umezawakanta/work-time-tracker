@@ -139,7 +139,10 @@ const AdminUsersPage: React.FC = () => {
 
       <Card>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" aria-live="polite">
+            <span className="sr-only" role="status">
+              {loading ? '読み込み中' : '読み込み完了'}
+            </span>
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -183,15 +186,32 @@ const AdminUsersPage: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading && items.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
-                      読み込み中…
-                    </td>
-                  </tr>
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={`skeleton-${i}`} className="animate-pulse">
+                      <td className="px-6 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-48" />
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-32" />
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-16" />
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-20" />
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-40" />
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="h-8 bg-gray-200 rounded w-24 ml-auto" />
+                      </td>
+                    </tr>
+                  ))
                 ) : items.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
-                      ユーザーが見つかりません
+                      ユーザーがいません
                     </td>
                   </tr>
                 ) : (
