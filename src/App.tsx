@@ -34,6 +34,20 @@ import { AdaptiveUIProvider } from './components/ui/AdaptiveUIProvider';
 import { RealtimeAdaptationProvider } from './components/realtime/RealtimeAdaptationProvider';
 import { PomodoroProvider } from './context/PomodoroContext';
 import { InternationalizationProvider } from './hooks/useInternationalization';
+import { useAuth } from './hooks/useAuth';
+// Admin dashboard (lazy)
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+
+// Guarded route: requires admin
+const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, user, loading } = useAuth() as any;
+  if (loading) return <LoadingSpinner />;
+  const isAdmin = Boolean(user?.isAdmin) || user?.role === 'admin';
+  if (!isAuthenticated || !isAdmin) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+};
 
 // Core pages - Always loaded
 // import HomePage from './pages/HomePage';
@@ -226,6 +240,18 @@ const App: React.FC = () => {
                           <div className="min-h-screen bg-gray-50">
                             <Routes>
                               {/* ホームページ */}
+                              <Route
+                                path="/admin"
+                                element={
+                                  <RequireAdmin>
+                                    <LayoutWrapper>
+                                      <LazyWrapper>
+                                        <AdminDashboard />
+                                      </LazyWrapper>
+                                    </LayoutWrapper>
+                                  </RequireAdmin>
+                                }
+                              />
                               <Route
                                 path="/"
                                 element={
