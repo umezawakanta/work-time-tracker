@@ -50,6 +50,7 @@ const AdminUsersPage: React.FC = () => {
       setTotal(res.total);
     } catch (e) {
       setError('ユーザー一覧の取得に失敗しました');
+      toast.error('ユーザー一覧の取得に失敗しました');
     } finally {
       setLoading(false);
     }
