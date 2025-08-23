@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import jwt from 'jsonwebtoken';
+import { sendError } from './apiError';
 
 type DecodedToken = {
   userId?: string;
@@ -94,12 +95,7 @@ export function getAuthContext(req: VercelRequest): AuthContext {
 export function requireAdmin(req: VercelRequest, res: VercelResponse): AuthContext | null {
   const ctx = getAuthContext(req);
   if (!ctx.isAdmin) {
-    res.status(403).json({
-      success: false,
-      status: 403,
-      code: 'FORBIDDEN',
-      message: '管理者権限が必要です',
-    });
+    sendError(res, 403, 'FORBIDDEN', '管理者権限が必要です');
     return null;
   }
   return ctx;

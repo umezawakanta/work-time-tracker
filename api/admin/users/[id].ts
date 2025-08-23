@@ -5,6 +5,7 @@ import { User } from '../../../src/server/models/User';
 import { cors } from '../../../lib/cors';
 import { requireAdmin } from '../../../lib/authAdmin';
 import { toPublicUser } from '../../../lib/publicUser';
+import { sendError } from '../../../lib/apiError';
 
 type AllowedRole = 'user' | 'admin' | 'manager' | 'guest';
 const ALLOWED_ROLES: AllowedRole[] = ['user', 'admin', 'manager', 'guest'];
@@ -35,23 +36,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!ctx) return; // 403 already sent
 
   if (req.method !== 'PATCH') {
-    return res.status(405).json({
-      success: false,
-      status: 405,
-      code: 'METHOD_NOT_ALLOWED',
-      message: '許可されていないメソッドです',
-    });
+    return sendError(res, 405, 'METHOD_NOT_ALLOWED', '許可されていないメソッドです');
   }
 
   try {
     const id = String(req.query.id || '');
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        status: 400,
-        code: 'BAD_REQUEST',
-        message: '無効なユーザーIDです',
-      });
+      return sendError(res, 400, 'BAD_REQUEST', '無効なユーザーIDです');
     }
 
     await connectDB();
@@ -63,9 +54,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (Object.prototype.hasOwnProperty.call(body, 'role')) {
       const roleVal = String(body.role).toLowerCase();
       if (!ALLOWED_ROLES.includes(roleVal as AllowedRole)) {
-        return res
-          .status(400)
-          .json({ success: false, status: 400, code: 'BAD_ROLE', message: '無効な役割です' });
+        return sendError(res, 400, 'BAD_ROLE', '無効な役割です');
       }
       updates.role = roleVal;
     }
@@ -74,14 +63,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (Object.prototype.hasOwnProperty.call(body, 'roles')) {
       const rolesInput = body.roles;
       if (!Array.isArray(rolesInput)) {
-        return res
-          .status(400)
-          .json({
-            success: false,
-            status: 400,
-            code: 'BAD_ROLES',
-            message: 'roles は配列で指定してください',
-          });
+        return sendError(res, 400, 'BAD_ROLES', 'roles は配列で指定してください');
       }
       const filtered = Array.from(
         new Set(
@@ -102,26 +84,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const hasBlocked = Object.prototype.hasOwnProperty.call(body, 'blocked');
     if (hasIsActive) {
       if (typeof body.isActive !== 'boolean') {
-        return res
-          .status(400)
-          .json({
-            success: false,
-            status: 400,
-            code: 'BAD_IS_ACTIVE',
-            message: 'isActive は boolean で指定してください',
-          });
+        return sendError(res, 400, 'BAD_IS_ACTIVE', 'isActive は boolean で指定してください');
       }
     }
     if (hasBlocked) {
       if (typeof body.blocked !== 'boolean') {
-        return res
-          .status(400)
-          .json({
-            success: false,
-            status: 400,
-            code: 'BAD_BLOCKED',
-            message: 'blocked は boolean で指定してください',
-          });
+        return sendError(res, 400, 'BAD_BLOCKED', 'blocked は boolean で指定してください');
       }
     }
     if (hasIsActive || hasBlocked) {
@@ -133,25 +101,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (Object.keys(updates).length === 0) {
-      return res.status(400).json({
-        success: false,
-        status: 400,
-        code: 'NO_UPDATABLE_FIELDS',
-        message: '更新可能なフィールドが含まれていません',
-      });
+      return sendError(res, 400, 'NO_UPDATABLE_FIELDS', '更新可能なフィールドが含まれていません');
     }
 
     await User.updateOne({ _id: id }, { $set: updates }, { runValidators: true });
     const refreshed = await User.findById(id).lean();
     if (!refreshed) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          status: 404,
-          code: 'NOT_FOUND',
-          message: 'ユーザーが見つかりません',
-        });
+      return sendError(res, 404, 'NOT_FOUND', 'ユーザーが見つかりません');
     }
 
     console.log('ADMIN_USER_UPDATE', { id, actor: ctx.userId, updates: Object.keys(updates) });
@@ -160,11 +116,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('❌ ADMIN_USER_UPDATE error:', error);
     const isCastErr = error instanceof mongoose.Error.CastError;
     const status = (error as any)?.statusCode || (isCastErr ? 400 : 500);
-    return res.status(status).json({
-      success: false,
+    return sendError(
+      res,
       status,
-      code: status === 400 ? 'BAD_REQUEST' : 'INTERNAL_ERROR',
-      message: status === 400 ? '無効なリクエストです' : 'サーバーエラーが発生しました',
-    });
+      status === 400 ? 'BAD_REQUEST' : 'INTERNAL_ERROR',
+      status === 400 ? '無効なリクエストです' : 'サーバーエラーが発生しました'
+    );
   }
 }

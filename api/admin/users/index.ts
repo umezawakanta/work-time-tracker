@@ -4,6 +4,7 @@ import { connectDB } from '../../../src/server/config/database';
 import { User } from '../../../src/server/models/User';
 import { cors } from '../../../lib/cors';
 import { requireAdmin } from '../../../lib/authAdmin';
+import { sendError } from '../../../lib/apiError';
 import { toPublicUsers } from '../../../lib/publicUser';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -14,12 +15,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!ctx) return; // 403 already sent
 
   if (req.method !== 'GET') {
-    return res.status(405).json({
-      success: false,
-      status: 405,
-      code: 'METHOD_NOT_ALLOWED',
-      message: '許可されていないメソッドです',
-    });
+    return sendError(res, 405, 'METHOD_NOT_ALLOWED', '許可されていないメソッドです');
   }
 
   try {
@@ -84,11 +80,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (error) {
     console.error('❌ ADMIN_USER_LIST error:', error);
     const isCastErr = error instanceof mongoose.Error.CastError;
-    return res.status(isCastErr ? 400 : 500).json({
-      success: false,
-      status: isCastErr ? 400 : 500,
-      code: isCastErr ? 'BAD_REQUEST' : 'INTERNAL_ERROR',
-      message: isCastErr ? '無効なリクエストです' : 'サーバーエラーが発生しました',
-    });
+    return sendError(
+      res,
+      isCastErr ? 400 : 500,
+      isCastErr ? 'BAD_REQUEST' : 'INTERNAL_ERROR',
+      isCastErr ? '無効なリクエストです' : 'サーバーエラーが発生しました'
+    );
   }
 }
