@@ -62,6 +62,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Map to public shape
     const data = toPublicUsers(items as any[]);
 
+    // Audit log for admin listing
+    console.log('ADMIN_USER_LIST', {
+      actor: ctx.userId,
+      q: String(q || ''),
+      page: pageNum,
+      limit: limitNum,
+      sort: String(sort),
+      returned: data.length,
+      total,
+    });
+
     return res.status(200).json({
       success: true,
       data,
