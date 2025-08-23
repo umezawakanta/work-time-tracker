@@ -62,13 +62,24 @@ const NewBlogPost: React.FC = () => {
         comments: [],
         viewCount: 0,
       };
-
-      await dispatch(addBlogPost(blogPost));
+      // Add an explicit timeout guard; abort create if it hangs > 20s
+      const result = await Promise.race([
+        // @ts-ignore unwrap is available on returned thunk
+        (dispatch as any)(addBlogPost(blogPost)).unwrap(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout while publishing')), 20000)
+        ),
+      ]);
+      void result;
       toast.success('Blog post created successfully!');
       navigate('/blog');
     } catch (error) {
       console.error('Failed to create blog post:', error);
-      toast.error('Failed to create blog post. Please try again.');
+      const message =
+        (error as any)?.response?.data?.message ||
+        (error as Error).message ||
+        'Failed to create blog post. Please try again.';
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

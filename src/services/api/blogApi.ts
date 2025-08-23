@@ -218,7 +218,8 @@ export const blogApi = {
   create: (
     post: Omit<BlogPost, '_id' | 'createdAt' | 'updatedAt' | 'likes' | 'comments'>
   ): Promise<AxiosResponse<BlogApiResponse>> => {
-    return api.post<BlogApiResponse>('/blog', post);
+    // Use a stricter timeout for create to prevent UI freeze on network hiccups
+    return api.post<BlogApiResponse>('/blog', post, { timeout: 15000 });
   },
 
   update: (_id: string, updates: Partial<BlogPost>): Promise<AxiosResponse<BlogApiResponse>> => {
