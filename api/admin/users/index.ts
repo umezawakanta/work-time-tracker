@@ -5,7 +5,7 @@ import { User } from '../../../src/server/models/User';
 import { cors } from '../../../lib/cors';
 import { requireAdmin } from '../../../lib/authAdmin';
 import { sendError } from '../../../lib/apiError';
-import { toPublicUsers } from '../../../lib/publicUser';
+import { toPublicUsers, assertNoSensitiveFields } from '../../../lib/publicUser';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   await cors(req, res);
@@ -78,14 +78,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       total,
     });
 
-    return res.status(200).json({
+    const responsePayload = {
       success: true,
       data,
       page: pageNum,
       limit: limitNum,
       total,
       totalPages: Math.ceil(total / limitNum),
-    });
+    } as const;
+    assertNoSensitiveFields(responsePayload);
+    return res.status(200).json(responsePayload);
   } catch (error) {
     console.error('❌ ADMIN_USER_LIST error:', error);
     const isCastErr = error instanceof mongoose.Error.CastError;

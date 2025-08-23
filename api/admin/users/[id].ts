@@ -4,7 +4,7 @@ import { connectDB } from '../../../src/server/config/database';
 import { User } from '../../../src/server/models/User';
 import { cors } from '../../../lib/cors';
 import { requireAdmin } from '../../../lib/authAdmin';
-import { toPublicUser } from '../../../lib/publicUser';
+import { toPublicUser, assertNoSensitiveFields } from '../../../lib/publicUser';
 import { sendError } from '../../../lib/apiError';
 
 type AllowedRole = 'user' | 'admin';
@@ -111,7 +111,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     console.log('ADMIN_USER_UPDATE', { id, actor: ctx.userId, updates: Object.keys(updates) });
-    return res.status(200).json({ success: true, data: toPublicUser(refreshed) });
+    const payload = { success: true, data: toPublicUser(refreshed) } as const;
+    assertNoSensitiveFields(payload);
+    return res.status(200).json(payload);
   } catch (error) {
     console.error('❌ ADMIN_USER_UPDATE error:', error);
     const isCastErr = error instanceof mongoose.Error.CastError;
