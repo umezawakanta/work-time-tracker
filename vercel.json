@@ -7,7 +7,7 @@
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {
     "api/**/*.ts": {
-      "includeFiles": "{src/server/**,src/services/**,src/middleware/**,src/config/**,lib/**}",
+      "includeFiles": "{src/server/**,lib/**}",
       "excludeFiles": "{src/components/**,src/pages/**,coverage/**,**/__tests__/**,cypress/**,docs/**}"
     }
   },
