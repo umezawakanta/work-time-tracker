@@ -1,6 +1,24 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertTriangle, Users } from 'lucide-react';
 import { listUsers, updateUser } from '@/services/api/adminUsersApi';
@@ -16,6 +34,10 @@ const AdminUsersPage: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
   const [query, setQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
+  const [confirm, setConfirm] = useState<{
+    type: 'promote' | 'demote' | 'block' | 'unblock';
+    user: PublicUser;
+  } | null>(null);
 
   const totalPages = useMemo(() => Math.max(Math.ceil(total / limit), 1), [total, limit]);
 
@@ -202,24 +224,74 @@ const AdminUsersPage: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString() : '—'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => void handlePromoteDemote(u)}
-                          aria-label={u.role === 'admin' ? '一般権限に変更' : '管理者に昇格'}
-                        >
-                          {u.role === 'admin' ? 'Demote' : 'Promote'}
-                        </Button>
-                        <Button
-                          variant={u.blocked ? 'default' : 'destructive'}
-                          size="sm"
-                          onClick={() => void handleToggleBlock(u)}
-                          aria-label={u.blocked ? 'ブロック解除' : 'ブロック'}
-                        >
-                          {u.blocked ? 'Unblock' : 'Block'}
-                        </Button>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" aria-label="アクションを開く">
+                              アクション
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>操作</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() =>
+                                setConfirm({
+                                  type: u.role === 'admin' ? 'demote' : 'promote',
+                                  user: u,
+                                })
+                              }
+                            >
+                              {u.role === 'admin'
+                                ? 'Demote (一般に変更)'
+                                : 'Promote (管理者に昇格)'}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                setConfirm({ type: u.blocked ? 'unblock' : 'block', user: u })
+                              }
+                            >
+                              {u.blocked ? 'Unblock (ブロック解除)' : 'Block (ブロック)'}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
+                      <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              {confirm?.type === 'promote' && '管理者に昇格しますか？'}
+                              {confirm?.type === 'demote' && '一般ユーザーに変更しますか？'}
+                              {confirm?.type === 'block' && 'このユーザーをブロックしますか？'}
+                              {confirm?.type === 'unblock' &&
+                                'このユーザーのブロックを解除しますか？'}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              対象: {confirm?.user.email}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel aria-label="キャンセル">
+                              キャンセル
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              aria-label="実行"
+                              onClick={async () => {
+                                const c = confirm;
+                                setConfirm(null);
+                                if (!c) return;
+                                if (c.type === 'promote' || c.type === 'demote') {
+                                  await handlePromoteDemote(c.user);
+                                } else {
+                                  await handleToggleBlock(c.user);
+                                }
+                              }}
+                            >
+                              実行
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </tr>
                   ))
                 )}
