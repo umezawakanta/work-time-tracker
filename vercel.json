@@ -1,13 +1,14 @@
 {
   "buildCommand": "pnpm run vercel-build",
   "outputDirectory": "dist",
-  "framework": null,
+  "framework": "vite",
   "installCommand": "corepack enable && corepack prepare pnpm@10.4.1 --activate || npm i -g pnpm@10.4.1 && pnpm install --frozen-lockfile --prefer-offline",
   "devCommand": "pnpm run dev",
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {
     "api/**/*.ts": {
-      "includeFiles": "{src/server/**,lib/**}",
+      "runtime": "nodejs20.x",
+      "includeFiles": "{src/server/config/**,src/server/models/**,src/middleware/**,lib/**}",
       "excludeFiles": "{src/components/**,src/pages/**,coverage/**,**/__tests__/**,cypress/**,docs/**}"
     }
   },

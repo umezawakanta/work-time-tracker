@@ -70,8 +70,8 @@ Thumbs.db
 # Uploads (if not needed for production)
 uploads/
 
-# Scripts
-scripts/
+## Do not ignore scripts so Vercel ignoreCommand can run
+# scripts/
 
 # Lighthouse reports
 lighthouse/
