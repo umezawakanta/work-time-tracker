@@ -42,6 +42,7 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const { setIsAuthenticated, isAuthenticated, refreshAuth, setUser } = useAuth();
+  const { user } = useAuth() as any;
 
   // リダイレクト先を取得（PrivateRouteから渡される）
   const from = location.state?.from?.pathname || '/';
@@ -50,16 +51,11 @@ export default function Login() {
 
   // 既にログイン済みの場合はリダイレクト（管理者は /admin 優先）
   useEffect(() => {
-    if (isAuthenticated) {
-      const isAdmin = (user?: any) => Boolean(user?.isAdmin) || user?.role === 'admin';
-      // location.state?.from が /admin の場合も踏まえ、管理者なら /admin を優先
-      if (isAdmin((useAuth() as any).user) || from === '/admin') {
-        navigate('/admin', { replace: true });
-      } else {
-        navigate(from, { replace: true });
-      }
-    }
-  }, [isAuthenticated, navigate, from]);
+    if (!isAuthenticated) return;
+    const isAdmin = Boolean((user as any)?.isAdmin) || (user as any)?.role === 'admin';
+    const target = isAdmin || from === '/admin' ? '/admin' : from;
+    navigate(target, { replace: true });
+  }, [isAuthenticated, user, navigate, from]);
 
   // 登録完了メッセージの表示
   useEffect(() => {
@@ -185,7 +181,7 @@ export default function Login() {
 
       // ログイン成功後、管理者なら /admin にリダイレクト、そうでなければ元のページ
       const isAdmin = (u?: any) => Boolean(u?.isAdmin) || u?.role === 'admin';
-      const target = isAdmin((useAuth() as any).user) || from === '/admin' ? '/admin' : from;
+      const target = isAdmin(user as any) || from === '/admin' ? '/admin' : from;
       console.log('🔀 Redirecting to:', target);
       navigate(target, { replace: true });
     } catch (error) {

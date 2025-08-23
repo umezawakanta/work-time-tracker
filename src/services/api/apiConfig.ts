@@ -136,10 +136,12 @@ api.interceptors.request.use(
 
     // ここまで来るのは本番・プレビューのみ
 
-    // まずはフロントのログインで保存されたトークンを優先（localStorage / sessionStorage）
+    // まずはフロントのログインで保存されたトークンを優先（localStorage / sessionStorage / TokenManagerキー）
     if (!tokenCache && typeof window !== 'undefined') {
       const localToken =
-        localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+        localStorage.getItem('access_token') ||
+        sessionStorage.getItem('access_token') ||
+        localStorage.getItem('accessToken');
       if (localToken) {
         tokenCache = localToken;
       }
@@ -220,25 +222,30 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    // 認証エラーの場合はトークンキャッシュをクリア
+    // 認証エラーの場合はトークンキャッシュをクリア（ただし認証系エンドポイントではリダイレクトしない）
     if (error.response?.status === 401 || error.response?.status === 403) {
       console.warn('Authentication error detected, clearing token cache');
       tokenCache = null;
       tokenFetchPromise = null;
 
-      // 最小導線: 未ログインならログインページへ誘導（1ステップ）
-      try {
-        if (typeof window !== 'undefined') {
-          const path = window.location.pathname + window.location.search;
-          const onLoginPage = window.location.pathname.startsWith('/login');
-          if (!onLoginPage) {
-            try {
-              sessionStorage.setItem('post_login_redirect', path);
-            } catch {}
-            window.location.assign('/login');
+      // 認証ルートに対する401はそのまま返す（/auth/login, /auth/check, /auth/whoami, /auth/refresh 等）
+      const url = String(error.config?.url || '');
+      const isAuthEndpoint = /\/auth\//.test(url);
+      if (!isAuthEndpoint) {
+        // 最小導線: 未ログインならログインページへ誘導（1ステップ）
+        try {
+          if (typeof window !== 'undefined') {
+            const path = window.location.pathname + window.location.search;
+            const onLoginPage = window.location.pathname.startsWith('/login');
+            if (!onLoginPage) {
+              try {
+                sessionStorage.setItem('post_login_redirect', path);
+              } catch {}
+              window.location.assign('/login');
+            }
           }
-        }
-      } catch {}
+        } catch {}
+      }
     }
 
     // サーバー接続エラーの詳細情報をログに出力
