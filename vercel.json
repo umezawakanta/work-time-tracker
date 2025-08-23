@@ -8,7 +8,7 @@
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {
     "api/**/*.ts": {
-      "runtime": "nodejs20.x",
+      "runtime": "@vercel/node@5.3.0",
       "includeFiles": "{src/server/config/**,src/server/models/**,src/middleware/**,lib/**}",
       "excludeFiles": "{src/components/**,src/pages/**,coverage/**,**/__tests__/**,cypress/**,docs/**}"
     }
