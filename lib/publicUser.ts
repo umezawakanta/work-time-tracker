@@ -9,7 +9,11 @@ export function toPublicUser(raw: any): PublicUser {
   const role = ['user', 'admin', 'manager', 'guest'].includes(roleValue)
     ? (roleValue as 'user' | 'admin' | 'manager' | 'guest')
     : 'user';
-  const roles: string[] = Array.isArray(raw?.roles) ? (raw.roles as string[]) : [];
+  const rolesMeta: string[] = Array.isArray(raw?.metadata?.roles)
+    ? (raw.metadata.roles as string[])
+    : [];
+  const rolesField: string[] = Array.isArray(raw?.roles) ? (raw.roles as string[]) : [];
+  const roles: string[] = Array.from(new Set([...(rolesField || []), ...(rolesMeta || [])]));
   const status: string = String(raw?.status ?? 'active');
   const isActive: boolean = status === 'active';
   const blocked: boolean = status === 'suspended';
