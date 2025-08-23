@@ -270,7 +270,9 @@ const BlogPage: React.FC = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeletePost}>Delete</AlertDialogAction>
+            <AlertDialogAction aria-label="投稿を削除" onClick={handleDeletePost}>
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
