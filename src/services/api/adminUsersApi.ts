@@ -26,8 +26,8 @@ export async function listUsers(params: ListUsersParams = {}): Promise<ListUsers
 }
 
 export type UpdateUserPayload = Partial<{
-  role: 'user' | 'admin' | 'manager' | 'guest';
-  roles: string[]; // validated server-side
+  role: 'user' | 'admin';
+  roles: Array<'user' | 'admin'>; // server also validates
   isActive: boolean;
   blocked: boolean;
 }>;

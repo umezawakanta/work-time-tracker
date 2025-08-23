@@ -38,6 +38,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       filter.$or = [{ email: regex }, { displayName: regex }, { username: regex }];
     }
 
+    // 強制: 役割フィルタが存在する場合はホワイトリスト ['user','admin'] のみ許容
+    const roleQuery = (req.query as any)?.role;
+    if (roleQuery) {
+      const wanted = String(roleQuery).toLowerCase();
+      if (wanted === 'user' || wanted === 'admin') {
+        (filter as any).role = wanted;
+      }
+    }
+
     // Parse sort string like "-createdAt,email"
     const sortObj: Record<string, 1 | -1> = {};
     String(sort)

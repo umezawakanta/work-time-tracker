@@ -7,8 +7,8 @@ import { requireAdmin } from '../../../lib/authAdmin';
 import { toPublicUser } from '../../../lib/publicUser';
 import { sendError } from '../../../lib/apiError';
 
-type AllowedRole = 'user' | 'admin' | 'manager' | 'guest';
-const ALLOWED_ROLES: AllowedRole[] = ['user', 'admin', 'manager', 'guest'];
+type AllowedRole = 'user' | 'admin';
+const ALLOWED_ROLES: AllowedRole[] = ['user', 'admin'];
 
 async function readJson(req: VercelRequest): Promise<any> {
   try {
