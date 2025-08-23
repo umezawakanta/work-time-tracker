@@ -112,6 +112,7 @@ function normalizePost(raw: any): BlogPost {
     title: String(raw?.title ?? ''),
     content: String(raw?.content ?? ''),
     author: String(raw?.author ?? ''),
+    authorId: String(raw?.authorId ?? raw?.userId ?? ''),
     category: String(raw?.category ?? ''),
     tags: coerceArray<string>(raw?.tags),
     likes: coerceArray<string>(raw?.likes),
