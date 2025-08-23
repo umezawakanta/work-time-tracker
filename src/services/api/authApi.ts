@@ -284,12 +284,23 @@ export const updateUserProfile = async (userData: {
 
 export const fetchUserData = async (): Promise<User> => {
   try {
-    console.log('🔄 Fetching user data from server...');
-    const response = await api.get<{ user: User }>('/auth/user');
-    console.log('✅ User data retrieved:', response.data.user?.email);
+    console.log('🔄 Fetching user data (whoami)...');
+    const response = await api.get<{ success: boolean; user: any }>('/auth/whoami');
+    const who = response.data.user || {};
+    console.log('✅ WhoAmI retrieved:', who?.email);
 
-    // 環境変数による管理者権限の確認
-    const userData = response.data.user;
+    // whoami → User への正規化
+    const userData: User = {
+      id: String(who.userId || who.id || ''),
+      email: String(who.email || ''),
+      name: String(who.name || who.displayName || ''),
+      role: String(who.role || ''),
+      isAdmin:
+        (who as any).isAdmin === true ||
+        String(who.role || '').toLowerCase() === 'admin' ||
+        (Array.isArray((who as any).roles) && ((who as any).roles as string[]).includes('admin')),
+      lastLoginAt: undefined,
+    } as User;
 
     // 安全な環境変数取得
     const getEnvVar = (key: string): string | undefined => {
@@ -311,10 +322,9 @@ export const fetchUserData = async (): Promise<User> => {
     };
 
     const adminEmails = getEnvVar('VITE_ADMIN_EMAILS')?.split(',') || [];
-
     if (adminEmails.includes(userData.email)) {
       userData.isAdmin = true;
-      console.log('[Auth] Admin privileges granted for:', userData.email);
+      console.log('[Auth] Admin privileges granted via env for:', userData.email);
     }
 
     return userData;

@@ -48,10 +48,16 @@ export default function Login() {
   const message = location.state?.message;
   const sessionExpired = location.state?.sessionExpired;
 
-  // 既にログイン済みの場合はリダイレクト
+  // 既にログイン済みの場合はリダイレクト（管理者は /admin 優先）
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(from, { replace: true });
+      const isAdmin = (user?: any) => Boolean(user?.isAdmin) || user?.role === 'admin';
+      // location.state?.from が /admin の場合も踏まえ、管理者なら /admin を優先
+      if (isAdmin((useAuth() as any).user) || from === '/admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     }
   }, [isAuthenticated, navigate, from]);
 
@@ -177,9 +183,11 @@ export default function Login() {
       // refreshAuthは呼ばない（すでにユーザー情報とトークンは設定済み）
       console.log('✅ Login complete - user and tokens set');
 
-      // ログイン成功後、元のページまたはホームページにリダイレクト
-      console.log('🔀 Redirecting to:', from);
-      navigate(from, { replace: true });
+      // ログイン成功後、管理者なら /admin にリダイレクト、そうでなければ元のページ
+      const isAdmin = (u?: any) => Boolean(u?.isAdmin) || u?.role === 'admin';
+      const target = isAdmin((useAuth() as any).user) || from === '/admin' ? '/admin' : from;
+      console.log('🔀 Redirecting to:', target);
+      navigate(target, { replace: true });
     } catch (error) {
       console.error('❌ Login submission error:', error);
       if (error instanceof Error) {

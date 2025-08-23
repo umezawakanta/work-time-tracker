@@ -41,10 +41,18 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 // Guarded route: requires admin
 const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, user, loading } = useAuth() as any;
+  // 許容: ローディング中はスピナー表示（直接リダイレクトしない）
   if (loading) return <LoadingSpinner />;
   const isAdmin = Boolean(user?.isAdmin) || user?.role === 'admin';
-  if (!isAuthenticated || !isAdmin) {
-    return <Navigate to="/login" replace />;
+  if (!isAuthenticated) {
+    // /admin を希望していることを覚えてログイン後に戻す
+    try {
+      if (typeof window !== 'undefined') sessionStorage.setItem('post_login_redirect', '/admin');
+    } catch {}
+    return <Navigate to="/login" replace state={{ from: { pathname: '/admin' } }} />;
+  }
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
   }
   return <>{children}</>;
 };
