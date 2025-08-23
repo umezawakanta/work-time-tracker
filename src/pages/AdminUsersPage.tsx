@@ -248,7 +248,12 @@ const AdminUsersPage: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" aria-label="アクションを開く">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              aria-label="アクションを開く"
+                              aria-haspopup="menu"
+                            >
                               アクション
                             </Button>
                           </DropdownMenuTrigger>
@@ -262,6 +267,7 @@ const AdminUsersPage: React.FC = () => {
                                   user: u,
                                 })
                               }
+                              aria-label={u.role === 'admin' ? '一般権限に変更' : '管理者に昇格'}
                             >
                               {u.role === 'admin'
                                 ? 'Demote (一般に変更)'
@@ -271,6 +277,7 @@ const AdminUsersPage: React.FC = () => {
                               onClick={() =>
                                 setConfirm({ type: u.blocked ? 'unblock' : 'block', user: u })
                               }
+                              aria-label={u.blocked ? 'ブロック解除' : 'ブロック'}
                             >
                               {u.blocked ? 'Unblock (ブロック解除)' : 'Block (ブロック)'}
                             </DropdownMenuItem>
@@ -278,7 +285,11 @@ const AdminUsersPage: React.FC = () => {
                         </DropdownMenu>
                       </td>
                       <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
-                        <AlertDialogContent>
+                        <AlertDialogContent
+                          role="alertdialog"
+                          aria-modal="true"
+                          aria-describedby="admin-user-confirm-desc"
+                        >
                           <AlertDialogHeader>
                             <AlertDialogTitle>
                               {confirm?.type === 'promote' && '管理者に昇格しますか？'}
@@ -287,12 +298,12 @@ const AdminUsersPage: React.FC = () => {
                               {confirm?.type === 'unblock' &&
                                 'このユーザーのブロックを解除しますか？'}
                             </AlertDialogTitle>
-                            <AlertDialogDescription>
+                            <AlertDialogDescription id="admin-user-confirm-desc">
                               対象: {confirm?.user.email}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel aria-label="キャンセル">
+                            <AlertDialogCancel aria-label="キャンセル" autoFocus>
                               キャンセル
                             </AlertDialogCancel>
                             <AlertDialogAction
