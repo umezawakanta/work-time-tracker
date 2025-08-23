@@ -62,6 +62,58 @@ interface AdminMetrics {
   };
 }
 
+// Normalize API metrics payload to UI's expected shape to avoid runtime errors in production
+function normalizeMetrics(raw: unknown): AdminMetrics {
+  const obj = (raw as Record<string, unknown>) || {};
+  const users = (obj.users as Record<string, unknown>) || {};
+  const revenue = (obj.revenue as Record<string, unknown>) || {};
+  const system = (obj.system as Record<string, unknown>) || {};
+  const support = (obj.support as Record<string, unknown>) || {};
+
+  const toNum = (v: unknown, fallback = 0): number => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : fallback;
+  };
+
+  const mrrNum = toNum(revenue.mrr, 0);
+  const growthNum = toNum(revenue.growth ?? revenue.conversionRate, 0);
+  const todayRevenueNum =
+    revenue.todayRevenue !== undefined
+      ? toNum(revenue.todayRevenue, 0)
+      : Math.max(0, Math.round((mrrNum * (growthNum / 100)) / 30));
+
+  return {
+    users: {
+      total: toNum(users.total, 0),
+      active: toNum(users.active, 0),
+      newToday: toNum(users.newToday ?? users.new, 0),
+      churnRate: toNum(users.churnRate ?? revenue.churn, 0),
+    },
+    revenue: {
+      mrr: mrrNum,
+      arr: toNum(revenue.arr ?? mrrNum * 12, mrrNum * 12),
+      todayRevenue: todayRevenueNum,
+      conversionRate: toNum(revenue.conversionRate ?? revenue.growth, 0),
+    },
+    system: {
+      uptime: toNum(system.uptime, 0),
+      responseTime: toNum(system.responseTime, 0),
+      errorRate: toNum(system.errorRate, 0),
+      activeConnections: toNum(system.activeConnections, 0),
+    },
+    support: {
+      openTickets: toNum(support.openTickets ?? support.tickets, 0),
+      avgResponseTime:
+        typeof support.avgResponseTime === 'string'
+          ? (support.avgResponseTime as string)
+          : support.responseTime !== undefined
+            ? `${String(support.responseTime)}h`
+            : '-',
+      satisfaction: toNum(support.satisfaction, 0),
+    },
+  };
+}
+
 interface PriorityAction {
   id: string;
   title: string;
@@ -86,7 +138,7 @@ const AdminDashboard: React.FC = () => {
       setIsLoading(true);
       const { data } = await api.get('/admin/metrics');
       const payload = (data && (data.data || data)) as any;
-      setMetrics(payload.metrics);
+      setMetrics(normalizeMetrics(payload.metrics || payload));
       setPriorityActions(payload.priorityActions || []);
       setLastUpdate(new Date());
     } catch (error) {
@@ -193,11 +245,17 @@ const AdminDashboard: React.FC = () => {
                 <Users className="w-8 h-8 text-blue-600" />
               </div>
               <Progress
-                value={(metrics.users.active / metrics.users.total) * 100}
+                value={
+                  metrics.users.total > 0 ? (metrics.users.active / metrics.users.total) * 100 : 0
+                }
                 className="mt-2"
               />
               <p className="text-xs text-gray-600 mt-1">
-                アクティブ率: {Math.round((metrics.users.active / metrics.users.total) * 100)}%
+                アクティブ率:{' '}
+                {metrics.users.total > 0
+                  ? Math.round((metrics.users.active / metrics.users.total) * 100)
+                  : 0}
+                %
               </p>
             </CardContent>
           </Card>
@@ -209,7 +267,7 @@ const AdminDashboard: React.FC = () => {
                   <p className="text-sm font-medium text-gray-600">月次売上 (MRR)</p>
                   <p className="text-2xl font-bold">¥{metrics.revenue.mrr.toLocaleString()}</p>
                   <p className="text-xs text-green-600">
-                    +¥{metrics.revenue.todayRevenue.toLocaleString()} 今日
+                    +¥{Number(metrics.revenue.todayRevenue || 0).toLocaleString()} 今日
                   </p>
                 </div>
                 <DollarSign className="w-8 h-8 text-green-600" />
