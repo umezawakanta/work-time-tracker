@@ -243,15 +243,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.warn('⚠️ Failed to update last login timestamps:', e);
     }
 
-    // JWTトークンの生成
+    // JWTトークンの生成（管理者クレームを付与）
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
     const tokenExpiry = rememberMe ? '30d' : '7d';
+    const adminEmails = (process.env.ADMIN_EMAILS || '')
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+    const userEmailLc = String(user.email || '').toLowerCase();
+    const existingRoles: string[] = Array.isArray((user as any).roles)
+      ? ((user as any).roles as string[])
+      : [];
+    const computedIsAdmin =
+      (user as any).isAdmin === true ||
+      String(user.role || '').toLowerCase() === 'admin' ||
+      existingRoles.includes('admin') ||
+      adminEmails.includes(userEmailLc);
+    const roleClaim = computedIsAdmin ? 'admin' : user.role || 'user';
+    const rolesClaim: string[] = computedIsAdmin
+      ? Array.from(new Set([...existingRoles, 'admin']))
+      : existingRoles;
 
     const token = jwt.sign(
       {
         userId: user.id,
         email: user.email,
-        role: user.role,
+        role: roleClaim,
+        roles: rolesClaim,
+        isAdmin: computedIsAdmin,
         isVerified: user.isVerified,
       },
       jwtSecret,
@@ -270,7 +289,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         id: user.id,
         email: user.email,
         displayName: user.displayName,
-        role: user.role,
+        role: roleClaim,
         isVerified: user.isVerified,
         avatar: user.avatar,
         preferences: user.preferences,

@@ -5,7 +5,11 @@ import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import { cors } from '../../lib/cors';
 
-function getAuth(req: VercelRequest): { userId: string | null; role: string | null } {
+function getAuth(req: VercelRequest): {
+  userId: string | null;
+  role: string | null;
+  isAdmin: boolean;
+} {
   try {
     const auth = req.headers.authorization || '';
     if (auth.startsWith('Bearer ')) {
@@ -14,14 +18,20 @@ function getAuth(req: VercelRequest): { userId: string | null; role: string | nu
         token,
         process.env.JWT_SECRET || 'fallback-secret-for-development'
       ) as any;
-      return { userId: decoded.userId || null, role: decoded.role || null };
+      const role: string | null = decoded.role || null;
+      const roles: string[] = Array.isArray((decoded as any).roles)
+        ? ((decoded as any).roles as string[])
+        : [];
+      const isAdmin =
+        role === 'admin' || roles.includes('admin') || (decoded as any).isAdmin === true;
+      return { userId: decoded.userId || null, role, isAdmin };
     }
   } catch (err) {
     void err;
   }
   const uid = (req.headers['x-user-id'] as string) || null;
   const role = (req.headers['x-user-role'] as string) || null;
-  return { userId: uid, role };
+  return { userId: uid, role, isAdmin: role === 'admin' };
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -61,8 +71,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json(post);
     }
 
-    const { userId, role } = getAuth(req);
-    const isAdmin = role === 'admin';
+    const { userId, isAdmin } = getAuth(req);
     if (!userId && !isAdmin) return sendError(res, 401, 'UNAUTHORIZED', '認証が必要です');
 
     if (req.method === 'DELETE') {

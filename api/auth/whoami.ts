@@ -43,6 +43,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         userId: decoded.userId,
         email: decoded.email,
         role: decoded.role,
+        roles: Array.isArray((decoded as any).roles)
+          ? ((decoded as any).roles as string[])
+          : undefined,
+        isAdmin:
+          (decoded as any).isAdmin === true ||
+          decoded.role === 'admin' ||
+          (Array.isArray((decoded as any).roles) &&
+            ((decoded as any).roles as string[]).includes('admin')),
         isVerified: decoded.isVerified,
       },
     });
