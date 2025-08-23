@@ -14,6 +14,8 @@ const AdminUsersPage: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(20);
   const [total, setTotal] = useState<number>(0);
+  const [query, setQuery] = useState<string>('');
+  const [debouncedQuery, setDebouncedQuery] = useState<string>('');
 
   const totalPages = useMemo(() => Math.max(Math.ceil(total / limit), 1), [total, limit]);
 
@@ -21,7 +23,7 @@ const AdminUsersPage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await listUsers({ page, limit, sort: '-createdAt' });
+      const res = await listUsers({ q: debouncedQuery, page, limit, sort: '-createdAt' });
       setItems(res.data);
       setTotal(res.total);
     } catch (e) {
@@ -32,9 +34,20 @@ const AdminUsersPage: React.FC = () => {
   };
 
   useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  useEffect(() => {
     void fetchPage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, debouncedQuery]);
+
+  useEffect(() => {
+    // 検索語が変わったら1ページ目へ
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQuery]);
 
   const formatStatus = (u: PublicUser): string => {
     if (u.blocked) return 'suspended';
@@ -72,7 +85,15 @@ const AdminUsersPage: React.FC = () => {
           </h1>
           <p className="text-gray-600">登録ユーザーの一覧・検索・更新を行えます。</p>
         </div>
-        <div>
+        <div className="flex items-center space-x-2">
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="メール/名前で検索"
+            aria-label="ユーザー検索"
+            className="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
           <Button
             variant="outline"
             size="sm"
