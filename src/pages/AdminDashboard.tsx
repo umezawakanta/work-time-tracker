@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';
+import { api } from '@/services/api/apiConfig';
 import SocialShareButton from '@/components/ui/SocialShareButton';
 import AdminUsersPage from '@/pages/AdminUsersPage';
 
@@ -83,82 +84,14 @@ const AdminDashboard: React.FC = () => {
   const fetchMetrics = async () => {
     try {
       setIsLoading(true);
-
-      const response = await fetch('/api/admin/metrics', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setMetrics(data.metrics);
-        setPriorityActions(data.priorityActions);
-      } else {
-        // フォールバック: デモデータ
-        setMetrics({
-          users: {
-            total: 1247,
-            active: 892,
-            newToday: 23,
-            churnRate: 2.1,
-          },
-          revenue: {
-            mrr: 980000,
-            arr: 11760000,
-            todayRevenue: 32400,
-            conversionRate: 15.3,
-          },
-          system: {
-            uptime: 99.97,
-            responseTime: 245,
-            errorRate: 0.03,
-            activeConnections: 156,
-          },
-          support: {
-            openTickets: 12,
-            avgResponseTime: '2.3h',
-            satisfaction: 4.6,
-          },
-        });
-
-        setPriorityActions([
-          {
-            id: 'action1',
-            title: 'サーバー容量の監視',
-            description: 'データベース使用量が80%に達しています。スケーリングの検討が必要です。',
-            urgency: 'high',
-            category: 'system',
-            deadline: '2025-02-01',
-            assignee: '運用チーム',
-            completed: false,
-          },
-          {
-            id: 'action2',
-            title: '新規契約企業への対応',
-            description: '大手企業3社からエンタープライズプランの引き合いがあります。',
-            urgency: 'high',
-            category: 'revenue',
-            deadline: '2025-01-31',
-            assignee: '営業チーム',
-            completed: false,
-          },
-          {
-            id: 'action3',
-            title: 'セキュリティ監査実施',
-            description: '四半期セキュリティ監査の実施時期です。',
-            urgency: 'medium',
-            category: 'system',
-            deadline: '2025-02-15',
-            assignee: 'セキュリティチーム',
-            completed: false,
-          },
-        ]);
-      }
-
+      const { data } = await api.get('/admin/metrics');
+      const payload = (data && (data.data || data)) as any;
+      setMetrics(payload.metrics);
+      setPriorityActions(payload.priorityActions || []);
       setLastUpdate(new Date());
     } catch (error) {
       console.error('Failed to fetch admin metrics:', error);
+      // 認証系エラーはトーストのみ（グローバルインターセプタが遷移を処理）
       toast.error('メトリクスの取得に失敗しました');
     } finally {
       setIsLoading(false);

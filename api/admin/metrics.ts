@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { withAuth, AuthenticatedRequest } from '../../src/middleware/auth';
 import { cors } from '../../lib/cors';
+import { requireAdmin } from '../../lib/authAdmin';
 
 interface AdminMetrics {
   users: {
@@ -40,7 +40,7 @@ interface PriorityAction {
   status: 'pending' | 'in_progress' | 'completed';
 }
 
-const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<void> => {
+const handler = async (req: VercelRequest, res: VercelResponse): Promise<void> => {
   await cors(req, res);
 
   if (req.method === 'OPTIONS') {
@@ -54,6 +54,10 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
   }
 
   try {
+    // Admin only
+    const ctx = requireAdmin(req, res);
+    if (!ctx) return;
+
     // 実際のデータベースからメトリクスを取得
     // デモ用のメトリクスデータ（実際の実装では実際のDBから取得）
     const metrics: AdminMetrics = {
@@ -136,7 +140,4 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
   }
 };
 
-export default withAuth(handler, {
-  requireAuth: true,
-  requireVerified: true,
-});
+export default handler;
