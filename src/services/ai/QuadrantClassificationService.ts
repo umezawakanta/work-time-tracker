@@ -11,7 +11,35 @@ const GEMINI_API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
-const OLLAMA_API_URL = 'http://localhost:11434/api/chat';
+// ---- AI auxiliary endpoints & flags ----
+const getAiTagsEnabled = (): boolean => {
+  try {
+    const v = getEnv('VITE_AI_TAGS_ENABLED');
+    return String(v).toLowerCase() === 'true';
+  } catch {
+    return false;
+  }
+};
+
+const getAiTagsUrl = (): string | null => {
+  try {
+    const fromEnv = getEnv('VITE_AI_TAGS_API');
+    if (fromEnv) return fromEnv;
+    // Dev fallback only
+    if (ENV.isDev()) return 'http://localhost:11434/api/tags';
+  } catch {}
+  return null;
+};
+
+const getOllamaChatUrl = (): string | null => {
+  try {
+    const fromEnv = getEnv('VITE_OLLAMA_CHAT_API');
+    if (fromEnv) return fromEnv;
+    // Dev fallback only
+    if (ENV.isDev()) return 'http://localhost:11434/api/chat';
+  } catch {}
+  return null;
+};
 
 import { ENV, getEnv, isDev as isDevEnv } from '@/utils/env';
 
@@ -112,9 +140,11 @@ const getOllamaModel = (): string => {
 // Ollamaの接続確認
 const checkOllamaConnection = async (): Promise<boolean> => {
   try {
-    const response = await axios.get('http://localhost:11434/api/tags', {
-      timeout: 5000,
-    });
+    // Guard: disabled in production unless explicitly enabled
+    if (!getAiTagsEnabled()) return false;
+    const url = getAiTagsUrl();
+    if (!url) return false;
+    const response = await axios.get(url, { timeout: 5000 });
     return response.status === 200;
   } catch {
     return false;
