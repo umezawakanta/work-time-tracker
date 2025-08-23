@@ -5,8 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Calendar, Globe, MapPin, Lock, Users } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import SupportRateChart from '@/components/chart/SupportRateChart';
 import CandidateTimeline from '@/components/timeline/CandidateTimeline';
 import { Candidate } from '@/types';
@@ -80,14 +79,12 @@ const CandidateDetailView: React.FC<CandidateDetailViewProps> = ({
           <CardContent>
             <div className="flex flex-col items-center mb-6">
               {candidate.imageUrl ? (
-                <div className="relative h-32 w-32 rounded-full overflow-hidden mb-4">
-                  <Image
-                    src={candidate.imageUrl}
-                    alt={candidate.name}
-                    layout="fill"
-                    objectFit="cover"
-                  />
-                </div>
+                <img
+                  src={candidate.imageUrl}
+                  alt={candidate.name}
+                  className="h-32 w-32 rounded-full object-cover mb-4"
+                  loading="lazy"
+                />
               ) : (
                 <Avatar className="h-32 w-32 mb-4">
                   <AvatarFallback>{getInitials(candidate.name)}</AvatarFallback>

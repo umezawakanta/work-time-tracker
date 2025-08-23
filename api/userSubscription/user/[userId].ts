@@ -3,7 +3,7 @@
  * /api/userSubscription/user/[userId]
  */
 
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // デモユーザーのサブスクリプションデータ
 const getUserSubscriptionData = (userId: string) => {
@@ -110,7 +110,7 @@ const getUserSubscriptionData = (userId: string) => {
   };
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { userId } = req.query;
 
   try {

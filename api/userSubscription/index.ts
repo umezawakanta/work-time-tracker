@@ -3,7 +3,7 @@
  * ADHD/ASD生活支援サイトのサブスクリプション管理
  */
 
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // サンプルサブスクリプションデータ
 const sampleSubscriptions = [
@@ -30,7 +30,7 @@ const sampleSubscriptions = [
   },
 ];
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     if (req.method === 'GET') {
       // すべてのサブスクリプションを取得

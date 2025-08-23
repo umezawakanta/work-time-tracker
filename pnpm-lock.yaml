@@ -237,9 +237,6 @@ importers:
       multer:
         specifier: 2.0.2
         version: 2.0.2
-      next:
-        specifier: ^15.3.0
-        version: 15.3.4(@babel/core@7.27.4)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       node-cron:
         specifier: ^4.2.1
         version: 4.2.1
@@ -3046,7 +3043,6 @@ packages:
 
   '@rollup/rollup-win32-x64-msvc@4.44.0':
     resolution: {integrity: sha512-Q2Mgwt+D8hd5FIPUuPDsvPR7Bguza6yTkJxspDGkZj7tBRn2y4KSWYuIXpftFSjBra76TbKerCV7rgFPQrn+wQ==}
-    cpu: [x64]
     os: [win32]
 
   '@sentry/core@6.19.7':
@@ -11304,7 +11300,8 @@ snapshots:
       outvariant: 1.4.3
       strict-event-emitter: 0.5.1
 
-  '@next/env@15.3.4': {}
+  '@next/env@15.3.4':
+    optional: true
 
   '@next/swc-darwin-arm64@15.3.4':
     optional: true
@@ -12334,6 +12331,7 @@ snapshots:
   '@swc/helpers@0.5.15':
     dependencies:
       tslib: 2.8.1
+    optional: true
 
   '@swc/types@0.1.23':
     dependencies:
@@ -13688,7 +13686,8 @@ snapshots:
 
   cli-width@4.1.0: {}
 
-  client-only@0.0.1: {}
+  client-only@0.0.1:
+    optional: true
 
   cliui@6.0.0:
     dependencies:
@@ -17187,6 +17186,7 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
+    optional: true
 
   node-cron@4.2.1: {}
 
@@ -17468,6 +17468,7 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+    optional: true
 
   postcss@8.5.6:
     dependencies:
@@ -18680,6 +18681,7 @@ snapshots:
     optionalDependencies:
       '@babel/core': 7.27.4
       babel-plugin-macros: 3.1.0
+    optional: true
 
   supports-color@5.5.0:
     dependencies:

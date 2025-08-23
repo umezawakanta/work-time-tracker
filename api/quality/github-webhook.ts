@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { QualityMetrics } from '../../src/services/quality/QualityAnalysisService';
 
 interface GitHubQualityPayload {
@@ -389,7 +389,7 @@ let qualityHistory: Array<{
   metrics: Partial<QualityMetrics>;
 }> = [];
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
