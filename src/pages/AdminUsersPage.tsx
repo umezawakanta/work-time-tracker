@@ -231,8 +231,8 @@ const AdminUsersPage: React.FC = () => {
           <div className="flex items-center justify-between px-4 py-3">
             <div className="text-sm text-gray-600">
               {total > 0
-                ? `${(page - 1) * limit + 1}–${Math.min(page * limit, total)} / ${total}`
-                : '0 / 0'}
+                ? `${(page - 1) * limit + 1}–${Math.min(page * limit, total)} / ${total} （ページ ${page} / ${totalPages}）`
+                : '0 / 0 （ページ 0 / 0）'}
             </div>
             <div className="space-x-2">
               <Button
