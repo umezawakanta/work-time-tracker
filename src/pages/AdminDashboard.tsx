@@ -33,6 +33,7 @@ import {
 import { toast } from 'react-hot-toast';
 import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';
 import SocialShareButton from '@/components/ui/SocialShareButton';
+import AdminUsersPage from '@/pages/AdminUsersPage';
 
 interface AdminMetrics {
   users: {
@@ -325,8 +326,9 @@ const AdminDashboard: React.FC = () => {
 
       {/* タブコンテンツ */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">概要</TabsTrigger>
+          <TabsTrigger value="users">ユーザー</TabsTrigger>
           <TabsTrigger value="actions">優先アクション</TabsTrigger>
           <TabsTrigger value="analytics">分析</TabsTrigger>
           <TabsTrigger value="settings">設定</TabsTrigger>
@@ -474,6 +476,10 @@ const AdminDashboard: React.FC = () => {
 
         <TabsContent value="analytics" className="space-y-6">
           <AnalyticsDashboard isAdminUser={true} />
+        </TabsContent>
+
+        <TabsContent value="users" className="space-y-6">
+          <AdminUsersPage />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-6">
