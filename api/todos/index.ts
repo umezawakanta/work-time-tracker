@@ -4,6 +4,55 @@ import { TodoModel } from '../../src/server/models/Todo';
 import { withAuth, AuthenticatedRequest, authMiddleware } from '../../src/middleware/auth';
 import { cors } from '../../lib/cors';
 
+// Robust JSON body reader (handles raw string/body getter differences)
+async function readJson(req: any): Promise<any> {
+  try {
+    if (req?.body !== undefined && req?.body !== null) {
+      return typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    }
+    const raw: string = await new Promise((resolve, reject) => {
+      let d = '';
+      req.on('data', (c: Buffer) => (d += c.toString('utf8')));
+      req.on('end', () => resolve(d));
+      req.on('error', reject);
+    });
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    const err: any = new Error('Invalid JSON');
+    err.statusCode = 400;
+    throw err;
+  }
+}
+
+// Helpers to normalize incoming fields from client to DB shape
+function normalizePriority(input: unknown): 'low' | 'medium' | 'high' | 'critical' {
+  if (typeof input === 'string') {
+    const p = input.toLowerCase();
+    if (p === 'low' || p === 'medium' || p === 'high' || p === 'critical') return p;
+  }
+  const num = typeof input === 'number' ? input : Number(input);
+  if (Number.isFinite(num)) {
+    if (num >= 5) return 'critical';
+    if (num >= 4) return 'high';
+    if (num >= 3) return 'medium';
+    return 'low';
+  }
+  return 'medium';
+}
+
+function toNumericPriority(p: 'low' | 'medium' | 'high' | 'critical'): number {
+  switch (p) {
+    case 'critical':
+      return 5;
+    case 'high':
+      return 4;
+    case 'medium':
+      return 3;
+    default:
+      return 2;
+  }
+}
+
 // Helper function to create entity ID
 const createEntityId = (prefix: string = 'todo'): string => {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -128,25 +177,26 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
           .status(401)
           .json({ success: false, status: 401, code: 'UNAUTHORIZED', message: '認証が必要です' });
       }
-      // Create new todo
-      const {
-        title,
-        description,
-        category = 'personal',
-        type = 'task',
-        priority = 'medium',
-        dueDate,
-        reminderDate,
-        projectId,
-        tags = [],
-        estimatedMinutes,
-        location,
-        context = [],
-        recurring,
-      } = req.body;
+      // Read and normalize request body
+      const rawBody = await readJson(req);
+      const title: string | undefined = (rawBody?.title as string) || (rawBody?.task as string);
+      const description: string | undefined = (rawBody?.description as string) || undefined;
+      const categoryInput: string | undefined = (rawBody?.category as string) || undefined;
+      const typeInput: string | undefined = (rawBody?.type as string) || undefined;
+      const priorityInput: unknown = rawBody?.priority;
+      const dueDate: string | undefined =
+        (rawBody?.dueDate as string) || (rawBody?.deadline as string) || undefined;
+      const reminderDate: string | undefined = (rawBody?.reminderDate as string) || undefined;
+      const projectId: string | undefined = (rawBody?.projectId as string) || undefined;
+      const tagsInput: unknown = rawBody?.tags;
+      const estimatedMinutes: number | undefined =
+        typeof rawBody?.estimatedMinutes === 'number' ? rawBody.estimatedMinutes : undefined;
+      const location: string | undefined = (rawBody?.location as string) || undefined;
+      const contextInput: unknown = rawBody?.context;
+      const isPrioritized: boolean = Boolean(rawBody?.isPrioritized);
 
       // Validation
-      if (!title) {
+      if (!title || typeof title !== 'string' || title.trim().length === 0) {
         res.status(400).json({
           success: false,
           error: 'Title is required',
@@ -157,39 +207,75 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
 
       const userId = req.user!.userId;
 
+      // Normalize fields
+      const priorityStr = normalizePriority(priorityInput);
+      const category =
+        typeof categoryInput === 'string' && categoryInput.trim().length > 0
+          ? categoryInput
+          : 'personal';
+      // Persist as a task; preserve ioType to metadata if client sent input/output
+      const dbType: 'task' | 'reminder' | 'goal' | 'habit' = 'task';
+      const ioType: 'input' | 'output' | null =
+        typeInput === 'input' || typeInput === 'output' ? (typeInput as any) : null;
+      const tags = Array.isArray(tagsInput) ? (tagsInput as string[]) : [];
+      const context = Array.isArray(contextInput) ? (contextInput as string[]) : [];
+
       // Create new todo
       const newTodo = new TodoModel({
         title,
         description,
         category,
-        type,
-        priority,
+        type: dbType,
+        priority: priorityStr,
         dueDate,
         reminderDate,
         userId,
         projectId,
-        tags: Array.isArray(tags) ? tags : [],
+        tags,
         estimatedMinutes,
         location,
-        context: Array.isArray(context) ? context : [],
-        recurring,
+        context,
         source: 'manual',
         completed: false,
+        metadata: {
+          ...(ioType ? { ioType } : {}),
+          isPrioritized,
+          clientPriority: priorityInput,
+        },
       });
 
       const savedTodo = await newTodo.save();
 
+      // Build client-compatible response
+      const clientTodo = {
+        _id: (savedTodo as any)?._id?.toString?.() || (savedTodo as any)?.id,
+        task: savedTodo.title,
+        completed: savedTodo.completed,
+        priority:
+          typeof priorityInput === 'number' ? priorityInput : toNumericPriority(priorityStr),
+        isPrioritized,
+        type: (savedTodo as any)?.metadata?.ioType || 'input',
+        createdAt:
+          (savedTodo as any)?.createdAt instanceof Date
+            ? (savedTodo as any).createdAt.toISOString()
+            : (savedTodo as any)?.createdAt,
+        deadline: savedTodo.dueDate || undefined,
+        category: savedTodo.category,
+        tags: Array.isArray(savedTodo.tags) ? savedTodo.tags : [],
+        note: savedTodo.description || undefined,
+        estimatedDuration: (savedTodo as any)?.estimatedMinutes,
+      };
+
       console.log('✅ Todo created:', {
-        todoId: savedTodo.id,
+        todoId: clientTodo._id,
         userId,
         title: savedTodo.title,
         category: savedTodo.category,
       });
 
       res.status(201).json({
-        success: true,
-        data: savedTodo,
         message: 'TODOを作成しました',
+        todo: clientTodo,
       });
     } else {
       res.status(405).json({
