@@ -169,7 +169,7 @@ const SubscriptionSchema = new Schema(
     // 基本情報
     userId: { type: String, required: true, index: true },
     planId: { type: String, required: true, index: true },
-    stripeCustomerId: { type: String, required: true, index: true },
+    stripeCustomerId: { type: String, required: true },
     stripeSubscriptionId: { type: String, required: true, unique: true },
 
     // プラン詳細
@@ -383,7 +383,6 @@ const InvoiceSchema = new Schema(
 
 // Indexes
 SubscriptionSchema.index({ userId: 1, status: 1 });
-SubscriptionSchema.index({ stripeCustomerId: 1 });
 SubscriptionSchema.index({ planType: 1 });
 
 SubscriptionPlanSchema.index({ target: 1, isActive: 1 });

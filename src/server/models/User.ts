@@ -262,12 +262,16 @@ const UserSchema = new Schema(
 );
 
 // Indexes for performance
-UserSchema.index({ email: 1 });
-UserSchema.index({ uid: 1 });
 UserSchema.index({ status: 1 });
 UserSchema.index({ role: 1 });
 UserSchema.index({ lastLoginAt: -1 });
 UserSchema.index({ createdAt: -1 });
+
+// Text index for search (email/displayName/username)
+UserSchema.index(
+  { email: 'text', displayName: 'text', username: 'text' },
+  { name: 'user_text_search', weights: { email: 10, displayName: 5, username: 4 } }
+);
 
 // Virtual for user ID
 UserSchema.virtual('id').get(function () {
