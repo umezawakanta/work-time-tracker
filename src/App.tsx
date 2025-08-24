@@ -43,6 +43,7 @@ const LearningHub = lazy(() => import('./pages/LearningHub'));
 const IQTest = lazy(() => import('./pages/IQTest'));
 const MBTITest = lazy(() => import('./pages/MBTITest'));
 const InvitePage = lazy(() => import('./pages/Invite'));
+const InviteThanks = lazy(() => import('./pages/InviteThanks'));
 
 // Guarded route: requires admin
 const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -323,6 +324,16 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <InvitePage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/invite/thanks"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <InviteThanks />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }
