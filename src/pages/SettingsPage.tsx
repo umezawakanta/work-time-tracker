@@ -16,6 +16,13 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
 import { usePremiumFeatures } from '@/components/dailyToDoReminder/controls/usePremiumFeatures';
@@ -227,6 +234,7 @@ const SettingsPage: React.FC = () => {
       return false;
     }
   });
+  const [showDigestPreview, setShowDigestPreview] = useState(false);
 
   const [language, setLanguage] = useState('ja');
   const [timezone, setTimezone] = useState('Asia/Tokyo');
@@ -518,7 +526,10 @@ const SettingsPage: React.FC = () => {
                   />
                 </div>
 
-                <div className="pt-4">
+                <div className="flex items-center justify-between pt-4">
+                  <Button variant="outline" size="sm" onClick={() => setShowDigestPreview(true)}>
+                    プレビューを見る
+                  </Button>
                   <Button onClick={handleSaveSettings} aria-label="通知設定を保存">
                     通知設定を保存
                   </Button>
@@ -526,6 +537,35 @@ const SettingsPage: React.FC = () => {
               </CardContent>
             </Card>
           </TabsContent>
+          <Dialog open={showDigestPreview} onOpenChange={setShowDigestPreview}>
+            <DialogContent className="max-w-xl">
+              <DialogHeader>
+                <DialogTitle>週1まとめメール（プレビュー）</DialogTitle>
+                <DialogDescription>今週のハイライトと次の一手の提案</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3 text-sm text-gray-700">
+                <div>
+                  <p className="font-semibold">🎯 今週の成果</p>
+                  <ul className="list-disc pl-5">
+                    <li>学習進捗: ビジネス基礎 +20%</li>
+                    <li>AI提案の実行: 3件</li>
+                    <li>継続日数: 4日</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold">🧠 次の一手（1分）</p>
+                  <p>AI秘書で「明日の最重要タスク」を1件だけ決めましょう。</p>
+                </div>
+                <div>
+                  <p className="font-semibold">📚 学習レコメンド</p>
+                  <p>生産性エンジン 第2章（見積もり誤差と対策）を読む（5分）。</p>
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <Button onClick={() => setShowDigestPreview(false)}>閉じる</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* API設定 */}
           <TabsContent value="api" className="space-y-4">
