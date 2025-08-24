@@ -27,6 +27,8 @@ pnpm lint && pnpm type-check
 
 - 環境変数と運用方針: `docs/environment-setup.md`
 - 分析/ダッシュボード要件: `docs/analytics.md`
+  - Live Metrics (dev): `GET /api/analytics/live-metrics`（Vercel関数）
+  - Live Metrics (dev server): `GET /api/analytics/live-metrics`、SSE: `GET /api/analytics/events`
 
 ### 最小 `.env.local` 例（または `.env`）
 
