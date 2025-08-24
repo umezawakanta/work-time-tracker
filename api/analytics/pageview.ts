@@ -1,7 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { connectDB } from '../../src/server/config/database';
+import AnalyticsEvent from '../../src/server/models/AnalyticsEvent';
 
-// Simple in-memory store keyed by YYYY-MM-DD
-// Note: For serverless, each invocation can be cold; this is best-effort and complemented by AnalyticsEvent storage elsewhere.
+// Simple in-memory store keyed by YYYY-MM-DD (fallback when DB not persisted due to cold start)
 const pageviewBuckets: Record<string, number> = {};
 
 function getDateKey(date = new Date()): string {
@@ -15,16 +16,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { path, referrer, title } = (req.body as any) || {};
+    const { path, referrer, title, clientId } = (req.body as any) || {};
     const key = getDateKey();
     pageviewBuckets[key] = (pageviewBuckets[key] || 0) + 1;
 
-    // Best-effort logging (does not block)
+    // Persist to DB (best-effort)
+    try {
+      await connectDB();
+      await AnalyticsEvent.create({
+        event: 'page_view',
+        timestamp: new Date(),
+        clientId: typeof clientId === 'string' ? clientId : undefined,
+        url: typeof path === 'string' ? path : undefined,
+        referrer: typeof referrer === 'string' ? referrer : undefined,
+        data: { title },
+        userAgent: String(req.headers['user-agent'] || ''),
+        ipAddress: String(
+          (req.headers['x-forwarded-for'] as string) || (req.connection as any)?.remoteAddress || ''
+        ),
+      });
+    } catch (e) {
+      // Non-fatal in serverless; fall back to memory bucket only
+      console.warn('[Pageview] DB persist failed (non-fatal):', e);
+    }
+
+    // Log
     console.log('[Pageview]', {
       key,
       path: typeof path === 'string' ? path : undefined,
       referrer: typeof referrer === 'string' ? referrer : undefined,
       title: typeof title === 'string' ? title : undefined,
+      clientId,
       ua: req.headers['user-agent'] || '',
     });
 

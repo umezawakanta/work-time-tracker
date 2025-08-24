@@ -1580,6 +1580,8 @@ console.log('   PUT  /api/books/:id'); // 追加
 console.log('   DELETE /api/books/:id'); // 追加
 console.log('   POST /api/analytics/track'); // 追加
 console.log('   GET  /api/analytics/summary'); // 追加
+console.log('   POST /api/analytics/pageview'); // 追加
+console.log('   GET  /api/admin/metrics/pageviews/trend'); // 追加
 console.log('   POST /api/ai/anthropic'); // 追加
 console.log('   GET  /api/ai/health'); // 追加
 console.log('   POST /api/todos/notify-added'); // 追加

@@ -313,6 +313,21 @@ export const useAnalytics = () => {
    */
   const trackPageView = useCallback((pagePath: string, pageTitle?: string) => {
     try {
+      const getClientId = () => {
+        try {
+          const key = 'analytics:client_id';
+          let cid = localStorage.getItem(key);
+          if (!cid) {
+            cid = 'cid_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+            localStorage.setItem(key, cid);
+          }
+          return cid;
+        } catch {
+          return undefined;
+        }
+      };
+      const clientId = getClientId();
+
       // Dev: log + optionally send to local mock endpoint so admin trend works in dev
       if (process.env.NODE_ENV !== 'production') {
         console.log(`[Analytics] Page View: ${pagePath} (${pageTitle})`);
@@ -320,7 +335,12 @@ export const useAnalytics = () => {
           fetch('/api/analytics/pageview', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ path: pagePath, title: pageTitle, referrer: document.referrer }),
+            body: JSON.stringify({
+              path: pagePath,
+              title: pageTitle,
+              referrer: document.referrer,
+              clientId,
+            }),
           }).catch(() => {});
         } catch {}
         return;
@@ -350,7 +370,12 @@ export const useAnalytics = () => {
         fetch('/api/analytics/pageview', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path: pagePath, title: pageTitle, referrer: document.referrer }),
+          body: JSON.stringify({
+            path: pagePath,
+            title: pageTitle,
+            referrer: document.referrer,
+            clientId,
+          }),
         }).catch(() => {});
       }
     } catch (error) {

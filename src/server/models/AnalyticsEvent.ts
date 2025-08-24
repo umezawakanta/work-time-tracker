@@ -5,6 +5,7 @@ export interface AnalyticsEventDocument extends Document {
   timestamp: Date;
   userId?: string;
   sessionId?: string;
+  clientId?: string;
   data: Record<string, unknown>;
   userAgent?: string;
   ipAddress?: string;
@@ -20,6 +21,7 @@ const AnalyticsEventSchema = new Schema<AnalyticsEventDocument>(
     timestamp: { type: Date, required: true, index: true },
     userId: { type: String, index: true },
     sessionId: { type: String, index: true },
+    clientId: { type: String, index: true },
     data: { type: Schema.Types.Mixed, default: {} },
     userAgent: { type: String },
     ipAddress: { type: String },
@@ -31,6 +33,8 @@ const AnalyticsEventSchema = new Schema<AnalyticsEventDocument>(
 
 AnalyticsEventSchema.index({ event: 1, timestamp: -1 });
 AnalyticsEventSchema.index({ userId: 1, timestamp: -1 });
+AnalyticsEventSchema.index({ clientId: 1, timestamp: -1 });
+AnalyticsEventSchema.index({ url: 1, timestamp: -1 });
 
 export const AnalyticsEvent: Model<AnalyticsEventDocument> =
   mongoose.models.AnalyticsEvent ||
