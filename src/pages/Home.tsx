@@ -292,6 +292,7 @@ const Home: React.FC = () => {
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-4">
             人生のコントロールを取り戻そう
           </h1>
+          <p className="text-sm font-semibold text-emerald-600 mb-2">無料で始める</p>
           <p className="text-base md:text-xl text-gray-700 max-w-3xl mx-auto mb-8">
             生成AIと連携したパーソナル秘書サービスで、計画・仕事・学習・自己診断までを一元管理。
             IQ/MBTIなどの診断結果に基づいて、あなた専用に最適化された体験を提供します。
@@ -311,8 +312,12 @@ const Home: React.FC = () => {
               aria-label="自己診断を始める"
             >
               自己診断を始める
+              <Badge variant="secondary" className="ml-2 align-middle">
+                5–10分
+              </Badge>
             </Button>
           </div>
+          <p className="mt-2 text-xs text-gray-500">登録不要・個人情報は非公開</p>
         </div>
       </div>
 
@@ -648,6 +653,35 @@ const Home: React.FC = () => {
           >
             <Plus className="w-8 h-8" />
           </Button>
+        </div>
+      </div>
+
+      {/* Bottom CTA duplicate */}
+      <div className="bg-white border-t">
+        <div className="container mx-auto px-4 max-w-7xl py-10 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">今日からはじめよう</h2>
+          <p className="text-gray-600 mb-6">AI秘書と自己診断で、最短60秒の一歩から。</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Button
+              className="px-6 py-6 text-base md:text-lg"
+              onClick={() => navigate('/ai-assistant')}
+              aria-label="AI秘書を使う"
+            >
+              AI秘書を使う
+            </Button>
+            <Button
+              variant="outline"
+              className="px-6 py-6 text-base md:text-lg"
+              onClick={() => navigate('/assessments')}
+              aria-label="自己診断を始める"
+            >
+              自己診断を始める
+              <Badge variant="secondary" className="ml-2 align-middle">
+                5–10分
+              </Badge>
+            </Button>
+          </div>
+          <p className="mt-2 text-xs text-gray-500">登録不要・個人情報は非公開</p>
         </div>
       </div>
     </div>
