@@ -956,6 +956,13 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
 
   return (
     <AccessibilityProvider>
+      {/* Skip to content link for keyboard users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:text-blue-700 focus:px-3 focus:py-2 focus:rounded shadow"
+      >
+        コンテンツにスキップ
+      </a>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
         {/* サイドバー */}
         <aside
@@ -1044,7 +1051,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         </aside>
 
         {/* メインコンテンツ */}
-        <main className="flex-1 flex flex-col min-h-screen">
+        <main id="main-content" role="main" className="flex-1 flex flex-col min-h-screen">
           {/* トップナビゲーション */}
           <header
             className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4"
