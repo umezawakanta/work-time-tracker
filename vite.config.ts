@@ -224,45 +224,7 @@ export default defineConfig(({ command, mode }) => {
             }
             return `assets/[name].[hash][extname]`;
           },
-
-          // Code splittingの最適化
-          manualChunks: (id) => {
-            // Vendor chunksの分離
-            if (id.includes('node_modules')) {
-              if (id.includes('react') || id.includes('react-dom')) {
-                return 'react-vendor';
-              }
-              if (id.includes('lucide-react') || id.includes('@radix-ui')) {
-                return 'ui-vendor';
-              }
-              if (id.includes('recharts') || id.includes('chart.js')) {
-                return 'chart-vendor';
-              }
-              if (id.includes('date-fns') || id.includes('react-big-calendar')) {
-                return 'date-vendor';
-              }
-              // Exclude heavy server-only libs from client bundle if accidentally imported
-              if (id.includes('mongoose') || id.includes('socket.io')) return 'void';
-              return 'vendor';
-            }
-
-            // 機能別chunksの分離
-            if (id.includes('/cognitive/')) {
-              return 'cognitive-features';
-            }
-            if (id.includes('/worktime/')) {
-              return 'worktime-features';
-            }
-            if (id.includes('/chart/') || id.includes('/analytics/')) {
-              return 'analytics-features';
-            }
-            if (id.includes('/testing/') || id.includes('/performance/')) return 'testing-features';
-            return undefined;
-          },
         },
-
-        // 外部依存関係の最適化
-        external: mode === 'production' ? [] : undefined,
       },
 
       // チャンク分割の最適化
