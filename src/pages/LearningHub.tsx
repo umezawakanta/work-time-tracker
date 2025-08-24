@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { useAnalytics } from '@/lib/analytics';
 
 const LearningHub: React.FC = () => {
   const { trackPageView, trackEvent } = useAnalytics();
+  const [continueTomorrow, setContinueTomorrow] = useState<Record<string, boolean>>({});
   const courses: Array<
     Course & { desc: string; icon: React.ReactNode; progress?: number; next?: string }
   > = [
@@ -49,6 +50,19 @@ const LearningHub: React.FC = () => {
     trackPageView('/learning', 'Learning Hub');
   }, [trackPageView]);
 
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('learning:continueTomorrow');
+      if (raw) setContinueTomorrow(JSON.parse(raw));
+    } catch {}
+  }, []);
+
+  const persistTomorrow = (next: Record<string, boolean>) => {
+    try {
+      localStorage.setItem('learning:continueTomorrow', JSON.stringify(next));
+    } catch {}
+  };
+
   return (
     <div className="container mx-auto px-4 py-10 max-w-6xl">
       <header className="text-center mb-10">
@@ -84,21 +98,61 @@ const LearningHub: React.FC = () => {
               <Button className="w-full" aria-label={`${c.title} を開始`}>
                 開始
               </Button>
-              <div className="mt-2 text-right">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  aria-label="進捗を+10%保存"
-                  onClick={() => {
-                    const nextVal = Math.min(100, (c.progress ?? 0) + 10);
-                    void saveProgress(c.id, nextVal).then(() =>
-                      trackEvent('learning_progress_saved', { courseId: c.id, progress: nextVal })
-                    );
-                  }}
-                >
-                  進捗+10%保存
-                </Button>
+              <div className="mt-2 flex items-center justify-between">
+                <div className="text-xs text-gray-600">
+                  <span className="inline-flex items-center gap-1 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded px-2 py-0.5">
+                    ⏱️ 次の1分タスク: {c.next || '次のセクションを1分だけ読む'}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    aria-label="進捗を+10%保存"
+                    onClick={() => {
+                      const nextVal = Math.min(100, (c.progress ?? 0) + 10);
+                      void saveProgress(c.id, nextVal).then(() => {
+                        trackEvent('learning_progress_saved', {
+                          courseId: c.id,
+                          progress: nextVal,
+                        });
+                        // +10% 後に「明日も続ける」トグルを提示
+                        setContinueTomorrow((prev) => {
+                          const next = { ...prev, [c.id]: true };
+                          persistTomorrow(next);
+                          return next;
+                        });
+                      });
+                    }}
+                  >
+                    進捗+10%保存
+                  </Button>
+                </div>
               </div>
+              {continueTomorrow[c.id] && (
+                <div className="mt-2 text-right">
+                  <label className="text-xs text-gray-600 inline-flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={continueTomorrow[c.id]}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setContinueTomorrow((prev) => {
+                          const next = { ...prev, [c.id]: checked };
+                          persistTomorrow(next);
+                          return next;
+                        });
+                        trackEvent('learning_continue_tomorrow_toggle', {
+                          courseId: c.id,
+                          enabled: checked,
+                        });
+                      }}
+                      aria-label="明日も続ける"
+                    />
+                    明日も続ける
+                  </label>
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
