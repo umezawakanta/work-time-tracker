@@ -9,6 +9,8 @@ import { AccessibilityProvider } from '@/components/accessibility/AccessibilityP
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
+import ThreeStepTour, { TourStepId } from '@/components/engagement/ThreeStepTour';
+import { useAnalytics } from '@/lib/analytics';
 import { LanguageSwitcher } from '@/components/internationalization/LanguageSwitcher';
 import { logout } from '@/services/api/authApi';
 import {
@@ -752,12 +754,19 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { user, setIsAuthenticated, setUser } = useAuth();
+  const { trackEvent } = useAnalytics();
   const isDarkMode = theme === 'dark';
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     core: true,
     'adhd-specialized': true,
+  });
+  const [tourOpen, setTourOpen] = useState(false);
+  const [tourProgress, setTourProgress] = useState<Record<TourStepId, boolean>>({
+    assessments: false,
+    ai: false,
+    learning: false,
   });
 
   // 翻訳関数（簡易版）
@@ -795,6 +804,39 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
     });
     setExpandedSections(initialState);
   }, []);
+
+  // 三段階ツアー進捗の読み込み
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('onboarding:3step');
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<Record<TourStepId, boolean>>;
+        setTourProgress((prev) => ({ ...prev, ...parsed }));
+      }
+    } catch {}
+  }, []);
+
+  const persistTour = (next: Record<TourStepId, boolean>) => {
+    try {
+      localStorage.setItem('onboarding:3step', JSON.stringify(next));
+    } catch {}
+  };
+
+  const completeTourStep = (step: TourStepId) => {
+    setTourProgress((prev) => {
+      const next = { ...prev, [step]: true };
+      persistTour(next);
+      return next;
+    });
+  };
+
+  const skipTourAll = () => {
+    trackEvent('onboarding_tour_skipped_all');
+    setTourOpen(false);
+    try {
+      localStorage.setItem('onboarding:3step_skipped', 'true');
+    } catch {}
+  };
 
   const renderMenuItem = (item: MenuItem) => {
     const isActive = location.pathname === item.path;
@@ -984,7 +1026,10 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         {/* メインコンテンツ */}
         <main className="flex-1 flex flex-col min-h-screen">
           {/* トップナビゲーション */}
-          <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4" role="banner">
+          <header
+            className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4"
+            role="banner"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -993,6 +1038,17 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
               </div>
 
               <div className="flex items-center gap-4">
+                {/* 3-step progress badge */}
+                <button
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-full text-xs hover:bg-purple-100 border border-purple-200"
+                  onClick={() => setTourOpen(true)}
+                  aria-label="スタートガイドを開く"
+                >
+                  <span>ガイド</span>
+                  <Badge variant="secondary" className="bg-white text-purple-700 border">
+                    {Object.values(tourProgress).filter(Boolean).length}/3
+                  </Badge>
+                </button>
                 <LanguageSwitcher variant="compact" className="text-gray-600 dark:text-gray-300" />
 
                 <Button
@@ -1041,11 +1097,22 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
 
           {/* ページコンテンツ */}
           <div className="flex-1 p-6">
+            {/* Global 3-step Tour */}
+            <ThreeStepTour
+              open={tourOpen}
+              onOpenChange={setTourOpen}
+              progress={tourProgress}
+              onCompleteStep={completeTourStep}
+              onSkipAll={skipTourAll}
+              navigateTo={(path) => navigate(path)}
+            />
             {/* パンくず（最小）*/}
             <nav className="mb-4 text-sm text-slate-600 dark:text-slate-300" aria-label="パンくず">
               <ol className="flex items-center gap-2">
                 <li>
-                  <Link to="/" className="hover:underline">ホーム</Link>
+                  <Link to="/" className="hover:underline">
+                    ホーム
+                  </Link>
                 </li>
                 <li aria-hidden>›</li>
                 <li>
