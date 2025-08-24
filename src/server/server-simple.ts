@@ -432,10 +432,10 @@ app.get('/api/auth/whoami', (req, res) => {
     const mockUser = {
       userId: 'user_123',
       email: 'demo@example.com',
-      role: 'user',
-      roles: ['user'],
+      role: 'admin',
+      roles: ['admin', 'user'],
       isVerified: true,
-      isAdmin: false,
+      isAdmin: true,
     };
 
     return res
