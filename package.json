@@ -58,7 +58,8 @@
         "test:auth:ci": "jest --config jest.auth.config.js --ci --coverage --watchAll=false",
         "test:auth:debug": "jest --config jest.auth.config.js --runInBand --detectOpenHandles",
         "test:auth:verbose": "jest --config jest.auth.config.js --verbose",
-        "test:auth:clean": "jest --config jest.auth.config.js --clearCache"
+        "test:auth:clean": "jest --config jest.auth.config.js --clearCache",
+        "postinstall": "pnpm dedupe"
     },
     "pnpm": {
         "onlyBuiltDependencies": [
@@ -69,6 +70,8 @@
             "esbuild"
         ],
         "overrides": {
+            "react": "18.3.1",
+            "react-dom": "18.3.1",
             "cookie@<0.7.0": ">=0.7.0",
             "@eslint/plugin-kit@<0.3.3": ">=0.3.3",
             "react-is": "18.3.1",

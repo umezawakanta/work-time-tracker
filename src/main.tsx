@@ -26,6 +26,20 @@ try {
     // バージョンの簡易ログ（本番ではコンソール除去設定で落ちます）
     // @ts-ignore
     console.log('[Boot] React version:', (React as any)?.version);
+    // Runtime guard: ensure Children exists to prevent undefined assignment
+    try {
+      if (!(React as any)?.Children) {
+        throw new Error('React.Children missing');
+      }
+    } catch (guardErr) {
+      console.error('[Boot] React runtime guard failed:', guardErr);
+      // Hard reload without cache as last resort
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('_r', Date.now().toString());
+        window.location.replace(url.toString());
+      } catch {}
+    }
   }
 } catch {}
 
