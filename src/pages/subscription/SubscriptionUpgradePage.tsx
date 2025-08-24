@@ -23,6 +23,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
 import { UserSubscription } from '@/types';
+import { useAnalytics } from '@/lib/analytics';
 
 // Type definition for interval
 type PlanInterval = 'month' | 'year';
@@ -160,6 +161,7 @@ const plans: {
 export default function SubscriptionUpgradePage() {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const { trackEvent } = useAnalytics();
   const [interval, setInterval] = useState<'monthly' | 'yearly'>('monthly');
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [currentSubscription, setCurrentSubscription] = useState<UserSubscription | null>(null);
@@ -207,9 +209,15 @@ export default function SubscriptionUpgradePage() {
 
     // フリープラン以外を選択した場合は支払いダイアログを表示
     if (planId !== 'free') {
+      try {
+        trackEvent('subscription_start_checkout', { planId, interval });
+      } catch {}
       setShowPaymentDialog(true);
     } else {
       // フリープランはダイアログなしで直接選択可能
+      try {
+        trackEvent('subscription_select_plan', { planId, interval });
+      } catch {}
       handleSubscriptionUpdate(planId);
     }
   };
@@ -246,6 +254,14 @@ export default function SubscriptionUpgradePage() {
       // 最新のサブスクリプション情報を再取得
       const response = await userSubscriptionApi.getUserSubscription(user.id);
       setCurrentSubscription(response.data);
+      try {
+        trackEvent('subscription_updated', {
+          userId: user.id,
+          planId,
+          interval,
+          status: 'active',
+        });
+      } catch {}
       setShowPaymentDialog(false);
 
       // プレミアムプランの場合、3秒後に成功メッセージを表示
@@ -285,6 +301,15 @@ export default function SubscriptionUpgradePage() {
     }
 
     // 処理中の演出（実際の決済処理はここに実装）
+    try {
+      if (selectedPlan) {
+        trackEvent('subscription_payment_submitted', {
+          planId: selectedPlan,
+          method: paymentMethod,
+          interval,
+        });
+      }
+    } catch {}
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // 選択されたプランIDでサブスクリプションを更新

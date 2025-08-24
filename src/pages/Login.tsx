@@ -18,6 +18,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'react-hot-toast';
 import { AxiosError } from 'axios';
 import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle, Mail, Lock, Shield } from 'lucide-react';
+import { useAnalytics } from '@/lib/analytics';
 
 // Extend Window interface for custom properties
 declare global {
@@ -43,6 +44,7 @@ export default function Login() {
   const location = useLocation();
   const { setIsAuthenticated, isAuthenticated, refreshAuth, setUser } = useAuth();
   const { user } = useAuth() as any;
+  const { identifyUser, trackEvent } = useAnalytics();
 
   // リダイレクト先を取得（PrivateRouteから渡される）
   const from = location.state?.from?.pathname || '/';
@@ -172,6 +174,12 @@ export default function Login() {
       }
 
       if (loginResponse.user) setUser(loginResponse.user);
+      try {
+        const uid =
+          (loginResponse as any)?.user?.id || (loginResponse as any)?.userId || formData.email;
+        identifyUser(uid, { email: formData.email });
+        trackEvent('login_success', { method: 'password' });
+      } catch {}
 
       console.log('🔄 Setting authenticated state...');
       setIsAuthenticated(true);
