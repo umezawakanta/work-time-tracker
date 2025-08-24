@@ -175,19 +175,19 @@ const AdminDashboard: React.FC = () => {
         api.get('/analytics/summary', { params: { range: '7d' } }),
         api.get('/admin/analytics/summary', { params: { range: '7d' } }),
       ]);
-      const base = (publicSummary && (publicSummary.data || publicSummary)) as any;
+      const summaryBase = (publicSummary && (publicSummary.data || publicSummary)) as any;
       const admin = (adminSummary && (adminSummary.data || adminSummary)) as any;
       const normalized: AnalyticsSummary = {
-        totalUsers: Number(base.totalUsers ?? admin.totalUsers) || 0,
-        activeUsers: Number(base.activeUsers ?? admin.activeUsers) || 0,
-        newUsers: Number(base.newUsers ?? admin.newUsers) || 0,
-        returningUsers: Number(base.returningUsers ?? admin.returningUsers) || 0,
+        totalUsers: Number(summaryBase.totalUsers ?? admin.totalUsers) || 0,
+        activeUsers: Number(summaryBase.activeUsers ?? admin.activeUsers) || 0,
+        newUsers: Number(summaryBase.newUsers ?? admin.newUsers) || 0,
+        returningUsers: Number(summaryBase.returningUsers ?? admin.returningUsers) || 0,
         averageSessionDuration:
-          Number(base.averageSessionDuration ?? admin.averageSessionDuration) || 0,
-        pageViewsTotal: Number(base.pageViewsTotal ?? admin.pageViewsTotal) || 0,
-        topPages: Array.isArray(base.topPages) ? base.topPages : [],
-        deviceBreakdown: base.deviceBreakdown || { desktop: 0, mobile: 0, tablet: 0 },
-        trafficSources: base.trafficSources || {},
+          Number(summaryBase.averageSessionDuration ?? admin.averageSessionDuration) || 0,
+        pageViewsTotal: Number(summaryBase.pageViewsTotal ?? admin.pageViewsTotal) || 0,
+        topPages: Array.isArray(summaryBase.topPages) ? summaryBase.topPages : [],
+        deviceBreakdown: summaryBase.deviceBreakdown || { desktop: 0, mobile: 0, tablet: 0 },
+        trafficSources: summaryBase.trafficSources || {},
         featureUsage: admin.featureUsage || { ai_ok: 0, assessment_saved: 0, learning_saved: 0 },
         topReferrers: admin.topReferrers || [],
         compare: admin.compare || { today: 0, yesterday: 0, diff: 0, pct: 0 },
@@ -197,10 +197,10 @@ const AdminDashboard: React.FC = () => {
       setAnalytics(normalized);
 
       // 7日新規ユーザーの簡易シリーズ（サーバーが配列を返さないため近似値を生成）
-      const base = Math.max(0, normalized.newUsers);
+      const baseNew = Math.max(0, normalized.newUsers);
       const seed = (normalized.pageViewsTotal % 13) + 3;
       const series = Array.from({ length: 7 }, (_, i) =>
-        Math.max(0, Math.round(base * 0.6 + ((i - 3) * seed) / 3))
+        Math.max(0, Math.round(baseNew * 0.6 + ((i - 3) * seed) / 3))
       );
       setDailyNewSeries(series);
     } catch (e) {
