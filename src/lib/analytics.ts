@@ -327,6 +327,21 @@ export const useAnalytics = () => {
         }
       };
       const clientId = getClientId();
+      const getUtm = () => {
+        try {
+          const stored = localStorage.getItem('utm:first_visit');
+          const storedObj = stored ? JSON.parse(stored) : {};
+          const params = new URLSearchParams(window.location.search);
+          const current: Record<string, string> = {};
+          params.forEach((v, k) => {
+            if (k.startsWith('utm_')) current[k] = v;
+          });
+          return { ...storedObj, ...current };
+        } catch {
+          return undefined;
+        }
+      };
+      const utm = getUtm();
 
       // Dev: log + optionally send to local mock endpoint so admin trend works in dev
       if (process.env.NODE_ENV !== 'production') {
@@ -340,6 +355,7 @@ export const useAnalytics = () => {
               title: pageTitle,
               referrer: document.referrer,
               clientId,
+              utm,
             }),
           }).catch(() => {});
         } catch {}
@@ -375,6 +391,7 @@ export const useAnalytics = () => {
             title: pageTitle,
             referrer: document.referrer,
             clientId,
+            utm,
           }),
         }).catch(() => {});
       }
