@@ -1500,6 +1500,9 @@ console.log('   GET  /api/notifications/settings/:userId'); // 追加
 console.log('   POST /api/notifications/settings/:userId'); // 追加
 console.log('   POST /api/notifications/test'); // 追加
 console.log('   GET  /api/notifications/status'); // 追加
+console.log('   POST /api/user/assessments/iq'); // 追加
+console.log('   POST /api/user/assessments/mbti'); // 追加
+console.log('   POST /api/user/learning/progress'); // 追加
 
 // ========================================
 // Notification API Endpoints
@@ -1653,6 +1656,48 @@ app.get('/api/notifications/status', (req, res) => {
         : 'Email service is not configured. Check EMAIL_USER and EMAIL_PASS environment variables.',
     },
   });
+});
+
+// =============================
+// User endpoints (Mock)
+// =============================
+app.post('/api/user/assessments/iq', (req, res) => {
+  console.log('✅ POST /api/user/assessments/iq (mock) called');
+  const { score, total, scaledIQ, percentile } = req.body || {};
+  if (
+    typeof score !== 'number' ||
+    typeof total !== 'number' ||
+    typeof scaledIQ !== 'number' ||
+    typeof percentile !== 'number'
+  ) {
+    return res.status(400).json({ success: false, message: 'Invalid body' });
+  }
+  return res.json({ success: true, data: { saved: true } });
+});
+
+app.post('/api/user/assessments/mbti', (req, res) => {
+  console.log('✅ POST /api/user/assessments/mbti (mock) called');
+  const { type, scores } = req.body || {};
+  const validType = typeof type === 'string' && /^[E|I][S|N][T|F][J|P]$/.test(type);
+  const validScores =
+    scores &&
+    typeof scores.EI === 'number' &&
+    typeof scores.SN === 'number' &&
+    typeof scores.TF === 'number' &&
+    typeof scores.JP === 'number';
+  if (!validType || !validScores) {
+    return res.status(400).json({ success: false, message: 'Invalid body' });
+  }
+  return res.json({ success: true, data: { saved: true } });
+});
+
+app.post('/api/user/learning/progress', (req, res) => {
+  console.log('✅ POST /api/user/learning/progress (mock) called');
+  const { courseId, progress } = req.body || {};
+  if (typeof courseId !== 'string' || typeof progress !== 'number') {
+    return res.status(400).json({ success: false, message: 'Invalid body' });
+  }
+  return res.json({ success: true, data: { saved: true, courseId, progress } });
 });
 
 // 404 Error handler - must be after all known routes; allow future mocks via pattern
