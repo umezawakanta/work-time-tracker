@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import * as ReactDOMClient from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { store } from './store';
@@ -22,7 +22,7 @@ try {
     // @ts-ignore
     (window as any).React = React;
     // @ts-ignore
-    (window as any).ReactDOM = ReactDOM;
+    (window as any).ReactDOM = ReactDOMClient;
     // バージョンの簡易ログ（本番ではコンソール除去設定で落ちます）
     // @ts-ignore
     console.log('[Boot] React version:', (React as any)?.version);
@@ -55,7 +55,7 @@ performanceOptimizer.setupLazyLoading();
 // StrictModeは無限ループデバッグのため一時的に無効化
 const enableStrictMode = false; // デバッグ後は true に戻す
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOMClient.createRoot(document.getElementById('root')!).render(
   enableStrictMode ? (
     <React.StrictMode>
       <ErrorBoundary>

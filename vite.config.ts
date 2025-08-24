@@ -288,9 +288,6 @@ export default defineConfig(({ command, mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-        // Force single React instance to prevent Children undefined
-        react: path.resolve(__dirname, 'node_modules/react'),
-        'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
         '@components': path.resolve(__dirname, './src/components'),
         '@pages': path.resolve(__dirname, './src/pages'),
         '@services': path.resolve(__dirname, './src/services'),
