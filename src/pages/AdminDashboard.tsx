@@ -156,7 +156,7 @@ const AdminDashboard: React.FC = () => {
   const fetchMetrics = async () => {
     try {
       setIsLoading(true);
-      const { data } = await api.get('/admin/metrics');
+      const { data } = await api.get('admin/metrics');
       const payload = (data && (data.data || data)) as any;
       setMetrics(normalizeMetrics(payload.metrics || payload));
       setPriorityActions(payload.priorityActions || []);
@@ -174,8 +174,8 @@ const AdminDashboard: React.FC = () => {
     try {
       setIsAnalyticsLoading(true);
       const [{ data: publicSummary }, { data: adminSummary }] = await Promise.all([
-        api.get('/analytics/summary', { params: { range: '7d' } }),
-        api.get('/admin/analytics/summary', { params: { range: '7d' } }),
+        api.get('analytics/summary', { params: { range: '7d' } }),
+        api.get('admin/analytics/summary', { params: { range: '7d' } }),
       ]);
       const summaryBase = (publicSummary && (publicSummary.data || publicSummary)) as any;
       const admin = (adminSummary && (adminSummary.data || adminSummary)) as any;
