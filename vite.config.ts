@@ -13,11 +13,12 @@ export default defineConfig(({ command, mode }) => {
       react(),
 
       // PWA機能強化 - オフライン対応・プッシュ通知・背景同期 (本番環境のみ)
-      ...(mode === 'production'
+      ...(mode === 'production' && process.env.VITE_ENABLE_PWA === 'true'
         ? [
             VitePWA({
               registerType: 'autoUpdate',
-              injectRegister: 'auto',
+              // 完全に登録を抑止（main.tsで明示的にunregisterしているため）
+              injectRegister: null,
               includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
               manifest: {
                 name: 'ADHD統合ライフハブ - Work Time Tracker',
