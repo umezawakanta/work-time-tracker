@@ -1443,6 +1443,40 @@ app.get('/api/analytics/summary', (req, res) => {
   res.json(mockAnalytics);
 });
 
+// Server-Sent Events for realtime analytics (dev mock)
+app.get('/api/analytics/events', (req, res) => {
+  console.log('📡 GET /api/analytics/events (SSE) connected');
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders?.();
+
+  const send = (event: string, data: unknown) => {
+    res.write(`event: ${event}\n`);
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+
+  const interval = setInterval(() => {
+    const payload = {
+      type: 'analytics_update',
+      data: {
+        activeUsers: Math.floor(Math.random() * 40) + 5,
+        completionRate: Math.floor(Math.random() * 30) + 60,
+        todaysTasks: Math.floor(Math.random() * 15) + 3,
+        weeklyTrend: Math.floor(Math.random() * 20) - 10,
+      },
+      ts: Date.now(),
+    };
+    send('message', payload);
+  }, 5000);
+
+  req.on('close', () => {
+    console.log('📡 /api/analytics/events disconnected');
+    clearInterval(interval);
+    res.end();
+  });
+});
+
 // Live metrics (dev mock)
 app.get('/api/analytics/live-metrics', (req, res) => {
   console.log('📊 GET /api/analytics/live-metrics called');

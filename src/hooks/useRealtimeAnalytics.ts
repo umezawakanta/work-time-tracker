@@ -281,17 +281,21 @@ export const useRealtimeAnalytics = (options: UseRealtimeAnalyticsOptions = {}) 
     } else {
       // フォールバック: HTTP APIで取得
       try {
-        const response = await fetch('/api/analytics/current', {
+        const response = await fetch('/api/analytics/live-metrics', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
         });
 
         if (response.ok) {
-          const analyticsData = await response.json();
+          const payload = await response.json();
+          const live = payload?.data || payload;
           setData((prev) => ({
             ...prev,
-            ...analyticsData,
+            activeUsers: Number(live?.activeUsers || 0),
+            completionRate: Number(live?.completionRate || 0),
+            todaysTasks: Number(live?.todaysTasks || 0),
+            weeklyTrend: Number(live?.weeklyTrend || 0),
           }));
           setLastUpdate(new Date());
         }
@@ -300,6 +304,33 @@ export const useRealtimeAnalytics = (options: UseRealtimeAnalyticsOptions = {}) 
       }
     }
   }, []);
+
+  // SSEフォールバック（WS未利用時のみ）
+  useEffect(() => {
+    if (isConnected) return; // WebSocketが接続中ならSSE不要
+    let es: EventSource | null = null;
+    try {
+      es = new EventSource('/api/analytics/events');
+      es.onmessage = (ev) => {
+        try {
+          const msg = JSON.parse(ev.data);
+          if (msg?.type === 'analytics_update') {
+            setData((prev) => ({
+              ...prev,
+              ...msg.data,
+            }));
+            setLastUpdate(new Date());
+          }
+        } catch {}
+      };
+      es.onerror = () => {
+        es && es.close();
+      };
+    } catch {}
+    return () => {
+      es && es.close();
+    };
+  }, [isConnected]);
 
   // 初期化
   useEffect(() => {
