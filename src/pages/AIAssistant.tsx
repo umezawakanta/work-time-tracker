@@ -10,6 +10,8 @@ import { toast } from 'react-hot-toast';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useAnalytics } from '@/lib/analytics';
 import { ASSISTANT_TEMPLATES } from '@/constants/aiAssistant';
+import { todoApi } from '@/services/api/todoApi';
+import { Share2, RotateCcw, CheckCircle } from 'lucide-react';
 
 const templates = ASSISTANT_TEMPLATES;
 
@@ -35,6 +37,7 @@ const AIAssistant: React.FC = () => {
   }, []);
 
   const [busy, setBusy] = useState(false);
+  const [lastError, setLastError] = useState<string | null>(null);
   const send = async (text: string) => {
     if (!text.trim() || busy) return;
     const userMsg: ChatMessage = { role: 'user', content: text.trim() };
@@ -42,6 +45,7 @@ const AIAssistant: React.FC = () => {
     setInput('');
     setLoading(true);
     setBusy(true);
+    setLastError(null);
 
     try {
       const res = await ask([...messages, userMsg], {
@@ -51,6 +55,7 @@ const AIAssistant: React.FC = () => {
       const assistant: ChatMessage = { role: 'assistant', content: res.text || '(no content)' };
       setMessages((prev) => [...prev, assistant]);
       trackEvent('ai_assistant_reply', { ok: true });
+      toast.success('✅ 計画を生成しました', { icon: '🎉' });
     } catch (e: any) {
       trackEvent('ai_assistant_reply', { ok: false, error: e?.message || 'unknown' });
       const code = e?.message;
@@ -64,6 +69,7 @@ const AIAssistant: React.FC = () => {
       } else {
         toast.error('AIリクエストに失敗しました。', opts as any);
       }
+      setLastError(code || 'REQUEST_FAILED');
     } finally {
       setLoading(false);
       setBusy(false);
@@ -73,6 +79,27 @@ const AIAssistant: React.FC = () => {
   useEffect(() => {
     trackPageView('/ai-assistant', 'AI Assistant');
   }, [trackPageView]);
+
+  const saveOneAction = async (): Promise<void> => {
+    // Find last assistant message
+    const last = [...messages].reverse().find((m) => m.role === 'assistant');
+    const content = last?.content?.trim();
+    if (!content) {
+      toast('保存できるAI提案が見つかりません', { icon: 'ℹ️' });
+      return;
+    }
+    try {
+      const firstLine = content.split('\n').find((l) => l.trim().length > 0) || content;
+      const task = firstLine.replace(/^[-*\d\.\)\s]+/, '').slice(0, 140);
+      const now = new Date().toISOString();
+      await todoApi.create(task, 2, true, 'output', undefined, now);
+      toast.success('1つのアクションをToDoに保存しました', { icon: '✅' });
+      trackEvent('ai_save_one_action', { length: task.length });
+    } catch (err) {
+      console.error('saveOneAction error', err);
+      toast.error('保存に失敗しました');
+    }
+  };
 
   return (
     <ErrorBoundary variant="app">
@@ -129,11 +156,55 @@ const AIAssistant: React.FC = () => {
               className="flex flex-wrap items-center gap-2 mt-3"
               aria-label="プロンプトテンプレート"
             >
+              <Badge variant="secondary" className="mr-2">
+                最短60秒で計画
+              </Badge>
               {templates.map((t) => (
                 <Button key={t.id} variant="outline" size="sm" onClick={() => setInput(t.text)}>
                   {t.label}
                 </Button>
               ))}
+            </div>
+
+            {/* Inline retry on error */}
+            {lastError && (
+              <div className="mt-3 flex items-center gap-2 text-sm text-red-600">
+                <span>エラーが発生しました（{lastError}）。</span>
+                <Button size="sm" variant="outline" onClick={() => void send(input)}>
+                  <RotateCcw className="w-4 h-4 mr-1" /> 再試行
+                </Button>
+              </div>
+            )}
+
+            {/* Save one action to Todo */}
+            <div className="mt-4 flex items-center gap-2">
+              <Button onClick={() => void saveOneAction()} variant="outline" size="sm">
+                <CheckCircle className="w-4 h-4 mr-1" /> 1アクションをToDoに保存
+              </Button>
+              <Button
+                onClick={async () => {
+                  try {
+                    const last = [...messages].reverse().find((m) => m.role === 'assistant');
+                    const text = last?.content || '';
+                    if (navigator.share && text) {
+                      await navigator.share({ title: '今日の計画', text });
+                      trackEvent('ai_share_plan', { method: 'web_share' });
+                    } else if (text) {
+                      await navigator.clipboard.writeText(text);
+                      toast.success('計画をコピーしました');
+                      trackEvent('ai_share_plan', { method: 'copy' });
+                    }
+                  } catch (e) {
+                    console.error(e);
+                    toast.error('共有に失敗しました');
+                  }
+                }}
+                variant="outline"
+                size="sm"
+                aria-label="計画を共有"
+              >
+                <Share2 className="w-4 h-4 mr-1" /> 計画を共有
+              </Button>
             </div>
 
             {/* Notice */}
