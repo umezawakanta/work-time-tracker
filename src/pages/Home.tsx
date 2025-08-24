@@ -57,6 +57,7 @@ import HowItWorks from '@/components/hero/HowItWorks';
 import WeeklyReportPreview from '@/components/home/WeeklyReportPreview';
 import UserStories from '@/components/home/UserStories';
 import FocusTimerQuick from '@/components/home/FocusTimerQuick';
+import InlineNPS from '@/components/feedback/InlineNPS';
 import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/referral';
 import { getVariant } from '@/lib/ab';
 import { useAnalytics } from '@/lib/analytics';
@@ -852,6 +853,9 @@ const Home: React.FC = () => {
       {/* Bottom CTA duplicate */}
       <div className="bg-white border-t">
         <div className="container mx-auto px-4 max-w-7xl py-10 text-center">
+          <div className="mb-6 text-left">
+            <InlineNPS />
+          </div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">今日からはじめよう</h2>
           <p className="text-gray-600 mb-6">AI秘書と自己診断で、最短60秒の一歩から。</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
