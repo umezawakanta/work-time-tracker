@@ -9,7 +9,7 @@
     "scripts": {
         "start": "vite",
         "build": "vite build",
-        "vercel-build": "vite build",
+        "vercel-build": "vite build --config vite.config.ts --logLevel warn",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 200",
         "lint:fix": "eslint . --ext ts,tsx --fix",
         "preview": "vite preview",

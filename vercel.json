@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "pnpm run vercel-build",
+  "buildCommand": "NODE_OPTIONS=--max_old_space_size=1536 VITE_ENABLE_REACT_GUARD=false pnpm run vercel-build -- --force",
   "outputDirectory": "dist",
   "framework": "vite",
-  "installCommand": "corepack enable && corepack prepare pnpm@10.4.1 --activate || npm i -g pnpm@10.4.1 && pnpm install --no-frozen-lockfile --prefer-offline",
+  "installCommand": "corepack enable && corepack prepare pnpm@10.4.1 --activate || npm i -g pnpm@10.4.1 && pnpm install --no-frozen-lockfile --prefer-offline --prefer-frozen-lockfile=false",
   "devCommand": "pnpm run dev",
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {
