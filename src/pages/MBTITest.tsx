@@ -223,7 +223,11 @@ const MBTITest: React.FC = () => {
                   className="grid grid-cols-1 md:grid-cols-5 gap-2"
                   role="radiogroup"
                   aria-labelledby={`mbti-${q.id}-label`}
+                  aria-describedby={`mbti-${q.id}-desc`}
                 >
+                  <p id={`mbti-${q.id}-desc`} className="sr-only">
+                    当てはまる度合いを1つ選択してください
+                  </p>
                   {q.choices.map((label, i) => (
                     <label
                       key={i}
