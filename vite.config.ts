@@ -342,11 +342,12 @@ export default defineConfig(({ command, mode }) => {
         '@radix-ui/react-tabs',
         '@radix-ui/react-toast',
         '@radix-ui/react-tooltip',
-      ],
-      exclude: [
-        // 大きなライブラリで動的インポートが必要なもの
+        // Charts (needed for dynamic imports to avoid dev 500 on transform)
         'recharts',
         'chart.js',
+      ],
+      exclude: [
+        // サーバー専用ライブラリは除外
         'mongoose',
       ],
     },
