@@ -1338,6 +1338,78 @@ app.get('/api/admin/metrics/users/trend', (req, res) => {
   }
 });
 
+// Admin revenue trend (dev mock)
+app.get('/api/admin/metrics/revenue/trend', (req, res) => {
+  try {
+    const months = Math.max(1, Math.min(12, Number(req.query.months || 6)));
+    const series: Array<{ month: string; amount: number }> = [];
+    const now = new Date();
+    for (let i = months - 1; i >= 0; i--) {
+      const d = new Date(now);
+      d.setMonth(now.getMonth() - i);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const base = 50000 + ((i * 1234) % 8000);
+      series.push({ month: key, amount: base });
+    }
+    return res.json({ success: true, data: { months, series } });
+  } catch (e) {
+    console.error('❌ Error building revenue trend:', e);
+    return res.json({ success: true, data: { months: 6, series: [] } });
+  }
+});
+
+// Admin paid users trend (dev mock)
+app.get('/api/admin/metrics/paid-users/trend', (req, res) => {
+  try {
+    const months = Math.max(1, Math.min(12, Number(req.query.months || 6)));
+    const series: Array<{ month: string; count: number }> = [];
+    const now = new Date();
+    for (let i = months - 1; i >= 0; i--) {
+      const d = new Date(now);
+      d.setMonth(now.getMonth() - i);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const count = 3 + ((i * 2) % 9);
+      series.push({ month: key, count });
+    }
+    return res.json({ success: true, data: { months, series } });
+  } catch (e) {
+    console.error('❌ Error building paid-users trend:', e);
+    return res.json({ success: true, data: { months: 6, series: [] } });
+  }
+});
+
+// Admin revenue summary (dev mock)
+app.get('/api/admin/metrics/revenue/summary', (req, res) => {
+  try {
+    const mrr = 68000;
+    const prevMrr = 64000;
+    const arr = mrr * 12;
+    const activePaid = 12;
+    const newPaidThisMonth = 2;
+    const churnRate = 0; // mock
+    const conversionRate = 0; // mock
+    return res.json({
+      success: true,
+      data: { mrr, arr, churnRate, conversionRate, activePaid, newPaidThisMonth, prevMrr },
+    });
+  } catch (e) {
+    console.error('❌ Error building revenue summary:', e);
+    return res.json({
+      success: true,
+      data: {
+        mrr: 0,
+        arr: 0,
+        churnRate: 0,
+        conversionRate: 0,
+        activePaid: 0,
+        newPaidThisMonth: 0,
+        prevMrr: 0,
+      },
+      degraded: true,
+    });
+  }
+});
+
 app.get('/api/analytics/summary', (req, res) => {
   console.log('📊 GET /api/analytics/summary called');
   console.log('📝 Query params:', req.query);
