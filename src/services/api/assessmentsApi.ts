@@ -15,3 +15,13 @@ export async function saveIQResult(payload: SaveIQPayload): Promise<SaveResponse
   const res = await api.post<SaveResponse>('/user/assessments/iq', payload);
   return res.data;
 }
+
+export interface SaveMBTIPayload {
+  type: string;
+  scores: { EI: number; SN: number; TF: number; JP: number };
+}
+
+export async function saveMBTIResult(payload: SaveMBTIPayload): Promise<SaveResponse> {
+  const res = await api.post<SaveResponse>('/user/assessments/mbti', payload);
+  return res.data;
+}
