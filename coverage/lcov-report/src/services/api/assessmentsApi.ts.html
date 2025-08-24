@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -95,7 +95,7 @@
 <a name='L30'></a><a href='#L30'>30</a>
 <a name='L31'></a><a href='#L31'>31</a>
 <a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L33'></a><a href='#L33'>33</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -108,9 +108,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -118,16 +118,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { api } from './apiConfig';</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { api } from './apiConfig';
 &nbsp;
 export interface SaveIQPayload {
   score: number;
@@ -140,9 +140,9 @@ export interface SaveResponse {
   success: boolean;
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export a</span>sync function <span class="fstat-no" title="function not covered" >saveIQResult(</span>payload: SaveIQPayload): Promise&lt;SaveResponse&gt; {
-  const res = <span class="cstat-no" title="statement not covered" >await api.post&lt;SaveResponse&gt;('/user/assessments/iq', payload);</span>
-<span class="cstat-no" title="statement not covered" >  return res.data;</span>
+export async function saveIQResult(payload: SaveIQPayload): Promise&lt;SaveResponse&gt; {
+  const res = await api.post&lt;SaveResponse&gt;('/user/assessments/iq', payload);
+  return res.data;
 }
 &nbsp;
 export interface SaveMBTIPayload {
@@ -150,14 +150,14 @@ export interface SaveMBTIPayload {
   scores: { EI: number; SN: number; TF: number; JP: number };
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export a</span>sync function <span class="fstat-no" title="function not covered" >saveMBTIResult(</span>payload: SaveMBTIPayload): Promise&lt;SaveResponse&gt; {
-  const res = <span class="cstat-no" title="statement not covered" >await api.post&lt;SaveResponse&gt;('/user/assessments/mbti', payload);</span>
-<span class="cstat-no" title="statement not covered" >  return res.data;</span>
+export async function saveMBTIResult(payload: SaveMBTIPayload): Promise&lt;SaveResponse&gt; {
+  const res = await api.post&lt;SaveResponse&gt;('/user/assessments/mbti', payload);
+  return res.data;
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export a</span>sync function <span class="fstat-no" title="function not covered" >saveProgress(</span>courseId: string, progress: number): Promise&lt;SaveResponse&gt; {
-  const res = <span class="cstat-no" title="statement not covered" >await api.post&lt;SaveResponse&gt;('/user/learning/progress', { courseId, progress });</span>
-<span class="cstat-no" title="statement not covered" >  return res.data;</span>
+export async function saveProgress(courseId: string, progress: number): Promise&lt;SaveResponse&gt; {
+  const res = await api.post&lt;SaveResponse&gt;('/user/learning/progress', { courseId, progress });
+  return res.data;
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -166,7 +166,7 @@ export interface SaveMBTIPayload {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T12:10:32.269Z
+                at 2025-08-24T12:43:50.334Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

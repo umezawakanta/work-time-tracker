@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>7/7</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>7/7</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -181,7 +181,7 @@
 <a name='L116'></a><a href='#L116'>116</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -191,7 +191,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -213,7 +213,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -236,13 +236,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -261,7 +261,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -274,7 +274,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -296,7 +296,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Centralized marketing copy strings
 // Keep UI text here to enable reuse and easy updates
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >HERO_COPY = {</span>
+export const HERO_COPY = {
   title: '人生のコントロールを取り戻そう',
   subtitle:
     'あなたは人生のコントロールを失っています。生成AIと連携したパーソナル秘書サービスを提供します。今日からはこのサイトだけですべてを管理できます。',
@@ -306,7 +306,7 @@ export const <span class="cstat-no" title="statement not covered" >HERO_COPY = {
 &nbsp;
 export type HeroCopy = typeof HERO_COPY;
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >BENEFITS_COPY = {</span>
+export const BENEFITS_COPY = {
   items: [
     {
       key: 'priorityTask',
@@ -328,7 +328,7 @@ export const <span class="cstat-no" title="statement not covered" >BENEFITS_COPY
 &nbsp;
 export type BenefitsCopy = typeof BENEFITS_COPY;
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >HOW_IT_WORKS_COPY = {</span>
+export const HOW_IT_WORKS_COPY = {
   title: 'How It Works',
   items: [
     {
@@ -351,13 +351,13 @@ export const <span class="cstat-no" title="statement not covered" >HOW_IT_WORKS_
 &nbsp;
 export type HowItWorksCopy = typeof HOW_IT_WORKS_COPY;
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >TRUST_COPY = {</span>
+export const TRUST_COPY = {
   line: '通信は暗号化。データの第三者提供は一切ありません。',
 };
 &nbsp;
 export type TrustCopy = typeof TRUST_COPY;
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >FAQ_COPY = {</span>
+export const FAQ_COPY = {
   items: [
     {
       q: 'AIに入力したデータは学習に使われますか？',
@@ -376,7 +376,7 @@ export const <span class="cstat-no" title="statement not covered" >FAQ_COPY = {<
 &nbsp;
 export type FaqCopy = typeof FAQ_COPY;
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >WEEKLY_REPORT_COPY = {</span>
+export const WEEKLY_REPORT_COPY = {
   title: '週次レポート',
   description: '1週間の活動を自動集計。習慣スコアと改善点を提示し、翌週の時間配分を最適化します。',
   points: [
@@ -389,7 +389,7 @@ export const <span class="cstat-no" title="statement not covered" >WEEKLY_REPORT
 &nbsp;
 export type WeeklyReportCopy = typeof WEEKLY_REPORT_COPY;
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >USER_STORIES_COPY = {</span>
+export const USER_STORIES_COPY = {
   title: 'ユーザー事例',
   items: [
     {
@@ -415,7 +415,7 @@ export type UserStoriesCopy = typeof USER_STORIES_COPY;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T12:10:32.269Z
+                at 2025-08-24T12:43:50.334Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

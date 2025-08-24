@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -128,14 +128,12 @@
 <a name='L63'></a><a href='#L63'>63</a>
 <a name='L64'></a><a href='#L64'>64</a>
 <a name='L65'></a><a href='#L65'>65</a>
-<a name='L66'></a><a href='#L66'>66</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L66'></a><a href='#L66'>66</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -164,9 +162,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -175,7 +175,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -192,13 +192,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React from 'react';</span>
-<span class="cstat-no" title="statement not covered" >import { BENEFITS_COPY } from '@/constants/copy';</span>
-<span class="cstat-no" title="statement not covered" >import useScrollFadeIn from '@/hooks/useScrollFadeIn';</span>
-<span class="cstat-no" title="statement not covered" >import { Lightbulb, Timer, BarChart3 } from 'lucide-react';</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react';
+import { BENEFITS_COPY } from '@/constants/copy';
+import useScrollFadeIn from '@/hooks/useScrollFadeIn';
+import { Lightbulb, Timer, BarChart3 } from 'lucide-react';
 &nbsp;
-const iconMap: Record&lt;string, React.ReactNode&gt; = <span class="cstat-no" title="statement not covered" >{</span>
+const iconMap: Record&lt;string, React.ReactNode&gt; = {
   priorityTask: (
     &lt;span className="relative inline-flex items-center" aria-hidden&gt;
       &lt;svg width="10" height="10" viewBox="0 0 10 10" className="mr-2"&gt;
@@ -229,9 +229,9 @@ export interface BenefitsProps {
   className?: string;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >Benefits: React.FC&lt;BenefitsProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> className }) =&gt; {</span>
-  const sectionRef = <span class="cstat-no" title="statement not covered" >useScrollFadeIn&lt;HTMLElement&gt;();</span>
-<span class="cstat-no" title="statement not covered" >  return (</span>
+export const Benefits: React.FC&lt;BenefitsProps&gt; = ({ className }) =&gt; {
+  const sectionRef = useScrollFadeIn&lt;HTMLElement&gt;();
+  return (
     &lt;section
       ref={sectionRef as any}
       className={'py-12 bg-white ' + (className || '')}
@@ -239,8 +239,8 @@ export const <span class="cstat-no" title="statement not covered" >Benefits: Rea
     &gt;
       &lt;div className="container mx-auto px-4"&gt;
         &lt;div className="grid gap-6 md:grid-cols-3"&gt;
-          {BENEFITS_COPY.items.map(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;div</span>
+          {BENEFITS_COPY.items.map((item) =&gt; (
+            &lt;div
               key={item.key}
               className="rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow bg-white"
             &gt;
@@ -257,7 +257,7 @@ export const <span class="cstat-no" title="statement not covered" >Benefits: Rea
   );
 };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default Benefits;</span>
+export default Benefits;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -265,7 +265,7 @@ export const <span class="cstat-no" title="statement not covered" >Benefits: Rea
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T12:10:32.269Z
+                at 2025-08-24T12:43:50.334Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

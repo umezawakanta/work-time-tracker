@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -108,26 +108,24 @@
 <a name='L43'></a><a href='#L43'>43</a>
 <a name='L44'></a><a href='#L44'>44</a>
 <a name='L45'></a><a href='#L45'>45</a>
-<a name='L46'></a><a href='#L46'>46</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L46'></a><a href='#L46'>46</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -143,34 +141,36 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { configureStore, combineReducers } from '@reduxjs/toolkit';</span>
-<span class="cstat-no" title="statement not covered" >import workTimeReducer from './workTimeSlice';</span>
-<span class="cstat-no" title="statement not covered" >import assetReducer from './assetSlice';</span>
-<span class="cstat-no" title="statement not covered" >import debtReducer from './debtSlice';</span>
-<span class="cstat-no" title="statement not covered" >import userReducer from './userSlice';</span>
-<span class="cstat-no" title="statement not covered" >import todoReducer from './todoSlice';</span>
-<span class="cstat-no" title="statement not covered" >import candidateReducer from './candidateSlice';</span>
-<span class="cstat-no" title="statement not covered" >import subscriptionReducer from './subscriptionSlice';</span>
-<span class="cstat-no" title="statement not covered" >import withdrawalReducer from './withdrawalSlice';</span>
-<span class="cstat-no" title="statement not covered" >import bookReducer from './bookSlice';</span>
-<span class="cstat-no" title="statement not covered" >import sleepTrackerReducer from './sleepTrackerSlice';</span>
-<span class="cstat-no" title="statement not covered" >import blogReducer from './blogSlice';</span>
-<span class="cstat-no" title="statement not covered" >import guitarPracticeReducer from './guitarPracticeSlice';</span>
-<span class="cstat-no" title="statement not covered" >import achievementReducer from './achievementSlice';</span>
-<span class="cstat-no" title="statement not covered" >import unifiedDataReducer from './unifiedDataSlice';</span>
-<span class="cstat-no" title="statement not covered" >import aiSuggestionReducer from './aiSuggestionSlice';</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import workTimeReducer from './workTimeSlice';
+import assetReducer from './assetSlice';
+import debtReducer from './debtSlice';
+import userReducer from './userSlice';
+import todoReducer from './todoSlice';
+import candidateReducer from './candidateSlice';
+import subscriptionReducer from './subscriptionSlice';
+import withdrawalReducer from './withdrawalSlice';
+import bookReducer from './bookSlice';
+import sleepTrackerReducer from './sleepTrackerSlice';
+import blogReducer from './blogSlice';
+import guitarPracticeReducer from './guitarPracticeSlice';
+import achievementReducer from './achievementSlice';
+import unifiedDataReducer from './unifiedDataSlice';
+import aiSuggestionReducer from './aiSuggestionSlice';
 &nbsp;
-const rootReducer = <span class="cstat-no" title="statement not covered" >combineReducers({</span>
+const rootReducer = combineReducers({
   workTime: workTimeReducer,
   asset: assetReducer,
   debt: debtReducer,
@@ -188,10 +188,10 @@ const rootReducer = <span class="cstat-no" title="statement not covered" >combin
   aiSuggestion: aiSuggestionReducer,
 });
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >store = configureStore({</span>
+export const store = configureStore({
   reducer: rootReducer,
-  middleware: <span class="fstat-no" title="function not covered" >(g</span>etDefaultMiddleware) =&gt;
-<span class="cstat-no" title="statement not covered" >    getDefaultMiddleware({</span>
+  middleware: (getDefaultMiddleware) =&gt;
+    getDefaultMiddleware({
       serializableCheck: true,
     }),
 });
@@ -205,7 +205,7 @@ export type AppDispatch = typeof store.dispatch;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T12:10:32.269Z
+                at 2025-08-24T12:43:50.334Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

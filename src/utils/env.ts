@@ -18,14 +18,15 @@ declare global {
  * 環境変数を安全に取得
  */
 export function getEnv(key: string): string | undefined {
-  // 1) Vite runtime (browser) – use import.meta.env
+  // 1) Vite runtime (browser) – safely try to read import.meta.env without parsing it in Jest
   try {
-    const viteEnv = (import.meta as any).env;
+    // Use indirect eval to avoid static parsing of `import.meta` in CommonJS/Jest
+    const viteEnv = (0, eval)('import.meta').env as Record<string, any> | undefined;
     if (viteEnv && typeof viteEnv[key] !== 'undefined') {
       return viteEnv[key];
     }
   } catch {
-    // ignore (e.g., non-Vite test environment)
+    // ignore (e.g., non-Vite or test environment)
   }
 
   // 2) Optional window-injected env (if your app sets it)
@@ -59,9 +60,8 @@ export function isDev(): boolean {
   }
 
   try {
-    if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
-      return (globalThis as any).import.meta.env.DEV === true;
-    }
+    const devFlag = (0, eval)('import.meta').env?.DEV;
+    return devFlag === true;
   } catch {
     // 無視
   }
@@ -89,9 +89,8 @@ export function isProd(): boolean {
   }
 
   try {
-    if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
-      return (globalThis as any).import.meta.env.PROD === true;
-    }
+    const prodFlag = (0, eval)('import.meta').env?.PROD;
+    return prodFlag === true;
   } catch {
     // 無視
   }
