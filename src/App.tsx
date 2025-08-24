@@ -1,9 +1,10 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import Layout from '@/components/layout/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { useAnalytics } from './lib/analytics';
 
 // Loading spinner component using Tailwind
 const LoadingSpinner: React.FC = () => (
@@ -220,6 +221,8 @@ const ImprovementImplementation = lazy(() => import('./pages/ImprovementImplemen
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
+  const { trackPageView } = useAnalytics();
 
   useEffect(() => {
     // アプリケーション初期化
@@ -252,6 +255,15 @@ const App: React.FC = () => {
                   <InternationalizationProvider>
                     <ErrorBoundary variant="app">
                       <div className="App">
+                        {/* Router pageview tracking */}
+                        <RouteChangeTracker
+                          path={location.pathname + location.search}
+                          onTrack={(path) => {
+                            try {
+                              trackPageView(path);
+                            } catch {}
+                          }}
+                        />
                         <Suspense fallback={<LoadingSpinner />}>
                           <div className="min-h-screen bg-gray-50">
                             <Routes>
@@ -1264,3 +1276,15 @@ const AppWithProviders: React.FC = () => {
 };
 
 export default AppWithProviders;
+
+// Lightweight helper component to detect route changes and fire pageview tracking
+const RouteChangeTracker: React.FC<{ path: string; onTrack: (path: string) => void }> = ({
+  path,
+  onTrack,
+}) => {
+  useEffect(() => {
+    onTrack(path);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [path]);
+  return null;
+};
