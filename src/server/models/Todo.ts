@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Todo } from '@/database/schema/UnifiedDatabaseSchema';
 
 // Simplified TodoDocument interface
 export interface TodoDocument extends Document {

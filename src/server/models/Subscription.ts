@@ -1,10 +1,4 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import {
-  Subscription,
-  SubscriptionPlan,
-  Payment,
-  Invoice,
-} from '@/database/schema/UnifiedDatabaseSchema';
 
 // Simplified document interfaces to avoid conflicts
 export interface SubscriptionDocument extends Document {
