@@ -1696,6 +1696,9 @@ console.log('   GET  /api/notifications/settings/:userId'); // 追加
 console.log('   POST /api/notifications/settings/:userId'); // 追加
 console.log('   POST /api/notifications/test'); // 追加
 console.log('   GET  /api/notifications/status'); // 追加
+console.log('   GET  /api/admin/metrics/users/summary'); // 追加
+console.log('   GET  /api/admin/metrics/assessments/summary'); // 追加
+console.log('   GET  /api/admin/metrics/learning/summary'); // 追加
 console.log('   POST /api/user/assessments/iq'); // 追加
 console.log('   POST /api/user/assessments/mbti'); // 追加
 console.log('   POST /api/user/learning/progress'); // 追加
@@ -1852,6 +1855,62 @@ app.get('/api/notifications/status', (req, res) => {
         : 'Email service is not configured. Check EMAIL_USER and EMAIL_PASS environment variables.',
     },
   });
+});
+
+// ==== Admin metrics summaries (dev mock) ====
+app.get('/api/admin/metrics/users/summary', (req, res) => {
+  try {
+    const now = new Date();
+    return res.json({
+      ok: true,
+      data: {
+        totalUsers: 123,
+        dau: 9,
+        wau: 27,
+        mau: 72,
+        new7d: 15,
+        generatedAt: now.toISOString(),
+      },
+    });
+  } catch (e) {
+    return res.json({
+      ok: true,
+      data: { totalUsers: 0, dau: 0, wau: 0, mau: 0, new7d: 0 },
+      degraded: true,
+    });
+  }
+});
+
+app.get('/api/admin/metrics/assessments/summary', (req, res) => {
+  try {
+    const now = new Date();
+    return res.json({
+      ok: true,
+      data: { iqSaved: 12, mbtiSaved: 18, totalSaved30d: 26, generatedAt: now.toISOString() },
+    });
+  } catch (e) {
+    return res.json({
+      ok: true,
+      data: { iqSaved: 0, mbtiSaved: 0, totalSaved30d: 0 },
+      degraded: true,
+    });
+  }
+});
+
+app.get('/api/admin/metrics/learning/summary', (req, res) => {
+  try {
+    const now = new Date();
+    return res.json({
+      ok: true,
+      data: { progressSaved30d: 34, uniqueLearners30d: 19, generatedAt: now.toISOString() },
+    });
+  } catch (e) {
+    return res.json({
+      ok: true,
+      data: { progressSaved30d: 0, uniqueLearners30d: 0 },
+      degraded: true,
+    });
+  }
 });
 
 // =============================
