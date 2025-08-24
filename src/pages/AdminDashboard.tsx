@@ -72,6 +72,9 @@ interface AnalyticsSummary {
   topPages?: Array<{ page: string; views: number }>;
   deviceBreakdown?: { desktop: number; mobile: number; tablet: number };
   trafficSources?: Record<string, number>;
+  featureUsage?: { ai_ok: number; assessment_saved: number; learning_saved: number };
+  topReferrers?: Array<{ referrer: string; count: number }>;
+  compare?: { today: number; yesterday: number; diff: number; pct: number };
 }
 
 // Normalize API metrics payload to UI's expected shape to avoid runtime errors in production
@@ -166,18 +169,26 @@ const AdminDashboard: React.FC = () => {
 
   const fetchAnalyticsSummary = async () => {
     try {
-      const { data } = await api.get('/analytics/summary', { params: { range: '7d' } });
-      const summary = (data && (data.data || data)) as any;
+      const [{ data: publicSummary }, { data: adminSummary }] = await Promise.all([
+        api.get('/analytics/summary', { params: { range: '7d' } }),
+        api.get('/admin/analytics/summary', { params: { range: '7d' } }),
+      ]);
+      const base = (publicSummary && (publicSummary.data || publicSummary)) as any;
+      const admin = (adminSummary && (adminSummary.data || adminSummary)) as any;
       const normalized: AnalyticsSummary = {
-        totalUsers: Number(summary.totalUsers) || 0,
-        activeUsers: Number(summary.activeUsers) || 0,
-        newUsers: Number(summary.newUsers) || 0,
-        returningUsers: Number(summary.returningUsers) || 0,
-        averageSessionDuration: Number(summary.averageSessionDuration) || 0,
-        pageViewsTotal: Number(summary.pageViewsTotal) || 0,
-        topPages: Array.isArray(summary.topPages) ? summary.topPages : [],
-        deviceBreakdown: summary.deviceBreakdown || { desktop: 0, mobile: 0, tablet: 0 },
-        trafficSources: summary.trafficSources || {},
+        totalUsers: Number(base.totalUsers ?? admin.totalUsers) || 0,
+        activeUsers: Number(base.activeUsers ?? admin.activeUsers) || 0,
+        newUsers: Number(base.newUsers ?? admin.newUsers) || 0,
+        returningUsers: Number(base.returningUsers ?? admin.returningUsers) || 0,
+        averageSessionDuration:
+          Number(base.averageSessionDuration ?? admin.averageSessionDuration) || 0,
+        pageViewsTotal: Number(base.pageViewsTotal ?? admin.pageViewsTotal) || 0,
+        topPages: Array.isArray(base.topPages) ? base.topPages : [],
+        deviceBreakdown: base.deviceBreakdown || { desktop: 0, mobile: 0, tablet: 0 },
+        trafficSources: base.trafficSources || {},
+        featureUsage: admin.featureUsage || { ai_ok: 0, assessment_saved: 0, learning_saved: 0 },
+        topReferrers: admin.topReferrers || [],
+        compare: admin.compare || { today: 0, yesterday: 0, diff: 0, pct: 0 },
       };
       setAnalytics(normalized);
 
@@ -418,6 +429,23 @@ const AdminDashboard: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">DAU 前日比</p>
+                  <p
+                    className={`text-2xl font-bold ${analytics.compare && analytics.compare.diff >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {analytics.compare
+                      ? `${analytics.compare.diff >= 0 ? '+' : ''}${analytics.compare.diff} (${analytics.compare.pct}%)`
+                      : '-'}
+                  </p>
+                </div>
+                <TrendingUp className="w-8 h-8 text-gray-600" />
+              </div>
+            </CardContent>
+          </Card>
           <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle>7日 新規ユーザー</CardTitle>
@@ -435,6 +463,51 @@ const AdminDashboard: React.FC = () => {
                     <span className="mt-1 text-[10px] text-gray-500">D{i + 1}</span>
                   </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>機能別利用数（7日）</CardTitle>
+              <CardDescription>AI/診断/学習の成功イベント</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className="text-sm text-gray-600">AI返信成功</p>
+                  <p className="text-2xl font-bold">{analytics.featureUsage?.ai_ok ?? 0}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">診断保存</p>
+                  <p className="text-2xl font-bold">
+                    {analytics.featureUsage?.assessment_saved ?? 0}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">学習保存</p>
+                  <p className="text-2xl font-bold">
+                    {analytics.featureUsage?.learning_saved ?? 0}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>上位リファラー</CardTitle>
+              <CardDescription>直近のトラフィックソース</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {(analytics.topReferrers || []).map((r, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-sm">
+                    <span className="text-gray-700">{r.referrer}</span>
+                    <span className="font-medium">{r.count}</span>
+                  </div>
+                ))}
+                {(!analytics.topReferrers || analytics.topReferrers.length === 0) && (
+                  <p className="text-sm text-gray-500">データがありません</p>
+                )}
               </div>
             </CardContent>
           </Card>

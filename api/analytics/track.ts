@@ -139,6 +139,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
           (req.headers['x-forwarded-for'] as string) || (req.connection as any)?.remoteAddress || ''
         ),
         url: String((req.headers.referer as string) || ''),
+        referrer: String((req.headers.referer as string) || ''),
       });
       persistedId = String(doc._id);
       console.log(`💾 [${operationId}] Event saved to DB:`, persistedId);

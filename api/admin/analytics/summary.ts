@@ -56,6 +56,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       event: 'page_view',
     }).catch(() => 0);
 
+    // Feature usage counts
+    const [aiOk, assessSaved, learningSaved] = await Promise.all([
+      AnalyticsEvent.countDocuments({
+        ...match,
+        event: 'ai_assistant_reply',
+        'data.ok': true,
+      }).catch(() => 0),
+      AnalyticsEvent.countDocuments({ ...match, event: 'assessment_saved' }).catch(() => 0),
+      AnalyticsEvent.countDocuments({ ...match, event: 'learning_progress_saved' }).catch(() => 0),
+    ]);
+
+    // Top referrers (from referrer field)
+    const refAgg = await AnalyticsEvent.aggregate([
+      { $match: { ...match, event: 'page_view' } },
+      { $group: { _id: '$referrer', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 5 },
+    ]).catch(() => []);
+
     // Average session duration approximation from page_view_end data.timeSpent
     const sessionAgg = await AnalyticsEvent.aggregate([
       { $match: { ...match, event: 'page_view_end' } },
@@ -72,6 +91,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         returningUsers: Math.max(0, activeUsers - newUsers),
         averageSessionDuration,
         pageViewsTotal,
+        featureUsage: { ai_ok: aiOk, assessment_saved: assessSaved, learning_saved: learningSaved },
+        topReferrers: refAgg.map((r: any) => ({ referrer: r._id || 'direct', count: r.count })),
+        compare: (() => {
+          const byDay = new Map<string, number>();
+          for (const d of dauAgg) byDay.set(d._id as string, d.users as number);
+          const todayKey = new Date().toISOString().slice(0, 10);
+          const y = new Date();
+          y.setDate(y.getDate() - 1);
+          const yKey = y.toISOString().slice(0, 10);
+          const today = byDay.get(todayKey) || 0;
+          const yesterday = byDay.get(yKey) || 0;
+          const diff = today - yesterday;
+          const pct = yesterday > 0 ? Math.round((diff / yesterday) * 100) : 0;
+          return { today, yesterday, diff, pct };
+        })(),
         dauSeries: dauAgg.map((d) => ({ day: d._id, users: d.users })),
         generatedAt: new Date().toISOString(),
         range,
