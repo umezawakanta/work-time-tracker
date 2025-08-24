@@ -1,13 +1,19 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectDB } from '../../../src/server/config/database';
-import User from '../../../src/server/models/User';
-import AnalyticsEvent from '../../../src/server/models/AnalyticsEvent';
+import { connectDB } from '../../../../src/server/config/database';
+import User from '../../../../src/server/models/User';
+import AnalyticsEvent from '../../../../src/server/models/AnalyticsEvent';
+import { cors } from '../../../../lib/cors';
+import { requireAdmin } from '../../../../lib/authAdmin';
 
 function formatDate(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  await cors(req, res);
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  const ctx = requireAdmin(req, res);
+  if (!ctx) return;
   if (req.method !== 'GET') {
     res.status(405).json({ error: 'Method Not Allowed' });
     return;
