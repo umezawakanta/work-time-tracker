@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { cors } from '../../lib/cors';
+import jwt from 'jsonwebtoken';
 import { connectDB } from '../../src/server/config/database';
 import { Project as ProjectModel } from '../../src/server/models/Project';
 
@@ -27,6 +28,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (method === 'POST') {
       if (!dbConnected) return res.status(503).json({ success: false, error: 'DB unavailable' });
+      // Enforce JWT in production
+      if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+        const authHeader = req.headers.authorization || '';
+        const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
+        try {
+          jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-for-development', {
+            issuer: 'work-time-tracker',
+            audience: 'work-time-tracker-users',
+          });
+        } catch {
+          return res.status(401).json({ success: false, error: 'Unauthorized' });
+        }
+      }
       const { name, color, userId, lastUsed } = req.body || {};
       if (!name || !color || !userId) {
         return res.status(400).json({ success: false, error: 'Missing fields' });

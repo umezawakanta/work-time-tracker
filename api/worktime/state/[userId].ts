@@ -1,9 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { cors } from '../../../lib/cors';
-
-// Reuse the in-memory map by module scoping (note: per-lambda instance)
-const memoryState: Map<string, any> = (global as any).__WT_MEMORY_STATE__ || new Map();
-(global as any).__WT_MEMORY_STATE__ = memoryState;
+import { connectDB } from '../../../src/server/config/database';
+import WorkState from '../../../src/server/models/WorkState';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   await cors(req, res);
@@ -17,8 +15,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!userId) return res.status(400).json({ success: false, error: 'Missing userId' });
 
   try {
-    const state = memoryState.get(userId) || null;
-    return res.status(200).json(state);
+    try {
+      await connectDB();
+      const doc = await WorkState.findOne({ userId });
+      return res.status(200).json(doc);
+    } catch {
+      return res.status(200).json(null);
+    }
   } catch (error) {
     console.error('Error in GET /api/worktime/state/:userId', error);
     return res.status(500).json({ success: false, error: 'Internal server error' });
