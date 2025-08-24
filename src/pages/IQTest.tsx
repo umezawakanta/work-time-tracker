@@ -24,6 +24,7 @@ const TOTAL_TIME_SEC = 10 * 60; // 10分
 
 const IQTest: React.FC = () => {
   const [questions, setQuestions] = useState<IQQuestion[]>([]);
+  const [loadingQuestions, setLoadingQuestions] = useState<boolean>(true);
   const [selected, setSelected] = useState<Record<string, number>>({});
   const [timeLeft, setTimeLeft] = useState<number>(TOTAL_TIME_SEC);
   const [submitting, setSubmitting] = useState(false);
@@ -31,7 +32,9 @@ const IQTest: React.FC = () => {
   const total = useMemo(() => 20, []); // 骨組みとして20問想定（サンプルは少数）
 
   useEffect(() => {
-    loadQuestions().then((q) => setQuestions(q));
+    loadQuestions()
+      .then((q) => setQuestions(q))
+      .finally(() => setLoadingQuestions(false));
   }, []);
 
   useEffect(() => {
@@ -106,21 +109,44 @@ const IQTest: React.FC = () => {
           </div>
 
           {!started ? (
-            <div className="text-center">
-              <Button onClick={() => setStarted(true)}>開始</Button>
+            <div className="space-y-4">
+              {loadingQuestions ? (
+                <div className="space-y-3" aria-busy="true" aria-live="polite">
+                  <div className="h-20 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-20 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-20 bg-gray-200 rounded animate-pulse" />
+                </div>
+              ) : (
+                <div className="text-center">
+                  <p id="iq-test-desc" className="text-sm text-gray-600 mb-3">
+                    各問題につき選択肢を1つ選んでください。
+                  </p>
+                  <Button onClick={() => setStarted(true)} aria-describedby="iq-test-desc">
+                    開始
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-6">
               {questions.map((q, idx) => (
-                <div key={q.id} className="border rounded p-4 bg-white">
-                  <div className="font-semibold mb-2">
+                <fieldset key={q.id} className="border rounded p-4 bg-white">
+                  <legend id={`q-${q.id}-label`} className="font-semibold mb-2">
                     Q{idx + 1}. {q.text}
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  </legend>
+                  <p id={`q-${q.id}-desc`} className="text-xs text-gray-600 mb-2">
+                    最も適切だと思うものを1つ選んでください。
+                  </p>
+                  <div
+                    className="grid grid-cols-1 md:grid-cols-2 gap-2"
+                    role="radiogroup"
+                    aria-labelledby={`q-${q.id}-label`}
+                    aria-describedby={`q-${q.id}-desc`}
+                  >
                     {q.choices.map((c, i) => (
                       <label
                         key={i}
-                        className="flex items-center gap-2 p-2 border rounded cursor-pointer"
+                        className="flex items-center gap-2 p-2 border rounded cursor-pointer focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
                       >
                         <input
                           type="radio"
@@ -128,12 +154,13 @@ const IQTest: React.FC = () => {
                           checked={selected[q.id] === i}
                           onChange={() => handleSelect(q.id, i)}
                           aria-label={`選択肢 ${i + 1}`}
+                          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                         />
                         <span>{c}</span>
                       </label>
                     ))}
                   </div>
-                </div>
+                </fieldset>
               ))}
               {questions.length === 0 && (
                 <Alert>
@@ -147,8 +174,9 @@ const IQTest: React.FC = () => {
                 <Button
                   onClick={() => void submit()}
                   disabled={submitting || questions.length === 0}
+                  aria-label="結果を保存"
                 >
-                  {submitting ? '保存中...' : '回答を保存'}
+                  {submitting ? '保存中...' : '結果を保存'}
                 </Button>
               </div>
             </div>

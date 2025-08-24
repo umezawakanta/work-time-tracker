@@ -82,19 +82,19 @@ const MBTITest: React.FC = () => {
         <CardContent>
           <div className="space-y-6">
             {questions.map((q, idx) => (
-              <div key={q.id} className="border rounded p-4 bg-white">
-                <div className="font-medium mb-2">
+              <fieldset key={q.id} className="border rounded p-4 bg-white">
+                <legend id={`mbti-${q.id}-label`} className="font-medium mb-2">
                   Q{idx + 1}. {q.text}
-                </div>
+                </legend>
                 <div
                   className="grid grid-cols-1 md:grid-cols-5 gap-2"
                   role="radiogroup"
-                  aria-label="Likert 選択"
+                  aria-labelledby={`mbti-${q.id}-label`}
                 >
                   {q.choices.map((label, i) => (
                     <label
                       key={i}
-                      className="flex items-center gap-2 p-2 border rounded cursor-pointer"
+                      className="flex items-center gap-2 p-2 border rounded cursor-pointer focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
                     >
                       <input
                         type="radio"
@@ -102,12 +102,13 @@ const MBTITest: React.FC = () => {
                         checked={selected[q.id] === i + 1}
                         onChange={() => handleSelect(q.id, i)}
                         aria-label={label}
+                        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                       />
                       <span className="text-sm">{label}</span>
                     </label>
                   ))}
                 </div>
-              </div>
+              </fieldset>
             ))}
 
             {questions.length === 0 && (
