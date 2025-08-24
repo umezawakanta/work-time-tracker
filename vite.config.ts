@@ -11,39 +11,42 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [
       react(),
-      // Build-time guard to ensure a single React runtime is bundled
-      {
-        name: 'single-react-guard',
-        apply: 'build',
-        generateBundle(_options, bundle) {
-          try {
-            const reactRoots = new Set<string>();
-            const reactDomRoots = new Set<string>();
-            for (const chunk of Object.values(bundle)) {
-              if ((chunk as any).type !== 'chunk') continue;
-              const modules = (chunk as any).modules || {};
-              for (const id of Object.keys(modules)) {
-                const norm = id.replace(/\\/g, '/');
-                const m = norm.match(/(.*?node_modules\/(react|react-dom))(\/|$)/);
-                if (m) {
-                  const root = m[1];
-                  if (m[2] === 'react') reactRoots.add(root);
-                  if (m[2] === 'react-dom') reactDomRoots.add(root);
+      // Build-time guard to ensure a single React runtime is bundled (disabled on Vercel)
+      ...(process.env.VITE_ENABLE_REACT_GUARD === 'true'
+        ? [
+            {
+              name: 'single-react-guard',
+              apply: 'build',
+              generateBundle(_options, bundle) {
+                try {
+                  const reactRoots = new Set<string>();
+                  const reactDomRoots = new Set<string>();
+                  for (const chunk of Object.values(bundle)) {
+                    if ((chunk as any).type !== 'chunk') continue;
+                    const modules = (chunk as any).modules || {};
+                    for (const id of Object.keys(modules)) {
+                      const norm = id.replace(/\\/g, '/');
+                      const m = norm.match(/(.*?node_modules\/(react|react-dom))(\/|$)/);
+                      if (m) {
+                        const root = m[1];
+                        if (m[2] === 'react') reactRoots.add(root);
+                        if (m[2] === 'react-dom') reactDomRoots.add(root);
+                      }
+                    }
+                  }
+                  if (reactRoots.size > 1 || reactDomRoots.size > 1) {
+                    const msg = `Detected multiple React runtimes in bundle. react: ${
+                      [...reactRoots].join(', ') || 'n/a'
+                    } | react-dom: ${[...reactDomRoots].join(', ') || 'n/a'}`;
+                    this.warn(`[single-react-guard] ${msg}`);
+                  }
+                } catch (e) {
+                  this.warn(`[single-react-guard] check failed: ${String(e)}`);
                 }
-              }
-            }
-            if (reactRoots.size > 1 || reactDomRoots.size > 1) {
-              const msg = `Detected multiple React runtimes in bundle. react: ${
-                [...reactRoots].join(', ') || 'n/a'
-              } | react-dom: ${[...reactDomRoots].join(', ') || 'n/a'}`;
-              // Log warning but don't fail build to avoid blocking deploys; runtime guard will handle
-              this.warn(`[single-react-guard] ${msg}`);
-            }
-          } catch (e) {
-            this.warn(`[single-react-guard] check failed: ${String(e)}`);
-          }
-        },
-      },
+              },
+            },
+          ]
+        : []),
 
       // PWA機能強化 - オフライン対応・プッシュ通知・背景同期 (本番環境のみ)
       ...(mode === 'production' && process.env.VITE_ENABLE_PWA === 'true'
