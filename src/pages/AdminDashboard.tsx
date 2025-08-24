@@ -165,6 +165,10 @@ const AdminDashboard: React.FC = () => {
   const [isPageviewsLoading, setIsPageviewsLoading] = useState<boolean>(false);
   const [topPages, setTopPages] = useState<Array<{ page: string; views: number }>>([]);
   const [isTopPagesLoading, setIsTopPagesLoading] = useState<boolean>(false);
+  const [usersTrend, setUsersTrend] = useState<
+    Array<{ day: string; newUsers: number; activeUsers: number }>
+  >([]);
+  const [isUsersTrendLoading, setIsUsersTrendLoading] = useState<boolean>(false);
 
   // メトリクス取得
   const fetchMetrics = async () => {
@@ -258,6 +262,23 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const fetchUsersTrend = async (windowArg: '7d' | '30d' | '90d' = '7d') => {
+    try {
+      setIsUsersTrendLoading(true);
+      const { data } = await api.get('admin/metrics/users/trend', {
+        params: { window: windowArg },
+      });
+      const payload = (data && (data.data || data)) as any;
+      const series = Array.isArray(payload.series) ? payload.series : [];
+      setUsersTrend(series);
+    } catch (e) {
+      console.error('Failed to fetch users trend:', e);
+      setUsersTrend([]);
+    } finally {
+      setIsUsersTrendLoading(false);
+    }
+  };
+
   // アクション完了処理
   const completeAction = async (actionId: string) => {
     try {
@@ -285,6 +306,7 @@ const AdminDashboard: React.FC = () => {
     fetchAnalyticsSummary();
     fetchPageviewsTrend(pageviewWindow);
     fetchTopPages(pageviewWindow);
+    fetchUsersTrend(pageviewWindow);
 
     // 30秒ごとに自動更新
     const interval = setInterval(() => {
@@ -292,6 +314,7 @@ const AdminDashboard: React.FC = () => {
       fetchAnalyticsSummary();
       fetchPageviewsTrend(pageviewWindow);
       fetchTopPages(pageviewWindow);
+      fetchUsersTrend(pageviewWindow);
     }, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -585,6 +608,68 @@ const AdminDashboard: React.FC = () => {
                           type="monotone"
                           dataKey="views"
                           stroke="#2563eb"
+                          strokeWidth={2}
+                          dot={{ r: 2 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">データがありません</p>
+                )}
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>ユーザー推移（新規/アクティブ）</CardTitle>
+                    <CardDescription>ユーザー増減のトレンド</CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    {(['7d', '30d', '90d'] as const).map((w) => (
+                      <Button
+                        key={w}
+                        size="sm"
+                        variant={pageviewWindow === w ? 'default' : 'outline'}
+                        onClick={() => {
+                          setPageviewWindow(w);
+                          fetchUsersTrend(w);
+                        }}
+                      >
+                        {w}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {isUsersTrendLoading ? (
+                  <div className="h-32 bg-gray-200 rounded animate-pulse" />
+                ) : usersTrend.length > 0 ? (
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={usersTrend}
+                        margin={{ left: 8, right: 8, top: 8, bottom: 8 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="day" tick={{ fontSize: 10 }} />
+                        <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+                        <Tooltip />
+                        <Line
+                          type="monotone"
+                          dataKey="newUsers"
+                          name="新規"
+                          stroke="#16a34a"
+                          strokeWidth={2}
+                          dot={{ r: 2 }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="activeUsers"
+                          name="アクティブ"
+                          stroke="#ea580c"
                           strokeWidth={2}
                           dot={{ r: 2 }}
                         />

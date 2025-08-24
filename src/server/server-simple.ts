@@ -1321,6 +1321,23 @@ app.get('/api/admin/metrics/top-pages', (req, res) => {
   }
 });
 
+// Admin users trend (dev mock)
+app.get('/api/admin/metrics/users/trend', (req, res) => {
+  try {
+    const windowParam = String(req.query.window || '7d');
+    const days = windowParam === '30d' ? 30 : windowParam === '90d' ? 90 : 7;
+    const series = Array.from({ length: days }, (_, i) => ({
+      day: `2025-08-${(i + 1).toString().padStart(2, '0')}`,
+      newUsers: (i * 3) % 7,
+      activeUsers: 5 + ((i * 5) % 11),
+    }));
+    return res.json({ success: true, data: { window: days, series } });
+  } catch (e) {
+    console.error('❌ Error building users trend:', e);
+    return res.json({ success: true, data: { window: 7, series: [] } });
+  }
+});
+
 app.get('/api/analytics/summary', (req, res) => {
   console.log('📊 GET /api/analytics/summary called');
   console.log('📝 Query params:', req.query);
