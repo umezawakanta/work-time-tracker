@@ -37,10 +37,10 @@ export async function ask(messages: ChatMessage[], options: AskOptions = {}): Pr
         messages: messages.map((m) => ({ role: m.role, content: m.content })),
         model: options.model ?? 'claude-3-5-sonnet-20241022',
         system: options.traits
-          ? `ユーザーの特性（IQ: ${options.traits.iq ?? '不明'}, MBTI: ${
+          ? `特性（IQ: ${options.traits.iq ?? '不明'}, MBTI: ${
               options.traits.mbti ?? '不明'
-            }）を考慮し、丁寧で簡潔な実行可能アドバイスを返してください。`
-          : '丁寧で簡潔な実行可能アドバイスを返してください。',
+            }）を考慮し、丁寧かつ簡潔に、実行可能な助言のみを返してください。`
+          : '丁寧かつ簡潔に、実行可能な助言のみを返してください。',
       },
       { signal: controller.signal }
     );
