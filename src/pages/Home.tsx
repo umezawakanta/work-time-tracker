@@ -373,7 +373,7 @@ const Home: React.FC = () => {
               </Badge>
             </Button>
           </div>
-          <p className="mt-2 text-xs text-gray-500">登録不要・個人情報は非公開</p>
+          <p className="mt-2 text-xs text-gray-500">無料・匿名OK・いつでも退会可能</p>
         </div>
       </div>
 
@@ -771,7 +771,7 @@ const Home: React.FC = () => {
               </Badge>
             </Button>
           </div>
-          <p className="mt-2 text-xs text-gray-500">登録不要・個人情報は非公開</p>
+          <p className="mt-2 text-xs text-gray-500">無料・匿名OK・いつでも退会可能</p>
         </div>
       </div>
     </div>

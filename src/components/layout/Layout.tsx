@@ -1136,6 +1136,23 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                 <div className="rounded-xl border border-slate-200 bg-white dark:bg-slate-900 p-4 text-center">
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     通信は暗号化。データの第三者提供は一切ありません。
+                    <a
+                      href="/status"
+                      className="ml-2 underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      システム稼働状況
+                    </a>{' '}
+                    ·{' '}
+                    <a
+                      href="/security"
+                      className="underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      セキュリティ方針
+                    </a>
                   </p>
                 </div>
               </div>
