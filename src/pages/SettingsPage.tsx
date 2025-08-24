@@ -220,6 +220,13 @@ const SettingsPage: React.FC = () => {
     taskReminders: true,
     weeklyReport: false,
   });
+  const [weeklyDigestOptIn, setWeeklyDigestOptIn] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('email:weekly_digest') === '1';
+    } catch {
+      return false;
+    }
+  });
 
   const [language, setLanguage] = useState('ja');
   const [timezone, setTimezone] = useState('Asia/Tokyo');
@@ -485,6 +492,30 @@ const SettingsPage: React.FC = () => {
                       }
                     />
                   </div>
+                </div>
+
+                <Separator />
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="weekly-digest">週1まとめメールを受け取る</Label>
+                    <p className="text-sm text-gray-500">学習やAI提案の要約を毎週配信</p>
+                  </div>
+                  <Switch
+                    id="weekly-digest"
+                    checked={weeklyDigestOptIn}
+                    onCheckedChange={(checked) => {
+                      setWeeklyDigestOptIn(checked);
+                      try {
+                        localStorage.setItem('email:weekly_digest', checked ? '1' : '0');
+                      } catch {}
+                      toast.success(
+                        checked
+                          ? '週1まとめメールを有効化しました'
+                          : '週1まとめメールを無効化しました'
+                      );
+                    }}
+                  />
                 </div>
 
                 <div className="pt-4">
