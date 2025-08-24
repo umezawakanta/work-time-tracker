@@ -1264,8 +1264,9 @@ app.post('/api/analytics/track', (req, res) => {
   }
 });
 
-// Simple in-memory pageview store (date buckets)
+// Simple in-memory pageview store (date buckets) and per-path totals
 const __pageviewBuckets: Record<string, number> = {};
+const __pagePathBuckets: Record<string, number> = {};
 const __getDateKey = (date = new Date()): string => date.toISOString().slice(0, 10);
 
 // Record pageview (dev mock)
@@ -1274,6 +1275,9 @@ app.post('/api/analytics/pageview', (req, res) => {
     const key = __getDateKey();
     __pageviewBuckets[key] = (__pageviewBuckets[key] || 0) + 1;
     const { path, title, referrer } = (req.body as any) || {};
+    if (typeof path === 'string' && path.length > 0) {
+      __pagePathBuckets[path] = (__pagePathBuckets[path] || 0) + 1;
+    }
     console.log('📄 Pageview recorded', { key, path, title, referrer });
     return res.json({ success: true });
   } catch (e) {
@@ -1300,6 +1304,20 @@ app.get('/api/admin/metrics/pageviews/trend', (req, res) => {
   } catch (e) {
     console.error('❌ Error building pageviews trend:', e);
     return res.json({ success: true, data: { window: 7, series: [] }, degraded: true });
+  }
+});
+
+// Admin top pages (dev mock)
+app.get('/api/admin/metrics/top-pages', (req, res) => {
+  try {
+    const entries = Object.entries(__pagePathBuckets)
+      .map(([page, views]) => ({ page, views }))
+      .sort((a, b) => b.views - a.views)
+      .slice(0, 20);
+    return res.json({ success: true, data: entries });
+  } catch (e) {
+    console.error('❌ Error building top pages:', e);
+    return res.json({ success: true, data: [] });
   }
 });
 

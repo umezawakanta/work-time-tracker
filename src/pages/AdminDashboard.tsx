@@ -163,6 +163,8 @@ const AdminDashboard: React.FC = () => {
   const [pageviewSeries, setPageviewSeries] = useState<Array<{ day: string; views: number }>>([]);
   const [pageviewWindow, setPageviewWindow] = useState<'7d' | '30d' | '90d'>('7d');
   const [isPageviewsLoading, setIsPageviewsLoading] = useState<boolean>(false);
+  const [topPages, setTopPages] = useState<Array<{ page: string; views: number }>>([]);
+  const [isTopPagesLoading, setIsTopPagesLoading] = useState<boolean>(false);
 
   // メトリクス取得
   const fetchMetrics = async () => {
@@ -241,6 +243,21 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const fetchTopPages = async (windowArg: '7d' | '30d' | '90d' = '7d') => {
+    try {
+      setIsTopPagesLoading(true);
+      const { data } = await api.get('admin/metrics/top-pages', { params: { window: windowArg } });
+      const payload = (data && (data.data || data)) as any;
+      const rows = Array.isArray(payload) ? payload : payload?.rows || payload;
+      setTopPages(Array.isArray(rows) ? rows : []);
+    } catch (e) {
+      console.error('Failed to fetch top pages:', e);
+      setTopPages([]);
+    } finally {
+      setIsTopPagesLoading(false);
+    }
+  };
+
   // アクション完了処理
   const completeAction = async (actionId: string) => {
     try {
@@ -267,12 +284,14 @@ const AdminDashboard: React.FC = () => {
     fetchMetrics();
     fetchAnalyticsSummary();
     fetchPageviewsTrend(pageviewWindow);
+    fetchTopPages(pageviewWindow);
 
     // 30秒ごとに自動更新
     const interval = setInterval(() => {
       fetchMetrics();
       fetchAnalyticsSummary();
       fetchPageviewsTrend(pageviewWindow);
+      fetchTopPages(pageviewWindow);
     }, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -624,23 +643,54 @@ const AdminDashboard: React.FC = () => {
             </Card>
             <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle>7日リテンション（簡易）</CardTitle>
-                <CardDescription>翌日継続率の目安</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>トップページ</CardTitle>
+                    <CardDescription>よく見られているページ</CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    {(['7d', '30d', '90d'] as const).map((w) => (
+                      <Button
+                        key={w}
+                        size="sm"
+                        variant={pageviewWindow === w ? 'default' : 'outline'}
+                        onClick={() => {
+                          setPageviewWindow(w);
+                          fetchTopPages(w);
+                        }}
+                      >
+                        {w}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-7 gap-2 text-center">
-                  {(analytics.retentionCohort || []).slice(-7).map((c, i) => (
-                    <div key={i} className="p-2 border rounded">
-                      <p className="text-[10px] text-gray-500">{c.day?.slice(5)}</p>
-                      <p className="text-sm font-semibold">
-                        {c.retainedNextDay}/{c.newUsers}
-                      </p>
-                    </div>
-                  ))}
-                  {(!analytics.retentionCohort || analytics.retentionCohort.length === 0) && (
-                    <p className="text-sm text-gray-500">データがありません</p>
-                  )}
-                </div>
+                {isTopPagesLoading ? (
+                  <div className="h-32 bg-gray-200 rounded animate-pulse" />
+                ) : topPages.length > 0 ? (
+                  <div className="space-y-2">
+                    {topPages.map((p, idx) => (
+                      <div
+                        key={p.page || idx}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <a
+                          href={p.page}
+                          className="text-blue-600 underline truncate max-w-[70%]"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={p.page}
+                        >
+                          {p.page}
+                        </a>
+                        <span className="font-medium">{p.views}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">データがありません</p>
+                )}
               </CardContent>
             </Card>
             <Card className="lg:col-span-2">
