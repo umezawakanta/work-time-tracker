@@ -275,7 +275,7 @@ export default defineConfig(({ command, mode }) => {
 
       // 圧縮設定
       cssCodeSplit: true,
-      cssMinify: true,
+      cssMinify: env.VITE_DISABLE_CSS_MINIFY === 'true' ? false : true,
     },
 
     esbuild: {
