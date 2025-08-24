@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -33,6 +34,7 @@ const IQTest: React.FC = () => {
   const [autoSubmitted, setAutoSubmitted] = useState(false);
   const total = useMemo(() => 20, []); // 骨組みとして20問想定（サンプルは少数）
   const { trackPageView, trackEvent } = useAnalytics();
+  const navigate = useNavigate();
   const firstUnansweredRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -78,7 +80,9 @@ const IQTest: React.FC = () => {
       const radio = document.querySelector(`input[name="${q.id}"]`) as HTMLInputElement | null;
       radio?.focus();
       firstUnansweredRef.current = q.id;
-    } catch {}
+    } catch (e) {
+      console.warn('Failed to scroll/focus first unanswered question:', e);
+    }
   };
 
   const computeScore = (): {
@@ -114,6 +118,28 @@ const IQTest: React.FC = () => {
       await saveIQResult({ score: raw, total: total, scaledIQ: scaled, percentile });
       toast.success(
         `結果を保存しました（推定IQ: ${scaled} / 上位${Math.max(1, 100 - percentile)}%）`
+      );
+      // 提案: AI秘書で反映
+      toast.custom(
+        (t) => (
+          <div className="rounded-md border bg-white shadow px-4 py-3 text-sm flex items-center gap-3">
+            <span>AI秘書に結果を反映しますか？</span>
+            <button
+              onClick={() => {
+                navigate('/ai-assistant');
+                try {
+                  (toast as any).dismiss((t as any).id);
+                } catch (e) {
+                  // ignore
+                }
+              }}
+              className="ml-auto inline-flex items-center px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+            >
+              AI秘書を開く
+            </button>
+          </div>
+        ),
+        { duration: 5000 }
       );
       trackEvent('assessment_saved', { type: 'iq', score: raw, scaled, percentile });
     } catch (e) {

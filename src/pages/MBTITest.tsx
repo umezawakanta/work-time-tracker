@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -30,6 +31,7 @@ const MBTITest: React.FC = () => {
   const [selected, setSelected] = useState<Record<string, 1 | 2 | 3 | 4 | 5 | undefined>>({});
   const [submitting, setSubmitting] = useState(false);
   const { trackPageView, trackEvent } = useAnalytics();
+  const navigate = useNavigate();
 
   const allAnswered = useMemo(
     () => questions.length > 0 && questions.every((q) => selected[q.id] != null),
@@ -78,6 +80,26 @@ const MBTITest: React.FC = () => {
       const result = compute();
       await saveMBTIResult({ type: result.type, scores: result.scores });
       toast.success(`あなたのタイプは ${result.type} です`);
+      // 提案: AI秘書で反映
+      toast.custom(
+        (t) => (
+          <div className="rounded-md border bg-white shadow px-4 py-3 text-sm flex items-center gap-3">
+            <span>AI秘書に結果を反映しますか？</span>
+            <button
+              onClick={() => {
+                navigate('/ai-assistant');
+                try {
+                  (toast as any).dismiss((t as any).id);
+                } catch {}
+              }}
+              className="ml-auto inline-flex items-center px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+            >
+              AI秘書を開く
+            </button>
+          </div>
+        ),
+        { duration: 5000 }
+      );
       trackEvent('assessment_saved', { type: 'mbti', mbti: result.type, scores: result.scores });
     } catch (e) {
       toast.error('結果の保存に失敗しました。再試行してください。');
