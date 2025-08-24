@@ -1270,6 +1270,8 @@ const AppWithProviders: React.FC = () => {
           },
         }}
       />
+      {/* Accessible live region for important status updates */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only" />
       <SpeedInsights />
     </>
   );

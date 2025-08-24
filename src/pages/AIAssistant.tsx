@@ -38,6 +38,21 @@ const AIAssistant: React.FC = () => {
 
   const [busy, setBusy] = useState(false);
   const [lastError, setLastError] = useState<string | null>(null);
+  // Inactivity nudge
+  const [lastInputAt, setLastInputAt] = useState<number>(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => {
+      const now = Date.now();
+      if (now - lastInputAt >= 60000) {
+        toast('少し休憩しますか？ もしくはAIに次の一手を相談しましょう。', { icon: '✨' });
+        setLastInputAt(now);
+        try {
+          trackEvent('ai_inactivity_nudge');
+        } catch {}
+      }
+    }, 15000);
+    return () => clearInterval(t);
+  }, [lastInputAt, trackEvent]);
   const send = async (text: string) => {
     if (!text.trim() || busy) return;
     const userMsg: ChatMessage = { role: 'user', content: text.trim() };
