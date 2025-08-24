@@ -119,10 +119,63 @@ const IQTest: React.FC = () => {
       toast.success(
         `結果を保存しました（推定IQ: ${scaled} / 上位${Math.max(1, 100 - percentile)}%）`
       );
+      // 共有/AI反映/学習CTA
+      const shareText = `IQテスト結果: 推定IQ ${scaled}（上位${Math.max(1, 100 - percentile)}%）。\nAI秘書で次の一手を作る → ${window.location.origin}/ai-assistant`;
+      toast.custom(
+        (t) => (
+          <div className="rounded-md border bg-white shadow px-4 py-3 text-sm flex items-center gap-3">
+            <button
+              onClick={async () => {
+                try {
+                  if (navigator.share) {
+                    await navigator.share({ title: 'IQテスト結果', text: shareText });
+                  } else {
+                    await navigator.clipboard.writeText(shareText);
+                    toast.success('結果をコピーしました');
+                  }
+                  (toast as any).dismiss((t as any).id);
+                } catch (err) {
+                  console.debug('Share/copy dismissed error', err);
+                }
+              }}
+              className="inline-flex items-center px-3 py-1 rounded bg-slate-100 hover:bg-slate-200"
+            >
+              結果を共有
+            </button>
+            <button
+              onClick={() => {
+                navigate('/ai-assistant');
+                try {
+                  (toast as any).dismiss((t as any).id);
+                } catch (err) {
+                  console.debug('Dismiss error', err);
+                }
+              }}
+              className="inline-flex items-center px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+            >
+              AIに反映
+            </button>
+            <button
+              onClick={() => {
+                navigate('/learning');
+                try {
+                  (toast as any).dismiss((t as any).id);
+                } catch (err) {
+                  console.debug('Dismiss error', err);
+                }
+              }}
+              className="inline-flex items-center px-3 py-1 rounded bg-emerald-600 text-white hover:bg-emerald-700"
+            >
+              学習を始める
+            </button>
+          </div>
+        ),
+        { duration: 6000 }
+      );
       try {
         localStorage.setItem('next_step_card', 'true');
       } catch (e) {
-        /* ignore */
+        console.debug('Failed to set next_step_card flag', e);
       }
       // 提案: AI秘書で反映
       toast.custom(
