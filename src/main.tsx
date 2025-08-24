@@ -19,12 +19,9 @@ setupGlobalErrorHandling();
 // ✅ 一部のUMD/外部ライブラリ対策: React/ReactDOM をグローバルに公開
 try {
   if (typeof window !== 'undefined') {
-    // @ts-ignore
     (window as any).React = React;
-    // @ts-ignore
     (window as any).ReactDOM = ReactDOMClient;
     // バージョンの簡易ログ（本番ではコンソール除去設定で落ちます）
-    // @ts-ignore
     console.log('[Boot] React version:', (React as any)?.version);
     // Runtime guard: ensure Children exists to prevent undefined assignment
     try {
@@ -38,10 +35,14 @@ try {
         const url = new URL(window.location.href);
         url.searchParams.set('_r', Date.now().toString());
         window.location.replace(url.toString());
-      } catch {}
+      } catch (_e) {
+        console.debug('[Boot] reload fallback failed');
+      }
     }
   }
-} catch {}
+} catch (e) {
+  console.debug('[Boot] init guard error', e);
+}
 
 // 🚫 ServiceWorker完全無効化（デバッグのため）
 if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
