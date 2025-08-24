@@ -38,16 +38,7 @@ module.exports = {
         ],
         '@babel/preset-typescript',
       ],
-      plugins: [
-        [
-          'transform-replace-expressions',
-          {
-            replace: {
-              'import.meta': 'global.import.meta',
-            },
-          },
-        ],
-      ],
+      plugins: [],
     },
   },
 }; 

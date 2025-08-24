@@ -114,55 +114,59 @@ jest.mock('*.svg', () => 'test-file-stub', { virtual: true });
 // ========================================
 
 // Mock useInternationalization hook globally
-jest.mock('./hooks/useInternationalization', () => ({
-  InternationalizationProvider: ({ children }: { children: React.ReactNode }) =>
-    React.createElement('div', {}, children),
-  useInternationalization: () => ({
-    locale: 'ja' as const,
-    setLocale: jest.fn(),
-    t: (key: string) => key,
-    formatDate: (date: Date) => date.toLocaleDateString(),
-    formatTime: (date: Date) => date.toLocaleTimeString(),
-    formatNumber: (number: number) => number.toString(),
-    formatCurrency: (amount: number) => `¥${amount}`,
-    getLocaleConfig: () => ({
-      code: 'ja' as const,
-      name: 'Japanese',
-      nativeName: '日本語',
-      flag: '🇯🇵',
-      direction: 'ltr' as const,
-      dateFormat: 'YYYY年MM月DD日',
-      timeFormat: 'HH:mm',
-      currency: 'JPY',
-      numberFormat: { decimal: '.', thousands: ',' },
+jest.mock('./hooks/useInternationalization', () => {
+  const React = jest.requireActual('react');
+  return {
+    __esModule: true,
+    InternationalizationProvider: ({ children }: { children: any }) =>
+      React.createElement('div', {}, children),
+    useInternationalization: () => ({
+      locale: 'ja' as const,
+      setLocale: jest.fn(),
+      t: (key: string) => key,
+      formatDate: (date: Date) => date.toLocaleDateString(),
+      formatTime: (date: Date) => date.toLocaleTimeString(),
+      formatNumber: (number: number) => number.toString(),
+      formatCurrency: (amount: number) => `¥${amount}`,
+      getLocaleConfig: () => ({
+        code: 'ja' as const,
+        name: 'Japanese',
+        nativeName: '日本語',
+        flag: '🇯🇵',
+        direction: 'ltr' as const,
+        dateFormat: 'YYYY年MM月DD日',
+        timeFormat: 'HH:mm',
+        currency: 'JPY',
+        numberFormat: { decimal: '.', thousands: ',' },
+      }),
+      isRTL: false,
     }),
-    isRTL: false,
-  }),
-  SUPPORTED_LOCALES: {
-    ja: {
-      code: 'ja' as const,
-      name: 'Japanese',
-      nativeName: '日本語',
-      flag: '🇯🇵',
-      direction: 'ltr' as const,
-      dateFormat: 'YYYY年MM月DD日',
-      timeFormat: 'HH:mm',
-      currency: 'JPY',
-      numberFormat: { decimal: '.', thousands: ',' },
+    SUPPORTED_LOCALES: {
+      ja: {
+        code: 'ja' as const,
+        name: 'Japanese',
+        nativeName: '日本語',
+        flag: '🇯🇵',
+        direction: 'ltr' as const,
+        dateFormat: 'YYYY年MM月DD日',
+        timeFormat: 'HH:mm',
+        currency: 'JPY',
+        numberFormat: { decimal: '.', thousands: ',' },
+      },
+      en: {
+        code: 'en' as const,
+        name: 'English',
+        nativeName: 'English',
+        flag: '🇺🇸',
+        direction: 'ltr' as const,
+        dateFormat: 'MM/DD/YYYY',
+        timeFormat: 'hh:mm A',
+        currency: 'USD',
+        numberFormat: { decimal: '.', thousands: ',' },
+      },
     },
-    en: {
-      code: 'en' as const,
-      name: 'English',
-      nativeName: 'English',
-      flag: '🇺🇸',
-      direction: 'ltr' as const,
-      dateFormat: 'MM/DD/YYYY',
-      timeFormat: 'hh:mm A',
-      currency: 'USD',
-      numberFormat: { decimal: '.', thousands: ',' },
-    },
-  },
-}));
+  };
+});
 
 // ========================================
 // Firebase App mock (initializeApp and friends)
