@@ -808,6 +808,31 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>7日リテンション（簡易）</CardTitle>
+                    <CardDescription>翌日継続率の目安</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-7 gap-2 text-center">
+                  {(analytics.retentionCohort || []).slice(-7).map((c, i) => (
+                    <div key={i} className="p-2 border rounded">
+                      <p className="text-[10px] text-gray-500">{c.day?.slice(5)}</p>
+                      <p className="text-sm font-semibold">
+                        {c.retainedNextDay}/{c.newUsers}
+                      </p>
+                    </div>
+                  ))}
+                  {(!analytics.retentionCohort || analytics.retentionCohort.length === 0) && (
+                    <p className="text-sm text-gray-500">データがありません</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )
       )}
