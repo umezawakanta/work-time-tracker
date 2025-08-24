@@ -101,6 +101,15 @@ interface LearningSummary {
   generatedAt?: string;
 }
 
+interface LiveMetrics {
+  activeUsers: number;
+  completionRate: number;
+  avgTaskTime: number;
+  todaysTasks: number;
+  weeklyTrend: number;
+  hourlyActivity: Array<{ hour: string; tasks: number; users: number }>;
+}
+
 // Normalize API metrics payload to UI's expected shape to avoid runtime errors in production
 function normalizeMetrics(raw: unknown): AdminMetrics {
   const obj = (raw as Record<string, unknown>) || {};
@@ -200,6 +209,8 @@ const AdminDashboard: React.FC = () => {
   const [learningSummary, setLearningSummary] = useState<LearningSummary | null>(null);
   const [isAssessLoading, setIsAssessLoading] = useState<boolean>(false);
   const [isLearningLoading, setIsLearningLoading] = useState<boolean>(false);
+  const [liveMetrics, setLiveMetrics] = useState<LiveMetrics | null>(null);
+  const [isLiveLoading, setIsLiveLoading] = useState<boolean>(false);
 
   // メトリクス取得
   const fetchMetrics = async () => {
@@ -389,6 +400,28 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const fetchLiveMetrics = async () => {
+    try {
+      setIsLiveLoading(true);
+      const { data } = await api.get('analytics/live-metrics');
+      const payload = (data && (data.data || data)) as Partial<LiveMetrics> | null;
+      const normalized: LiveMetrics = {
+        activeUsers: Number(payload?.activeUsers ?? 0),
+        completionRate: Number(payload?.completionRate ?? 0),
+        avgTaskTime: Number(payload?.avgTaskTime ?? 0),
+        todaysTasks: Number(payload?.todaysTasks ?? 0),
+        weeklyTrend: Number(payload?.weeklyTrend ?? 0),
+        hourlyActivity: Array.isArray(payload?.hourlyActivity) ? payload!.hourlyActivity! : [],
+      };
+      setLiveMetrics(normalized);
+    } catch (e) {
+      console.error('Failed to fetch live metrics:', e);
+      setLiveMetrics(null);
+    } finally {
+      setIsLiveLoading(false);
+    }
+  };
+
   // アクション完了処理
   const completeAction = async (actionId: string) => {
     try {
@@ -422,6 +455,7 @@ const AdminDashboard: React.FC = () => {
     fetchRevenueSummary();
     fetchAssessmentsSummary();
     fetchLearningSummary();
+    fetchLiveMetrics();
 
     // 30秒ごとに自動更新
     const interval = setInterval(() => {
@@ -435,6 +469,7 @@ const AdminDashboard: React.FC = () => {
       fetchRevenueSummary();
       fetchAssessmentsSummary();
       fetchLearningSummary();
+      fetchLiveMetrics();
     }, 30000);
     return () => clearInterval(interval);
   }, [pageviewWindow]);
@@ -568,6 +603,27 @@ const AdminDashboard: React.FC = () => {
                   平均応答: {metrics.support.avgResponseTime} | 満足度:{' '}
                   {metrics.support.satisfaction}/5
                 </span>
+              </div>
+            </CardContent>
+          </Card>
+          {/* ライブメトリクス */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">ライブアクティブ</p>
+                  <p className="text-2xl font-bold">
+                    {isLiveLoading ? '—' : (liveMetrics?.activeUsers ?? 0)}
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    完了率: {isLiveLoading ? '—' : `${liveMetrics?.completionRate ?? 0}%`}
+                  </p>
+                </div>
+                <Activity className="w-8 h-8 text-rose-500" />
+              </div>
+              <div className="mt-2 text-xs text-gray-600">
+                今日のタスク: {isLiveLoading ? '—' : (liveMetrics?.todaysTasks ?? 0)} / 週次傾向:{' '}
+                {isLiveLoading ? '—' : (liveMetrics?.weeklyTrend ?? 0)}%
               </div>
             </CardContent>
           </Card>
