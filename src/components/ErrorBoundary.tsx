@@ -31,8 +31,22 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       timestamp: new Date().toISOString(),
     });
 
-    // エラーを開発バッジシステムに報告
+    // エラーを開発バッジシステムに報告 & analyticsタグ送信
     this.reportErrorToBadgeSystem(error, errorInfo);
+    try {
+      // Lazy import to avoid bundle weight when unused
+      import('@/lib/analytics').then(({ useAnalytics }) => {
+        try {
+          const { trackEvent } = useAnalytics();
+          trackEvent('error_boundary', {
+            message: error.message,
+            stack: (error.stack || '').slice(0, 500),
+            componentStack: errorInfo.componentStack.slice(0, 500),
+            variant: this.props.variant || 'default',
+          });
+        } catch {}
+      });
+    } catch {}
   }
 
   private reportErrorToBadgeSystem = (error: Error, errorInfo: ErrorInfo) => {
