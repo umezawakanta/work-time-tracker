@@ -420,6 +420,30 @@ app.get('/api/auth/me', (req, res) => {
   }
 });
 
+// whoami endpoint for frontend compatibility
+app.get('/api/auth/whoami', (req, res) => {
+  console.log('✅ GET /api/auth/whoami called');
+
+  // In dev, return a simple successful user payload similar to Vercel function shape
+  const authHeader = req.headers.authorization || '';
+  const hasToken = authHeader.startsWith('Bearer ') || true; // allow in dev
+
+  if (hasToken) {
+    const mockUser = {
+      userId: 'user_123',
+      email: 'demo@example.com',
+      role: 'user',
+      roles: ['user'],
+      isVerified: true,
+      isAdmin: false,
+    };
+
+    return res.status(200).json({ success: true, user: mockUser, timestamp: new Date().toISOString() });
+  }
+
+  return res.status(401).json({ success: false, status: 401, code: 'UNAUTHORIZED', message: 'Unauthorized' });
+});
+
 // /api/auth/check エンドポイントを追加
 app.get('/api/auth/check', (req: Request, res: Response) => {
   console.log('✅ GET /api/auth/check called');
