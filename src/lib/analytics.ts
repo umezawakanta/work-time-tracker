@@ -9,6 +9,97 @@ const __devCounters = {
 
 type EventData = Record<string, any>;
 
+// ------------------------------
+// IDs and Queue Utilities
+// ------------------------------
+
+function getClientId(): string | undefined {
+  try {
+    const key = 'analytics:client_id';
+    let clientId = localStorage.getItem(key);
+    if (!clientId) {
+      clientId = 'cid_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem(key, clientId);
+    }
+    return clientId;
+  } catch {
+    return undefined;
+  }
+}
+
+function getSessionId(): string | undefined {
+  try {
+    const key = 'analytics:session_id';
+    let sessionId = sessionStorage.getItem(key);
+    if (!sessionId) {
+      sessionId = 'sid_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      sessionStorage.setItem(key, sessionId);
+    }
+    return sessionId;
+  } catch {
+    return undefined;
+  }
+}
+
+type QueuedEvent = {
+  endpoint: '/api/analytics/track' | '/api/analytics/pageview';
+  body: Record<string, unknown>;
+  createdAt: string;
+  attempt?: number;
+};
+
+function readQueue(): QueuedEvent[] {
+  try {
+    const raw = localStorage.getItem('analytics:queue');
+    return raw ? (JSON.parse(raw) as QueuedEvent[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeQueue(queue: QueuedEvent[]): void {
+  try {
+    localStorage.setItem('analytics:queue', JSON.stringify(queue));
+  } catch {}
+}
+
+async function postWithQueue(
+  endpoint: QueuedEvent['endpoint'],
+  body: Record<string, unknown>
+): Promise<void> {
+  try {
+    await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    const queue = readQueue();
+    queue.push({ endpoint, body, createdAt: new Date().toISOString(), attempt: 0 });
+    writeQueue(queue);
+  }
+}
+
+async function flushAnalyticsQueue(): Promise<void> {
+  const queue = readQueue();
+  if (queue.length === 0) return;
+  const remaining: QueuedEvent[] = [];
+  for (const item of queue) {
+    try {
+      await fetch(item.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item.body),
+      });
+    } catch {
+      const attempts = (item.attempt ?? 0) + 1;
+      // Keep for future retry, cap size to avoid unbounded growth
+      if (attempts <= 10) remaining.push({ ...item, attempt: attempts });
+    }
+  }
+  writeQueue(remaining.slice(-500));
+}
+
 /**
  * アナリティクス機能を提供するカスタムフック
  * ユーザーの行動を追跡し、分析に役立てるための機能を提供します
@@ -73,6 +164,20 @@ export const useAnalytics = () => {
       console.groupEnd();
     }, 60000);
     return () => clearInterval(id);
+  }, []);
+
+  // Queue flusher: try on interval, on online, and on unload
+  useEffect(() => {
+    const onOnline = () => void flushAnalyticsQueue();
+    const onBeforeUnload = () => navigator.sendBeacon && flushAnalyticsQueue();
+    const id = setInterval(() => void flushAnalyticsQueue(), 30000);
+    window.addEventListener('online', onOnline);
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      clearInterval(id);
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
   }, []);
 
   /**
@@ -237,11 +342,13 @@ export const useAnalytics = () => {
       // dev時もリモート送信が有効ならPOST
       try {
         if (import.meta?.env?.VITE_ENABLE_ANALYTICS === 'true') {
-          fetch('/api/analytics/track', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ event: eventName, data, timestamp: new Date().toISOString() }),
-          }).catch(() => {});
+          const clientId = getClientId();
+          const sessionId = getSessionId();
+          postWithQueue('/api/analytics/track', {
+            event: eventName,
+            data: { ...data, clientId, sessionId },
+            timestamp: new Date().toISOString(),
+          });
         }
       } catch {}
       return;
@@ -273,11 +380,13 @@ export const useAnalytics = () => {
 
       // バックエンドにも保存
       if (typeof fetch === 'function') {
-        fetch('/api/analytics/track', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ event: eventName, data, timestamp: new Date().toISOString() }),
-        }).catch(() => {});
+        const clientId = getClientId();
+        const sessionId = getSessionId();
+        postWithQueue('/api/analytics/track', {
+          event: eventName,
+          data: { ...data, clientId, sessionId },
+          timestamp: new Date().toISOString(),
+        });
       }
     } catch (error) {
       console.error('[Analytics] Error tracking event:', error);
@@ -313,20 +422,8 @@ export const useAnalytics = () => {
    */
   const trackPageView = useCallback((pagePath: string, pageTitle?: string) => {
     try {
-      const getClientId = () => {
-        try {
-          const key = 'analytics:client_id';
-          let cid = localStorage.getItem(key);
-          if (!cid) {
-            cid = 'cid_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
-            localStorage.setItem(key, cid);
-          }
-          return cid;
-        } catch {
-          return undefined;
-        }
-      };
       const clientId = getClientId();
+      const sessionId = getSessionId();
       const getUtm = () => {
         try {
           const stored = localStorage.getItem('utm:first_visit');
@@ -347,17 +444,14 @@ export const useAnalytics = () => {
       if (process.env.NODE_ENV !== 'production') {
         console.log(`[Analytics] Page View: ${pagePath} (${pageTitle})`);
         try {
-          fetch('/api/analytics/pageview', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              path: pagePath,
-              title: pageTitle,
-              referrer: document.referrer,
-              clientId,
-              utm,
-            }),
-          }).catch(() => {});
+          postWithQueue('/api/analytics/pageview', {
+            path: pagePath,
+            title: pageTitle,
+            referrer: document.referrer,
+            clientId,
+            sessionId,
+            utm,
+          });
         } catch {}
         return;
       }
@@ -383,17 +477,14 @@ export const useAnalytics = () => {
       }
 
       if (typeof fetch === 'function') {
-        fetch('/api/analytics/pageview', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            path: pagePath,
-            title: pageTitle,
-            referrer: document.referrer,
-            clientId,
-            utm,
-          }),
-        }).catch(() => {});
+        postWithQueue('/api/analytics/pageview', {
+          path: pagePath,
+          title: pageTitle,
+          referrer: document.referrer,
+          clientId,
+          sessionId,
+          utm,
+        });
       }
     } catch (error) {
       console.error('[Analytics] Error tracking page view:', error);
@@ -458,3 +549,79 @@ declare global {
     amplitude?: unknown;
   }
 }
+
+// ------------------------------
+// Basic Web Vitals (CLS/LCP/FID) reporting without external deps
+// ------------------------------
+try {
+  if (typeof window !== 'undefined') {
+    let cumulativeLayoutShift = 0;
+    let largestContentfulPaint = 0;
+    let firstInputDelay = 0;
+
+    if ('PerformanceObserver' in window) {
+      try {
+        const clsObserver = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries() as any) {
+            const e = entry as any;
+            if (!e.hadRecentInput) cumulativeLayoutShift += e.value || 0;
+          }
+        });
+        // @ts-expect-error types for 'layout-shift'
+        clsObserver.observe({ type: 'layout-shift', buffered: true });
+      } catch {}
+
+      try {
+        const lcpObserver = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          const last = entries[entries.length - 1] as any;
+          if (last && last.renderTime) {
+            largestContentfulPaint = Math.max(largestContentfulPaint, last.renderTime);
+          } else if (last && last.loadTime) {
+            largestContentfulPaint = Math.max(largestContentfulPaint, last.loadTime);
+          }
+        });
+        // @ts-expect-error types for 'largest-contentful-paint'
+        lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+      } catch {}
+
+      try {
+        const fidObserver = new PerformanceObserver((list) => {
+          const firstInput = list.getEntries()[0] as any;
+          if (firstInput) {
+            firstInputDelay = Math.max(0, firstInput.processingStart - firstInput.startTime);
+          }
+        });
+        // @ts-expect-error types for 'first-input'
+        fidObserver.observe({ type: 'first-input', buffered: true });
+      } catch {}
+    }
+
+    const sendVitals = () => {
+      try {
+        const allowDev = (import.meta as any)?.env?.VITE_ENABLE_ANALYTICS === 'true';
+        if (process.env.NODE_ENV !== 'production' && !allowDev) return;
+        const clientId = getClientId();
+        const sessionId = getSessionId();
+        const path = typeof window !== 'undefined' ? window.location.pathname : undefined;
+        postWithQueue('/api/analytics/track', {
+          event: 'web_vitals',
+          data: {
+            cls: Number(cumulativeLayoutShift.toFixed(4)),
+            lcp: Math.round(largestContentfulPaint),
+            fid: Math.round(firstInputDelay),
+            path,
+            clientId,
+            sessionId,
+          },
+          timestamp: new Date().toISOString(),
+        });
+      } catch {}
+    };
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') sendVitals();
+    });
+    window.addEventListener('pagehide', sendVitals);
+  }
+} catch {}
