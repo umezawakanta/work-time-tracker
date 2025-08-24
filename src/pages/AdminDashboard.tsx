@@ -317,12 +317,14 @@ const AdminDashboard: React.FC = () => {
 
       {/* タブコンテンツ */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview">概要</TabsTrigger>
           <TabsTrigger value="users">ユーザー</TabsTrigger>
           <TabsTrigger value="actions">優先アクション</TabsTrigger>
           <TabsTrigger value="analytics">分析</TabsTrigger>
           <TabsTrigger value="settings">設定</TabsTrigger>
+          <TabsTrigger value="assessments">診断集計</TabsTrigger>
+          <TabsTrigger value="learning">学習進捗</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -409,6 +411,73 @@ const AdminDashboard: React.FC = () => {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* 診断集計（ダミー） */}
+        <TabsContent value="assessments" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>診断集計（ダミー）</CardTitle>
+              <CardDescription>IQ/MBTIの受検数や傾向（デモ）</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-sm text-gray-600">今月のIQ受検数</p>
+                    <p className="text-3xl font-bold">42</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-sm text-gray-600">MBTI受検数</p>
+                    <p className="text-3xl font-bold">58</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-sm text-gray-600">上位タイプ</p>
+                    <p className="text-3xl font-bold">INTJ</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* 学習進捗（ダミー） */}
+        <TabsContent value="learning" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>学習進捗（ダミー）</CardTitle>
+              <CardDescription>主要コースの平均進捗（デモ）</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-sm text-gray-600">ビジネス基礎 101</p>
+                    <Progress value={64} className="mt-2" />
+                    <p className="text-xs text-gray-500 mt-1">64%</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-sm text-gray-600">生産性エンジン</p>
+                    <Progress value={52} className="mt-2" />
+                    <p className="text-xs text-gray-500 mt-1">52%</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-sm text-gray-600">要点読書術</p>
+                    <Progress value={35} className="mt-2" />
+                    <p className="text-xs text-gray-500 mt-1">35%</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="actions" className="space-y-6">

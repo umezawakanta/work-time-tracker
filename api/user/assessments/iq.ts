@@ -2,6 +2,7 @@ import type { VercelResponse } from '@vercel/node';
 import { z } from 'zod';
 import { cors } from '../../../lib/cors';
 import { withAuth, type AuthenticatedRequest } from '../../../src/middleware/auth';
+import { allowRequest, getResetMs } from '../../../lib/limiter';
 
 const BodySchema = z.object({
   score: z.number().int().min(0).max(1000),
@@ -16,6 +17,11 @@ async function handler(req: AuthenticatedRequest, res: VercelResponse) {
   if (req.method !== 'POST')
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   try {
+    const key = `iq:${req.user?.userId}`;
+    if (!allowRequest(key, 5, 60_000)) {
+      res.setHeader('Retry-After', Math.ceil(getResetMs(key) / 1000).toString());
+      return res.status(429).json({ success: false, message: 'Rate limit exceeded' });
+    }
     const parsed = BodySchema.safeParse(req.body);
     if (!parsed.success) {
       return res
