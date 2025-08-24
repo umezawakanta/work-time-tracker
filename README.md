@@ -30,6 +30,18 @@ pnpm lint && pnpm type-check
   - Live Metrics (dev): `GET /api/analytics/live-metrics`（Vercel関数）
   - Live Metrics (dev server): `GET /api/analytics/live-metrics`、SSE: `GET /api/analytics/events`
 
+### ビルド安定化（Reactランタイム一意性ガード）
+
+- ローカル検証向けにビルド時のReact重複検出（警告）のプラグインを用意しています。
+- 本番（Vercel）ではデフォルト無効です。必要に応じて以下で有効化してください。
+
+```bash
+# 有効化してビルド
+VITE_ENABLE_REACT_GUARD=true pnpm run build
+```
+
+Vercel 環境では `VITE_ENABLE_REACT_GUARD` を未設定のまま運用してください（警告がデプロイログに出てもブロックはしません）。
+
 ### 最小 `.env.local` 例（または `.env`）
 
 ```env

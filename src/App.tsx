@@ -222,7 +222,7 @@ const ImprovementImplementation = lazy(() => import('./pages/ImprovementImplemen
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
-  const { trackPageView } = useAnalytics();
+  const { trackPageView, trackEvent } = useAnalytics();
 
   useEffect(() => {
     // アプリケーション初期化
@@ -261,6 +261,14 @@ const App: React.FC = () => {
                           onTrack={(path) => {
                             try {
                               trackPageView(path);
+                            } catch {}
+                          }}
+                        />
+                        {/* PWA install tracking */}
+                        <PwaInstallTracker
+                          onEvent={(name) => {
+                            try {
+                              trackEvent(name, {});
                             } catch {}
                           }}
                         />
@@ -1288,5 +1296,24 @@ const RouteChangeTracker: React.FC<{ path: string; onTrack: (path: string) => vo
     onTrack(path);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path]);
+  return null;
+};
+
+// PWA install tracking component
+const PwaInstallTracker: React.FC<{ onEvent: (name: string) => void }> = ({ onEvent }) => {
+  useEffect(() => {
+    const before = (e: any) => {
+      onEvent('pwa_beforeinstallprompt');
+    };
+    const installed = () => {
+      onEvent('pwa_appinstalled');
+    };
+    window.addEventListener('beforeinstallprompt', before as any);
+    window.addEventListener('appinstalled', installed);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', before as any);
+      window.removeEventListener('appinstalled', installed);
+    };
+  }, [onEvent]);
   return null;
 };
