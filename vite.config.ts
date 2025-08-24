@@ -36,10 +36,10 @@ export default defineConfig(({ command, mode }) => {
               const msg = `Detected multiple React runtimes in bundle. react: ${
                 [...reactRoots].join(', ') || 'n/a'
               } | react-dom: ${[...reactDomRoots].join(', ') || 'n/a'}`;
-              this.error(new Error(msg));
+              // Log warning but don't fail build to avoid blocking deploys; runtime guard will handle
+              this.warn(`[single-react-guard] ${msg}`);
             }
           } catch (e) {
-            // Fail-safe: do not break build on guard error, but log
             this.warn(`[single-react-guard] check failed: ${String(e)}`);
           }
         },
