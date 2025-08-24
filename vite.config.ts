@@ -12,7 +12,7 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       react(),
       // Build-time guard to ensure a single React runtime is bundled (disabled on Vercel)
-      ...(process.env.VITE_ENABLE_REACT_GUARD === 'true'
+      ...(env.VITE_ENABLE_REACT_GUARD === 'true'
         ? [
             {
               name: 'single-react-guard',
@@ -49,7 +49,7 @@ export default defineConfig(({ command, mode }) => {
         : []),
 
       // PWA機能強化 - オフライン対応・プッシュ通知・背景同期 (本番環境のみ)
-      ...(mode === 'production' && process.env.VITE_ENABLE_PWA === 'true'
+      ...(mode === 'production' && env.VITE_ENABLE_PWA === 'true'
         ? [
             VitePWA({
               registerType: 'autoUpdate',
