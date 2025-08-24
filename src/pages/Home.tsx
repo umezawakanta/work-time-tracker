@@ -58,6 +58,7 @@ import WeeklyReportPreview from '@/components/home/WeeklyReportPreview';
 import UserStories from '@/components/home/UserStories';
 import FocusTimerQuick from '@/components/home/FocusTimerQuick';
 import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/referral';
+import { getVariant } from '@/lib/ab';
 import { useAnalytics } from '@/lib/analytics';
 
 interface DashboardStats {
@@ -358,9 +359,15 @@ const Home: React.FC = () => {
       {/* Mission Hero (copy refreshed) */}
       <div className="bg-gradient-to-b from-white to-blue-50 border-b">
         <div className="container mx-auto px-4 max-w-7xl py-14 md:py-20 text-center">
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-4">
-            人生のコントロールを取り戻そう
-          </h1>
+          {getVariant('ab:home_headline') === 'A' ? (
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-4">
+              人生のコントロールを取り戻そう
+            </h1>
+          ) : (
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-4">
+              1分で「今日の一手」をAIが提案
+            </h1>
+          )}
           <p className="text-sm font-semibold text-emerald-600 mb-2">無料で始める</p>
           <p className="text-base md:text-xl text-gray-700 max-w-3xl mx-auto mb-8">
             生成AIと連携したパーソナル秘書サービスで、計画・仕事・学習・自己診断までを一元管理。

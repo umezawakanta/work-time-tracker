@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { useAnalytics } from '@/lib/analytics';
 import { buildOwnInviteUrl, ensureOwnReferralCode } from '@/services/share/referral';
+import { getVariant } from '@/lib/ab';
 
 const Invite: React.FC = () => {
   const { trackPageView, trackEvent } = useAnalytics();
@@ -17,7 +18,11 @@ const Invite: React.FC = () => {
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <Card>
         <CardHeader>
-          <CardTitle>友だちを招待</CardTitle>
+          <CardTitle>
+            {getVariant('ab:invite_cta') === 'A'
+              ? '友だちを招待'
+              : '1人招待すると今日の一歩が進む！'}
+          </CardTitle>
           <CardDescription>自己診断やAI秘書を友だちと試してみましょう。</CardDescription>
         </CardHeader>
         <CardContent>
