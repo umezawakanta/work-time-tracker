@@ -278,6 +278,23 @@ api.interceptors.response.use(
     } else {
       logger.error('API', `${error.response?.status} ${error.config?.url}`, error.response?.data);
     }
+
+    // Track 404 on admin as analytics event (dev)
+    try {
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        error.response?.status === 404 &&
+        typeof window !== 'undefined' &&
+        /\/admin\//.test(String(error.config?.url || ''))
+      ) {
+        const path = window.location.pathname + window.location.search;
+        console.log('[Analytics] Event: not_found_admin', {
+          url: String(error.config?.url || ''),
+          path,
+          referrer: document.referrer || '',
+        });
+      }
+    } catch {}
     return Promise.reject(error);
   }
 );
