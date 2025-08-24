@@ -107,6 +107,21 @@
     <!-- 🚀 Main Script -->
     <script type="module" src="./src/main.tsx"></script>
     
+    <!-- 🧹 Service Worker Killer (one-time) -->
+    <script>
+      (function killStaleSW(){
+        if (!('serviceWorker' in navigator)) return;
+        if (localStorage.getItem('sw_killed') === '1') return;
+        // Try to register a killer SW at root scope once to evict old SW/caches
+        navigator.serviceWorker.register('/sw-kill.js', { scope: '/' })
+          .then(() => {
+            localStorage.setItem('sw_killed', '1');
+            console.log('[SW-KILL] registered');
+          })
+          .catch(() => {});
+      })();
+    </script>
+    
     <!-- 📊 Service Worker Registration (一時的に無効化) -->
     <script>
       // Service Workerを一時的に無効化（デバッグのため）
