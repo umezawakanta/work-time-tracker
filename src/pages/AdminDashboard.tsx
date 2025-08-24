@@ -169,6 +169,20 @@ const AdminDashboard: React.FC = () => {
     Array<{ day: string; newUsers: number; activeUsers: number }>
   >([]);
   const [isUsersTrendLoading, setIsUsersTrendLoading] = useState<boolean>(false);
+  const [revenueTrend, setRevenueTrend] = useState<Array<{ month: string; amount: number }>>([]);
+  const [paidUsersTrend, setPaidUsersTrend] = useState<Array<{ month: string; count: number }>>([]);
+  const [isRevenueTrendLoading, setIsRevenueTrendLoading] = useState<boolean>(false);
+  const [isPaidTrendLoading, setIsPaidTrendLoading] = useState<boolean>(false);
+  const [revenueSummary, setRevenueSummary] = useState<{
+    mrr: number;
+    arr: number;
+    churnRate: number;
+    conversionRate: number;
+    activePaid: number;
+    newPaidThisMonth: number;
+    prevMrr: number;
+  } | null>(null);
+  const [isRevenueSummaryLoading, setIsRevenueSummaryLoading] = useState<boolean>(false);
 
   // メトリクス取得
   const fetchMetrics = async () => {
@@ -277,6 +291,50 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const fetchRevenueTrend = async (months = 6) => {
+    try {
+      setIsRevenueTrendLoading(true);
+      const { data } = await api.get('admin/metrics/revenue/trend', { params: { months } });
+      const payload = (data && (data.data || data)) as any;
+      const series = Array.isArray(payload.series) ? payload.series : [];
+      setRevenueTrend(series);
+    } catch (e) {
+      console.error('Failed to fetch revenue trend:', e);
+      setRevenueTrend([]);
+    } finally {
+      setIsRevenueTrendLoading(false);
+    }
+  };
+
+  const fetchPaidUsersTrend = async (months = 6) => {
+    try {
+      setIsPaidTrendLoading(true);
+      const { data } = await api.get('admin/metrics/paid-users/trend', { params: { months } });
+      const payload = (data && (data.data || data)) as any;
+      const series = Array.isArray(payload.series) ? payload.series : [];
+      setPaidUsersTrend(series);
+    } catch (e) {
+      console.error('Failed to fetch paid users trend:', e);
+      setPaidUsersTrend([]);
+    } finally {
+      setIsPaidTrendLoading(false);
+    }
+  };
+
+  const fetchRevenueSummary = async () => {
+    try {
+      setIsRevenueSummaryLoading(true);
+      const { data } = await api.get('admin/metrics/revenue/summary');
+      const payload = (data && (data.data || data)) as any;
+      setRevenueSummary(payload as any);
+    } catch (e) {
+      console.error('Failed to fetch revenue summary:', e);
+      setRevenueSummary(null);
+    } finally {
+      setIsRevenueSummaryLoading(false);
+    }
+  };
+
   // アクション完了処理
   const completeAction = async (actionId: string) => {
     try {
@@ -305,6 +363,9 @@ const AdminDashboard: React.FC = () => {
     fetchPageviewsTrend(pageviewWindow);
     fetchTopPages(pageviewWindow);
     fetchUsersTrend(pageviewWindow);
+    fetchRevenueTrend(6);
+    fetchPaidUsersTrend(6);
+    fetchRevenueSummary();
 
     // 30秒ごとに自動更新
     const interval = setInterval(() => {
@@ -313,6 +374,9 @@ const AdminDashboard: React.FC = () => {
       fetchPageviewsTrend(pageviewWindow);
       fetchTopPages(pageviewWindow);
       fetchUsersTrend(pageviewWindow);
+      fetchRevenueTrend(6);
+      fetchPaidUsersTrend(6);
+      fetchRevenueSummary();
     }, 30000);
     return () => clearInterval(interval);
   }, [pageviewWindow]);
@@ -703,6 +767,110 @@ const AdminDashboard: React.FC = () => {
                     </p>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>収益サマリ</CardTitle>
+                <CardDescription>MRR/ARR・有料ユーザー</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isRevenueSummaryLoading ? (
+                  <div className="h-24 bg-gray-200 rounded animate-pulse" />
+                ) : revenueSummary ? (
+                  <div className="grid grid-cols-2 gap-4 text-center">
+                    <div>
+                      <p className="text-sm text-gray-600">MRR</p>
+                      <p className="text-2xl font-bold">
+                        ¥{revenueSummary.mrr?.toLocaleString?.() ?? 0}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        前月: ¥{revenueSummary.prevMrr?.toLocaleString?.() ?? 0}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">ARR</p>
+                      <p className="text-2xl font-bold">
+                        ¥{revenueSummary.arr?.toLocaleString?.() ?? 0}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        有料: {revenueSummary.activePaid ?? 0}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">データがありません</p>
+                )}
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>月次売上推移</CardTitle>
+                <CardDescription>直近6カ月</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isRevenueTrendLoading ? (
+                  <div className="h-32 bg-gray-200 rounded animate-pulse" />
+                ) : revenueTrend.length > 0 ? (
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={revenueTrend}
+                        margin={{ left: 8, right: 8, top: 8, bottom: 8 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                        <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+                        <Tooltip />
+                        <Line
+                          type="monotone"
+                          dataKey="amount"
+                          name="売上"
+                          stroke="#0ea5e9"
+                          strokeWidth={2}
+                          dot={{ r: 2 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">データがありません</p>
+                )}
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>有料ユーザー推移</CardTitle>
+                <CardDescription>直近6カ月</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isPaidTrendLoading ? (
+                  <div className="h-32 bg-gray-200 rounded animate-pulse" />
+                ) : paidUsersTrend.length > 0 ? (
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={paidUsersTrend}
+                        margin={{ left: 8, right: 8, top: 8, bottom: 8 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                        <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+                        <Tooltip />
+                        <Line
+                          type="monotone"
+                          dataKey="count"
+                          name="有料ユーザー"
+                          stroke="#22c55e"
+                          strokeWidth={2}
+                          dot={{ r: 2 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">データがありません</p>
+                )}
               </CardContent>
             </Card>
             <Card className="lg:col-span-2">
