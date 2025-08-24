@@ -15,6 +15,46 @@ const AssessmentsHub: React.FC = () => {
     trackPageView('/assessments', 'Assessments Hub');
     // URLからreferralコードを保存
     persistReferralFromUrl();
+    // FAQ JSON-LD を注入
+    try {
+      const scriptId = 'jsonld-assessments-faq';
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.id = scriptId;
+        script.text = JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: [
+            {
+              '@type': 'Question',
+              name: '所要時間はどのくらい？',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'IQ/MBTI いずれも 5〜10 分程度です。',
+              },
+            },
+            {
+              '@type': 'Question',
+              name: '結果の用途は？',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'AI秘書の提案を個別最適化するためにのみ利用します。',
+              },
+            },
+            {
+              '@type': 'Question',
+              name: 'プライバシーは守られますか？',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: '個人を特定しない形で扱い、外部提供は行いません。',
+              },
+            },
+          ],
+        });
+        document.head.appendChild(script);
+      }
+    } catch {}
   }, [trackPageView]);
 
   return (
