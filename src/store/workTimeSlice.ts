@@ -94,6 +94,8 @@ interface WorkTimeState {
   isLoading: boolean;
   error: string | null;
   workState: WorkState | null;
+  optimisticCreate?: Record<string, string>; // requestId -> tempId
+  prevById?: Record<string, WorkTimeEntry>; // snapshots for update/delete revert
 }
 
 const initialState: WorkTimeState = {
@@ -101,6 +103,8 @@ const initialState: WorkTimeState = {
   isLoading: false,
   error: null,
   workState: null,
+  optimisticCreate: {},
+  prevById: {},
 };
 
 const workTimeSlice = createSlice({
@@ -125,17 +129,42 @@ const workTimeSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      .addCase(createWorkTimeEntry.pending, (state) => {
+      .addCase(createWorkTimeEntry.pending, (state, action) => {
         state.isLoading = true;
         state.error = null;
+        // Optimistic insert
+        const tempId = `optimistic_${action.meta.requestId}`;
+        state.optimisticCreate![action.meta.requestId] = tempId;
+        const arg = action.meta.arg as Omit<WorkTimeEntry, '_id' | 'userId'>;
+        const optimisticEntry: WorkTimeEntry = {
+          _id: tempId,
+          userId: 'local',
+          date: arg.date,
+          startTime: arg.startTime,
+          endTime: arg.endTime,
+          duration: arg.duration,
+          projectName: arg.projectName,
+          description: arg.description,
+        } as WorkTimeEntry;
+        state.entries.unshift(optimisticEntry);
       })
       .addCase(createWorkTimeEntry.fulfilled, (state, action) => {
         state.isLoading = false;
+        const tempId = state.optimisticCreate![action.meta.requestId];
+        if (tempId) {
+          state.entries = state.entries.filter((e) => e._id !== tempId);
+          delete state.optimisticCreate![action.meta.requestId];
+        }
         state.entries.unshift(action.payload);
       })
       .addCase(createWorkTimeEntry.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+        const tempId = state.optimisticCreate![action.meta.requestId];
+        if (tempId) {
+          state.entries = state.entries.filter((e) => e._id !== tempId);
+          delete state.optimisticCreate![action.meta.requestId];
+        }
       })
       .addCase(updateWorkTimeEntry.fulfilled, (state, action: PayloadAction<WorkTimeEntry>) => {
         const index = state.entries.findIndex((entry) => entry._id === action.payload._id);
@@ -144,14 +173,44 @@ const workTimeSlice = createSlice({
         }
         state.error = null;
       })
+      .addCase(updateWorkTimeEntry.pending, (state, action) => {
+        const { id, entry } = action.meta.arg as { id: string; entry: Partial<WorkTimeEntry> };
+        const idx = state.entries.findIndex((e) => e._id === id);
+        if (idx !== -1) {
+          state.prevById![id] = { ...state.entries[idx] } as WorkTimeEntry;
+          state.entries[idx] = { ...state.entries[idx], ...entry } as WorkTimeEntry;
+        }
+      })
       .addCase(updateWorkTimeEntry.rejected, (state, action) => {
+        const { id } = action.meta.arg as { id: string; entry: Partial<WorkTimeEntry> };
+        const prev = state.prevById![id];
+        if (prev) {
+          const idx = state.entries.findIndex((e) => e._id === id);
+          if (idx !== -1) state.entries[idx] = prev;
+          delete state.prevById![id];
+        }
         state.error = action.payload || 'エントリーの更新に失敗しました';
+      })
+      .addCase(deleteWorkTimeEntry.pending, (state, action) => {
+        const id = action.meta.arg as string;
+        const idx = state.entries.findIndex((e) => e._id === id);
+        if (idx !== -1) {
+          state.prevById![id] = { ...state.entries[idx] } as WorkTimeEntry;
+          state.entries.splice(idx, 1);
+        }
       })
       .addCase(deleteWorkTimeEntry.fulfilled, (state, action: PayloadAction<string>) => {
         state.entries = state.entries.filter((entry) => entry._id !== action.payload);
         state.error = null;
+        if (action.payload) delete state.prevById![action.payload];
       })
       .addCase(deleteWorkTimeEntry.rejected, (state, action) => {
+        const id = action.meta.arg as string;
+        const prev = state.prevById![id];
+        if (prev) {
+          state.entries.unshift(prev);
+          delete state.prevById![id];
+        }
         state.error = action.payload || 'エントリーの削除に失敗しました';
       })
       .addCase(fetchWorkState.fulfilled, (state, action) => {
