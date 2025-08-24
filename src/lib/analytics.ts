@@ -1,5 +1,12 @@
 import { useCallback, useEffect } from 'react';
 
+// Dev-only counters for quick success rate insights
+const __devCounters = {
+  ai: { ok: 0, fail: 0 },
+  assess: { saved: 0, failed: 0 },
+  learning: { saved: 0 },
+};
+
 type EventData = Record<string, any>;
 
 /**
@@ -45,6 +52,27 @@ export const useAnalytics = () => {
         localStorage.setItem('utm:first_visit', JSON.stringify(utm));
       }
     } catch {}
+  }, []);
+
+  // Dev-only: periodic success summary log
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') return;
+    const id = setInterval(() => {
+      // Print only if there was activity
+      const total =
+        __devCounters.ai.ok +
+        __devCounters.ai.fail +
+        __devCounters.assess.saved +
+        __devCounters.assess.failed +
+        __devCounters.learning.saved;
+      if (total === 0) return;
+      console.group('[Analytics] Success summary (dev)');
+      console.log('AI:', __devCounters.ai);
+      console.log('Assessments:', __devCounters.assess);
+      console.log('Learning:', __devCounters.learning);
+      console.groupEnd();
+    }, 60000);
+    return () => clearInterval(id);
   }, []);
 
   /**
@@ -112,6 +140,26 @@ export const useAnalytics = () => {
   const trackEvent = useCallback((eventName: string, data: EventData = {}) => {
     // 開発環境ではコンソールに出力するだけ
     if (process.env.NODE_ENV !== 'production') {
+      // Update dev counters for key flows
+      try {
+        switch (eventName) {
+          case 'ai_assistant_reply': {
+            const ok = Boolean((data as any).ok);
+            if (ok) __devCounters.ai.ok++;
+            else __devCounters.ai.fail++;
+            break;
+          }
+          case 'assessment_saved':
+            __devCounters.assess.saved++;
+            break;
+          case 'assessment_save_failed':
+            __devCounters.assess.failed++;
+            break;
+          case 'learning_progress_saved':
+            __devCounters.learning.saved++;
+            break;
+        }
+      } catch {}
       console.log(`[Analytics] Event: ${eventName}`, data);
       return;
     }
