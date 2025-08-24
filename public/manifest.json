@@ -1,7 +1,7 @@
 {
-    "name": "ADHD統合ライフハブ - 認知特性最適化プラットフォーム",
-    "short_name": "ADHDライフハブ",
-    "description": "ADHD/ASDの方の生産性と生活の質を向上させる統合ライフマネジメントシステム",
+    "name": "Work Time Tracker - 生成AIパーソナル秘書プラットフォーム",
+    "short_name": "AI秘書",
+    "description": "生成AIと自己診断で体験を最適化。仕事・学習・生活を一元管理するパーソナル秘書サービス",
     "version": "1.0.0",
     "manifest_version": 3,
     "start_url": "/",

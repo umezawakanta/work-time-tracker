@@ -284,14 +284,91 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Marketing sections */}
-      <Hero
-        ctaPrimaryText="無料で始める"
-        ctaSecondaryText="仕組みを見る"
-        onPrimaryClick={() => navigate('/register')}
-        onSecondaryClick={() => navigate('/how-it-works')}
-      />
-      <Benefits />
+      {/* Mission Hero (copy refreshed) */}
+      <div className="bg-gradient-to-b from-white to-blue-50 border-b">
+        <div className="container mx-auto px-4 max-w-7xl py-14 md:py-20 text-center">
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-4">
+            人生のコントロールを取り戻そう
+          </h1>
+          <p className="text-base md:text-xl text-gray-700 max-w-3xl mx-auto mb-8">
+            生成AIと連携したパーソナル秘書サービスで、計画・仕事・学習・自己診断までを一元管理。
+            IQ/MBTIなどの診断結果に基づいて、あなた専用に最適化された体験を提供します。
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Button
+              className="px-6 py-6 text-base md:text-lg"
+              onClick={() => navigate('/ai-assistant')}
+              aria-label="AI秘書を使う"
+            >
+              AI秘書を使う
+            </Button>
+            <Button
+              variant="outline"
+              className="px-6 py-6 text-base md:text-lg"
+              onClick={() => navigate('/assessments')}
+              aria-label="自己診断を始める"
+            >
+              自己診断を始める
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* 3 Benefits (with lazy images for LCP optimization below-the-fold) */}
+      <div className="container mx-auto px-4 max-w-7xl py-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="bg-white/80 border shadow-sm">
+            <CardContent className="p-6">
+              <img
+                src="/icons/icon-128x128.svg"
+                alt="人生の再設計"
+                loading="lazy"
+                width="64"
+                height="64"
+                className="mb-4 mx-auto"
+              />
+              <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">人生の再設計</h3>
+              <p className="text-gray-600 text-sm text-center">
+                衝動に流されない日々を。AIが時間配分と優先順位を設計し、再現可能な習慣へ導きます。
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 border shadow-sm">
+            <CardContent className="p-6">
+              <img
+                src="/icons/icon-128x128.svg"
+                alt="統合管理"
+                loading="lazy"
+                width="64"
+                height="64"
+                className="mb-4 mx-auto"
+              />
+              <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">統合管理</h3>
+              <p className="text-gray-600 text-sm text-center">
+                タスク、予定、学習、自己診断、記録をひとつのハブに。もう他のアプリは不要です。
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 border shadow-sm">
+            <CardContent className="p-6">
+              <img
+                src="/icons/icon-128x128.svg"
+                alt="AI学習"
+                loading="lazy"
+                width="64"
+                height="64"
+                className="mb-4 mx-auto"
+              />
+              <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">AI学習</h3>
+              <p className="text-gray-600 text-sm text-center">
+                ビジネススクールの要点をAIが自動要約。IQ/MBTIに合わせたカリキュラムで効率良く学ぶ。
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
       <HowItWorks />
       <div className="container mx-auto px-4 max-w-7xl mb-8">
         <WeeklyReportPreview />
