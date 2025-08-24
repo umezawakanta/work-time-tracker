@@ -75,6 +75,8 @@ interface AnalyticsSummary {
   featureUsage?: { ai_ok: number; assessment_saved: number; learning_saved: number };
   topReferrers?: Array<{ referrer: string; count: number }>;
   compare?: { today: number; yesterday: number; diff: number; pct: number };
+  retentionCohort?: Array<{ day: string; newUsers: number; retainedNextDay: number }>;
+  topErrors?: Array<{ message: string; count: number; url?: string }>;
 }
 
 // Normalize API metrics payload to UI's expected shape to avoid runtime errors in production
@@ -189,6 +191,8 @@ const AdminDashboard: React.FC = () => {
         featureUsage: admin.featureUsage || { ai_ok: 0, assessment_saved: 0, learning_saved: 0 },
         topReferrers: admin.topReferrers || [],
         compare: admin.compare || { today: 0, yesterday: 0, diff: 0, pct: 0 },
+        retentionCohort: admin.retentionCohort || [],
+        topErrors: admin.topErrors || [],
       };
       setAnalytics(normalized);
 
@@ -507,6 +511,59 @@ const AdminDashboard: React.FC = () => {
                 ))}
                 {(!analytics.topReferrers || analytics.topReferrers.length === 0) && (
                   <p className="text-sm text-gray-500">データがありません</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>7日リテンション（簡易）</CardTitle>
+              <CardDescription>翌日継続率の目安</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-7 gap-2 text-center">
+                {(analytics.retentionCohort || []).slice(-7).map((c, i) => (
+                  <div key={i} className="p-2 border rounded">
+                    <p className="text-[10px] text-gray-500">{c.day?.slice(5)}</p>
+                    <p className="text-sm font-semibold">
+                      {c.retainedNextDay}/{c.newUsers}
+                    </p>
+                  </div>
+                ))}
+                {(!analytics.retentionCohort || analytics.retentionCohort.length === 0) && (
+                  <p className="text-sm text-gray-500">データがありません</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>最近のエラー（上位3件）</CardTitle>
+              <CardDescription>リンクから再現箇所へ</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {(analytics.topErrors || []).map((e, i) => (
+                  <div key={i} className="flex items-center justify-between text-sm">
+                    <span className="truncate max-w-[70%]" title={e.message}>
+                      {e.message}
+                    </span>
+                    {e.url ? (
+                      <a
+                        className="text-blue-600 underline"
+                        href={e.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        開く
+                      </a>
+                    ) : (
+                      <span className="text-gray-500">{e.count}</span>
+                    )}
+                  </div>
+                ))}
+                {(!analytics.topErrors || analytics.topErrors.length === 0) && (
+                  <p className="text-sm text-gray-500">エラーはありません</p>
                 )}
               </div>
             </CardContent>

@@ -82,6 +82,50 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     ]);
     const averageSessionDuration = Math.round(sessionAgg?.[0]?.avg || 0);
 
+    // Simple 7-day cohort: new users per day and next-day retention
+    const newByDay = await AnalyticsEvent.aggregate([
+      { $match: { ...match, event: 'register' } },
+      {
+        $group: {
+          _id: {
+            day: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } },
+            user: '$userId',
+          },
+        },
+      },
+      { $group: { _id: '$_id.day', users: { $addToSet: '$_id.user' } } },
+      { $sort: { _id: 1 } },
+    ]).catch(() => [] as Array<{ _id: string; users: string[] }>);
+
+    const retentionCohort: Array<{ day: string; newUsers: number; retainedNextDay: number }> = [];
+    for (const row of newByDay as any[]) {
+      const dayStr: string = row._id as string;
+      const users: string[] = (row.users || []).filter(Boolean);
+      const dayStart = new Date(dayStr + 'T00:00:00Z');
+      const nextStart = new Date(dayStart);
+      nextStart.setUTCDate(nextStart.getUTCDate() + 1);
+      const nextEnd = new Date(nextStart);
+      nextEnd.setUTCDate(nextEnd.getUTCDate() + 1);
+      let retained = 0;
+      if (users.length > 0) {
+        retained = await AnalyticsEvent.distinct('userId', {
+          userId: { $in: users },
+          timestamp: { $gte: nextStart, $lt: nextEnd },
+        })
+          .then((a) => a.filter(Boolean).length)
+          .catch(() => 0);
+      }
+      retentionCohort.push({ day: dayStr, newUsers: users.length, retainedNextDay: retained });
+    }
+
+    // Top recent errors (from ErrorBoundary)
+    const topErrorsAgg = await AnalyticsEvent.aggregate([
+      { $match: { ...match, event: 'error_boundary_triggered' } },
+      { $group: { _id: '$data.message', count: { $sum: 1 }, anyUrl: { $first: '$url' } } },
+      { $sort: { count: -1 } },
+      { $limit: 3 },
+    ]).catch(() => [] as Array<{ _id: string; count: number; anyUrl?: string }>);
+
     return res.status(200).json({
       success: true,
       data: {
@@ -91,6 +135,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         returningUsers: Math.max(0, activeUsers - newUsers),
         averageSessionDuration,
         pageViewsTotal,
+        retentionCohort,
+        topErrors: topErrorsAgg.map((e: any) => ({
+          message: e._id || '(no message)',
+          count: e.count,
+          url: e.anyUrl || '',
+        })),
         featureUsage: { ai_ok: aiOk, assessment_saved: assessSaved, learning_saved: learningSaved },
         topReferrers: refAgg.map((r: any) => ({ referrer: r._id || 'direct', count: r.count })),
         compare: (() => {

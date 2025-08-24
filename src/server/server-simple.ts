@@ -1324,6 +1324,20 @@ app.get('/api/admin/analytics/summary', (req, res) => {
         { referrer: 'news.ycombinator.com', count: 7 },
       ],
       compare: { today: 19, yesterday: 14, diff: 5, pct: 36 },
+      retentionCohort: Array.from({ length: days }, (_, i) => ({
+        day: `2025-08-${(i + 1).toString().padStart(2, '0')}`,
+        newUsers: 5 + (i % 3),
+        retainedNextDay: 2 + (i % 2),
+      })),
+      topErrors: [
+        { message: 'Cannot set properties of undefined (setting "Children")', count: 3, url: '/' },
+        { message: 'Route GET /api/admin/metrics not found', count: 2, url: '/admin' },
+        {
+          message: 'NetworkError when attempting to fetch resource.',
+          count: 1,
+          url: '/ai-assistant',
+        },
+      ],
       dauSeries,
       generatedAt: new Date().toISOString(),
       range,
