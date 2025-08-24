@@ -58,6 +58,7 @@ import WeeklyReportPreview from '@/components/home/WeeklyReportPreview';
 import UserStories from '@/components/home/UserStories';
 import FocusTimerQuick from '@/components/home/FocusTimerQuick';
 import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/referral';
+import { useAnalytics } from '@/lib/analytics';
 
 interface DashboardStats {
   tasksCompleted: number;
@@ -98,6 +99,8 @@ const Home: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showNextStep, setShowNextStep] = useState(false);
   const [ownRef, setOwnRef] = useState<string | null>(null);
+  const [showDailyNudge, setShowDailyNudge] = useState(false);
+  const { trackEvent } = useAnalytics();
 
   // Initialize data
   useEffect(() => {
@@ -122,6 +125,11 @@ const Home: React.FC = () => {
       // Referral banner
       const code = ensureOwnReferralCode();
       setOwnRef(code || null);
+
+      // Daily nudge banner
+      const today = new Date().toISOString().slice(0, 10);
+      const lastShown = localStorage.getItem('nudge:last_shown');
+      if (lastShown !== today) setShowDailyNudge(true);
     } catch {}
   }, []);
 
@@ -451,6 +459,50 @@ const Home: React.FC = () => {
                     aria-label="非表示にする"
                   >
                     非表示
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {showDailyNudge && (
+          <div className="mb-6">
+            <Card className="bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-100">
+              <CardContent className="p-4 flex items-center gap-3">
+                <Target className="w-5 h-5 text-amber-600" />
+                <div className="text-sm text-gray-800">
+                  今日の一手を作る？ 1分でAIが提案します。
+                </div>
+                <div className="ml-auto flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      try {
+                        const today = new Date().toISOString().slice(0, 10);
+                        localStorage.setItem('nudge:last_shown', today);
+                      } catch {}
+                      trackEvent('daily_nudge_action');
+                      navigate('/ai-assistant');
+                    }}
+                    aria-label="今日の一手を作る"
+                  >
+                    今やる
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      try {
+                        const today = new Date().toISOString().slice(0, 10);
+                        localStorage.setItem('nudge:last_shown', today);
+                      } catch {}
+                      trackEvent('daily_nudge_snooze');
+                      setShowDailyNudge(false);
+                    }}
+                    aria-label="あとで"
+                  >
+                    あとで
                   </Button>
                 </div>
               </CardContent>
