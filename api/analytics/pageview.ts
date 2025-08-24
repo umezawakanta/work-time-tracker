@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { connectDB } from '../../src/server/config/database';
 import AnalyticsEvent from '../../src/server/models/AnalyticsEvent';
+import { cors } from '../../lib/cors';
 
 // Simple in-memory store keyed by YYYY-MM-DD (fallback when DB not persisted due to cold start)
 const pageviewBuckets: Record<string, number> = {};
@@ -10,13 +11,22 @@ function getDateKey(date = new Date()): string {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  await cors(req, res);
+  if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method Not Allowed' });
     return;
   }
 
   try {
-    const { path, referrer, title, clientId } = (req.body as any) || {};
+    const { path, referrer, title, clientId, utm } = (req.body as any) || {};
+    if (!path || typeof path !== 'string') {
+      return res.status(400).json({ ok: false, error: 'INVALID_PATH' });
+    }
+    const safeTitle = typeof title === 'string' ? title : undefined;
+    const safeRef = typeof referrer === 'string' ? referrer : undefined;
+    const safeClientId = typeof clientId === 'string' ? clientId : undefined;
+    const safeUtm = utm && typeof utm === 'object' ? utm : undefined;
     const key = getDateKey();
     pageviewBuckets[key] = (pageviewBuckets[key] || 0) + 1;
 
@@ -26,10 +36,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await AnalyticsEvent.create({
         event: 'page_view',
         timestamp: new Date(),
-        clientId: typeof clientId === 'string' ? clientId : undefined,
-        url: typeof path === 'string' ? path : undefined,
-        referrer: typeof referrer === 'string' ? referrer : undefined,
-        data: { title },
+        clientId: safeClientId,
+        url: path,
+        path,
+        referrer: safeRef,
+        data: { title: safeTitle, utm: safeUtm },
         userAgent: String(req.headers['user-agent'] || ''),
         ipAddress: String(
           (req.headers['x-forwarded-for'] as string) || (req.connection as any)?.remoteAddress || ''
