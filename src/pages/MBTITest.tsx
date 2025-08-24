@@ -13,7 +13,7 @@ import {
 import { saveMBTIResult } from '@/services/api/assessmentsApi';
 import { useAnalytics } from '@/lib/analytics';
 import { issueShortUrl } from '@/services/share/shortUrlStub';
-import { buildShareUrl } from '@/services/share/referral';
+import { buildShareUrl, buildOwnInviteUrl } from '@/services/share/referral';
 import { Badge } from '@/components/ui/badge';
 
 interface MBTIQuestion {
@@ -114,7 +114,10 @@ const MBTITest: React.FC = () => {
               onClick={async () => {
                 try {
                   const url = new URL(window.location.origin + '/assessments');
-                  url.searchParams.set('ref', 'invite');
+                  url.searchParams.set(
+                    'ref',
+                    buildOwnInviteUrl().split('ref=')[1]?.split('&')[0] || 'invite'
+                  );
                   url.searchParams.set('utm_source', 'share');
                   if (navigator.share) {
                     await navigator.share({

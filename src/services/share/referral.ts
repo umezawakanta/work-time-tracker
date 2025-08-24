@@ -27,3 +27,23 @@ export function buildShareUrl(path: string): string {
   url.searchParams.set('utm_source', 'share');
   return url.toString();
 }
+
+export function ensureOwnReferralCode(): string {
+  try {
+    const existing = localStorage.getItem('referral:own');
+    if (existing) return existing;
+    const code = `u-${Math.random().toString(36).slice(2, 8)}`;
+    localStorage.setItem('referral:own', code);
+    return code;
+  } catch {
+    return 'u-anon';
+  }
+}
+
+export function buildOwnInviteUrl(): string {
+  const code = ensureOwnReferralCode();
+  const url = new URL('/assessments', window.location.origin);
+  url.searchParams.set('ref', code);
+  url.searchParams.set('utm_source', 'share');
+  return url.toString();
+}
