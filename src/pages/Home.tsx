@@ -11,6 +11,7 @@ import { RootState, AppDispatch } from '@/store';
 import { fetchTodoItems } from '@/store/todoSlice';
 import { selectAllTodos } from '@/components/dailyToDoReminder/store/selectors/todoSelectors';
 import { useAuth } from '@/hooks/useAuth';
+import { usePersonalization } from '@/hooks/usePersonalization';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -76,6 +77,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { user, isAuthenticated } = useAuth();
+  const pz = usePersonalization(user as any);
 
   // Redux state
   const todos = useSelector(selectAllTodos);
@@ -386,7 +388,11 @@ const Home: React.FC = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             {getWelcomeMessage()}, {user?.name || 'ユーザー'}さん！
           </h2>
-          <p className="text-xl text-gray-600 mb-6">今日も生産性を向上させていきましょう</p>
+          <p className="text-xl text-gray-600 mb-6">
+            {pz.prefersPlanning
+              ? '今日の時間割を確認し、計画通りに進めましょう'
+              : 'まずは優先タスクを1つだけ着手しましょう'}
+          </p>
 
           {/* Level badge */}
           <div

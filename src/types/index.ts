@@ -204,6 +204,10 @@ export interface User {
   trialExpiryDate?: string; // トライアル有効期限
   lastLoginAt?: string; // 最終ログイン日時
   // その他必要なユーザープロパティ
+  traits?: {
+    iq?: number;
+    mbti?: string;
+  };
 }
 
 // UserState インターフェースを拡張

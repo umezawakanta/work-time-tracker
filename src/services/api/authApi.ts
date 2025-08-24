@@ -267,6 +267,7 @@ export const getUserProfile = async (): Promise<User> => {
 export const updateUserProfile = async (userData: {
   name: string;
   email: string;
+  traits?: { iq?: number; mbti?: string };
 }): Promise<User> => {
   try {
     const token = await tokenManager.getAccessToken();

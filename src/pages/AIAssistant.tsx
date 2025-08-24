@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { ask, type ChatMessage } from '@/services/api/aiAssistantApi';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
@@ -22,6 +23,7 @@ const AIAssistant: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   const envInfo = useMemo(() => {
     const hasGemini = Boolean(import.meta?.env?.VITE_GEMINI_API_KEY);
@@ -40,7 +42,10 @@ const AIAssistant: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await ask([...messages, userMsg], { timeoutMs: 35000 });
+      const res = await ask([...messages, userMsg], {
+        timeoutMs: 35000,
+        traits: user?.traits,
+      });
       const assistant: ChatMessage = { role: 'assistant', content: res.text || '(no content)' };
       setMessages((prev) => [...prev, assistant]);
     } catch (e: any) {

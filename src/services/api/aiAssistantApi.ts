@@ -10,6 +10,7 @@ export interface ChatMessage {
 export interface AskOptions {
   model?: string;
   timeoutMs?: number;
+  traits?: { iq?: number; mbti?: string };
 }
 
 export interface AskResult {
@@ -30,6 +31,9 @@ export async function ask(messages: ChatMessage[], options: AskOptions = {}): Pr
       {
         messages: messages.map((m) => ({ role: m.role, content: m.content })),
         model: options.model ?? 'claude-3-5-sonnet-20241022',
+        system: options.traits
+          ? `User traits -> IQ: ${options.traits.iq ?? 'unknown'}, MBTI: ${options.traits.mbti ?? 'unknown'}. Tailor advice accordingly.`
+          : undefined,
       },
       { signal: controller.signal }
     );
