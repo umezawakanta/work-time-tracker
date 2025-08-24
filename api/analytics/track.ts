@@ -1,4 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { connectDB } from '../../src/server/config/database';
+import AnalyticsEvent from '../../src/server/models/AnalyticsEvent';
 
 interface TrackingEvent {
   event: string;
@@ -66,7 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
       return;
     }
 
-    // Generate event ID
+    // Generate event ID (fallback when DB not used)
     const eventId = `event_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     // Process different event types
@@ -124,28 +126,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
         console.log(`❓ [${operationId}] Unknown event type:`, trackingEvent.event);
     }
 
-    // In production, save to database
-    // For now, just log and acknowledge
-    const processedEvent = {
-      id: eventId,
-      event: trackingEvent.event,
-      data: trackingEvent.data,
-      timestamp: trackingEvent.timestamp,
-      processedAt: new Date().toISOString(),
-      metadata: {
-        userAgent: req.headers['user-agent'],
-        origin: req.headers.origin,
-        ipAddress: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
-      },
-    };
-
-    // Mock database save
-    console.log(`💾 [${operationId}] Event saved (mock):`, processedEvent.id);
+    // Try to persist to DB (with safe fallback)
+    let persistedId = eventId;
+    try {
+      await connectDB();
+      const doc = await AnalyticsEvent.create({
+        event: trackingEvent.event,
+        timestamp: new Date(trackingEvent.timestamp),
+        data: trackingEvent.data || {},
+        userAgent: String(req.headers['user-agent'] || ''),
+        ipAddress: String(
+          (req.headers['x-forwarded-for'] as string) || (req.connection as any)?.remoteAddress || ''
+        ),
+        url: String((req.headers.referer as string) || ''),
+      });
+      persistedId = String(doc._id);
+      console.log(`💾 [${operationId}] Event saved to DB:`, persistedId);
+    } catch (persistErr) {
+      console.warn(`⚠️ [${operationId}] DB save failed, using in-memory ack`, persistErr);
+    }
 
     res.status(200).json({
       success: true,
       message: 'トラッキングイベントが正常に記録されました',
-      eventId: processedEvent.id,
+      eventId: persistedId,
     } as TrackingResponse);
   } catch (error: any) {
     console.error(`❌ [${operationId}] Tracking failed:`, error);

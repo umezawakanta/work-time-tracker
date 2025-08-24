@@ -1297,6 +1297,31 @@ app.get('/api/analytics/summary', (req, res) => {
   res.json(mockAnalytics);
 });
 
+// Admin analytics summary (mock)
+app.get('/api/admin/analytics/summary', (req, res) => {
+  console.log('📊 GET /api/admin/analytics/summary called');
+  const range = String(req.query.range || '7d');
+  const days = range === '24h' ? 1 : range === '7d' ? 7 : 30;
+  const dauSeries = Array.from({ length: days }, (_, i) => ({
+    day: `D${i + 1}`,
+    users: 10 + ((i * 7) % 13),
+  }));
+  res.json({
+    success: true,
+    data: {
+      totalUsers: 1247,
+      activeUsers: 89,
+      newUsers: 23,
+      returningUsers: 66,
+      averageSessionDuration: 847,
+      pageViewsTotal: 3421,
+      dauSeries,
+      generatedAt: new Date().toISOString(),
+      range,
+    },
+  });
+});
+
 // =============================
 // Admin (Mock)
 // =============================

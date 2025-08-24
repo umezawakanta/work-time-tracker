@@ -164,6 +164,16 @@ export const useAnalytics = () => {
         }
       } catch {}
       console.log(`[Analytics] Event: ${eventName}`, data);
+      // dev時もリモート送信が有効ならPOST
+      try {
+        if (import.meta?.env?.VITE_ENABLE_ANALYTICS === 'true') {
+          fetch('/api/analytics/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ event: eventName, data, timestamp: new Date().toISOString() }),
+          }).catch(() => {});
+        }
+      } catch {}
       return;
     }
 
@@ -189,6 +199,15 @@ export const useAnalytics = () => {
           event: eventName,
           ...data,
         });
+      }
+
+      // バックエンドにも保存
+      if (typeof fetch === 'function') {
+        fetch('/api/analytics/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ event: eventName, data, timestamp: new Date().toISOString() }),
+        }).catch(() => {});
       }
     } catch (error) {
       console.error('[Analytics] Error tracking event:', error);
