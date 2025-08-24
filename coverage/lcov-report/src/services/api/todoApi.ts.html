@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.18% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>2/11</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.18% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>2/11</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
@@ -143,20 +143,17 @@
 <a name='L78'></a><a href='#L78'>78</a>
 <a name='L79'></a><a href='#L79'>79</a>
 <a name='L80'></a><a href='#L80'>80</a>
-<a name='L81'></a><a href='#L81'>81</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -171,8 +168,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -217,16 +226,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/services/api/todoApi.ts
 &nbsp;
 import { AxiosResponse } from 'axios';
-import { api } from './apiConfig';
+<span class="cstat-no" title="statement not covered" >import { api } from './apiConfig';</span>
 import { TodoItem } from '@/types';
 &nbsp;
 export interface TodoApiResponse {
@@ -251,9 +265,11 @@ export interface TodoHistoryItem {
   updatedAt?: string;
 }
 &nbsp;
-export const todoApi = {
-  getAll: <span class="fstat-no" title="function not covered" >(): Promise&lt;AxiosResponse&lt;TodoItem[]&gt;&gt; =</span>&gt; {
-<span class="cstat-no" title="statement not covered" >    return api.get&lt;TodoItem[]&gt;('/todos');</span>
+export const <span class="cstat-no" title="statement not covered" >todoApi = {</span>
+  getAll: <span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;TodoItem[]&gt; =&gt; {
+    const resp = <span class="cstat-no" title="statement not covered" >await api.get('/todos');</span>
+    const items = <span class="cstat-no" title="statement not covered" >Array.isArray(resp.data) ? resp.data : (resp.data?.data ?? []);</span>
+<span class="cstat-no" title="statement not covered" >    return items as TodoItem[];</span>
   },
 &nbsp;
   // createdAt パラメータを追加
@@ -295,12 +311,17 @@ export const todoApi = {
 <span class="cstat-no" title="statement not covered" >    return api.post&lt;TodoApiResponse&gt;(`/todos/${_id}/toggle-priority`);</span>
   },
 &nbsp;
-  getHistory: <span class="fstat-no" title="function not covered" >(): Promise&lt;AxiosResponse&lt;TodoHistoryItem[]&gt;&gt; =</span>&gt; {
-<span class="cstat-no" title="statement not covered" >    return api.get&lt;TodoHistoryItem[]&gt;('/todos/history');</span>
+  getHistory: <span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;TodoHistoryItem[]&gt; =&gt; {
+    const resp = <span class="cstat-no" title="statement not covered" >await api.get('/todos/history');</span>
+<span class="cstat-no" title="statement not covered" >    return (Array.isArray(resp.data) ? resp.data : (resp.data?.data ?? [])) as TodoHistoryItem[];</span>
   },
 &nbsp;
-  getDailyHistory: <span class="fstat-no" title="function not covered" >(): Promise&lt;AxiosResponse&lt;{ date: string; count: number }[]&gt;&gt; =</span>&gt; {
-<span class="cstat-no" title="statement not covered" >    return api.get&lt;{ date: string; count: number }[]&gt;('/todos/history/daily');</span>
+  getDailyHistory: <span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;{ date: string; count: number }[]&gt; =&gt; {
+    const resp = <span class="cstat-no" title="statement not covered" >await api.get('/todos/history/daily');</span>
+<span class="cstat-no" title="statement not covered" >    return (Array.isArray(resp.data) ? resp.data : (resp.data?.data ?? [])) as {</span>
+      date: string;
+      count: number;
+    }[];
   },
 };
 &nbsp;</pre></td></tr></table></pre>
@@ -310,7 +331,7 @@ export const todoApi = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-18T17:44:22.918Z
+                at 2025-08-24T12:10:32.269Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

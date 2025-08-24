@@ -534,7 +534,10 @@
 <a name='L469'></a><a href='#L469'>469</a>
 <a name='L470'></a><a href='#L470'>470</a>
 <a name='L471'></a><a href='#L471'>471</a>
-<a name='L472'></a><a href='#L472'>472</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L472'></a><a href='#L472'>472</a>
+<a name='L473'></a><a href='#L473'>473</a>
+<a name='L474'></a><a href='#L474'>474</a>
+<a name='L475'></a><a href='#L475'>475</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -669,27 +672,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -708,6 +690,28 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -717,16 +721,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1122,7 +1128,7 @@ ${todos.map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt
 <span class="fstat-no" title="function not covered" >    async </span>(command: TaskCommand): Promise&lt;string&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >      try {</span>
 <span class="cstat-no" title="statement not covered" >        switch (command.action) {</span>
-          case 'create':
+          case 'create': {
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (!command.task) {</span>
 <span class="cstat-no" title="statement not covered" >              return 'タスクのタイトルが必要です。';</span>
             }
@@ -1138,6 +1144,7 @@ ${todos.map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt
             ).unwrap();
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            return `✅ タスク「${command.task}」を作成しました（優先度: ${command.priority || 3}）`;</span>
+          }
 &nbsp;
           case 'update':
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (!command.taskId) {</span>
@@ -1175,7 +1182,7 @@ ${todos.map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            return `✅ タスクを完了にしました`;</span>
 &nbsp;
-          case 'search':
+          case 'search': {
             const searchTerm = <span class="cstat-no" title="statement not covered" >command.task?.toLowerCase() || '';</span>
             const foundTasks = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.task.toLowerCase().includes(searchTerm))</span>;</span>
 &nbsp;
@@ -1186,8 +1193,9 @@ ${todos.map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt
 <span class="cstat-no" title="statement not covered" >            return `🔍 ${foundTasks.length}件のタスクが見つかりました:\n${foundTasks</span>
               .map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >`• ${t.task} (優先度: ${t.priority})`)</span>
               .join('\n')}`;
+          }
 &nbsp;
-          case 'analyze':
+          case 'analyze': {
             const incompleteTasks = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >!t.completed)</span>;</span>
             const highPriorityTasks = <span class="cstat-no" title="statement not covered" >incompleteTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.priority &gt;= 4)</span>;</span>
 &nbsp;
@@ -1198,6 +1206,7 @@ ${todos.map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt
 • 完了率: ${Math.round(((todos.length - incompleteTasks.length) / todos.length) * 100)}%
 &nbsp;
 ${highPriorityTasks.length &gt; 0 ? `\n⚠️ 高優先度タスク:\n${highPriorityTasks.map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >`• ${t.task}`)</span>.join('\n')}` : ''}`;
+          }
 &nbsp;
           default:
 <span class="cstat-no" title="statement not covered" >            return 'サポートされていないコマンドです。';</span>
@@ -1483,7 +1492,7 @@ ${highPriorityTasks.length &gt; 0 ? `\n⚠️ 高優先度タスク:\n${highPrio
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-18T17:44:22.918Z
+                at 2025-08-24T12:10:32.269Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

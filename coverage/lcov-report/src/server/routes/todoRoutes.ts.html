@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/125</span>
+                <span class='fraction'>0/126</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/122</span>
+                <span class='fraction'>0/123</span>
             </div>
         
             
@@ -417,8 +417,10 @@
 <a name='L352'></a><a href='#L352'>352</a>
 <a name='L353'></a><a href='#L353'>353</a>
 <a name='L354'></a><a href='#L354'>354</a>
-<a name='L355'></a><a href='#L355'>355</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L355'></a><a href='#L355'>355</a>
+<a name='L356'></a><a href='#L356'>356</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -776,12 +778,13 @@ import { Request, Response } from 'express';
 <span class="cstat-no" title="statement not covered" >import { TodoItem, ITodoItem } from '../models/TodoItem.js';</span>
 <span class="cstat-no" title="statement not covered" >import { TodoHistory } from '../models/TodoHistory.js';</span>
 <span class="cstat-no" title="statement not covered" >import { TodoArchive } from '../models/TodoArchive.js';</span>
+<span class="cstat-no" title="statement not covered" >import { authMiddleware } from '../middleware/authMiddleware.js';</span>
 // import TodoWBSIntegrationService from '../../services/integration/TodoWBSIntegrationService.js';  // コメントアウト
 &nbsp;
 const router = <span class="cstat-no" title="statement not covered" >express.Router();</span>
 &nbsp;
-// GET all todos
-<span class="cstat-no" title="statement not covered" >router.get('/', <span class="fstat-no" title="function not covered" >async </span>(_req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
+// GET all todos (auth required)
+<span class="cstat-no" title="statement not covered" >router.get('/', authMiddleware, <span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // 🐛 エラーエリミネーター: 強化されたエラーハンドリング
     const todos = <span class="cstat-no" title="statement not covered" >await TodoItem.find().sort({ completed: 1, isPrioritized: -1, priority: 1 });</span>
@@ -815,8 +818,8 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
   }
 });
 &nbsp;
-// POST new todo
-<span class="cstat-no" title="statement not covered" >router.post('/', <span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
+// POST new todo (auth required)
+<span class="cstat-no" title="statement not covered" >router.post('/', authMiddleware, <span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const { task, priority, isPrioritized, type, deadline, tags, category } = <span class="cstat-no" title="statement not covered" >req.body;</span>
     const newTodo = <span class="cstat-no" title="statement not covered" >new TodoItem({</span>
@@ -863,8 +866,8 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
   }
 });
 &nbsp;
-// PUT update todo
-<span class="cstat-no" title="statement not covered" >router.put('/:id', <span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
+// PUT update todo (auth required)
+<span class="cstat-no" title="statement not covered" >router.put('/:id', authMiddleware, <span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const { id } = <span class="cstat-no" title="statement not covered" >req.params;</span>
     const updates = <span class="cstat-no" title="statement not covered" >req.body;</span>
@@ -901,8 +904,8 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
   }
 });
 &nbsp;
-// DELETE todo
-<span class="cstat-no" title="statement not covered" >router.delete('/:id', <span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
+// DELETE todo (auth required)
+<span class="cstat-no" title="statement not covered" >router.delete('/:id', authMiddleware, <span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const { id } = <span class="cstat-no" title="statement not covered" >req.params;</span>
     const deletedTodo = <span class="cstat-no" title="statement not covered" >await TodoItem.findByIdAndDelete(id);</span>
@@ -910,7 +913,7 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
 <span class="cstat-no" title="statement not covered" >      res.status(404).json({ message: 'Todo not found' });</span>
 <span class="cstat-no" title="statement not covered" >      return;</span>
     }
-<span class="cstat-no" title="statement not covered" >    res.json({ message: 'Todo deleted successfully' });</span>
+<span class="cstat-no" title="statement not covered" >    res.json({ message: 'Todo deleted successfully', id });</span>
   } catch (error) {
 <span class="cstat-no" title="statement not covered" >    res.status(500).json({ message: 'Error deleting todo', error });</span>
   }
@@ -1132,7 +1135,7 @@ interface DailyCounts {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-18T17:44:22.918Z
+                at 2025-08-24T12:10:32.269Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

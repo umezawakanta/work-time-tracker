@@ -306,7 +306,23 @@
 <a name='L241'></a><a href='#L241'>241</a>
 <a name='L242'></a><a href='#L242'>242</a>
 <a name='L243'></a><a href='#L243'>243</a>
-<a name='L244'></a><a href='#L244'>244</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -420,19 +436,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -444,7 +457,26 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -658,16 +690,24 @@ export interface TodoAnalysisResult {
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      if (task.length &lt; 10) {</span>
 <span class="cstat-no" title="statement not covered" >        recommendations.push({</span>
+          id: `${Date.now()}-del`,
+          title: '削除を検討',
           type: 'delete',
-          reason: '抽象的すぎて具体的なアクションが不明',
+          description: '抽象的すぎるため具体化または削除を推奨',
+          priority: 3,
           confidence: 85,
+          reason: '抽象的すぎて具体的なアクションが不明',
         });
       } else {
 <span class="cstat-no" title="statement not covered" >        recommendations.push({</span>
+          id: `${Date.now()}-rw`,
+          title: '具体化を提案',
           type: 'rewrite',
+          description: '抽象的な表現を具体的なアクションに変換',
+          priority: 4,
+          confidence: 75,
           reason: '抽象的な表現を具体的なアクションに変換',
           rewrittenTask: this.makeTaskConcrete(task),
-          confidence: 75,
         });
       }
     }
@@ -676,7 +716,11 @@ export interface TodoAnalysisResult {
 <span class="cstat-no" title="statement not covered" >      actionability -= 30;</span>
 <span class="cstat-no" title="statement not covered" >      issues.push('タスクが複雑すぎます');</span>
 <span class="cstat-no" title="statement not covered" >      recommendations.push({</span>
+        id: `${Date.now()}-sp`,
+        title: '分割を提案',
         type: 'split',
+        description: '複雑なタスクを実行可能な小さなステップに分割',
+        priority: 4,
         reason: '複雑なタスクを実行可能な小さなステップに分割',
         newTasks: this.splitComplexTask(task),
         confidence: 80,
@@ -688,7 +732,11 @@ export interface TodoAnalysisResult {
 <span class="cstat-no" title="statement not covered" >      actionability -= 20;</span>
 <span class="cstat-no" title="statement not covered" >      issues.push('具体的なアクションが不明確');</span>
 <span class="cstat-no" title="statement not covered" >      recommendations.push({</span>
+        id: `${Date.now()}-cl`,
+        title: '明確化を提案',
         type: 'clarify',
+        description: '具体的な動詞を追加して明確化',
+        priority: 3,
         reason: '具体的な動詞を追加して明確化',
         rewrittenTask: this.addActionVerb(task),
         confidence: 70,
@@ -799,7 +847,7 @@ export const <span class="cstat-no" title="statement not covered" >todoAnalysisS
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-18T17:44:22.918Z
+                at 2025-08-24T12:10:32.269Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
