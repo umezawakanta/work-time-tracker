@@ -84,6 +84,8 @@ const CandidateDetailView: React.FC<CandidateDetailViewProps> = ({
                   alt={candidate.name}
                   className="h-32 w-32 rounded-full object-cover mb-4"
                   loading="lazy"
+                  width={128}
+                  height={128}
                 />
               ) : (
                 <Avatar className="h-32 w-32 mb-4">
