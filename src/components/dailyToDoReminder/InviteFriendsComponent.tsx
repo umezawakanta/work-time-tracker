@@ -534,7 +534,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({ userName, isPremiu
         </p>
 
         <Button variant="ghost" size="sm" className="text-xs" asChild>
-          <a href="/terms/referral" target="_blank">
+          <a href="/terms/referral" target="_blank" rel="noopener noreferrer">
             適用条件
             <ChevronRight className="h-3 w-3 ml-1" />
           </a>
