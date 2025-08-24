@@ -51,6 +51,9 @@ const Invite: React.FC = () => {
                 </Button>
               )}
             </div>
+            <div className="text-xs text-gray-500">
+              ※ 共有リンクにはUTMパラメータが自動付与されます
+            </div>
             <div className="pt-4">
               <img
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
