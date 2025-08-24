@@ -37,7 +37,7 @@ import { InternationalizationProvider } from './hooks/useInternationalization';
 import { useAuth } from './hooks/useAuth';
 // Admin dashboard (lazy)
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
-const AIAssistantPage = lazy(() => import('./pages/AIAssistantPage'));
+const AIAssistantPage = lazy(() => import('./pages/AIAssistant'));
 const AssessmentsHub = lazy(() => import('./pages/AssessmentsHub'));
 const LearningHub = lazy(() => import('./pages/LearningHub'));
 
