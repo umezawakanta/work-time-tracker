@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,8 +6,10 @@ import { BookOpen, GraduationCap, Rocket } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import type { Course } from '@/types/learning';
 import { saveProgress } from '@/services/api/assessmentsApi';
+import { useAnalytics } from '@/lib/analytics';
 
 const LearningHub: React.FC = () => {
+  const { trackPageView, trackEvent } = useAnalytics();
   const courses: Array<
     Course & { desc: string; icon: React.ReactNode; progress?: number; next?: string }
   > = [
@@ -42,6 +44,10 @@ const LearningHub: React.FC = () => {
       next: 'SQ3Rのステップ（実践）',
     },
   ];
+
+  useEffect(() => {
+    trackPageView('/learning', 'Learning Hub');
+  }, [trackPageView]);
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-6xl">
@@ -85,7 +91,9 @@ const LearningHub: React.FC = () => {
                   aria-label="進捗を+10%保存"
                   onClick={() => {
                     const nextVal = Math.min(100, (c.progress ?? 0) + 10);
-                    void saveProgress(c.id, nextVal);
+                    void saveProgress(c.id, nextVal).then(() =>
+                      trackEvent('learning_progress_saved', { courseId: c.id, progress: nextVal })
+                    );
                   }}
                 >
                   進捗+10%保存

@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'react-hot-toast';
 import { calculateIQScore, type IQAnswer } from '@/services/assessments/iq';
 import { saveIQResult } from '@/services/api/assessmentsApi';
+import { useAnalytics } from '@/lib/analytics';
 
 interface IQQuestion {
   id: string;
@@ -30,12 +31,17 @@ const IQTest: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [started, setStarted] = useState(false);
   const total = useMemo(() => 20, []); // 骨組みとして20問想定（サンプルは少数）
+  const { trackPageView, trackEvent } = useAnalytics();
 
   useEffect(() => {
     loadQuestions()
       .then((q) => setQuestions(q))
       .finally(() => setLoadingQuestions(false));
   }, []);
+
+  useEffect(() => {
+    trackPageView('/iq-test', 'IQ Test');
+  }, [trackPageView]);
 
   useEffect(() => {
     if (!started) return;
@@ -84,8 +90,10 @@ const IQTest: React.FC = () => {
       toast.success(
         `結果を保存しました。推定IQ: ${scaled}（上位${Math.max(1, 100 - percentile)}%）`
       );
+      trackEvent('assessment_saved', { type: 'iq', score: raw, scaled, percentile });
     } catch (e) {
       toast.error('保存に失敗しました');
+      trackEvent('assessment_save_failed', { type: 'iq' });
     } finally {
       setSubmitting(false);
     }

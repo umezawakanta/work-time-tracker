@@ -1,6 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react';
 import { Button } from './button';
+import { useAnalytics } from '@/lib/analytics';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Badge } from './badge';
 
@@ -18,6 +19,7 @@ interface State {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
+  private analytics = null as any;
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -26,6 +28,14 @@ export class ErrorBoundary extends Component<Props, State> {
       errorInfo: null,
       errorId: '',
     };
+    // Lazy init analytics functions via a hook-like accessor
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { useAnalytics } = require('@/lib/analytics');
+      this.analytics = useAnalytics();
+    } catch {
+      this.analytics = null;
+    }
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -72,7 +82,17 @@ export class ErrorBoundary extends Component<Props, State> {
     }
 
     // 本番環境では外部サービスにエラー送信（例：Sentry）
-    // TODO: エラートラッキングサービスとの連携
+    // ここでは簡易的にアナリティクスイベントとして記録
+    try {
+      const track = this.analytics?.trackEvent;
+      if (track) {
+        track('error_boundary_triggered', {
+          category: this.getErrorCategory(error),
+          errorId: this.state.errorId,
+          message: error.message,
+        });
+      }
+    } catch {}
   };
 
   private handleRetry = () => {

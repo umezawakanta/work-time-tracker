@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Timer, Brain, TestTube, Target } from 'lucide-react';
+import { useAnalytics } from '@/lib/analytics';
 
 const AssessmentsHub: React.FC = () => {
   const navigate = useNavigate();
+  const { trackPageView } = useAnalytics();
+
+  useEffect(() => {
+    trackPageView('/assessments', 'Assessments Hub');
+  }, [trackPageView]);
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-5xl">

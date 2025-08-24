@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { ask, type ChatMessage } from '@/services/api/aiAssistantApi';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { useAnalytics } from '@/lib/analytics';
 
 const templates = [
   { id: 'day-plan', label: '一日の計画', text: '今日の最適な計画を30分単位で提案してください。' },
@@ -24,6 +25,7 @@ const AIAssistant: React.FC = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+  const { trackPageView, trackEvent } = useAnalytics();
 
   const envInfo = useMemo(() => {
     const hasGemini = Boolean(import.meta?.env?.VITE_GEMINI_API_KEY);
@@ -48,7 +50,9 @@ const AIAssistant: React.FC = () => {
       });
       const assistant: ChatMessage = { role: 'assistant', content: res.text || '(no content)' };
       setMessages((prev) => [...prev, assistant]);
+      trackEvent('ai_assistant_reply', { ok: true });
     } catch (e: any) {
+      trackEvent('ai_assistant_reply', { ok: false, error: e?.message || 'unknown' });
       const code = e?.message;
       if (code === 'NOT_CONFIGURED') {
         toast.error('AIキーが未設定です。設定ページでAPIキーを登録してください。');
@@ -63,6 +67,10 @@ const AIAssistant: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    trackPageView('/ai-assistant', 'AI Assistant');
+  }, [trackPageView]);
 
   return (
     <ErrorBoundary variant="app">

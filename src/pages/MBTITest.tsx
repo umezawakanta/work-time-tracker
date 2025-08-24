@@ -10,6 +10,7 @@ import {
   type MBTIResult,
 } from '@/services/assessments/mbti';
 import { saveMBTIResult } from '@/services/api/assessmentsApi';
+import { useAnalytics } from '@/lib/analytics';
 
 interface MBTIQuestion {
   id: string;
@@ -28,6 +29,7 @@ const MBTITest: React.FC = () => {
   const [questions, setQuestions] = useState<MBTIQuestion[]>([]);
   const [selected, setSelected] = useState<Record<string, 1 | 2 | 3 | 4 | 5 | undefined>>({});
   const [submitting, setSubmitting] = useState(false);
+  const { trackPageView, trackEvent } = useAnalytics();
 
   const allAnswered = useMemo(
     () => questions.length > 0 && questions.every((q) => selected[q.id] != null),
@@ -37,6 +39,10 @@ const MBTITest: React.FC = () => {
   useEffect(() => {
     loadQuestions().then((q) => setQuestions(q));
   }, []);
+
+  useEffect(() => {
+    trackPageView('/mbti-test', 'MBTI Test');
+  }, [trackPageView]);
 
   const handleSelect = (qid: string, idx: number) => {
     const val = (idx + 1) as 1 | 2 | 3 | 4 | 5;
@@ -63,8 +69,10 @@ const MBTITest: React.FC = () => {
       const result = compute();
       await saveMBTIResult({ type: result.type, scores: result.scores });
       toast.success(`あなたのタイプは ${result.type} です`);
+      trackEvent('assessment_saved', { type: 'mbti', mbti: result.type, scores: result.scores });
     } catch (e) {
       toast.error('結果の保存に失敗しました');
+      trackEvent('assessment_save_failed', { type: 'mbti' });
     } finally {
       setSubmitting(false);
     }
