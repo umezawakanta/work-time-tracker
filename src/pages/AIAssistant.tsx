@@ -9,16 +9,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useAnalytics } from '@/lib/analytics';
+import { ASSISTANT_TEMPLATES } from '@/constants/aiAssistant';
 
-const templates = [
-  { id: 'day-plan', label: '一日の計画', text: '今日の最適な計画を30分単位で提案してください。' },
-  { id: 'habit', label: '習慣化', text: '毎日続けられる3つの小さな習慣を提案してください。' },
-  {
-    id: 'urgent-important',
-    label: '緊急⇔重要',
-    text: 'タスクを緊急度×重要度で分類し、順序を提案してください。',
-  },
-];
+const templates = ASSISTANT_TEMPLATES;
 
 const AIAssistant: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -36,12 +29,14 @@ const AIAssistant: React.FC = () => {
     return { hasGemini, hasAnthropic };
   }, []);
 
+  const [busy, setBusy] = useState(false);
   const send = async (text: string) => {
-    if (!text.trim()) return;
+    if (!text.trim() || busy) return;
     const userMsg: ChatMessage = { role: 'user', content: text.trim() };
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setLoading(true);
+    setBusy(true);
 
     try {
       const res = await ask([...messages, userMsg], {
@@ -65,6 +60,7 @@ const AIAssistant: React.FC = () => {
       }
     } finally {
       setLoading(false);
+      setBusy(false);
     }
   };
 
@@ -81,7 +77,7 @@ const AIAssistant: React.FC = () => {
             <CardTitle>AIパーソナル秘書</CardTitle>
             <div className="flex items-center gap-2">
               <Badge variant={envInfo.hasAnthropic || envInfo.hasGemini ? 'default' : 'outline'}>
-                {envInfo.hasAnthropic || envInfo.hasGemini ? 'キー検出済み' : 'キー未設定'}
+                {envInfo.hasAnthropic || envInfo.hasGemini ? 'キーOK' : 'キー未設定'}
               </Badge>
             </div>
           </CardHeader>
@@ -112,11 +108,12 @@ const AIAssistant: React.FC = () => {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    void send(input);
+                    // debounce: 無入力/送信中は無視
+                    if (!busy) void send(input);
                   }
                 }}
               />
-              <Button onClick={() => void send(input)} disabled={loading} aria-label="送信">
+              <Button onClick={() => void send(input)} disabled={loading || busy} aria-label="送信">
                 {loading ? '送信中...' : '送信'}
               </Button>
             </div>
@@ -136,10 +133,7 @@ const AIAssistant: React.FC = () => {
             {/* Notice */}
             {!envInfo.hasAnthropic && !envInfo.hasGemini && (
               <Alert className="mt-4">
-                <AlertDescription>
-                  環境変数が未設定です。VITE_ANTHROPIC_API_KEY または VITE_GEMINI_API_KEY
-                  を設定してください。
-                </AlertDescription>
+                <AlertDescription>AIキーが未設定です。設定後に再試行してください。</AlertDescription>
               </Alert>
             )}
           </CardContent>

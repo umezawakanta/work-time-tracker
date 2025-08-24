@@ -32,8 +32,8 @@ export async function ask(messages: ChatMessage[], options: AskOptions = {}): Pr
         messages: messages.map((m) => ({ role: m.role, content: m.content })),
         model: options.model ?? 'claude-3-5-sonnet-20241022',
         system: options.traits
-          ? `User traits -> IQ: ${options.traits.iq ?? 'unknown'}, MBTI: ${options.traits.mbti ?? 'unknown'}. Tailor advice accordingly.`
-          : undefined,
+          ? `ユーザー特性: IQ=${options.traits.iq ?? '不明'}, MBTI=${options.traits.mbti ?? '不明'}。これらを考慮し、丁寧に最適な提案を返してください。`
+          : '丁寧な言葉遣いで、簡潔かつ実行可能な提案を返してください。',
       },
       { signal: controller.signal }
     );

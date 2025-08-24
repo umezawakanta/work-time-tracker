@@ -308,8 +308,8 @@ export default defineConfig(({ command, mode }) => {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __BUILD_DATE__: JSON.stringify(new Date().toISOString()),
       __COMMIT_HASH__: JSON.stringify(process.env.VITE_COMMIT_HASH || 'unknown'),
-      // React 19 compatibility
-      'process.env': {},
+      // Ensure NODE_ENV is available without clobbering process.env object
+      'process.env.NODE_ENV': JSON.stringify(mode === 'development' ? 'development' : 'production'),
       global: 'globalThis',
     },
 
