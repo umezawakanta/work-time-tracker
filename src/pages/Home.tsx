@@ -57,6 +57,7 @@ import HowItWorks from '@/components/hero/HowItWorks';
 import WeeklyReportPreview from '@/components/home/WeeklyReportPreview';
 import UserStories from '@/components/home/UserStories';
 import FocusTimerQuick from '@/components/home/FocusTimerQuick';
+import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/referral';
 
 interface DashboardStats {
   tasksCompleted: number;
@@ -96,6 +97,7 @@ const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showNextStep, setShowNextStep] = useState(false);
+  const [ownRef, setOwnRef] = useState<string | null>(null);
 
   // Initialize data
   useEffect(() => {
@@ -117,6 +119,9 @@ const Home: React.FC = () => {
       // Next step card
       const nextStep = localStorage.getItem('next_step_card') === 'true';
       setShowNextStep(nextStep);
+      // Referral banner
+      const code = ensureOwnReferralCode();
+      setOwnRef(code || null);
     } catch {}
   }, []);
 
@@ -379,6 +384,45 @@ const Home: React.FC = () => {
 
       {/* 3 Benefits (with lazy images for LCP optimization below-the-fold) */}
       <div className="container mx-auto px-4 max-w-7xl py-10">
+        {ownRef && (
+          <div className="mb-6">
+            <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-100">
+              <CardContent className="p-4 flex items-center gap-3">
+                <Users className="w-5 h-5 text-emerald-600" />
+                <div className="text-sm text-gray-800">
+                  友だちを招待して一緒に始めよう（あなたの招待コード: {ownRef}）
+                </div>
+                <div className="ml-auto flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        const url = buildOwnInviteUrl();
+                        if (navigator.share) {
+                          await navigator.share({ title: 'AI秘書と自己診断', url });
+                        } else {
+                          await navigator.clipboard.writeText(url);
+                          toast.success('招待リンクをコピーしました');
+                        }
+                      } catch {}
+                    }}
+                    aria-label="招待リンクを共有"
+                  >
+                    招待を送る
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate('/invite')}
+                    aria-label="招待ページを開く"
+                  >
+                    詳細を見る
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
         {showNextStep && (
           <div className="mb-6">
             <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
