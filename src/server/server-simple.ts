@@ -1297,6 +1297,43 @@ app.get('/api/analytics/summary', (req, res) => {
   res.json(mockAnalytics);
 });
 
+// =============================
+// Admin (Mock)
+// =============================
+app.get('/api/admin/metrics', (req, res) => {
+  console.log('✅ GET /api/admin/metrics (mock) called');
+  res.json({
+    success: true,
+    data: {
+      usersTotal: 1234,
+      usersActive: 987,
+      aiRequests24h: 456,
+      assessmentsTaken: 321,
+      mbtiCount: 210,
+      iqSaved: 111,
+    },
+  });
+});
+
+app.get('/api/admin/users', (req, res) => {
+  console.log('✅ GET /api/admin/users (mock) called');
+  const page = Number(req.query.page || 1);
+  const limit = Number(req.query.limit || 20);
+  const total = 1;
+  const users = [
+    {
+      id: 'user_123',
+      email: 'demo@example.com',
+      name: 'Demo Admin',
+      role: 'admin',
+      roles: ['admin', 'user'],
+      isActive: true,
+      createdAt: new Date().toISOString(),
+    },
+  ];
+  res.json({ success: true, data: users, page, limit, total, totalPages: 1 });
+});
+
 // Anthropic AI proxy endpoint
 app.post('/api/ai/anthropic', async (req, res) => {
   console.log('🤖 POST /api/ai/anthropic called');
@@ -1441,6 +1478,7 @@ console.log('   POST /api/auth/logout');
 console.log('   GET  /api/auth/me');
 console.log('   GET  /api/auth/check'); // 追加
 console.log('   GET  /api/auth/user'); // 追加
+console.log('   GET  /api/auth/whoami'); // 追加
 console.log('   GET  /api/todos');
 console.log('   POST /api/todos');
 console.log('   PUT  /api/todos/:id'); // 追加
