@@ -185,6 +185,7 @@ const ErrorDashboardPage = lazy(() => import('./pages/ErrorDashboardPage'));
 const TestingDashboard = lazy(() => import('./pages/TestingDashboard'));
 const AnalyticsDashboard = lazy(() => import('./pages/AnalyticsDashboard'));
 const SNSSharePage = lazy(() => import('./pages/SNSSharePage'));
+const KpiNamingRulesPage = lazy(() => import('./pages/KpiNamingRules'));
 const AdvancedPerformanceMonitoringPage = lazy(
   () => import('./pages/AdvancedPerformanceMonitoringPage')
 );
@@ -877,6 +878,16 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <AnalyticsPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/kpi-naming-rules"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <KpiNamingRulesPage />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }
