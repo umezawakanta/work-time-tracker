@@ -47,6 +47,7 @@ export default defineConfig(({ command, mode }) => {
                 maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB limit
                 skipWaiting: true,
                 clientsClaim: true,
+                cleanupOutdatedCaches: true,
                 runtimeCaching: [
                   // External API calls (避免与内部API冲突)
                   {
@@ -127,12 +128,12 @@ export default defineConfig(({ command, mode }) => {
                       },
                     },
                   },
-                  // 静的リソースキャッシュ
+                  // CSSのみを軽くキャッシュ（JSはキャッシュしない: バンドル不整合回避）
                   {
-                    urlPattern: /^https:\/\/.*\.(?:js|css)$/,
-                    handler: 'CacheFirst',
+                    urlPattern: ({ request }) => request.destination === 'style',
+                    handler: 'StaleWhileRevalidate',
                     options: {
-                      cacheName: 'static-resources-cache',
+                      cacheName: 'styles-cache',
                       expiration: {
                         maxEntries: 100,
                         maxAgeSeconds: 60 * 60 * 24 * 7, // 1週間
