@@ -438,10 +438,14 @@ app.get('/api/auth/whoami', (req, res) => {
       isAdmin: false,
     };
 
-    return res.status(200).json({ success: true, user: mockUser, timestamp: new Date().toISOString() });
+    return res
+      .status(200)
+      .json({ success: true, user: mockUser, timestamp: new Date().toISOString() });
   }
 
-  return res.status(401).json({ success: false, status: 401, code: 'UNAUTHORIZED', message: 'Unauthorized' });
+  return res
+    .status(401)
+    .json({ success: false, status: 401, code: 'UNAUTHORIZED', message: 'Unauthorized' });
 });
 
 // /api/auth/check エンドポイントを追加

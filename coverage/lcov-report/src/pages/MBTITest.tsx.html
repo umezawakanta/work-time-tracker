@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/77</span>
+                <span class='fraction'>0/85</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/46</span>
+                <span class='fraction'>0/54</span>
             </div>
         
             
@@ -222,7 +222,16 @@
 <a name='L157'></a><a href='#L157'>157</a>
 <a name='L158'></a><a href='#L158'>158</a>
 <a name='L159'></a><a href='#L159'>159</a>
-<a name='L160'></a><a href='#L160'>160</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -285,6 +294,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -444,7 +462,16 @@ const <span class="fstat-no" title="function not covered" >MBTITest:</span> Reac
 &nbsp;
   const <span class="fstat-no" title="function not covered" >submit<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>a</span></span>sync () =&gt; {</span></span></span></span>
     if (!allAnswered<span class="cstat-no" title="statement not covered" >) {</span>
-<span class="cstat-no" title="statement not covered" >      toast.error('未回答の設問があります');<span class="cstat-no" title="statement not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" >      toast.error('未回答の設問があります。未回答の設問に移動しました。');</span>
+<span class="cstat-no" title="statement not covered" >      try {</span>
+        const <span class="cstat-no" title="statement not covered" >q = questions.find(<span class="fstat-no" title="function not covered" >(q</span>q<span class="cstat-no" title="statement not covered" >) =&gt; selected[qq.id] == null);</span></span>
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (q) {</span>
+          const <span class="cstat-no" title="statement not covered" >labelEl = document.getElementById(`mbti-${q.id}-label`);</span>
+<span class="cstat-no" title="statement not covered" >          labelEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });</span>
+          const <span class="cstat-no" title="statement not covered" >radio = document.querySelector(`input[name="${q.id}"]`) as HTMLInputElement | null;</span>
+<span class="cstat-no" title="statement not covered" >          radio?.focus();</span>
+        }
+      } catch {}<span class="cstat-no" title="statement not covered" ></span>
       return;
     }
 <span class="cstat-no" title="statement not covered" >    setSubmitting(true);<span class="cstat-no" title="statement not covered" ></span></span>
@@ -454,7 +481,7 @@ const <span class="fstat-no" title="function not covered" >MBTITest:</span> Reac
 <span class="cstat-no" title="statement not covered" >      toast.success(`あなたのタイプは ${result.type} です`);</span>
 <span class="cstat-no" title="statement not covered" >      trackEvent('assessment_saved', { type: 'mbti', mbti: result.type, scores: result.scores });<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (e) {
-<span class="cstat-no" title="statement not covered" >      toast.error('結果の保存に失敗しました');</span>
+<span class="cstat-no" title="statement not covered" >      toast.error('結果の保存に失敗しました。再試行してください。');</span>
 <span class="cstat-no" title="statement not covered" >      trackEvent('assessment_save_failed', { type: 'mbti' });<span class="cstat-no" title="statement not covered" ></span></span>
     } finally {
 <span class="cstat-no" title="statement not covered" >      setSubmitting(false);<span class="cstat-no" title="statement not covered" ></span></span>
@@ -547,7 +574,7 @@ const <span class="fstat-no" title="function not covered" >MBTITest:</span> Reac
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T16:27:30.482Z
+                at 2025-08-24T16:36:12.668Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
