@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">87.5% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>7/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">38.46% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>5/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -110,7 +110,7 @@
 <a name='L45'></a><a href='#L45'>45</a>
 <a name='L46'></a><a href='#L46'>46</a>
 <a name='L47'></a><a href='#L47'>47</a>
-<a name='L48'></a><a href='#L48'>48</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L48'></a><a href='#L48'>48</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -122,7 +122,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -131,21 +131,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -156,8 +147,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React from 'react';</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react';
 &nbsp;
 export interface HeroBackgroundImageProps {
   webpSrc?: string;
@@ -169,7 +169,7 @@ export interface HeroBackgroundImageProps {
   height?: number;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >HeroBackgroundImage: React.FC&lt;HeroBackgroundImageProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
+export const HeroBackgroundImage: React.FC&lt;HeroBackgroundImageProps&gt; = ({
   webpSrc,
   fallbackSrc,
   alt = <span class="branch-0 cbranch-no" title="branch not covered" >'',</span>
@@ -178,14 +178,14 @@ export const <span class="cstat-no" title="statement not covered" >HeroBackgroun
   width,
   height,
 }) =&gt; {
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!webpSrc &amp;&amp; !fallbackSrc) <span class="cstat-no" title="statement not covered" >return null;</span></span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (!webpSrc &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!fallbackSrc)</span> <span class="cstat-no" title="statement not covered" >return null;</span>
 &nbsp;
-  const loading = <span class="cstat-no" title="statement not covered" >priority === 'high' ? 'eager' : 'lazy';</span>
+  const loading = priority === 'high' ? <span class="branch-0 cbranch-no" title="branch not covered" >'eager' </span>: 'lazy';
   // Avoid fetchPriority attribute for broader React type compatibility
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
-    &lt;picture className={className || ''} aria-hidden={alt === ''}&gt;
-      {webpSrc ? &lt;source srcSet={webpSrc} type="image/webp" /&gt; : null}
+  return (
+    &lt;picture className={className || <span class="branch-1 cbranch-no" title="branch not covered" >''}</span> aria-hidden={alt === ''}&gt;
+      {webpSrc ? &lt;source srcSet={webpSrc} type="image/webp" /&gt; : <span class="branch-1 cbranch-no" title="branch not covered" >null}</span>
       {fallbackSrc ? (
         &lt;img
           src={fallbackSrc}
@@ -198,12 +198,12 @@ export const <span class="cstat-no" title="statement not covered" >HeroBackgroun
           className="w-full h-full object-cover"
           draggable={false}
         /&gt;
-      ) : null}
+      ) : <span class="branch-1 cbranch-no" title="branch not covered" >null}</span>
     &lt;/picture&gt;
   );
 };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default HeroBackgroundImage;</span>
+export default HeroBackgroundImage;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -211,7 +211,7 @@ export const <span class="cstat-no" title="statement not covered" >HeroBackgroun
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T13:01:29.308Z
+                at 2025-08-24T14:41:49.777Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

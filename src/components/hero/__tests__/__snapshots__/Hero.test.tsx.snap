@@ -1,0 +1,303 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Hero renders default hero and matches snapshot 1`] = `
+<div>
+  <section
+    aria-label="Hero section"
+    class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 "
+  >
+    <div
+      aria-hidden="true"
+      class="absolute inset-0"
+    >
+      <picture
+        aria-hidden="true"
+        class="absolute inset-0"
+      >
+        <source
+          srcset="/images/hero/gradient-bg.webp"
+          type="image/webp"
+        />
+        <img
+          alt=""
+          class="w-full h-full object-cover"
+          decoding="async"
+          draggable="false"
+          loading="lazy"
+          sizes="100vw"
+          src="/images/hero/gradient-bg.jpg"
+        />
+      </picture>
+      <div
+        class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"
+      />
+      <div
+        class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/50"
+      />
+    </div>
+    <div
+      class="relative container mx-auto px-4 py-24 lg:py-32"
+    >
+      <div
+        class="text-center max-w-4xl mx-auto"
+      >
+        <h1
+          class="text-5xl lg:text-7xl font-bold text-white mb-6"
+        >
+          <span
+            class="bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent"
+          >
+            人生のコントロールを取り戻そう
+          </span>
+        </h1>
+        <p
+          class="text-xl lg:text-2xl text-slate-300 mb-8 leading-relaxed max-w-3xl mx-auto"
+        >
+          あなたは人生のコントロールを失っています。生成AIと連携したパーソナル秘書サービスを提供します。今日からはこのサイトだけですべてを管理できます。
+        </p>
+        <div
+          class="flex flex-col sm:flex-row gap-4 justify-center"
+        >
+          <button
+            aria-label="今すぐ始める"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground hover:bg-primary/90 h-11 rounded-md text-lg px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
+          >
+            今すぐ始める
+            <svg
+              class="lucide lucide-arrow-right ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="m12 5 7 7-7 7"
+              />
+            </svg>
+          </button>
+          <button
+            aria-label="3分でセットアップ"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-background h-11 rounded-md text-lg px-8 py-4 border-2 border-white/30 text-white hover:bg-white hover:text-slate-900 backdrop-blur-sm transition-all duration-300"
+          >
+            <svg
+              class="lucide lucide-sparkles mr-2 h-5 w-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"
+              />
+              <path
+                d="M20 3v4"
+              />
+              <path
+                d="M22 5h-4"
+              />
+              <path
+                d="M4 17v2"
+              />
+              <path
+                d="M5 18H3"
+              />
+            </svg>
+            3分でセットアップ
+          </button>
+        </div>
+        <div
+          class="mt-6"
+        >
+          <button
+            aria-label="今日の最重要タスクの提案を開く"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-11 rounded-md px-8 bg-white/90 text-slate-900 hover:bg-white"
+          >
+            今日の最重要タスクを提案
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      aria-hidden="true"
+      class="absolute bottom-0 left-0 right-0"
+    >
+      <svg
+        class="w-full h-12 text-white"
+        viewBox="0 0 1440 120"
+      >
+        <path
+          d="M0,0 C720,120 720,120 1440,0 L1440,120 L0,120 Z"
+          fill="currentColor"
+        />
+      </svg>
+    </div>
+  </section>
+</div>
+`;
+
+exports[`Hero renders with custom texts and matches snapshot 1`] = `
+<div>
+  <section
+    aria-label="Hero section"
+    class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 "
+  >
+    <div
+      aria-hidden="true"
+      class="absolute inset-0"
+    >
+      <picture
+        aria-hidden="true"
+        class="absolute inset-0"
+      >
+        <source
+          srcset="/images/hero/gradient-bg.webp"
+          type="image/webp"
+        />
+        <img
+          alt=""
+          class="w-full h-full object-cover"
+          decoding="async"
+          draggable="false"
+          loading="lazy"
+          sizes="100vw"
+          src="/images/hero/gradient-bg.jpg"
+        />
+      </picture>
+      <div
+        class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"
+      />
+      <div
+        class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/50"
+      />
+    </div>
+    <div
+      class="relative container mx-auto px-4 py-24 lg:py-32"
+    >
+      <div
+        class="text-center max-w-4xl mx-auto"
+      >
+        <h1
+          class="text-5xl lg:text-7xl font-bold text-white mb-6"
+        >
+          <span
+            class="bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent"
+          >
+            カスタムタイトル
+          </span>
+        </h1>
+        <p
+          class="text-xl lg:text-2xl text-slate-300 mb-8 leading-relaxed max-w-3xl mx-auto"
+        >
+          カスタムサブタイトル
+        </p>
+        <div
+          class="flex flex-col sm:flex-row gap-4 justify-center"
+        >
+          <button
+            aria-label="今すぐ始める"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground hover:bg-primary/90 h-11 rounded-md text-lg px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
+          >
+            今すぐ始める
+            <svg
+              class="lucide lucide-arrow-right ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="m12 5 7 7-7 7"
+              />
+            </svg>
+          </button>
+          <button
+            aria-label="3分でセットアップ"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-background h-11 rounded-md text-lg px-8 py-4 border-2 border-white/30 text-white hover:bg-white hover:text-slate-900 backdrop-blur-sm transition-all duration-300"
+          >
+            <svg
+              class="lucide lucide-sparkles mr-2 h-5 w-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"
+              />
+              <path
+                d="M20 3v4"
+              />
+              <path
+                d="M22 5h-4"
+              />
+              <path
+                d="M4 17v2"
+              />
+              <path
+                d="M5 18H3"
+              />
+            </svg>
+            3分でセットアップ
+          </button>
+        </div>
+        <div
+          class="mt-6"
+        >
+          <button
+            aria-label="今日の最重要タスクの提案を開く"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-11 rounded-md px-8 bg-white/90 text-slate-900 hover:bg-white"
+          >
+            今日の最重要タスクを提案
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      aria-hidden="true"
+      class="absolute bottom-0 left-0 right-0"
+    >
+      <svg
+        class="w-full h-12 text-white"
+        viewBox="0 0 1440 120"
+      >
+        <path
+          d="M0,0 C720,120 720,120 1440,0 L1440,120 L0,120 Z"
+          fill="currentColor"
+        />
+      </svg>
+    </div>
+  </section>
+</div>
+`;

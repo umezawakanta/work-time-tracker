@@ -2,15 +2,26 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@/test-utils/render';
 import EnhancedBlogPostForm from '@/components/EnhancedBlogPostForm';
 
-// Mock ENV to pass API key guard
+// Mock ENV to pass API key guard and provide required named exports
 jest.mock('@/utils/env', () => ({
+  __esModule: true,
+  // Named exports used by apiConfig and others
+  getEnv: jest.fn(() => undefined),
+  getBooleanEnv: jest.fn(() => false),
+  isDev: jest.fn(() => false),
+  isProd: jest.fn(() => false),
+  // ENV helper used by components
   ENV: {
     OPENAI_API_KEY: () => 'test-key',
     ANTHROPIC_API_KEY: () => undefined,
     GEMINI_API_KEY: () => undefined,
   },
-  __esModule: true,
-  default: { OPENAI_API_KEY: () => 'test-key' },
+  // Default export mirrors ENV for compatibility
+  default: {
+    OPENAI_API_KEY: () => 'test-key',
+    ANTHROPIC_API_KEY: () => undefined,
+    GEMINI_API_KEY: () => undefined,
+  },
 }));
 
 // Mock extraction service
