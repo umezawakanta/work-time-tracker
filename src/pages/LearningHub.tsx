@@ -6,6 +6,7 @@ import { BookOpen, GraduationCap, Rocket } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import type { Course } from '@/types/learning';
 import { saveProgress } from '@/services/api/assessmentsApi';
+import { addTodayToWeek, setLastProgressDate } from '@/services/learning/streak';
 import { useAnalytics } from '@/lib/analytics';
 
 const LearningHub: React.FC = () => {
@@ -122,6 +123,8 @@ const LearningHub: React.FC = () => {
                           persistTomorrow(next);
                           return next;
                         });
+                        addTodayToWeek();
+                        setLastProgressDate(new Date().toISOString());
                       });
                     }}
                   >

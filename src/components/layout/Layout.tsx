@@ -10,6 +10,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import ThreeStepTour, { TourStepId } from '@/components/engagement/ThreeStepTour';
+import { getWeekCount } from '@/services/learning/streak';
 import { useAnalytics } from '@/lib/analytics';
 import { LanguageSwitcher } from '@/components/internationalization/LanguageSwitcher';
 import { logout } from '@/services/api/authApi';
@@ -768,6 +769,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
     ai: false,
     learning: false,
   });
+  const [streakCount, setStreakCount] = useState<number>(0);
 
   // 翻訳関数（簡易版）
   const t = (key: string) => key;
@@ -814,6 +816,8 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         setTourProgress((prev) => ({ ...prev, ...parsed }));
       }
     } catch {}
+    // 学習ストリーク
+    setStreakCount(getWeekCount());
   }, []);
 
   const persistTour = (next: Record<TourStepId, boolean>) => {
@@ -1049,6 +1053,12 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                     {Object.values(tourProgress).filter(Boolean).length}/3
                   </Badge>
                 </button>
+                <span
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs border border-emerald-200"
+                  aria-label="今週の学習ストリーク"
+                >
+                  🔥 {streakCount}日
+                </span>
                 <LanguageSwitcher variant="compact" className="text-gray-600 dark:text-gray-300" />
 
                 <Button
