@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +38,7 @@ const AIAssistant: React.FC = () => {
 
   const [busy, setBusy] = useState(false);
   const [lastError, setLastError] = useState<string | null>(null);
+  const lastSendAtRef = useRef<number>(0);
   // Inactivity nudge
   const [lastInputAt, setLastInputAt] = useState<number>(() => Date.now());
   useEffect(() => {
@@ -55,6 +56,9 @@ const AIAssistant: React.FC = () => {
   }, [lastInputAt, trackEvent]);
   const send = async (text: string) => {
     if (!text.trim() || busy) return;
+    const now = Date.now();
+    if (now - lastSendAtRef.current < 600) return;
+    lastSendAtRef.current = now;
     const userMsg: ChatMessage = { role: 'user', content: text.trim() };
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
@@ -76,13 +80,13 @@ const AIAssistant: React.FC = () => {
       const code = e?.message;
       const opts = { icon: '⚠️' } as const;
       if (code === 'NOT_CONFIGURED') {
-        toast.error('APIキーが未設定です。設定後に再試行してください。', opts as any);
+        toast.error('APIキー未設定です。設定後に再試行してください。', opts as any);
       } else if (code === 'RATE_LIMIT') {
         toast.error('リクエストが多すぎます。しばらくしてからお試しください。', opts as any);
       } else if (code === 'TIMEOUT') {
         toast.error('タイムアウトしました。通信状況を確認して再試行してください。', opts as any);
       } else {
-        toast.error('AIリクエストに失敗しました。', opts as any);
+        toast.error('AIリクエストに失敗しました。もう一度お試しください。', opts as any);
       }
       setLastError(code || 'REQUEST_FAILED');
     } finally {
@@ -225,9 +229,7 @@ const AIAssistant: React.FC = () => {
             {/* Notice */}
             {hasServerKey === false && (
               <Alert className="mt-4" variant="destructive">
-                <AlertDescription>
-                  APIキーが未設定です。環境変数に設定してください。
-                </AlertDescription>
+                <AlertDescription>APIキー未設定: 設定後に再試行してください。</AlertDescription>
               </Alert>
             )}
           </CardContent>
