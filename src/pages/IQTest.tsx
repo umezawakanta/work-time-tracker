@@ -235,6 +235,14 @@ const IQTest: React.FC = () => {
         { duration: 5000 }
       );
       trackEvent('assessment_saved', { type: 'iq', score: raw, scaled, percentile });
+      // Referral conversion (first action)
+      try {
+        const ref = localStorage.getItem('referral:code');
+        if (ref)
+          trackEvent('referral_first_action', { ref, action: 'assessment_saved', kind: 'iq' });
+      } catch (e) {
+        // ignore referral tracking errors
+      }
     } catch (e) {
       toast.error('結果の保存に失敗しました。通信環境をご確認ください。');
       trackEvent('assessment_save_failed', { type: 'iq' });

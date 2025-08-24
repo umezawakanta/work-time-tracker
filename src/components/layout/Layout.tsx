@@ -1158,6 +1158,13 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                   </Link>
                   <span className="hidden sm:inline-block">·</span>
                   <Link
+                    to="/invite"
+                    className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
+                  >
+                    友だちを招待
+                  </Link>
+                  <span className="hidden sm:inline-block">·</span>
+                  <Link
                     to="/contact"
                     className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
                   >

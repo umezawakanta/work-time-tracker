@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { persistReferralFromUrl } from '@/services/share/referral';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,8 @@ const AssessmentsHub: React.FC = () => {
 
   useEffect(() => {
     trackPageView('/assessments', 'Assessments Hub');
+    // URLからreferralコードを保存
+    persistReferralFromUrl();
   }, [trackPageView]);
 
   return (

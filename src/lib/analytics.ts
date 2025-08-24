@@ -158,6 +158,9 @@ export const useAnalytics = () => {
           case 'learning_progress_saved':
             __devCounters.learning.saved++;
             break;
+          case 'referral_first_action':
+            // no-op counter
+            break;
         }
       } catch {}
       console.log(`[Analytics] Event: ${eventName}`, data);

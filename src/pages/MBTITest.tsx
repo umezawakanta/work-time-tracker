@@ -189,6 +189,11 @@ const MBTITest: React.FC = () => {
         { duration: 5000 }
       );
       trackEvent('assessment_saved', { type: 'mbti', mbti: result.type, scores: result.scores });
+      try {
+        const ref = localStorage.getItem('referral:code');
+        if (ref)
+          trackEvent('referral_first_action', { ref, action: 'assessment_saved', kind: 'mbti' });
+      } catch {}
     } catch (e) {
       toast.error('結果の保存に失敗しました。再試行してください。');
       trackEvent('assessment_save_failed', { type: 'mbti' });
