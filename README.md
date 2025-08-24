@@ -11,6 +11,7 @@ AI支援の生産性管理アプリ（React + TypeScript + Vite）。ブログ�
 - Reduxベースの状態管理（`aiSuggestionSlice`, `todoSlice.addMany`）
 - アクセシビリティ（focus ring / skip links / aria-label）
 - 計測（`page_view_home` / `cta_click` / `ai_suggest_click` / `ai_success` ほか抽出系）
+- 新ルート: `/ai-assistant`, `/assessments`, `/iq-test`, `/mbti-test`, `/learning`
 - Vercel プレビュー/本番デプロイ（GitHub Actions連携）
 
 ## クイックスタート
@@ -27,13 +28,13 @@ pnpm lint && pnpm type-check
 - 環境変数と運用方針: `docs/environment-setup.md`
 - 分析/ダッシュボード要件: `docs/analytics.md`
 
-### 最小 `.env.local` 例
+### 最小 `.env.local` 例（または `.env`）
 
 ```env
 VITE_API_BASE_URL=http://localhost:3001/api
-VITE_GEMINI_API_KEY=
-VITE_OPENAI_API_KEY=
-VITE_ANTHROPIC_API_KEY=
+VITE_GEMINI_API_KEY=your-gemini-key-optional
+VITE_OPENAI_API_KEY=your-openai-key-optional
+VITE_ANTHROPIC_API_KEY=your-anthropic-key
 VITE_ENABLE_ANALYTICS=false
 ```
 
@@ -69,8 +70,55 @@ api/  # Vercel functions
 - Jest + Testing Library
 - 代表: `Hero` スナップショット / `useAIAction` 状態遷移 / `ErrorBoundary` 分岐 / `BlogTaskExtractionService` パース / `EnhancedBlogPostForm` スモーク
 
-```bash
+````bash
 pnpm test
+### E2E
+
+```bash
+pnpm build && pnpm preview
+pnpm test:e2e
+````
+
+### 新規追加の分析イベント
+
+- PageView: `/ai-assistant`, `/assessments`, `/learning`, `/iq-test`, `/mbti-test`
+- Assessment: `assessment_saved`（IQ/MBTI保存成功）, `assessment_save_failed`
+- AI: `ai_assistant_reply`（ok: true/false）
+- Learning: `learning_progress_saved`
+
+### AI API 利用
+
+- バックエンドのAnthropicプロキシ: `api/ai/anthropic.ts`
+- フロントからの呼び出し: `src/services/api/aiAssistantApi.ts`
+
+### 起動手順（開発）
+
+```bash
+pnpm install
+pnpm dev
+# 別ターミナル: （必要に応じて）APIモック/バックエンド
+```
+
+### 環境変数（AI/計測関連）
+
+- `VITE_ANTHROPIC_API_KEY`: Anthropic Claude キー（推奨）
+- `VITE_GEMINI_API_KEY`: Google Gemini キー（任意）
+- `VITE_OPENAI_API_KEY`: OpenAI キー（任意）
+- `VITE_API_BASE_URL`: API ベースURL（例: `http://localhost:3001/api`）
+- `VITE_ENABLE_ANALYTICS`: `true` で分析有効（デフォルトは開発でコンソール出力）
+
+## 導入ガイド（3ステップ）
+
+1. 自己診断を実施（約5〜10分）
+   - `/assessments` から IQ/MBTI を開始
+   - 完了後に結果を保存（プロフィール `traits` に反映）
+2. AI秘書に相談
+   - `/ai-assistant` で生活/学習/仕事の相談を入力
+   - 特性（IQ/MBTI）を踏まえた助言が返答
+3. 学習を開始
+   - `/learning` でコースを選択
+   - 進捗を保存しながら日次で学習
+
 ```
 
 ## アクセシビリティ / 国際化
@@ -154,3 +202,4 @@ pnpm test
 ---
 
 開発の詳細・最新の変更は GitHub リポジトリを参照。
+```
