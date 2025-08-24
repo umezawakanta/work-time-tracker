@@ -88,6 +88,19 @@ interface AnalyticsSummary {
   topErrors?: Array<{ message: string; count: number; url?: string }>;
 }
 
+interface AssessmentsSummary {
+  iqSaved: number;
+  mbtiSaved: number;
+  totalSaved30d: number;
+  generatedAt?: string;
+}
+
+interface LearningSummary {
+  progressSaved30d: number;
+  uniqueLearners30d: number;
+  generatedAt?: string;
+}
+
 // Normalize API metrics payload to UI's expected shape to avoid runtime errors in production
 function normalizeMetrics(raw: unknown): AdminMetrics {
   const obj = (raw as Record<string, unknown>) || {};
@@ -183,6 +196,10 @@ const AdminDashboard: React.FC = () => {
     prevMrr: number;
   } | null>(null);
   const [isRevenueSummaryLoading, setIsRevenueSummaryLoading] = useState<boolean>(false);
+  const [assessSummary, setAssessSummary] = useState<AssessmentsSummary | null>(null);
+  const [learningSummary, setLearningSummary] = useState<LearningSummary | null>(null);
+  const [isAssessLoading, setIsAssessLoading] = useState<boolean>(false);
+  const [isLearningLoading, setIsLearningLoading] = useState<boolean>(false);
 
   // メトリクス取得
   const fetchMetrics = async () => {
@@ -335,6 +352,43 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const fetchAssessmentsSummary = async () => {
+    try {
+      setIsAssessLoading(true);
+      const { data } = await api.get('admin/metrics/assessments/summary');
+      const payload = (data && (data.data || data)) as AssessmentsSummary;
+      setAssessSummary({
+        iqSaved: Number(payload?.iqSaved || 0),
+        mbtiSaved: Number(payload?.mbtiSaved || 0),
+        totalSaved30d: Number(payload?.totalSaved30d || 0),
+        generatedAt: payload?.generatedAt,
+      });
+    } catch (e) {
+      console.error('Failed to fetch assessments summary:', e);
+      setAssessSummary(null);
+    } finally {
+      setIsAssessLoading(false);
+    }
+  };
+
+  const fetchLearningSummary = async () => {
+    try {
+      setIsLearningLoading(true);
+      const { data } = await api.get('admin/metrics/learning/summary');
+      const payload = (data && (data.data || data)) as LearningSummary;
+      setLearningSummary({
+        progressSaved30d: Number(payload?.progressSaved30d || 0),
+        uniqueLearners30d: Number(payload?.uniqueLearners30d || 0),
+        generatedAt: payload?.generatedAt,
+      });
+    } catch (e) {
+      console.error('Failed to fetch learning summary:', e);
+      setLearningSummary(null);
+    } finally {
+      setIsLearningLoading(false);
+    }
+  };
+
   // アクション完了処理
   const completeAction = async (actionId: string) => {
     try {
@@ -366,6 +420,8 @@ const AdminDashboard: React.FC = () => {
     fetchRevenueTrend(6);
     fetchPaidUsersTrend(6);
     fetchRevenueSummary();
+    fetchAssessmentsSummary();
+    fetchLearningSummary();
 
     // 30秒ごとに自動更新
     const interval = setInterval(() => {
@@ -377,6 +433,8 @@ const AdminDashboard: React.FC = () => {
       fetchRevenueTrend(6);
       fetchPaidUsersTrend(6);
       fetchRevenueSummary();
+      fetchAssessmentsSummary();
+      fetchLearningSummary();
     }, 30000);
     return () => clearInterval(interval);
   }, [pageviewWindow]);
@@ -1126,69 +1184,62 @@ const AdminDashboard: React.FC = () => {
           </div>
         </TabsContent>
 
-        {/* 診断集計（ダミー） */}
+        {/* 診断集計（実データ） */}
         <TabsContent value="assessments" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>診断集計（ダミー）</CardTitle>
-              <CardDescription>IQ/MBTIの受検数や傾向（デモ）</CardDescription>
+              <CardTitle>診断サマリ</CardTitle>
+              <CardDescription>IQ/MBTI保存数と直近30日合計</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-sm text-gray-600">今月のIQ受検数</p>
-                    <p className="text-3xl font-bold">42</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-sm text-gray-600">MBTI受検数</p>
-                    <p className="text-3xl font-bold">58</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-sm text-gray-600">上位タイプ</p>
-                    <p className="text-3xl font-bold">INTJ</p>
-                  </CardContent>
-                </Card>
-              </div>
+              {isAssessLoading ? (
+                <div className="h-20 bg-gray-200 rounded animate-pulse" />
+              ) : assessSummary ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                  <div>
+                    <p className="text-sm text-gray-600">IQ保存</p>
+                    <p className="text-3xl font-bold">{assessSummary.iqSaved}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">MBTI保存</p>
+                    <p className="text-3xl font-bold">{assessSummary.mbtiSaved}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">直近30日 合計</p>
+                    <p className="text-3xl font-bold">{assessSummary.totalSaved30d}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">データがありません</p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* 学習進捗（ダミー） */}
+        {/* 学習進捗（実データ） */}
         <TabsContent value="learning" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>学習進捗（ダミー）</CardTitle>
-              <CardDescription>主要コースの平均進捗（デモ）</CardDescription>
+              <CardTitle>学習サマリ</CardTitle>
+              <CardDescription>直近30日の進捗保存とユニーク学習者</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-sm text-gray-600">ビジネス基礎 101</p>
-                    <Progress value={64} className="mt-2" />
-                    <p className="text-xs text-gray-500 mt-1">64%</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-sm text-gray-600">生産性エンジン</p>
-                    <Progress value={52} className="mt-2" />
-                    <p className="text-xs text-gray-500 mt-1">52%</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-sm text-gray-600">要点読書術</p>
-                    <Progress value={35} className="mt-2" />
-                    <p className="text-xs text-gray-500 mt-1">35%</p>
-                  </CardContent>
-                </Card>
-              </div>
+              {isLearningLoading ? (
+                <div className="h-20 bg-gray-200 rounded animate-pulse" />
+              ) : learningSummary ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+                  <div>
+                    <p className="text-sm text-gray-600">進捗保存（30日）</p>
+                    <p className="text-3xl font-bold">{learningSummary.progressSaved30d}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">ユニーク学習者（30日）</p>
+                    <p className="text-3xl font-bold">{learningSummary.uniqueLearners30d}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">データがありません</p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
