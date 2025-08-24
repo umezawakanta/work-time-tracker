@@ -124,6 +124,33 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     gradient: 'from-purple-500 via-indigo-500 to-blue-500',
     accentColor: 'purple',
   },
+  {
+    icon: <Brain className="h-5 w-5" />,
+    label: '🤖 AI秘書',
+    path: '/ai-assistant',
+    description: '生成AIパーソナル秘書サービス',
+    badge: 'AI',
+    gradient: 'from-purple-500 via-indigo-500 to-blue-500',
+    accentColor: 'purple',
+  },
+  {
+    icon: <TestTube className="h-5 w-5" />,
+    label: '🧭 自己診断',
+    path: '/assessments',
+    description: 'IQ/MBTIなどの自己診断',
+    badge: '診断',
+    gradient: 'from-emerald-500 via-teal-500 to-cyan-500',
+    accentColor: 'emerald',
+  },
+  {
+    icon: <BookOpen className="h-5 w-5" />,
+    label: '📚 学習',
+    path: '/learning',
+    description: 'ビジネススクール要点をAI学習',
+    badge: '学習',
+    gradient: 'from-amber-500 via-orange-500 to-rose-500',
+    accentColor: 'amber',
+  },
 ];
 
 // ADHD/ASD特化機能メニューアイテム

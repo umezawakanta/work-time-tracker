@@ -37,6 +37,9 @@ import { InternationalizationProvider } from './hooks/useInternationalization';
 import { useAuth } from './hooks/useAuth';
 // Admin dashboard (lazy)
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const AIAssistantPage = lazy(() => import('./pages/AIAssistantPage'));
+const AssessmentsHub = lazy(() => import('./pages/AssessmentsHub'));
+const LearningHub = lazy(() => import('./pages/LearningHub'));
 
 // Guarded route: requires admin
 const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -276,6 +279,37 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <HomePage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              {/* New primary navigation routes */}
+                              <Route
+                                path="/ai-assistant"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <AIAssistantPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/assessments"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <AssessmentsHub />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/learning"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <LearningHub />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }
