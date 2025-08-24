@@ -17,6 +17,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
   Clock,
   Target,
   CheckCircle,
@@ -86,6 +94,7 @@ const Home: React.FC = () => {
   // Local state
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Initialize data
   useEffect(() => {
@@ -94,6 +103,18 @@ const Home: React.FC = () => {
       initializeDashboard();
     }
   }, [isAuthenticated]);
+
+  // Onboarding modal (first visit → link to /assessments)
+  useEffect(() => {
+    try {
+      const key = 'onboarding:assessments_shown';
+      const shown = localStorage.getItem(key) === 'true';
+      if (!shown) {
+        setShowOnboarding(true);
+        localStorage.setItem(key, 'true');
+      }
+    } catch {}
+  }, []);
 
   const initializeDashboard = async () => {
     setIsLoading(true);
@@ -286,6 +307,37 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Onboarding Modal */}
+      <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>最初の一歩: 自己診断を実施</DialogTitle>
+            <DialogDescription>
+              5〜10分でIQ/MBTIを把握し、AI秘書をあなた用に最適化します。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <div className="flex w-full justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowOnboarding(false)}
+                aria-label="あとで"
+              >
+                あとで
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowOnboarding(false);
+                  navigate('/assessments');
+                }}
+                aria-label="自己診断を始める"
+              >
+                自己診断を始める
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       {/* Mission Hero (copy refreshed) */}
       <div className="bg-gradient-to-b from-white to-blue-50 border-b">
         <div className="container mx-auto px-4 max-w-7xl py-14 md:py-20 text-center">
