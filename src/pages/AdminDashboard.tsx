@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -211,6 +212,7 @@ const AdminDashboard: React.FC = () => {
   const [isLearningLoading, setIsLearningLoading] = useState<boolean>(false);
   const [liveMetrics, setLiveMetrics] = useState<LiveMetrics | null>(null);
   const [isLiveLoading, setIsLiveLoading] = useState<boolean>(false);
+  const [topPagesQuery, setTopPagesQuery] = useState<string>('');
 
   // メトリクス取得
   const fetchMetrics = async () => {
@@ -498,6 +500,16 @@ const AdminDashboard: React.FC = () => {
           <p className="text-gray-600">最終更新: {lastUpdate.toLocaleString()}</p>
         </div>
         <div className="flex items-center space-x-2">
+          {(['7d', '30d', '90d'] as const).map((w) => (
+            <Button
+              key={w}
+              variant={pageviewWindow === w ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setPageviewWindow(w)}
+            >
+              {w}
+            </Button>
+          ))}
           <Button variant="outline" size="sm" onClick={fetchMetrics} disabled={isLoading}>
             <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
             更新
@@ -772,7 +784,7 @@ const AdminDashboard: React.FC = () => {
                       )}
                     </CardDescription>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     {(['7d', '30d', '90d'] as const).map((w) => (
                       <Button
                         key={w}
@@ -786,6 +798,27 @@ const AdminDashboard: React.FC = () => {
                         {w}
                       </Button>
                     ))}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        (function exportPageviews(){
+                          try {
+                            const headers = ['day','views'];
+                            const lines = [headers.join(',')].concat(
+                              pageviewSeries.map((r) => `${r.day},${r.views}`)
+                            );
+                            const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url; a.download = 'pageviews_trend.csv';
+                            document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                          } catch (e) { console.error(e); }
+                        })()
+                      }
+                    >
+                      CSV
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -825,7 +858,7 @@ const AdminDashboard: React.FC = () => {
                     <CardTitle>ユーザー推移（新規/アクティブ）</CardTitle>
                     <CardDescription>ユーザー増減のトレンド</CardDescription>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     {(['7d', '30d', '90d'] as const).map((w) => (
                       <Button
                         key={w}
@@ -839,6 +872,27 @@ const AdminDashboard: React.FC = () => {
                         {w}
                       </Button>
                     ))}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        (function exportUsers(){
+                          try {
+                            const headers = ['day','newUsers','activeUsers'];
+                            const lines = [headers.join(',')].concat(
+                              usersTrend.map((r) => `${r.day},${r.newUsers},${r.activeUsers}`)
+                            );
+                            const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url; a.download = 'users_trend.csv';
+                            document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                          } catch (e) { console.error(e); }
+                        })()
+                      }
+                    >
+                      CSV
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -1036,7 +1090,7 @@ const AdminDashboard: React.FC = () => {
                     <CardTitle>トップページ</CardTitle>
                     <CardDescription>よく見られているページ</CardDescription>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     {(['7d', '30d', '90d'] as const).map((w) => (
                       <Button
                         key={w}
@@ -1050,6 +1104,34 @@ const AdminDashboard: React.FC = () => {
                         {w}
                       </Button>
                     ))}
+                    <Input
+                      placeholder="pathを含む..."
+                      className="h-8 w-40"
+                      value={topPagesQuery}
+                      onChange={(e) => setTopPagesQuery(e.target.value)}
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        (function exportTopPages(){
+                          try {
+                            const headers = ['page','views'];
+                            const rows = (topPages || []).filter((p) => !topPagesQuery || (p.page || '').includes(topPagesQuery));
+                            const lines = [headers.join(',')].concat(
+                              rows.map((r) => `${r.page},${r.views}`)
+                            );
+                            const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url; a.download = 'top_pages.csv';
+                            document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                          } catch (e) { console.error(e); }
+                        })()
+                      }
+                    >
+                      CSV
+                    </Button>
                   </div>
                 </div>
               </CardHeader>

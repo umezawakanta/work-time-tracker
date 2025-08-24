@@ -1443,6 +1443,40 @@ app.get('/api/analytics/summary', (req, res) => {
   res.json(mockAnalytics);
 });
 
+// Live metrics (dev mock)
+app.get('/api/analytics/live-metrics', (req, res) => {
+  console.log('📊 GET /api/analytics/live-metrics called');
+  try {
+    const mock = {
+      activeUsers: Math.floor(Math.random() * 50) + 10,
+      completionRate: Math.floor(Math.random() * 40) + 60,
+      avgTaskTime: Math.floor(Math.random() * 30) + 15,
+      todaysTasks: Math.floor(Math.random() * 20) + 5,
+      weeklyTrend: Math.floor(Math.random() * 30) - 15,
+      hourlyActivity: Array.from({ length: 12 }, (_, i) => ({
+        hour: `${(i * 2).toString().padStart(2, '0')}:00`,
+        tasks: Math.floor(Math.random() * 10),
+        users: Math.floor(Math.random() * 15),
+      })),
+    };
+    return res.json({ success: true, data: mock });
+  } catch (e) {
+    console.error('❌ Error in /api/analytics/live-metrics (dev mock):', e);
+    return res.status(200).json({
+      success: true,
+      data: {
+        activeUsers: 0,
+        completionRate: 0,
+        avgTaskTime: 0,
+        todaysTasks: 0,
+        weeklyTrend: 0,
+        hourlyActivity: [],
+      },
+      degraded: true,
+    });
+  }
+});
+
 // Admin analytics summary (mock)
 app.get('/api/admin/analytics/summary', (req, res) => {
   console.log('📊 GET /api/admin/analytics/summary called');
@@ -1687,6 +1721,7 @@ console.log('   PUT  /api/books/:id'); // 追加
 console.log('   DELETE /api/books/:id'); // 追加
 console.log('   POST /api/analytics/track'); // 追加
 console.log('   GET  /api/analytics/summary'); // 追加
+console.log('   GET  /api/analytics/live-metrics'); // 追加
 console.log('   POST /api/analytics/pageview'); // 追加
 console.log('   GET  /api/admin/metrics/pageviews/trend'); // 追加
 console.log('   POST /api/ai/anthropic'); // 追加
