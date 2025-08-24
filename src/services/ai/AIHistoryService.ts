@@ -52,9 +52,20 @@ const MAX_ENTRIES = 500; // 軽量ローカル保持の上限
 
 class AIHistoryServiceImpl {
   private dbPromise: Promise<IDBPDatabase> | null = null;
-  private enabled: boolean =
-    typeof import.meta !== 'undefined' &&
-    (import.meta as any).env?.VITE_AI_HISTORY_ENABLED !== 'false';
+  private enabled: boolean = (() => {
+    // Avoid parsing `import.meta` in Jest/CommonJS by using indirect eval
+    try {
+      const viteMeta = (0, eval)('import.meta') as { env?: Record<string, unknown> } | undefined;
+      const raw = (viteMeta?.env as Record<string, unknown> | undefined)?.[
+        'VITE_AI_HISTORY_ENABLED'
+      ] as string | undefined;
+      // Enabled by default in Vite runtime unless explicitly set to 'false'
+      return raw !== 'false';
+    } catch {
+      // Non-Vite (Node/Jest) default: disabled
+      return false;
+    }
+  })();
 
   private getDB(): Promise<IDBPDatabase> {
     if (!this.dbPromise) {
