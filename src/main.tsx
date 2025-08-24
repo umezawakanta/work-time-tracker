@@ -16,6 +16,19 @@ import PerformanceOptimizer from './lib/performanceOptimizer';
 // 🐛 エラーエリミネーター: グローバルエラーハンドリングの初期化
 setupGlobalErrorHandling();
 
+// ✅ 一部のUMD/外部ライブラリ対策: React/ReactDOM をグローバルに公開
+try {
+  if (typeof window !== 'undefined') {
+    // @ts-ignore
+    (window as any).React = React;
+    // @ts-ignore
+    (window as any).ReactDOM = ReactDOM;
+    // バージョンの簡易ログ（本番ではコンソール除去設定で落ちます）
+    // @ts-ignore
+    console.log('[Boot] React version:', (React as any)?.version);
+  }
+} catch {}
+
 // 🚫 ServiceWorker完全無効化（デバッグのため）
 if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
   navigator.serviceWorker
