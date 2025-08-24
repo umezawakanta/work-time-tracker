@@ -262,7 +262,7 @@ export default defineConfig(({ command, mode }) => {
         'react-is': 'react-is',
         'prop-types': 'prop-types',
       },
-      dedupe: ['react', 'react-dom'],
+      dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
     },
 
     // 環境変数
