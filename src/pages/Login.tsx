@@ -558,15 +558,7 @@ export default function Login() {
             </CardContent>
 
             <CardFooter className="flex flex-col space-y-4">
-              <Button
-                type="button"
-                className="w-full"
-                disabled={isSubmitting}
-                onClick={(e) => {
-                  console.log('🖱️ Login button clicked');
-                  handleSubmit(e);
-                }}
-              >
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
