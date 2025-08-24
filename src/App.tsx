@@ -129,8 +129,8 @@ const SubscriptionManagementPage = lazy(() => import('./pages/SubscriptionManage
 const SubscriptionUpgradePage = lazy(() => import('./pages/subscription/SubscriptionUpgradePage'));
 const BillingHistoryPage = lazy(() => import('./pages/subscription/BillingHistoryPage'));
 
-// 🤖 AI & Assistant
-const AIAssistantPage = lazy(() => import('./pages/AIAssistantPage'));
+// 🤖 AI & Assistant (dedupe)
+// const AIAssistantPage = lazy(() => import('./pages/AIAssistantPage'));
 
 // 💰 Finance & Reports
 const AssetLiabilityReportPage = lazy(() => import('./pages/AssetLiabilityReportPage'));
