@@ -59,7 +59,7 @@
         "test:auth:debug": "jest --config jest.auth.config.js --runInBand --detectOpenHandles",
         "test:auth:verbose": "jest --config jest.auth.config.js --verbose",
         "test:auth:clean": "jest --config jest.auth.config.js --clearCache",
-        "postinstall": "pnpm dedupe"
+        "postinstall": "echo skipping dedupe on Vercel"
     },
     "pnpm": {
         "onlyBuiltDependencies": [
