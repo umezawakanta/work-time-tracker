@@ -19,6 +19,7 @@ import { api } from '@/services/api/apiConfig';
 import { AxiosError } from 'axios';
 import { Eye, EyeOff, CheckCircle, XCircle, AlertCircle, User, Mail, Lock } from 'lucide-react';
 import { tokenManager } from '@/services/auth/TokenManager';
+import { useAnalytics } from '@/lib/analytics';
 
 interface ValidationErrors {
   name?: string;
@@ -50,6 +51,7 @@ export default function Register() {
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
 
   const navigate = useNavigate();
+  const { identifyUser, trackEvent } = useAnalytics();
 
   // パスワード強度チェック
   const checkPasswordStrength = (password: string): PasswordStrength => {
@@ -188,6 +190,13 @@ export default function Register() {
       });
 
       toast.success('アカウントが正常に作成されました');
+      try {
+        identifyUser(response.data?.user?.id || response.data?.userId || formData.email, {
+          email: formData.email,
+          displayName: formData.name,
+        });
+        trackEvent('register_success', { method: 'email' });
+      } catch {}
 
       // 登録成功後の処理
       if (response.data.token) {
