@@ -946,17 +946,7 @@ const App: React.FC = () => {
                                 }
                               />
 
-                              {/* 🤖 AI & Assistant */}
-                              <Route
-                                path="/ai-assistant"
-                                element={
-                                  <LayoutWrapper>
-                                    <LazyWrapper>
-                                      <AIAssistantPage />
-                                    </LazyWrapper>
-                                  </LayoutWrapper>
-                                }
-                              />
+                              {/* 🤖 AI & Assistant (route defined earlier; duplicate removed) */}
 
                               {/* 🧘 Personal Development */}
                               <Route

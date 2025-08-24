@@ -101,6 +101,7 @@ const IQTest: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <h1 className="sr-only">IQ テスト</h1>
       <Card>
         <CardHeader>
           <CardTitle>IQ テスト（最小版）</CardTitle>

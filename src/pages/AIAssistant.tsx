@@ -75,6 +75,7 @@ const AIAssistant: React.FC = () => {
   return (
     <ErrorBoundary variant="app">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 className="sr-only">AIパーソナル秘書</h1>
         <Card>
           <CardHeader>
             <CardTitle>AIパーソナル秘書</CardTitle>

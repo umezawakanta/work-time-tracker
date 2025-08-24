@@ -934,7 +934,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
 
           {/* メニューコンテンツ */}
           <ScrollArea className="flex-1 px-3 py-4">
-            <nav className="space-y-2">
+            <nav className="space-y-2" role="navigation" aria-label="サイドナビゲーション">
               {(searchQuery ? filteredSections : menuSections).map(renderSection)}
             </nav>
           </ScrollArea>
@@ -984,7 +984,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         {/* メインコンテンツ */}
         <main className="flex-1 flex flex-col min-h-screen">
           {/* トップナビゲーション */}
-          <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+          <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4" role="banner">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -1027,12 +1027,32 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                 >
                   <Settings className="h-4 w-4" />
                 </Button>
+                <a
+                  href="https://vercel.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 underline-offset-2 hover:underline"
+                >
+                  Vercel
+                </a>
               </div>
             </div>
           </header>
 
           {/* ページコンテンツ */}
           <div className="flex-1 p-6">
+            {/* パンくず（最小）*/}
+            <nav className="mb-4 text-sm text-slate-600 dark:text-slate-300" aria-label="パンくず">
+              <ol className="flex items-center gap-2">
+                <li>
+                  <Link to="/" className="hover:underline">ホーム</Link>
+                </li>
+                <li aria-hidden>›</li>
+                <li>
+                  <span aria-current="page">{location.pathname.replace('/', '') || 'トップ'}</span>
+                </li>
+              </ol>
+            </nav>
             {children}
             <div className="mt-12">
               <div className="container mx-auto px-4">
