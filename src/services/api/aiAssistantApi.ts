@@ -21,9 +21,14 @@ export interface AskResult {
 /**
  * Send messages to the AI assistant via server proxy (/api/ai/anthropic)
  */
+const DEFAULT_TIMEOUT_MS = 35000;
+
 export async function ask(messages: ChatMessage[], options: AskOptions = {}): Promise<AskResult> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), Math.max(1000, options.timeoutMs ?? 30000));
+  const timeout = setTimeout(
+    () => controller.abort(),
+    Math.max(1000, options.timeoutMs ?? DEFAULT_TIMEOUT_MS)
+  );
 
   try {
     const response = await api.post(
@@ -32,8 +37,10 @@ export async function ask(messages: ChatMessage[], options: AskOptions = {}): Pr
         messages: messages.map((m) => ({ role: m.role, content: m.content })),
         model: options.model ?? 'claude-3-5-sonnet-20241022',
         system: options.traits
-          ? `ユーザー特性: IQ=${options.traits.iq ?? '不明'}, MBTI=${options.traits.mbti ?? '不明'}。これらを考慮し、丁寧に最適な提案を返してください。`
-          : '丁寧な言葉遣いで、簡潔かつ実行可能な提案を返してください。',
+          ? `ユーザーの特性（IQ: ${options.traits.iq ?? '不明'}, MBTI: ${
+              options.traits.mbti ?? '不明'
+            }）を考慮し、丁寧で簡潔な実行可能アドバイスを返してください。`
+          : '丁寧で簡潔な実行可能アドバイスを返してください。',
       },
       { signal: controller.signal }
     );

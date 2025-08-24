@@ -49,14 +49,15 @@ const AIAssistant: React.FC = () => {
     } catch (e: any) {
       trackEvent('ai_assistant_reply', { ok: false, error: e?.message || 'unknown' });
       const code = e?.message;
+      const opts = { icon: '⚠️' } as const;
       if (code === 'NOT_CONFIGURED') {
-        toast.error('AIキーが未設定です。設定ページでAPIキーを登録してください。');
+        toast.error('APIキーが未設定です。設定後に再試行してください。', opts as any);
       } else if (code === 'RATE_LIMIT') {
-        toast.error('リクエストが多すぎます。しばらくしてから再試行してください。');
+        toast.error('リクエストが多すぎます。しばらくしてからお試しください。', opts as any);
       } else if (code === 'TIMEOUT') {
-        toast.error('タイムアウトしました。ネットワーク状況を確認して再試行してください。');
+        toast.error('タイムアウトしました。通信状況を確認して再試行してください。', opts as any);
       } else {
-        toast.error('AIリクエストに失敗しました。');
+        toast.error('AIリクエストに失敗しました。', opts as any);
       }
     } finally {
       setLoading(false);
@@ -76,7 +77,9 @@ const AIAssistant: React.FC = () => {
           <CardHeader>
             <CardTitle>AIパーソナル秘書</CardTitle>
             <div className="flex items-center gap-2">
-              <Badge variant={envInfo.hasAnthropic || envInfo.hasGemini ? 'default' : 'outline'}>
+              <Badge
+                variant={envInfo.hasAnthropic || envInfo.hasGemini ? 'default' : 'destructive'}
+              >
                 {envInfo.hasAnthropic || envInfo.hasGemini ? 'キーOK' : 'キー未設定'}
               </Badge>
             </div>
@@ -132,8 +135,10 @@ const AIAssistant: React.FC = () => {
 
             {/* Notice */}
             {!envInfo.hasAnthropic && !envInfo.hasGemini && (
-              <Alert className="mt-4">
-                <AlertDescription>AIキーが未設定です。設定後に再試行してください。</AlertDescription>
+              <Alert className="mt-4" variant="destructive">
+                <AlertDescription>
+                  APIキーが未設定です。環境変数に設定してください。
+                </AlertDescription>
               </Alert>
             )}
           </CardContent>
