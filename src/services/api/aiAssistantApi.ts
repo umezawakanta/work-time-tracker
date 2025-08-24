@@ -73,3 +73,9 @@ export async function ask(messages: ChatMessage[], options: AskOptions = {}): Pr
     clearTimeout(timeout);
   }
 }
+
+export async function getAIHealth(): Promise<{ hasApiKey: boolean; status?: string }> {
+  const res = await api.get('/ai/health');
+  const data = res.data as any;
+  return { hasApiKey: Boolean(data?.hasApiKey), status: data?.status };
+}

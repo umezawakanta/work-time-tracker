@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { ask, type ChatMessage } from '@/services/api/aiAssistantApi';
+import { ask, getAIHealth, type ChatMessage } from '@/services/api/aiAssistantApi';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -20,13 +20,18 @@ const AIAssistant: React.FC = () => {
   const { user } = useAuth();
   const { trackPageView, trackEvent } = useAnalytics();
 
-  const envInfo = useMemo(() => {
-    const hasGemini = Boolean(import.meta?.env?.VITE_GEMINI_API_KEY);
-    const hasAnthropic = Boolean(import.meta?.env?.VITE_ANTHROPIC_API_KEY);
-    // Log once on first render
-    // eslint-disable-next-line no-console
-    console.log('[AI] Env check', { hasGemini, hasAnthropic });
-    return { hasGemini, hasAnthropic };
+  const [hasServerKey, setHasServerKey] = useState<boolean | null>(null);
+  useEffect(() => {
+    (async () => {
+      try {
+        const health = await getAIHealth();
+        setHasServerKey(health.hasApiKey);
+        // eslint-disable-next-line no-console
+        console.log('[AI] Server health', health);
+      } catch {
+        setHasServerKey(null);
+      }
+    })();
   }, []);
 
   const [busy, setBusy] = useState(false);
@@ -77,10 +82,8 @@ const AIAssistant: React.FC = () => {
           <CardHeader>
             <CardTitle>AIパーソナル秘書</CardTitle>
             <div className="flex items-center gap-2">
-              <Badge
-                variant={envInfo.hasAnthropic || envInfo.hasGemini ? 'default' : 'destructive'}
-              >
-                {envInfo.hasAnthropic || envInfo.hasGemini ? 'キーOK' : 'キー未設定'}
+              <Badge variant={hasServerKey ? 'default' : 'destructive'}>
+                {hasServerKey ? 'キーOK' : 'キー未設定'}
               </Badge>
             </div>
           </CardHeader>
@@ -134,7 +137,7 @@ const AIAssistant: React.FC = () => {
             </div>
 
             {/* Notice */}
-            {!envInfo.hasAnthropic && !envInfo.hasGemini && (
+            {hasServerKey === false && (
               <Alert className="mt-4" variant="destructive">
                 <AlertDescription>
                   APIキーが未設定です。環境変数に設定してください。
