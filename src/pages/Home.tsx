@@ -95,6 +95,7 @@ const Home: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showNextStep, setShowNextStep] = useState(false);
 
   // Initialize data
   useEffect(() => {
@@ -113,6 +114,9 @@ const Home: React.FC = () => {
         setShowOnboarding(true);
         localStorage.setItem(key, 'true');
       }
+      // Next step card
+      const nextStep = localStorage.getItem('next_step_card') === 'true';
+      setShowNextStep(nextStep);
     } catch {}
   }, []);
 
@@ -375,6 +379,40 @@ const Home: React.FC = () => {
 
       {/* 3 Benefits (with lazy images for LCP optimization below-the-fold) */}
       <div className="container mx-auto px-4 max-w-7xl py-10">
+        {showNextStep && (
+          <div className="mb-6">
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
+              <CardContent className="p-4 flex items-center gap-3">
+                <Sparkles className="w-5 h-5 text-blue-600" />
+                <div className="text-sm text-gray-800">
+                  明日の次の一手: 「AI秘書で今日の計画を1分で作成」
+                </div>
+                <div className="ml-auto flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => navigate('/ai-assistant')}
+                    aria-label="AI秘書を開く"
+                  >
+                    開く
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      try {
+                        localStorage.removeItem('next_step_card');
+                      } catch {}
+                      setShowNextStep(false);
+                    }}
+                    aria-label="非表示にする"
+                  >
+                    非表示
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="bg-white/80 border shadow-sm">
             <CardContent className="p-6">

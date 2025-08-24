@@ -119,6 +119,11 @@ const IQTest: React.FC = () => {
       toast.success(
         `結果を保存しました（推定IQ: ${scaled} / 上位${Math.max(1, 100 - percentile)}%）`
       );
+      try {
+        localStorage.setItem('next_step_card', 'true');
+      } catch (e) {
+        /* ignore */
+      }
       // 提案: AI秘書で反映
       toast.custom(
         (t) => (

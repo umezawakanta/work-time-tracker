@@ -80,6 +80,11 @@ const MBTITest: React.FC = () => {
       const result = compute();
       await saveMBTIResult({ type: result.type, scores: result.scores });
       toast.success(`あなたのタイプは ${result.type} です`);
+      try {
+        localStorage.setItem('next_step_card', 'true');
+      } catch (e) {
+        /* ignore */
+      }
       // 提案: AI秘書で反映
       toast.custom(
         (t) => (
