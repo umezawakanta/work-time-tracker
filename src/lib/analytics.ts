@@ -28,6 +28,25 @@ export const useAnalytics = () => {
     }
   }, []);
 
+  // UTMパラメータを初回訪問時に保存
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const hasUtm = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].some(
+        (k) => params.has(k)
+      );
+      if (hasUtm && !localStorage.getItem('utm:first_visit')) {
+        const utm: Record<string, string> = {};
+        params.forEach((v, k) => {
+          if (k.startsWith('utm_')) utm[k] = v;
+        });
+        utm['referrer'] = document.referrer || '';
+        localStorage.setItem('utm:first_visit', JSON.stringify(utm));
+      }
+    } catch {}
+  }, []);
+
   /**
    * Google Analyticsのスクリプトを動的にロードする関数
    */
@@ -125,6 +144,28 @@ export const useAnalytics = () => {
     }
   }, []);
 
+  // ファネル用ショートカット
+  const trackFunnelVisit = useCallback(
+    (step: string, meta: EventData = {}) => {
+      trackEvent('funnel_visit', { step, ...meta });
+    },
+    [trackEvent]
+  );
+
+  const trackFunnelAction = useCallback(
+    (step: string, meta: EventData = {}) => {
+      trackEvent('funnel_action', { step, ...meta });
+    },
+    [trackEvent]
+  );
+
+  const trackFunnelSuccess = useCallback(
+    (step: string, meta: EventData = {}) => {
+      trackEvent('funnel_success', { step, ...meta });
+    },
+    [trackEvent]
+  );
+
   /**
    * ページビューを追跡する関数
    * @param pagePath ページパス
@@ -208,6 +249,9 @@ export const useAnalytics = () => {
     trackEvent,
     trackPageView,
     identifyUser,
+    trackFunnelVisit,
+    trackFunnelAction,
+    trackFunnelSuccess,
   };
 };
 
