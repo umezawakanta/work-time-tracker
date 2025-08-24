@@ -1264,6 +1264,45 @@ app.post('/api/analytics/track', (req, res) => {
   }
 });
 
+// Simple in-memory pageview store (date buckets)
+const __pageviewBuckets: Record<string, number> = {};
+const __getDateKey = (date = new Date()): string => date.toISOString().slice(0, 10);
+
+// Record pageview (dev mock)
+app.post('/api/analytics/pageview', (req, res) => {
+  try {
+    const key = __getDateKey();
+    __pageviewBuckets[key] = (__pageviewBuckets[key] || 0) + 1;
+    const { path, title, referrer } = (req.body as any) || {};
+    console.log('📄 Pageview recorded', { key, path, title, referrer });
+    return res.json({ success: true });
+  } catch (e) {
+    console.warn('⚠️ Failed to record pageview (dev mock):', e);
+    return res.json({ success: true, degraded: true });
+  }
+});
+
+// Admin pageviews trend (dev mock)
+app.get('/api/admin/metrics/pageviews/trend', (req, res) => {
+  try {
+    const windowParam = String(req.query.window || '7d');
+    const days = windowParam === '30d' ? 30 : windowParam === '90d' ? 90 : 7;
+    const series: Array<{ day: string; views: number }> = [];
+    const today = new Date();
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const key = __getDateKey(d);
+      const views = __pageviewBuckets[key] || 0;
+      series.push({ day: key, views });
+    }
+    return res.json({ success: true, data: { window: days, series } });
+  } catch (e) {
+    console.error('❌ Error building pageviews trend:', e);
+    return res.json({ success: true, data: { window: 7, series: [] }, degraded: true });
+  }
+});
+
 app.get('/api/analytics/summary', (req, res) => {
   console.log('📊 GET /api/analytics/summary called');
   console.log('📝 Query params:', req.query);

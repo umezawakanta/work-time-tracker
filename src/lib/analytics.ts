@@ -311,35 +311,47 @@ export const useAnalytics = () => {
    * @param pagePath ページパス
    * @param pageTitle ページタイトル
    */
-  const trackPageView = useCallback((pagePath: string, pageTitle: string) => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`[Analytics] Page View: ${pagePath} (${pageTitle})`);
-      return;
-    }
-
+  const trackPageView = useCallback((pagePath: string, pageTitle?: string) => {
     try {
-      // Google Analytics
+      // Dev: log + optionally send to local mock endpoint so admin trend works in dev
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`[Analytics] Page View: ${pagePath} (${pageTitle})`);
+        try {
+          fetch('/api/analytics/pageview', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: pagePath, title: pageTitle, referrer: document.referrer }),
+          }).catch(() => {});
+        } catch {}
+        return;
+      }
+
+      // Prod: send to GA/Mixpanel/Amplitude as before and also record to backend (best-effort)
       if (window.gtag) {
         window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '', {
           page_path: pagePath,
           page_title: pageTitle,
         });
       }
-
-      // Mixpanel
       if (window.mixpanel) {
         (window.mixpanel as any).track('Page View', {
           page_path: pagePath,
           page_title: pageTitle,
         });
       }
-
-      // Amplitude
       if (window.amplitude) {
         (window.amplitude as any).getInstance().logEvent('Page View', {
           page_path: pagePath,
           page_title: pageTitle,
         });
+      }
+
+      if (typeof fetch === 'function') {
+        fetch('/api/analytics/pageview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: pagePath, title: pageTitle, referrer: document.referrer }),
+        }).catch(() => {});
       }
     } catch (error) {
       console.error('[Analytics] Error tracking page view:', error);
