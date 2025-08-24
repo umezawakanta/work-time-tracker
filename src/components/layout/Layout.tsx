@@ -15,6 +15,7 @@ import { getWeekCount } from '@/services/learning/streak';
 import { useAnalytics } from '@/lib/analytics';
 import { LanguageSwitcher } from '@/components/internationalization/LanguageSwitcher';
 import { logout } from '@/services/api/authApi';
+import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/referral';
 import {
   Home,
   Search,
@@ -1051,6 +1052,25 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
+                {/* Invite quick copy */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={async () => {
+                    try {
+                      ensureOwnReferralCode();
+                      const url = buildOwnInviteUrl();
+                      await navigator.clipboard.writeText(url);
+                      toast.success('招待リンクをコピーしました');
+                      trackEvent('invite_header_copied', { location: 'header' });
+                    } catch (e) {
+                      toast.error('コピーに失敗しました');
+                    }
+                  }}
+                  aria-label="招待リンクをコピー"
+                >
+                  友だちを招待
+                </Button>
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                   ダッシュボード
                 </h2>
