@@ -138,6 +138,76 @@ export const useAnalytics = () => {
    * @param data イベントデータ
    */
   const trackEvent = useCallback((eventName: string, data: EventData = {}) => {
+    // 初回アクティベーション統一イベント（dev/prod共通）
+    try {
+      const qualifies =
+        eventName === 'assessment_saved' ||
+        eventName === 'learning_progress_saved' ||
+        (eventName === 'ai_assistant_reply' && Boolean((data as any).ok));
+
+      if (qualifies && typeof window !== 'undefined') {
+        const key = 'activation:first_success_at';
+        const existed = localStorage.getItem(key);
+        if (!existed) {
+          const nowIso = new Date().toISOString();
+          localStorage.setItem(key, nowIso);
+          // 送信（環境に応じて）
+          if (process.env.NODE_ENV !== 'production') {
+            console.log('[Analytics] Event: activation_first_success', {
+              source: eventName,
+              at: nowIso,
+            });
+            try {
+              if (import.meta?.env?.VITE_ENABLE_ANALYTICS === 'true') {
+                fetch('/api/analytics/track', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    event: 'activation_first_success',
+                    data: { source: eventName, at: nowIso, ...data },
+                    timestamp: nowIso,
+                  }),
+                }).catch(() => {});
+              }
+            } catch {}
+          } else {
+            try {
+              if (window.gtag) {
+                window.gtag('event', 'activation_first_success', {
+                  source: eventName,
+                  at: nowIso,
+                  ...data,
+                });
+              }
+              if (window.mixpanel) {
+                (window.mixpanel as any).track('activation_first_success', {
+                  source: eventName,
+                  at: nowIso,
+                  ...data,
+                });
+              }
+              if (window.amplitude) {
+                (window.amplitude as any)
+                  .getInstance()
+                  .logEvent('activation_first_success', { source: eventName, at: nowIso, ...data });
+              }
+              if (typeof fetch === 'function') {
+                fetch('/api/analytics/track', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    event: 'activation_first_success',
+                    data: { source: eventName, at: nowIso, ...data },
+                    timestamp: nowIso,
+                  }),
+                }).catch(() => {});
+              }
+            } catch {}
+          }
+        }
+      }
+    } catch {}
+
     // 開発環境ではコンソールに出力するだけ
     if (process.env.NODE_ENV !== 'production') {
       // Update dev counters for key flows

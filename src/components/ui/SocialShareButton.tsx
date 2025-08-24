@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Share2, Twitter, Facebook, Linkedin, Mail, Link } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useAnalytics } from '@/lib/analytics';
 
 interface SocialShareButtonProps {
   url?: string;
@@ -26,6 +27,7 @@ export const SocialShareButton: React.FC<SocialShareButtonProps> = ({
   variant = 'outline',
   size = 'default',
 }) => {
+  const { trackEvent } = useAnalytics();
   // Using globalThis.gtag if present; avoid TS 'declare' in block scope
   const shareData = {
     url: encodeURIComponent(url),
@@ -101,6 +103,9 @@ export const SocialShareButton: React.FC<SocialShareButtonProps> = ({
   const trackShare = (platform: string) => {
     // アナリティクス記録
     console.log(`📊 Share tracked: ${platform} - ${title}`);
+    try {
+      trackEvent('share_clicked', { platform, location: window.location.pathname });
+    } catch {}
 
     // Google Analytics があれば送信
     const ga = (globalThis as any).gtag as
