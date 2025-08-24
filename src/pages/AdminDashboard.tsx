@@ -188,26 +188,24 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const fetchAnalyticsSummary = async () => {
+  const fetchAnalyticsSummary = async (windowArg: '7d' | '30d' | '90d' = '7d') => {
     try {
       setIsAnalyticsLoading(true);
-      const [{ data: publicSummary }, { data: adminSummary }] = await Promise.all([
-        api.get('analytics/summary', { params: { range: '7d' } }),
-        api.get('admin/analytics/summary', { params: { range: '7d' } }),
-      ]);
-      const summaryBase = (publicSummary && (publicSummary.data || publicSummary)) as any;
+      const range = windowArg === '90d' ? '30d' : windowArg;
+      const { data: adminSummary } = await api.get('admin/analytics/summary', {
+        params: { range },
+      });
       const admin = (adminSummary && (adminSummary.data || adminSummary)) as any;
       const normalized: AnalyticsSummary = {
-        totalUsers: Number(summaryBase.totalUsers ?? admin.totalUsers) || 0,
-        activeUsers: Number(summaryBase.activeUsers ?? admin.activeUsers) || 0,
-        newUsers: Number(summaryBase.newUsers ?? admin.newUsers) || 0,
-        returningUsers: Number(summaryBase.returningUsers ?? admin.returningUsers) || 0,
-        averageSessionDuration:
-          Number(summaryBase.averageSessionDuration ?? admin.averageSessionDuration) || 0,
-        pageViewsTotal: Number(summaryBase.pageViewsTotal ?? admin.pageViewsTotal) || 0,
-        topPages: Array.isArray(summaryBase.topPages) ? summaryBase.topPages : [],
-        deviceBreakdown: summaryBase.deviceBreakdown || { desktop: 0, mobile: 0, tablet: 0 },
-        trafficSources: summaryBase.trafficSources || {},
+        totalUsers: Number(admin.totalUsers) || 0,
+        activeUsers: Number(admin.activeUsers) || 0,
+        newUsers: Number(admin.newUsers) || 0,
+        returningUsers: Number(admin.returningUsers) || 0,
+        averageSessionDuration: Number(admin.averageSessionDuration) || 0,
+        pageViewsTotal: Number(admin.pageViewsTotal) || 0,
+        topPages: Array.isArray(admin.topPages) ? admin.topPages : [],
+        deviceBreakdown: admin.deviceBreakdown || { desktop: 0, mobile: 0, tablet: 0 },
+        trafficSources: admin.trafficSources || {},
         featureUsage: admin.featureUsage || { ai_ok: 0, assessment_saved: 0, learning_saved: 0 },
         topReferrers: admin.topReferrers || [],
         compare: admin.compare || { today: 0, yesterday: 0, diff: 0, pct: 0 },
@@ -303,7 +301,7 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchMetrics();
-    fetchAnalyticsSummary();
+    fetchAnalyticsSummary(pageviewWindow);
     fetchPageviewsTrend(pageviewWindow);
     fetchTopPages(pageviewWindow);
     fetchUsersTrend(pageviewWindow);
@@ -311,13 +309,13 @@ const AdminDashboard: React.FC = () => {
     // 30秒ごとに自動更新
     const interval = setInterval(() => {
       fetchMetrics();
-      fetchAnalyticsSummary();
+      fetchAnalyticsSummary(pageviewWindow);
       fetchPageviewsTrend(pageviewWindow);
       fetchTopPages(pageviewWindow);
       fetchUsersTrend(pageviewWindow);
     }, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [pageviewWindow]);
 
   if (isLoading && !metrics) {
     return (
