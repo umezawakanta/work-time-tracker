@@ -275,6 +275,7 @@ const NotificationSettings: React.FC = () => {
               value={settings.emailPass || ''}
               onChange={(e) => updateSetting('emailPass', e.target.value)}
               disabled={!settings.enabled}
+              autoComplete="new-password"
             />
             <p className="text-sm text-gray-500">
               Gmailの場合は2段階認証を有効にしてアプリパスワードを生成してください
