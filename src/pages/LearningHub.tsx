@@ -3,15 +3,23 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, GraduationCap, Rocket } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import type { Course } from '@/types/learning';
+import { saveProgress } from '@/services/api/assessmentsApi';
 
 const LearningHub: React.FC = () => {
-  const courses = [
+  const courses: Array<
+    Course & { desc: string; icon: React.ReactNode; progress?: number; next?: string }
+  > = [
     {
       id: 'biz-101',
       title: 'ビジネス基礎 101',
       desc: '会計・マーケ・戦略の要点を最短で学ぶ',
       icon: <GraduationCap className="h-5 w-5 text-indigo-600" />,
       level: '入門',
+      tags: ['会計', 'マーケ', '戦略'],
+      progress: 30,
+      next: '損益計算書の読み方（要点）',
     },
     {
       id: 'productivity',
@@ -19,6 +27,9 @@ const LearningHub: React.FC = () => {
       desc: '時間管理・タスク分解・優先度設計の実践',
       icon: <Rocket className="h-5 w-5 text-purple-600" />,
       level: '実践',
+      tags: ['時間管理', '優先度', 'タスク分解'],
+      progress: 55,
+      next: '4象限マトリクスのケース演習',
     },
     {
       id: 'reading',
@@ -26,6 +37,9 @@ const LearningHub: React.FC = () => {
       desc: '重要ポイント抽出とAIサマリの組み合わせ',
       icon: <BookOpen className="h-5 w-5 text-emerald-600" />,
       level: '実践',
+      tags: ['要約', 'インプット'],
+      progress: 10,
+      next: 'SQ3Rのステップ（実践）',
     },
   ];
 
@@ -53,9 +67,30 @@ const LearningHub: React.FC = () => {
                 <Badge variant="outline">{c.level}</Badge>
                 <span className="text-xs text-gray-500">推奨: 15–30 分/日</span>
               </div>
+              <div className="mb-3">
+                <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                  <span>進捗</span>
+                  <span>{c.progress ?? 0}%</span>
+                </div>
+                <Progress value={c.progress ?? 0} />
+              </div>
+              {c.next && <div className="text-xs text-gray-600 mb-3">次に学ぶ: {c.next}</div>}
               <Button className="w-full" aria-label={`${c.title} を開始`}>
                 開始
               </Button>
+              <div className="mt-2 text-right">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-label="進捗を+10%保存"
+                  onClick={() => {
+                    const nextVal = Math.min(100, (c.progress ?? 0) + 10);
+                    void saveProgress(c.id, nextVal);
+                  }}
+                >
+                  進捗+10%保存
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}

@@ -25,3 +25,8 @@ export async function saveMBTIResult(payload: SaveMBTIPayload): Promise<SaveResp
   const res = await api.post<SaveResponse>('/user/assessments/mbti', payload);
   return res.data;
 }
+
+export async function saveProgress(courseId: string, progress: number): Promise<SaveResponse> {
+  const res = await api.post<SaveResponse>('/user/learning/progress', { courseId, progress });
+  return res.data;
+}
