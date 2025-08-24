@@ -858,6 +858,20 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           }
           ${isCollapsed ? 'justify-center px-2' : ''}
         `}
+        onClick={() => {
+          try {
+            trackEvent('nav_click', { path: item.path, label: item.label });
+            if (item.path === '/subscription-upgrade') {
+              trackEvent('upgrade_cta_click', { location: 'sidebar' });
+            }
+            if (item.path === '/pricing') {
+              trackEvent('pricing_cta_click', { location: 'sidebar' });
+            }
+            if (item.path === '/invite') {
+              trackEvent('invite_nav_click', { location: 'footer_or_sidebar' });
+            }
+          } catch {}
+        }}
       >
         <div
           className={`transition-colors duration-200 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}`}

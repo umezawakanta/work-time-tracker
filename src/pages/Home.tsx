@@ -132,6 +132,9 @@ const Home: React.FC = () => {
       const today = new Date().toISOString().slice(0, 10);
       const lastShown = localStorage.getItem('nudge:last_shown');
       if (lastShown !== today) setShowDailyNudge(true);
+      if (showDailyNudge) {
+        trackEvent('daily_nudge_viewed', { day: today });
+      }
     } catch {}
   }, []);
 
