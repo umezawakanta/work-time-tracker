@@ -8,6 +8,8 @@ import { toast } from 'react-hot-toast';
 import { calculateIQScore, type IQAnswer } from '@/services/assessments/iq';
 import { saveIQResult } from '@/services/api/assessmentsApi';
 import { useAnalytics } from '@/lib/analytics';
+import { issueShortUrl } from '@/services/share/shortUrlStub';
+import { buildShareUrl } from '@/services/share/referral';
 
 interface IQQuestion {
   id: string;
@@ -120,7 +122,13 @@ const IQTest: React.FC = () => {
         `結果を保存しました（推定IQ: ${scaled} / 上位${Math.max(1, 100 - percentile)}%）`
       );
       // 共有/AI反映/学習CTA
-      const shareText = `IQテスト結果: 推定IQ ${scaled}（上位${Math.max(1, 100 - percentile)}%）。\nAI秘書で次の一手を作る → ${window.location.origin}/ai-assistant`;
+      const stub = issueShortUrl({
+        kind: 'iq',
+        data: { scaled, percentile },
+        issuedAt: Date.now(),
+      });
+      const aiUrl = buildShareUrl('/ai-assistant');
+      const shareText = `IQテスト結果: 推定IQ ${scaled}（上位${Math.max(1, 100 - percentile)}%）。\n結果リンク: ${stub.url}\nAI秘書で次の一手 → ${aiUrl}`;
       toast.custom(
         (t) => (
           <div className="rounded-md border bg-white shadow px-4 py-3 text-sm flex items-center gap-3">
@@ -141,6 +149,30 @@ const IQTest: React.FC = () => {
               className="inline-flex items-center px-3 py-1 rounded bg-slate-100 hover:bg-slate-200"
             >
               結果を共有
+            </button>
+            <button
+              onClick={async () => {
+                try {
+                  const url = new URL(window.location.origin + '/assessments');
+                  url.searchParams.set('ref', 'invite');
+                  url.searchParams.set('utm_source', 'share');
+                  if (navigator.share) {
+                    await navigator.share({
+                      title: '自己診断を試す',
+                      text: 'あなたもやってみませんか？',
+                      url: url.toString(),
+                    });
+                  } else {
+                    await navigator.clipboard.writeText(url.toString());
+                    toast.success('招待リンクをコピーしました');
+                  }
+                } catch (err) {
+                  console.debug('Invite share error', err);
+                }
+              }}
+              className="inline-flex items-center px-3 py-1 rounded bg-amber-500 text-white hover:bg-amber-600"
+            >
+              友だちを招待
             </button>
             <button
               onClick={() => {

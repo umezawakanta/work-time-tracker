@@ -12,6 +12,8 @@ import {
 } from '@/services/assessments/mbti';
 import { saveMBTIResult } from '@/services/api/assessmentsApi';
 import { useAnalytics } from '@/lib/analytics';
+import { issueShortUrl } from '@/services/share/shortUrlStub';
+import { buildShareUrl } from '@/services/share/referral';
 import { Badge } from '@/components/ui/badge';
 
 interface MBTIQuestion {
@@ -82,7 +84,13 @@ const MBTITest: React.FC = () => {
       await saveMBTIResult({ type: result.type, scores: result.scores });
       toast.success(`あなたのタイプは ${result.type} です`);
       // 共有/AI反映/学習CTA
-      const shareText = `MBTI結果: ${result.type}. AI秘書で次の一手 → ${window.location.origin}/ai-assistant`;
+      const stub = issueShortUrl({
+        kind: 'mbti',
+        data: { type: result.type },
+        issuedAt: Date.now(),
+      });
+      const aiUrl = buildShareUrl('/ai-assistant');
+      const shareText = `MBTI結果: ${result.type}. 結果リンク: ${stub.url} \nAI秘書で次の一手 → ${aiUrl}`;
       toast.custom(
         (t) => (
           <div className="rounded-md border bg-white shadow px-4 py-3 text-sm flex items-center gap-3">
@@ -101,6 +109,30 @@ const MBTITest: React.FC = () => {
               className="inline-flex items-center px-3 py-1 rounded bg-slate-100 hover:bg-slate-200"
             >
               結果を共有
+            </button>
+            <button
+              onClick={async () => {
+                try {
+                  const url = new URL(window.location.origin + '/assessments');
+                  url.searchParams.set('ref', 'invite');
+                  url.searchParams.set('utm_source', 'share');
+                  if (navigator.share) {
+                    await navigator.share({
+                      title: '自己診断を試す',
+                      text: 'あなたもやってみませんか？',
+                      url: url.toString(),
+                    });
+                  } else {
+                    await navigator.clipboard.writeText(url.toString());
+                    toast.success('招待リンクをコピーしました');
+                  }
+                } catch (e) {
+                  // ignore
+                }
+              }}
+              className="inline-flex items-center px-3 py-1 rounded bg-amber-500 text-white hover:bg-amber-600"
+            >
+              友だちを招待
             </button>
             <button
               onClick={() => {
