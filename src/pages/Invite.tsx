@@ -23,7 +23,10 @@ const Invite: React.FC = () => {
               ? '友だちを招待'
               : '1人招待すると今日の一歩が進む！'}
           </CardTitle>
-          <CardDescription>自己診断やAI秘書を友だちと試してみましょう。</CardDescription>
+          <CardDescription>
+            自己診断やAI秘書を友だちと試してみましょう。
+            <span className="ml-1 font-medium text-green-700">今なら1人招待で7日間プレミアム</span>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
