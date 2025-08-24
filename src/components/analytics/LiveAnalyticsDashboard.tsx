@@ -79,6 +79,17 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
 
   // 📊 データウィザード: WebSocket接続でリアルタイムデータ
   const connectWebSocket = () => {
+    // In production, require explicit VITE_WEBSOCKET_URL; otherwise skip gracefully
+    if (
+      typeof window !== 'undefined' &&
+      window.location.hostname !== 'localhost' &&
+      window.location.hostname !== '127.0.0.1' &&
+      !process.env.VITE_WEBSOCKET_URL
+    ) {
+      console.warn('Skipping WebSocket in production: VITE_WEBSOCKET_URL not set');
+      setIsConnected(false);
+      return;
+    }
     try {
       // 動的ポート検出
       const getWebSocketUrl = () => {
