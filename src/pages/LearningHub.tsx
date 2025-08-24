@@ -6,7 +6,7 @@ import { BookOpen, GraduationCap, Rocket } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import type { Course } from '@/types/learning';
 import { saveProgress } from '@/services/api/assessmentsApi';
-import { addTodayToWeek, setLastProgressDate } from '@/services/learning/streak';
+import { addTodayToWeek, setLastProgressDate, isSkipDay } from '@/services/learning/streak';
 import { useAnalytics } from '@/lib/analytics';
 
 const LearningHub: React.FC = () => {
@@ -73,6 +73,14 @@ const LearningHub: React.FC = () => {
         </p>
       </header>
 
+      {isSkipDay() && (
+        <div className="mb-6" role="status" aria-live="polite">
+          <div className="rounded-md border border-blue-200 bg-blue-50 text-blue-800 px-4 py-3 text-sm">
+            最近少し間が空きました。今日は「1分だけ」進めてみませんか？小さな一歩が再開のコツです。
+          </div>
+        </div>
+      )}
+
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6" aria-label="学習コース一覧">
         {courses.map((c) => (
           <Card key={c.id} className="bg-white/80 border shadow-sm">
@@ -112,7 +120,7 @@ const LearningHub: React.FC = () => {
                     aria-label="進捗を+10%保存"
                     onClick={() => {
                       const nextVal = Math.min(100, (c.progress ?? 0) + 10);
-                      void saveProgress(c.id, nextVal).then(() => {
+                      void saveProgress(c.id, nextVal).then(async () => {
                         trackEvent('learning_progress_saved', {
                           courseId: c.id,
                           progress: nextVal,
@@ -125,6 +133,16 @@ const LearningHub: React.FC = () => {
                         });
                         addTodayToWeek();
                         setLastProgressDate(new Date().toISOString());
+                        // 完了到達時: ブログ用サマリをコピー
+                        if (nextVal >= 100) {
+                          const summary = `【学習完了】${c.title}\n\n要点:\n- ${c.tags.join(', ')}\n\n次の一歩: ${c.next || '復習しながら実践に落とし込む'}\n\n完了日: ${new Date().toLocaleDateString()}`;
+                          try {
+                            await navigator.clipboard.writeText(summary);
+                            trackEvent('learning_summary_copied', { courseId: c.id });
+                          } catch (e) {
+                            // Clipboardが使えない環境ではトーストのみ
+                          }
+                        }
                       });
                     }}
                   >
@@ -132,6 +150,24 @@ const LearningHub: React.FC = () => {
                   </Button>
                 </div>
               </div>
+              {(c.progress ?? 0) >= 100 && (
+                <div className="mt-2 text-right">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    aria-label="ブログ用サマリをコピー"
+                    onClick={async () => {
+                      const summary = `【学習完了】${c.title}\n\n要点:\n- ${c.tags.join(', ')}\n\n次の一歩: ${c.next || '復習しながら実践に落とし込む'}\n\n完了日: ${new Date().toLocaleDateString()}`;
+                      try {
+                        await navigator.clipboard.writeText(summary);
+                        trackEvent('learning_summary_copied', { courseId: c.id, manual: true });
+                      } catch (e) {}
+                    }}
+                  >
+                    ブログ用サマリをコピー
+                  </Button>
+                </div>
+              )}
               {continueTomorrow[c.id] && (
                 <div className="mt-2 text-right">
                   <label className="text-xs text-gray-600 inline-flex items-center gap-2">
