@@ -224,7 +224,6 @@
         "@types/uuid": "^10.0.0",
         "@types/ws": "^8.18.1",
         "@vitejs/plugin-react": "^4.4.0",
-        "@vitejs/plugin-react-swc": "^3.9.0",
         "autoprefixer": "^10.4.21",
         "babel-plugin-transform-replace-expressions": "^0.2.0",
         "chalk": "^5.4.1",

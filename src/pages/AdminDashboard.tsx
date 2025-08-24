@@ -544,6 +544,15 @@ const AdminDashboard: React.FC = () => {
                   <div>
                     <p className="text-sm font-medium text-gray-600">DAU</p>
                     <p className="text-2xl font-bold">{analytics.activeUsers}</p>
+                    <p
+                      className={`text-xs ${analytics.activeUsers >= 8 ? 'text-green-600' : 'text-orange-600'}`}
+                    >
+                      目標 8（
+                      {analytics.activeUsers >= 8
+                        ? '達成'
+                        : `残り ${Math.max(0, 8 - analytics.activeUsers)}`}
+                      ）
+                    </p>
                   </div>
                   <Users className="w-8 h-8 text-blue-600" />
                 </div>
@@ -633,7 +642,21 @@ const AdminDashboard: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>ページビュー推移</CardTitle>
-                    <CardDescription>サイト全体の閲覧傾向</CardDescription>
+                    <CardDescription>
+                      サイト全体の閲覧傾向
+                      {pageviewSeries && pageviewSeries.length >= 2 && (
+                        <span className="ml-2 inline-block text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
+                          前日比{' '}
+                          {(() => {
+                            const a = pageviewSeries[pageviewSeries.length - 1]?.views || 0;
+                            const b = pageviewSeries[pageviewSeries.length - 2]?.views || 0;
+                            const diff = a - b;
+                            const pct = b > 0 ? Math.round((diff / b) * 100) : 0;
+                            return `${diff >= 0 ? '+' : ''}${diff} (${pct}%)`;
+                          })()}
+                        </span>
+                      )}
+                    </CardDescription>
                   </div>
                   <div className="flex gap-2">
                     {(['7d', '30d', '90d'] as const).map((w) => (
