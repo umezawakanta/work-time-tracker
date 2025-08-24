@@ -148,6 +148,7 @@ const AdminDashboard: React.FC = () => {
   const [dailyNewSeries, setDailyNewSeries] = useState<number[]>([]);
   const [priorityActions, setPriorityActions] = useState<PriorityAction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -171,6 +172,7 @@ const AdminDashboard: React.FC = () => {
 
   const fetchAnalyticsSummary = async () => {
     try {
+      setIsAnalyticsLoading(true);
       const [{ data: publicSummary }, { data: adminSummary }] = await Promise.all([
         api.get('/analytics/summary', { params: { range: '7d' } }),
         api.get('/admin/analytics/summary', { params: { range: '7d' } }),
@@ -205,6 +207,8 @@ const AdminDashboard: React.FC = () => {
       setDailyNewSeries(series);
     } catch (e) {
       console.error('Failed to fetch analytics summary:', e);
+    } finally {
+      setIsAnalyticsLoading(false);
     }
   };
 
@@ -378,197 +382,217 @@ const AdminDashboard: React.FC = () => {
       )}
 
       {/* 利用状況サマリ（DAU/WAU/MAU & 7日新規） */}
-      {analytics && (
+      {isAnalyticsLoading && !analytics ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">DAU</p>
-                  <p className="text-2xl font-bold">{analytics.activeUsers}</p>
-                </div>
-                <Users className="w-8 h-8 text-blue-600" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">WAU (推定)</p>
-                  <p className="text-2xl font-bold">
-                    {Math.max(analytics.activeUsers * 3, analytics.activeUsers).toLocaleString()}
-                  </p>
-                </div>
-                <TrendingUp className="w-8 h-8 text-green-600" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">MAU (推定)</p>
-                  <p className="text-2xl font-bold">
-                    {Math.max(
-                      analytics.activeUsers * 8,
-                      analytics.totalUsers
-                        ? Math.min(analytics.totalUsers, analytics.activeUsers * 8)
-                        : analytics.activeUsers * 8
-                    ).toLocaleString()}
-                  </p>
-                </div>
-                <BarChart3 className="w-8 h-8 text-purple-600" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">平均セッション (秒)</p>
-                  <p className="text-2xl font-bold">{analytics.averageSessionDuration}</p>
-                </div>
-                <Clock className="w-8 h-8 text-amber-600" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">DAU 前日比</p>
-                  <p
-                    className={`text-2xl font-bold ${analytics.compare && analytics.compare.diff >= 0 ? 'text-green-600' : 'text-red-600'}`}
-                  >
-                    {analytics.compare
-                      ? `${analytics.compare.diff >= 0 ? '+' : ''}${analytics.compare.diff} (${analytics.compare.pct}%)`
-                      : '-'}
-                  </p>
-                </div>
-                <TrendingUp className="w-8 h-8 text-gray-600" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>7日 新規ユーザー</CardTitle>
-              <CardDescription>直近の新規増加傾向（簡易）</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-7 gap-2 items-end h-24">
-                {dailyNewSeries.map((v, i) => (
-                  <div key={i} className="flex flex-col items-center">
-                    <div
-                      className="w-6 bg-blue-500 rounded"
-                      style={{ height: `${Math.max(6, Math.min(100, v))}%` }}
-                      aria-label={`Day ${i + 1}: ${v}`}
-                    />
-                    <span className="mt-1 text-[10px] text-gray-500">D{i + 1}</span>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 rounded w-28 animate-pulse mb-2" />
+                    <div className="h-7 bg-gray-200 rounded w-24 animate-pulse" />
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>機能別利用数（7日）</CardTitle>
-              <CardDescription>AI/診断/学習の成功イベント</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <p className="text-sm text-gray-600">AI返信成功</p>
-                  <p className="text-2xl font-bold">{analytics.featureUsage?.ai_ok ?? 0}</p>
+                  <div className="w-8 h-8 bg-gray-200 rounded animate-pulse" />
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">診断保存</p>
-                  <p className="text-2xl font-bold">
-                    {analytics.featureUsage?.assessment_saved ?? 0}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">学習保存</p>
-                  <p className="text-2xl font-bold">
-                    {analytics.featureUsage?.learning_saved ?? 0}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>上位リファラー</CardTitle>
-              <CardDescription>直近のトラフィックソース</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {(analytics.topReferrers || []).map((r, idx) => (
-                  <div key={idx} className="flex items-center justify-between text-sm">
-                    <span className="text-gray-700">{r.referrer}</span>
-                    <span className="font-medium">{r.count}</span>
+                <div className="h-2 bg-gray-200 rounded mt-4 animate-pulse" />
+                <div className="h-3 bg-gray-100 rounded mt-2 w-1/3 animate-pulse" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        analytics && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">DAU</p>
+                    <p className="text-2xl font-bold">{analytics.activeUsers}</p>
                   </div>
-                ))}
-                {(!analytics.topReferrers || analytics.topReferrers.length === 0) && (
-                  <p className="text-sm text-gray-500">データがありません</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>7日リテンション（簡易）</CardTitle>
-              <CardDescription>翌日継続率の目安</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-7 gap-2 text-center">
-                {(analytics.retentionCohort || []).slice(-7).map((c, i) => (
-                  <div key={i} className="p-2 border rounded">
-                    <p className="text-[10px] text-gray-500">{c.day?.slice(5)}</p>
-                    <p className="text-sm font-semibold">
-                      {c.retainedNextDay}/{c.newUsers}
+                  <Users className="w-8 h-8 text-blue-600" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">WAU (推定)</p>
+                    <p className="text-2xl font-bold">
+                      {Math.max(analytics.activeUsers * 3, analytics.activeUsers).toLocaleString()}
                     </p>
                   </div>
-                ))}
-                {(!analytics.retentionCohort || analytics.retentionCohort.length === 0) && (
-                  <p className="text-sm text-gray-500">データがありません</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>最近のエラー（上位3件）</CardTitle>
-              <CardDescription>リンクから再現箇所へ</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {(analytics.topErrors || []).map((e, i) => (
-                  <div key={i} className="flex items-center justify-between text-sm">
-                    <span className="truncate max-w-[70%]" title={e.message}>
-                      {e.message}
-                    </span>
-                    {e.url ? (
-                      <a
-                        className="text-blue-600 underline"
-                        href={e.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        開く
-                      </a>
-                    ) : (
-                      <span className="text-gray-500">{e.count}</span>
-                    )}
+                  <TrendingUp className="w-8 h-8 text-green-600" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">MAU (推定)</p>
+                    <p className="text-2xl font-bold">
+                      {Math.max(
+                        analytics.activeUsers * 8,
+                        analytics.totalUsers
+                          ? Math.min(analytics.totalUsers, analytics.activeUsers * 8)
+                          : analytics.activeUsers * 8
+                      ).toLocaleString()}
+                    </p>
                   </div>
-                ))}
-                {(!analytics.topErrors || analytics.topErrors.length === 0) && (
-                  <p className="text-sm text-gray-500">エラーはありません</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                  <BarChart3 className="w-8 h-8 text-purple-600" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">平均セッション (秒)</p>
+                    <p className="text-2xl font-bold">{analytics.averageSessionDuration}</p>
+                  </div>
+                  <Clock className="w-8 h-8 text-amber-600" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">DAU 前日比</p>
+                    <p
+                      className={`text-2xl font-bold ${analytics.compare && analytics.compare.diff >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                    >
+                      {analytics.compare
+                        ? `${analytics.compare.diff >= 0 ? '+' : ''}${analytics.compare.diff} (${analytics.compare.pct}%)`
+                        : '-'}
+                    </p>
+                  </div>
+                  <TrendingUp className="w-8 h-8 text-gray-600" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>7日 新規ユーザー</CardTitle>
+                <CardDescription>直近の新規増加傾向（簡易）</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-7 gap-2 items-end h-24">
+                  {dailyNewSeries.map((v, i) => (
+                    <div key={i} className="flex flex-col items-center">
+                      <div
+                        className="w-6 bg-blue-500 rounded"
+                        style={{ height: `${Math.max(6, Math.min(100, v))}%` }}
+                        aria-label={`Day ${i + 1}: ${v}`}
+                      />
+                      <span className="mt-1 text-[10px] text-gray-500">D{i + 1}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>機能別利用数（7日）</CardTitle>
+                <CardDescription>AI/診断/学習の成功イベント</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <p className="text-sm text-gray-600">AI返信成功</p>
+                    <p className="text-2xl font-bold">{analytics.featureUsage?.ai_ok ?? 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">診断保存</p>
+                    <p className="text-2xl font-bold">
+                      {analytics.featureUsage?.assessment_saved ?? 0}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">学習保存</p>
+                    <p className="text-2xl font-bold">
+                      {analytics.featureUsage?.learning_saved ?? 0}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>上位リファラー</CardTitle>
+                <CardDescription>直近のトラフィックソース</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {(analytics.topReferrers || []).map((r, idx) => (
+                    <div key={idx} className="flex items-center justify-between text-sm">
+                      <span className="text-gray-700">{r.referrer}</span>
+                      <span className="font-medium">{r.count}</span>
+                    </div>
+                  ))}
+                  {(!analytics.topReferrers || analytics.topReferrers.length === 0) && (
+                    <p className="text-sm text-gray-500">データがありません</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>7日リテンション（簡易）</CardTitle>
+                <CardDescription>翌日継続率の目安</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-7 gap-2 text-center">
+                  {(analytics.retentionCohort || []).slice(-7).map((c, i) => (
+                    <div key={i} className="p-2 border rounded">
+                      <p className="text-[10px] text-gray-500">{c.day?.slice(5)}</p>
+                      <p className="text-sm font-semibold">
+                        {c.retainedNextDay}/{c.newUsers}
+                      </p>
+                    </div>
+                  ))}
+                  {(!analytics.retentionCohort || analytics.retentionCohort.length === 0) && (
+                    <p className="text-sm text-gray-500">データがありません</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>最近のエラー（上位3件）</CardTitle>
+                <CardDescription>リンクから再現箇所へ</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {(analytics.topErrors || []).map((e, i) => (
+                    <div key={i} className="flex items-center justify-between text-sm">
+                      <span className="truncate max-w-[70%]" title={e.message}>
+                        {e.message}
+                      </span>
+                      {e.url ? (
+                        <a
+                          className="text-blue-600 underline"
+                          href={e.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          開く
+                        </a>
+                      ) : (
+                        <span className="text-gray-500">{e.count}</span>
+                      )}
+                    </div>
+                  ))}
+                  {(!analytics.topErrors || analytics.topErrors.length === 0) && (
+                    <p className="text-sm text-gray-500">エラーはありません</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )
       )}
 
       {/* タブコンテンツ */}
