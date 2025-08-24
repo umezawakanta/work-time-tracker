@@ -216,7 +216,7 @@ const AdminUsersPage: React.FC = () => {
                   </tr>
                 ) : (
                   items.map((u) => (
-                    <tr key={u._id}>
+                    <tr key={u._id || u.email}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {u.email}
                       </td>
@@ -284,52 +284,52 @@ const AdminUsersPage: React.FC = () => {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>
-                      <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
-                        <AlertDialogContent
-                          role="alertdialog"
-                          aria-modal="true"
-                          aria-describedby="admin-user-confirm-desc"
-                        >
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              {confirm?.type === 'promote' && '管理者に昇格しますか？'}
-                              {confirm?.type === 'demote' && '一般ユーザーに変更しますか？'}
-                              {confirm?.type === 'block' && 'このユーザーをブロックしますか？'}
-                              {confirm?.type === 'unblock' &&
-                                'このユーザーのブロックを解除しますか？'}
-                            </AlertDialogTitle>
-                            <AlertDialogDescription id="admin-user-confirm-desc">
-                              対象: {confirm?.user.email}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel aria-label="キャンセル" autoFocus>
-                              キャンセル
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              aria-label="実行"
-                              onClick={async () => {
-                                const c = confirm;
-                                setConfirm(null);
-                                if (!c) return;
-                                if (c.type === 'promote' || c.type === 'demote') {
-                                  await handlePromoteDemote(c.user);
-                                } else {
-                                  await handleToggleBlock(c.user);
-                                }
-                              }}
-                            >
-                              実行
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
                     </tr>
                   ))
                 )}
               </tbody>
             </table>
           </div>
+
+          <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
+            <AlertDialogContent
+              role="alertdialog"
+              aria-modal="true"
+              aria-describedby="admin-user-confirm-desc"
+            >
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {confirm?.type === 'promote' && '管理者に昇格しますか？'}
+                  {confirm?.type === 'demote' && '一般ユーザーに変更しますか？'}
+                  {confirm?.type === 'block' && 'このユーザーをブロックしますか？'}
+                  {confirm?.type === 'unblock' && 'このユーザーのブロックを解除しますか？'}
+                </AlertDialogTitle>
+                <AlertDialogDescription id="admin-user-confirm-desc">
+                  対象: {confirm?.user.email}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel aria-label="キャンセル" autoFocus>
+                  キャンセル
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  aria-label="実行"
+                  onClick={async () => {
+                    const c = confirm;
+                    setConfirm(null);
+                    if (!c) return;
+                    if (c.type === 'promote' || c.type === 'demote') {
+                      await handlePromoteDemote(c.user);
+                    } else {
+                      await handleToggleBlock(c.user);
+                    }
+                  }}
+                >
+                  実行
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
           {/* Pagination */}
           <div className="flex items-center justify-between px-4 py-3">
