@@ -21,7 +21,7 @@ export interface AskResult {
 /**
  * Send messages to the AI assistant via server proxy (/api/ai/anthropic)
  */
-const DEFAULT_TIMEOUT_MS = 35000;
+const DEFAULT_TIMEOUT_MS = 30000;
 
 export async function ask(messages: ChatMessage[], options: AskOptions = {}): Promise<AskResult> {
   const controller = new AbortController();
