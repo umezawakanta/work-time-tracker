@@ -1,0 +1,162 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'react-hot-toast';
+import { calculateIQScore, type IQAnswer } from '@/services/assessments/iq';
+import { saveIQResult } from '@/services/api/assessmentsApi';
+
+interface IQQuestion {
+  id: string;
+  text: string;
+  choices: string[];
+  answerIndex: number;
+}
+
+const loadQuestions = async (): Promise<IQQuestion[]> => {
+  const mod = await import('@/data/iq-questions.json');
+  // Vite will import JSON as default
+  return (mod as any).default as IQQuestion[];
+};
+
+const TOTAL_TIME_SEC = 10 * 60; // 10分
+
+const IQTest: React.FC = () => {
+  const [questions, setQuestions] = useState<IQQuestion[]>([]);
+  const [selected, setSelected] = useState<Record<string, number>>({});
+  const [timeLeft, setTimeLeft] = useState<number>(TOTAL_TIME_SEC);
+  const [submitting, setSubmitting] = useState(false);
+  const [started, setStarted] = useState(false);
+  const total = useMemo(() => 20, []); // 骨組みとして20問想定（サンプルは少数）
+
+  useEffect(() => {
+    loadQuestions().then((q) => setQuestions(q));
+  }, []);
+
+  useEffect(() => {
+    if (!started) return;
+    const timer = setInterval(() => setTimeLeft((t) => Math.max(0, t - 1)), 1000);
+    return () => clearInterval(timer);
+  }, [started]);
+
+  const unanswered = questions.filter((q) => selected[q.id] == null).length;
+  const progress =
+    questions.length > 0 ? ((questions.length - unanswered) / questions.length) * 100 : 0;
+
+  const handleSelect = (qid: string, idx: number) => {
+    setSelected((prev) => ({ ...prev, [qid]: idx }));
+  };
+
+  const computeScore = (): {
+    answers: IQAnswer[];
+    raw: number;
+    scaled: number;
+    percentile: number;
+  } => {
+    const answers: IQAnswer[] = questions.map((q) => ({
+      questionId: q.id,
+      correct: selected[q.id] === q.answerIndex,
+    }));
+    const result = calculateIQScore(answers, total);
+    return {
+      answers,
+      raw: result.rawScore,
+      scaled: result.scaledIQ,
+      percentile: result.percentile,
+    };
+  };
+
+  const submit = async () => {
+    if (questions.length === 0) return;
+    const hasUnanswered = questions.some((q) => selected[q.id] == null);
+    if (hasUnanswered) {
+      toast.error('未選択の問題があります');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { raw, scaled, percentile } = computeScore();
+      await saveIQResult({ score: raw, total: total, scaledIQ: scaled, percentile });
+      toast.success(
+        `結果を保存しました。推定IQ: ${scaled}（上位${Math.max(1, 100 - percentile)}%）`
+      );
+    } catch (e) {
+      toast.error('保存に失敗しました');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <Card>
+        <CardHeader>
+          <CardTitle>IQ テスト（最小版）</CardTitle>
+          <CardDescription>制限時間: 10分。すべての問題に回答してください。</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-sm text-gray-600">
+              残り時間: {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+            </div>
+            <div className="w-48">
+              <Progress value={progress} />
+            </div>
+          </div>
+
+          {!started ? (
+            <div className="text-center">
+              <Button onClick={() => setStarted(true)}>開始</Button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {questions.map((q, idx) => (
+                <div key={q.id} className="border rounded p-4 bg-white">
+                  <div className="font-semibold mb-2">
+                    Q{idx + 1}. {q.text}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {q.choices.map((c, i) => (
+                      <label
+                        key={i}
+                        className="flex items-center gap-2 p-2 border rounded cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          name={q.id}
+                          checked={selected[q.id] === i}
+                          onChange={() => handleSelect(q.id, i)}
+                          aria-label={`選択肢 ${i + 1}`}
+                        />
+                        <span>{c}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {questions.length === 0 && (
+                <Alert>
+                  <AlertDescription>
+                    問題データの読み込み中、またはサンプル不足です。
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="text-right">
+                <Button
+                  onClick={() => void submit()}
+                  disabled={submitting || questions.length === 0}
+                >
+                  {submitting ? '保存中...' : '回答を保存'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default IQTest;

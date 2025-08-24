@@ -40,6 +40,7 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AIAssistantPage = lazy(() => import('./pages/AIAssistant'));
 const AssessmentsHub = lazy(() => import('./pages/AssessmentsHub'));
 const LearningHub = lazy(() => import('./pages/LearningHub'));
+const IQTest = lazy(() => import('./pages/IQTest'));
 
 // Guarded route: requires admin
 const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -310,6 +311,16 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <LearningHub />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/iq-test"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <IQTest />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }
