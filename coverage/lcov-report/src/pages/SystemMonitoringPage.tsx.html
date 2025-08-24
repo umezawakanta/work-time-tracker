@@ -470,7 +470,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -614,6 +613,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -699,7 +699,7 @@ import { Button } from '@/components/ui/button';
   Wifi,
 } from 'lucide-react';
 &nbsp;
-const SystemMonitoringPage: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+const <span class="fstat-no" title="function not covered" >SystemMonitoringPage:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
   const features = <span class="cstat-no" title="statement not covered" >[</span>
     {
       icon: &lt;Activity className="h-6 w-6 text-blue-600" /&gt;,
@@ -749,7 +749,7 @@ const SystemMonitoringPage: React.FC = <span class="cstat-no" title="statement n
     storage: { used: 28.5, total: 100, percentage: 28.5 },
   };
 &nbsp;
-  const getStatusBadge = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tatus: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getStatusBadge </span>= <span class="cstat-no" title="statement not covered" >(status: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (status) {</span>
       case 'implemented':
 <span class="cstat-no" title="statement not covered" >        return &lt;Badge className="bg-green-100 text-green-800"&gt;実装済み&lt;/Badge&gt;;</span>
@@ -776,8 +776,8 @@ const SystemMonitoringPage: React.FC = <span class="cstat-no" title="statement n
       &lt;div className="space-y-8"&gt;
         {/* 主要メトリクス */}
         &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"&gt;
-          {metrics.map(<span class="fstat-no" title="function not covered" >(m</span>etric, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;Card key={index} c</span>lassName="text-center"&gt;
+          {metrics.map(<span class="fstat-no" title="function not covered" >(m</span>etric, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;Card key={index} className="text-center"&gt;
               &lt;CardContent className="pt-6"&gt;
                 &lt;div className="flex justify-center mb-2"&gt;{metric.icon}&lt;/div&gt;
                 &lt;div className="text-2xl font-bold text-gray-900"&gt;{metric.value}&lt;/div&gt;
@@ -879,8 +879,8 @@ const SystemMonitoringPage: React.FC = <span class="cstat-no" title="statement n
                   { name: 'API サーバー', status: 'healthy', responseTime: 150 },
                   { name: 'データベース', status: 'healthy', responseTime: 89 },
                   { name: 'フロントエンド', status: 'healthy', responseTime: 245 },
-                ].map(<span class="fstat-no" title="function not covered" >(c</span>heck, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div key={index} c</span>lassName="flex items-center justify-between text-sm"&gt;
+                ].map(<span class="fstat-no" title="function not covered" >(c</span>heck, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;div key={index} className="flex items-center justify-between text-sm"&gt;
                     &lt;div className="flex items-center gap-2"&gt;
                       &lt;div className="w-2 h-2 bg-green-500 rounded-full"&gt;&lt;/div&gt;
                       &lt;span&gt;{check.name}&lt;/span&gt;
@@ -896,8 +896,8 @@ const SystemMonitoringPage: React.FC = <span class="cstat-no" title="statement n
                   { name: 'サービス可用性', target: 99.9, current: 99.95, status: 'meeting' },
                   { name: '応答時間', target: 2000, current: 1200, status: 'meeting' },
                   { name: 'エラー率', target: 1.0, current: 0.3, status: 'meeting' },
-                ].map(<span class="fstat-no" title="function not covered" >(s</span>lo, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div key={index} c</span>lassName="flex items-center justify-between text-sm"&gt;
+                ].map(<span class="fstat-no" title="function not covered" >(s</span>lo, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;div key={index} className="flex items-center justify-between text-sm"&gt;
                     &lt;span&gt;{slo.name}&lt;/span&gt;
                     &lt;Badge className="bg-green-100 text-green-800"&gt;達成&lt;/Badge&gt;
                   &lt;/div&gt;
@@ -918,8 +918,8 @@ const SystemMonitoringPage: React.FC = <span class="cstat-no" title="statement n
           &lt;/CardHeader&gt;
           &lt;CardContent&gt;
             &lt;div className="grid grid-cols-1 md:grid-cols-2 gap-6"&gt;
-              {features.map(<span class="fstat-no" title="function not covered" >(f</span>eature, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div key={index} c</span>lassName="flex items-start gap-3 p-4 border rounded-lg"&gt;
+              {features.map(<span class="fstat-no" title="function not covered" >(f</span>eature, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div key={index} className="flex items-start gap-3 p-4 border rounded-lg"&gt;
                   &lt;div className="flex-shrink-0"&gt;{feature.icon}&lt;/div&gt;
                   &lt;div className="flex-1"&gt;
                     &lt;div className="flex items-center justify-between mb-2"&gt;
@@ -988,7 +988,7 @@ const SystemMonitoringPage: React.FC = <span class="cstat-no" title="statement n
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

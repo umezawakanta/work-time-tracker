@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/110</span>
+                <span class='fraction'>0/131</span>
             </div>
         
             
@@ -816,7 +816,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -938,7 +938,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1247,7 +1247,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1341,8 +1340,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1363,6 +1362,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1466,32 +1466,32 @@ interface CategoryStats {
   color: string;
 }
 &nbsp;
-const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const [selectedCategory, setSelectedCategory] = <span class="cstat-no" title="statement not covered" >useState&lt;BadgeCategory | 'all'&gt;('all');</span>
-  const [searchTerm, setSearchTerm] = <span class="cstat-no" title="statement not covered" >useState('');</span>
-  const [sortBy, setSortBy] = <span class="cstat-no" title="statement not covered" >useState&lt;'progress' | 'priority' | 'points' | 'hours'&gt;('progress');</span>
-  const [currentWeekPlan, setCurrentWeekPlan] = <span class="cstat-no" title="statement not covered" >useState&lt;WeeklyWorkPlan | null&gt;(null);</span>
-  const [badgeProgress, setBadgeProgress] = <span class="cstat-no" title="statement not covered" >useState&lt;BadgeProgress[]&gt;([]);</span>
-  const [categoryStats, setCategoryStats] = <span class="cstat-no" title="statement not covered" >useState&lt;CategoryStats[]&gt;([]);</span>
-  const [totalStats, setTotalStats] = <span class="cstat-no" title="statement not covered" >useState({</span>
+const <span class="fstat-no" title="function not covered" >ComprehensiveBadgeManagementDashboard:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const [selectedCategory<span class="cstat-no" title="statement not covered" >, s</span>etSelectedCategory<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;BadgeCategory | 'all'&gt;('all')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [searchTerm<span class="cstat-no" title="statement not covered" >, s</span>etSearchTerm<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [sortBy<span class="cstat-no" title="statement not covered" >, s</span>etSortBy<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;'progress' | 'priority' | 'points' | 'hours'&gt;('progress')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [currentWeekPlan<span class="cstat-no" title="statement not covered" >, s</span>etCurrentWeekPlan<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;WeeklyWorkPlan | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [badgeProgress<span class="cstat-no" title="statement not covered" >, s</span>etBadgeProgress<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;BadgeProgress[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [categoryStats<span class="cstat-no" title="statement not covered" >, s</span>etCategoryStats<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;CategoryStats[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [totalStats<span class="cstat-no" title="statement not covered" >, s</span>etTotalStats<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState({</span>
     totalBadges: 0,
     unlockedBadges: 0,
     totalPoints: 0,
     averageProgress: 0,
     weeklyActiveTime: 0,
     completionRate: 0,
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    initializeDashboard();</span>
 <span class="cstat-no" title="statement not covered" >    setupEventListeners();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      comprehensivePageSyncSystem.destroy();</span>
     };
   }, []);
 &nbsp;
-  const initializeDashboard = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >initializeDashboard </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     // 週次計画取得
     const weekPlan = <span class="cstat-no" title="statement not covered" >weeklyWorkPlanningService.getCurrentWeekPlan();</span>
 <span class="cstat-no" title="statement not covered" >    setCurrentWeekPlan(weekPlan);</span>
@@ -1509,7 +1509,7 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
 <span class="cstat-no" title="statement not covered" >    setTotalStats(overallStats);</span>
   };
 &nbsp;
-  const setupEventListeners = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >setupEventListeners </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    comprehensivePageSyncSystem.on('badge-progress-updated', <span class="fstat-no" title="function not covered" >(d</span>ata: any) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      updateBadgeProgress(data.badgeId, data.progress);</span>
     });
@@ -1519,8 +1519,8 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
     });
   };
 &nbsp;
-  const calculateBadgeProgress = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): BadgeProgress[] =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    return ALL_COMPREHENSIVE_BADGES.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+  const <span class="fstat-no" title="function not covered" >calculateBadgeProgress </span>= <span class="cstat-no" title="statement not covered" >(): BadgeProgress[] =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return ALL_COMPREHENSIVE_BADGES.map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       badgeId: badge.id,
       currentProgress: badge.progress,
       weeklyGrowth: Math.random() * 10, // シミュレーション
@@ -1530,7 +1530,7 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
     }));
   };
 &nbsp;
-  const calculateCategoryStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): CategoryStats[] =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateCategoryStats </span>= <span class="cstat-no" title="statement not covered" >(): CategoryStats[] =&gt; {</span>
     const categories: BadgeCategory[] = <span class="cstat-no" title="statement not covered" >[</span>
       'cybersecurity',
       'ci-cd',
@@ -1561,13 +1561,13 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return categories.map(<span class="fstat-no" title="function not covered" >(c</span>ategory) =&gt; {</span>
       const categoryBadges = <span class="cstat-no" title="statement not covered" >ALL_COMPREHENSIVE_BADGES.filter(</span>
-<span class="fstat-no" title="function not covered" >        (b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.category === category</span>
+<span class="fstat-no" title="function not covered" >        (b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.category === category</span>
       );
-      const unlockedCount = <span class="cstat-no" title="statement not covered" >categoryBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.isUnlocked)</span>.length;</span>
+      const unlockedCount = <span class="cstat-no" title="statement not covered" >categoryBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.isUnlocked).</span>length;</span>
       const avgProgress =
-<span class="cstat-no" title="statement not covered" >        categoryBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + badge.progress,</span> 0) / categoryBadges.length || 0;</span>
-      const totalPoints = <span class="cstat-no" title="statement not covered" >categoryBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + badge.points,</span> 0);</span>
-      const totalHours = <span class="cstat-no" title="statement not covered" >categoryBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + badge.estimatedHours,</span> 0);</span>
+<span class="cstat-no" title="statement not covered" >        categoryBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt; sum + badge.progress, 0</span>) / categoryBadges.length || 0;</span>
+      const totalPoints = <span class="cstat-no" title="statement not covered" >categoryBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt; sum + badge.points, 0</span>);</span>
+      const totalHours = <span class="cstat-no" title="statement not covered" >categoryBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt; sum + badge.estimatedHours, 0</span>);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      return {</span>
         category,
@@ -1582,12 +1582,12 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
     });
   };
 &nbsp;
-  const calculateTotalStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateTotalStats </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const total = <span class="cstat-no" title="statement not covered" >ALL_COMPREHENSIVE_BADGES.length;</span>
-    const unlocked = <span class="cstat-no" title="statement not covered" >ALL_COMPREHENSIVE_BADGES.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.isUnlocked)</span>.length;</span>
-    const totalPoints = <span class="cstat-no" title="statement not covered" >ALL_COMPREHENSIVE_BADGES.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + badge.points,</span> 0);</span>
+    const unlocked = <span class="cstat-no" title="statement not covered" >ALL_COMPREHENSIVE_BADGES.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.isUnlocked).</span>length;</span>
+    const totalPoints = <span class="cstat-no" title="statement not covered" >ALL_COMPREHENSIVE_BADGES.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt; sum + badge.points, 0</span>);</span>
     const avgProgress =
-<span class="cstat-no" title="statement not covered" >      ALL_COMPREHENSIVE_BADGES.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + badge.progress,</span> 0) / total;</span>
+<span class="cstat-no" title="statement not covered" >      ALL_COMPREHENSIVE_BADGES.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt; sum + badge.progress, 0</span>) / total;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
       totalBadges: total,
@@ -1599,23 +1599,23 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
     };
   };
 &nbsp;
-  const updateBadgeProgress = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(b</span>adgeId: string, progress: number) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setBadgeProgress(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >      prev.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >        badge.badgeId === badgeId ? { ...badge, currentProgress: progress } : badge</span>
+  const <span class="fstat-no" title="function not covered" >updateBadgeProgress </span>= <span class="cstat-no" title="statement not covered" >(badgeId: string, progress: number) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setBadgeProgress(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+      prev.map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+        badge.badgeId === badgeId ? { ...badge, currentProgress: progress } : badge
       )
     );
   };
 &nbsp;
-  const updateCybersecurityProgress = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(w</span>eeklyProgress: any) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >updateCybersecurityProgress </span>= <span class="cstat-no" title="statement not covered" >(weeklyProgress: any) =&gt; {</span>
     // サイバーセキュリティバッジの進捗を更新
-    const cyberProgress = <span class="cstat-no" title="statement not covered" >badgeProgress.find(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.badgeId === 'cybersecurity-specialist')</span>;</span>
+    const cyberProgress = <span class="cstat-no" title="statement not covered" >badgeProgress.find(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.badgeId === 'cybersecurity-specialist');</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (cyberProgress) {</span>
 <span class="cstat-no" title="statement not covered" >      cyberProgress.currentProgress = weeklyProgress.progressPercentage;</span>
     }
   };
 &nbsp;
-  const calculateEstimatedCompletion = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(b</span>adge: ComprehensiveBadge): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateEstimatedCompletion </span>= <span class="cstat-no" title="statement not covered" >(badge: ComprehensiveBadge): string =&gt; {</span>
     const remainingProgress = <span class="cstat-no" title="statement not covered" >100 - badge.progress;</span>
     const estimatedWeeks = <span class="cstat-no" title="statement not covered" >Math.ceil((remainingProgress * badge.estimatedHours) / (10 * 7));</span> // 週10時間想定
     const completionDate = <span class="cstat-no" title="statement not covered" >new Date();</span>
@@ -1623,13 +1623,13 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
 <span class="cstat-no" title="statement not covered" >    return completionDate.toISOString().split('T')[0];</span>
   };
 &nbsp;
-  const calculatePriority = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(b</span>adge: ComprehensiveBadge): 'high' | 'medium' | 'low' =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculatePriority </span>= <span class="cstat-no" title="statement not covered" >(badge: ComprehensiveBadge): 'high' | 'medium' | 'low' =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (badge.difficulty === 'legendary' || badge.category === 'cybersecurity') <span class="cstat-no" title="statement not covered" >return 'high';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (badge.difficulty === 'platinum' || badge.points &gt; 400) <span class="cstat-no" title="statement not covered" >return 'medium';</span></span>
 <span class="cstat-no" title="statement not covered" >    return 'low';</span>
   };
 &nbsp;
-  const getCategoryIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>ategory: BadgeCategory): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getCategoryIcon </span>= <span class="cstat-no" title="statement not covered" >(category: BadgeCategory): string =&gt; {</span>
     const iconMap: Record&lt;BadgeCategory, string&gt; = <span class="cstat-no" title="statement not covered" >{</span>
       cybersecurity: '🔐',
       'ci-cd': '🔄',
@@ -1715,7 +1715,7 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
 <span class="cstat-no" title="statement not covered" >    return iconMap[category] || '🏆';</span>
   };
 &nbsp;
-  const getCategoryColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>ategory: BadgeCategory): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getCategoryColor </span>= <span class="cstat-no" title="statement not covered" >(category: BadgeCategory): string =&gt; {</span>
     const colorMap: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{</span>
       cybersecurity: 'from-blue-500 to-purple-600',
       'ci-cd': 'from-green-500 to-blue-500',
@@ -1877,13 +1877,13 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
                     &lt;Input
                       placeholder="バッジを検索..."
                       value={searchTerm}
-                      onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setSearchTerm(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                      onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setSearchTerm(e.target.value)}</span>
                       className="pl-10 bg-slate-700 border-slate-600 text-white"
                     /&gt;
                   &lt;/div&gt;
                   &lt;select
                     value={selectedCategory}
-                    onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setSelectedCategory(e.target.value as BadgeCategory | 'all')}</span>
+<span class="fstat-no" title="function not covered" >                    onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setSelectedCategory(e.target.value as BadgeCategory | 'all')}</span>
                     className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white"
                     aria-label="カテゴリを選択"
                   &gt;
@@ -1897,7 +1897,7 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
                   &lt;/select&gt;
                   &lt;select
                     value={sortBy}
-                    onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setSortBy(e.target.value as any)}</span>
+<span class="fstat-no" title="function not covered" >                    onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setSortBy(e.target.value as any)}</span>
                     className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white"
                     aria-label="ソート方法を選択"
                   &gt;
@@ -1911,8 +1911,8 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
 &nbsp;
             {/* バッジリスト */}
             &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
-              {sortedBadges.slice(0, 12).map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;Card</span>
+              {sortedBadges.slice(0, 12).map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;Card
                   key={badge.id}
                   className="bg-slate-800 border-slate-700 hover:border-slate-600 transition-colors"
                 &gt;
@@ -1970,8 +1970,8 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
           {/* カテゴリ別タブ */}
           &lt;TabsContent value="categories" className="space-y-6"&gt;
             &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
-              {categoryStats.map(<span class="fstat-no" title="function not covered" >(c</span>ategory) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;Card key={category.category} c</span>lassName="bg-slate-800 border-slate-700"&gt;
+              {categoryStats.map(<span class="fstat-no" title="function not covered" >(c</span>ategory<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;Card key={category.category} className="bg-slate-800 border-slate-700"&gt;
                   &lt;CardHeader&gt;
                     &lt;CardTitle className="text-white flex items-center space-x-2"&gt;
                       &lt;span className="text-2xl"&gt;{category.icon}&lt;/span&gt;
@@ -2005,7 +2005,7 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
                     &lt;Progress value={category.averageProgress} className="h-2 bg-slate-700" /&gt;
 &nbsp;
                     &lt;Button
-                      onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setSelectedCategory(category.category)}</span>
+<span class="fstat-no" title="function not covered" >                      onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setSelectedCategory(category.category)}</span>
                       className="w-full bg-cyan-600 hover:bg-cyan-700"
                       size="sm"
                     &gt;
@@ -2025,8 +2025,8 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
               &lt;/CardHeader&gt;
               &lt;CardContent&gt;
                 &lt;div className="space-y-4"&gt;
-                  {badgeProgress.slice(0, 10).map(<span class="fstat-no" title="function not covered" >(p</span>rogress) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;div</span>
+                  {badgeProgress.slice(0, 10).map(<span class="fstat-no" title="function not covered" >(p</span>rogress<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                    &lt;div
                       key={progress.badgeId}
                       className="flex items-center justify-between p-3 bg-slate-700 rounded"
                     &gt;
@@ -2062,7 +2062,7 @@ const ComprehensiveBadgeManagementDashboard: React.FC = <span class="cstat-no" t
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

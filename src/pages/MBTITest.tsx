@@ -61,7 +61,16 @@ const MBTITest: React.FC = () => {
 
   const submit = async () => {
     if (!allAnswered) {
-      toast.error('未回答の設問があります');
+      toast.error('未回答の設問があります。未回答の設問に移動しました。');
+      try {
+        const q = questions.find((qq) => selected[qq.id] == null);
+        if (q) {
+          const labelEl = document.getElementById(`mbti-${q.id}-label`);
+          labelEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const radio = document.querySelector(`input[name="${q.id}"]`) as HTMLInputElement | null;
+          radio?.focus();
+        }
+      } catch {}
       return;
     }
     setSubmitting(true);
@@ -71,7 +80,7 @@ const MBTITest: React.FC = () => {
       toast.success(`あなたのタイプは ${result.type} です`);
       trackEvent('assessment_saved', { type: 'mbti', mbti: result.type, scores: result.scores });
     } catch (e) {
-      toast.error('結果の保存に失敗しました');
+      toast.error('結果の保存に失敗しました。再試行してください。');
       trackEvent('assessment_save_failed', { type: 'mbti' });
     } finally {
       setSubmitting(false);

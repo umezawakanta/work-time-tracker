@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/26</span>
             </div>
         
             
@@ -416,24 +416,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -447,7 +430,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -523,9 +523,9 @@ interface DashboardOption {
   features: string[];
 }
 &nbsp;
-const RoleDashboardSelector: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+const <span class="fstat-no" title="function not covered" >RoleDashboardSelector:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
   const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span>
-  const { user } = <span class="cstat-no" title="statement not covered" >useAuth();</span>
+  const { user<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useAuth();</span></span>
 &nbsp;
   const dashboards: DashboardOption[] = <span class="cstat-no" title="statement not covered" >[</span>
     {
@@ -610,7 +610,7 @@ const RoleDashboardSelector: React.FC = <span class="cstat-no" title="statement 
 <span class="cstat-no" title="statement not covered" >    return dashboard.roles.includes(userRole) || user.isAdmin;</span>
   });
 &nbsp;
-  const handleDashboardSelect = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>ath: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleDashboardSelect </span>= <span class="cstat-no" title="statement not covered" >(path: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    navigate(path);</span>
   };
 &nbsp;
@@ -630,11 +630,11 @@ const RoleDashboardSelector: React.FC = <span class="cstat-no" title="statement 
       )}
 &nbsp;
       &lt;div className="grid grid-cols-1 md:grid-cols-2 gap-6"&gt;
-        {accessibleDashboards.map(<span class="fstat-no" title="function not covered" >(d</span>ashboard) =&gt; (
-<span class="cstat-no" title="statement not covered" >          &lt;Card</span>
+        {accessibleDashboards.map(<span class="fstat-no" title="function not covered" >(d</span>ashboard<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+          &lt;Card
             key={dashboard.id}
             className={`cursor-pointer transition-all duration-200 ${dashboard.color} hover:shadow-lg`}
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleDashboardSelect(dashboard.path)}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleDashboardSelect(dashboard.path)}</span>
           &gt;
             &lt;CardHeader&gt;
               &lt;div className="flex items-center space-x-3"&gt;
@@ -650,8 +650,8 @@ const RoleDashboardSelector: React.FC = <span class="cstat-no" title="statement 
                 &lt;div&gt;
                   &lt;h4 className="text-sm font-medium text-gray-700 mb-2"&gt;主な機能:&lt;/h4&gt;
                   &lt;div className="flex flex-wrap gap-1"&gt;
-                    {dashboard.features.map(<span class="fstat-no" title="function not covered" >(f</span>eature, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;Badge key={index} v</span>ariant="secondary" className="text-xs"&gt;
+                    {dashboard.features.map(<span class="fstat-no" title="function not covered" >(f</span>eature, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                      &lt;Badge key={index} variant="secondary" className="text-xs"&gt;
                         {feature}
                       &lt;/Badge&gt;
                     ))}
@@ -660,8 +660,8 @@ const RoleDashboardSelector: React.FC = <span class="cstat-no" title="statement 
                 &lt;div&gt;
                   &lt;h4 className="text-sm font-medium text-gray-700 mb-2"&gt;対象役割:&lt;/h4&gt;
                   &lt;div className="flex flex-wrap gap-1"&gt;
-                    {dashboard.roles.map(<span class="fstat-no" title="function not covered" >(r</span>ole, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;Badge key={index} v</span>ariant="outline" className="text-xs"&gt;
+                    {dashboard.roles.map(<span class="fstat-no" title="function not covered" >(r</span>ole, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                      &lt;Badge key={index} variant="outline" className="text-xs"&gt;
                         {role}
                       &lt;/Badge&gt;
                     ))}
@@ -688,7 +688,7 @@ const RoleDashboardSelector: React.FC = <span class="cstat-no" title="statement 
                   管理者にお問い合わせいただくか、適切な役割の設定をお願いします。
                 &lt;/p&gt;
               &lt;/div&gt;
-              &lt;Button variant="outline" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate('/dashboard')}</span>&gt;
+              &lt;Button variant="outline" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate('/dashboard')}&gt;</span>
                 &lt;BarChart3 className="w-4 h-4 mr-2" /&gt;
                 メインダッシュボードに戻る
               &lt;/Button&gt;
@@ -712,7 +712,7 @@ const RoleDashboardSelector: React.FC = <span class="cstat-no" title="statement 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

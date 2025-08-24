@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/20</span>
+                <span class='fraction'>0/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>0/20</span>
             </div>
         
             
@@ -369,7 +369,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -410,8 +409,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -493,7 +493,7 @@ interface UpdateStatsProps {
   stats: UpdateHistoryStats;
 }
 &nbsp;
-const UpdateStats: React.FC&lt;UpdateStatsProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> stats }) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >UpdateStats:</span> React.FC&lt;UpdateStatsProps&gt; = <span class="cstat-no" title="statement not covered" >({ stats<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span>
   // コミットタイプの表示設定
   const commitTypeConfig = <span class="cstat-no" title="statement not covered" >{</span>
     feat: { label: '機能追加', color: 'bg-blue-500', icon: '✨' },
@@ -507,7 +507,7 @@ const UpdateStats: React.FC&lt;UpdateStatsProps&gt; = <span class="cstat-no" tit
   };
 &nbsp;
   // 最大アクティビティ数を計算
-  const maxActivity = <span class="cstat-no" title="statement not covered" >Math.max(...stats.activityData.map(<span class="fstat-no" title="function not covered" >(d</span>) =&gt; <span class="cstat-no" title="statement not covered" >d.commits)</span>);</span>
+  const maxActivity = <span class="cstat-no" title="statement not covered" >Math.max(...stats.activityData.map(<span class="fstat-no" title="function not covered" >(d<span class="cstat-no" title="statement not covered" ></span>) =&gt; d.commits))</span>;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"&gt;
@@ -562,7 +562,7 @@ const UpdateStats: React.FC&lt;UpdateStatsProps&gt; = <span class="cstat-no" tit
         &lt;/CardHeader&gt;
         &lt;CardContent&gt;
           &lt;div className="text-2xl font-bold"&gt;
-            {stats.activityData.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, d) =&gt; <span class="cstat-no" title="statement not covered" >sum + d.commits,</span> 0)}
+            {stats.activityData.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, d<span class="cstat-no" title="statement not covered" >) =&gt; sum + d.commits, 0</span>)}
           &lt;/div&gt;
           &lt;p className="text-xs text-muted-foreground"&gt;過去30日間&lt;/p&gt;
         &lt;/CardContent&gt;
@@ -578,8 +578,8 @@ const UpdateStats: React.FC&lt;UpdateStatsProps&gt; = <span class="cstat-no" tit
         &lt;/CardHeader&gt;
         &lt;CardContent&gt;
           &lt;div className="space-y-3"&gt;
-            {stats.topContributors.map(<span class="fstat-no" title="function not covered" >(c</span>ontributor, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;div key={contributor.author} c</span>lassName="flex items-center space-x-3"&gt;
+            {stats.topContributors.map(<span class="fstat-no" title="function not covered" >(c</span>ontributor, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;div key={contributor.author} className="flex items-center space-x-3"&gt;
                 &lt;Badge
                   variant="outline"
                   className="w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs"
@@ -619,11 +619,11 @@ const UpdateStats: React.FC&lt;UpdateStatsProps&gt; = <span class="cstat-no" tit
         &lt;CardContent&gt;
           &lt;div className="space-y-3"&gt;
             {Object.entries(stats.commitsByType)
-              .sort(<span class="fstat-no" title="function not covered" >([</span>, a], [, b]) =&gt; <span class="cstat-no" title="statement not covered" >b - a)</span>
-              .map(<span class="fstat-no" title="function not covered" >([</span>type, count]) =&gt; {
+              .sort(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([, a<span class="cstat-no" title="statement not covered" ></span></span>], [, b<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span>]) =&gt; b</span> - a)</span>
+              .map(<span class="fstat-no" title="function not covered" >([t</span>ype<span class="cstat-no" title="statement not covered" >, c</span>ount<span class="cstat-no" title="statement not covered" >]) =&gt;<span class="cstat-no" title="statement not covered" > </span>{</span>
                 const config =
 <span class="cstat-no" title="statement not covered" >                  commitTypeConfig[type as keyof typeof commitTypeConfig] || commitTypeConfig.other;</span>
-                const percentage = <span class="cstat-no" title="statement not covered" >(count / stats.totalCommits) * 100;</span>
+                const percentage = (<span class="cstat-no" title="statement not covered" >count / stats.totalCommits) * 100;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                return (</span>
                   &lt;div key={type} className="flex items-center space-x-3"&gt;
@@ -697,7 +697,7 @@ const UpdateStats: React.FC&lt;UpdateStatsProps&gt; = <span class="cstat-no" tit
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

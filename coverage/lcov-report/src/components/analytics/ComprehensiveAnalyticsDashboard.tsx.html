@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/98</span>
+                <span class='fraction'>0/151</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/53</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/97</span>
+                <span class='fraction'>0/100</span>
             </div>
         
             
@@ -1039,11 +1039,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1059,7 +1059,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1074,7 +1074,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1276,8 +1276,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1456,7 +1456,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1691,6 +1690,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1843,63 +1843,63 @@ interface AnalyticsData {
 /**
  * 包括的分析ダッシュボード - ユーザー行動・アクセス解析
  */
-const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const { user } = <span class="cstat-no" title="statement not covered" >useAuth();</span>
-  const [analyticsData, setAnalyticsData] = <span class="cstat-no" title="statement not covered" >useState&lt;AnalyticsData | null&gt;(null);</span>
-  const [userSessions, setUserSessions] = <span class="cstat-no" title="statement not covered" >useState&lt;UserSession[]&gt;([]);</span>
-  const [pageViews, setPageViews] = <span class="cstat-no" title="statement not covered" >useState&lt;PageView[]&gt;([]);</span>
-  const [userProfiles, setUserProfiles] = <span class="cstat-no" title="statement not covered" >useState&lt;UserProfile[]&gt;([]);</span>
-  const [selectedTimeRange, setSelectedTimeRange] = <span class="cstat-no" title="statement not covered" >useState('7d');</span>
-  const [isLoading, setIsLoading] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [lastUpdate, setLastUpdate] = <span class="cstat-no" title="statement not covered" >useState(new Date());</span>
+const <span class="fstat-no" title="function not covered" >ComprehensiveAnalyticsDashboard:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const { user<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useAuth();</span></span>
+  const [analyticsData<span class="cstat-no" title="statement not covered" >, s</span>etAnalyticsData<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;AnalyticsData | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [userSessions<span class="cstat-no" title="statement not covered" >, s</span>etUserSessions<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;UserSession[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [pageViews<span class="cstat-no" title="statement not covered" >, s</span>etPageViews<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;PageView[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [userProfiles<span class="cstat-no" title="statement not covered" >, s</span>etUserProfiles<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;UserProfile[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [selectedTimeRange<span class="cstat-no" title="statement not covered" >, s</span>etSelectedTimeRange<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('7d')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isLoading<span class="cstat-no" title="statement not covered" >, s</span>etIsLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [lastUpdate<span class="cstat-no" title="statement not covered" >, s</span>etLastUpdate<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(new Date())<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 初期化とデータ取得
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    fetchAnalyticsData();</span>
     const interval = <span class="cstat-no" title="statement not covered" >setInterval(fetchAnalyticsData, 60000);</span> // 1分ごとに更新
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >clearInterval(interval);</span></span>
+<span class="cstat-no" title="statement not covered" >    return <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; c</span>learInterval(interval);</span></span>
   }, [selectedTimeRange]);
 &nbsp;
-  const fetchAnalyticsData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setIsLoading(true);</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
+  const <span class="fstat-no" title="function not covered" >fetchAnalyticsData<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span></span>sync () =&gt; {</span></span></span>
+<span class="cstat-no" title="statement not covered" >    setIsLoading(true);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+    try {
       // 実際の分析データを取得
-      const response = <span class="cstat-no" title="statement not covered" >await fetch(`/api/analytics/data?timeRange=${selectedTimeRange}`, {</span>
-        headers: {
-          Authorization: `Bearer ${typeof (user as any)?.getIdToken === 'function' ? await (user as any).getIdToken() : ''}`,
+      const <span class="cstat-no" title="statement not covered" >response<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span> = await f</span>etch<span class="cstat-no" title="statement not covered" >(`/api/analytics/data?timeRange=${selectedTimeRange<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>}`, {</span></span></span></span>
+        headers<span class="cstat-no" title="statement not covered" >: {</span>
+          Authorization<span class="cstat-no" title="statement not covered" >: `Bearer ${typeof (user as any)?.getIdToken === 'function'<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > ? await (u</span>ser as any).getIdToken()<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > : '</span></span>'<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >}`,</span></span></span></span>
         },
       });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      if (response.ok) {</span>
-        const result = <span class="cstat-no" title="statement not covered" >await response.json();</span>
-<span class="cstat-no" title="statement not covered" >        if (result.success &amp;&amp; result.data) {</span>
+      if (response.ok<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >) {</span></span>
+        const <span class="cstat-no" title="statement not covered" >result<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span> = await r</span>esponse.json();</span>
+        if (result.success &amp;&amp; result.data<span class="cstat-no" title="statement not covered" >) {</span>
 <span class="cstat-no" title="statement not covered" >          setAnalyticsData(result.data.analytics);</span>
 <span class="cstat-no" title="statement not covered" >          setUserSessions(result.data.sessions || []);</span>
 <span class="cstat-no" title="statement not covered" >          setPageViews(result.data.pageViews || []);</span>
 <span class="cstat-no" title="statement not covered" >          setUserProfiles(result.data.users || []);</span>
-<span class="cstat-no" title="statement not covered" >          console.log('✅ Analytics data loaded successfully');</span>
+<span class="cstat-no" title="statement not covered" >          console.log('✅ Analytics data loaded successfully');<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
         } else {
-<span class="cstat-no" title="statement not covered" >          throw new Error(result.message || 'Failed to load analytics data');</span>
+          throw new Error(result.message || 'Failed to load analytics data')<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >;</span></span>
         }
       } else {
-<span class="cstat-no" title="statement not covered" >        throw new Error(`HTTP ${response.status}: ${response.statusText}`);</span>
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-<span class="cstat-no" title="statement not covered" >      setLastUpdate(new Date());</span>
+<span class="cstat-no" title="statement not covered" >      setLastUpdate(new Date());<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('❌ Analytics data fetch failed:', error);</span>
       // エラー時はモックデータで初期化
-      const mock = <span class="cstat-no" title="statement not covered" >getMockAnalyticsData();</span>
+      const <span class="cstat-no" title="statement not covered" >mock = getMockAnalyticsData();</span>
 <span class="cstat-no" title="statement not covered" >      setAnalyticsData(mock);</span>
 <span class="cstat-no" title="statement not covered" >      setUserSessions([]);</span>
 <span class="cstat-no" title="statement not covered" >      setPageViews([]);</span>
 <span class="cstat-no" title="statement not covered" >      setUserProfiles([]);</span>
-<span class="cstat-no" title="statement not covered" >      toast.error('分析データの取得に失敗しました。ネットワーク接続を確認してください。');</span>
+<span class="cstat-no" title="statement not covered" >      toast.error('分析データの取得に失敗しました。ネットワーク接続を確認してください。');<span class="cstat-no" title="statement not covered" ></span></span>
     } finally {
-<span class="cstat-no" title="statement not covered" >      setIsLoading(false);</span>
+<span class="cstat-no" title="statement not covered" >      setIsLoading(false);<span class="cstat-no" title="statement not covered" ></span></span>
     }
-  };
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const getMockAnalyticsData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): AnalyticsData =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getMockAnalyticsData </span>= <span class="cstat-no" title="statement not covered" >(): AnalyticsData =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return {</span>
       users: {
         total: 2847,
@@ -1957,7 +1957,7 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
     };
   };
 &nbsp;
-  const getMockUserSessions = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): UserSession[] =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getMockUserSessions </span>= <span class="cstat-no" title="statement not covered" >(): UserSession[] =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return [</span>
       {
         id: 'session-1',
@@ -1993,7 +1993,7 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
     ];
   };
 &nbsp;
-  const getMockPageViews = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): PageView[] =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getMockPageViews </span>= <span class="cstat-no" title="statement not covered" >(): PageView[] =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return [</span>
       {
         id: 'view-1',
@@ -2021,7 +2021,7 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
     ];
   };
 &nbsp;
-  const getMockUserProfiles = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): UserProfile[] =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getMockUserProfiles </span>= <span class="cstat-no" title="statement not covered" >(): UserProfile[] =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return [</span>
       {
         id: 'user-123',
@@ -2049,7 +2049,7 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
     ];
   };
 &nbsp;
-  const formatDuration = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>econds: number): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatDuration </span>= <span class="cstat-no" title="statement not covered" >(seconds: number): string =&gt; {</span>
     const hours = <span class="cstat-no" title="statement not covered" >Math.floor(seconds / 3600);</span>
     const minutes = <span class="cstat-no" title="statement not covered" >Math.floor((seconds % 3600) / 60);</span>
     const secs = <span class="cstat-no" title="statement not covered" >seconds % 60;</span>
@@ -2063,7 +2063,7 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
     }
   };
 &nbsp;
-  const getTrendIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>alue: number, threshold: number = <span class="branch-0 cbranch-no" title="branch not covered" >0)</span> =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getTrendIcon </span>= <span class="cstat-no" title="statement not covered" >(value: number, <span class="cstat-no" title="statement not covered" >threshold: number = 0)</span> =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    if (value &gt; threshold) {</span>
 <span class="cstat-no" title="statement not covered" >      return &lt;TrendingUp className="h-4 w-4 text-green-500" /&gt;;</span>
     } else <span class="cstat-no" title="statement not covered" >if (value &lt; threshold) {</span>
@@ -2073,9 +2073,9 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
     }
   };
 &nbsp;
-  const exportData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >exportData<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span></span>sync () =&gt; {</span></span></span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const exportData = <span class="cstat-no" title="statement not covered" >{</span>
+      const <span class="cstat-no" title="statement not covered" >exportData = {</span>
         analytics: analyticsData,
         sessions: userSessions,
         pageViews: pageViews,
@@ -2083,11 +2083,11 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
         exportedAt: new Date().toISOString(),
       };
 &nbsp;
-      const dataStr = <span class="cstat-no" title="statement not covered" >JSON.stringify(exportData, null, 2);</span>
-      const dataBlob = <span class="cstat-no" title="statement not covered" >new Blob([dataStr], { type: 'application/json' });</span>
-      const url = <span class="cstat-no" title="statement not covered" >URL.createObjectURL(dataBlob);</span>
+      const <span class="cstat-no" title="statement not covered" >dataStr = JSON.stringify(exportData, null, 2);</span>
+      const <span class="cstat-no" title="statement not covered" >dataBlob = new Blob([dataStr], { type: 'application/json' });</span>
+      const <span class="cstat-no" title="statement not covered" >url = URL.createObjectURL(dataBlob);</span>
 &nbsp;
-      const link = <span class="cstat-no" title="statement not covered" >document.createElement('a');</span>
+      const <span class="cstat-no" title="statement not covered" >link = document.createElement('a');</span>
 <span class="cstat-no" title="statement not covered" >      link.href = url;</span>
 <span class="cstat-no" title="statement not covered" >      link.download = `analytics-export-${new Date().toISOString().split('T')[0]}.json`;</span>
 <span class="cstat-no" title="statement not covered" >      document.body.appendChild(link);</span>
@@ -2099,8 +2099,8 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('エクスポートエラー:', error);</span>
 <span class="cstat-no" title="statement not covered" >      toast.error('エクスポートに失敗しました');</span>
-    }
-  };
+    }<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!analyticsData) {</span>
 <span class="cstat-no" title="statement not covered" >    return (</span>
@@ -2132,7 +2132,7 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
               &lt;select
                 aria-label="期間選択"
                 value={selectedTimeRange}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setSelectedTimeRange(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setSelectedTimeRange(e.target.value)}</span>
                 className="border border-gray-300 rounded-md px-3 py-2"
               &gt;
                 &lt;option value="1d"&gt;過去24時間&lt;/option&gt;
@@ -2279,8 +2279,8 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
                 &lt;/CardHeader&gt;
                 &lt;CardContent&gt;
                   &lt;div className="space-y-4"&gt;
-                    {Object.entries(analyticsData.traffic).map(<span class="fstat-no" title="function not covered" >([</span>source, percentage]) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;div key={source} c</span>lassName="flex items-center justify-between"&gt;
+                    {Object.entries(analyticsData.traffic).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([s</span></span>ource<span class="cstat-no" title="statement not covered" >, p</span>ercentage<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; (</span></span>
+                      &lt;div key={source} className="flex items-center justify-between"&gt;
                         &lt;span className="capitalize font-medium"&gt;{source}&lt;/span&gt;
                         &lt;div className="flex items-center gap-3"&gt;
                           &lt;Progress value={percentage} className="w-20 h-2" /&gt;
@@ -2299,8 +2299,8 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
                 &lt;/CardHeader&gt;
                 &lt;CardContent&gt;
                   &lt;div className="space-y-4"&gt;
-                    {analyticsData.pageViews.topPages.map(<span class="fstat-no" title="function not covered" >(p</span>age, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;div key={page.path} c</span>lassName="flex items-center justify-between"&gt;
+                    {analyticsData.pageViews.topPages.map(<span class="fstat-no" title="function not covered" >(p</span>age, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                      &lt;div key={page.path} className="flex items-center justify-between"&gt;
                         &lt;div className="flex items-center gap-3"&gt;
                           &lt;Badge variant="outline"&gt;{index + 1}&lt;/Badge&gt;
                           &lt;div&gt;
@@ -2376,8 +2376,8 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
               &lt;/CardHeader&gt;
               &lt;CardContent&gt;
                 &lt;div className="space-y-4"&gt;
-                  {analyticsData.geography.map(<span class="fstat-no" title="function not covered" >(l</span>ocation, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;div</span>
+                  {analyticsData.geography.map(<span class="fstat-no" title="function not covered" >(l</span>ocation, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                    &lt;div
                       key={location.country}
                       className="flex items-center justify-between p-3 border rounded-lg"
                     &gt;
@@ -2419,8 +2419,8 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
                     &lt;p className="text-gray-600"&gt;現在アクティブ&lt;/p&gt;
                   &lt;/div&gt;
                   &lt;div className="space-y-3"&gt;
-                    {analyticsData.realtime.currentPageViews.map(<span class="fstat-no" title="function not covered" >(p</span>age) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;div key={page.path} c</span>lassName="flex items-center justify-between"&gt;
+                    {analyticsData.realtime.currentPageViews.map(<span class="fstat-no" title="function not covered" >(p</span>age<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                      &lt;div key={page.path} className="flex items-center justify-between"&gt;
                         &lt;span className="font-medium"&gt;{page.path}&lt;/span&gt;
                         &lt;Badge variant="secondary"&gt;{page.users} ユーザー&lt;/Badge&gt;
                       &lt;/div&gt;
@@ -2436,8 +2436,8 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
                 &lt;/CardHeader&gt;
                 &lt;CardContent&gt;
                   &lt;div className="space-y-4"&gt;
-                    {userSessions.slice(0, 5).map(<span class="fstat-no" title="function not covered" >(s</span>ession) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;div key={session.id} c</span>lassName="border rounded-lg p-3"&gt;
+                    {userSessions.slice(0, 5).map(<span class="fstat-no" title="function not covered" >(s</span>ession<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                      &lt;div key={session.id} className="border rounded-lg p-3"&gt;
                         &lt;div className="flex items-center justify-between mb-2"&gt;
                           &lt;Badge
                             className={`${session.device === 'desktop' ? 'bg-blue-100 text-blue-800' : session.device === 'mobile' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}`}
@@ -2471,8 +2471,8 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
               &lt;/CardHeader&gt;
               &lt;CardContent&gt;
                 &lt;div className="space-y-4"&gt;
-                  {userProfiles.slice(0, 5).map(<span class="fstat-no" title="function not covered" >(u</span>ser) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;div key={user.id} c</span>lassName="border rounded-lg p-4"&gt;
+                  {userProfiles.slice(0, 5).map(<span class="fstat-no" title="function not covered" >(u</span>ser<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                    &lt;div key={user.id} className="border rounded-lg p-4"&gt;
                       &lt;div className="flex items-center justify-between mb-3"&gt;
                         &lt;div&gt;
                           &lt;p className="font-medium"&gt;{user.displayName}&lt;/p&gt;
@@ -2512,8 +2512,8 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
                       &lt;div className="mt-3"&gt;
                         &lt;p className="text-sm text-gray-600 mb-1"&gt;よく使う機能:&lt;/p&gt;
                         &lt;div className="flex flex-wrap gap-1"&gt;
-                          {user.behavior.mostUsedFeatures.map(<span class="fstat-no" title="function not covered" >(f</span>eature) =&gt; (
-<span class="cstat-no" title="statement not covered" >                            &lt;Badge key={feature} v</span>ariant="secondary" className="text-xs"&gt;
+                          {user.behavior.mostUsedFeatures.map(<span class="fstat-no" title="function not covered" >(f</span>eature<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                            &lt;Badge key={feature} variant="secondary" className="text-xs"&gt;
                               {feature}
                             &lt;/Badge&gt;
                           ))}
@@ -2539,7 +2539,7 @@ const ComprehensiveAnalyticsDashboard: React.FC = <span class="cstat-no" title="
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,21 +25,21 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/46</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
@@ -215,19 +215,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -285,15 +285,15 @@ interface TweetListProps {
   onUpdateTweet: (id: string, content: string) =&gt; Promise&lt;void&gt;;
 }
 &nbsp;
-const TweetList: React.FC&lt;TweetListProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> tweets, onUpdateTweet }) =&gt; {</span>
-  const [editingId, setEditingId] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;(null);</span>
-  const [editContent, setEditContent] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('');</span>
+const <span class="fstat-no" title="function not covered" >TweetList:</span> React.FC&lt;TweetListProps&gt; = <span class="cstat-no" title="statement not covered" >({ tweets<span class="cstat-no" title="statement not covered" >, onUpdateTweet<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span>
+  const [editingId<span class="cstat-no" title="statement not covered" >, s</span>etEditingId<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [editContent<span class="cstat-no" title="statement not covered" >, s</span>etEditContent<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('')<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const renderContent = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>ontent: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >renderContent </span>= <span class="cstat-no" title="statement not covered" >(content: string) =&gt; {</span>
     const urlRegex = <span class="cstat-no" title="statement not covered" >/(https?:\/\/[^\s]+)/g;</span>
     const parts = <span class="cstat-no" title="statement not covered" >content.split(urlRegex);</span>
     const matches = <span class="cstat-no" title="statement not covered" >Array.from(content.matchAll(urlRegex));</span>
-    const urls = <span class="cstat-no" title="statement not covered" >matches.map(<span class="fstat-no" title="function not covered" >(m</span>atch) =&gt; <span class="cstat-no" title="statement not covered" >match[0])</span>;</span>
+    const urls = <span class="cstat-no" title="statement not covered" >matches.map(<span class="fstat-no" title="function not covered" >(m</span>atch<span class="cstat-no" title="statement not covered" >) =&gt; match[0]);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return parts.map(<span class="fstat-no" title="function not covered" >(p</span>art, index) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (urls.includes(part)) {</span>
@@ -314,38 +314,38 @@ const TweetList: React.FC&lt;TweetListProps&gt; = <span class="cstat-no" title="
     });
   };
 &nbsp;
-  const handleEdit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>weet: Tweet) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleEdit </span>= <span class="cstat-no" title="statement not covered" >(tweet: Tweet) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setEditingId(tweet._id.toString());</span>
 <span class="cstat-no" title="statement not covered" >    setEditContent(tweet.content || ''); </span>// ここで undefined の可能性を処理
   };
 &nbsp;
-  const handleSave = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(id: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      await onUpdateTweet(id, editContent);</span>
-<span class="cstat-no" title="statement not covered" >      setEditingId(null);</span>
+  const <span class="fstat-no" title="function not covered" >handleSave<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span>sync (i</span>d: string<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >) =&gt; {</span></span></span></span></span>
+    try {
+      await onUpdateTweet(id, editContent);
+<span class="cstat-no" title="statement not covered" >      setEditingId(null);<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Failed to update tweet:', error);</span>
-      // ここでエラー処理を行う（例：エラーメッセージを表示する）
+<span class="cstat-no" title="statement not covered" >      // ここでエラー処理を行う（例：エラーメッセージを表示する）</span>
     }
-  };
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className="space-y-4 mt-4"&gt;
-      {tweets.map(<span class="fstat-no" title="function not covered" >(t</span>weet) =&gt; (
-<span class="cstat-no" title="statement not covered" >        &lt;Card key={tweet._id.toString()}&gt;</span>
+      {tweets.map(<span class="fstat-no" title="function not covered" >(t</span>weet<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+        &lt;Card key={tweet._id.toString()}&gt;
           &lt;CardContent className="pt-4"&gt;
             {editingId === tweet._id.toString() ? (
               &lt;&gt;
                 &lt;Textarea
                   value={editContent}
-                  onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setEditContent(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                  onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setEditContent(e.target.value)}</span>
                   className="mb-2"
                 /&gt;
-                &lt;Button onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleSave(tweet._id.toString())}</span> className="mr-2"&gt;
+                &lt;Button <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleSave(tweet._id.toString())} c</span>lassName="mr-2"&gt;
                   &lt;Save size={16} className="mr-2" /&gt;
                   保存
                 &lt;/Button&gt;
-                &lt;Button variant="outline" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setEditingId(null)}</span>&gt;
+                &lt;Button variant="outline" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setEditingId(null)}&gt;</span>
                   キャンセル
                 &lt;/Button&gt;
               &lt;/&gt;
@@ -354,7 +354,7 @@ const TweetList: React.FC&lt;TweetListProps&gt; = <span class="cstat-no" title="
                 &lt;p className="whitespace-pre-wrap break-words"&gt;
                   {tweet.content &amp;&amp; renderContent(tweet.content)}
                 &lt;/p&gt;
-                &lt;Button variant="ghost" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleEdit(tweet)}</span> className="mt-2"&gt;
+                &lt;Button variant="ghost" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleEdit(tweet)} c</span>lassName="mt-2"&gt;
                   &lt;Edit size={16} className="mr-2" /&gt;
                   編集
                 &lt;/Button&gt;
@@ -385,7 +385,7 @@ const TweetList: React.FC&lt;TweetListProps&gt; = <span class="cstat-no" title="
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

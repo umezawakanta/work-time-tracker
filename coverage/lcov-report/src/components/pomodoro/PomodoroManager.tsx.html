@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/156</span>
+                <span class='fraction'>0/157</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/70</span>
+                <span class='fraction'>0/86</span>
             </div>
         
             
@@ -683,21 +683,21 @@ import { pomodoroWorkTimeIntegration } from '@/services/PomodoroWorkTimeIntegrat
 <span class="cstat-no" title="statement not covered" >import { store } from '@/store';</span>
 <span class="cstat-no" title="statement not covered" >import { fetchWorkTimeEntries } from '@/store/workTimeSlice';</span>
 &nbsp;
-const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const { pomodoro } = <span class="cstat-no" title="statement not covered" >usePomodoroContext();</span>
+const <span class="fstat-no" title="function not covered" >PomodoroManagerComponent:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const { pomodoro<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >usePomodoroContext();</span></span>
 &nbsp;
   // デバッグ関数をグローバルに登録（開発環境のみ）
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof window !== 'undefined' &amp;&amp; process.env.NODE_ENV === 'development') {</span>
     // すでに登録されている場合はスキップ
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(window as any).clearPomodoroStorage) {</span>
-      (<span class="cstat-no" title="statement not covered" >window as any).clearPomodoroStorage = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      (<span class="cstat-no" title="statement not covered" >window as any).clearPomodoroStorage = <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >        pomodoro.clearPomodoroStorage();</span>
 <span class="cstat-no" title="statement not covered" >        window.location.reload();</span>
       };
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(window as any).showPomodoroEntries) {</span>
-      (<span class="cstat-no" title="statement not covered" >window as any).showPomodoroEntries = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      (<span class="cstat-no" title="statement not covered" >window as any).showPomodoroEntries = <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
         const entries = <span class="cstat-no" title="statement not covered" >localStorage.getItem('pomodoro-work-entries');</span>
 <span class="cstat-no" title="statement not covered" >        if (entries) {</span>
           const parsed = <span class="cstat-no" title="statement not covered" >JSON.parse(entries);</span>
@@ -706,7 +706,7 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
 &nbsp;
           // 今日のエントリをフィルタ
           const today = <span class="cstat-no" title="statement not covered" >new Date().toISOString().split('T')[0];</span>
-          const todayEntries = <span class="cstat-no" title="statement not covered" >parsed.filter(<span class="fstat-no" title="function not covered" >(e</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >e.date === today)</span>;</span>
+          const todayEntries = <span class="cstat-no" title="statement not covered" >parsed.filter(<span class="fstat-no" title="function not covered" >(e</span>: any<span class="cstat-no" title="statement not covered" >) =&gt; e.date === today);</span></span>
 <span class="cstat-no" title="statement not covered" >          console.log('📅 今日のエントリ:', todayEntries.length, '件');</span>
 <span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (todayEntries.length &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >            console.table(todayEntries);</span>
@@ -718,14 +718,14 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(window as any).clearPomodoroEntries) {</span>
-      (<span class="cstat-no" title="statement not covered" >window as any).clearPomodoroEntries = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      (<span class="cstat-no" title="statement not covered" >window as any).clearPomodoroEntries = <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >        localStorage.removeItem('pomodoro-work-entries');</span>
 <span class="cstat-no" title="statement not covered" >        console.log('🧹 Pomodoro entries cleared');</span>
       };
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(window as any).getPomodoroStats) {</span>
-      (<span class="cstat-no" title="statement not covered" >window as any).getPomodoroStats = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      (<span class="cstat-no" title="statement not covered" >window as any).getPomodoroStats = <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
         // Import and use the service to get stats
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >        import('</span>@/services/PomodoroWorkTimeIntegrationService').t</span>hen(<span class="fstat-no" title="function not covered" >(m</span>odule) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >          module.PomodoroWorkTimeIntegrationService.getInstance()</span>
@@ -739,7 +739,7 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
 &nbsp;
     // 作業時間記録状況の詳細確認機能を追加
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(window as any).checkWorkTimeRecording) {</span>
-      (<span class="cstat-no" title="statement not covered" >window as any).checkWorkTimeRecording = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      (<span class="cstat-no" title="statement not covered" >window as any).checkWorkTimeRecording = <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
         const settings = <span class="cstat-no" title="statement not covered" >localStorage.getItem('pomodoro-settings');</span>
         const entries = <span class="cstat-no" title="statement not covered" >localStorage.getItem('pomodoro-work-entries');</span>
 &nbsp;
@@ -782,7 +782,7 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
 &nbsp;
     // 無効データ修正機能を追加
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(window as any).fixPomodoroData) {</span>
-      (<span class="cstat-no" title="statement not covered" >window as any).fixPomodoroData = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      (<span class="cstat-no" title="statement not covered" >window as any).fixPomodoroData = <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
         const entries = <span class="cstat-no" title="statement not covered" >localStorage.getItem('pomodoro-work-entries');</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!entries) {</span>
 <span class="cstat-no" title="statement not covered" >          console.log('📭 修正対象のデータがありません');</span>
@@ -794,7 +794,7 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
           let fixedCount = <span class="cstat-no" title="statement not covered" >0;</span>
 &nbsp;
           const fixedEntries = <span class="cstat-no" title="statement not covered" >parsed.map(<span class="fstat-no" title="function not covered" >(e</span>ntry: any) =&gt; {</span>
-            const fixed = <span class="cstat-no" title="statement not covered" >{ ...entry };</span>
+            const fixed<span class="cstat-no" title="statement not covered" > = { ...entry };</span>
             let needsFix = <span class="cstat-no" title="statement not covered" >false;</span>
 &nbsp;
             // startTimeとendTimeの修正
@@ -851,7 +851,7 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
 &nbsp;
     // Redux store の作業時間エントリ確認機能を追加
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(window as any).checkReduxWorkTimeEntries) {</span>
-      (<span class="cstat-no" title="statement not covered" >window as any).checkReduxWorkTimeEntries = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      (<span class="cstat-no" title="statement not covered" >window as any).checkReduxWorkTimeEntries = <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
         const state = (<span class="cstat-no" title="statement not covered" >window as any).__store?.getState() || store.getState();</span>
         const workTimeEntries = <span class="cstat-no" title="statement not covered" >state.workTime?.entries || [];</span>
         const isLoading = <span class="cstat-no" title="statement not covered" >state.workTime?.isLoading || false;</span>
@@ -861,7 +861,7 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
           entriesCount: workTimeEntries.length,
           isLoading,
           error,
-          entries: workTimeEntries.map(<span class="fstat-no" title="function not covered" >(e</span>ntry: any) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+          entries: workTimeEntries.map(<span class="fstat-no" title="function not covered" >(e</span>ntry: any<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
             id: entry._id,
             date: entry.date,
             time: `${entry.startTime} - ${entry.endTime}`,
@@ -880,10 +880,10 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
 &nbsp;
     // Redux store から最新データを強制取得する機能
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(window as any).refreshWorkTimeData) {</span>
-      (<span class="cstat-no" title="statement not covered" >window as any).refreshWorkTimeData = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      (<span class="cstat-no" title="statement not covered" >window as any).refreshWorkTimeData = <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >        store.dispatch(fetchWorkTimeEntries());</span>
 <span class="cstat-no" title="statement not covered" >        console.log('🔄 作業時間データの再取得を開始しました');</span>
-<span class="cstat-no" title="statement not covered" >        setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
           (<span class="cstat-no" title="statement not covered" >window as any).checkReduxWorkTimeEntries();</span>
         }, 2000);
       };
@@ -891,13 +891,13 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
 &nbsp;
     // Mock API ストレージのデバッグ機能を追加
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(window as any).checkMockApiEntries) {</span>
-      (<span class="cstat-no" title="statement not covered" >window as any).checkMockApiEntries = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      (<span class="cstat-no" title="statement not covered" >window as any).checkMockApiEntries = <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
         const mockEntries = <span class="cstat-no" title="statement not covered" >localStorage.getItem('mock-api-work-entries');</span>
 <span class="cstat-no" title="statement not covered" >        if (mockEntries) {</span>
           const parsed = <span class="cstat-no" title="statement not covered" >JSON.parse(mockEntries);</span>
 <span class="cstat-no" title="statement not covered" >          console.log('🎭 Mock API保存済みエントリ:', parsed.length, '件');</span>
 <span class="cstat-no" title="statement not covered" >          console.table(</span>
-            parsed.map(<span class="fstat-no" title="function not covered" >(e</span>: any) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+            parsed.map(<span class="fstat-no" title="function not covered" >(e</span>: any<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
               id: e._id,
               date: e.date,
               time: `${e.startTime} - ${e.endTime}`,
@@ -914,7 +914,7 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
 &nbsp;
     // 全ストレージのサマリーを表示する機能
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(window as any).showAllWorkTimeData) {</span>
-      (<span class="cstat-no" title="statement not covered" >window as any).showAllWorkTimeData = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      (<span class="cstat-no" title="statement not covered" >window as any).showAllWorkTimeData = <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >        console.log('📊 === 全作業時間データサマリー ===');</span>
 &nbsp;
         // Mock APIストレージ
@@ -939,7 +939,7 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
   }
 &nbsp;
   // 次のモードを計算
-  const getNextMode = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): PomodoroMode =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getNextMode </span>= <span class="cstat-no" title="statement not covered" >(): PomodoroMode =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    if (pomodoro.currentMode === 'work') {</span>
       const shouldTakeLongBreak =
 <span class="cstat-no" title="statement not covered" >        pomodoro.currentSession % pomodoro.settings.longBreakInterval === 0;</span>
@@ -949,13 +949,13 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
     }
   };
 &nbsp;
-  const handleStartNext = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleStartNext </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const nextMode = <span class="cstat-no" title="statement not covered" >getNextMode();</span>
 <span class="cstat-no" title="statement not covered" >    pomodoro.switchMode(nextMode);</span>
 <span class="cstat-no" title="statement not covered" >    pomodoro.startTimer();</span>
   };
 &nbsp;
-  const handleClose = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleClose </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    console.log('🚪 PomodoroManager: handleClose実行 - toggleVisibility呼び出し', {</span>
       instanceId: pomodoro.instanceId,
       currentVisibility: pomodoro.isVisible,
@@ -985,7 +985,7 @@ export const <span class="cstat-no" title="statement not covered" >PomodoroManag
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

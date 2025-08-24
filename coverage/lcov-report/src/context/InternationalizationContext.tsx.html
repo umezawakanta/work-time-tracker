@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/20</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
@@ -282,7 +282,7 @@ const InternationalizationContext = <span class="cstat-no" title="statement not 
   undefined
 );
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >InternationalizationProvider: React.FC&lt;{ children: ReactNode }&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> children }) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >InternationalizationProvider:</span> React.FC&lt;{ children: ReactNode }&gt; = <span class="cstat-no" title="statement not covered" >(</span>{ children<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span>
   // 基本的な日本語設定をデフォルトとして提供
   const defaultLocaleConfig: LocaleConfig = <span class="cstat-no" title="statement not covered" >{</span>
     code: 'ja',
@@ -301,27 +301,27 @@ export const <span class="cstat-no" title="statement not covered" >International
 &nbsp;
   const value: InternationalizationContextType = <span class="cstat-no" title="statement not covered" >{</span>
     locale: 'ja',
-    setLocale: <span class="fstat-no" title="function not covered" >(l</span>ocale: SupportedLocale) =&gt; {
+<span class="fstat-no" title="function not covered" >    setLocale:</span> (locale: SupportedLocale) =&gt; {
 <span class="cstat-no" title="statement not covered" >      console.log('setLocale called with:', locale);</span>
       // TODO: 実装予定
     },
-    t: <span class="fstat-no" title="function not covered" >(k</span>ey: string) =&gt; {
+<span class="fstat-no" title="function not covered" >    t:</span> (key: string) =&gt; {
       // 簡易翻訳（キーをそのまま返す）
 <span class="cstat-no" title="statement not covered" >      return key;</span>
     },
-    formatDate: <span class="fstat-no" title="function not covered" >(d</span>ate: Date) =&gt; {
+<span class="fstat-no" title="function not covered" >    formatDate:</span> (date: Date) =&gt; {
 <span class="cstat-no" title="statement not covered" >      return date.toLocaleDateString('ja-JP');</span>
     },
-    formatTime: <span class="fstat-no" title="function not covered" >(d</span>ate: Date) =&gt; {
+<span class="fstat-no" title="function not covered" >    formatTime:</span> (date: Date) =&gt; {
 <span class="cstat-no" title="statement not covered" >      return date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });</span>
     },
-    formatNumber: <span class="fstat-no" title="function not covered" >(n</span>umber: number) =&gt; {
+<span class="fstat-no" title="function not covered" >    formatNumber:</span> (number: number) =&gt; {
 <span class="cstat-no" title="statement not covered" >      return number.toLocaleString('ja-JP');</span>
     },
-    formatCurrency: <span class="fstat-no" title="function not covered" >(a</span>mount: number) =&gt; {
+<span class="fstat-no" title="function not covered" >    formatCurrency:</span> (amount: number) =&gt; {
 <span class="cstat-no" title="statement not covered" >      return `¥${amount.toLocaleString('ja-JP')}`;</span>
     },
-    getLocaleConfig: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >defaultLocaleConfig,</span>
+<span class="fstat-no" title="function not covered" >    getLocaleConfig<span class="cstat-no" title="statement not covered" >:</span> () =&gt; defaultLocaleConfig,</span>
     isRTL: false,
   };
 &nbsp;
@@ -332,7 +332,7 @@ export const <span class="cstat-no" title="statement not covered" >International
   );
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >useInternationalization = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useInternationalization </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
   const context = <span class="cstat-no" title="statement not covered" >useContext(InternationalizationContext);</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (context === undefined) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('useInternationalization must be used within an InternationalizationProvider');</span>
@@ -346,7 +346,7 @@ export const <span class="cstat-no" title="statement not covered" >useInternatio
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

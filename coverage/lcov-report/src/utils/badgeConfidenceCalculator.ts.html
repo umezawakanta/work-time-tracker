@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">71.95% </span>
+                <span class="strong">73.09% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>136/189</span>
+                <span class='fraction'>144/197</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">74.1% </span>
+                <span class="strong">76.19% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>83/112</span>
+                <span class='fraction'>128/168</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">61.11% </span>
+                <span class="strong">63.15% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>11/18</span>
+                <span class='fraction'>12/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">72.67% </span>
+                <span class="strong">72.97% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>133/183</span>
+                <span class='fraction'>135/185</span>
             </div>
         
             
@@ -535,7 +535,7 @@
 <a name='L470'></a><a href='#L470'>470</a>
 <a name='L471'></a><a href='#L471'>471</a>
 <a name='L472'></a><a href='#L472'>472</a>
-<a name='L473'></a><a href='#L473'>473</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L473'></a><a href='#L473'>473</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -616,10 +616,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -997,7 +997,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -1041,9 +1041,9 @@ export function calculateBadgeConfidence(
   ) {
     const user = paramsOrUser;
     try {
-      const userLevel = user?.level || 1;
-      const badgeDifficulty = badge?.difficulty || 3;
-      const category = badge?.category || 'general';
+      const userLevel = user<span class="branch-0 cbranch-no" title="branch not covered" >?.l</span>evel || 1;
+      const badgeDifficulty = badge<span class="branch-0 cbranch-no" title="branch not covered" >?.d</span>ifficulty || 3;
+      const category = badge<span class="branch-0 cbranch-no" title="branch not covered" >?.c</span>ategory || 'general';
       const userSkill = user?.skillLevels?.[category] || 1;
 &nbsp;
       // 基本信頼度計算（より厳格に）
@@ -1058,7 +1058,7 @@ export function calculateBadgeConfidence(
       confidence += skillDiff * 5;
 &nbsp;
       // 経験値による調整
-      const experience = user?.experience || 0;
+      const experience = user<span class="branch-0 cbranch-no" title="branch not covered" >?.e</span>xperience || 0;
       const requiredExp = badge?.requirements?.experience || 0;
       if (experience &gt;= requiredExp) {
         confidence += 15;
@@ -1091,7 +1091,7 @@ export function calculateBadgeConfidence(
       dependencies = [],
       category,
       targetWeek,
-      progress = 0,
+      progress = 0<span class="branch-1 cbranch-no" title="branch not covered" >,</span>
     } = params;
 &nbsp;
     // 基本信頼度（難易度に基づく）
@@ -1111,7 +1111,7 @@ export function calculateBadgeConfidence(
     confidence *= Math.max(0.8, hoursFactor);
 &nbsp;
     // 依存関係による調整（依存が多いほど不確実性が増す）
-    const dependencyPenalty = Math.min((dependencies?.length || 0) * 2, 10);
+    const dependencyPenalty = Math.min((dependencies<span class="branch-0 cbranch-no" title="branch not covered" >?.l</span>ength || 0) * 2, 10);
     confidence -= dependencyPenalty;
 &nbsp;
     // カテゴリによる調整（技術的なものほど予測しやすい）
@@ -1248,17 +1248,17 @@ export function <span class="fstat-no" title="function not covered" >calculateGr
 <span class="cstat-no" title="statement not covered" >    return 75;</span>
   }
 &nbsp;
-  const individualConfidences = <span class="cstat-no" title="statement not covered" >badges.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >calculateBadgeConfidence(badge))</span>;</span>
+  const individualConfidences = <span class="cstat-no" title="statement not covered" >badges.map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; calculateBadgeConfidence(badge));</span></span>
 &nbsp;
   // 個別信頼性の平均
   const averageConfidence =
-<span class="cstat-no" title="statement not covered" >    individualConfidences.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, conf) =&gt; <span class="cstat-no" title="statement not covered" >sum + conf,</span> 0) / badges.length;</span>
+<span class="cstat-no" title="statement not covered" >    individualConfidences.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, conf<span class="cstat-no" title="statement not covered" >) =&gt; sum + conf, 0</span>) / badges.length;</span>
 &nbsp;
   // グループサイズによる調整（バッジが多いほど実現困難）
   const groupSizePenalty = <span class="cstat-no" title="statement not covered" >Math.min(badges.length * 1.5, 12);</span>
 &nbsp;
   // 依存関係の複雑さを評価
-  const totalDependencies = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + badge.dependencies.length,</span> 0);</span>
+  const totalDependencies = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt; sum + badge.dependencies.length, 0</span>);</span>
   const dependencyPenalty = <span class="cstat-no" title="statement not covered" >Math.min(totalDependencies * 0.8, 8);</span>
 &nbsp;
   const groupConfidence = <span class="cstat-no" title="statement not covered" >averageConfidence - groupSizePenalty - dependencyPenalty;</span>
@@ -1287,7 +1287,7 @@ export function calculateUserProgress(user: any, badges: any[]): any {
       }
 &nbsp;
       // ユーザーのスキルレベルに基づく進捗計算
-      const userSkill = user.skillLevels?.[category] || <span class="branch-1 cbranch-no" title="branch not covered" >1;</span>
+      const userSkill = user.skillLevels<span class="branch-0 cbranch-no" title="branch not covered" >?.[c</span>ategory] || <span class="branch-1 cbranch-no" title="branch not covered" >1;</span>
       const badgeDifficulty = badge.difficulty || <span class="branch-1 cbranch-no" title="branch not covered" >3;</span>
       const progress = Math.min((userSkill / badgeDifficulty) * 100, 100);
 &nbsp;
@@ -1486,7 +1486,7 @@ export function calculateCategoryProgress(user: any, badges: any[], category: st
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/204</span>
+                <span class='fraction'>0/221</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/41</span>
+                <span class='fraction'>0/42</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/186</span>
+                <span class='fraction'>0/191</span>
             </div>
         
             
@@ -699,13 +699,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -815,7 +815,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -895,7 +895,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -909,6 +908,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -916,8 +916,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1284,15 +1284,15 @@ export interface ADHDTaskRecommendation {
   optimizations?: string[];
 }
 &nbsp;
-class ADHDTodoIntegrationService extends EventEmitter {
+class ADHDTodoIntegrationService <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >extends E</span>ventEmitter {</span>
   private static instance: ADHDTodoIntegrationService;
-  private readonly <span class="cstat-no" title="statement not covered" >STORAGE_KEY = 'adhd-tasks';</span>
+  private readonly STORAGE_KEY = 'adhd-tasks';<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-<span class="fstat-no" title="function not covered" >  private constructor() {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  private constructor() {</span></span>
 <span class="cstat-no" title="statement not covered" >    super();</span>
-  }
+  }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >static </span>getInstance(): ADHDTodoIntegrationService {
+  public static <span class="fstat-no" title="function not covered" >getInstance(</span>): ADHDTodoIntegrationService {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!ADHDTodoIntegrationService.instance) {</span>
 <span class="cstat-no" title="statement not covered" >      ADHDTodoIntegrationService.instance = new ADHDTodoIntegrationService();</span>
     }
@@ -1335,7 +1335,7 @@ class ADHDTodoIntegrationService extends EventEmitter {
 <span class="cstat-no" title="statement not covered" >    return {</span>
       originalTask: taskTitle,
       suggestedSubtasks: subtasks,
-      totalEstimatedTime: subtasks.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, task) =&gt; <span class="cstat-no" title="statement not covered" >sum + task.estimatedMinutes,</span> 0),
+      totalEstimatedTime: subtasks.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, task<span class="cstat-no" title="statement not covered" >) =&gt; sum + task.estimatedMinutes, 0</span>),
       reasoning: '大きなタスクを管理しやすい小さなステップに分割しました。',
       tips: [
         '各サブタスクは25分以内で完了できるよう設計されています',
@@ -1357,7 +1357,7 @@ class ADHDTodoIntegrationService extends EventEmitter {
       低: ['削除', '送信', '保存', '印刷', '読む', '見る', '聞く'],
     };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    Object.entries(complexityIndicators).forEach(<span class="fstat-no" title="function not covered" >([</span>level, keywords]) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    Object.entries(complexityIndicators).forEach(<span class="fstat-no" title="function not covered" >([l</span>evel<span class="cstat-no" title="statement not covered" >, k</span>eywords<span class="cstat-no" title="statement not covered" >]) =&gt;<span class="cstat-no" title="statement not covered" > </span>{</span></span>
       const score = <span class="cstat-no" title="statement not covered" >level === '高' ? 3 : level === '中' ? 2 : 1;</span>
 <span class="cstat-no" title="statement not covered" >      keywords.forEach(<span class="fstat-no" title="function not covered" >(k</span>eyword) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (text.includes(keyword)) {</span>
@@ -1386,7 +1386,7 @@ class ADHDTodoIntegrationService extends EventEmitter {
       15: ['送信', '連絡', '削除', '保存'],
     };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    Object.entries(timeIndicators).forEach(<span class="fstat-no" title="function not covered" >([</span>time, keywords]) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    Object.entries(timeIndicators).forEach(<span class="fstat-no" title="function not covered" >([t</span>ime<span class="cstat-no" title="statement not covered" >, k</span>eywords<span class="cstat-no" title="statement not covered" >]) =&gt;<span class="cstat-no" title="statement not covered" > </span>{</span></span>
 <span class="cstat-no" title="statement not covered" >      keywords.forEach(<span class="fstat-no" title="function not covered" >(k</span>eyword) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (text.includes(keyword)) {</span>
 <span class="cstat-no" title="statement not covered" >          baseTime = Math.max(baseTime, parseInt(time));</span>
@@ -1400,7 +1400,7 @@ class ADHDTodoIntegrationService extends EventEmitter {
   private <span class="fstat-no" title="function not covered" >breakdownComplexTask(</span>
     title: string,
     totalTime: number,
-    description?: string
+    description?: string<span class="cstat-no" title="statement not covered" ></span>
   ): TaskBreakdownSuggestion['suggestedSubtasks'] {
     const subtasks: TaskBreakdownSuggestion['suggestedSubtasks'] = <span class="cstat-no" title="statement not covered" >[];</span>
     const text = <span class="cstat-no" title="statement not covered" >(title + ' ' + (description || '')).toLowerCase();</span>
@@ -1426,8 +1426,8 @@ class ADHDTodoIntegrationService extends EventEmitter {
     ];
 &nbsp;
     let selectedPattern: string[] | null = <span class="cstat-no" title="statement not covered" >null;</span>
-<span class="cstat-no" title="statement not covered" >    for (const { pattern, steps } of commonPatterns) {</span>
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (pattern.some(<span class="fstat-no" title="function not covered" >(k</span>eyword) =&gt; <span class="cstat-no" title="statement not covered" >text.includes(keyword))</span>) {</span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    for (<span class="cstat-no" title="statement not covered" >c</span>onst { p</span>attern<span class="cstat-no" title="statement not covered" >, steps<span class="cstat-no" title="statement not covered" > } of <span class="cstat-no" title="statement not covered" >commonPatterns)</span> {</span></span></span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (pattern.some(<span class="fstat-no" title="function not covered" >(k</span>eyword<span class="cstat-no" title="statement not covered" >) =&gt; text.includes(keyword)))</span> {</span>
 <span class="cstat-no" title="statement not covered" >        selectedPattern = steps;</span>
 <span class="cstat-no" title="statement not covered" >        break;</span>
       }
@@ -1436,7 +1436,7 @@ class ADHDTodoIntegrationService extends EventEmitter {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!selectedPattern) {</span>
       // デフォルトの分割パターン
       const numSubtasks = <span class="cstat-no" title="statement not covered" >Math.ceil(totalTime / 20);</span>
-<span class="cstat-no" title="statement not covered" >      selectedPattern = Array.from({ length: numSubtasks }, <span class="fstat-no" title="function not covered" >(_</span>, i) =&gt; <span class="cstat-no" title="statement not covered" >`ステップ${i + 1}`)</span>;</span>
+<span class="cstat-no" title="statement not covered" >      selectedPattern = Array.from({ length: numSubtasks }, <span class="fstat-no" title="function not covered" >(_</span>, i<span class="cstat-no" title="statement not covered" >) =&gt; `ステップ${i + 1}`)</span>;</span>
     }
 &nbsp;
     const timePerSubtask = <span class="cstat-no" title="statement not covered" >Math.floor(totalTime / selectedPattern.length);</span>
@@ -1493,16 +1493,16 @@ class ADHDTodoIntegrationService extends EventEmitter {
     availableTasks: ADHDTask[],
     currentMood?: 'very-low' | 'low' | 'normal' | 'good' | 'excellent',
     currentEnergy?: 'very-low' | 'low' | 'normal' | 'high' | 'very-high',
-    availableMinutes?: number
+    availableMinutes?: number<span class="cstat-no" title="statement not covered" ></span>
   ): ADHDTaskRecommendation[] {
     const settings = <span class="cstat-no" title="statement not covered" >adhdService.getSettings();</span>
     const progress = <span class="cstat-no" title="statement not covered" >adhdService.getProgress();</span>
     const thoughtPattern = <span class="cstat-no" title="statement not covered" >adhdService.analyzeThoughtPattern('daily');</span>
 &nbsp;
     const recommendations = <span class="cstat-no" title="statement not covered" >availableTasks</span>
-      .filter(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; <span class="cstat-no" title="statement not covered" >task.status === 'pending')</span>
-      .map(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt;
-<span class="cstat-no" title="statement not covered" >        this.scoreTask(task, {</span>
+      .filter(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt; task.status === 'pending')</span>
+      .map(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+        this.scoreTask(task, {
           mood: currentMood || 'normal',
           energy: currentEnergy || 'normal',
           availableMinutes: availableMinutes || 30,
@@ -1511,7 +1511,7 @@ class ADHDTodoIntegrationService extends EventEmitter {
           thoughtPattern,
         })
       )
-      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >b.score - a.score)</span>;
+      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; b.score - a.score);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return recommendations.slice(0, 5); </span>// 上位5つを返す
   }
@@ -1681,7 +1681,7 @@ class ADHDTodoIntegrationService extends EventEmitter {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!taskId) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
     const tasks = <span class="cstat-no" title="statement not covered" >this.getTasks();</span>
-    const task = <span class="cstat-no" title="statement not covered" >tasks.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.id === taskId)</span>;</span>
+    const task = <span class="cstat-no" title="statement not covered" >tasks.find(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.id === taskId);</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!task) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
     // 実際の所要時間を記録
@@ -1739,7 +1739,7 @@ class ADHDTodoIntegrationService extends EventEmitter {
 &nbsp;
   public <span class="fstat-no" title="function not covered" >createTask(</span>taskData: Omit&lt;ADHDTask, 'id' | 'createdAt' | 'updatedAt'&gt;): ADHDTask {
     const tasks = <span class="cstat-no" title="statement not covered" >this.getTasks();</span>
-    const newTask: ADHDTask = <span class="cstat-no" title="statement not covered" >{</span>
+    const newTask<span class="cstat-no" title="statement not covered" >: ADHDTask = {</span>
       ...taskData,
       id: Date.now().toString(),
       createdAt: new Date(),
@@ -1755,7 +1755,7 @@ class ADHDTodoIntegrationService extends EventEmitter {
 &nbsp;
   public <span class="fstat-no" title="function not covered" >updateTask(</span>taskId: string, updates: Partial&lt;ADHDTask&gt;): ADHDTask | null {
     const tasks = <span class="cstat-no" title="statement not covered" >this.getTasks();</span>
-    const taskIndex = <span class="cstat-no" title="statement not covered" >tasks.findIndex(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.id === taskId)</span>;</span>
+    const taskIndex = <span class="cstat-no" title="statement not covered" >tasks.findIndex(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.id === taskId);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (taskIndex === -1) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
@@ -1777,7 +1777,7 @@ class ADHDTodoIntegrationService extends EventEmitter {
 &nbsp;
   private <span class="fstat-no" title="function not covered" >linkTaskToSession(</span>taskId: string, sessionId: string): void {
     const tasks = <span class="cstat-no" title="statement not covered" >this.getTasks();</span>
-    const task = <span class="cstat-no" title="statement not covered" >tasks.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.id === taskId)</span>;</span>
+    const task = <span class="cstat-no" title="statement not covered" >tasks.find(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.id === taskId);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (task) {</span>
 <span class="cstat-no" title="statement not covered" >      task.focusSessionIds = task.focusSessionIds || [];</span>
@@ -1793,16 +1793,16 @@ class ADHDTodoIntegrationService extends EventEmitter {
 &nbsp;
   public <span class="fstat-no" title="function not covered" >getTaskStats(</span>): any {
     const tasks = <span class="cstat-no" title="statement not covered" >this.getTasks();</span>
-    const completedTasks = <span class="cstat-no" title="statement not covered" >tasks.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.status === 'completed')</span>;</span>
+    const completedTasks = <span class="cstat-no" title="statement not covered" >tasks.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.status === 'completed');</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
       total: tasks.length,
       completed: completedTasks.length,
-      pending: tasks.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.status === 'pending')</span>.length,
-      inProgress: tasks.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.status === 'in-progress')</span>.length,
+      pending: tasks.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.status === 'pending').</span>length,
+      inProgress: tasks.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.status === 'in-progress').</span>length,
       averageCompletionTime:
         completedTasks.length &gt; 0
-          ? completedTasks.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, t) =&gt; <span class="cstat-no" title="statement not covered" >sum + (t.actualMinutes || 0),</span> 0) /
+          ? completedTasks.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, t<span class="cstat-no" title="statement not covered" >) =&gt; sum + (t.actualMinutes || 0), 0</span>) /
             completedTasks.length
           : 0,
       difficultyDistribution: tasks.reduce(
@@ -1825,7 +1825,7 @@ export const <span class="cstat-no" title="statement not covered" >adhdTodoInteg
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

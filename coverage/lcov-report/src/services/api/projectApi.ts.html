@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">42.85% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/7</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">42.85% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/7</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
@@ -101,7 +101,7 @@
 <a name='L36'></a><a href='#L36'>36</a>
 <a name='L37'></a><a href='#L37'>37</a>
 <a name='L38'></a><a href='#L38'>38</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -118,8 +118,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -136,9 +135,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/services/api/projectApi.ts
-import { api } from './apiConfig';
+<span class="cstat-no" title="statement not covered" >import { api } from './apiConfig';</span>
 &nbsp;
 interface Project {
   _id: string;
@@ -155,25 +155,25 @@ interface CreateProjectParams {
   lastUsed?: Date;
 }
 &nbsp;
-const projectApi = {
-  getUserProjects: <span class="fstat-no" title="function not covered" >async </span>(userId: string) =&gt; {
-<span class="cstat-no" title="statement not covered" >    return api.get(`/projects/user/${userId}`);</span>
+const projectApi = <span class="cstat-no" title="statement not covered" >{</span>
+<span class="fstat-no" title="function not covered" >  getUserProjects<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >:</span> <span class="fstat-no" title="function not covered" >a</span></span>sync (u</span>serId: string<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >) =&gt; {</span></span></span></span>
+    return api.get(`/projects/user/${userId}`);
   },
 &nbsp;
-  createProject: <span class="fstat-no" title="function not covered" >async </span>(projectData: CreateProjectParams) =&gt; {
-<span class="cstat-no" title="statement not covered" >    return api.post('/projects', projectData);</span>
+<span class="fstat-no" title="function not covered" >  createProject<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >:</span> <span class="fstat-no" title="function not covered" >a</span></span>sync (p</span>rojectData: CreateProjectParams<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >) =&gt; {</span></span></span></span>
+    return api.post('/projects', projectData);
   },
 &nbsp;
-  updateProject: <span class="fstat-no" title="function not covered" >async </span>(projectId: string, projectData: Partial&lt;Project&gt;) =&gt; {
-<span class="cstat-no" title="statement not covered" >    return api.put(`/projects/${projectId}`, projectData);</span>
+<span class="fstat-no" title="function not covered" >  updateProject<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >:</span> <span class="fstat-no" title="function not covered" >a</span></span>sync (p</span>rojectId: string, projectData: Partial&lt;Project&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >) =&gt; {</span></span></span></span>
+    return api.put(`/projects/${projectId}`, projectData);
   },
 &nbsp;
-  deleteProject: <span class="fstat-no" title="function not covered" >async </span>(projectId: string) =&gt; {
-<span class="cstat-no" title="statement not covered" >    return api.delete(`/projects/${projectId}`);</span>
+<span class="fstat-no" title="function not covered" >  deleteProject<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >:</span> <span class="fstat-no" title="function not covered" >a</span></span>sync (p</span>rojectId: string<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >) =&gt; {</span></span></span></span>
+    return api.delete(`/projects/${projectId}`);
   },
 };
 &nbsp;
-export default projectApi;
+<span class="cstat-no" title="statement not covered" >export default projectApi;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -181,7 +181,7 @@ export default projectApi;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

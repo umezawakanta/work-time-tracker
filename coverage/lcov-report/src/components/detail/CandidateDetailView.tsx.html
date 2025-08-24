@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/28</span>
+                <span class='fraction'>0/32</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/49</span>
+                <span class='fraction'>0/61</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/28</span>
+                <span class='fraction'>0/32</span>
             </div>
         
             
@@ -387,10 +387,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -559,8 +559,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -690,19 +690,19 @@ interface CandidateDetailViewProps {
   isPremium: boolean;
 }
 &nbsp;
-const CandidateDetailView: React.FC&lt;CandidateDetailViewProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span></span>
-  candidate,
-  onClose,
-  onEdit,
-  isPremium,
+const <span class="fstat-no" title="function not covered" >CandidateDetailView:</span> React.FC&lt;CandidateDetailViewProps&gt; = <span class="cstat-no" title="statement not covered" >({</span>
+  candidate<span class="cstat-no" title="statement not covered" >,</span>
+  onClose<span class="cstat-no" title="statement not covered" >,</span>
+  onEdit<span class="cstat-no" title="statement not covered" >,</span>
+  isPremium<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
   // 候補者名の頭文字を取得
-  const getInitials = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(n</span>ame: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getInitials </span>= <span class="cstat-no" title="statement not covered" >(name: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return name.charAt(0);</span>
   };
 &nbsp;
   // ステータスバッジの色を決定
-  const getStatusBadgeVariant = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tatus?: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getStatusBadgeVariant </span>= <span class="cstat-no" title="statement not covered" >(status?: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (status) {</span>
       case 'confirmed':
 <span class="cstat-no" title="statement not covered" >        return 'default';</span>
@@ -716,7 +716,7 @@ const CandidateDetailView: React.FC&lt;CandidateDetailViewProps&gt; = <span clas
   };
 &nbsp;
   // ステータスの日本語表示
-  const getStatusText = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tatus?: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getStatusText </span>= <span class="cstat-no" title="statement not covered" >(status?: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (status) {</span>
       case 'confirmed':
 <span class="cstat-no" title="statement not covered" >        return '確定';</span>
@@ -863,8 +863,8 @@ const CandidateDetailView: React.FC&lt;CandidateDetailViewProps&gt; = <span clas
                       &lt;div&gt;
                         &lt;h4 className="font-medium mb-2"&gt;過去の経歴&lt;/h4&gt;
                         &lt;ul className="list-disc pl-5 text-sm text-gray-700"&gt;
-                          {candidate.pastExperience.map(<span class="fstat-no" title="function not covered" >(e</span>xp, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                            &lt;li key={index}&gt;{e</span>xp}&lt;/li&gt;
+                          {candidate.pastExperience.map(<span class="fstat-no" title="function not covered" >(e</span>xp, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                            &lt;li key={index}&gt;{exp}&lt;/li&gt;
                           ))}
                         &lt;/ul&gt;
                       &lt;/div&gt;
@@ -982,7 +982,7 @@ const CandidateDetailView: React.FC&lt;CandidateDetailViewProps&gt; = <span clas
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

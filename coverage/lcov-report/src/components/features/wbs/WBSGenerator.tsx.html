@@ -25,21 +25,21 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/104</span>
+                <span class='fraction'>0/130</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/51</span>
+                <span class='fraction'>0/79</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/36</span>
+                <span class='fraction'>0/38</span>
             </div>
         
             
@@ -664,7 +664,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -696,14 +696,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -713,8 +713,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -735,8 +735,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -965,13 +965,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1137,6 +1136,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1202,9 +1202,9 @@ interface WBSGeneratorProps {
   onWBSGenerated?: (result: WBSGenerationResult) =&gt; void;
 }
 &nbsp;
-const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> onWBSGenerated }) =&gt; {</span>
-  const { user } = <span class="cstat-no" title="statement not covered" >useAuth();</span>
-  const [formData, setFormData] = <span class="cstat-no" title="statement not covered" >useState&lt;WBSGenerationRequest&gt;({</span>
+const <span class="fstat-no" title="function not covered" >WBSGenerator:</span> React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" title="statement not covered" >({ onWBSGenerated<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span>
+  const { user<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useAuth();</span></span>
+  const [formData<span class="cstat-no" title="statement not covered" >, s</span>etFormData<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;WBSGenerationRequest&gt;({</span>
     projectName: '',
     projectGoal: '',
     projectScope: '',
@@ -1213,22 +1213,22 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
     teamSize: 3,
     budget: 0,
     constraints: [],
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const [constraintInput, setConstraintInput] = <span class="cstat-no" title="statement not covered" >useState('');</span>
-  const [isGenerating, setIsGenerating] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [generationResult, setGenerationResult] = <span class="cstat-no" title="statement not covered" >useState&lt;WBSGenerationResult | null&gt;(null);</span>
-  const [showAdvanced, setShowAdvanced] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [constraintInput<span class="cstat-no" title="statement not covered" >, s</span>etConstraintInput<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isGenerating<span class="cstat-no" title="statement not covered" >, s</span>etIsGenerating<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [generationResult<span class="cstat-no" title="statement not covered" >, s</span>etGenerationResult<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;WBSGenerationResult | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showAdvanced<span class="cstat-no" title="statement not covered" >, s</span>etShowAdvanced<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // フォーム入力の処理
-  const handleInputChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(f</span>ield: keyof WBSGenerationRequest, value: any) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setFormData(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, [field]: value })</span>);</span>
+  const <span class="fstat-no" title="function not covered" >handleInputChange </span>= <span class="cstat-no" title="statement not covered" >(field: keyof WBSGenerationRequest, value: any) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setFormData(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, [field]: value }))</span>;</span>
   };
 &nbsp;
   // 制約条件の追加
-  const addConstraint = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >addConstraint </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (constraintInput.trim()) {</span>
-<span class="cstat-no" title="statement not covered" >      setFormData(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >      setFormData(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
         ...prev,
         constraints: [...(prev.constraints || []), constraintInput.trim()],
       }));
@@ -1237,36 +1237,36 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
   };
 &nbsp;
   // 制約条件の削除
-  const removeConstraint = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>ndex: number) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setFormData(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+  const <span class="fstat-no" title="function not covered" >removeConstraint </span>= <span class="cstat-no" title="statement not covered" >(index: number) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setFormData(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
-      constraints: prev.constraints?.filter(<span class="fstat-no" title="function not covered" >(_</span>, i) =&gt; <span class="cstat-no" title="statement not covered" >i !== index)</span> || [],
+      constraints: prev.constraints?.filter(<span class="fstat-no" title="function not covered" >(_</span>, i<span class="cstat-no" title="statement not covered" >) =&gt; i !== index) </span>|| [],
     }));
   };
 &nbsp;
   // WBS生成の実行
-  const generateWBS = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!formData.projectName.trim() || !formData.projectGoal.trim()) {</span>
-<span class="cstat-no" title="statement not covered" >      toast.error('プロジェクト名と目標は必須です');</span>
-<span class="cstat-no" title="statement not covered" >      return;</span>
+  const <span class="fstat-no" title="function not covered" >generateWBS<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>a</span></span>sync () =&gt; {</span></span></span></span>
+    if (!formData.projectName.trim() || !formData.projectGoal.trim()<span class="cstat-no" title="statement not covered" >) {</span>
+<span class="cstat-no" title="statement not covered" >      toast.error('プロジェクト名と目標は必須です');<span class="cstat-no" title="statement not covered" ></span></span>
+      return;
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    setIsGenerating(true);</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const result = <span class="cstat-no" title="statement not covered" >await WBSService.generateWBS(formData);</span>
+<span class="cstat-no" title="statement not covered" >    setIsGenerating(true);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+    try {
+      const <span class="cstat-no" title="statement not covered" >result = await W</span>BSService.generateWBS(formData);
 <span class="cstat-no" title="statement not covered" >      setGenerationResult(result);</span>
 <span class="cstat-no" title="statement not covered" >      onWBSGenerated?.(result);</span>
-<span class="cstat-no" title="statement not covered" >      toast.success(`WBSを生成しました！総工数: ${result.project.totalEstimatedHours}時間`);</span>
+<span class="cstat-no" title="statement not covered" >      toast.success(`WBSを生成しました！総工数: ${result.project.totalEstimatedHours}時間`);<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('WBS generation error:', error);</span>
-<span class="cstat-no" title="statement not covered" >      toast.error('WBS生成に失敗しました。もう一度お試しください。');</span>
+<span class="cstat-no" title="statement not covered" >      toast.error('WBS生成に失敗しました。もう一度お試しください。');<span class="cstat-no" title="statement not covered" ></span></span>
     } finally {
-<span class="cstat-no" title="statement not covered" >      setIsGenerating(false);</span>
+<span class="cstat-no" title="statement not covered" >      setIsGenerating(false);<span class="cstat-no" title="statement not covered" ></span></span>
     }
-  };
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
   // WBSツリーを再帰的に表示
-  const renderWBSTree = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(n</span>ode: WBSNode, depth = <span class="branch-0 cbranch-no" title="branch not covered" >0)</span> =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >renderWBSTree </span>= <span class="cstat-no" title="statement not covered" >(node: WBSNode, depth<span class="cstat-no" title="statement not covered" > = 0)</span> =&gt; {</span>
     const indentStyle = <span class="cstat-no" title="statement not covered" >{ paddingLeft: `${depth * 20}px` };</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return (</span>
@@ -1284,8 +1284,8 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
             &lt;p className="text-sm text-gray-600 mt-1"&gt;{node.description}&lt;/p&gt;
             {node.deliverables.length &gt; 0 &amp;&amp; (
               &lt;div className="flex flex-wrap gap-1 mt-2"&gt;
-                {node.deliverables.map(<span class="fstat-no" title="function not covered" >(d</span>eliverable, idx) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;Badge key={idx} v</span>ariant="secondary" className="text-xs"&gt;
+                {node.deliverables.map(<span class="fstat-no" title="function not covered" >(d</span>eliverable, idx<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;Badge key={idx} variant="secondary" className="text-xs"&gt;
                     {deliverable}
                   &lt;/Badge&gt;
                 ))}
@@ -1299,20 +1299,20 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
           &lt;/div&gt;
         &lt;/div&gt;
 &nbsp;
-        {node.children.map(<span class="fstat-no" title="function not covered" >(c</span>hild) =&gt; <span class="cstat-no" title="statement not covered" >renderWBSTree(child, depth + 1))</span>}
+        {node.children.map(<span class="fstat-no" title="function not covered" >(c</span>hild<span class="cstat-no" title="statement not covered" >) =&gt; renderWBSTree(child, depth + 1))}</span>
       &lt;/div&gt;
     );
   };
 &nbsp;
   // 優先度に応じたバッジ色
-  const getPriorityVariant = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>riority: number) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getPriorityVariant </span>= <span class="cstat-no" title="statement not covered" >(priority: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (priority &lt;= 2) <span class="cstat-no" title="statement not covered" >return 'destructive';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (priority &lt;= 3) <span class="cstat-no" title="statement not covered" >return 'default';</span></span>
 <span class="cstat-no" title="statement not covered" >    return 'secondary';</span>
   };
 &nbsp;
   // ステータスに応じたバッジ色
-  const getStatusVariant = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tatus: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getStatusVariant </span>= <span class="cstat-no" title="statement not covered" >(status: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (status) {</span>
       case 'completed':
 <span class="cstat-no" title="statement not covered" >        return 'default';</span>
@@ -1326,7 +1326,7 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
   };
 &nbsp;
   // ステータスラベル
-  const getStatusLabel = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tatus: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getStatusLabel </span>= <span class="cstat-no" title="statement not covered" >(status: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (status) {</span>
       case 'not_started':
 <span class="cstat-no" title="statement not covered" >        return '未着手';</span>
@@ -1342,12 +1342,12 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
   };
 &nbsp;
   // タスクリストをCSVでダウンロード
-  const downloadTasksCSV = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >downloadTasksCSV </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!generationResult) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
     const csvContent = <span class="cstat-no" title="statement not covered" >[</span>
       ['タスク名', '説明', '優先度', '予定時間', '期限', 'タグ'],
-      ...generationResult.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; <span class="cstat-no" title="statement not covered" >[</span>
+      ...generationResult.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt; [</span>
         task.task,
         task.note || '',
         task.priority.toString(),
@@ -1356,7 +1356,7 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
         task.tags?.join(';') || '',
       ]),
     ]
-      .map(<span class="fstat-no" title="function not covered" >(r</span>ow) =&gt; <span class="cstat-no" title="statement not covered" >row.map(<span class="fstat-no" title="function not covered" >(c</span>ell) =&gt; <span class="cstat-no" title="statement not covered" >`"${cell}"`)</span>.join(','))</span>
+      .map(<span class="fstat-no" title="function not covered" >(r</span>ow<span class="cstat-no" title="statement not covered" >) =&gt; row.map(<span class="fstat-no" title="function not covered" >(c</span>ell<span class="cstat-no" title="statement not covered" >) =&gt; `"${cell}"`)</span>.join(','))</span>
       .join('\n');
 &nbsp;
     const blob = <span class="cstat-no" title="statement not covered" >new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });</span>
@@ -1367,7 +1367,7 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
   };
 &nbsp;
   // WBSをJSON形式でコピー
-  const copyWBSToClipboard = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >copyWBSToClipboard </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!generationResult) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
     const wbsData = <span class="cstat-no" title="statement not covered" >{</span>
@@ -1409,7 +1409,7 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
               &lt;Input
                 id="projectName"
                 value={formData.projectName}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >handleInputChange('projectName', e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; handleInputChange('projectName', e.target.value)}</span>
                 placeholder="例: ECサイト開発プロジェクト"
               /&gt;
             &lt;/div&gt;
@@ -1417,7 +1417,7 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
               &lt;Label htmlFor="methodology"&gt;開発手法&lt;/Label&gt;
               &lt;Select
                 value={formData.methodology}
-                onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >handleInputChange('methodology', value)}</span>
+<span class="fstat-no" title="function not covered" >                onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; handleInputChange('methodology', value)}</span>
               &gt;
                 &lt;SelectTrigger&gt;
                   &lt;SelectValue /&gt;
@@ -1436,7 +1436,7 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
             &lt;Textarea
               id="projectGoal"
               value={formData.projectGoal}
-              onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >handleInputChange('projectGoal', e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >              onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; handleInputChange('projectGoal', e.target.value)}</span>
               placeholder="例: 顧客の購入体験を向上させるオンラインショッピングサイトを構築し、売上を20%向上させる"
               rows={3}
             /&gt;
@@ -1447,7 +1447,7 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
             &lt;Textarea
               id="projectScope"
               value={formData.projectScope}
-              onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >handleInputChange('projectScope', e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >              onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; handleInputChange('projectScope', e.target.value)}</span>
               placeholder="例: ユーザー登録、商品検索、決済機能、管理画面を含む。モバイルアプリは対象外。"
               rows={2}
             /&gt;
@@ -1457,7 +1457,7 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
           &lt;Button
             type="button"
             variant="ghost"
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowAdvanced(!showAdvanced)}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowAdvanced(!showAdvanced)}</span>
             className="w-full"
           &gt;
             詳細設定 {showAdvanced ? '▲' : '▼'}
@@ -1472,7 +1472,7 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
                   &lt;Input
                     id="timeline"
                     value={formData.timeline}
-                    onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >handleInputChange('timeline', e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                    onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; handleInputChange('timeline', e.target.value)}</span>
                     placeholder="例: 6ヶ月"
                   /&gt;
                 &lt;/div&gt;
@@ -1482,7 +1482,7 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
                     id="teamSize"
                     type="number"
                     value={formData.teamSize}
-                    onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >handleInputChange('teamSize', parseInt(e.target.value))}</span>
+<span class="fstat-no" title="function not covered" >                    onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; handleInputChange('teamSize', parseInt(e.target.value))}</span>
                     min="1"
                     max="20"
                   /&gt;
@@ -1493,7 +1493,7 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
                     id="budget"
                     type="number"
                     value={formData.budget}
-                    onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >handleInputChange('budget', parseInt(e.target.value))}</span>
+<span class="fstat-no" title="function not covered" >                    onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; handleInputChange('budget', parseInt(e.target.value))}</span>
                     placeholder="0"
                   /&gt;
                 &lt;/div&gt;
@@ -1505,21 +1505,21 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
                 &lt;div className="flex gap-2 mt-1"&gt;
                   &lt;Input
                     value={constraintInput}
-                    onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setConstraintInput(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                    onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setConstraintInput(e.target.value)}</span>
                     placeholder="制約条件を入力"
-                    onKeyDown={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.key === 'Enter' &amp;&amp; addConstraint()}</span>
+<span class="fstat-no" title="function not covered" >                    onKeyDown=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; e.key === 'Enter' &amp;&amp; addConstraint()}</span>
                   /&gt;
                   &lt;Button type="button" onClick={addConstraint} variant="outline"&gt;
                     追加
                   &lt;/Button&gt;
                 &lt;/div&gt;
                 &lt;div className="flex flex-wrap gap-2 mt-2"&gt;
-                  {formData.constraints?.map(<span class="fstat-no" title="function not covered" >(c</span>onstraint, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;Badge</span>
+                  {formData.constraints?.map(<span class="fstat-no" title="function not covered" >(c</span>onstraint, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                    &lt;Badge
                       key={index}
                       variant="secondary"
                       className="cursor-pointer"
-                      onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >removeConstraint(index)}</span>
+<span class="fstat-no" title="function not covered" >                      onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; removeConstraint(index)}</span>
                     &gt;
                       {constraint} ×
                     &lt;/Badge&gt;
@@ -1611,8 +1611,8 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
               &lt;/CardHeader&gt;
               &lt;CardContent&gt;
                 &lt;ul className="space-y-2"&gt;
-                  {generationResult.recommendations.map(<span class="fstat-no" title="function not covered" >(r</span>ec, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;li key={index} c</span>lassName="flex items-start gap-2"&gt;
+                  {generationResult.recommendations.map(<span class="fstat-no" title="function not covered" >(r</span>ec, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                    &lt;li key={index} className="flex items-start gap-2"&gt;
                       &lt;CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" /&gt;
                       &lt;span className="text-sm"&gt;{rec}&lt;/span&gt;
                     &lt;/li&gt;
@@ -1630,8 +1630,8 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
               &lt;/CardHeader&gt;
               &lt;CardContent&gt;
                 &lt;ul className="space-y-2"&gt;
-                  {generationResult.riskFactors.map(<span class="fstat-no" title="function not covered" >(r</span>isk, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;li key={index} c</span>lassName="flex items-start gap-2"&gt;
+                  {generationResult.riskFactors.map(<span class="fstat-no" title="function not covered" >(r</span>isk, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                    &lt;li key={index} className="flex items-start gap-2"&gt;
                       &lt;AlertCircle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" /&gt;
                       &lt;span className="text-sm"&gt;{risk}&lt;/span&gt;
                     &lt;/li&gt;
@@ -1670,8 +1670,8 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
             &lt;/CardHeader&gt;
             &lt;CardContent&gt;
               &lt;div className="space-y-2"&gt;
-                {generationResult.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>ask, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div key={task._id} c</span>lassName="flex items-center gap-3 p-3 border rounded-lg"&gt;
+                {generationResult.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>ask, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;div key={task._id} className="flex items-center gap-3 p-3 border rounded-lg"&gt;
                     &lt;div className="flex-1"&gt;
                       &lt;h4 className="font-medium"&gt;{task.task}&lt;/h4&gt;
                       {task.note &amp;&amp; &lt;p className="text-sm text-muted-foreground"&gt;{task.note}&lt;/p&gt;}
@@ -1684,8 +1684,8 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
                             {Math.round(task.estimatedDuration / 60)}時間
                           &lt;/Badge&gt;
                         )}
-                        {task.tags?.map(<span class="fstat-no" title="function not covered" >(t</span>ag, tagIndex) =&gt; (
-<span class="cstat-no" title="statement not covered" >                          &lt;Badge key={tagIndex} v</span>ariant="secondary" className="text-xs"&gt;
+                        {task.tags?.map(<span class="fstat-no" title="function not covered" >(t</span>ag, tagIndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                          &lt;Badge key={tagIndex} variant="secondary" className="text-xs"&gt;
                             {tag}
                           &lt;/Badge&gt;
                         ))}
@@ -1717,7 +1717,7 @@ const WBSGenerator: React.FC&lt;WBSGeneratorProps&gt; = <span class="cstat-no" t
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

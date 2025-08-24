@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/98</span>
+                <span class='fraction'>0/116</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/37</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/96</span>
+                <span class='fraction'>0/104</span>
             </div>
         
             
@@ -352,38 +352,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -393,10 +380,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -582,7 +582,7 @@ interface AccessibilityContextType {
 &nbsp;
 const AccessibilityContext = <span class="cstat-no" title="statement not covered" >createContext&lt;AccessibilityContextType | undefined&gt;(undefined);</span>
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >useAccessibilityContext = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useAccessibilityContext </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
   const context = <span class="cstat-no" title="statement not covered" >useContext(AccessibilityContext);</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!context) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('useAccessibilityContext must be used within AccessibilityProvider');</span>
@@ -594,23 +594,23 @@ interface AccessibilityProviderProps {
   children: React.ReactNode;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AccessibilityProvider: React.FC&lt;AccessibilityProviderProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> children }) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AccessibilityProvider:</span> React.FC&lt;AccessibilityProviderProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{ children<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span>
   const {
-    isHighContrast: baseHighContrast,
-    isReducedMotion: baseReducedMotion,
-    fontSize,
-    increaseFontSize,
-    decreaseFontSize,
-    resetFontSize,
-    announceToScreenReader: baseAnnounce,
+    isHighContrast: baseHighContrast<span class="cstat-no" title="statement not covered" >,</span>
+    isReducedMotion: baseReducedMotion<span class="cstat-no" title="statement not covered" >,</span>
+    fontSize<span class="cstat-no" title="statement not covered" >,</span>
+    increaseFontSize<span class="cstat-no" title="statement not covered" >,</span>
+    decreaseFontSize<span class="cstat-no" title="statement not covered" >,</span>
+    resetFontSize<span class="cstat-no" title="statement not covered" >,</span>
+    announceToScreenReader: baseAnnounce<span class="cstat-no" title="statement not covered" >,</span>
   } = <span class="cstat-no" title="statement not covered" >useAccessibility();</span>
 &nbsp;
-  const [isHighContrast, setIsHighContrast] = <span class="cstat-no" title="statement not covered" >useState(baseHighContrast);</span>
-  const [isReducedMotion, setIsReducedMotion] = <span class="cstat-no" title="statement not covered" >useState(baseReducedMotion);</span>
-  const [focusVisible, setFocusVisible] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [isHighContrast<span class="cstat-no" title="statement not covered" >, s</span>etIsHighContrast<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(baseHighContrast)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isReducedMotion<span class="cstat-no" title="statement not covered" >, s</span>etIsReducedMotion<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(baseReducedMotion)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [focusVisible<span class="cstat-no" title="statement not covered" >, s</span>etFocusVisible<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 高コントラストモードの切り替え
-  const toggleHighContrast = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const toggleHighContrast = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const newValue = <span class="cstat-no" title="statement not covered" >!isHighContrast;</span>
 <span class="cstat-no" title="statement not covered" >    setIsHighContrast(newValue);</span>
 <span class="cstat-no" title="statement not covered" >    document.documentElement.classList.toggle('high-contrast', newValue);</span>
@@ -624,7 +624,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
   }, [isHighContrast, baseAnnounce]);
 &nbsp;
   // モーション削減の切り替え
-  const toggleReducedMotion = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const toggleReducedMotion = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const newValue = <span class="cstat-no" title="statement not covered" >!isReducedMotion;</span>
 <span class="cstat-no" title="statement not covered" >    setIsReducedMotion(newValue);</span>
 <span class="cstat-no" title="statement not covered" >    document.documentElement.classList.toggle('reduce-motion', newValue);</span>
@@ -640,7 +640,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
 &nbsp;
   // 拡張スクリーンリーダー通知
   const announceToScreenReader = <span class="cstat-no" title="statement not covered" >useCallback(</span>
-<span class="fstat-no" title="function not covered" >    (m</span>essage: string, priority: 'polite' | 'assertive' = <span class="branch-0 cbranch-no" title="branch not covered" >'polite')</span> =&gt; {
+<span class="fstat-no" title="function not covered" >    (m</span>essage: string, <span class="cstat-no" title="statement not covered" >priority: 'polite' | 'assertive' = 'polite')</span> =&gt; {
       const announcement = <span class="cstat-no" title="statement not covered" >document.createElement('div');</span>
 <span class="cstat-no" title="statement not covered" >      announcement.setAttribute('aria-live', priority);</span>
 <span class="cstat-no" title="statement not covered" >      announcement.setAttribute('aria-atomic', 'true');</span>
@@ -648,7 +648,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
 <span class="cstat-no" title="statement not covered" >      announcement.textContent = message;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      document.body.appendChild(announcement);</span>
-<span class="cstat-no" title="statement not covered" >      setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >        document.body.removeChild(announcement);</span>
       }, 1000);
     },
@@ -656,7 +656,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
   );
 &nbsp;
   // メインコンテンツにスキップ
-  const skipToContent = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const skipToContent = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const mainContent = <span class="cstat-no" title="statement not covered" >document.querySelector('main') || document.querySelector('#main-content');</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (mainContent) {</span>
       (<span class="cstat-no" title="statement not covered" >mainContent as HTMLElement).focus();</span>
@@ -665,7 +665,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
   }, [announceToScreenReader]);
 &nbsp;
   // 次のタブ可能要素にフォーカス
-  const focusNextTabbable = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const focusNextTabbable = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const tabbableElements = <span class="cstat-no" title="statement not covered" >document.querySelectorAll(</span>
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
@@ -680,7 +680,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
   }, []);
 &nbsp;
   // 前のタブ可能要素にフォーカス
-  const focusPreviousTabbable = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const focusPreviousTabbable = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const tabbableElements = <span class="cstat-no" title="statement not covered" >document.querySelectorAll(</span>
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
@@ -695,8 +695,8 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
   }, []);
 &nbsp;
   // キーボードショートカット
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const handleKeyDown = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>vent: KeyboardEvent) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+    const <span class="fstat-no" title="function not covered" >handleKeyDown </span>= <span class="cstat-no" title="statement not covered" >(event: KeyboardEvent) =&gt; {</span>
       // Alt + S: メインコンテンツにスキップ
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (event.altKey &amp;&amp; event.key === 's') {</span>
 <span class="cstat-no" title="statement not covered" >        event.preventDefault();</span>
@@ -742,14 +742,14 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
       }
     };
 &nbsp;
-    const handleMouseDown = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleMouseDown </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setFocusVisible(false);</span>
     };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    document.addEventListener('keydown', handleKeyDown);</span>
 <span class="cstat-no" title="statement not covered" >    document.addEventListener('mousedown', handleMouseDown);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      document.removeEventListener('keydown', handleKeyDown);</span>
 <span class="cstat-no" title="statement not covered" >      document.removeEventListener('mousedown', handleMouseDown);</span>
     };
@@ -765,7 +765,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
   ]);
 &nbsp;
   // 初期設定の読み込み
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const savedHighContrast = <span class="cstat-no" title="statement not covered" >localStorage.getItem('accessibility-high-contrast') === 'true';</span>
     const savedReducedMotion = <span class="cstat-no" title="statement not covered" >localStorage.getItem('accessibility-reduced-motion') === 'true';</span>
 &nbsp;
@@ -802,7 +802,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

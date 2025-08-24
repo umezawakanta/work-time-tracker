@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>0/39</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/16</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
@@ -209,14 +209,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -286,7 +286,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -333,17 +333,17 @@ interface PullToRefreshProps {
  * 📱 モバイルファースト: プルツーリフレッシュコンポーネント
  * iOS/AndroidライクなプルツーリフレッシュUIを提供
  */
-export const <span class="cstat-no" title="statement not covered" >PullToRefresh: React.FC&lt;PullToRefreshProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  children,
-  onRefresh,
-  className,
-  threshold = <span class="branch-0 cbranch-no" title="branch not covered" >80,</span>
-  disabled = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span>
-  refreshText = <span class="branch-0 cbranch-no" title="branch not covered" >'プルして更新',</span>
-  releaseText = <span class="branch-0 cbranch-no" title="branch not covered" >'離して更新',</span>
-  loadingText = <span class="branch-0 cbranch-no" title="branch not covered" >'更新中...',</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >PullToRefresh:</span> React.FC&lt;PullToRefreshProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  children<span class="cstat-no" title="statement not covered" >,</span>
+  onRefresh<span class="cstat-no" title="statement not covered" >,</span>
+  className<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+  threshold<span class="cstat-no" title="statement not covered" > = 80<span class="cstat-no" title="statement not covered" >,</span></span>
+  disabled<span class="cstat-no" title="statement not covered" > = false<span class="cstat-no" title="statement not covered" >,</span></span>
+  refreshText<span class="cstat-no" title="statement not covered" > = 'プルして更新'<span class="cstat-no" title="statement not covered" >,</span></span>
+  releaseText<span class="cstat-no" title="statement not covered" > = '離して更新'<span class="cstat-no" title="statement not covered" >,</span></span>
+  loadingText<span class="cstat-no" title="statement not covered" > = '更新中...',</span>
 }) =&gt; {
-  const { containerRef, state, indicatorStyle, containerStyle } = <span class="cstat-no" title="statement not covered" >usePullToRefresh({</span>
+  const { containerRef<span class="cstat-no" title="statement not covered" >, state<span class="cstat-no" title="statement not covered" >, indicatorStyle<span class="cstat-no" title="statement not covered" >, containerStyle<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >usePullToRefresh({</span></span></span></span></span>
     onRefresh,
     threshold,
     disabled,
@@ -402,16 +402,16 @@ export const <span class="cstat-no" title="statement not covered" >PullToRefresh
 };
 &nbsp;
 // 📱 軽量版：シンプルなプルツーリフレッシュインジケーター
-export const <span class="cstat-no" title="statement not covered" >SimplePullToRefresh: React.FC&lt;{</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >SimplePullToRefresh:</span> React.FC&lt;{</span>
   isRefreshing: boolean;
   onRefresh: () =&gt; Promise&lt;void&gt;;
   children: React.ReactNode;
-}&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> isRefreshing, onRefresh, children }) =&gt; {</span>
-  const handleRefreshClick = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!isRefreshing) {</span>
-<span class="cstat-no" title="statement not covered" >      await onRefresh();</span>
+}&gt; = <span class="cstat-no" title="statement not covered" >({ isRefreshing<span class="cstat-no" title="statement not covered" >, onRefresh<span class="cstat-no" title="statement not covered" >, children<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span></span>
+  const <span class="fstat-no" title="function not covered" >handleRefreshClick<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>a</span></span>sync () =&gt; {</span></span></span></span>
+    if (!isRefreshing<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >) {</span></span>
+      await onRefresh()<span class="cstat-no" title="statement not covered" >;</span>
     }
-  };
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className="relative"&gt;
@@ -445,7 +445,7 @@ export const <span class="cstat-no" title="statement not covered" >SimplePullToR
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

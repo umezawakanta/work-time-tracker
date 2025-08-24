@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/31</span>
+                <span class='fraction'>0/38</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/28</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -209,11 +209,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -336,15 +336,15 @@ interface ProgressSectionProps {
 /**
  * タスクの進捗状況とインプット/アウトプットのバランスを表示するコンポーネント
  */
-const ProgressSection: FC&lt;ProgressSectionProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span></span>
-  completedCount,
-  totalCount,
-  progressPercentage,
-  inputCount,
-  outputCount,
+const <span class="fstat-no" title="function not covered" >ProgressSection:</span> FC&lt;ProgressSectionProps&gt; = <span class="cstat-no" title="statement not covered" >({</span>
+  completedCount<span class="cstat-no" title="statement not covered" >,</span>
+  totalCount<span class="cstat-no" title="statement not covered" >,</span>
+  progressPercentage<span class="cstat-no" title="statement not covered" >,</span>
+  inputCount<span class="cstat-no" title="statement not covered" >,</span>
+  outputCount<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
   // インプット/アウトプットのバランス計算
-  const { inputPercentage, outputPercentage } = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const { inputPercentage<span class="cstat-no" title="statement not covered" >, outputPercentage<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span></span></span>
     const totalTypeCount = <span class="cstat-no" title="statement not covered" >inputCount + outputCount;</span>
     const inputPerc = <span class="cstat-no" title="statement not covered" >totalTypeCount &gt; 0 ? Math.round((inputCount / totalTypeCount) * 100) : 50;</span>
     const outputPerc = <span class="cstat-no" title="statement not covered" >totalTypeCount &gt; 0 ? Math.round((outputCount / totalTypeCount) * 100) : 50;</span>
@@ -353,7 +353,7 @@ const ProgressSection: FC&lt;ProgressSectionProps&gt; = <span class="cstat-no" t
   }, [inputCount, outputCount]);
 &nbsp;
   // バランス評価
-  const balanceStatus = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const balanceStatus = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (totalCount === 0) <span class="cstat-no" title="statement not covered" >return 'noTasks';</span></span>
 &nbsp;
     const ratio = <span class="cstat-no" title="statement not covered" >inputCount / (outputCount || 1);</span>
@@ -364,7 +364,7 @@ const ProgressSection: FC&lt;ProgressSectionProps&gt; = <span class="cstat-no" t
   }, [inputCount, outputCount, totalCount]);
 &nbsp;
   // バランスに関するアドバイス
-  const balanceAdvice = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const balanceAdvice = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    switch (balanceStatus) {</span>
       case 'noTasks':
 <span class="cstat-no" title="statement not covered" >        return 'タスクを追加して生産性を記録しましょう';</span>
@@ -380,8 +380,8 @@ const ProgressSection: FC&lt;ProgressSectionProps&gt; = <span class="cstat-no" t
   }, [balanceStatus]);
 &nbsp;
   // inputWidthクラス名とoutputWidthクラス名を動的に生成
-  const inputWidthClass = <span class="cstat-no" title="statement not covered" >`inputWidth-${inputPercentage}`;</span>
-  const outputWidthClass = <span class="cstat-no" title="statement not covered" >`outputWidth-${outputPercentage}`;</span>
+  const inputWidthClass<span class="cstat-no" title="statement not covered" > = `inputWidth-${inputPercentage}`;</span>
+  const outputWidthClass<span class="cstat-no" title="statement not covered" > = `outputWidth-${outputPercentage}`;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;&gt;
@@ -454,7 +454,7 @@ const ProgressSection: FC&lt;ProgressSectionProps&gt; = <span class="cstat-no" t
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

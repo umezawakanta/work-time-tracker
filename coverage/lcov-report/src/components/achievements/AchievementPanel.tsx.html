@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/38</span>
+                <span class='fraction'>0/47</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/39</span>
             </div>
         
             
@@ -322,12 +322,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -558,21 +558,21 @@ const categoryIcons = <span class="cstat-no" title="statement not covered" >{</s
   special: Zap,
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AchievementPanel: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AchievementPanel:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
   const {
-    achievements,
-    userStats,
-    getLevelInfo,
-    getAchievementProgress,
-    unlockedAchievements,
-    lockedAchievements,
+    achievements<span class="cstat-no" title="statement not covered" >,</span>
+    userStats<span class="cstat-no" title="statement not covered" >,</span>
+    getLevelInfo<span class="cstat-no" title="statement not covered" >,</span>
+    getAchievementProgress<span class="cstat-no" title="statement not covered" >,</span>
+    unlockedAchievements<span class="cstat-no" title="statement not covered" >,</span>
+    lockedAchievements<span class="cstat-no" title="statement not covered" >,</span>
   } = <span class="cstat-no" title="statement not covered" >useAchievements();</span>
 &nbsp;
-  const [activeCategory, setActiveCategory] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('all');</span>
+  const [activeCategory<span class="cstat-no" title="statement not covered" >, s</span>etActiveCategory<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('all')<span class="cstat-no" title="statement not covered" >;</span></span>
   const levelInfo = <span class="cstat-no" title="statement not covered" >getLevelInfo();</span>
 &nbsp;
   // カテゴリ別に実績を分類
-  const achievementsByCategory = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const achievementsByCategory = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const categorized = <span class="cstat-no" title="statement not covered" >achievements.reduce(</span>
 <span class="fstat-no" title="function not covered" >      (a</span>cc, achievement) =&gt; {
         const category = <span class="cstat-no" title="statement not covered" >achievement.category;</span>
@@ -587,7 +587,7 @@ export const <span class="cstat-no" title="statement not covered" >AchievementPa
   }, [achievements]);
 &nbsp;
   // フィルタリングされた実績
-  const filteredAchievements = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const filteredAchievements = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (activeCategory === 'all') <span class="cstat-no" title="statement not covered" >return achievements;</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (activeCategory === 'unlocked') <span class="cstat-no" title="statement not covered" >return unlockedAchievements;</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (activeCategory === 'locked') <span class="cstat-no" title="statement not covered" >return lockedAchievements;</span></span>
@@ -600,7 +600,7 @@ export const <span class="cstat-no" title="statement not covered" >AchievementPa
     achievementsByCategory,
   ]);
 &nbsp;
-  const resetAchievements = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >resetAchievements </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (confirm('すべての実績をリセットしますか？この操作は取り消せません。')) {</span>
       // リセット機能の実装
     }
@@ -784,7 +784,7 @@ export const <span class="cstat-no" title="statement not covered" >AchievementPa
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/53</span>
+                <span class='fraction'>0/58</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/41</span>
+                <span class='fraction'>0/46</span>
             </div>
         
             
@@ -247,11 +247,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -410,28 +410,28 @@ interface TodoProgressProps {
  * Todo Progress Component
  * Displays completion progress and input/output balance
  */
-export const <span class="cstat-no" title="statement not covered" >TodoProgress: React.FC&lt;TodoProgressProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  completedCount,
-  totalCount,
-  progressPercentage,
-  inputCount,
-  outputCount,
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >TodoProgress:</span> React.FC&lt;TodoProgressProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  completedCount<span class="cstat-no" title="statement not covered" >,</span>
+  totalCount<span class="cstat-no" title="statement not covered" >,</span>
+  progressPercentage<span class="cstat-no" title="statement not covered" >,</span>
+  inputCount<span class="cstat-no" title="statement not covered" >,</span>
+  outputCount<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
-  const getProgressColorClass = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>ercentage: number): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getProgressColorClass </span>= <span class="cstat-no" title="statement not covered" >(percentage: number): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (percentage &gt;= 80) <span class="cstat-no" title="statement not covered" >return styles.progressGreen;</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (percentage &gt;= 60) <span class="cstat-no" title="statement not covered" >return styles.progressBlue;</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (percentage &gt;= 40) <span class="cstat-no" title="statement not covered" >return styles.progressYellow;</span></span>
 <span class="cstat-no" title="statement not covered" >    return styles.progressRed;</span>
   };
 &nbsp;
-  const getProgressTextColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>ercentage: number): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getProgressTextColor </span>= <span class="cstat-no" title="statement not covered" >(percentage: number): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (percentage &gt;= 80) <span class="cstat-no" title="statement not covered" >return 'text-green-600';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (percentage &gt;= 60) <span class="cstat-no" title="statement not covered" >return 'text-blue-600';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (percentage &gt;= 40) <span class="cstat-no" title="statement not covered" >return 'text-yellow-600';</span></span>
 <span class="cstat-no" title="statement not covered" >    return 'text-red-600';</span>
   };
 &nbsp;
-  const getProgressMessage = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>ercentage: number): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getProgressMessage </span>= <span class="cstat-no" title="statement not covered" >(percentage: number): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (percentage === 100) <span class="cstat-no" title="statement not covered" >return '🎉 完璧です！';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (percentage &gt;= 80) <span class="cstat-no" title="statement not covered" >return '💪 素晴らしい進捗です！';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (percentage &gt;= 60) <span class="cstat-no" title="statement not covered" >return '👍 順調に進んでいます';</span></span>
@@ -440,7 +440,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoProgress:
 <span class="cstat-no" title="statement not covered" >    return '📝 タスクを開始しましょう';</span>
   };
 &nbsp;
-  const getBalanceStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): {</span></span>
+  const <span class="fstat-no" title="function not covered" >getBalanceStatus </span>= <span class="cstat-no" title="statement not covered" >(): {</span>
     status: 'balanced' | 'input-heavy' | 'output-heavy';
     message: string;
   } =&gt; {
@@ -460,7 +460,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoProgress:
   };
 &nbsp;
   // Round progress to nearest 5% for data attribute matching
-  const getRoundedProgress = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>ercentage: number): number =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getRoundedProgress </span>= <span class="cstat-no" title="statement not covered" >(percentage: number): number =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return Math.round(percentage / 5) * 5;</span>
   };
 &nbsp;
@@ -562,7 +562,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoProgress:
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

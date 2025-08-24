@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/42</span>
+                <span class='fraction'>0/57</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/40</span>
+                <span class='fraction'>0/45</span>
             </div>
         
             
@@ -491,24 +491,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -516,9 +509,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -529,6 +523,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -570,8 +570,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -866,23 +866,23 @@ interface TodoSettingsProps {
   isPremium?: boolean;
 }
 &nbsp;
-const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span></span>
-  isOpen,
-  onClose,
-  settings,
-  onSave,
-  isPremium = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span>
+const <span class="fstat-no" title="function not covered" >TodoSettings:</span> React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" title="statement not covered" >({</span>
+  isOpen<span class="cstat-no" title="statement not covered" >,</span>
+  onClose<span class="cstat-no" title="statement not covered" >,</span>
+  settings<span class="cstat-no" title="statement not covered" >,</span>
+  onSave<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+  isPremium<span class="cstat-no" title="statement not covered" > = false,</span>
 }) =&gt; {
-  const [updated, setUpdated] = <span class="cstat-no" title="statement not covered" >useState&lt;TodoSettingsType&gt;(settings);</span>
-  const [activeTab, setActiveTab] = <span class="cstat-no" title="statement not covered" >useState('general');</span>
-  const [hasChanges, setHasChanges] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [updated<span class="cstat-no" title="statement not covered" >, s</span>etUpdated<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;TodoSettingsType&gt;(settings)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [activeTab<span class="cstat-no" title="statement not covered" >, s</span>etActiveTab<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('general')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [hasChanges<span class="cstat-no" title="statement not covered" >, s</span>etHasChanges<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const _update = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >&lt;K extends keyof TodoSettingsType&gt;(</span></span>
+  const <span class="fstat-no" title="function not covered" >_update </span>= <span class="cstat-no" title="statement not covered" >&lt;K extends keyof TodoSettingsType&gt;(</span>
     category: K,
     field: keyof TodoSettingsType[K],
     value: TodoSettingsType[K][keyof TodoSettingsType[K]]
   ) =&gt; {
-<span class="cstat-no" title="statement not covered" >    setUpdated(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >    setUpdated(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       [category]: {
         ...(prev[category] as object),
@@ -892,13 +892,13 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
 <span class="cstat-no" title="statement not covered" >    setHasChanges(true);</span>
   };
 &nbsp;
-  const _handleSave = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >_handleSave </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    onSave(updated);</span>
 <span class="cstat-no" title="statement not covered" >    setHasChanges(false);</span>
 <span class="cstat-no" title="statement not covered" >    onClose();</span>
   };
 &nbsp;
-  const _handleCancel = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >_handleCancel </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setUpdated(settings);</span>
 <span class="cstat-no" title="statement not covered" >    setHasChanges(false);</span>
 <span class="cstat-no" title="statement not covered" >    onClose();</span>
@@ -946,8 +946,8 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                 &lt;Label htmlFor="theme"&gt;Theme&lt;/Label&gt;
                 &lt;Select
                   value={updated.theme}
-                  onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt;
-<span class="cstat-no" title="statement not covered" >                    _update(</span>
+<span class="fstat-no" title="function not covered" >                  onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                    _update(
                       'theme',
                       'theme' as keyof TodoSettingsType['theme'],
                       value as 'light' | 'dark' | 'system'
@@ -977,7 +977,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                 &lt;Switch
                   id="notifications-enabled"
                   checked={updated.notifications.enabled}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >_update('notifications', 'enabled', checked)}</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; _update('notifications', 'enabled', checked)}</span>
                 /&gt;
               &lt;/div&gt;
 &nbsp;
@@ -991,7 +991,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                     &lt;Switch
                       id="notifications-sound"
                       checked={updated.notifications.sound}
-                      onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >_update('notifications', 'sound', checked)}</span>
+<span class="fstat-no" title="function not covered" >                      onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; _update('notifications', 'sound', checked)}</span>
                     /&gt;
                   &lt;/div&gt;
 &nbsp;
@@ -1005,7 +1005,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                     &lt;Switch
                       id="notifications-desktop"
                       checked={updated.notifications.desktop}
-                      onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >_update('notifications', 'desktop', checked)}</span>
+<span class="fstat-no" title="function not covered" >                      onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; _update('notifications', 'desktop', checked)}</span>
                       disabled={!isPremium}
                     /&gt;
                   &lt;/div&gt;
@@ -1032,7 +1032,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                       id="work-start"
                       type="time"
                       value={updated.workingHours.start}
-                      onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >_update('workingHours', 'start', e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                      onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; _update('workingHours', 'start', e.target.value)}</span>
                       className="w-full px-3 py-2 border rounded-md"
                       aria-label="Start Time"
                     /&gt;
@@ -1043,7 +1043,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                       id="work-end"
                       type="time"
                       value={updated.workingHours.end}
-                      onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >_update('workingHours', 'end', e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                      onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; _update('workingHours', 'end', e.target.value)}</span>
                       className="w-full px-3 py-2 border rounded-md"
                       aria-label="End Time"
                     /&gt;
@@ -1062,7 +1062,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                     &lt;Switch
                       id="breaks-enabled"
                       checked={updated.breaks.enabled}
-                      onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >_update('breaks', 'enabled', checked)}</span>
+<span class="fstat-no" title="function not covered" >                      onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; _update('breaks', 'enabled', checked)}</span>
                     /&gt;
                   &lt;/div&gt;
 &nbsp;
@@ -1076,7 +1076,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                           min="5"
                           max="60"
                           value={updated.breaks.duration}
-                          onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >_update('breaks', 'duration', parseInt(e.target.value))}</span>
+<span class="fstat-no" title="function not covered" >                          onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; _update('breaks', 'duration', parseInt(e.target.value))}</span>
                           className="w-full px-3 py-2 border rounded-md"
                           aria-label="Break Duration in minutes"
                         /&gt;
@@ -1089,7 +1089,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                           min="30"
                           max="180"
                           value={updated.breaks.interval}
-                          onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >_update('breaks', 'interval', parseInt(e.target.value))}</span>
+<span class="fstat-no" title="function not covered" >                          onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; _update('breaks', 'interval', parseInt(e.target.value))}</span>
                           className="w-full px-3 py-2 border rounded-md"
                           aria-label="Break Interval in minutes"
                         /&gt;
@@ -1111,7 +1111,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                 &lt;Switch
                   id="auto-save"
                   checked={updated.dataSync.autoSave}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >_update('dataSync', 'autoSave', checked)}</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; _update('dataSync', 'autoSave', checked)}</span>
                 /&gt;
               &lt;/div&gt;
 &nbsp;
@@ -1119,7 +1119,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                 &lt;Label htmlFor="sync-interval"&gt;蜷梧悄髢馴囈・育ｧ抵ｼ・&lt;/Label&gt;
                 &lt;Select
                   value={updated.dataSync.syncInterval.toString()}
-                  onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >_update('dataSync', 'syncInterval', parseInt(value))}</span>
+<span class="fstat-no" title="function not covered" >                  onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; _update('dataSync', 'syncInterval', parseInt(value))}</span>
                 &gt;
                   &lt;SelectTrigger id="sync-interval"&gt;
                     &lt;SelectValue /&gt;
@@ -1145,7 +1145,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                 &lt;Switch
                   id="share-analytics"
                   checked={updated.privacy.shareAnalytics}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >_update('privacy', 'shareAnalytics', checked)}</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; _update('privacy', 'shareAnalytics', checked)}</span>
                 /&gt;
               &lt;/div&gt;
 &nbsp;
@@ -1159,7 +1159,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
                 &lt;Switch
                   id="public-profile"
                   checked={updated.privacy.showPublicProfile}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >_update('privacy', 'showPublicProfile', checked)}</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; _update('privacy', 'showPublicProfile', checked)}</span>
                   disabled={!isPremium}
                 /&gt;
               &lt;/div&gt;
@@ -1198,7 +1198,7 @@ const TodoSettings: React.FC&lt;TodoSettingsProps&gt; = <span class="cstat-no" t
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

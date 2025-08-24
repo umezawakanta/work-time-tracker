@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/65</span>
+                <span class='fraction'>0/63</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/64</span>
+                <span class='fraction'>0/61</span>
             </div>
         
             
@@ -327,20 +327,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -349,10 +339,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -559,18 +559,18 @@ export interface TokenValidationResult {
 /**
  * セキュリティマネージャークラス
  */
-<span class="cstat-no" title="statement not covered" >export class S</span>ecurityManager {
+<span class="cstat-no" title="statement not covered" >export class S</span>ecurityManager<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
   private static <span class="cstat-no" title="statement not covered" >instance: SecurityManager | null = n</span>ull;
-  private <span class="cstat-no" title="statement not covered" >logger = ApiLogger.getInstance();</span>
-  private <span class="cstat-no" title="statement not covered" >rateLimiter: RateLimiter;</span>
-  private <span class="cstat-no" title="statement not covered" >tokenValidator: TokenValidator;</span>
-  private <span class="cstat-no" title="statement not covered" >initialized = false;</span>
-  private <span class="cstat-no" title="statement not covered" >securityRules: Record&lt;string, unknown&gt; = {};</span>
+  private logger = ApiLogger.getInstance();
+  private rateLimiter: RateLimiter;
+  private tokenValidator: TokenValidator;
+  private initialized = false;
+  private securityRules: Record&lt;string, unknown&gt; = {};
 &nbsp;
   /**
    * シングルトンインスタンスを取得
    */
-  public <span class="fstat-no" title="function not covered" >static </span>getInstance(): SecurityManager {
+  public static <span class="fstat-no" title="function not covered" >getInstance(</span>): SecurityManager {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!SecurityManager.instance) {</span>
 <span class="cstat-no" title="statement not covered" >      SecurityManager.instance = new SecurityManager();</span>
     }
@@ -580,13 +580,13 @@ export interface TokenValidationResult {
   /**
    * コンストラクタ
    */
-<span class="fstat-no" title="function not covered" >  private constructor() {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  private constructor() {</span></span>
 <span class="cstat-no" title="statement not covered" >    this.logger.setContext('SecurityManager');</span>
 <span class="cstat-no" title="statement not covered" >    this.rateLimiter = new RateLimiter();</span>
 <span class="cstat-no" title="statement not covered" >    this.tokenValidator = new TokenValidator();</span>
   }
 &nbsp;
-  /**
+<span class="cstat-no" title="statement not covered" >  /**</span>
    * 初期化
    */
   public <span class="fstat-no" title="function not covered" >initialize(</span>): void {
@@ -772,7 +772,7 @@ export interface TokenValidationResult {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/88</span>
+                <span class='fraction'>0/98</span>
             </div>
         
             
@@ -809,7 +809,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -838,6 +837,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -927,12 +927,12 @@ interface AssetLiabilityTrendChartProps {
   data: DataPoint[];
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >A</span>ssetLiabilityTrendChart(</span>{ data }: AssetLiabilityTrendChartProps) {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >A</span>ssetLiabilityTrendChart(</span>{ data<span class="cstat-no" title="statement not covered" > }: AssetLiabilityTrendChartProps) {</span>
   const chartRef = <span class="cstat-no" title="statement not covered" >useRef&lt;ChartJS&lt;'line'&gt; | null&gt;(null);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const chart = <span class="cstat-no" title="statement not covered" >chartRef.current;</span>
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (chart) {</span>
 <span class="cstat-no" title="statement not covered" >        chart.destroy();</span>
       }
@@ -940,8 +940,8 @@ interface AssetLiabilityTrendChartProps {
   }, []);
 &nbsp;
   // 日付ごとにデータを処理して最新の値を使用
-  const processedData = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const sortedData = <span class="cstat-no" title="statement not covered" >data.sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >a.date.getTime() - b.date.getTime())</span>;</span>
+  const processedData = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+    const sortedData = <span class="cstat-no" title="statement not covered" >data.sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; a.date.getTime() - b.date.getTime());</span></span>
 &nbsp;
     // 口座ごとの日付→値のマッピングを作成
     const accountData: Record&lt;
@@ -965,13 +965,13 @@ interface AssetLiabilityTrendChartProps {
 &nbsp;
     // 日付の一覧を取得（重複なし、ソート済み）
     const allDates = <span class="cstat-no" title="statement not covered" >Array.from(</span>
-      new Set(sortedData.map(<span class="fstat-no" title="function not covered" >(d</span>) =&gt; <span class="cstat-no" title="statement not covered" >d.date.toISOString().split('T')[0])</span>)
+      new Set(sortedData.map(<span class="fstat-no" title="function not covered" >(d<span class="cstat-no" title="statement not covered" ></span>) =&gt; d.date.toISOString().split('T')[0]))</span>
     ).sort();
 &nbsp;
     // 口座と日付の組み合わせで最新のデータを生成
     const filledData: DataPoint[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    Object.entries(accountData).forEach(<span class="fstat-no" title="function not covered" >([</span>account, dateValues]) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    Object.entries(accountData).forEach(<span class="fstat-no" title="function not covered" >([a</span>ccount<span class="cstat-no" title="statement not covered" >, d</span>ateValues<span class="cstat-no" title="statement not covered" >]) =&gt;<span class="cstat-no" title="statement not covered" > </span>{</span></span>
       let lastValue = <span class="cstat-no" title="statement not covered" >0;</span>
       let type: 'asset' | 'debt' = <span class="cstat-no" title="statement not covered" >'asset';</span> // デフォルト値
 &nbsp;
@@ -996,7 +996,7 @@ interface AssetLiabilityTrendChartProps {
   }, [data]);
 &nbsp;
   // 日付ごとに資産と負債を集計
-  const aggregatedData = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const aggregatedData = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const aggregated: Record&lt;
       string,
       {
@@ -1035,10 +1035,10 @@ interface AssetLiabilityTrendChartProps {
       const entry = <span class="cstat-no" title="statement not covered" >aggregated[dateStr];</span>
 &nbsp;
       // 資産合計
-<span class="cstat-no" title="statement not covered" >      entry.totalAssets = Object.values(entry.assets).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, value) =&gt; <span class="cstat-no" title="statement not covered" >sum + value,</span> 0);</span>
+<span class="cstat-no" title="statement not covered" >      entry.totalAssets = Object.values(entry.assets).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, value<span class="cstat-no" title="statement not covered" >) =&gt; sum + value, 0</span>);</span>
 &nbsp;
       // 負債合計
-<span class="cstat-no" title="statement not covered" >      entry.totalDebts = Object.values(entry.debts).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, value) =&gt; <span class="cstat-no" title="statement not covered" >sum + value,</span> 0);</span>
+<span class="cstat-no" title="statement not covered" >      entry.totalDebts = Object.values(entry.debts).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, value<span class="cstat-no" title="statement not covered" >) =&gt; sum + value, 0</span>);</span>
 &nbsp;
       // 純資産
 <span class="cstat-no" title="statement not covered" >      entry.netWorth = entry.totalAssets - entry.totalDebts;</span>
@@ -1051,12 +1051,12 @@ interface AssetLiabilityTrendChartProps {
 &nbsp;
   // チャートデータの作成
   const chartData: ChartData&lt;'line'&gt; = <span class="cstat-no" title="statement not covered" >{</span>
-    labels: sortedDates.map(<span class="fstat-no" title="function not covered" >(d</span>ate) =&gt; <span class="cstat-no" title="statement not covered" >new Date(date))</span>,
+    labels: sortedDates.map(<span class="fstat-no" title="function not covered" >(d</span>ate<span class="cstat-no" title="statement not covered" >) =&gt; new Date(date)),</span>
     datasets: [
       // 資産合計のライン
       {
         label: '資産合計',
-        data: sortedDates.map(<span class="fstat-no" title="function not covered" >(d</span>ate) =&gt; <span class="cstat-no" title="statement not covered" >aggregatedData[date].totalAssets)</span>,
+        data: sortedDates.map(<span class="fstat-no" title="function not covered" >(d</span>ate<span class="cstat-no" title="statement not covered" >) =&gt; aggregatedData[date].totalAssets),</span>
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         fill: true,
@@ -1068,7 +1068,7 @@ interface AssetLiabilityTrendChartProps {
       // 負債合計のライン
       {
         label: '負債合計',
-        data: sortedDates.map(<span class="fstat-no" title="function not covered" >(d</span>ate) =&gt; <span class="cstat-no" title="statement not covered" >aggregatedData[date].totalDebts)</span>,
+        data: sortedDates.map(<span class="fstat-no" title="function not covered" >(d</span>ate<span class="cstat-no" title="statement not covered" >) =&gt; aggregatedData[date].totalDebts),</span>
         borderColor: 'rgba(255, 99, 132, 1)',
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         fill: true,
@@ -1080,7 +1080,7 @@ interface AssetLiabilityTrendChartProps {
       // 純資産のライン
       {
         label: '純資産',
-        data: sortedDates.map(<span class="fstat-no" title="function not covered" >(d</span>ate) =&gt; <span class="cstat-no" title="statement not covered" >aggregatedData[date].netWorth)</span>,
+        data: sortedDates.map(<span class="fstat-no" title="function not covered" >(d</span>ate<span class="cstat-no" title="statement not covered" >) =&gt; aggregatedData[date].netWorth),</span>
         borderColor: 'rgba(54, 162, 235, 1)',
         backgroundColor: 'rgba(54, 162, 235, 0.2)',
         borderDash: [5, 5],
@@ -1106,7 +1106,7 @@ interface AssetLiabilityTrendChartProps {
       },
       tooltip: {
         callbacks: {
-          label: <span class="fstat-no" title="function not covered" >function (c</span>ontext) {
+<span class="fstat-no" title="function not covered" >          label:</span> function (context) {
             let label = <span class="cstat-no" title="statement not covered" >context.dataset.label || '';</span>
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (label) {</span>
 <span class="cstat-no" title="statement not covered" >              label += ': ';</span>
@@ -1143,7 +1143,7 @@ interface AssetLiabilityTrendChartProps {
           },
         },
         ticks: {
-          callback: <span class="fstat-no" title="function not covered" >function (v</span>alue) {
+<span class="fstat-no" title="function not covered" >          callback:</span> function (value) {
 <span class="cstat-no" title="statement not covered" >            return format(new Date(value), 'MM/dd');</span>
           },
         },
@@ -1154,7 +1154,7 @@ interface AssetLiabilityTrendChartProps {
           text: '金額 (円)',
         },
         ticks: {
-          callback: <span class="fstat-no" title="function not covered" >function (v</span>alue: number | string) {
+<span class="fstat-no" title="function not covered" >          callback:</span> function (value: number | string) {
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof value === 'number') {</span>
 <span class="cstat-no" title="statement not covered" >              return value.toLocaleString() + '円';</span>
             }
@@ -1166,7 +1166,7 @@ interface AssetLiabilityTrendChartProps {
   };
 &nbsp;
   // 現在の残高情報を計算
-  const balanceSummary = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const balanceSummary = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (sortedDates.length === 0) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
     const latestDate = <span class="cstat-no" title="statement not covered" >sortedDates[sortedDates.length - 1];</span>
@@ -1187,7 +1187,7 @@ interface AssetLiabilityTrendChartProps {
       assets: {
         total: latest.totalAssets,
         change: assetChange,
-        accounts: Object.entries(latest.assets).map(<span class="fstat-no" title="function not covered" >([</span>account, value]) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+        accounts: Object.entries(latest.assets).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([a</span></span>ccount<span class="cstat-no" title="statement not covered" >, v</span>alue<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; ({</span></span>
           account,
           value,
           change: value - (previous.assets[account] || 0),
@@ -1196,7 +1196,7 @@ interface AssetLiabilityTrendChartProps {
       debts: {
         total: latest.totalDebts,
         change: debtChange,
-        accounts: Object.entries(latest.debts).map(<span class="fstat-no" title="function not covered" >([</span>account, value]) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+        accounts: Object.entries(latest.debts).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([a</span></span>ccount<span class="cstat-no" title="statement not covered" >, v</span>alue<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; ({</span></span>
           account,
           value,
           change: value - (previous.debts[account] || 0),
@@ -1219,8 +1219,8 @@ interface AssetLiabilityTrendChartProps {
       &lt;div className="current-balances"&gt;
         &lt;div className="balance-section assets"&gt;
           &lt;h2&gt;資産&lt;/h2&gt;
-          {balanceSummary.assets.accounts.map(<span class="fstat-no" title="function not covered" >(a</span>ccount) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;div key={account.account} c</span>lassName="balance-card asset"&gt;
+          {balanceSummary.assets.accounts.map(<span class="fstat-no" title="function not covered" >(a</span>ccount<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;div key={account.account} className="balance-card asset"&gt;
               &lt;h3 className="account-name"&gt;{account.account}&lt;/h3&gt;
               &lt;p className="balance-amount"&gt;{account.value.toLocaleString()} 円&lt;/p&gt;
               &lt;p className={`difference ${account.change &gt;= 0 ? 'positive' : 'negative'}`}&gt;
@@ -1246,8 +1246,8 @@ interface AssetLiabilityTrendChartProps {
 &nbsp;
         &lt;div className="balance-section liabilities"&gt;
           &lt;h2&gt;負債&lt;/h2&gt;
-          {balanceSummary.debts.accounts.map(<span class="fstat-no" title="function not covered" >(a</span>ccount) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;div key={account.account} c</span>lassName="balance-card liability"&gt;
+          {balanceSummary.debts.accounts.map(<span class="fstat-no" title="function not covered" >(a</span>ccount<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;div key={account.account} className="balance-card liability"&gt;
               &lt;h3 className="account-name"&gt;{account.account}&lt;/h3&gt;
               &lt;p className="balance-amount"&gt;{account.value.toLocaleString()} 円&lt;/p&gt;
               &lt;p className={`difference ${account.change &lt;= 0 ? 'positive' : 'negative'}`}&gt;
@@ -1300,7 +1300,7 @@ interface AssetLiabilityTrendChartProps {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

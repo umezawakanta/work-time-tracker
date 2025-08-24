@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/39</span>
+                <span class='fraction'>0/44</span>
             </div>
         
             
@@ -281,19 +281,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -307,6 +294,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -319,6 +318,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -368,23 +368,23 @@ const partyColors: { [key: string]: string } = <span class="cstat-no" title="sta
 };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >export default function <span class="fstat-no" title="function not covered" >D</span>istrictPage(</span>) {
-  const { prefecture, district: initialDistrict } = <span class="cstat-no" title="statement not covered" >useParams&lt;{</span>
+  const { prefecture<span class="cstat-no" title="statement not covered" >, district: initialDistrict<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useParams&lt;{</span></span></span>
     prefecture: string;
     district: string;
   }&gt;();
-  const [selectedDistrict, setSelectedDistrict] = <span class="cstat-no" title="statement not covered" >useState&lt;number | null&gt;(null);</span>
+  const [selectedDistrict<span class="cstat-no" title="statement not covered" >, s</span>etSelectedDistrict<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;number | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
   const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span>
-  const candidates = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.candidate.candidates)</span>;</span>
+  const candidates = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.candidate.candidates);</span></span>
 &nbsp;
-  const prefectureCandidates = <span class="cstat-no" title="statement not covered" >candidates.filter(<span class="fstat-no" title="function not covered" >(c</span>) =&gt; <span class="cstat-no" title="statement not covered" >c.prefecture === prefecture)</span>;</span>
+  const prefectureCandidates = <span class="cstat-no" title="statement not covered" >candidates.filter(<span class="fstat-no" title="function not covered" >(c<span class="cstat-no" title="statement not covered" ></span>) =&gt; c.prefecture === prefecture);</span></span>
 &nbsp;
   const districts = <span class="cstat-no" title="statement not covered" >Array.from(</span>
-    new Set(prefectureCandidates.map(<span class="fstat-no" title="function not covered" >(c</span>) =&gt; <span class="cstat-no" title="statement not covered" >c.district)</span>.filter(<span class="fstat-no" title="function not covered" >(d</span>): d is number =&gt; <span class="cstat-no" title="statement not covered" >d !== null)</span>)
-  ).sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >a - b)</span>;
+    new Set(prefectureCandidates.map(<span class="fstat-no" title="function not covered" >(c<span class="cstat-no" title="statement not covered" ></span>) =&gt; c.district).</span>filter(<span class="fstat-no" title="function not covered" >(d<span class="cstat-no" title="statement not covered" ></span>): d is number =&gt; d !== null))</span>
+  ).sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; a - b);</span>
 &nbsp;
-  const districtCandidates = <span class="cstat-no" title="statement not covered" >prefectureCandidates.filter(<span class="fstat-no" title="function not covered" >(c</span>) =&gt; <span class="cstat-no" title="statement not covered" >c.district === selectedDistrict)</span>;</span>
+  const districtCandidates = <span class="cstat-no" title="statement not covered" >prefectureCandidates.filter(<span class="fstat-no" title="function not covered" >(c<span class="cstat-no" title="statement not covered" ></span>) =&gt; c.district === selectedDistrict);</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const initialDistrictNumber = <span class="cstat-no" title="statement not covered" >parseInt(initialDistrict || '1', 10);</span>
 <span class="cstat-no" title="statement not covered" >    if (districts.includes(initialDistrictNumber)) {</span>
 <span class="cstat-no" title="statement not covered" >      setSelectedDistrict(initialDistrictNumber);</span>
@@ -394,7 +394,7 @@ const partyColors: { [key: string]: string } = <span class="cstat-no" title="sta
     }
   }, [initialDistrict, districts, prefecture, navigate]);
 &nbsp;
-  const handleDistrictChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>istrict: number) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleDistrictChange </span>= <span class="cstat-no" title="statement not covered" >(district: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setSelectedDistrict(district);</span>
 <span class="cstat-no" title="statement not covered" >    navigate(`/district/${prefecture}/${district}`);</span>
   };
@@ -413,14 +413,14 @@ const partyColors: { [key: string]: string } = <span class="cstat-no" title="sta
         &lt;div className="flex justify-center items-center space-x-2"&gt;
           &lt;Select
             value={selectedDistrict.toString()}
-            onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >handleDistrictChange(parseInt(value, 10))}</span>
+<span class="fstat-no" title="function not covered" >            onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; handleDistrictChange(parseInt(value, 10))}</span>
           &gt;
             &lt;SelectTrigger className="w-[200px]"&gt;
               &lt;SelectValue placeholder={`${prefecture} 第${selectedDistrict}区`} /&gt;
             &lt;/SelectTrigger&gt;
             &lt;SelectContent&gt;
-              {districts.map(<span class="fstat-no" title="function not covered" >(d</span>) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;SelectItem key={d} v</span>alue={d.toString()}&gt;
+              {districts.map(<span class="fstat-no" title="function not covered" >(d<span class="cstat-no" title="statement not covered" ></span>) =&gt; (</span>
+                &lt;SelectItem key={d} value={d.toString()}&gt;
                   {prefecture} 第{d}区
                 &lt;/SelectItem&gt;
               ))}
@@ -432,7 +432,7 @@ const partyColors: { [key: string]: string } = <span class="cstat-no" title="sta
       &lt;div className="grid grid-cols-1 md:grid-cols-3 gap-8"&gt;
         &lt;div className="md:col-span-2"&gt;
           &lt;HokkaidoMap
-            districts={districts.map(<span class="fstat-no" title="function not covered" >(d</span>) =&gt; (<span class="cstat-no" title="statement not covered" >{ id: d, name: `第${d}区` })</span>)}
+            districts={districts.map(<span class="fstat-no" title="function not covered" >(d<span class="cstat-no" title="statement not covered" ></span>) =&gt; ({ id: d, name: `第${d}区` }))</span>}
             selectedDistrict={selectedDistrict}
             onDistrictSelect={handleDistrictChange}
           /&gt;
@@ -455,8 +455,8 @@ const partyColors: { [key: string]: string } = <span class="cstat-no" title="sta
       &lt;h2 className="text-2xl font-bold mt-8 mb-4"&gt;予想される顔ぶれ&lt;/h2&gt;
       {districtCandidates.length &gt; 0 ? (
         &lt;div className="space-y-4"&gt;
-          {districtCandidates.map(<span class="fstat-no" title="function not covered" >(c</span>andidate) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;div</span>
+          {districtCandidates.map(<span class="fstat-no" title="function not covered" >(c</span>andidate<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;div
               key={candidate._id}
               className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow"
             &gt;
@@ -484,7 +484,7 @@ const partyColors: { [key: string]: string } = <span class="cstat-no" title="sta
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

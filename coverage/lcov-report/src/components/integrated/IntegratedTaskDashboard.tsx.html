@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/164</span>
+                <span class='fraction'>0/182</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/81</span>
+                <span class='fraction'>0/82</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/150</span>
+                <span class='fraction'>0/149</span>
             </div>
         
             
@@ -910,7 +910,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1084,7 +1084,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1171,9 +1171,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1354,7 +1354,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1376,8 +1375,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1454,6 +1453,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1636,18 +1636,18 @@ interface Achievement {
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >IntegratedTaskDashboard: React.FC&lt;{</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >IntegratedTaskDashboard:</span> React.FC&lt;{</span>
   isPremium?: boolean;
-}&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> isPremium = <span class="branch-0 cbranch-no" title="branch not covered" >false </span>}) =&gt; {</span>
+}&gt; = <span class="cstat-no" title="statement not covered" >({ isPremium<span class="cstat-no" title="statement not covered" > = false }) =&gt;<span class="cstat-no" title="statement not covered" > </span>{</span></span>
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
-  const { recordActivity } = <span class="cstat-no" title="statement not covered" >useUnifiedPageSync('integrated-tasks');</span>
+  const { recordActivity<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useUnifiedPageSync('integrated-tasks');</span></span>
 &nbsp;
   // Redux state
-  const todos = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.items)</span> || [];</span>
+  const todos = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.todo.items) </span>|| [];</span>
   const safeTodos = <span class="cstat-no" title="statement not covered" >Array.isArray(todos) ? todos : [];</span>
 &nbsp;
   // Local state
-  const [playerStats, setPlayerStats] = <span class="cstat-no" title="statement not covered" >useState&lt;PlayerStats&gt;({</span>
+  const [playerStats<span class="cstat-no" title="statement not covered" >, s</span>etPlayerStats<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;PlayerStats&gt;({</span>
     level: 1,
     currentXP: 0,
     totalXP: 0,
@@ -1658,21 +1658,21 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
     averageCompletionRate: 0,
     weeklyXP: 0,
     monthlyXP: 0,
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const [integratedTasks, setIntegratedTasks] = <span class="cstat-no" title="statement not covered" >useState&lt;DailyTask[]&gt;([]);</span>
-  const [achievements, setAchievements] = <span class="cstat-no" title="statement not covered" >useState&lt;Achievement[]&gt;([]);</span>
-  const [newTaskTitle, setNewTaskTitle] = <span class="cstat-no" title="statement not covered" >useState('');</span>
-  const [selectedTab, setSelectedTab] = <span class="cstat-no" title="statement not covered" >useState&lt;'tasks' | 'achievements' | 'stats'&gt;('tasks');</span>
+  const [integratedTasks<span class="cstat-no" title="statement not covered" >, s</span>etIntegratedTasks<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;DailyTask[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [achievements<span class="cstat-no" title="statement not covered" >, s</span>etAchievements<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Achievement[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [newTaskTitle<span class="cstat-no" title="statement not covered" >, s</span>etNewTaskTitle<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [selectedTab<span class="cstat-no" title="statement not covered" >, s</span>etSelectedTab<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;'tasks' | 'achievements' | 'stats'&gt;('tasks')<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 統合タスクの初期化
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    initializeIntegratedTasks();</span>
 <span class="cstat-no" title="statement not covered" >    loadPlayerStats();</span>
 <span class="cstat-no" title="statement not covered" >    loadAchievements();</span>
   }, [safeTodos]);
 &nbsp;
-  const initializeIntegratedTasks = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >initializeIntegratedTasks </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     // ゲーミフィケーションタスク
     const gamificationTasks: DailyTask[] = <span class="cstat-no" title="statement not covered" >[</span>
       {
@@ -1718,9 +1718,9 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
 &nbsp;
     // ToDoタスクをゲーミフィケーション形式に変換
     const todoTasks: DailyTask[] = <span class="cstat-no" title="statement not covered" >safeTodos</span>
-      .filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo &amp;&amp; todo._id &amp;&amp; !todo.completed &amp;&amp; isToday(todo.createdAt))</span>
+      .filter(<span class="fstat-no" title="function not covered" >(t</span>odo<span class="cstat-no" title="statement not covered" >) =&gt; todo &amp;&amp; todo._id &amp;&amp; !todo.completed &amp;&amp; isToday(todo.createdAt))</span>
       .slice(0, 7) // 最大7件
-      .map(<span class="fstat-no" title="function not covered" >(t</span>odo, index) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+      .map(<span class="fstat-no" title="function not covered" >(t</span>odo, index<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
         id: `todo-${todo._id}`,
         title: todo.task,
         description: todo.note || '詳細なし',
@@ -1738,13 +1738,13 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
 <span class="cstat-no" title="statement not covered" >    setIntegratedTasks([...gamificationTasks, ...todoTasks]);</span>
   };
 &nbsp;
-  const isToday = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ateString?: string): boolean =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >isToday </span>= <span class="cstat-no" title="statement not covered" >(dateString?: string): boolean =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!dateString) <span class="cstat-no" title="statement not covered" >return true;</span></span>
     const today = <span class="cstat-no" title="statement not covered" >new Date().toDateString();</span>
 <span class="cstat-no" title="statement not covered" >    return new Date(dateString).toDateString() === today;</span>
   };
 &nbsp;
-  const getCategoryFromTodo = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>odo: any): DailyTask['category'] =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getCategoryFromTodo </span>= <span class="cstat-no" title="statement not covered" >(todo: any): DailyTask['category'] =&gt; {</span>
     const title = <span class="cstat-no" title="statement not covered" >todo.task.toLowerCase();</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (title.includes('運動') || title.includes('健康')) <span class="cstat-no" title="statement not covered" >return 'health';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (title.includes('学習') || title.includes('勉強')) <span class="cstat-no" title="statement not covered" >return 'learning';</span></span>
@@ -1752,26 +1752,26 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
 <span class="cstat-no" title="statement not covered" >    return 'work';</span>
   };
 &nbsp;
-  const getDifficultyFromTodo = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>odo: any): DailyTask['difficulty'] =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getDifficultyFromTodo </span>= <span class="cstat-no" title="statement not covered" >(todo: any): DailyTask['difficulty'] =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (todo.priority &amp;&amp; todo.priority &gt; 4) <span class="cstat-no" title="statement not covered" >return 'hard';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (todo.priority &amp;&amp; todo.priority &gt; 2) <span class="cstat-no" title="statement not covered" >return 'medium';</span></span>
 <span class="cstat-no" title="statement not covered" >    return 'easy';</span>
   };
 &nbsp;
-  const getXPRewardFromTodo = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>odo: any): number =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getXPRewardFromTodo </span>= <span class="cstat-no" title="statement not covered" >(todo: any): number =&gt; {</span>
     const difficulty = <span class="cstat-no" title="statement not covered" >getDifficultyFromTodo(todo);</span>
     const baseXP = <span class="cstat-no" title="statement not covered" >{ easy: 15, medium: 25, hard: 40 };</span>
 <span class="cstat-no" title="statement not covered" >    return baseXP[difficulty];</span>
   };
 &nbsp;
-  const getPriorityFromTodo = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>odo: any): DailyTask['priority'] =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getPriorityFromTodo </span>= <span class="cstat-no" title="statement not covered" >(todo: any): DailyTask['priority'] =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (todo.isPrioritized) <span class="cstat-no" title="statement not covered" >return 'high';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (todo.priority &amp;&amp; todo.priority &gt; 3) <span class="cstat-no" title="statement not covered" >return 'high';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (todo.priority &amp;&amp; todo.priority &gt; 1) <span class="cstat-no" title="statement not covered" >return 'medium';</span></span>
 <span class="cstat-no" title="statement not covered" >    return 'low';</span>
   };
 &nbsp;
-  const loadPlayerStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >loadPlayerStats </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const saved = <span class="cstat-no" title="statement not covered" >localStorage.getItem('playerStats');</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (saved) {</span>
@@ -1782,7 +1782,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
     }
   };
 &nbsp;
-  const loadAchievements = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >loadAchievements </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const saved = <span class="cstat-no" title="statement not covered" >localStorage.getItem('achievements');</span>
 <span class="cstat-no" title="statement not covered" >      if (saved) {</span>
@@ -1830,11 +1830,11 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
     }
   };
 &nbsp;
-  const completeTask = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>askId: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setIntegratedTasks(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >      prev.map(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >completeTask </span>= <span class="cstat-no" title="statement not covered" >(taskId: string) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setIntegratedTasks(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+      prev.map(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (task.id === taskId &amp;&amp; !task.isCompleted) {</span>
-          const completedTask = <span class="cstat-no" title="statement not covered" >{</span>
+          const completedTask<span class="cstat-no" title="statement not covered" > = {</span>
             ...task,
             isCompleted: true,
             completedAt: new Date().toISOString(),
@@ -1878,7 +1878,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
     );
   };
 &nbsp;
-  const gainXP = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(a</span>mount: number, taskTitle: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >gainXP </span>= <span class="cstat-no" title="statement not covered" >(amount: number, taskTitle: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setPlayerStats(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; {</span>
       const newCurrentXP = <span class="cstat-no" title="statement not covered" >prev.currentXP + amount;</span>
       const newTotalXP = <span class="cstat-no" title="statement not covered" >prev.totalXP + amount;</span>
@@ -1897,7 +1897,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
 <span class="cstat-no" title="statement not covered" >        toast.success(`🎉 レベルアップ! レベル${newLevel}に到達しました！`);</span>
       }
 &nbsp;
-      const updatedStats = <span class="cstat-no" title="statement not covered" >{</span>
+      const updatedStats<span class="cstat-no" title="statement not covered" > = {</span>
         ...prev,
         level: newLevel,
         currentXP: remainingXP,
@@ -1915,14 +1915,14 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
     });
   };
 &nbsp;
-  const calculateXPForLevel = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(l</span>evel: number): number =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateXPForLevel </span>= <span class="cstat-no" title="statement not covered" >(level: number): number =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return Math.floor(100 * Math.pow(1.2, level - 1));</span>
   };
 &nbsp;
-  const updateAchievements = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>ventType: string, data?: any) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setAchievements(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >      prev.map(<span class="fstat-no" title="function not covered" >(a</span>chievement) =&gt; {</span>
-        let updated = <span class="cstat-no" title="statement not covered" >{ ...achievement };</span>
+  const <span class="fstat-no" title="function not covered" >updateAchievements </span>= <span class="cstat-no" title="statement not covered" >(eventType: string, data?: any) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setAchievements(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+      prev.map(<span class="fstat-no" title="function not covered" >(a</span>chievement) =&gt; {
+        let updated<span class="cstat-no" title="statement not covered" > = { ...achievement };</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        switch (achievement.id) {</span>
           case 'first-task':
@@ -1951,7 +1951,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
     );
   };
 &nbsp;
-  const addNewTask = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >addNewTask </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!newTaskTitle.trim()) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
     const newTask: DailyTask = <span class="cstat-no" title="statement not covered" >{</span>
@@ -1968,7 +1968,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
       type: 'both',
     };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    setIntegratedTasks(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >[...prev, newTask])</span>;</span>
+<span class="cstat-no" title="statement not covered" >    setIntegratedTasks(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; [...prev, newTask])</span>;</span>
 <span class="cstat-no" title="statement not covered" >    setNewTaskTitle('');</span>
 &nbsp;
     // ToDoとしても追加
@@ -1984,7 +1984,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
 <span class="cstat-no" title="statement not covered" >    toast.success('新しいタスクを追加しました！');</span>
   };
 &nbsp;
-  const getCategoryIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>ategory: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getCategoryIcon </span>= <span class="cstat-no" title="statement not covered" >(category: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (category) {</span>
       case 'work':
 <span class="cstat-no" title="statement not covered" >        return &lt;Gamepad2 className="h-4 w-4" /&gt;;</span>
@@ -2001,7 +2001,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
     }
   };
 &nbsp;
-  const getDifficultyColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ifficulty: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getDifficultyColor </span>= <span class="cstat-no" title="statement not covered" >(difficulty: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (difficulty) {</span>
       case 'easy':
 <span class="cstat-no" title="statement not covered" >        return 'text-green-600 bg-green-50';</span>
@@ -2014,8 +2014,8 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
     }
   };
 &nbsp;
-  const completedTasks = <span class="cstat-no" title="statement not covered" >integratedTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; <span class="cstat-no" title="statement not covered" >task.isCompleted)</span>;</span>
-  const pendingTasks = <span class="cstat-no" title="statement not covered" >integratedTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; <span class="cstat-no" title="statement not covered" >!task.isCompleted)</span>;</span>
+  const completedTasks = <span class="cstat-no" title="statement not covered" >integratedTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt; task.isCompleted);</span></span>
+  const pendingTasks = <span class="cstat-no" title="statement not covered" >integratedTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt; !task.isCompleted);</span></span>
   const completionRate =
 <span class="cstat-no" title="statement not covered" >    integratedTasks.length &gt; 0</span>
       ? Math.round((completedTasks.length / integratedTasks.length) * 100)
@@ -2078,7 +2078,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
       &lt;/CardHeader&gt;
 &nbsp;
       &lt;CardContent&gt;
-        &lt;Tabs value={selectedTab} onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue: any) =&gt; <span class="cstat-no" title="statement not covered" >setSelectedTab(value)}</span>&gt;
+        &lt;Tabs value={selectedTab} <span class="fstat-no" title="function not covered" >onValueChange=</span>{(value: any<span class="cstat-no" title="statement not covered" >) =&gt; setSelectedTab(value)}&gt;</span>
           &lt;TabsList className="grid w-full grid-cols-3 bg-gray-100"&gt;
             &lt;TabsTrigger value="tasks" className="flex items-center gap-2"&gt;
               &lt;CheckSquare className="h-4 w-4" /&gt;
@@ -2100,8 +2100,8 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
               &lt;Input
                 placeholder="新しいタスクを追加..."
                 value={newTaskTitle}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setNewTaskTitle(e.target.value)}</span>
-                onKeyPress={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.key === 'Enter' &amp;&amp; addNewTask()}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setNewTaskTitle(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                onKeyPress=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; e.key === 'Enter' &amp;&amp; addNewTask()}</span>
                 className="bg-white"
               /&gt;
               &lt;Button onClick={addNewTask} size="sm"&gt;
@@ -2111,8 +2111,8 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
 &nbsp;
             {/* タスクリスト */}
             &lt;div className="space-y-3"&gt;
-              {integratedTasks.map(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div</span>
+              {integratedTasks.map(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div
                   key={task.id}
                   className={cn(
                     'p-4 rounded-lg border transition-all duration-200',
@@ -2124,7 +2124,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
                   &lt;div className="flex items-start gap-3"&gt;
                     &lt;Checkbox
                       checked={task.isCompleted}
-                      onCheckedChange={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >!task.isCompleted &amp;&amp; completeTask(task.id)}</span>
+<span class="fstat-no" title="function not covered" >                      onCheckedChange<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; !task.isCompleted &amp;&amp; completeTask(task.id)}</span>
                       className="mt-1"
                     /&gt;
 &nbsp;
@@ -2200,8 +2200,8 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
 &nbsp;
           &lt;TabsContent value="achievements" className="mt-6"&gt;
             &lt;div className="grid grid-cols-1 md:grid-cols-2 gap-4"&gt;
-              {achievements.map(<span class="fstat-no" title="function not covered" >(a</span>chievement) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div</span>
+              {achievements.map(<span class="fstat-no" title="function not covered" >(a</span>chievement<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div
                   key={achievement.id}
                   className={cn(
                     'p-4 rounded-lg border',
@@ -2285,7 +2285,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
                   &lt;h4 className="font-semibold text-slate-900"&gt;アチーブメント&lt;/h4&gt;
                 &lt;/div&gt;
                 &lt;p className="text-2xl font-bold text-purple-600"&gt;
-                  {achievements.filter(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.unlocked)</span>.length}
+                  {achievements.filter(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; a.unlocked).</span>length}
                 &lt;/p&gt;
                 &lt;p className="text-sm text-gray-600"&gt;{achievements.length}個中&lt;/p&gt;
               &lt;/div&gt;
@@ -2314,7 +2314,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

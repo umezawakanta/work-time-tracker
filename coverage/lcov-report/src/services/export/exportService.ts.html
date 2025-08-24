@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/30</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
@@ -144,8 +144,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -153,15 +153,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -170,6 +166,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -182,7 +182,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -213,24 +213,24 @@ export interface ExportOptions {
   sections?: ('tasks' | 'metrics' | 'team' | 'timeline')[];
 }
 &nbsp;
-class ExportService {
-<span class="fstat-no" title="function not covered" >  async </span>exportData(data: any, options: ExportOptions, filename: string) {
-<span class="cstat-no" title="statement not covered" >    switch (options.format) {</span>
+class ExportService<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span></span>
+<span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >e</span>xportData<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>d</span></span>ata: any, options: ExportOptions, filename: string<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >) {</span></span></span></span>
+    switch (options.format<span class="cstat-no" title="statement not covered" >) {</span>
       case 'pdf':
-<span class="cstat-no" title="statement not covered" >        return this.exportToPDF(data, options, filename);</span>
+        return this.exportToPDF(data, options, filename)<span class="cstat-no" title="statement not covered" >;</span>
       case 'csv':
-<span class="cstat-no" title="statement not covered" >        return this.exportToCSV(data, filename);</span>
+        return this.exportToCSV(data, filename)<span class="cstat-no" title="statement not covered" >;</span>
       case 'xlsx':
-<span class="cstat-no" title="statement not covered" >        return this.exportToXLSX(data, filename);</span>
-      case 'json':
-<span class="cstat-no" title="statement not covered" >        return this.exportToJSON(data, filename);</span>
+        return this.exportToXLSX(data, filename)<span class="cstat-no" title="statement not covered" >;</span>
+      case 'json'<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >:</span></span>
+        return this.exportToJSON(data, filename)<span class="cstat-no" title="statement not covered" >;</span>
       default:
-<span class="cstat-no" title="statement not covered" >        throw new Error(`Unsupported format: ${options.format}`);</span>
+        throw new Error(`Unsupported format: ${options.format}`)<span class="cstat-no" title="statement not covered" >;</span>
     }
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >async </span>exportToPDF(data: any, options: ExportOptions, filename: string) {
-    const doc = <span class="cstat-no" title="statement not covered" >new jsPDF();</span>
+  private <span class="fstat-no" title="function not covered" >async <span class="fstat-no" title="function not covered" >e</span>xportToPDF<span class="cstat-no" title="statement not covered" >(</span>d</span>ata: any, options: ExportOptions, filename: string<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >) {</span></span>
+    const <span class="cstat-no" title="statement not covered" >doc = new jsPDF();</span>
 &nbsp;
     // ヘッダー
 <span class="cstat-no" title="statement not covered" >    doc.setFontSize(20);</span>
@@ -246,12 +246,12 @@ class ExportService {
       );
     }
 &nbsp;
-    const yPosition = <span class="cstat-no" title="statement not covered" >60;</span>
+    const <span class="cstat-no" title="statement not covered" >yPosition = 60;</span>
 &nbsp;
     // タスクセクション
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (options.sections?.includes('tasks') &amp;&amp; data.tasks) {</span>
       // ... (existing or future implementation)
-    }
+    }<span class="cstat-no" title="statement not covered" ></span>
   }
 &nbsp;
   private <span class="fstat-no" title="function not covered" >exportToCSV(</span>data: any, filename: string) {
@@ -277,7 +277,7 @@ class ExportService {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

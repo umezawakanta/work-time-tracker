@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/58</span>
+                <span class='fraction'>0/74</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/50</span>
+                <span class='fraction'>0/54</span>
             </div>
         
             
@@ -442,10 +442,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -720,8 +720,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -789,20 +789,20 @@ interface TaskAnalyticsProps {
  * タスク分析ダッシュボードコンポーネント
  * プレミアムユーザー向けの詳細な統計と分析を提供
  */
-export const <span class="cstat-no" title="statement not covered" >TaskAnalytics: React.FC&lt;TaskAnalyticsProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  stats,
-  dateRange,
-  setDateRange,
-  isPremium,
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >TaskAnalytics:</span> React.FC&lt;TaskAnalyticsProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  stats<span class="cstat-no" title="statement not covered" >,</span>
+  dateRange<span class="cstat-no" title="statement not covered" >,</span>
+  setDateRange<span class="cstat-no" title="statement not covered" >,</span>
+  isPremium<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
-  const [activeTab, setActiveTab] = <span class="cstat-no" title="statement not covered" >useState&lt;AnalyticsTab&gt;('overview');</span>
-  const [productivityScore, setProductivityScore] = <span class="cstat-no" title="statement not covered" >useState&lt;number&gt;(0);</span>
-  const [loadingInsights, setLoadingInsights] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
-  const [productivityTips, setProductivityTips] = <span class="cstat-no" title="statement not covered" >useState&lt;string[]&gt;([]);</span>
+  const [activeTab<span class="cstat-no" title="statement not covered" >, s</span>etActiveTab<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;AnalyticsTab&gt;('overview')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [productivityScore<span class="cstat-no" title="statement not covered" >, s</span>etProductivityScore<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;number&gt;(0)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [loadingInsights<span class="cstat-no" title="statement not covered" >, s</span>etLoadingInsights<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [productivityTips<span class="cstat-no" title="statement not covered" >, s</span>etProductivityTips<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 生産性スコアの計算
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const calculateScore = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+    const <span class="fstat-no" title="function not covered" >calculateScore </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
       // 基本的な完了率（0-50点）
       const completionScore = <span class="cstat-no" title="statement not covered" >Math.min(stats.completionRate, 100) * 0.5;</span>
 &nbsp;
@@ -820,7 +820,7 @@ export const <span class="cstat-no" title="statement not covered" >TaskAnalytics
     const targetScore = <span class="cstat-no" title="statement not covered" >calculateScore();</span>
     let currentScore = <span class="cstat-no" title="statement not covered" >0;</span>
 &nbsp;
-    const interval = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const interval = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      currentScore += 2;</span>
 <span class="cstat-no" title="statement not covered" >      setProductivityScore(Math.min(currentScore, targetScore));</span>
 &nbsp;
@@ -829,16 +829,16 @@ export const <span class="cstat-no" title="statement not covered" >TaskAnalytics
       }
     }, 30);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >clearInterval(interval);</span></span>
+<span class="cstat-no" title="statement not covered" >    return <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; c</span>learInterval(interval);</span></span>
   }, [stats]);
 &nbsp;
   // 生産性向上のヒントを取得
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (activeTab === 'insights' &amp;&amp; isPremium) {</span>
 <span class="cstat-no" title="statement not covered" >      setLoadingInsights(true);</span>
 &nbsp;
       // 実際の実装ではAPIからデータを取得
-<span class="cstat-no" title="statement not covered" >      setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
         const tips = <span class="cstat-no" title="statement not covered" >[</span>
           '完了率が最も高い曜日は水曜日です。重要なタスクをこの日に設定してみましょう。',
           `平均タスク完了時間は${
@@ -858,7 +858,7 @@ export const <span class="cstat-no" title="statement not covered" >TaskAnalytics
   }, [activeTab, isPremium, stats.averageCompletionTime]);
 &nbsp;
   // パフォーマンススコアの色を取得
-  const getScoreColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>core: number) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getScoreColor </span>= <span class="cstat-no" title="statement not covered" >(score: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (score &gt;= 80) <span class="cstat-no" title="statement not covered" >return 'text-green-600';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (score &gt;= 60) <span class="cstat-no" title="statement not covered" >return 'text-blue-600';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (score &gt;= 40) <span class="cstat-no" title="statement not covered" >return 'text-amber-600';</span></span>
@@ -866,7 +866,7 @@ export const <span class="cstat-no" title="statement not covered" >TaskAnalytics
   };
 &nbsp;
   // スコアのラベルを取得
-  const getScoreLabel = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>core: number) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getScoreLabel </span>= <span class="cstat-no" title="statement not covered" >(score: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (score &gt;= 80) <span class="cstat-no" title="statement not covered" >return '優秀';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (score &gt;= 60) <span class="cstat-no" title="statement not covered" >return '良好';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (score &gt;= 40) <span class="cstat-no" title="statement not covered" >return '平均的';</span></span>
@@ -884,7 +884,7 @@ export const <span class="cstat-no" title="statement not covered" >TaskAnalytics
             &lt;TabsTrigger
               value="day"
               className="text-xs py-1 px-2"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setDateRange('day')}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setDateRange('day')}</span>
               data-active={dateRange === 'day'}
             &gt;
               今日
@@ -892,7 +892,7 @@ export const <span class="cstat-no" title="statement not covered" >TaskAnalytics
             &lt;TabsTrigger
               value="week"
               className="text-xs py-1 px-2"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setDateRange('week')}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setDateRange('week')}</span>
               data-active={dateRange === 'week'}
             &gt;
               今週
@@ -900,7 +900,7 @@ export const <span class="cstat-no" title="statement not covered" >TaskAnalytics
             &lt;TabsTrigger
               value="month"
               className="text-xs py-1 px-2"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setDateRange('month')}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setDateRange('month')}</span>
               data-active={dateRange === 'month'}
             &gt;
               今月
@@ -908,7 +908,7 @@ export const <span class="cstat-no" title="statement not covered" >TaskAnalytics
             &lt;TabsTrigger
               value="year"
               className="text-xs py-1 px-2"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setDateRange('year')}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setDateRange('year')}</span>
               data-active={dateRange === 'year'}
             &gt;
               今年
@@ -918,7 +918,7 @@ export const <span class="cstat-no" title="statement not covered" >TaskAnalytics
       &lt;/div&gt;
 &nbsp;
       {/* 分析タブ */}
-      &lt;Tabs value={activeTab} onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >setActiveTab(value as AnalyticsTab)}</span>&gt;
+      &lt;Tabs value={activeTab} <span class="fstat-no" title="function not covered" >onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; setActiveTab(value as AnalyticsTab)}&gt;</span>
         &lt;TabsList className="grid grid-cols-4 mb-4"&gt;
           &lt;TabsTrigger value="overview"&gt;概要&lt;/TabsTrigger&gt;
           &lt;TabsTrigger value="productivity"&gt;生産性&lt;/TabsTrigger&gt;
@@ -1068,8 +1068,8 @@ export const <span class="cstat-no" title="statement not covered" >TaskAnalytics
                   &lt;/div&gt;
                 ) : (
                   &lt;ul className="space-y-3"&gt;
-                    {productivityTips.map(<span class="fstat-no" title="function not covered" >(t</span>ip, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;li key={index} c</span>lassName="flex items-start"&gt;
+                    {productivityTips.map(<span class="fstat-no" title="function not covered" >(t</span>ip, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                      &lt;li key={index} className="flex items-start"&gt;
                         &lt;ArrowUpRight className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5" /&gt;
                         &lt;span className="text-sm"&gt;{tip}&lt;/span&gt;
                       &lt;/li&gt;
@@ -1114,7 +1114,7 @@ export const <span class="cstat-no" title="statement not covered" >TaskAnalytics
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

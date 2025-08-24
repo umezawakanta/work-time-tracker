@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
@@ -856,7 +856,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -973,6 +972,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1003,7 +1003,7 @@
 } from 'lucide-react';
 &nbsp;
 // 完全な予定vs実績ビューレンダリング関数
-const renderVsActualView = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+const <span class="fstat-no" title="function not covered" >renderVsActualView </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
   // インターフェース定義（再定義）
   interface PlannedVsActualData {
     period: string;
@@ -1066,7 +1066,7 @@ const renderVsActualView = <span class="cstat-no" title="statement not covered" 
   }
 &nbsp;
   // サンプルデータ生成
-  const generateVsActualData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >generateVsActualData </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const monthlyData: PlannedVsActualData = <span class="cstat-no" title="statement not covered" >{</span>
       period: '2025-07',
       periodType: 'monthly',
@@ -1188,7 +1188,7 @@ const renderVsActualView = <span class="cstat-no" title="statement not covered" 
 <span class="cstat-no" title="statement not covered" >    return { monthlyData, categoryComparisons, timeSeriesData };</span>
   };
 &nbsp;
-  const { monthlyData, categoryComparisons, timeSeriesData } = <span class="cstat-no" title="statement not covered" >generateVsActualData();</span>
+  const { monthlyData<span class="cstat-no" title="statement not covered" >, categoryComparisons<span class="cstat-no" title="statement not covered" >, timeSeriesData<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >generateVsActualData();</span></span></span></span>
 &nbsp;
   // 洞察生成
   const insights: PerformanceInsight[] = <span class="cstat-no" title="statement not covered" >[</span>
@@ -1319,8 +1319,8 @@ const renderVsActualView = <span class="cstat-no" title="statement not covered" 
         &lt;/CardHeader&gt;
         &lt;CardContent&gt;
           &lt;div className="space-y-4"&gt;
-            {categoryComparisons.map(<span class="fstat-no" title="function not covered" >(c</span>ategory) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;div key={category.categoryName} c</span>lassName="border rounded-lg p-4"&gt;
+            {categoryComparisons.map(<span class="fstat-no" title="function not covered" >(c</span>ategory<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;div key={category.categoryName} className="border rounded-lg p-4"&gt;
                 &lt;div className="flex items-center justify-between mb-4"&gt;
                   &lt;div className="flex items-center gap-3"&gt;
                     &lt;span className="text-2xl"&gt;{category.categoryIcon}&lt;/span&gt;
@@ -1369,8 +1369,8 @@ const renderVsActualView = <span class="cstat-no" title="statement not covered" 
                   &lt;div className="mt-4"&gt;
                     &lt;div className="text-sm font-medium mb-2"&gt;完了バッジ:&lt;/div&gt;
                     &lt;div className="flex flex-wrap gap-2"&gt;
-                      {category.actual.completedBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                        &lt;Badge key={index} v</span>ariant="outline" className="text-xs"&gt;
+                      {category.actual.completedBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                        &lt;Badge key={index} variant="outline" className="text-xs"&gt;
                           ✅ {badge}
                         &lt;/Badge&gt;
                       ))}
@@ -1393,8 +1393,8 @@ const renderVsActualView = <span class="cstat-no" title="statement not covered" 
         &lt;/CardHeader&gt;
         &lt;CardContent&gt;
           &lt;div className="space-y-4"&gt;
-            {insights.map(<span class="fstat-no" title="function not covered" >(i</span>nsight, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;div</span>
+            {insights.map(<span class="fstat-no" title="function not covered" >(i</span>nsight, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;div
                 key={index}
                 className={`border rounded-lg p-4 ${
                   insight.type === 'success'
@@ -1434,8 +1434,8 @@ const renderVsActualView = <span class="cstat-no" title="statement not covered" 
                     &lt;div&gt;
                       &lt;div className="text-sm font-medium mb-2"&gt;推奨アクション:&lt;/div&gt;
                       &lt;ul className="text-sm space-y-1"&gt;
-                        {insight.actionItems.map(<span class="fstat-no" title="function not covered" >(a</span>ction, actionIndex) =&gt; (
-<span class="cstat-no" title="statement not covered" >                          &lt;li key={actionIndex} c</span>lassName="flex items-start gap-2"&gt;
+                        {insight.actionItems.map(<span class="fstat-no" title="function not covered" >(a</span>ction, actionIndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                          &lt;li key={actionIndex} className="flex items-start gap-2"&gt;
                             &lt;ArrowRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-blue-600" /&gt;
                             &lt;span&gt;{action}&lt;/span&gt;
                           &lt;/li&gt;
@@ -1459,7 +1459,7 @@ const renderVsActualView = <span class="cstat-no" title="statement not covered" 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

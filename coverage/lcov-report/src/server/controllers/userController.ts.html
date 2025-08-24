@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/29</span>
+                <span class='fraction'>0/48</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/29</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
@@ -121,36 +121,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -159,6 +129,36 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response } from 'express';
 <span class="cstat-no" title="statement not covered" >import { User } from '../models/User.js';</span>
 &nbsp;
@@ -168,45 +168,45 @@ interface AuthRequest extends Request {
   };
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >getUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: AuthRequest, res: Response) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  try {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!req.user?.id) {</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(401).json({ message: 'Unauthorized' });</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getUserProfile<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span></span>sync (r</span>eq: AuthRequest, res: Response<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>) =&gt; {</span></span></span></span></span>
+  try {
+    if (!req.user?.id<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >) {</span></span>
+      return res.status(401).json({ message: 'Unauthorized' })<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >;</span></span>
     }
-    const user = <span class="cstat-no" title="statement not covered" >await User.findById(req.user.id).select('-password');</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ message: 'User not found' });</span>
+    const <span class="cstat-no" title="statement not covered" >user<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span> = await U</span>ser.findById(req.user.id).select('-password');</span>
+    if (!user<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >) {</span></span>
+      return res.status(404).json({ message: 'User not found' });
     }
-<span class="cstat-no" title="statement not covered" >    res.json(user);</span>
+<span class="cstat-no" title="statement not covered" >    res.json(user);<span class="cstat-no" title="statement not covered" ></span></span>
   } catch (error) {
 <span class="cstat-no" title="statement not covered" >    console.error('Get user profile error:', error);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(500).json({ message: 'Server error' });</span>
+<span class="cstat-no" title="statement not covered" >    res.status(500).json({ message: 'Server error' });<span class="cstat-no" title="statement not covered" ></span></span>
   }
-};
+}<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >updateUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: AuthRequest, res: Response) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  try {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!req.user?.id) {</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(401).json({ message: 'Unauthorized' });</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >updateUserProfile<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span></span>sync (r</span>eq: AuthRequest, res: Response<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>) =&gt; {</span></span></span></span></span>
+  try {
+    if (!req.user?.id<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >) {</span></span>
+      return res.status(401).json({ message: 'Unauthorized' })<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >;</span></span>
     }
 &nbsp;
-    const user = <span class="cstat-no" title="statement not covered" >await User.findById(req.params.id);</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ message: 'User not found' });</span>
+    const <span class="cstat-no" title="statement not covered" >user<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span> = await U</span>ser.findById(req.params.id);</span>
+    if (!user<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >) {</span></span>
+      return res.status(404).json({ message: 'User not found' });
     }
 &nbsp;
-    // Update fields if provided
-    const { name: displayName, email }: { name?: string; email?: string } = <span class="cstat-no" title="statement not covered" >req.body;</span>
+<span class="cstat-no" title="statement not covered" >    // Update fields if provided</span>
+    const { name: displayName, email }: { name?: string; email?: string } = req.body;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (displayName &amp;&amp; typeof displayName === 'string') <span class="cstat-no" title="statement not covered" >user.displayName = displayName;</span></span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (email &amp;&amp; typeof email === 'string') <span class="cstat-no" title="statement not covered" >user.email = email;</span></span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (email &amp;&amp; typeof email === 'string') <span class="cstat-no" title="statement not covered" >user.email = email;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    await user.save();</span>
-<span class="cstat-no" title="statement not covered" >    res.json({ displayName: user.displayName, email: user.email });</span>
+    await user.save();
+<span class="cstat-no" title="statement not covered" >    res.json({ displayName: user.displayName, email: user.email });<span class="cstat-no" title="statement not covered" ></span></span>
   } catch (error) {
 <span class="cstat-no" title="statement not covered" >    console.error('Update user profile error:', error);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(500).json({ message: 'Server error' });</span>
+<span class="cstat-no" title="statement not covered" >    res.status(500).json({ message: 'Server error' });<span class="cstat-no" title="statement not covered" ></span></span>
   }
-};
+}<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -214,7 +214,7 @@ export const <span class="cstat-no" title="statement not covered" >updateUserPro
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

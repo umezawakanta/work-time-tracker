@@ -30,9 +30,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8% </span>
+                <span class="strong">12.22% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>4/50</span>
+                <span class='fraction'>11/90</span>
             </div>
         
             
@@ -566,7 +566,7 @@ export interface PriorityTaskPromptInput {
 }
 &nbsp;
 export function <span class="fstat-no" title="function not covered" >buildPriorityTaskPrompt(</span>input: PriorityTaskPromptInput): string {
-  const locale: SupportedLocale = <span class="cstat-no" title="statement not covered" >input.locale ?? 'ja';</span>
+  const locale<span class="cstat-no" title="statement not covered" >: SupportedLocale = input.locale ?? 'ja';</span>
   const situation = <span class="cstat-no" title="statement not covered" >input.situation?.trim() || '（特になし）';</span>
   const goals = <span class="cstat-no" title="statement not covered" >input.goals &amp;&amp; input.goals.length &gt; 0 ? `- Goals: ${input.goals.join(', ')}` : '';</span>
   const recent =
@@ -631,12 +631,12 @@ export interface HabitSuggestionPromptInput {
 }
 &nbsp;
 export function <span class="fstat-no" title="function not covered" >buildHabitSuggestionPrompt(</span>input: HabitSuggestionPromptInput): string {
-  const locale: SupportedLocale = <span class="cstat-no" title="statement not covered" >input.locale ?? 'ja';</span>
+  const locale<span class="cstat-no" title="statement not covered" >: SupportedLocale = input.locale ?? 'ja';</span>
   const habitsLine = <span class="cstat-no" title="statement not covered" >input.currentHabits?.length</span>
     ? `- Current habits: ${input.currentHabits.join(', ')}`
     : '';
-  const stats = <span class="cstat-no" title="statement not covered" >input.stats ?? {};</span>
-  const limit = <span class="cstat-no" title="statement not covered" >input.limit ?? 3;</span>
+  const stats<span class="cstat-no" title="statement not covered" > = input.stats ?? {};</span>
+  const limit<span class="cstat-no" title="statement not covered" > = input.limit ?? 3;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (locale === 'en') {</span>
 <span class="cstat-no" title="statement not covered" >    return [</span>
@@ -696,10 +696,10 @@ export interface TimeAllocationPromptInput {
 }
 &nbsp;
 export function <span class="fstat-no" title="function not covered" >buildTimeAllocationPrompt(</span>input: TimeAllocationPromptInput): string {
-  const locale: SupportedLocale = <span class="cstat-no" title="statement not covered" >input.locale ?? 'ja';</span>
-  const blocks = <span class="cstat-no" title="statement not covered" >input.timeBlocksAvailable.map(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >`${b.start}-${b.end}`)</span>.join(', ');</span>
+  const locale<span class="cstat-no" title="statement not covered" >: SupportedLocale = input.locale ?? 'ja';</span>
+  const blocks = <span class="cstat-no" title="statement not covered" >input.timeBlocksAvailable.map(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; `${b.start}-${b.end}`)</span>.join(', ');</span>
   const tasks = <span class="cstat-no" title="statement not covered" >input.tasks</span>
-    .map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >`${t.title}(${t.durationMin}min, P${t.priority})`)</span>
+    .map(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; `${t.title}(${t.durationMin}min, P${t.priority})`)</span>
     .join(', ');
   const prefs = <span class="cstat-no" title="statement not covered" >input.preferences?.length ? `- Preferences: ${input.preferences.join(', ')}` : '';</span>
 &nbsp;
@@ -748,7 +748,7 @@ export interface TaskExtractionPromptInput {
 export function buildTaskExtractionPrompt(input: TaskExtractionPromptInput): string {
   const locale: SupportedLocale = input.locale ?? <span class="branch-1 cbranch-no" title="branch not covered" >'ja';</span>
   const maxTasks = input.maxTasks ?? <span class="branch-1 cbranch-no" title="branch not covered" >5;</span>
-  const content = input.content?.trim() || <span class="branch-1 cbranch-no" title="branch not covered" >'';</span>
+  const content = input.content<span class="branch-0 cbranch-no" title="branch not covered" >?.t</span>rim() || <span class="branch-1 cbranch-no" title="branch not covered" >'';</span>
 &nbsp;
   if (locale === 'en') {
     return [
@@ -802,7 +802,7 @@ export type PromptTemplateMap = typeof PromptTemplates;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

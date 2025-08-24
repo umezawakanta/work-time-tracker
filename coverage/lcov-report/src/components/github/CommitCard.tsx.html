@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/26</span>
+                <span class='fraction'>0/32</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/42</span>
             </div>
         
             
@@ -395,8 +395,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -496,9 +496,9 @@ interface CommitCardProps {
   onClick?: () =&gt; void;
 }
 &nbsp;
-const CommitCard: React.FC&lt;CommitCardProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> commit, showDetails = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span> onClick }) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >CommitCard:</span> React.FC&lt;CommitCardProps&gt; = <span class="cstat-no" title="statement not covered" >({ commit<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >, showDetails<span class="cstat-no" title="statement not covered" > </span>= false, o</span>nClick<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span>
   // コミットタイプに応じたバッジの設定
-  const getCommitTypeBadge = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ype: EnhancedCommit['commitType']) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getCommitTypeBadge </span>= <span class="cstat-no" title="statement not covered" >(type: EnhancedCommit['commitType']) =&gt; {</span>
     const config = <span class="cstat-no" title="statement not covered" >{</span>
       feat: { variant: 'default' as const, label: '機能追加', color: 'bg-blue-500' },
       fix: { variant: 'destructive' as const, label: 'バグ修正', color: 'bg-red-500' },
@@ -514,7 +514,7 @@ const CommitCard: React.FC&lt;CommitCardProps&gt; = <span class="cstat-no" title
   };
 &nbsp;
   // コミットメッセージを整形
-  const formatCommitMessage = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(m</span>essage: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatCommitMessage </span>= <span class="cstat-no" title="statement not covered" >(message: string) =&gt; {</span>
     const lines = <span class="cstat-no" title="statement not covered" >message.split('\n');</span>
     const title = <span class="cstat-no" title="statement not covered" >lines[0];</span>
     const body = <span class="cstat-no" title="statement not covered" >lines.slice(1).join('\n').trim();</span>
@@ -522,7 +522,7 @@ const CommitCard: React.FC&lt;CommitCardProps&gt; = <span class="cstat-no" title
 <span class="cstat-no" title="statement not covered" >    return { title, body };</span>
   };
 &nbsp;
-  const { title, body } = <span class="cstat-no" title="statement not covered" >formatCommitMessage(commit.commit.message);</span>
+  const { title<span class="cstat-no" title="statement not covered" >, body<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >formatCommitMessage(commit.commit.message);</span></span></span>
   const typeBadge = <span class="cstat-no" title="statement not covered" >getCommitTypeBadge(commit.commitType);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
@@ -599,8 +599,8 @@ const CommitCard: React.FC&lt;CommitCardProps&gt; = <span class="cstat-no" title
               &lt;div&gt;
                 &lt;h4 className="text-sm font-medium mb-2"&gt;変更されたファイル:&lt;/h4&gt;
                 &lt;div className="space-y-1"&gt;
-                  {commit.files.slice(0, 5).map(<span class="fstat-no" title="function not covered" >(f</span>ile, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;div key={index} c</span>lassName="flex items-center justify-between text-xs"&gt;
+                  {commit.files.slice(0, 5).map(<span class="fstat-no" title="function not covered" >(f</span>ile, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                    &lt;div key={index} className="flex items-center justify-between text-xs"&gt;
                       &lt;span className="flex items-center space-x-2"&gt;
                         &lt;FileText className="h-3 w-3" /&gt;
                         &lt;span className="truncate max-w-xs"&gt;{file.filename}&lt;/span&gt;
@@ -644,7 +644,7 @@ const CommitCard: React.FC&lt;CommitCardProps&gt; = <span class="cstat-no" title
               &lt;Button
                 variant="outline"
                 size="sm"
-                onClick={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="fstat-no" title="function not covered" >                onClick=</span>{(e) =&gt; {
 <span class="cstat-no" title="statement not covered" >                  e.stopPropagation();</span>
 <span class="cstat-no" title="statement not covered" >                  window.open(commit.html_url, '_blank');</span>
                 }}
@@ -657,7 +657,7 @@ const CommitCard: React.FC&lt;CommitCardProps&gt; = <span class="cstat-no" title
                 &lt;Button
                   variant="outline"
                   size="sm"
-                  onClick={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="fstat-no" title="function not covered" >                  onClick=</span>{(e) =&gt; {
 <span class="cstat-no" title="statement not covered" >                    e.stopPropagation();</span>
 <span class="cstat-no" title="statement not covered" >                    <span class="missing-if-branch" title="if path not taken" >I</span>if (onClick) <span class="cstat-no" title="statement not covered" >onClick();</span></span>
                   }}
@@ -682,7 +682,7 @@ const CommitCard: React.FC&lt;CommitCardProps&gt; = <span class="cstat-no" title
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

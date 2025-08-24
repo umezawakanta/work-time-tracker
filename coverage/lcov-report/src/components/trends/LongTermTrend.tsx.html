@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/173</span>
+                <span class='fraction'>0/187</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/113</span>
+                <span class='fraction'>0/128</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/158</span>
+                <span class='fraction'>0/163</span>
             </div>
         
             
@@ -981,10 +981,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1154,7 +1154,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1175,6 +1174,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1630,7 +1630,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1760,7 +1760,7 @@ const TIME_RANGES = <span class="cstat-no" title="statement not covered" >[</spa
 ];
 &nbsp;
 // フォーマット関数
-const formatCurrency = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>alue: number): string =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >formatCurrency </span>= <span class="cstat-no" title="statement not covered" >(value: number): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return new Intl.NumberFormat('ja-JP', {</span>
     style: 'currency',
     currency: 'JPY',
@@ -1769,7 +1769,7 @@ const formatCurrency = <span class="cstat-no" title="statement not covered" ><sp
   }).format(value);
 };
 &nbsp;
-const formatDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ateString: string, granularity: string): string =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >formatDate </span>= <span class="cstat-no" title="statement not covered" >(dateString: string, granularity: string): string =&gt; {</span>
   const date = <span class="cstat-no" title="statement not covered" >new Date(dateString);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (granularity === 'day') {</span>
@@ -1798,18 +1798,18 @@ interface LongTermTrendProps {
   onFullscreen: () =&gt; void;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >LongTermTrend: React.FC&lt;LongTermTrendProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  financialData,
-  goals,
-  onExportData,
-  onFullscreen,
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >LongTermTrend:</span> React.FC&lt;LongTermTrendProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  financialData<span class="cstat-no" title="statement not covered" >,</span>
+  goals<span class="cstat-no" title="statement not covered" >,</span>
+  onExportData<span class="cstat-no" title="statement not covered" >,</span>
+  onFullscreen<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
-  const [timeRange, setTimeRange] = <span class="cstat-no" title="statement not covered" >useState('year');</span>
-  const [chartType, setChartType] = <span class="cstat-no" title="statement not covered" >useState('netWorth');</span>
-  const [showGoals, setShowGoals] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
+  const [timeRange<span class="cstat-no" title="statement not covered" >, s</span>etTimeRange<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('year')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [chartType<span class="cstat-no" title="statement not covered" >, s</span>etChartType<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('netWorth')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showGoals<span class="cstat-no" title="statement not covered" >, s</span>etShowGoals<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 時間範囲でデータをフィルター
-  const filteredData = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const filteredData = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!financialData.length) <span class="cstat-no" title="statement not covered" >return [];</span></span>
 &nbsp;
     const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
@@ -1855,12 +1855,12 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return financialData</span>
-      .filter(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >new Date(item.date) &gt;= startDate)</span>
-      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(a.date).getTime() - new Date(b.date).getTime())</span>;
+      .filter(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; new Date(item.date) &gt;= startDate)</span>
+      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(a.date).getTime() - new Date(b.date).getTime());</span>
   }, [financialData, timeRange]);
 &nbsp;
   // 目標を含めたデータ作成
-  const chartData = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const chartData = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!filteredData.length) <span class="cstat-no" title="statement not covered" >return [];</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!showGoals) <span class="cstat-no" title="statement not covered" >return filteredData;</span></span>
@@ -1874,7 +1874,7 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
       });
 &nbsp;
       // 目標データを追加
-      const enhancedItem = <span class="cstat-no" title="statement not covered" >{ ...item };</span>
+      const enhancedItem<span class="cstat-no" title="statement not covered" > = { ...item };</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      relevantGoals.forEach(<span class="fstat-no" title="function not covered" >(g</span>oal) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        if (goal.type === 'asset') {</span>
@@ -1891,7 +1891,7 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
   }, [filteredData, goals, showGoals]);
 &nbsp;
   // チャートデータの集計期間を調整
-  const aggregatedData = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const aggregatedData = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!chartData.length) <span class="cstat-no" title="statement not covered" >return [];</span></span>
 &nbsp;
     // 長期間のデータは集計する
@@ -1931,7 +1931,7 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
 <span class="cstat-no" title="statement not covered" >    return chartData;</span>
   }, [chartData, timeRange]);
 &nbsp;
-  const granularity = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const granularity = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (['day', 'week', '2weeks'].includes(timeRange)) <span class="cstat-no" title="statement not covered" >return 'day';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (['month', 'quarter', 'halfyear', 'year', '2years'].includes(timeRange)) <span class="cstat-no" title="statement not covered" >return 'month';</span></span>
 <span class="cstat-no" title="statement not covered" >    return 'year';</span>
@@ -1950,7 +1950,7 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
   };
 &nbsp;
   // 成長率計算
-  const growthRates = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const growthRates = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (aggregatedData.length &lt; 2) <span class="cstat-no" title="statement not covered" >return { assets: 0, debts: 0, netWorth: 0 };</span></span>
 &nbsp;
     const first = <span class="cstat-no" title="statement not covered" >aggregatedData[0];</span>
@@ -1985,15 +1985,15 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
               &lt;SelectValue placeholder="期間" /&gt;
             &lt;/SelectTrigger&gt;
             &lt;SelectContent&gt;
-              {TIME_RANGES.map(<span class="fstat-no" title="function not covered" >(r</span>ange) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;SelectItem key={range.value} v</span>alue={range.value}&gt;
+              {TIME_RANGES.map(<span class="fstat-no" title="function not covered" >(r</span>ange<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;SelectItem key={range.value} value={range.value}&gt;
                   {range.label}
                 &lt;/SelectItem&gt;
               ))}
             &lt;/SelectContent&gt;
           &lt;/Select&gt;
 &nbsp;
-          &lt;Button variant="outline" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowGoals(!showGoals)}</span>&gt;
+          &lt;Button variant="outline" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowGoals(!showGoals)}&gt;</span>
             &lt;Target className="h-4 w-4 mr-2" /&gt;
             目標{showGoals ? '非表示' : '表示'}
           &lt;/Button&gt;
@@ -2049,7 +2049,7 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
                       ? '過去90日間'
                       : timeRange === 'month'
                         ? '過去12ヶ月'
-                        : `過去の${TIME_RANGES.find(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.value === timeRange)</span>?.label || ''}`}
+                        : `過去の${TIME_RANGES.find(<span class="fstat-no" title="function not covered" >(r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.value === timeRange)?</span>.label || ''}`}
                 &lt;/div&gt;
               &lt;/CardContent&gt;
             &lt;/Card&gt;
@@ -2069,7 +2069,7 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
                       ? '過去90日間'
                       : timeRange === 'month'
                         ? '過去12ヶ月'
-                        : `過去の${TIME_RANGES.find(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.value === timeRange)</span>?.label || ''}`}
+                        : `過去の${TIME_RANGES.find(<span class="fstat-no" title="function not covered" >(r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.value === timeRange)?</span>.label || ''}`}
                 &lt;/div&gt;
               &lt;/CardContent&gt;
             &lt;/Card&gt;
@@ -2089,7 +2089,7 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
                       ? '過去90日間'
                       : timeRange === 'month'
                         ? '過去12ヶ月'
-                        : `過去の${TIME_RANGES.find(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.value === timeRange)</span>?.label || ''}`}
+                        : `過去の${TIME_RANGES.find(<span class="fstat-no" title="function not covered" >(r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.value === timeRange)?</span>.label || ''}`}
                 &lt;/div&gt;
               &lt;/CardContent&gt;
             &lt;/Card&gt;
@@ -2120,12 +2120,12 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
                         &lt;CartesianGrid strokeDasharray="3 3" /&gt;
                         &lt;XAxis
                           dataKey="date"
-                          tickFormatter={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >formatDate(value, granularity)}</span>
+<span class="fstat-no" title="function not covered" >                          tickFormatter=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; formatDate(value, granularity)}</span>
                         /&gt;
-                        &lt;YAxis tickFormatter={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >`${(value / 10000).toFixed(0)}万`}</span> /&gt;
+                        &lt;YAxis <span class="fstat-no" title="function not covered" >tickFormatter=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; `${(value / 10000).toFixed(0)}万`}</span> /&gt;
                         &lt;Tooltip
-                          formatter={<span class="fstat-no" title="function not covered" >(v</span>alue: number) =&gt; <span class="cstat-no" title="statement not covered" >[formatCurrency(value), '']}</span>
-                          labelFormatter={<span class="fstat-no" title="function not covered" >(l</span>abel) =&gt; <span class="cstat-no" title="statement not covered" >formatDate(label, 'day')}</span>
+<span class="fstat-no" title="function not covered" >                          formatter=</span>{(value: number<span class="cstat-no" title="statement not covered" >) =&gt; [formatCurrency(value), '']}</span>
+<span class="fstat-no" title="function not covered" >                          labelFormatter=</span>{(label<span class="cstat-no" title="statement not covered" >) =&gt; formatDate(label, 'day')}</span>
                         /&gt;
                         &lt;Legend /&gt;
                         &lt;Area
@@ -2186,12 +2186,12 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
                         &lt;CartesianGrid strokeDasharray="3 3" /&gt;
                         &lt;XAxis
                           dataKey="date"
-                          tickFormatter={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >formatDate(value, granularity)}</span>
+<span class="fstat-no" title="function not covered" >                          tickFormatter=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; formatDate(value, granularity)}</span>
                         /&gt;
-                        &lt;YAxis tickFormatter={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >`${(value / 10000).toFixed(0)}万`}</span> /&gt;
+                        &lt;YAxis <span class="fstat-no" title="function not covered" >tickFormatter=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; `${(value / 10000).toFixed(0)}万`}</span> /&gt;
                         &lt;Tooltip
-                          formatter={<span class="fstat-no" title="function not covered" >(v</span>alue: number) =&gt; <span class="cstat-no" title="statement not covered" >[formatCurrency(value), '']}</span>
-                          labelFormatter={<span class="fstat-no" title="function not covered" >(l</span>abel) =&gt; <span class="cstat-no" title="statement not covered" >formatDate(label, 'day')}</span>
+<span class="fstat-no" title="function not covered" >                          formatter=</span>{(value: number<span class="cstat-no" title="statement not covered" >) =&gt; [formatCurrency(value), '']}</span>
+<span class="fstat-no" title="function not covered" >                          labelFormatter=</span>{(label<span class="cstat-no" title="statement not covered" >) =&gt; formatDate(label, 'day')}</span>
                         /&gt;
                         &lt;Legend /&gt;
                         &lt;Area
@@ -2257,20 +2257,20 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
                         &lt;CartesianGrid strokeDasharray="3 3" /&gt;
                         &lt;XAxis
                           dataKey="date"
-                          tickFormatter={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >formatDate(value, granularity)}</span>
+<span class="fstat-no" title="function not covered" >                          tickFormatter=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; formatDate(value, granularity)}</span>
                         /&gt;
-                        &lt;YAxis tickFormatter={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >`${(value / 10000).toFixed(0)}万`}</span> /&gt;
+                        &lt;YAxis <span class="fstat-no" title="function not covered" >tickFormatter=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; `${(value / 10000).toFixed(0)}万`}</span> /&gt;
                         &lt;Tooltip
-                          formatter={<span class="fstat-no" title="function not covered" >(v</span>alue: number) =&gt; <span class="cstat-no" title="statement not covered" >[formatCurrency(value), '']}</span>
-                          labelFormatter={<span class="fstat-no" title="function not covered" >(l</span>abel) =&gt; <span class="cstat-no" title="statement not covered" >formatDate(label, 'day')}</span>
+<span class="fstat-no" title="function not covered" >                          formatter=</span>{(value: number<span class="cstat-no" title="statement not covered" >) =&gt; [formatCurrency(value), '']}</span>
+<span class="fstat-no" title="function not covered" >                          labelFormatter=</span>{(label<span class="cstat-no" title="statement not covered" >) =&gt; formatDate(label, 'day')}</span>
                         /&gt;
                         &lt;Legend /&gt;
 &nbsp;
                         {/* 動的にカテゴリ別のエリアを生成 */}
                         {Object.keys(aggregatedData[0].categories || {}).map(<span class="fstat-no" title="function not covered" >(c</span>ategory, index) =&gt; {
                           // 各カテゴリに異なる色を割り当て
-                          const hue = <span class="cstat-no" title="statement not covered" >(index * 30) % 360;</span>
-                          const color = <span class="cstat-no" title="statement not covered" >`hsl(${hue}, 70%, 50%)`;</span>
+                          const hue = (<span class="cstat-no" title="statement not covered" >index * 30) % 360;</span>
+                          const color<span class="cstat-no" title="statement not covered" > = `hsl(${hue}, 70%, 50%)`;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                          return (</span>
                             &lt;Area
@@ -2312,12 +2312,12 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
                         &lt;CartesianGrid strokeDasharray="3 3" /&gt;
                         &lt;XAxis
                           dataKey="date"
-                          tickFormatter={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >formatDate(value, granularity)}</span>
+<span class="fstat-no" title="function not covered" >                          tickFormatter=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; formatDate(value, granularity)}</span>
                         /&gt;
-                        &lt;YAxis tickFormatter={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >`${(value / 10000).toFixed(0)}万`}</span> /&gt;
+                        &lt;YAxis <span class="fstat-no" title="function not covered" >tickFormatter=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; `${(value / 10000).toFixed(0)}万`}</span> /&gt;
                         &lt;Tooltip
-                          formatter={<span class="fstat-no" title="function not covered" >(v</span>alue: number) =&gt; <span class="cstat-no" title="statement not covered" >[formatCurrency(value), '']}</span>
-                          labelFormatter={<span class="fstat-no" title="function not covered" >(l</span>abel) =&gt; <span class="cstat-no" title="statement not covered" >formatDate(label, 'day')}</span>
+<span class="fstat-no" title="function not covered" >                          formatter=</span>{(value: number<span class="cstat-no" title="statement not covered" >) =&gt; [formatCurrency(value), '']}</span>
+<span class="fstat-no" title="function not covered" >                          labelFormatter=</span>{(label<span class="cstat-no" title="statement not covered" >) =&gt; formatDate(label, 'day')}</span>
                         /&gt;
                         &lt;Legend /&gt;
 &nbsp;
@@ -2326,7 +2326,7 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
 <span class="fstat-no" title="function not covered" >                          (c</span>ategory, index) =&gt; {
                             // 各カテゴリに異なる色を割り当て
                             const hue = <span class="cstat-no" title="statement not covered" >(index * 30 + 15) % 360;</span>
-                            const color = <span class="cstat-no" title="statement not covered" >`hsl(${hue}, 70%, 50%)`;</span>
+                            const color<span class="cstat-no" title="statement not covered" > = `hsl(${hue}, 70%, 50%)`;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                            return (</span>
                               &lt;Area
@@ -2448,7 +2448,7 @@ export const <span class="cstat-no" title="statement not covered" >LongTermTrend
 function <span class="fstat-no" title="function not covered" >calculateAnnualGrowthRate(</span>
   data: FinancialData[],
   key: 'assets' | 'debts' | 'netWorth',
-  isDebt = <span class="branch-0 cbranch-no" title="branch not covered" >false</span>
+  isDebt<span class="cstat-no" title="statement not covered" > = false</span>
 ): string {
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (data.length &lt; 2) <span class="cstat-no" title="statement not covered" >return 'N/A';</span></span>
 &nbsp;
@@ -2481,19 +2481,19 @@ function <span class="fstat-no" title="function not covered" >calculateDebtToAss
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (last.assets &lt;= 0) <span class="cstat-no" title="statement not covered" >return 'N/A';</span></span>
 &nbsp;
-  const ratio = <span class="cstat-no" title="statement not covered" >(last.debts / last.assets) * 100;</span>
+  const ratio = (<span class="cstat-no" title="statement not covered" >last.debts / last.assets) * 100;</span>
 <span class="cstat-no" title="statement not covered" >  return ratio.toFixed(1);</span>
 }
 &nbsp;
 // 平均貯蓄率計算
 function <span class="fstat-no" title="function not covered" >calculateAverageSavingsRate(</span>data: FinancialData[]): string {
   const savingsRates = <span class="cstat-no" title="statement not covered" >data</span>
-    .filter(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >item.savingsRate !== undefined)</span>
-    .map(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >item.savingsRate || 0)</span>;
+    .filter(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; item.savingsRate !== undefined)</span>
+    .map(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; item.savingsRate || 0);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (savingsRates.length === 0) <span class="cstat-no" title="statement not covered" >return 'N/A';</span></span>
 &nbsp;
-  const avgRate = <span class="cstat-no" title="statement not covered" >savingsRates.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, rate) =&gt; <span class="cstat-no" title="statement not covered" >sum + rate,</span> 0) / savingsRates.length;</span>
+  const avgRate = <span class="cstat-no" title="statement not covered" >savingsRates.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, rate<span class="cstat-no" title="statement not covered" >) =&gt; sum + rate, 0</span>) / savingsRates.length;</span>
 <span class="cstat-no" title="statement not covered" >  return avgRate.toFixed(1);</span>
 }
 &nbsp;
@@ -2524,7 +2524,7 @@ function <span class="fstat-no" title="function not covered" >predictFutureValue
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

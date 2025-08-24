@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/27</span>
             </div>
         
             
@@ -333,7 +333,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -360,6 +359,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -420,9 +420,9 @@ interface AchievementsListProps {
   };
 }
 &nbsp;
-const AchievementsList: React.FC&lt;AchievementsListProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> achievements, streakData }) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >AchievementsList:</span> React.FC&lt;AchievementsListProps&gt; = <span class="cstat-no" title="statement not covered" >({ achievements<span class="cstat-no" title="statement not covered" >, streakData<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span>
   // アイコンのマッピング
-  const getIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>conName: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getIcon </span>= <span class="cstat-no" title="statement not covered" >(iconName: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (iconName) {</span>
       case 'Trophy':
 <span class="cstat-no" title="statement not covered" >        return &lt;Trophy className="h-5 w-5" /&gt;;</span>
@@ -442,7 +442,7 @@ const AchievementsList: React.FC&lt;AchievementsListProps&gt; = <span class="cst
   };
 &nbsp;
   // 取得した実績数と取得率
-  const earnedCount = <span class="cstat-no" title="statement not covered" >achievements.filter(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.earned)</span>.length;</span>
+  const earnedCount = <span class="cstat-no" title="statement not covered" >achievements.filter(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; a.earned).</span>length;</span>
   const earnedPercentage = <span class="cstat-no" title="statement not covered" >Math.round((earnedCount / achievements.length) * 100);</span>
 &nbsp;
   function <span class="fstat-no" title="function not covered" >getDynamicWidthClass(</span>percentage: number) {
@@ -498,13 +498,13 @@ const AchievementsList: React.FC&lt;AchievementsListProps&gt; = <span class="cst
                 &lt;Crown className="h-5 w-5 inline mr-1 text-amber-500" /&gt;
                 次に挑戦するべき実績
               &lt;/h3&gt;
-              {achievements.filter(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >!a.earned)</span>.length &gt; 0 ? (
+              {achievements.filter(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; !a.earned).</span>length &gt; 0 ? (
                 &lt;ul className="space-y-2"&gt;
                   {achievements
-                    .filter(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >!a.earned)</span>
+                    .filter(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; !a.earned)</span>
                     .slice(0, 3)
-                    .map(<span class="fstat-no" title="function not covered" >(a</span>chievement) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;li key={achievement.id} c</span>lassName="text-sm"&gt;
+                    .map(<span class="fstat-no" title="function not covered" >(a</span>chievement<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                      &lt;li key={achievement.id} className="text-sm"&gt;
                         • {achievement.description}
                       &lt;/li&gt;
                     ))}
@@ -528,8 +528,8 @@ const AchievementsList: React.FC&lt;AchievementsListProps&gt; = <span class="cst
         &lt;CardContent&gt;
           &lt;ScrollArea className="h-[500px] pr-4"&gt;
             &lt;div className="space-y-3"&gt;
-              {achievements.map(<span class="fstat-no" title="function not covered" >(a</span>chievement) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div</span>
+              {achievements.map(<span class="fstat-no" title="function not covered" >(a</span>chievement<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div
                   key={achievement.id}
                   className={`flex items-start p-3 rounded-md border ${
                     achievement.earned
@@ -580,7 +580,7 @@ const AchievementsList: React.FC&lt;AchievementsListProps&gt; = <span class="cst
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

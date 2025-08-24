@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -180,6 +180,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -189,28 +203,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -283,10 +283,10 @@ interface ChartLegendProps {
   highlightedParties: string[];
 }
 &nbsp;
-const ChartLegend: React.FC&lt;ChartLegendProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span></span>
-  parties,
-  onToggleHighlight,
-  highlightedParties,
+const <span class="fstat-no" title="function not covered" >ChartLegend:</span> React.FC&lt;ChartLegendProps&gt; = <span class="cstat-no" title="statement not covered" >({</span>
+  parties<span class="cstat-no" title="statement not covered" >,</span>
+  onToggleHighlight<span class="cstat-no" title="statement not covered" >,</span>
+  highlightedParties<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
   // activeMediaパラメータを削除
 &nbsp;
@@ -313,8 +313,8 @@ const ChartLegend: React.FC&lt;ChartLegendProps&gt; = <span class="cstat-no" tit
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className="flex flex-wrap gap-2"&gt;
       &lt;TooltipProvider&gt;
-        {sortedParties.map(<span class="fstat-no" title="function not covered" >(p</span>arty) =&gt; (
-<span class="cstat-no" title="statement not covered" >          &lt;Tooltip key={party.shortName}&gt;</span>
+        {sortedParties.map(<span class="fstat-no" title="function not covered" >(p</span>arty<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+          &lt;Tooltip key={party.shortName}&gt;
             &lt;TooltipTrigger asChild&gt;
               &lt;Button
                 variant="outline"
@@ -329,7 +329,7 @@ const ChartLegend: React.FC&lt;ChartLegendProps&gt; = <span class="cstat-no" tit
                 style={{
                   borderLeftColor: party.colorCode,
                 }}
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >onToggleHighlight(party.shortName)}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; onToggleHighlight(party.shortName)}</span>
               &gt;
                 &lt;span className="font-medium"&gt;{party.name}&lt;/span&gt;
                 {highlightedParties.includes(party.shortName) &amp;&amp; (
@@ -352,7 +352,7 @@ const ChartLegend: React.FC&lt;ChartLegendProps&gt; = <span class="cstat-no" tit
                 variant="ghost"
                 size="sm"
                 className="px-3 py-1 h-8"
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >                onClick=</span>{() =&gt; {
                   // すべてのハイライトをクリア
 <span class="cstat-no" title="statement not covered" >                  sortedParties.forEach(<span class="fstat-no" title="function not covered" >(p</span>arty) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >                    <span class="missing-if-branch" title="if path not taken" >I</span>if (highlightedParties.includes(party.shortName)) {</span>
@@ -382,7 +382,7 @@ const ChartLegend: React.FC&lt;ChartLegendProps&gt; = <span class="cstat-no" tit
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">4.39% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/86</span>
+                <span class='fraction'>4/91</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">10% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>1/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">3.65% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/82</span>
+                <span class='fraction'>3/82</span>
             </div>
         
             
@@ -285,7 +285,7 @@
 <a name='L220'></a><a href='#L220'>220</a>
 <a name='L221'></a><a href='#L221'>221</a>
 <a name='L222'></a><a href='#L222'>222</a>
-<a name='L223'></a><a href='#L223'>223</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L223'></a><a href='#L223'>223</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -293,9 +293,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">39x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -507,7 +507,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { useCallback, useEffect } from 'react';</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useCallback, useEffect } from 'react';
 &nbsp;
 type EventData = Record&lt;string, any&gt;;
 &nbsp;
@@ -515,9 +515,9 @@ type EventData = Record&lt;string, any&gt;;
  * アナリティクス機能を提供するカスタムフック
  * ユーザーの行動を追跡し、分析に役立てるための機能を提供します
  */
-export const <span class="cstat-no" title="statement not covered" >useAnalytics = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const useAnalytics = () =&gt; {
   // アナリティクスの初期化
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{
     // 本番環境では実際のアナリティクスサービスを初期化
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof window !== 'undefined' &amp;&amp; process.env.NODE_ENV === 'production') {</span>
       // 例: Google Analyticsの初期化
@@ -540,7 +540,7 @@ export const <span class="cstat-no" title="statement not covered" >useAnalytics 
   /**
    * Google Analyticsのスクリプトを動的にロードする関数
    */
-  const loadGoogleAnalytics = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >loadGoogleAnalytics </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const gtagId = <span class="cstat-no" title="statement not covered" >process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!gtagId) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
@@ -562,7 +562,7 @@ export const <span class="cstat-no" title="statement not covered" >useAnalytics 
   /**
    * Mixpanelのスクリプトを動的にロードする関数
    */
-  const loadMixpanel = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >loadMixpanel </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const mixpanelId = <span class="cstat-no" title="statement not covered" >process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!mixpanelId) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
@@ -578,7 +578,7 @@ export const <span class="cstat-no" title="statement not covered" >useAnalytics 
   /**
    * Amplitudeのスクリプトを動的にロードする関数
    */
-  const loadAmplitude = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >loadAmplitude </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const amplitudeKey = <span class="cstat-no" title="statement not covered" >process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!amplitudeKey) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
@@ -599,7 +599,7 @@ export const <span class="cstat-no" title="statement not covered" >useAnalytics 
    * @param eventName イベント名
    * @param data イベントデータ
    */
-  const trackEvent = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(e</span>ventName: string, data: EventData = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span> =&gt; {</span>
+  const trackEvent = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(e</span>ventName: string, <span class="cstat-no" title="statement not covered" >data: EventData = {})</span> =&gt; {</span>
     // 開発環境ではコンソールに出力するだけ
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (process.env.NODE_ENV !== 'production') {</span>
 <span class="cstat-no" title="statement not covered" >      console.log(`[Analytics] Event: ${eventName}`, data);</span>
@@ -679,7 +679,7 @@ export const <span class="cstat-no" title="statement not covered" >useAnalytics 
    * @param userId ユーザーID
    * @param traits ユーザー特性
    */
-  const identifyUser = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(u</span>serId: string, traits: Record&lt;string, any&gt; = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span> =&gt; {</span>
+  const identifyUser = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(u</span>serId: string, <span class="cstat-no" title="statement not covered" >traits: Record&lt;string, any&gt; = {})</span> =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (process.env.NODE_ENV !== 'production') {</span>
 <span class="cstat-no" title="statement not covered" >      console.log(`[Analytics] Identify User: ${userId}`, traits);</span>
 <span class="cstat-no" title="statement not covered" >      return;</span>
@@ -701,7 +701,7 @@ export const <span class="cstat-no" title="statement not covered" >useAnalytics 
       // Amplitude
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (window.amplitude) {</span>
         const identify = <span class="cstat-no" title="statement not covered" >new (window.amplitude as any).Identify();</span>
-<span class="cstat-no" title="statement not covered" >        Object.entries(traits).forEach(<span class="fstat-no" title="function not covered" >([</span>key, value]) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        Object.entries(traits).forEach(<span class="fstat-no" title="function not covered" >([k</span>ey<span class="cstat-no" title="statement not covered" >, v</span>alue<span class="cstat-no" title="statement not covered" >]) =&gt;<span class="cstat-no" title="statement not covered" > </span>{</span></span>
 <span class="cstat-no" title="statement not covered" >          identify.set(key, value);</span>
         });
 &nbsp;
@@ -736,7 +736,7 @@ declare global {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

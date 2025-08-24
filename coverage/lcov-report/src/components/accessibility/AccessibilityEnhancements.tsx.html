@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/100</span>
+                <span class='fraction'>0/115</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/91</span>
+                <span class='fraction'>0/92</span>
             </div>
         
             
@@ -593,7 +593,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1063,8 +1063,8 @@ interface AccessibilitySettings {
  * ♿ アクセシビリティチャンピオン: 包括的アクセシビリティ強化
  * WCAG AAA準拠のアクセシビリティ機能を提供
  */
-export const <span class="cstat-no" title="statement not covered" >AccessibilityEnhancements: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const [settings, setSettings] = <span class="cstat-no" title="statement not covered" >useState&lt;AccessibilitySettings&gt;({</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AccessibilityEnhancements:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const [settings<span class="cstat-no" title="statement not covered" >, s</span>etSettings<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;AccessibilitySettings&gt;({</span>
     highContrast: false,
     largeText: false,
     reduceMotion: false,
@@ -1074,13 +1074,13 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
     fontSize: 100,
     lineHeight: 150,
     letterSpacing: 0,
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const [isVisible, setIsVisible] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [wcagScore, setWcagScore] = <span class="cstat-no" title="statement not covered" >useState(0);</span>
+  const [isVisible<span class="cstat-no" title="statement not covered" >, s</span>etIsVisible<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [wcagScore<span class="cstat-no" title="statement not covered" >, s</span>etWcagScore<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(0)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 🎯 WCAG準拠スコア計算
-  const calculateWCAGScore = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateWCAGScore </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     let score = <span class="cstat-no" title="statement not covered" >0;</span>
     const maxScore = <span class="cstat-no" title="statement not covered" >8;</span>
 &nbsp;
@@ -1097,7 +1097,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
   };
 &nbsp;
   // 🎨 CSS変数を適用
-  const applyAccessibilityStyles = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >applyAccessibilityStyles </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const root = <span class="cstat-no" title="statement not covered" >document.documentElement;</span>
 &nbsp;
     // フォントサイズ
@@ -1142,7 +1142,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
   };
 &nbsp;
   // 📢 スクリーンリーダー対応
-  const announceChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>etting: string, value: boolean | number | string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >announceChange </span>= <span class="cstat-no" title="statement not covered" >(setting: string, value: boolean | number | string) =&gt; {</span>
     const message =
 <span class="cstat-no" title="statement not covered" >      typeof value === 'boolean'</span>
         ? `${setting} ${value ? '有効' : '無効'}になりました`
@@ -1156,19 +1156,19 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
   };
 &nbsp;
   // 設定更新ハンドラー
-  const updateSetting = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >&lt;K extends keyof AccessibilitySettings&gt;(</span></span>
+  const <span class="fstat-no" title="function not covered" >updateSetting </span>= <span class="cstat-no" title="statement not covered" >&lt;K extends keyof AccessibilitySettings&gt;(</span>
     key: K,
     value: AccessibilitySettings[K]
   ) =&gt; {
 <span class="cstat-no" title="statement not covered" >    setSettings(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; {</span>
-      const newSettings = <span class="cstat-no" title="statement not covered" >{ ...prev, [key]: value };</span>
+      const newSettings<span class="cstat-no" title="statement not covered" > = { ...prev, [key]: value };</span>
 <span class="cstat-no" title="statement not covered" >      announceChange(key.toString(), value);</span>
 <span class="cstat-no" title="statement not covered" >      return newSettings;</span>
     });
   };
 &nbsp;
   // 🔄 初期化と設定適用
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // ローカルストレージから設定を復元
     const savedSettings = <span class="cstat-no" title="statement not covered" >localStorage.getItem('accessibility-settings');</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (savedSettings) {</span>
@@ -1181,7 +1181,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
     }
   }, []);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    applyAccessibilityStyles();</span>
 <span class="cstat-no" title="statement not covered" >    setWcagScore(calculateWCAGScore());</span>
 &nbsp;
@@ -1190,7 +1190,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
   }, [settings]);
 &nbsp;
   // 🎭 プリセット設定
-  const applyPreset = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>reset: 'default' | 'highVisibility' | 'lowMotion' | 'screenReader') =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >applyPreset </span>= <span class="cstat-no" title="statement not covered" >(preset: 'default' | 'highVisibility' | 'lowMotion' | 'screenReader') =&gt; {</span>
     const presets = <span class="cstat-no" title="statement not covered" >{</span>
       default: {
         highContrast: false,
@@ -1246,7 +1246,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
     &lt;&gt;
       {/* フローティングアクセシビリティボタン */}
       &lt;Button
-        onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsVisible(!isVisible)}</span>
+<span class="fstat-no" title="function not covered" >        onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsVisible(!isVisible)}</span>
         className="fixed bottom-4 right-4 z-50 rounded-full w-12 h-12 p-0 shadow-lg"
         aria-label="アクセシビリティ設定を開く"
         title="アクセシビリティ設定"
@@ -1258,11 +1258,11 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
       {isVisible &amp;&amp; (
         &lt;div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4"
-          onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsVisible(false)}</span>
+<span class="fstat-no" title="function not covered" >          onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsVisible(false)}</span>
         &gt;
           &lt;Card
             className="w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-            onClick={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.stopPropagation()}</span>
+<span class="fstat-no" title="function not covered" >            onClick=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; e.stopPropagation()}</span>
           &gt;
             &lt;CardHeader&gt;
               &lt;div className="flex items-center justify-between"&gt;
@@ -1279,7 +1279,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                 &lt;Button
                   variant="ghost"
                   size="sm"
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsVisible(false)}</span>
+<span class="fstat-no" title="function not covered" >                  onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsVisible(false)}</span>
                   aria-label="設定を閉じる"
                 &gt;
                   ✕
@@ -1292,16 +1292,16 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
               &lt;div&gt;
                 &lt;h3 className="font-semibold mb-3"&gt;クイック設定&lt;/h3&gt;
                 &lt;div className="grid grid-cols-2 gap-2"&gt;
-                  &lt;Button variant="outline" size="sm" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >applyPreset('default')}</span>&gt;
+                  &lt;Button variant="outline" size="sm" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; applyPreset('default')}&gt;</span>
                     標準
                   &lt;/Button&gt;
-                  &lt;Button variant="outline" size="sm" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >applyPreset('highVisibility')}</span>&gt;
+                  &lt;Button variant="outline" size="sm" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; applyPreset('highVisibility')}&gt;</span>
                     高視認性
                   &lt;/Button&gt;
-                  &lt;Button variant="outline" size="sm" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >applyPreset('lowMotion')}</span>&gt;
+                  &lt;Button variant="outline" size="sm" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; applyPreset('lowMotion')}&gt;</span>
                     低動作
                   &lt;/Button&gt;
-                  &lt;Button variant="outline" size="sm" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >applyPreset('screenReader')}</span>&gt;
+                  &lt;Button variant="outline" size="sm" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; applyPreset('screenReader')}&gt;</span>
                     読み上げ
                   &lt;/Button&gt;
                 &lt;/div&gt;
@@ -1319,7 +1319,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                     &lt;label className="text-sm font-medium"&gt;ハイコントラスト&lt;/label&gt;
                     &lt;Switch
                       checked={settings.highContrast}
-                      onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >updateSetting('highContrast', checked)}</span>
+<span class="fstat-no" title="function not covered" >                      onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; updateSetting('highContrast', checked)}</span>
                     /&gt;
                   &lt;/div&gt;
 &nbsp;
@@ -1327,7 +1327,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                     &lt;label className="text-sm font-medium"&gt;大きなテキスト&lt;/label&gt;
                     &lt;Switch
                       checked={settings.largeText}
-                      onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >updateSetting('largeText', checked)}</span>
+<span class="fstat-no" title="function not covered" >                      onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; updateSetting('largeText', checked)}</span>
                     /&gt;
                   &lt;/div&gt;
 &nbsp;
@@ -1337,7 +1337,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                     &lt;/label&gt;
                     &lt;Slider
                       value={[settings.fontSize]}
-                      onValueChange={<span class="fstat-no" title="function not covered" >([</span>value]) =&gt; <span class="cstat-no" title="statement not covered" >updateSetting('fontSize', value)}</span>
+<span class="fstat-no" title="function not covered" >                      onValueChange<span class="cstat-no" title="statement not covered" >=</span>{(</span>[value<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; u</span>pdateSetting('fontSize', value)}</span>
                       min={80}
                       max={200}
                       step={10}
@@ -1350,7 +1350,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                     &lt;/label&gt;
                     &lt;Slider
                       value={[settings.lineHeight]}
-                      onValueChange={<span class="fstat-no" title="function not covered" >([</span>value]) =&gt; <span class="cstat-no" title="statement not covered" >updateSetting('lineHeight', value)}</span>
+<span class="fstat-no" title="function not covered" >                      onValueChange<span class="cstat-no" title="statement not covered" >=</span>{(</span>[value<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; u</span>pdateSetting('lineHeight', value)}</span>
                       min={120}
                       max={250}
                       step={10}
@@ -1363,7 +1363,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                     &lt;/label&gt;
                     &lt;Slider
                       value={[settings.letterSpacing]}
-                      onValueChange={<span class="fstat-no" title="function not covered" >([</span>value]) =&gt; <span class="cstat-no" title="statement not covered" >updateSetting('letterSpacing', value)}</span>
+<span class="fstat-no" title="function not covered" >                      onValueChange<span class="cstat-no" title="statement not covered" >=</span>{(</span>[value<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; u</span>pdateSetting('letterSpacing', value)}</span>
                       min={0}
                       max={5}
                       step={0.5}
@@ -1384,7 +1384,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                     &lt;label className="text-sm font-medium"&gt;キーボードナビゲーション&lt;/label&gt;
                     &lt;Switch
                       checked={settings.keyboardNavigation}
-                      onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >updateSetting('keyboardNavigation', checked)}</span>
+<span class="fstat-no" title="function not covered" >                      onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; updateSetting('keyboardNavigation', checked)}</span>
                     /&gt;
                   &lt;/div&gt;
 &nbsp;
@@ -1392,7 +1392,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                     &lt;label className="text-sm font-medium"&gt;フォーカスインジケーター&lt;/label&gt;
                     &lt;Switch
                       checked={settings.focusIndicator}
-                      onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >updateSetting('focusIndicator', checked)}</span>
+<span class="fstat-no" title="function not covered" >                      onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; updateSetting('focusIndicator', checked)}</span>
                     /&gt;
                   &lt;/div&gt;
 &nbsp;
@@ -1400,7 +1400,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                     &lt;label className="text-sm font-medium"&gt;アニメーション削減&lt;/label&gt;
                     &lt;Switch
                       checked={settings.reduceMotion}
-                      onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >updateSetting('reduceMotion', checked)}</span>
+<span class="fstat-no" title="function not covered" >                      onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; updateSetting('reduceMotion', checked)}</span>
                     /&gt;
                   &lt;/div&gt;
                 &lt;/div&gt;
@@ -1418,7 +1418,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                     &lt;label className="text-sm font-medium"&gt;スクリーンリーダー最適化&lt;/label&gt;
                     &lt;Switch
                       checked={settings.screenReader}
-                      onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >updateSetting('screenReader', checked)}</span>
+<span class="fstat-no" title="function not covered" >                      onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; updateSetting('screenReader', checked)}</span>
                     /&gt;
                   &lt;/div&gt;
                 &lt;/div&gt;
@@ -1513,7 +1513,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -789,7 +789,7 @@ const DEFAULT_POSITION = <span class="cstat-no" title="statement not covered" >{
 export const <span class="cstat-no" title="statement not covered" >usePomodoroStore = create&lt;PomodoroStore&gt;(</span>
   // @ts-expect-error - persist型の不整合を回避
   persist(
-<span class="fstat-no" title="function not covered" >    (s</span>et, get) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+<span class="fstat-no" title="function not covered" >    (s</span>et, get<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
       // 初期状態
       currentMode: 'work' as PomodoroMode,
       status: 'idle' as const,
@@ -809,7 +809,7 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
       },
 &nbsp;
       // タイマー制御
-      startTimer: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >      startTimer:</span> () =&gt; {
         const state = <span class="cstat-no" title="statement not covered" >get();</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (state.status === 'idle' || state.status === 'paused') {</span>
 <span class="cstat-no" title="statement not covered" >          set({ status: 'running' });</span>
@@ -821,14 +821,14 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
         }
       },
 &nbsp;
-      pauseTimer: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >      pauseTimer:</span> () =&gt; {
         const state = <span class="cstat-no" title="statement not covered" >get();</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (state.status === 'running') {</span>
 <span class="cstat-no" title="statement not covered" >          set({ status: 'paused' });</span>
         }
       },
 &nbsp;
-      resetTimer: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >      resetTimer:</span> () =&gt; {
         const state = <span class="cstat-no" title="statement not covered" >get();</span>
         const duration =
 <span class="cstat-no" title="statement not covered" >          state.currentMode === 'work'</span>
@@ -844,7 +844,7 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
         });
       },
 &nbsp;
-      skipSession: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >      skipSession:</span> () =&gt; {
         const state = <span class="cstat-no" title="statement not covered" >get();</span>
 &nbsp;
         // Complete current session
@@ -866,7 +866,7 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
       },
 &nbsp;
       // モード変更
-      switchMode: <span class="fstat-no" title="function not covered" >(m</span>ode: PomodoroMode) =&gt; {
+<span class="fstat-no" title="function not covered" >      switchMode:</span> (mode: PomodoroMode) =&gt; {
         const state = <span class="cstat-no" title="statement not covered" >get();</span>
         let duration: number;
 &nbsp;
@@ -891,7 +891,7 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
       },
 &nbsp;
       // 次のモードに自動切り替え
-      switchToNextMode: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >      switchToNextMode:</span> () =&gt; {
         const state = <span class="cstat-no" title="statement not covered" >get();</span>
         let nextMode: PomodoroMode;
 &nbsp;
@@ -910,7 +910,7 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
 &nbsp;
         // 自動開始設定のチェック
         const shouldAutoStart =
-<span class="cstat-no" title="statement not covered" >          (nextMode === 'work' &amp;&amp; state.settings.autoStartPomodoros) ||</span>
+          (<span class="cstat-no" title="statement not covered" >nextMode === 'work' &amp;&amp; state.settings.autoStartPomodoros) ||</span>
           (nextMode !== 'work' &amp;&amp; state.settings.autoStartBreaks);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (shouldAutoStart) {</span>
@@ -920,27 +920,27 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
           const sessionMultiplier = <span class="cstat-no" title="statement not covered" >Math.min(state.currentSession / 10, 0.5);</span> // セッション数による調整
           const delay = <span class="cstat-no" title="statement not covered" >Math.round(baseDelay * modeMultiplier * (1 + sessionMultiplier));</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >          setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; (<span class="cstat-no" title="statement not covered" >get() as PomodoroStore).startTimer(),</span> delay);</span>
+<span class="cstat-no" title="statement not covered" >          setTimeout(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; (g</span>et() as PomodoroStore).startTimer(), d</span>elay);</span>
         }
       },
 &nbsp;
       // UI制御
-      toggleMinimized: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
-<span class="cstat-no" title="statement not covered" >        set(<span class="fstat-no" title="function not covered" >(s</span>tate: PomodoroState) =&gt; (<span class="cstat-no" title="statement not covered" >{ isMinimized: !state.isMinimized })</span>);</span>
+<span class="fstat-no" title="function not covered" >      toggleMinimized:</span> () =&gt; {
+<span class="cstat-no" title="statement not covered" >        set(<span class="fstat-no" title="function not covered" >(s</span>tate: PomodoroState<span class="cstat-no" title="statement not covered" >) =&gt; ({ isMinimized: !state.isMinimized }))</span>;</span>
       },
 &nbsp;
-      toggleVisibility: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
-<span class="cstat-no" title="statement not covered" >        set(<span class="fstat-no" title="function not covered" >(s</span>tate: PomodoroState) =&gt; (<span class="cstat-no" title="statement not covered" >{ isVisible: !state.isVisible })</span>);</span>
+<span class="fstat-no" title="function not covered" >      toggleVisibility:</span> () =&gt; {
+<span class="cstat-no" title="statement not covered" >        set(<span class="fstat-no" title="function not covered" >(s</span>tate: PomodoroState<span class="cstat-no" title="statement not covered" >) =&gt; ({ isVisible: !state.isVisible }))</span>;</span>
       },
 &nbsp;
-      updatePosition: <span class="fstat-no" title="function not covered" >(p</span>osition: { x: number; y: number }) =&gt; {
+<span class="fstat-no" title="function not covered" >      updatePosition:</span> (position: { x: number; y: number }) =&gt; {
 <span class="cstat-no" title="statement not covered" >        set({ position });</span>
       },
 &nbsp;
       // 設定更新
-      updateSettings: <span class="fstat-no" title="function not covered" >(n</span>ewSettings: Partial&lt;PomodoroSettings&gt;) =&gt; {
+<span class="fstat-no" title="function not covered" >      updateSettings:</span> (newSettings: Partial&lt;PomodoroSettings&gt;) =&gt; {
         const state = <span class="cstat-no" title="statement not covered" >get();</span>
-        const updatedSettings = <span class="cstat-no" title="statement not covered" >{ ...state.settings, ...newSettings };</span>
+        const updatedSettings<span class="cstat-no" title="statement not covered" > = { ...state.settings, ...newSettings };</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        set({ settings: updatedSettings });</span>
 &nbsp;
@@ -951,7 +951,7 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
       },
 &nbsp;
       // セッション完了
-      completeSession: <span class="fstat-no" title="function not covered" >(t</span>askName?: string) =&gt; {
+<span class="fstat-no" title="function not covered" >      completeSession:</span> (taskName?: string) =&gt; {
         const state = <span class="cstat-no" title="statement not covered" >get();</span>
         const session: PomodoroSession = <span class="cstat-no" title="statement not covered" >{</span>
           id: Date.now().toString(),
@@ -971,7 +971,7 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
       },
 &nbsp;
       // 通知表示
-      showNotification: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >      showNotification:</span> () =&gt; {
         const state = <span class="cstat-no" title="statement not covered" >get();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!state.settings.notificationSound || Notification.permission !== 'granted') {</span>
@@ -1013,7 +1013,7 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
       },
 &nbsp;
       // 統計更新
-      updateDailyStats: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >      updateDailyStats:</span> () =&gt; {
         const state = <span class="cstat-no" title="statement not covered" >get();</span>
         const today = <span class="cstat-no" title="statement not covered" >new Date().toDateString();</span>
 &nbsp;
@@ -1031,18 +1031,18 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
 &nbsp;
         // 完了したセッションに基づいて統計を更新
         const todaySessions = <span class="cstat-no" title="statement not covered" >state.completedSessions.filter(</span>
-<span class="fstat-no" title="function not covered" >          (s</span>ession: PomodoroSession) =&gt; <span class="cstat-no" title="statement not covered" >session.completedAt.toDateString() === today</span>
+<span class="fstat-no" title="function not covered" >          (s</span>ession: PomodoroSession<span class="cstat-no" title="statement not covered" >) =&gt; session.completedAt.toDateString() === today</span>
         );
 &nbsp;
         const completedPomodoros = <span class="cstat-no" title="statement not covered" >todaySessions.filter(</span>
-<span class="fstat-no" title="function not covered" >          (s</span>: PomodoroSession) =&gt; <span class="cstat-no" title="statement not covered" >s.mode === 'work'</span>
+<span class="fstat-no" title="function not covered" >          (s</span>: PomodoroSession<span class="cstat-no" title="statement not covered" >) =&gt; s.mode === 'work'</span>
         ).length;
         const totalFocusTime = <span class="cstat-no" title="statement not covered" >todaySessions</span>
-          .filter(<span class="fstat-no" title="function not covered" >(s</span>: PomodoroSession) =&gt; <span class="cstat-no" title="statement not covered" >s.mode === 'work')</span>
-          .reduce(<span class="fstat-no" title="function not covered" >(s</span>um: number, s: PomodoroSession) =&gt; <span class="cstat-no" title="statement not covered" >sum + s.duration / 60,</span> 0);
+          .filter(<span class="fstat-no" title="function not covered" >(s</span>: PomodoroSession<span class="cstat-no" title="statement not covered" >) =&gt; s.mode === 'work')</span>
+          .reduce(<span class="fstat-no" title="function not covered" >(s</span>um: number, s: PomodoroSession<span class="cstat-no" title="statement not covered" >) =&gt; sum + s.duration / 60, 0</span>);
         const totalBreakTime = <span class="cstat-no" title="statement not covered" >todaySessions</span>
-          .filter(<span class="fstat-no" title="function not covered" >(s</span>: PomodoroSession) =&gt; <span class="cstat-no" title="statement not covered" >s.mode !== 'work')</span>
-          .reduce(<span class="fstat-no" title="function not covered" >(s</span>um: number, s: PomodoroSession) =&gt; <span class="cstat-no" title="statement not covered" >sum + s.duration / 60,</span> 0);
+          .filter(<span class="fstat-no" title="function not covered" >(s</span>: PomodoroSession<span class="cstat-no" title="statement not covered" >) =&gt; s.mode !== 'work')</span>
+          .reduce(<span class="fstat-no" title="function not covered" >(s</span>um: number, s: PomodoroSession<span class="cstat-no" title="statement not covered" >) =&gt; sum + s.duration / 60, 0</span>);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        set({</span>
           dailyStats: {
@@ -1054,7 +1054,7 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
         });
       },
 &nbsp;
-      resetDailyStats: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >      resetDailyStats:</span> () =&gt; {
 <span class="cstat-no" title="statement not covered" >        set({</span>
           dailyStats: {
             date: new Date().toDateString(),
@@ -1068,7 +1068,7 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
     {
       name: 'pomodoro-storage',
       // 永続化しないフィールド（ランタイム状態）
-      partialize: <span class="fstat-no" title="function not covered" >(s</span>tate: PomodoroState) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+<span class="fstat-no" title="function not covered" >      partialize:</span> (state: PomodoroState<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
         settings: state.settings,
         position: state.position,
         isVisible: state.isVisible,
@@ -1081,14 +1081,14 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroSt
 );
 &nbsp;
 // タイマーのティック処理用カスタムフック
-export const <span class="cstat-no" title="statement not covered" >usePomodoroTimer = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >usePomodoroTimer </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
   const store = <span class="cstat-no" title="statement not covered" >usePomodoroStore();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  React.useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  React.useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     let intervalId: NodeJS.Timeout | null = <span class="cstat-no" title="statement not covered" >null;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (store.status === 'running') {</span>
-<span class="cstat-no" title="statement not covered" >      intervalId = setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      intervalId = setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
         const newRemainingTime = <span class="cstat-no" title="statement not covered" >store.remainingTime - 1;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (newRemainingTime &lt;= 0) {</span>
@@ -1101,7 +1101,7 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroTi
       }, 1000);
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (intervalId) {</span>
 <span class="cstat-no" title="statement not covered" >        clearInterval(intervalId);</span>
       }
@@ -1117,7 +1117,7 @@ export const <span class="cstat-no" title="statement not covered" >usePomodoroTi
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

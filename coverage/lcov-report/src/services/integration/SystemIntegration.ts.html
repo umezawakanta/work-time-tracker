@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>0/31</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
@@ -162,12 +162,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -185,6 +183,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -220,6 +219,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -246,18 +246,18 @@ interface OptimizationSuggestion {
   category: string;
 }
 &nbsp;
-class SystemIntegrationService {
-  // 全機能のデータを統合分析
-<span class="fstat-no" title="function not covered" >  async </span>generateHolisticInsights(userId: string): Promise&lt;HolisticInsights&gt; {
-    const [todoData, habitData, timeData, goalData, subscriptionData] = <span class="cstat-no" title="statement not covered" >await Promise.all([</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>class S</span></span>ystemIntegrationService<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  // 全機能のデータを統合分析</span></span>
+<span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >g</span>enerateHolisticInsights<span class="cstat-no" title="statement not covered" >(</span>u</span>serId: string<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >): Promise&lt;HolisticInsights&gt; {</span></span></span></span>
+    const [<span class="cstat-no" title="statement not covered" >todoData, <span class="cstat-no" title="statement not covered" >h</span>abitData, <span class="cstat-no" title="statement not covered" >t</span>imeData, <span class="cstat-no" title="statement not covered" >g</span>oalData, <span class="cstat-no" title="statement not covered" >s</span>ubscriptionData<span class="cstat-no" title="statement not covered" >] = await P</span>romise.all([</span>
       this.getTodoAnalytics(userId),
       this.getHabitAnalytics(userId),
       this.getTimeAnalytics(userId),
       this.getGoalProgress(userId),
       this.getSubscriptionOptimization(userId),
-    ]);
+    ])<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return this.analyzeSystemicPatterns({</span>
+    return this.analyzeSystemicPatterns({
       todo: todoData,
       habits: habitData,
       time: timeData,
@@ -266,9 +266,9 @@ class SystemIntegrationService {
     });
   }
 &nbsp;
-  // 自動最適化提案
-<span class="fstat-no" title="function not covered" >  async </span>suggestSystemOptimizations(insights: HolisticInsights): Promise&lt;OptimizationSuggestion[]&gt; {
-<span class="cstat-no" title="statement not covered" >    return [</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  // 自動最適化提案</span></span>
+<span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >s</span>uggestSystemOptimizations<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>i</span></span>nsights: HolisticInsights<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;OptimizationSuggestion[]&gt; {</span></span></span></span>
+    return [
       {
         title: 'タスク→習慣自動変換システム',
         description: '繰り返しタスクを自動で習慣トラッキングに移行',
@@ -286,24 +286,24 @@ class SystemIntegrationService {
     ];
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >async </span>getTodoAnalytics(userId: string): Promise&lt;any&gt; {
-<span class="cstat-no" title="statement not covered" >    return {};</span>
+  private <span class="fstat-no" title="function not covered" >async <span class="fstat-no" title="function not covered" >g</span>etTodoAnalytics<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>u</span></span>serId: string<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;any&gt; {</span></span></span></span>
+    return {};
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >async </span>getHabitAnalytics(userId: string): Promise&lt;any&gt; {
-<span class="cstat-no" title="statement not covered" >    return {};</span>
+  private <span class="fstat-no" title="function not covered" >async <span class="fstat-no" title="function not covered" >g</span>etHabitAnalytics<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>u</span></span>serId: string<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;any&gt; {</span></span></span></span>
+    return {};
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >async </span>getTimeAnalytics(userId: string): Promise&lt;any&gt; {
-<span class="cstat-no" title="statement not covered" >    return {};</span>
+  private <span class="fstat-no" title="function not covered" >async <span class="fstat-no" title="function not covered" >g</span>etTimeAnalytics<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>u</span></span>serId: string<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;any&gt; {</span></span></span></span>
+    return {};
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >async </span>getGoalProgress(userId: string): Promise&lt;any&gt; {
-<span class="cstat-no" title="statement not covered" >    return {};</span>
+  private <span class="fstat-no" title="function not covered" >async <span class="fstat-no" title="function not covered" >g</span>etGoalProgress<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>u</span></span>serId: string<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;any&gt; {</span></span></span></span>
+    return {};
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >async </span>getSubscriptionOptimization(userId: string): Promise&lt;any&gt; {
-<span class="cstat-no" title="statement not covered" >    return {};</span>
+  private <span class="fstat-no" title="function not covered" >async <span class="fstat-no" title="function not covered" >g</span>etSubscriptionOptimization<span class="cstat-no" title="statement not covered" >(</span>u</span>serId: string<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;any&gt; {</span></span></span>
+    return {};
   }
 &nbsp;
   private <span class="fstat-no" title="function not covered" >analyzeSystemicPatterns(</span>data: any): HolisticInsights {
@@ -322,7 +322,7 @@ class SystemIntegrationService {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

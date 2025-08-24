@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/35</span>
+                <span class='fraction'>0/36</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/20</span>
             </div>
         
             
@@ -226,16 +226,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -277,8 +277,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -355,16 +355,16 @@ export interface SubscriptionPlanProps {
 }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >S</span>ubscriptionPlanCard(</span>{
-  id,
-  name,
-  price,
-  interval,
-  description,
-  features,
-  isPopular,
-  isCurrent,
-  onSelect,
-  disabled = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span>
+  id<span class="cstat-no" title="statement not covered" >,</span>
+  name<span class="cstat-no" title="statement not covered" >,</span>
+  price<span class="cstat-no" title="statement not covered" >,</span>
+  interval<span class="cstat-no" title="statement not covered" >,</span>
+  description<span class="cstat-no" title="statement not covered" >,</span>
+  features<span class="cstat-no" title="statement not covered" >,</span>
+  isPopular<span class="cstat-no" title="statement not covered" >,</span>
+  isCurrent<span class="cstat-no" title="statement not covered" >,</span>
+  onSelect<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+  disabled<span class="cstat-no" title="statement not covered" > = false,</span>
 }: SubscriptionPlanProps) {
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;Card
@@ -406,8 +406,8 @@ export interface SubscriptionPlanProps {
           )}
         &lt;/div&gt;
         &lt;ul className="space-y-2"&gt;
-          {features.map(<span class="fstat-no" title="function not covered" >(f</span>eature, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;li key={index} c</span>lassName="flex items-start"&gt;
+          {features.map(<span class="fstat-no" title="function not covered" >(f</span>eature, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;li key={index} className="flex items-start"&gt;
               &lt;div className="flex-shrink-0 mt-0.5"&gt;
                 &lt;Check
                   className={cn('h-5 w-5', feature.included ? 'text-green-500' : 'text-gray-300')}
@@ -441,7 +441,7 @@ export interface SubscriptionPlanProps {
             isPopular &amp;&amp; !isCurrent &amp;&amp; 'bg-primary hover:bg-primary/90',
             isCurrent &amp;&amp; 'bg-green-500 hover:bg-green-600'
           )}
-          onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >onSelect(id)}</span>
+<span class="fstat-no" title="function not covered" >          onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; onSelect(id)}</span>
           disabled={disabled || isCurrent}
         &gt;
           {isCurrent ? '現在のプラン' : '選択する'}
@@ -457,7 +457,7 @@ export interface SubscriptionPlanProps {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

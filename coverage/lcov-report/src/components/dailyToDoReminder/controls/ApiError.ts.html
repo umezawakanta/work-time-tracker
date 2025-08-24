@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/44</span>
+                <span class='fraction'>0/42</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/44</span>
+                <span class='fraction'>0/41</span>
             </div>
         
             
@@ -222,14 +222,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -245,6 +242,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -255,10 +255,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -376,14 +376,14 @@
  * API通信に関連するエラーを表すクラスで、様々なエラータイプを分類し、
  * 適切なエラーハンドリングを可能にします。
  */
-class ApiError extends Error {
-  public readonly <span class="cstat-no" title="statement not covered" >statusCode?: number;</span>
-  public readonly <span class="cstat-no" title="statement not covered" >code?: string;</span>
-  public readonly <span class="cstat-no" title="statement not covered" >data?: unknown;</span>
-  public readonly <span class="cstat-no" title="statement not covered" >timestamp: number;</span>
-  public readonly <span class="cstat-no" title="statement not covered" >requestId?: string;</span>
-  public readonly <span class="cstat-no" title="statement not covered" >endpoint?: string;</span>
-  public readonly <span class="cstat-no" title="statement not covered" >cause?: Error;</span>
+class ApiError <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >extends E</span>rror {</span>
+  public readonly statusCode?: number;
+  public readonly code?: string;
+  public readonly data?: unknown;
+  public readonly timestamp: number;
+  public readonly requestId?: string;
+  public readonly endpoint?: string;
+  public readonly cause?: Error;
 &nbsp;
 <span class="fstat-no" title="function not covered" >  constructor(</span>
     message: string,
@@ -394,7 +394,7 @@ class ApiError extends Error {
       data?: unknown;
       requestId?: string;
       endpoint?: string;
-    }
+    }<span class="cstat-no" title="statement not covered" ></span>
   ) {
     // TypeScriptエラーを修正: Errorコンストラクタには1つの引数のみ渡す
 <span class="cstat-no" title="statement not covered" >    super(message);</span>
@@ -409,10 +409,10 @@ class ApiError extends Error {
 <span class="cstat-no" title="statement not covered" >      this.data = options.data;</span>
 <span class="cstat-no" title="statement not covered" >      this.requestId = options.requestId;</span>
 <span class="cstat-no" title="statement not covered" >      this.endpoint = options.endpoint;</span>
-    }
+    }<span class="cstat-no" title="statement not covered" ></span>
   }
 &nbsp;
-  /**
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >  /**</span></span>
    * エラーメッセージに詳細情報を付加した文字列を取得
    */
   public <span class="fstat-no" title="function not covered" >getDetailedMessage(</span>): string {
@@ -532,7 +532,7 @@ class ApiError extends Error {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

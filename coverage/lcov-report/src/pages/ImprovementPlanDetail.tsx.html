@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/35</span>
+                <span class='fraction'>0/44</span>
             </div>
         
             
@@ -920,7 +920,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1146,6 +1145,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1236,9 +1236,9 @@ import {
 } from 'lucide-react';
 <span class="cstat-no" title="statement not covered" >import { useNavigate } from 'react-router-dom';</span>
 &nbsp;
-const ImprovementPlanDetail: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+const <span class="fstat-no" title="function not covered" >ImprovementPlanDetail:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
   const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span>
-  const [activeTab, setActiveTab] = <span class="cstat-no" title="statement not covered" >useState('overview');</span>
+  const [activeTab<span class="cstat-no" title="statement not covered" >, s</span>etActiveTab<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('overview')<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 技術スタック比較
   const techStackComparison = <span class="cstat-no" title="statement not covered" >{</span>
@@ -1446,7 +1446,7 @@ const ImprovementPlanDetail: React.FC = <span class="cstat-no" title="statement 
           &lt;Button
             variant="ghost"
             size="sm"
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate('/improvement-plan')}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate('/improvement-plan')}</span>
             className="mb-4"
           &gt;
             &lt;ArrowLeft className="h-4 w-4 mr-2" /&gt;
@@ -1484,12 +1484,12 @@ const ImprovementPlanDetail: React.FC = <span class="cstat-no" title="statement 
                 &lt;/CardTitle&gt;
               &lt;/CardHeader&gt;
               &lt;CardContent className="space-y-4"&gt;
-                {Object.entries(techStackComparison.current).map(<span class="fstat-no" title="function not covered" >([</span>category, items]) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div key={category}&gt;</span>
+                {Object.entries(techStackComparison.current).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([c</span></span>ategory<span class="cstat-no" title="statement not covered" >, i</span>tems<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; (</span></span>
+                  &lt;div key={category}&gt;
                     &lt;h4 className="font-semibold text-sm mb-2 capitalize"&gt;{category}&lt;/h4&gt;
                     &lt;div className="flex flex-wrap gap-2"&gt;
-                      {items.map(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; (
-<span class="cstat-no" title="statement not covered" >                        &lt;Badge key={item} v</span>ariant="secondary"&gt;
+                      {items.map(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                        &lt;Badge key={item} variant="secondary"&gt;
                           {item}
                         &lt;/Badge&gt;
                       ))}
@@ -1508,12 +1508,12 @@ const ImprovementPlanDetail: React.FC = <span class="cstat-no" title="statement 
                 &lt;/CardTitle&gt;
               &lt;/CardHeader&gt;
               &lt;CardContent className="space-y-4"&gt;
-                {Object.entries(techStackComparison.proposed).map(<span class="fstat-no" title="function not covered" >([</span>category, items]) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div key={category}&gt;</span>
+                {Object.entries(techStackComparison.proposed).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([c</span></span>ategory<span class="cstat-no" title="statement not covered" >, i</span>tems<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; (</span></span>
+                  &lt;div key={category}&gt;
                     &lt;h4 className="font-semibold text-sm mb-2 capitalize"&gt;{category}&lt;/h4&gt;
                     &lt;div className="flex flex-wrap gap-2"&gt;
-                      {items.map(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; (
-<span class="cstat-no" title="statement not covered" >                        &lt;Badge key={item} v</span>ariant="default"&gt;
+                      {items.map(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                        &lt;Badge key={item} variant="default"&gt;
                           {item}
                         &lt;/Badge&gt;
                       ))}
@@ -1566,15 +1566,15 @@ const ImprovementPlanDetail: React.FC = <span class="cstat-no" title="statement 
             &lt;/CardHeader&gt;
             &lt;CardContent&gt;
               &lt;Accordion type="single" collapsible className="w-full"&gt;
-                {implementationGuidelines.map(<span class="fstat-no" title="function not covered" >(p</span>hase, phaseIndex) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;AccordionItem key={phaseIndex} v</span>alue={`phase-${phaseIndex}`}&gt;
+                {implementationGuidelines.map(<span class="fstat-no" title="function not covered" >(p</span>hase, phaseIndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;AccordionItem key={phaseIndex} value={`phase-${phaseIndex}`}&gt;
                     &lt;AccordionTrigger className="text-lg font-semibold"&gt;
                       {phase.phase}: {phase.title}
                     &lt;/AccordionTrigger&gt;
                     &lt;AccordionContent&gt;
                       &lt;div className="space-y-6 pt-4"&gt;
-                        {phase.steps.map(<span class="fstat-no" title="function not covered" >(s</span>tep, stepIndex) =&gt; (
-<span class="cstat-no" title="statement not covered" >                          &lt;div key={stepIndex} c</span>lassName="relative pl-8"&gt;
+                        {phase.steps.map(<span class="fstat-no" title="function not covered" >(s</span>tep, stepIndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                          &lt;div key={stepIndex} className="relative pl-8"&gt;
                             &lt;div className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm"&gt;
                               {step.step}
                             &lt;/div&gt;
@@ -1582,8 +1582,8 @@ const ImprovementPlanDetail: React.FC = <span class="cstat-no" title="statement 
                               &lt;h4 className="font-semibold"&gt;{step.title}&lt;/h4&gt;
                               &lt;p className="text-sm text-muted-foreground"&gt;{step.description}&lt;/p&gt;
                               &lt;div className="space-y-2"&gt;
-                                {step.checklist.map(<span class="fstat-no" title="function not covered" >(i</span>tem, itemIndex) =&gt; (
-<span class="cstat-no" title="statement not covered" >                                  &lt;label</span>
+                                {step.checklist.map(<span class="fstat-no" title="function not covered" >(i</span>tem, itemIndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                                  &lt;label
                                     key={itemIndex}
                                     className="flex items-center gap-2 text-sm"
                                   &gt;
@@ -1613,8 +1613,8 @@ const ImprovementPlanDetail: React.FC = <span class="cstat-no" title="statement 
             &lt;/CardHeader&gt;
             &lt;CardContent&gt;
               &lt;div className="relative"&gt;
-                {timeline.map(<span class="fstat-no" title="function not covered" >(i</span>tem, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div key={index} c</span>lassName="flex gap-4 pb-8 last:pb-0"&gt;
+                {timeline.map(<span class="fstat-no" title="function not covered" >(i</span>tem, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;div key={index} className="flex gap-4 pb-8 last:pb-0"&gt;
                     &lt;div className="relative flex flex-col items-center"&gt;
                       &lt;div
                         className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
@@ -1639,8 +1639,8 @@ const ImprovementPlanDetail: React.FC = <span class="cstat-no" title="statement 
                         &lt;span className="text-sm text-muted-foreground"&gt;{item.date}&lt;/span&gt;
                       &lt;/div&gt;
                       &lt;ul className="space-y-1"&gt;
-                        {item.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>ask, taskIndex) =&gt; (
-<span class="cstat-no" title="statement not covered" >                          &lt;li key={taskIndex} c</span>lassName="text-sm text-muted-foreground"&gt;
+                        {item.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>ask, taskIndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                          &lt;li key={taskIndex} className="text-sm text-muted-foreground"&gt;
                             • {task}
                           &lt;/li&gt;
                         ))}
@@ -1662,8 +1662,8 @@ const ImprovementPlanDetail: React.FC = <span class="cstat-no" title="statement 
             &lt;/CardHeader&gt;
             &lt;CardContent&gt;
               &lt;div className="grid gap-4 md:grid-cols-2"&gt;
-                {risks.map(<span class="fstat-no" title="function not covered" >(r</span>isk, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;Card key={index} c</span>lassName="p-4"&gt;
+                {risks.map(<span class="fstat-no" title="function not covered" >(r</span>isk, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;Card key={index} className="p-4"&gt;
                     &lt;div className="flex items-start gap-3"&gt;
                       {risk.icon}
                       &lt;div className="flex-1"&gt;
@@ -1701,15 +1701,15 @@ const ImprovementPlanDetail: React.FC = <span class="cstat-no" title="statement 
         {/* 期待効果タブ */}
         &lt;TabsContent value="benefits" className="space-y-6"&gt;
           &lt;div className="grid gap-6"&gt;
-            {expectedBenefits.map(<span class="fstat-no" title="function not covered" >(c</span>ategory, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;Card key={index}&gt;</span>
+            {expectedBenefits.map(<span class="fstat-no" title="function not covered" >(c</span>ategory, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;Card key={index}&gt;
                 &lt;CardHeader&gt;
                   &lt;CardTitle&gt;{category.category}&lt;/CardTitle&gt;
                 &lt;/CardHeader&gt;
                 &lt;CardContent&gt;
                   &lt;div className="grid gap-4 md:grid-cols-3"&gt;
-                    {category.benefits.map(<span class="fstat-no" title="function not covered" >(b</span>enefit, benefitIndex) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;div</span>
+                    {category.benefits.map(<span class="fstat-no" title="function not covered" >(b</span>enefit, benefitIndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                      &lt;div
                         key={benefitIndex}
                         className="text-center p-4 border rounded-lg bg-gradient-to-b from-transparent to-accent/20"
                       &gt;
@@ -1737,14 +1737,14 @@ const ImprovementPlanDetail: React.FC = <span class="cstat-no" title="statement 
 &nbsp;
       {/* アクションボタン */}
       &lt;div className="mt-8 flex justify-center gap-4"&gt;
-        &lt;Button variant="outline" size="lg" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate('/site-dev')}</span>&gt;
+        &lt;Button variant="outline" size="lg" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate('/site-dev')}&gt;</span>
           &lt;GitBranch className="h-4 w-4 mr-2" /&gt;
           WBSで進捗を確認
         &lt;/Button&gt;
         &lt;Button
           size="lg"
           className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
-          onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate('/improvement-plan/implementation')}</span>
+<span class="fstat-no" title="function not covered" >          onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate('/improvement-plan/implementation')}</span>
         &gt;
           &lt;Rocket className="h-4 w-4 mr-2" /&gt;
           実装を開始する
@@ -1762,7 +1762,7 @@ const ImprovementPlanDetail: React.FC = <span class="cstat-no" title="statement 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/31</span>
+                <span class='fraction'>0/37</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
@@ -144,7 +144,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -206,28 +206,28 @@ interface PerformanceMetrics {
   renderTime: number;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >usePerformance = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const [metrics, setMetrics] = <span class="cstat-no" title="statement not covered" >useState&lt;PerformanceMetrics&gt;({</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >usePerformance </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const [metrics<span class="cstat-no" title="statement not covered" >, s</span>etMetrics<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;PerformanceMetrics&gt;({</span>
     fps: 0,
     loadTime: 0,
     renderTime: 0,
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const [isLowPerformance, setIsLowPerformance] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [isLowPerformance<span class="cstat-no" title="statement not covered" >, s</span>etIsLowPerformance<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // FPS測定
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     let frameCount = <span class="cstat-no" title="statement not covered" >0;</span>
     let lastTime = <span class="cstat-no" title="statement not covered" >performance.now();</span>
     let animationId: number;
 &nbsp;
-    const measureFPS = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >measureFPS </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      frameCount++;</span>
       const currentTime = <span class="cstat-no" title="statement not covered" >performance.now();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (currentTime &gt;= lastTime + 1000) {</span>
         const fps = <span class="cstat-no" title="statement not covered" >Math.round((frameCount * 1000) / (currentTime - lastTime));</span>
-<span class="cstat-no" title="statement not covered" >        setMetrics(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, fps })</span>);</span>
+<span class="cstat-no" title="statement not covered" >        setMetrics(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, fps }))</span>;</span>
 &nbsp;
         // 低パフォーマンス検出
 <span class="cstat-no" title="statement not covered" >        setIsLowPerformance(fps &lt; 30);</span>
@@ -241,17 +241,17 @@ export const <span class="cstat-no" title="statement not covered" >usePerformanc
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    animationId = requestAnimationFrame(measureFPS);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      cancelAnimationFrame(animationId);</span>
     };
   }, []);
 &nbsp;
   // メモリ使用量測定
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const measureMemory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+    const <span class="fstat-no" title="function not covered" >measureMemory </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if ('memory' in performance) {</span>
         const memory = (<span class="cstat-no" title="statement not covered" >performance as any).memory;</span>
-<span class="cstat-no" title="statement not covered" >        setMetrics(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >        setMetrics(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
           ...prev,
           memoryUsage: memory.usedJSHeapSize / memory.totalJSHeapSize,
         }));
@@ -259,7 +259,7 @@ export const <span class="cstat-no" title="statement not covered" >usePerformanc
     };
 &nbsp;
     const interval = <span class="cstat-no" title="statement not covered" >setInterval(measureMemory, 5000);</span>
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >clearInterval(interval);</span></span>
+<span class="cstat-no" title="statement not covered" >    return <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; c</span>learInterval(interval);</span></span>
   }, []);
 &nbsp;
   // ページ
@@ -271,7 +271,7 @@ export const <span class="cstat-no" title="statement not covered" >usePerformanc
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/38</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/24</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
@@ -310,10 +310,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -532,26 +532,26 @@ interface ReferralDialogProps {
  * リファラル（紹介）プログラムのダイアログコンポーネント
  * 友達招待のための紹介コードと共有リンクを表示
  */
-export const <span class="cstat-no" title="statement not covered" >ReferralDialog: React.FC&lt;ReferralDialogProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  isOpen,
-  onClose,
-  referralCode,
-  appDomain = <span class="branch-0 cbranch-no" title="branch not covered" >'yourtaskapp.com',</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >ReferralDialog:</span> React.FC&lt;ReferralDialogProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  isOpen<span class="cstat-no" title="statement not covered" >,</span>
+  onClose<span class="cstat-no" title="statement not covered" >,</span>
+  referralCode<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+  appDomain<span class="cstat-no" title="statement not covered" > = 'yourtaskapp.com',</span>
 }) =&gt; {
   // コピー成功状態
-  const [copiedCode, setCopiedCode] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
-  const [copiedLink, setCopiedLink] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
+  const [copiedCode<span class="cstat-no" title="statement not covered" >, s</span>etCopiedCode<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [copiedLink<span class="cstat-no" title="statement not covered" >, s</span>etCopiedLink<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 共有リンクの生成
-  const shareLink = <span class="cstat-no" title="statement not covered" >`https://${appDomain}/signup?ref=${referralCode}`;</span>
+  const shareLink<span class="cstat-no" title="statement not covered" > = `https://${appDomain}/signup?ref=${referralCode}`;</span>
 &nbsp;
   // リファラルコードをコピー
-  const handleCopyCode = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleCopyCode </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    navigator.clipboard</span>
       .writeText(referralCode)
-      .then(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+      .then(<span class="fstat-no" title="function not covered" >() =&gt; </span>{
 <span class="cstat-no" title="statement not covered" >        setCopiedCode(true);</span>
-<span class="cstat-no" title="statement not covered" >        setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setCopiedCode(false),</span> 2000);</span>
+<span class="cstat-no" title="statement not covered" >        setTimeout(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; s</span>etCopiedCode(false), 2</span>000);</span>
       })
       .catch(<span class="fstat-no" title="function not covered" >(e</span>rr) =&gt; {
 <span class="cstat-no" title="statement not covered" >        console.error('クリップボードへのコピーに失敗しました:', err);</span>
@@ -559,12 +559,12 @@ export const <span class="cstat-no" title="statement not covered" >ReferralDialo
   };
 &nbsp;
   // 共有リンクをコピー
-  const handleCopyLink = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleCopyLink </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    navigator.clipboard</span>
       .writeText(shareLink)
-      .then(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+      .then(<span class="fstat-no" title="function not covered" >() =&gt; </span>{
 <span class="cstat-no" title="statement not covered" >        setCopiedLink(true);</span>
-<span class="cstat-no" title="statement not covered" >        setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setCopiedLink(false),</span> 2000);</span>
+<span class="cstat-no" title="statement not covered" >        setTimeout(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; s</span>etCopiedLink(false), 2</span>000);</span>
       })
       .catch(<span class="fstat-no" title="function not covered" >(e</span>rr) =&gt; {
 <span class="cstat-no" title="statement not covered" >        console.error('クリップボードへのコピーに失敗しました:', err);</span>
@@ -572,7 +572,7 @@ export const <span class="cstat-no" title="statement not covered" >ReferralDialo
   };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
-    &lt;Dialog open={isOpen} onOpenChange={<span class="fstat-no" title="function not covered" >(o</span>pen) =&gt; <span class="cstat-no" title="statement not covered" >!open &amp;&amp; onClose()}</span>&gt;
+    &lt;Dialog open={isOpen} <span class="fstat-no" title="function not covered" >onOpenChange=</span>{(open<span class="cstat-no" title="statement not covered" >) =&gt; !open &amp;&amp; onClose()}&gt;</span>
       &lt;DialogContent className="sm:max-w-md"&gt;
         &lt;DialogHeader&gt;
           &lt;DialogTitle&gt;友達に紹介してポイントをゲット&lt;/DialogTitle&gt;
@@ -661,7 +661,7 @@ export const <span class="cstat-no" title="statement not covered" >ReferralDialo
               &lt;Button
                 variant="outline"
                 className="flex-1 text-[#1DA1F2]"
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >                onClick=</span>{() =&gt; {
                   const text = <span class="cstat-no" title="statement not covered" >encodeURIComponent(</span>
                     `タスク管理アプリで生産性向上！あなたとわたしにプレミアム特典付き ${shareLink}`
                   );
@@ -682,7 +682,7 @@ export const <span class="cstat-no" title="statement not covered" >ReferralDialo
               &lt;Button
                 variant="outline"
                 className="flex-1 text-[#1877F2]"
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >                onClick=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" >                  window.open(</span>
                     `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareLink)}`,
                     '_blank'
@@ -703,7 +703,7 @@ export const <span class="cstat-no" title="statement not covered" >ReferralDialo
               &lt;Button
                 variant="outline"
                 className="flex-1 text-[#0A66C2]"
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >                onClick=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" >                  window.open(</span>
                     `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareLink)}`,
                     '_blank'
@@ -739,7 +739,7 @@ export const <span class="cstat-no" title="statement not covered" >ReferralDialo
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

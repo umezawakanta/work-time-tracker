@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/152</span>
+                <span class='fraction'>0/168</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/44</span>
+                <span class='fraction'>0/50</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/131</span>
+                <span class='fraction'>0/132</span>
             </div>
         
             
@@ -876,7 +876,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1057,15 +1057,15 @@ const defaultCognitiveState: CognitiveState = <span class="cstat-no" title="stat
   cognitiveLoad: 5,
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AdaptiveUIProvider: React.FC&lt;{ children: React.ReactNode }&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> children }) =&gt; {</span>
-  const [settings, setSettings] = <span class="cstat-no" title="statement not covered" >useState&lt;AdaptiveUISettings&gt;(defaultSettings);</span>
-  const [cognitiveState, setCognitiveState] = <span class="cstat-no" title="statement not covered" >useState&lt;CognitiveState&gt;(defaultCognitiveState);</span>
-  const [isAdaptationEnabled, setIsAdaptationEnabled] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
-  const [cognitiveService] = <span class="cstat-no" title="statement not covered" >useState(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >new CognitiveIntegrationService())</span>;</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AdaptiveUIProvider:</span> React.FC&lt;{ children: React.ReactNode }&gt; = <span class="cstat-no" title="statement not covered" >(</span>{ children<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span>
+  const [settings<span class="cstat-no" title="statement not covered" >, s</span>etSettings<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;AdaptiveUISettings&gt;(defaultSettings)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [cognitiveState<span class="cstat-no" title="statement not covered" >, s</span>etCognitiveState<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;CognitiveState&gt;(defaultCognitiveState)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isAdaptationEnabled<span class="cstat-no" title="statement not covered" >, s</span>etIsAdaptationEnabled<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [cognitiveService<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; n</span>ew CognitiveIntegrationService())<span class="cstat-no" title="statement not covered" >;</span></span></span>
 &nbsp;
   // 時間帯検出
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const updateTimeOfDay = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+    const <span class="fstat-no" title="function not covered" >updateTimeOfDay </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
       const hour = <span class="cstat-no" title="statement not covered" >new Date().getHours();</span>
       let timeOfDay: CognitiveState['timeOfDay'];
 &nbsp;
@@ -1074,21 +1074,21 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
       else <span class="cstat-no" title="statement not covered" >if (hour &gt;= 18 &amp;&amp; hour &lt; 22) <span class="cstat-no" title="statement not covered" >timeOfDay = 'evening';</span></span>
       else <span class="cstat-no" title="statement not covered" >timeOfDay = 'night';</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      setCognitiveState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, timeOfDay })</span>);</span>
+<span class="cstat-no" title="statement not covered" >      setCognitiveState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, timeOfDay }))</span>;</span>
     };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    updateTimeOfDay();</span>
     const interval = <span class="cstat-no" title="statement not covered" >setInterval(updateTimeOfDay, 60000);</span> // 1分ごと更新
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >clearInterval(interval);</span></span>
+<span class="cstat-no" title="statement not covered" >    return <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; c</span>learInterval(interval);</span></span>
   }, []);
 &nbsp;
   // 認知状態に基づくUI自動調整
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!isAdaptationEnabled) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
-    const adaptUI = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-      const newSettings = <span class="cstat-no" title="statement not covered" >{ ...settings };</span>
+    const <span class="fstat-no" title="function not covered" >adaptUI </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+      const newSettings<span class="cstat-no" title="statement not covered" > = { ...settings };</span>
 &nbsp;
       // エネルギーレベルによる調整
 <span class="cstat-no" title="statement not covered" >      if (cognitiveState.currentEnergyLevel &lt;= 3) {</span>
@@ -1149,7 +1149,7 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
   }, [cognitiveState, isAdaptationEnabled]);
 &nbsp;
   // CSS変数更新
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const root = <span class="cstat-no" title="statement not covered" >document.documentElement;</span>
 &nbsp;
     // 色彩設定
@@ -1176,7 +1176,7 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
 &nbsp;
     // レイアウト密度による調整
     const densityClasses = <span class="cstat-no" title="statement not covered" >['adaptive-compact', 'adaptive-comfortable', 'adaptive-spacious'];</span>
-<span class="cstat-no" title="statement not covered" >    densityClasses.forEach(<span class="fstat-no" title="function not covered" >(c</span>ls) =&gt; <span class="cstat-no" title="statement not covered" >document.body.classList.remove(cls))</span>;</span>
+<span class="cstat-no" title="statement not covered" >    densityClasses.forEach(<span class="fstat-no" title="function not covered" >(c</span>ls<span class="cstat-no" title="statement not covered" >) =&gt; document.body.classList.remove(cls));</span></span>
 <span class="cstat-no" title="statement not covered" >    document.body.classList.add(`adaptive-${settings.layoutDensity}`);</span>
 &nbsp;
     // アニメーションレベル調整
@@ -1186,7 +1186,7 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
       'adaptive-moderate-animations',
       'adaptive-full-animations',
     ];
-<span class="cstat-no" title="statement not covered" >    animationClasses.forEach(<span class="fstat-no" title="function not covered" >(c</span>ls) =&gt; <span class="cstat-no" title="statement not covered" >document.body.classList.remove(cls))</span>;</span>
+<span class="cstat-no" title="statement not covered" >    animationClasses.forEach(<span class="fstat-no" title="function not covered" >(c</span>ls<span class="cstat-no" title="statement not covered" >) =&gt; document.body.classList.remove(cls));</span></span>
 <span class="cstat-no" title="statement not covered" >    document.body.classList.add(`adaptive-${settings.animationLevel}-animations`);</span>
 &nbsp;
     // 簡素化インターface
@@ -1213,12 +1213,12 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
 &nbsp;
   // 設定更新
   const updateSettings = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(n</span>ewSettings: Partial&lt;AdaptiveUISettings&gt;) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setSettings(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, ...newSettings })</span>);</span>
+<span class="cstat-no" title="statement not covered" >    setSettings(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, ...newSettings }))</span>;</span>
   }, []);
 &nbsp;
   // 認知状態更新
   const updateCognitiveState = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(n</span>ewState: Partial&lt;CognitiveState&gt;) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setCognitiveState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, ...newState })</span>);</span>
+<span class="cstat-no" title="statement not covered" >    setCognitiveState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, ...newState }))</span>;</span>
   }, []);
 &nbsp;
   // コンテキスト特化の適応
@@ -1270,17 +1270,17 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
   );
 &nbsp;
   // デフォルト設定にリセット
-  const resetToDefaults = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const resetToDefaults = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    setSettings(defaultSettings);</span>
 <span class="cstat-no" title="statement not covered" >    setCognitiveState(defaultCognitiveState);</span>
   }, []);
 &nbsp;
   // 適応機能のON/OFF
-  const toggleAdaptation = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setIsAdaptationEnabled(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >!prev)</span>;</span>
+  const toggleAdaptation = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+<span class="cstat-no" title="statement not covered" >    setIsAdaptationEnabled(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; !prev);</span></span>
 <span class="cstat-no" title="statement not covered" >    if (!isAdaptationEnabled) {</span>
       // 適応機能を有効にした時、即座に適応
-<span class="cstat-no" title="statement not covered" >      setCognitiveState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev })</span>);</span>
+<span class="cstat-no" title="statement not covered" >      setCognitiveState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev }))</span>;</span>
     } else {
       // 適応機能を無効にした時、デフォルト設定に戻す
 <span class="cstat-no" title="statement not covered" >      setSettings(defaultSettings);</span>
@@ -1302,7 +1302,7 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
 };
 &nbsp;
 // カスタムフック
-export const <span class="cstat-no" title="statement not covered" >useAdaptiveUI = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useAdaptiveUI </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
   const context = <span class="cstat-no" title="statement not covered" >useContext(AdaptiveUIContext);</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (context === undefined) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('useAdaptiveUI must be used within an AdaptiveUIProvider');</span>
@@ -1311,17 +1311,17 @@ export const <span class="cstat-no" title="statement not covered" >useAdaptiveUI
 };
 &nbsp;
 // 高次コンポーネント：認知負荷感知
-export const <span class="cstat-no" title="statement not covered" >withCognitiveLoad = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >&lt;</span>P extends object&gt;(</span></span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >withCognitiveLoad </span>= <span class="cstat-no" title="statement not covered" >&lt;</span>P extends object&gt;(</span>
   Component: React.ComponentType&lt;P&gt;,
-  baseCognitiveLoad: number = <span class="branch-0 cbranch-no" title="branch not covered" >5</span>
+<span class="cstat-no" title="statement not covered" >  baseCognitiveLoad: number = 5</span>
 ) =&gt; {
   const WrappedComponent = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;any, P&gt;(<span class="fstat-no" title="function not covered" >(p</span>rops, ref) =&gt; {</span>
-    const { updateCognitiveState } = <span class="cstat-no" title="statement not covered" >useAdaptiveUI();</span>
+    const { updateCognitiveState<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useAdaptiveUI();</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      updateCognitiveState({ cognitiveLoad: baseCognitiveLoad });</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >        updateCognitiveState({ cognitiveLoad: 5 }); </span>// デフォルトに戻す
       };
     }, [updateCognitiveState]);
@@ -1334,11 +1334,11 @@ export const <span class="cstat-no" title="statement not covered" >withCognitive
 };
 &nbsp;
 // ユーティリティフック：適応的スタイル
-export const <span class="cstat-no" title="statement not covered" >useAdaptiveStyles = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const { settings } = <span class="cstat-no" title="statement not covered" >useAdaptiveUI();</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useAdaptiveStyles </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const { settings<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useAdaptiveUI();</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
-    getAdaptiveClassName: <span class="fstat-no" title="function not covered" >(b</span>aseClass: string) =&gt; {
+<span class="fstat-no" title="function not covered" >    getAdaptiveClassName:</span> (baseClass: string) =&gt; {
       let className = <span class="cstat-no" title="statement not covered" >baseClass;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (settings.simplifiedInterface) <span class="cstat-no" title="statement not covered" >className += ' simplified';</span></span>
@@ -1348,7 +1348,7 @@ export const <span class="cstat-no" title="statement not covered" >useAdaptiveSt
 <span class="cstat-no" title="statement not covered" >      return className;</span>
     },
 &nbsp;
-    getAdaptiveStyles: <span class="fstat-no" title="function not covered" >(b</span>aseStyles: React.CSSProperties = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span> =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+<span class="fstat-no" title="function not covered" >    getAdaptiveStyles:</span> (<span class="cstat-no" title="statement not covered" >baseStyles: React.CSSProperties = {}<span class="cstat-no" title="statement not covered" >)</span> =&gt; ({</span>
       ...baseStyles,
       fontSize: `calc(1rem * ${settings.fontSizeMultiplier})`,
       lineHeight: settings.lineHeight,
@@ -1360,7 +1360,7 @@ export const <span class="cstat-no" title="statement not covered" >useAdaptiveSt
           : `all ${settings.transitionDuration}ms ease-in-out`,
     }),
 &nbsp;
-    getCognitiveLoadStyle: <span class="fstat-no" title="function not covered" >(c</span>ognitiveLoad: number) =&gt; {
+<span class="fstat-no" title="function not covered" >    getCognitiveLoadStyle:</span> (cognitiveLoad: number) =&gt; {
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (cognitiveLoad &gt;= 8) {</span>
 <span class="cstat-no" title="statement not covered" >        return {</span>
           border: '2px solid var(--adaptive-accent)',
@@ -1381,7 +1381,7 @@ export const <span class="cstat-no" title="statement not covered" >useAdaptiveSt
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

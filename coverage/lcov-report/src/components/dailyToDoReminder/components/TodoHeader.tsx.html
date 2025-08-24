@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/45</span>
+                <span class='fraction'>0/72</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>0/41</span>
             </div>
         
             
@@ -287,7 +287,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -320,26 +319,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -347,12 +334,25 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -482,8 +482,8 @@ const ActionButtons = <span class="cstat-no" title="statement not covered" >Reac
   isResetting: boolean;
   onResetClick: () =&gt; void;
   onAIClick: () =&gt; void;
-}&gt;(<span class="fstat-no" title="function not covered" >({</span> hasPremium, isResetting, onResetClick, onAIClick }) =&gt; (
-<span class="cstat-no" title="statement not covered" >  &lt;div className="flex items-center gap-2 flex-wrap"&gt;</span>
+}&gt;(<span class="fstat-no" title="function not covered" >({ h</span>asPremium<span class="cstat-no" title="statement not covered" >, isResetting<span class="cstat-no" title="statement not covered" >, onResetClick<span class="cstat-no" title="statement not covered" >, onAIClick<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > }) =&gt; (</span></span></span></span></span>
+  &lt;div className="flex items-center gap-2 flex-wrap"&gt;
     &lt;Button
       variant="outline"
       size="sm"
@@ -515,8 +515,8 @@ const ActionButtons = <span class="cstat-no" title="statement not covered" >Reac
 ));
 &nbsp;
 // Lazy load the AI suggestion modal
-const AISuggestionModal = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  import('</span>./AISuggestionModal').t</span>hen(<span class="fstat-no" title="function not covered" >(m</span>odule) =&gt; (<span class="cstat-no" title="statement not covered" >{ default: module.AISuggestionModal })</span>)</span>
+const AISuggestionModal = <span class="cstat-no" title="statement not covered" >lazy(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt;</span></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  import('</span>./AISuggestionModal').t</span>hen(<span class="fstat-no" title="function not covered" >(m</span>odule<span class="cstat-no" title="statement not covered" >) =&gt; ({ default: module.AISuggestionModal }))</span>
 );
 &nbsp;
 /**
@@ -525,29 +525,29 @@ const AISuggestionModal = <span class="cstat-no" title="statement not covered" >
  * パフォーマンス最適化とアクセシビリティを考慮した設計
  */
 export const <span class="cstat-no" title="statement not covered" >TodoHeader: React.FC&lt;TodoHeaderProps&gt; = React.memo(</span>
-<span class="fstat-no" title="function not covered" >  ({</span> hasPremium, streakCount, completedToday = <span class="branch-0 cbranch-no" title="branch not covered" >0,</span> totalToday = <span class="branch-0 cbranch-no" title="branch not covered" >0,</span> productivityScore = <span class="branch-0 cbranch-no" title="branch not covered" >0 </span>}) =&gt; {
+<span class="fstat-no" title="function not covered" >  ({ h</span>asPremium<span class="cstat-no" title="statement not covered" >, streakCount<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >, completedToday<span class="cstat-no" title="statement not covered" > </span>= 0<span class="cstat-no" title="statement not covered" >, t</span>otalToday<span class="cstat-no" title="statement not covered" > </span>= 0<span class="cstat-no" title="statement not covered" >, p</span>roductivityScore<span class="cstat-no" title="statement not covered" > </span>= 0 }) =&gt; </span>{</span></span>
     const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
     const analytics = <span class="cstat-no" title="statement not covered" >useAnalytics();</span>
 &nbsp;
-    const [showResetDialog, setShowResetDialog] = <span class="cstat-no" title="statement not covered" >React.useState(false);</span>
-    const [isResetting, setIsResetting] = <span class="cstat-no" title="statement not covered" >React.useState(false);</span>
-    const [showAISuggestionModal, setShowAISuggestionModal] = <span class="cstat-no" title="statement not covered" >React.useState(false);</span>
+    const [showResetDialog<span class="cstat-no" title="statement not covered" >, s</span>etShowResetDialog<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >R</span>eact.useState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+    const [isResetting<span class="cstat-no" title="statement not covered" >, s</span>etIsResetting<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >R</span>eact.useState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+    const [showAISuggestionModal<span class="cstat-no" title="statement not covered" >, s</span>etShowAISuggestionModal<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >R</span>eact.useState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-    const expensiveAnalytics = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const expensiveAnalytics = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      return hasPremium ? analytics : null;</span>
     }, [hasPremium, analytics]);
 &nbsp;
-    const handleResetTodos = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;void&gt; =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      setIsResetting(true);</span>
-<span class="cstat-no" title="statement not covered" >      try {</span>
+    const handleResetTodos = <span class="cstat-no" title="statement not covered" >useCallback(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async (): Promise&lt;void&gt; =&gt; {</span></span></span>
+<span class="cstat-no" title="statement not covered" >      setIsResetting(true);<span class="cstat-no" title="statement not covered" ></span></span>
+      try {
 <span class="cstat-no" title="statement not covered" >        expensiveAnalytics?.track('todo_reset_initiated', {</span>
           streakCount,
           completedToday,
           totalToday,
           productivityScore,
-        });
-<span class="cstat-no" title="statement not covered" >        await dispatch(resetTodoList()).unwrap();</span>
-<span class="cstat-no" title="statement not covered" >        await Promise.all([</span>
+        });<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
+        await dispatch(resetTodoList()).unwrap()<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >;</span></span>
+        await Promise.all([
           dispatch(fetchTodoHistory()).unwrap(),
           dispatch(fetchDailyTodoHistory()).unwrap(),
         ]);
@@ -556,22 +556,22 @@ export const <span class="cstat-no" title="statement not covered" >TodoHeader: R
           position: 'top-center',
           icon: '🎯',
         });
-<span class="cstat-no" title="statement not covered" >        expensiveAnalytics?.track('todo_reset_completed', { success: true });</span>
+<span class="cstat-no" title="statement not covered" >        expensiveAnalytics?.track('todo_reset_completed', { success: true });<span class="cstat-no" title="statement not covered" ></span></span>
       } catch (err) {
-        const errorMessage = <span class="cstat-no" title="statement not covered" >err instanceof Error ? err.message : '不明なエラー';</span>
+        const <span class="cstat-no" title="statement not covered" >errorMessage = err instanceof Error ? err.message : '不明なエラー';</span>
 <span class="cstat-no" title="statement not covered" >        console.error('Reset error:', err);</span>
 <span class="cstat-no" title="statement not covered" >        toast.error(`エラーが発生しました: ${errorMessage}`, {</span>
           duration: 5000,
           position: 'top-center',
         });
-<span class="cstat-no" title="statement not covered" >        expensiveAnalytics?.track('todo_reset_failed', { error: errorMessage });</span>
+<span class="cstat-no" title="statement not covered" >        expensiveAnalytics?.track('todo_reset_failed', { error: errorMessage });<span class="cstat-no" title="statement not covered" ></span></span>
       } finally {
-<span class="cstat-no" title="statement not covered" >        setIsResetting(false);</span>
+<span class="cstat-no" title="statement not covered" >        setIsResetting(false);<span class="cstat-no" title="statement not covered" ></span></span>
       }
     }, [dispatch, expensiveAnalytics, streakCount, completedToday, totalToday, productivityScore]);
 &nbsp;
     const metricsData = <span class="cstat-no" title="statement not covered" >useMemo(</span>
-<span class="fstat-no" title="function not covered" >      () =</span>&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >      () =&gt; ({</span></span>
         completedToday,
         totalToday,
         productivityScore,
@@ -616,8 +616,8 @@ export const <span class="cstat-no" title="statement not covered" >TodoHeader: R
             &lt;ActionButtons
               hasPremium={hasPremium}
               isResetting={isResetting}
-              onResetClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowResetDialog(true)}</span>
-              onAIClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowAISuggestionModal(true)}</span>
+<span class="fstat-no" title="function not covered" >              onResetClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowResetDialog(true)}</span>
+<span class="fstat-no" title="function not covered" >              onAIClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowAISuggestionModal(true)}</span>
             /&gt;
           &lt;/div&gt;
         &lt;/div&gt;
@@ -655,7 +655,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoHeader: R
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

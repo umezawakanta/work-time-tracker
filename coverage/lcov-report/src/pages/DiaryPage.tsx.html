@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/376</span>
+                <span class='fraction'>0/445</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/112</span>
+                <span class='fraction'>0/152</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/74</span>
+                <span class='fraction'>0/75</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/355</span>
+                <span class='fraction'>0/356</span>
             </div>
         
             
@@ -1170,7 +1170,7 @@
 <a name='L1105'></a><a href='#L1105'>1105</a>
 <a name='L1106'></a><a href='#L1106'>1106</a>
 <a name='L1107'></a><a href='#L1107'>1107</a>
-<a name='L1108'></a><a href='#L1108'>1108</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1108'></a><a href='#L1108'>1108</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1342,7 +1342,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1935,7 +1935,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2277,7 +2277,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span></span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >import React, { useState, useEffect, Suspense, useCallback, useRef, lazy } from 'react';</span>
 <span class="cstat-no" title="statement not covered" >import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';</span>
@@ -2319,7 +2319,7 @@ import {
 <span class="cstat-no" title="statement not covered" >import { format } from 'date-fns';</span>
 &nbsp;
 // 遅延ロードするコンポーネント
-const StatsView = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >() =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > import('</span>@/components/StatsView'))</span>;</span>
+const StatsView = <span class="cstat-no" title="statement not covered" >lazy(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>import('</span>@/components/StatsView'))</span>;</span></span>
 &nbsp;
 // defaultAchievementsの定義
 const defaultAchievements: Achievement[] = <span class="cstat-no" title="statement not covered" >[</span>
@@ -2431,33 +2431,33 @@ const goalCategories = <span class="cstat-no" title="statement not covered" >[</
   { value: 'long-term', label: '長期目標' },
 ];
 &nbsp;
-const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+const <span class="fstat-no" title="function not covered" >DiaryPage:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
   // 状態管理
-  const [entries, setEntries] = <span class="cstat-no" title="statement not covered" >useState&lt;DiaryEntry[]&gt;([]);</span>
-  const [newAchievement, setNewAchievement] = <span class="cstat-no" title="statement not covered" >useState('');</span>
-  const [newMood, setNewMood] = <span class="cstat-no" title="statement not covered" >useState('');</span>
-  const [selectedTags, setSelectedTags] = <span class="cstat-no" title="statement not covered" >useState&lt;string[]&gt;([]);</span>
-  const [difficulty, setDifficulty] = <span class="cstat-no" title="statement not covered" >useState&lt;number&gt;(1);</span>
-  const [isImportant, setIsImportant] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [editingEntry, setEditingEntry] = <span class="cstat-no" title="statement not covered" >useState&lt;DiaryEntry | null&gt;(null);</span>
-  const [goals, setGoals] = <span class="cstat-no" title="statement not covered" >useState&lt;Goal[]&gt;([]);</span>
-  const [newGoal, setNewGoal] = <span class="cstat-no" title="statement not covered" >useState('');</span>
-  const [newGoalCategory, setNewGoalCategory] = <span class="cstat-no" title="statement not covered" >useState('daily');</span>
-  const [newGoalDate, setNewGoalDate] = <span class="cstat-no" title="statement not covered" >useState('');</span>
-  const [currentView, setCurrentView] = <span class="cstat-no" title="statement not covered" >useState('day');</span>
-  const [streakData, setStreakData] = <span class="cstat-no" title="statement not covered" >useState&lt;Streak&gt;({</span>
+  const [entries<span class="cstat-no" title="statement not covered" >, s</span>etEntries<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;DiaryEntry[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [newAchievement<span class="cstat-no" title="statement not covered" >, s</span>etNewAchievement<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [newMood<span class="cstat-no" title="statement not covered" >, s</span>etNewMood<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [selectedTags<span class="cstat-no" title="statement not covered" >, s</span>etSelectedTags<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [difficulty<span class="cstat-no" title="statement not covered" >, s</span>etDifficulty<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;number&gt;(1)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isImportant<span class="cstat-no" title="statement not covered" >, s</span>etIsImportant<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [editingEntry<span class="cstat-no" title="statement not covered" >, s</span>etEditingEntry<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;DiaryEntry | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [goals<span class="cstat-no" title="statement not covered" >, s</span>etGoals<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Goal[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [newGoal<span class="cstat-no" title="statement not covered" >, s</span>etNewGoal<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [newGoalCategory<span class="cstat-no" title="statement not covered" >, s</span>etNewGoalCategory<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('daily')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [newGoalDate<span class="cstat-no" title="statement not covered" >, s</span>etNewGoalDate<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [currentView<span class="cstat-no" title="statement not covered" >, s</span>etCurrentView<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('day')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [streakData<span class="cstat-no" title="statement not covered" >, s</span>etStreakData<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Streak&gt;({</span>
     currentStreak: 0,
     longestStreak: 0,
     lastEntryDate: null,
-  });
-  const [achievements, setAchievements] = <span class="cstat-no" title="statement not covered" >useState&lt;Achievement[]&gt;(defaultAchievements);</span>
-  const [showTips, setShowTips] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
-  const [isPremium, setIsPremium] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [isSettingsOpen, setIsSettingsOpen] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [currentMonth, setCurrentMonth] = <span class="cstat-no" title="statement not covered" >useState(new Date());</span>
-  const [userSettings, setUserSettings] = <span class="cstat-no" title="statement not covered" >useState&lt;UserSettings&gt;(defaultSettings);</span>
-  const [showMonthlyCalendar, setShowMonthlyCalendar] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [isMobile, setIsMobile] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  })<span class="cstat-no" title="statement not covered" >;</span>
+  const [achievements<span class="cstat-no" title="statement not covered" >, s</span>etAchievements<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Achievement[]&gt;(defaultAchievements)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showTips<span class="cstat-no" title="statement not covered" >, s</span>etShowTips<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isPremium<span class="cstat-no" title="statement not covered" >, s</span>etIsPremium<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isSettingsOpen<span class="cstat-no" title="statement not covered" >, s</span>etIsSettingsOpen<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [currentMonth<span class="cstat-no" title="statement not covered" >, s</span>etCurrentMonth<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(new Date())<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [userSettings<span class="cstat-no" title="statement not covered" >, s</span>etUserSettings<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;UserSettings&gt;(defaultSettings)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showMonthlyCalendar<span class="cstat-no" title="statement not covered" >, s</span>etShowMonthlyCalendar<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isMobile<span class="cstat-no" title="statement not covered" >, s</span>etIsMobile<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // useRefは循環依存を解決するために使用
   const saveStreakDataRef = <span class="cstat-no" title="statement not covered" >useRef&lt;((data: Streak) =&gt; void) | undefined&gt;(undefined);</span>
@@ -2466,8 +2466,8 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   const checkAchievementsRef = <span class="cstat-no" title="statement not covered" >useRef&lt;(() =&gt; void) | undefined&gt;(undefined);</span>
 &nbsp;
   // ブレークポイント検出
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const checkScreenSize = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+    const <span class="fstat-no" title="function not covered" >checkScreenSize </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setIsMobile(window.innerWidth &lt; 768);</span>
     };
 &nbsp;
@@ -2478,7 +2478,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
 <span class="cstat-no" title="statement not covered" >    window.addEventListener('resize', checkScreenSize);</span>
 &nbsp;
     // コンポーネントのアンマウント時にリスナーを削除
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      window.removeEventListener('resize', checkScreenSize);</span>
     };
   }, []);
@@ -2501,7 +2501,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   const randomEncouragement =
 <span class="cstat-no" title="statement not covered" >    encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const storedEntries = <span class="cstat-no" title="statement not covered" >localStorage.getItem('diaryEntries');</span>
     const storedGoals = <span class="cstat-no" title="statement not covered" >localStorage.getItem('diaryGoals');</span>
     const storedStreak = <span class="cstat-no" title="statement not covered" >localStorage.getItem('diaryStreak');</span>
@@ -2531,7 +2531,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
     }
   }, []);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // ストリークデータが変わったら達成状況をチェック
 <span class="cstat-no" title="statement not covered" >    checkAchievements();</span>
   }, [streakData, entries, goals]);
@@ -2559,7 +2559,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
 &nbsp;
     // 日付でソート
     const sortedEntries = <span class="cstat-no" title="statement not covered" >[...entries].sort(</span>
-<span class="fstat-no" title="function not covered" >      (a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(b.date).getTime() - new Date(a.date).getTime()</span>
+<span class="fstat-no" title="function not covered" >      (a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(b.date).getTime() - new Date(a.date).getTime()</span>
     );
 &nbsp;
     const today = <span class="cstat-no" title="statement not covered" >new Date();</span>
@@ -2647,11 +2647,11 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
     });
   }, []);
 &nbsp;
-  const checkAchievements = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const checkAchievements = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // 最新のachievementsを関数内で取得
 <span class="cstat-no" title="statement not covered" >    setAchievements(<span class="fstat-no" title="function not covered" >(c</span>urrentAchievements) =&gt; {</span>
       let updated = <span class="cstat-no" title="statement not covered" >false;</span>
-      const newAchievements = <span class="cstat-no" title="statement not covered" >[...currentAchievements];</span>
+      const newAchievements<span class="cstat-no" title="statement not covered" > = [...currentAchievements];</span>
 &nbsp;
       // 連続日数の達成をチェック
       const streakAchievements = <span class="cstat-no" title="statement not covered" >[</span>
@@ -2661,8 +2661,8 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
         { id: 'streak-60', days: 60 },
       ];
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      streakAchievements.forEach(<span class="fstat-no" title="function not covered" >({</span> id, days }) =&gt; {</span>
-        const achievement = <span class="cstat-no" title="statement not covered" >newAchievements.find(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.id === id)</span>;</span>
+<span class="cstat-no" title="statement not covered" >      streakAchievements.forEach(<span class="fstat-no" title="function not covered" >({ i</span>d<span class="cstat-no" title="statement not covered" >, days<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span>
+        const achievement = <span class="cstat-no" title="statement not covered" >newAchievements.find(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; a.id === id);</span></span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (achievement &amp;&amp; !achievement.earned &amp;&amp; streakData.currentStreak &gt;= days) {</span>
 <span class="cstat-no" title="statement not covered" >          achievement.earned = true;</span>
 <span class="cstat-no" title="statement not covered" >          achievement.date = new Date().toISOString();</span>
@@ -2676,7 +2676,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
       });
 &nbsp;
       // エントリー数の達成をチェック
-      const entriesAchievement = <span class="cstat-no" title="statement not covered" >newAchievements.find(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.id === 'entries-10')</span>;</span>
+      const entriesAchievement = <span class="cstat-no" title="statement not covered" >newAchievements.find(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; a.id === 'entries-10');</span></span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (entriesAchievement &amp;&amp; !entriesAchievement.earned &amp;&amp; entries.length &gt;= 10) {</span>
 <span class="cstat-no" title="statement not covered" >        entriesAchievement.earned = true;</span>
 <span class="cstat-no" title="statement not covered" >        entriesAchievement.date = new Date().toISOString();</span>
@@ -2689,14 +2689,14 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
       }
 &nbsp;
       // 目標達成数のチェック
-      const completedGoals = <span class="cstat-no" title="statement not covered" >goals.filter(<span class="fstat-no" title="function not covered" >(g</span>oal) =&gt; <span class="cstat-no" title="statement not covered" >goal.completed)</span>.length;</span>
+      const completedGoals = <span class="cstat-no" title="statement not covered" >goals.filter(<span class="fstat-no" title="function not covered" >(g</span>oal<span class="cstat-no" title="statement not covered" >) =&gt; goal.completed).</span>length;</span>
       const goalAchievements = <span class="cstat-no" title="statement not covered" >[</span>
         { id: 'goals-5', count: 5 },
         { id: 'goals-15', count: 15 },
       ];
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      goalAchievements.forEach(<span class="fstat-no" title="function not covered" >({</span> id, count }) =&gt; {</span>
-        const achievement = <span class="cstat-no" title="statement not covered" >newAchievements.find(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.id === id)</span>;</span>
+<span class="cstat-no" title="statement not covered" >      goalAchievements.forEach(<span class="fstat-no" title="function not covered" >({ i</span>d<span class="cstat-no" title="statement not covered" >, count<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span>
+        const achievement = <span class="cstat-no" title="statement not covered" >newAchievements.find(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; a.id === id);</span></span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (achievement &amp;&amp; !achievement.earned &amp;&amp; completedGoals &gt;= count) {</span>
 <span class="cstat-no" title="statement not covered" >          achievement.earned = true;</span>
 <span class="cstat-no" title="statement not covered" >          achievement.date = new Date().toISOString();</span>
@@ -2710,8 +2710,8 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
       });
 &nbsp;
       // 難しい達成のチェック
-      const difficultAchievements = <span class="cstat-no" title="statement not covered" >entries.filter(<span class="fstat-no" title="function not covered" >(e</span>ntry) =&gt; <span class="cstat-no" title="statement not covered" >entry.difficulty === 5)</span>.length;</span>
-      const difficultAchievement = <span class="cstat-no" title="statement not covered" >newAchievements.find(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.id === 'difficult-5')</span>;</span>
+      const difficultAchievements = <span class="cstat-no" title="statement not covered" >entries.filter(<span class="fstat-no" title="function not covered" >(e</span>ntry<span class="cstat-no" title="statement not covered" >) =&gt; entry.difficulty === 5).</span>length;</span>
+      const difficultAchievement = <span class="cstat-no" title="statement not covered" >newAchievements.find(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; a.id === 'difficult-5');</span></span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (difficultAchievement &amp;&amp; !difficultAchievement.earned &amp;&amp; difficultAchievements &gt;= 3) {</span>
 <span class="cstat-no" title="statement not covered" >        difficultAchievement.earned = true;</span>
 <span class="cstat-no" title="statement not covered" >        difficultAchievement.date = new Date().toISOString();</span>
@@ -2738,7 +2738,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   }, []);
 &nbsp;
   // useRefに関数を保存
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    saveStreakDataRef.current = saveStreakData;</span>
 <span class="cstat-no" title="statement not covered" >    calculateStreaksRef.current = calculateStreaks;</span>
 <span class="cstat-no" title="statement not covered" >    saveEntriesRef.current = saveEntries;</span>
@@ -2746,7 +2746,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   }, [saveStreakData, calculateStreaks, saveEntries, checkAchievements]);
 &nbsp;
   // 初期データのロード
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const storedEntries = <span class="cstat-no" title="statement not covered" >localStorage.getItem('diaryEntries');</span>
     const storedGoals = <span class="cstat-no" title="statement not covered" >localStorage.getItem('diaryGoals');</span>
     const storedStreak = <span class="cstat-no" title="statement not covered" >localStorage.getItem('diaryStreak');</span>
@@ -2777,23 +2777,23 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   }, []);
 &nbsp;
   // ストリークデータ、エントリー、目標が変わったら達成状況をチェック
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    checkAchievementsRef.current?.();</span>
   }, [streakData, entries, goals]);
 &nbsp;
   // その他の関数
-  const saveGoals = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(n</span>ewGoals: Goal[]) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >saveGoals </span>= <span class="cstat-no" title="statement not covered" >(newGoals: Goal[]) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setGoals(newGoals);</span>
 <span class="cstat-no" title="statement not covered" >    localStorage.setItem('diaryGoals', JSON.stringify(newGoals));</span>
   };
 &nbsp;
-  const saveUserSettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>ettings: UserSettings) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >saveUserSettings </span>= <span class="cstat-no" title="statement not covered" >(settings: UserSettings) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setUserSettings(settings);</span>
 <span class="cstat-no" title="statement not covered" >    localStorage.setItem('userSettings', JSON.stringify(settings));</span>
   };
 &nbsp;
   // プログレスバーのアニメーション機能
-  const animateProgress = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>elector: string, targetValue: number) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >animateProgress </span>= <span class="cstat-no" title="statement not covered" >(selector: string, targetValue: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof document === 'undefined') <span class="cstat-no" title="statement not covered" >return; </span></span>// SSRの場合は何もしない
 &nbsp;
     const progressElement = <span class="cstat-no" title="statement not covered" >document.querySelector(selector) as HTMLElement;</span>
@@ -2805,7 +2805,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
     const steps = <span class="cstat-no" title="statement not covered" >duration / interval;</span>
     const increment = <span class="cstat-no" title="statement not covered" >targetValue / steps;</span>
 &nbsp;
-    const animation = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const animation = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      currentValue += increment;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (currentValue &gt;= targetValue) {</span>
@@ -2818,10 +2818,10 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   };
 &nbsp;
   // タブ切り替え時にプログレスバーをアニメーションさせる
-  const handleTabChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>alue: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleTabChange </span>= <span class="cstat-no" title="statement not covered" >(value: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (value === 'stats') {</span>
       // 統計タブが選択されたらアニメーションを開始
-<span class="cstat-no" title="statement not covered" >      setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >        animateProgress('.record-progress', (stats.entryCount / 30) * 100);</span>
 <span class="cstat-no" title="statement not covered" >        animateProgress('.mood-progress', 100);</span>
       }, 200);
@@ -2829,14 +2829,14 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   };
 &nbsp;
   // タグ切り替え処理
-  const handleTagToggle = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ag: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setSelectedTags(<span class="fstat-no" title="function not covered" >(p</span>revTags) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >      prevTags.includes(tag) ? prevTags.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t !== tag)</span> : [...prevTags, tag]</span>
+  const <span class="fstat-no" title="function not covered" >handleTagToggle </span>= <span class="cstat-no" title="statement not covered" >(tag: string) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setSelectedTags(<span class="fstat-no" title="function not covered" >(p</span>revTags<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+      prevTags.includes(tag) ? prevTags.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t !== tag) </span>: [...prevTags, tag]
     );
   };
 &nbsp;
   // エクスポート機能
-  const exportData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >exportData </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     // エクスポートロジック...
 <span class="cstat-no" title="statement not covered" >    toast({</span>
       title: 'データをエクスポートしました',
@@ -2845,8 +2845,8 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   };
 &nbsp;
   // インポート機能
-  const importData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>vent: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {</span>
-    const file = <span class="cstat-no" title="statement not covered" >event.target.files?.[0];</span>
+  const <span class="fstat-no" title="function not covered" >importData </span>= <span class="cstat-no" title="statement not covered" >(event: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {</span>
+    const file<span class="cstat-no" title="statement not covered" > = event.target.files?.[0];</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!file) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
     const reader = <span class="cstat-no" title="statement not covered" >new FileReader();</span>
@@ -2904,7 +2904,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   };
 &nbsp;
   // 月間統計を計算
-  const calculateMonthlyStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): MonthlyStats =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateMonthlyStats </span>= <span class="cstat-no" title="statement not covered" >(): MonthlyStats =&gt; {</span>
     // 表示中の月のエントリーを抽出（デフォルトは今月）
     const selectedMonth = <span class="cstat-no" title="statement not covered" >currentMonth.getMonth();</span>
     const selectedYear = <span class="cstat-no" title="statement not covered" >currentMonth.getFullYear();</span>
@@ -2940,7 +2940,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
     // 平均難易度
     const avgDifficulty =
 <span class="cstat-no" title="statement not covered" >      monthEntries.length &gt; 0</span>
-        ? monthEntries.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry) =&gt; <span class="cstat-no" title="statement not covered" >sum + (entry.difficulty || 1),</span> 0) /
+        ? monthEntries.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry<span class="cstat-no" title="statement not covered" >) =&gt; sum + (entry.difficulty || 1), 0</span>) /
           monthEntries.length
         : 0;
 &nbsp;
@@ -2959,10 +2959,10 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
       moodCounts,
       tagCounts,
       avgDifficulty,
-      importantCount: monthEntries.filter(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.isImportant)</span>.length,
+      importantCount: monthEntries.filter(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; e.isImportant).</span>length,
       weeklyAchievements,
       // 追加統計情報
-      highDifficultyCount: monthEntries.filter(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.difficulty &gt;= 4)</span>.length,
+      highDifficultyCount: monthEntries.filter(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; e.difficulty &gt;= 4).</span>length,
       completedGoalsThisMonth: goals.filter(<span class="fstat-no" title="function not covered" >(g</span>) =&gt; {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!g.completed || !g.targetDate) <span class="cstat-no" title="statement not covered" >return false;</span></span>
         const targetDate = <span class="cstat-no" title="statement not covered" >new Date(g.targetDate);</span>
@@ -2972,7 +2972,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   };
 &nbsp;
   // モチベーショングラフのデータを準備
-  const prepareMotivationGraphData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): MotivationDataPoint[] =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >prepareMotivationGraphData </span>= <span class="cstat-no" title="statement not covered" >(): MotivationDataPoint[] =&gt; {</span>
     // 過去30日間のデータを準備
     const thirtyDaysAgo = <span class="cstat-no" title="statement not covered" >new Date();</span>
 <span class="cstat-no" title="statement not covered" >    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);</span>
@@ -2993,7 +2993,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
     };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return dateRange.map(<span class="fstat-no" title="function not covered" >(d</span>ateStr) =&gt; {</span>
-      const entry = <span class="cstat-no" title="statement not covered" >entries.find(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.date === dateStr)</span>;</span>
+      const entry = <span class="cstat-no" title="statement not covered" >entries.find(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; e.date === dateStr);</span></span>
       const defaultScore = <span class="cstat-no" title="statement not covered" >0;</span> // データがない日は0
       const score = <span class="cstat-no" title="statement not covered" >entry?.mood ? moodScores[entry.mood] : defaultScore;</span>
 &nbsp;
@@ -3006,7 +3006,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
     });
   };
 &nbsp;
-  const handleAddGoal = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: React.FormEvent) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleAddGoal </span>= <span class="cstat-no" title="statement not covered" >(e: React.FormEvent) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    e.preventDefault();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!newGoal.trim()) {</span>
@@ -3027,7 +3027,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
       targetDate: newGoalDate || undefined,
     };
 &nbsp;
-    const updatedGoals = <span class="cstat-no" title="statement not covered" >[newGoalObj, ...goals];</span>
+    const updatedGoals<span class="cstat-no" title="statement not covered" > = [newGoalObj, ...goals];</span>
 <span class="cstat-no" title="statement not covered" >    saveGoals(updatedGoals);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    setNewGoal('');</span>
@@ -3040,15 +3040,15 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
     });
   };
 &nbsp;
-  const handleToggleGoal = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>d: string) =&gt; {</span>
-    const updatedGoals = <span class="cstat-no" title="statement not covered" >goals.map(<span class="fstat-no" title="function not covered" >(g</span>oal) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >      goal.id === id ? { ...goal, completed: !goal.completed } : goal</span>
+  const <span class="fstat-no" title="function not covered" >handleToggleGoal </span>= <span class="cstat-no" title="statement not covered" >(id: string) =&gt; {</span>
+    const updatedGoals = <span class="cstat-no" title="statement not covered" >goals.map(<span class="fstat-no" title="function not covered" >(g</span>oal<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+      goal.id === id ? { ...goal, completed: !goal.completed } : goal
     );
 <span class="cstat-no" title="statement not covered" >    saveGoals(updatedGoals);</span>
   };
 &nbsp;
-  const handleDeleteGoal = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>d: string) =&gt; {</span>
-    const updatedGoals = <span class="cstat-no" title="statement not covered" >goals.filter(<span class="fstat-no" title="function not covered" >(g</span>oal) =&gt; <span class="cstat-no" title="statement not covered" >goal.id !== id)</span>;</span>
+  const <span class="fstat-no" title="function not covered" >handleDeleteGoal </span>= <span class="cstat-no" title="statement not covered" >(id: string) =&gt; {</span>
+    const updatedGoals = <span class="cstat-no" title="statement not covered" >goals.filter(<span class="fstat-no" title="function not covered" >(g</span>oal<span class="cstat-no" title="statement not covered" >) =&gt; goal.id !== id);</span></span>
 <span class="cstat-no" title="statement not covered" >    saveGoals(updatedGoals);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    toast({</span>
@@ -3062,12 +3062,12 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   const stats = <span class="cstat-no" title="statement not covered" >calculateMonthlyStats();</span>
 &nbsp;
   // 週間ビューをレンダリング
-  const renderWeeklyView = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >renderWeeklyView </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return &lt;WeeklyView entries={entries} moodEmojis={moodEmojis} /&gt;;</span>
   };
 &nbsp;
   // 月間カレンダーをレンダリング
-  const renderMonthlyCalendar = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >renderMonthlyCalendar </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return (</span>
       &lt;MonthlyCalendar
         entries={entries}
@@ -3082,7 +3082,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   };
 &nbsp;
   // エントリー編集
-  const handleEdit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>ntry: DiaryEntry) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleEdit </span>= <span class="cstat-no" title="statement not covered" >(entry: DiaryEntry) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setEditingEntry(entry);</span>
 <span class="cstat-no" title="statement not covered" >    setNewAchievement(entry.achievement);</span>
 <span class="cstat-no" title="statement not covered" >    setNewMood(entry.mood || '');</span>
@@ -3092,8 +3092,8 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   };
 &nbsp;
   // エントリー削除
-  const handleDelete = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>d: string) =&gt; {</span>
-    const updatedEntries = <span class="cstat-no" title="statement not covered" >entries.filter(<span class="fstat-no" title="function not covered" >(e</span>ntry) =&gt; <span class="cstat-no" title="statement not covered" >entry.id !== id)</span>;</span>
+  const <span class="fstat-no" title="function not covered" >handleDelete </span>= <span class="cstat-no" title="statement not covered" >(id: string) =&gt; {</span>
+    const updatedEntries = <span class="cstat-no" title="statement not covered" >entries.filter(<span class="fstat-no" title="function not covered" >(e</span>ntry<span class="cstat-no" title="statement not covered" >) =&gt; entry.id !== id);</span></span>
 <span class="cstat-no" title="statement not covered" >    saveEntries(updatedEntries);</span>
 <span class="cstat-no" title="statement not covered" >    toast({</span>
       title: 'エントリーを削除しました',
@@ -3103,7 +3103,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   };
 &nbsp;
   // フォームリセット
-  const resetForm = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >resetForm </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setNewAchievement('');</span>
 <span class="cstat-no" title="statement not covered" >    setNewMood('');</span>
 <span class="cstat-no" title="statement not covered" >    setSelectedTags([]);</span>
@@ -3112,13 +3112,13 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
   };
 &nbsp;
   // フォーム送信
-  const handleSubmit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: React.FormEvent) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleSubmit </span>= <span class="cstat-no" title="statement not covered" >(e: React.FormEvent) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    e.preventDefault();</span>
     // フォーム送信ロジック...
   };
 &nbsp;
   // エントリークラス取得
-  const getEntryClass = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>ntry: DiaryEntry) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getEntryClass </span>= <span class="cstat-no" title="statement not covered" >(entry: DiaryEntry) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (entry.isImportant) {</span>
 <span class="cstat-no" title="statement not covered" >      return 'border-l-4 border-amber-400 pl-4';</span>
     }
@@ -3140,7 +3140,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
           &lt;Button
             variant="ghost"
             size="sm"
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsSettingsOpen(true)}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsSettingsOpen(true)}</span>
             className="rounded-full"
             aria-label="設定"
           &gt;
@@ -3151,7 +3151,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
           &lt;Button
             variant="ghost"
             size="sm"
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsPremium(!isPremium)}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsPremium(!isPremium)}</span>
             className="rounded-full"
             aria-label="プレミアム切り替え"
           &gt;
@@ -3181,7 +3181,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
               &lt;Switch
                 id="reminder-toggle"
                 checked={userSettings.reminderEnabled}
-                onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; {
+<span class="fstat-no" title="function not covered" >                onCheckedChange=</span>{(checked) =&gt; {
 <span class="cstat-no" title="statement not covered" >                  saveUserSettings({</span>
                     ...userSettings,
                     reminderEnabled: checked,
@@ -3197,7 +3197,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
                   id="reminder-time"
                   type="time"
                   value={userSettings.reminderTime}
-                  onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="fstat-no" title="function not covered" >                  onChange=</span>{(e) =&gt; {
 <span class="cstat-no" title="statement not covered" >                    saveUserSettings({</span>
                       ...userSettings,
                       reminderTime: e.target.value,
@@ -3213,7 +3213,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
               &lt;Switch
                 id="tips-toggle"
                 checked={userSettings.showTips}
-                onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; {
+<span class="fstat-no" title="function not covered" >                onCheckedChange=</span>{(checked) =&gt; {
 <span class="cstat-no" title="statement not covered" >                  saveUserSettings({</span>
                     ...userSettings,
                     showTips: checked,
@@ -3228,7 +3228,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
               &lt;Switch
                 id="dark-mode-toggle"
                 checked={userSettings.darkMode}
-                onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; {
+<span class="fstat-no" title="function not covered" >                onCheckedChange=</span>{(checked) =&gt; {
 <span class="cstat-no" title="statement not covered" >                  saveUserSettings({</span>
                     ...userSettings,
                     darkMode: checked,
@@ -3269,7 +3269,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
             &lt;/div&gt;
           &lt;/div&gt;
           &lt;DialogFooter&gt;
-            &lt;Button variant="outline" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsSettingsOpen(false)}</span>&gt;
+            &lt;Button variant="outline" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsSettingsOpen(false)}&gt;</span>
               閉じる
             &lt;/Button&gt;
           &lt;/DialogFooter&gt;
@@ -3391,7 +3391,7 @@ const DiaryPage: React.FC = <span class="cstat-no" title="statement not covered"
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>0/31</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/22</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
@@ -143,17 +143,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -182,34 +182,34 @@ import { AppDispatch, RootState } from '@/store';
 <span class="cstat-no" title="statement not covered" >import { selectBlogPostById, updateBlogPost, addBlogPost, BlogPost } from '@/store/blogSlice';</span>
 <span class="cstat-no" title="statement not covered" >import { BlogPostForm } from '@/components/BlogPostForm';</span>
 &nbsp;
-const BlogPostEditor: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const { id } = <span class="cstat-no" title="statement not covered" >useParams&lt;{ id: string }&gt;();</span>
+const <span class="fstat-no" title="function not covered" >BlogPostEditor:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const { id<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useParams&lt;{ id: string }&gt;();</span></span>
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
   const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span>
-  const existingPost = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >selectBlogPostById(state, id))</span>;</span>
+  const existingPost = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; selectBlogPostById(state, id));</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (id &amp;&amp; !existingPost) {</span>
 <span class="cstat-no" title="statement not covered" >      navigate('/404');</span>
     }
   }, [id, existingPost, navigate]);
 &nbsp;
-  const handleSubmit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(formData: {</span>
+  const <span class="fstat-no" title="function not covered" >handleSubmit<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span>sync (f</span>ormData: {</span>
     title: string;
     content: string;
     category: string;
     tags: string[];
-  }) =&gt; {
-<span class="cstat-no" title="statement not covered" >    if (id) {</span>
-<span class="cstat-no" title="statement not covered" >      await dispatch(updateBlogPost({ _id: id, updates: formData }));</span>
-<span class="cstat-no" title="statement not covered" >      navigate(`/blog/${id}`);</span>
+  }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>) =&gt; {</span></span></span>
+    if (id<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >) {</span></span>
+      await dispatch(updateBlogPost({ _id: id, updates: formData }));
+<span class="cstat-no" title="statement not covered" >      navigate(`/blog/${id}`);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
     } else {
-      const newPost = <span class="cstat-no" title="statement not covered" >await dispatch(addBlogPost({ ...formData, status: 'published' } as BlogPost));</span>
+      const <span class="cstat-no" title="statement not covered" >newPost = await d</span>ispatch(addBlogPost({ ...formData, status: 'published' } as BlogPost));
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (addBlogPost.fulfilled.match(newPost)) {</span>
 <span class="cstat-no" title="statement not covered" >        navigate(`/blog/${newPost.payload._id}`);</span>
-      }
+      }<span class="cstat-no" title="statement not covered" ></span>
     }
-  };
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className="container mx-auto max-w-4xl px-4 py-8"&gt;
@@ -238,7 +238,7 @@ const BlogPostEditor: React.FC = <span class="cstat-no" title="statement not cov
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

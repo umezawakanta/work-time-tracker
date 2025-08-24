@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/31</span>
             </div>
         
             
@@ -606,7 +606,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -626,6 +625,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -830,11 +830,11 @@
 <span class="cstat-no" title="statement not covered" >import WBSGenerator from '@/components/features/wbs/WBSGenerator';</span>
 import { WBSGenerationResult } from '@/services/ai/wbsService';
 &nbsp;
-const WBSGeneratorPage: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const [showGenerator, setShowGenerator] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [generatedWBS, setGeneratedWBS] = <span class="cstat-no" title="statement not covered" >useState&lt;WBSGenerationResult | null&gt;(null);</span>
+const <span class="fstat-no" title="function not covered" >WBSGeneratorPage:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const [showGenerator<span class="cstat-no" title="statement not covered" >, s</span>etShowGenerator<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [generatedWBS<span class="cstat-no" title="statement not covered" >, s</span>etGeneratedWBS<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;WBSGenerationResult | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const handleWBSGenerated = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>esult: WBSGenerationResult) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleWBSGenerated </span>= <span class="cstat-no" title="statement not covered" >(result: WBSGenerationResult) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setGeneratedWBS(result);</span>
   };
 &nbsp;
@@ -906,7 +906,7 @@ const WBSGeneratorPage: React.FC = <span class="cstat-no" title="statement not c
 <span class="cstat-no" title="statement not covered" >    return (</span>
       &lt;div className="container mx-auto px-4 py-8"&gt;
         &lt;div className="mb-6 flex items-center gap-4"&gt;
-          &lt;Button variant="ghost" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowGenerator(false)}</span> className="text-blue-600"&gt;
+          &lt;Button variant="ghost" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowGenerator(false)} c</span>lassName="text-blue-600"&gt;
             ← 概要に戻る
           &lt;/Button&gt;
           &lt;h1 className="text-3xl font-bold"&gt;WBS生成ツール&lt;/h1&gt;
@@ -932,7 +932,7 @@ const WBSGeneratorPage: React.FC = <span class="cstat-no" title="statement not c
         &lt;/p&gt;
         &lt;div className="flex justify-center gap-4 mt-6"&gt;
           &lt;Button
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowGenerator(true)}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowGenerator(true)}</span>
             size="lg"
             className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
           &gt;
@@ -980,8 +980,8 @@ const WBSGeneratorPage: React.FC = <span class="cstat-no" title="statement not c
 &nbsp;
         &lt;TabsContent value="features" className="space-y-6"&gt;
           &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
-            {features.map(<span class="fstat-no" title="function not covered" >(f</span>eature, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;Card key={index} c</span>lassName="hover:shadow-lg transition-shadow"&gt;
+            {features.map(<span class="fstat-no" title="function not covered" >(f</span>eature, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;Card key={index} className="hover:shadow-lg transition-shadow"&gt;
                 &lt;CardContent className="pt-6"&gt;
                   &lt;div className="flex items-start gap-4"&gt;
                     &lt;div className="flex-shrink-0"&gt;{feature.icon}&lt;/div&gt;
@@ -998,8 +998,8 @@ const WBSGeneratorPage: React.FC = <span class="cstat-no" title="statement not c
 &nbsp;
         &lt;TabsContent value="examples" className="space-y-6"&gt;
           &lt;div className="grid grid-cols-1 lg:grid-cols-3 gap-6"&gt;
-            {examples.map(<span class="fstat-no" title="function not covered" >(e</span>xample, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;Card key={index} c</span>lassName="hover:shadow-lg transition-shadow"&gt;
+            {examples.map(<span class="fstat-no" title="function not covered" >(e</span>xample, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;Card key={index} className="hover:shadow-lg transition-shadow"&gt;
                 &lt;CardHeader&gt;
                   &lt;CardTitle className="flex items-center gap-2"&gt;
                     &lt;span className="text-2xl"&gt;{example.icon}&lt;/span&gt;
@@ -1028,7 +1028,7 @@ const WBSGeneratorPage: React.FC = <span class="cstat-no" title="statement not c
                     variant="outline"
                     size="sm"
                     className="w-full"
-                    onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowGenerator(true)}</span>
+<span class="fstat-no" title="function not covered" >                    onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowGenerator(true)}</span>
                   &gt;
                     このテンプレートを使用
                     &lt;ArrowRight className="h-4 w-4 ml-2" /&gt;
@@ -1155,7 +1155,7 @@ const WBSGeneratorPage: React.FC = <span class="cstat-no" title="statement not c
                 &lt;p className="text-muted-foreground"&gt;{generatedWBS.tasks.length}個&lt;/p&gt;
               &lt;/div&gt;
             &lt;/div&gt;
-            &lt;Button onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowGenerator(true)}</span> variant="outline" className="mt-4"&gt;
+            &lt;Button <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowGenerator(true)} v</span>ariant="outline" className="mt-4"&gt;
               詳細を確認する
             &lt;/Button&gt;
           &lt;/CardContent&gt;
@@ -1171,7 +1171,7 @@ const WBSGeneratorPage: React.FC = <span class="cstat-no" title="statement not c
             わずか数分で詳細なWBSが完成します。
           &lt;/p&gt;
           &lt;Button
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowGenerator(true)}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowGenerator(true)}</span>
             size="lg"
             className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
           &gt;
@@ -1192,7 +1192,7 @@ const WBSGeneratorPage: React.FC = <span class="cstat-no" title="statement not c
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -25,21 +25,21 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>0/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
@@ -115,19 +115,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -140,15 +136,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import mongoose from 'mongoose';</span>
 <span class="cstat-no" title="statement not covered" >import dotenv from 'dotenv';</span>
 &nbsp;
@@ -157,10 +157,10 @@
 const MONGODB_URI = <span class="cstat-no" title="statement not covered" >process.env.MONGODB_URI || 'mongodb://localhost:27017/workTimeTracker';</span>
 &nbsp;
 // 🐛 エラーエリミネーター: MongoDB接続の安定化
-export const <span class="cstat-no" title="statement not covered" >connectDB = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  try {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >connectDB<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span></span></span>sync () =&gt; {</span></span></span></span></span>
+  try {
     // 接続オプションを追加してタイムアウトと再接続を最適化
-<span class="cstat-no" title="statement not covered" >    await mongoose.connect(MONGODB_URI, {</span>
+    await mongoose.connect(MONGODB_URI, {
       maxPoolSize: 10, // 接続プールサイズ
       serverSelectionTimeoutMS: 5000, // サーバー選択タイムアウト
       socketTimeoutMS: 45000, // ソケットタイムアウト
@@ -174,24 +174,24 @@ export const <span class="cstat-no" title="statement not covered" >connectDB = <
 <span class="cstat-no" title="statement not covered" >      console.error('❌ MongoDB connection error:', error);</span>
     });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    mongoose.connection.on('disconnected', <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    mongoose.connection.on('disconnected', <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      console.warn('⚠️ MongoDB disconnected');</span>
     });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    mongoose.connection.on('reconnected', <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    mongoose.connection.on('reconnected', <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      console.log('🔄 MongoDB reconnected');</span>
-    });
+    });<span class="cstat-no" title="statement not covered" ></span>
   } catch (error) {
 <span class="cstat-no" title="statement not covered" >    console.error('❌ MongoDB connection failed:', error);</span>
     // サーバーレス環境（Vercel）や本番環境ではプロセスを終了せず、呼び出し元に委ねる
-    // 呼び出し元（API Routesなど）でフォールバック処理や適切なHTTPレスポンスへ切り替えるため
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (process.env.VERCEL || process.env.NODE_ENV === 'production') {</span>
-<span class="cstat-no" title="statement not covered" >      throw error;</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>// 呼び出し元（API Routesなど）でフォールバック処理や適切なHTTPレスポンスへ切り替えるため</span>
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production'<span class="cstat-no" title="statement not covered" >) {</span>
+      throw error;
     }
     // 開発環境では続行（モック / ローカル機能を使用）
-<span class="cstat-no" title="statement not covered" >    console.warn('⚠️ Development mode: Continuing without MongoDB');</span>
+<span class="cstat-no" title="statement not covered" >    console.warn('⚠️ Development mode: Continuing without MongoDB');<span class="cstat-no" title="statement not covered" ></span></span>
   }
-};
+}<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -199,7 +199,7 @@ export const <span class="cstat-no" title="statement not covered" >connectDB = <
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

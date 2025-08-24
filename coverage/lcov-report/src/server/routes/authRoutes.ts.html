@@ -25,21 +25,21 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
@@ -169,23 +169,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -194,10 +188,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -238,35 +238,35 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
 // 管理者権限付与エンドポイント（開発用）
 <span class="cstat-no" title="statement not covered" >router.post(</span>
   '/promote-admin',
-  /* authMiddleware, */ // Disabled for development
-<span class="fstat-no" title="function not covered" >  async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {
-<span class="cstat-no" title="statement not covered" >    try {</span>
+  /* authMiddleware, */ <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >// Disabled for development</span></span>
+<span class="fstat-no" title="function not covered" >  async (r</span>eq: Request, res: Response<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>): Promise&lt;void&gt; =&gt; {</span></span></span></span>
+    try {
       // 環境が開発環境の場合のみ許可
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (process.env.NODE_ENV === 'production') {</span>
-<span class="cstat-no" title="statement not covered" >        res.status(403).json({ message: '本番環境では管理者権限の付与はできません' });</span>
-<span class="cstat-no" title="statement not covered" >        return;</span>
+      if (process.env.NODE_ENV === 'production'<span class="cstat-no" title="statement not covered" >) {</span>
+<span class="cstat-no" title="statement not covered" >        res.status(403).json({ message: '本番環境では管理者権限の付与はできません' });<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span></span></span></span>
+        return;
       }
 &nbsp;
       // ユーザー認証チェック
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!req.user) {</span>
-<span class="cstat-no" title="statement not covered" >        res.status(401).json({ message: '認証が必要です' });</span>
-<span class="cstat-no" title="statement not covered" >        return;</span>
+      if (!req.user<span class="cstat-no" title="statement not covered" >) {</span>
+<span class="cstat-no" title="statement not covered" >        res.status(401).json({ message: '認証が必要です' });<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+        return;
       }
 &nbsp;
       // ユーザーを管理者にする処理をここに実装
       // req.user を使用してユーザー情報を更新
-      const updatedUser = <span class="cstat-no" title="statement not covered" >await User.findByIdAndUpdate(</span>
+      const <span class="cstat-no" title="statement not covered" >updatedUser = await U</span>ser.findByIdAndUpdate(
         req.user.id,
         { isAdmin: true },
         { new: true }
       ).select('-password');
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      res.json({ user: updatedUser, message: '管理者権限を付与しました' });</span>
+<span class="cstat-no" title="statement not covered" >      res.json({ user: updatedUser, message: '管理者権限を付与しました' });<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Admin promotion error:', error);</span>
-<span class="cstat-no" title="statement not covered" >      res.status(500).json({ message: '管理者権限の付与に失敗しました' });</span>
+<span class="cstat-no" title="statement not covered" >      res.status(500).json({ message: '管理者権限の付与に失敗しました' });<span class="cstat-no" title="statement not covered" ></span></span>
     }
-  }
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >export default router;</span>
@@ -277,7 +277,7 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

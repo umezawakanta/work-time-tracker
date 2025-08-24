@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">48.35% </span>
+                <span class="strong">47.82% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>44/91</span>
+                <span class='fraction'>44/92</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">44.82% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>13/26</span>
+                <span class='fraction'>13/29</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">42.66% </span>
+                <span class="strong">42.1% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>32/75</span>
+                <span class='fraction'>32/76</span>
             </div>
         
             
@@ -363,7 +363,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -541,7 +541,7 @@ export const createSafeDate = (dateValue?: string | Date | null): Date =&gt; {
  * @param value - Date string value
  * @returns Normalized datetime-local format (YYYY-MM-DDTHH:MM)
  */
-export const normalizeDateTimeLocal = <span class="fstat-no" title="function not covered" >(v</span>alue?: string): string =&gt; {
+export const <span class="fstat-no" title="function not covered" >normalizeDateTimeLocal </span>= (value?: string): string =&gt; {
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!value) <span class="cstat-no" title="statement not covered" >return '';</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  try {</span>
@@ -566,7 +566,7 @@ export const normalizeDateTimeLocal = <span class="fstat-no" title="function not
  * @param dateValue - Date string to validate
  * @returns true if valid, false otherwise
  */
-export const isValidDateString = <span class="fstat-no" title="function not covered" >(d</span>ateValue: string): boolean =&gt; {
+export const <span class="fstat-no" title="function not covered" >isValidDateString </span>= (dateValue: string): boolean =&gt; {
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!dateValue || dateValue.trim() === '') <span class="cstat-no" title="statement not covered" >return false;</span></span>
 &nbsp;
   const date = <span class="cstat-no" title="statement not covered" >new Date(dateValue);</span>
@@ -579,9 +579,9 @@ export const isValidDateString = <span class="fstat-no" title="function not cove
  * @param options - Intl.DateTimeFormat options
  * @returns Formatted date string
  */
-export const formatDisplayDate = <span class="fstat-no" title="function not covered" >(</span>
+export const <span class="fstat-no" title="function not covered" >formatDisplayDate </span>= (
   dateValue: string | Date,
-  options: Intl.DateTimeFormatOptions = <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >  options: Intl.DateTimeFormatOptions = {</span>
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -602,7 +602,7 @@ export const formatDisplayDate = <span class="fstat-no" title="function not cove
  * Gets today's date in YYYY-MM-DD format for min attribute
  * @returns Today's date string
  */
-export const getTodayString = <span class="fstat-no" title="function not covered" >(): string =</span>&gt; {
+export const <span class="fstat-no" title="function not covered" >getTodayString </span>= (): string =&gt; {
   const today = <span class="cstat-no" title="statement not covered" >new Date();</span>
 <span class="cstat-no" title="statement not covered" >  return today.toISOString().split('T')[0];</span>
 };
@@ -611,7 +611,7 @@ export const getTodayString = <span class="fstat-no" title="function not covered
  * Gets current datetime in datetime-local format for min attribute
  * @returns Current datetime string
  */
-export const getCurrentDateTimeString = <span class="fstat-no" title="function not covered" >(): string =</span>&gt; {
+export const <span class="fstat-no" title="function not covered" >getCurrentDateTimeString </span>= (): string =&gt; {
   const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
 <span class="cstat-no" title="statement not covered" >  return normalizeDateTimeLocal(now.toISOString());</span>
 };
@@ -681,7 +681,7 @@ export const isValidDateFormat = (dateString: string): boolean =&gt; {
  * @param dateString - Date string to convert
  * @returns Number timestamp or 0 if invalid
  */
-export const convertDateStringToNumber = <span class="fstat-no" title="function not covered" >(d</span>ateString: string): number =&gt; {
+export const <span class="fstat-no" title="function not covered" >convertDateStringToNumber </span>= (dateString: string): number =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const date = <span class="cstat-no" title="statement not covered" >createSafeDate(dateString);</span>
 <span class="cstat-no" title="statement not covered" >    return date.getTime();</span>
@@ -707,7 +707,7 @@ export const calculateDuration = (start: Date, end: Date): number =&gt; {
  * @param endDate - End date (defaults to now)
  * @returns Duration in milliseconds
  */
-export const calculateDurationMs = <span class="fstat-no" title="function not covered" >(s</span>tartDate: string | Date, endDate?: string | Date): number =&gt; {
+export const <span class="fstat-no" title="function not covered" >calculateDurationMs </span>= (startDate: string | Date, endDate?: string | Date): number =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const start = <span class="cstat-no" title="statement not covered" >createSafeDate(startDate);</span>
     const end = <span class="cstat-no" title="statement not covered" >endDate ? createSafeDate(endDate) : new Date();</span>
@@ -724,7 +724,7 @@ export const calculateDurationMs = <span class="fstat-no" title="function not co
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

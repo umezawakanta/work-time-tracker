@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/87</span>
+                <span class='fraction'>0/93</span>
             </div>
         
             
@@ -599,7 +599,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -779,13 +779,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -920,8 +919,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1029,6 +1028,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1088,9 +1088,9 @@ import { Button } from '@/components/ui/button';
 /**
  * 🧠 ニューロダイバーシティ推進者: 統合アクセシビリティページ
  */
-const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const [safeModeActive, setSafeModeActive] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [settings, setSettings] = <span class="cstat-no" title="statement not covered" >useState({</span>
+const <span class="fstat-no" title="function not covered" >NeurodiversityPage:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const [safeModeActive<span class="cstat-no" title="statement not covered" >, s</span>etSafeModeActive<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [settings<span class="cstat-no" title="statement not covered" >, s</span>etSettings<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState({</span>
     sensory: {
       reducedMotion: false,
       highContrast: false,
@@ -1106,10 +1106,10 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
       textToSpeech: false,
       highlightFocus: false,
     },
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const handleSettingChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>ategory: string, setting: string, value: boolean): void =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setSettings(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+  const <span class="fstat-no" title="function not covered" >handleSettingChange </span>= <span class="cstat-no" title="statement not covered" >(category: string, setting: string, value: boolean): void =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setSettings(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       [category]: {
         ...prev[category as keyof typeof prev],
@@ -1127,7 +1127,7 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
     });
   };
 &nbsp;
-  const applyAccessibilitySetting = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>ategory: string, setting: string, value: boolean): void =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >applyAccessibilitySetting </span>= <span class="cstat-no" title="statement not covered" >(category: string, setting: string, value: boolean): void =&gt; {</span>
     const body = <span class="cstat-no" title="statement not covered" >document.body;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    switch (`${category}.${setting}`) {</span>
@@ -1179,18 +1179,18 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
     }
   };
 &nbsp;
-  const enableTextToSpeech = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): void =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >enableTextToSpeech </span>= <span class="cstat-no" title="statement not covered" >(): void =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    document.addEventListener('mouseup', handleTextSelection);</span>
   };
 &nbsp;
-  const disableTextToSpeech = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): void =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >disableTextToSpeech </span>= <span class="cstat-no" title="statement not covered" >(): void =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    document.removeEventListener('mouseup', handleTextSelection);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if ('speechSynthesis' in window) {</span>
 <span class="cstat-no" title="statement not covered" >      window.speechSynthesis.cancel();</span>
     }
   };
 &nbsp;
-  const handleTextSelection = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): void =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleTextSelection </span>= <span class="cstat-no" title="statement not covered" >(): void =&gt; {</span>
     const selection = <span class="cstat-no" title="statement not covered" >window.getSelection();</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (selection &amp;&amp; selection.toString().trim() &amp;&amp; 'speechSynthesis' in window) {</span>
       const utterance = <span class="cstat-no" title="statement not covered" >new SpeechSynthesisUtterance(selection.toString());</span>
@@ -1200,7 +1200,7 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
     }
   };
 &nbsp;
-  const handleSafeModeToggle = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): void =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleSafeModeToggle </span>= <span class="cstat-no" title="statement not covered" >(): void =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setSafeModeActive(!safeModeActive);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    if (!safeModeActive) {</span>
@@ -1252,7 +1252,7 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
     }
   };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // スタイル注入
     const style = <span class="cstat-no" title="statement not covered" >document.createElement('style');</span>
 <span class="cstat-no" title="statement not covered" >    style.textContent = `</span>
@@ -1280,13 +1280,13 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
     `;
 <span class="cstat-no" title="statement not covered" >    document.head.appendChild(style);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      document.head.removeChild(style);</span>
     };
   }, []);
 &nbsp;
-  const getStatusBadge = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>sActive: boolean) =&gt; (</span>
-<span class="cstat-no" title="statement not covered" >    &lt;Badge variant={isActive ? 'default' : 'outline'} className={isActive ? 'bg-green-500' : ''}&gt;</span>
+  const <span class="fstat-no" title="function not covered" >getStatusBadge </span>= <span class="cstat-no" title="statement not covered" >(isActive: boolean<span class="cstat-no" title="statement not covered" >) =&gt; (</span></span>
+    &lt;Badge variant={isActive ? 'default' : 'outline'} className={isActive ? 'bg-green-500' : ''}&gt;
       {isActive ? '有効' : '無効'}
     &lt;/Badge&gt;
   );
@@ -1414,8 +1414,8 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
                 &lt;/div&gt;
                 &lt;Switch
                   checked={settings.sensory.reducedMotion}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt;
-<span class="cstat-no" title="statement not covered" >                    handleSettingChange('sensory', 'reducedMotion', value)</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                    handleSettingChange('sensory', 'reducedMotion', value)
                   }
                 /&gt;
               &lt;/div&gt;
@@ -1427,7 +1427,7 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
                 &lt;/div&gt;
                 &lt;Switch
                   checked={settings.sensory.highContrast}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >handleSettingChange('sensory', 'highContrast', value)}</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; handleSettingChange('sensory', 'highContrast', value)}</span>
                 /&gt;
               &lt;/div&gt;
 &nbsp;
@@ -1438,8 +1438,8 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
                 &lt;/div&gt;
                 &lt;Switch
                   checked={settings.sensory.soundsEnabled}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt;
-<span class="cstat-no" title="statement not covered" >                    handleSettingChange('sensory', 'soundsEnabled', value)</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                    handleSettingChange('sensory', 'soundsEnabled', value)
                   }
                 /&gt;
               &lt;/div&gt;
@@ -1460,8 +1460,8 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
                 &lt;/div&gt;
                 &lt;Switch
                   checked={settings.cognitive.simplifyInterface}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt;
-<span class="cstat-no" title="statement not covered" >                    handleSettingChange('cognitive', 'simplifyInterface', value)</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                    handleSettingChange('cognitive', 'simplifyInterface', value)
                   }
                 /&gt;
               &lt;/div&gt;
@@ -1473,8 +1473,8 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
                 &lt;/div&gt;
                 &lt;Switch
                   checked={settings.cognitive.memorySupport}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt;
-<span class="cstat-no" title="statement not covered" >                    handleSettingChange('cognitive', 'memorySupport', value)</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                    handleSettingChange('cognitive', 'memorySupport', value)
                   }
                 /&gt;
               &lt;/div&gt;
@@ -1486,8 +1486,8 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
                 &lt;/div&gt;
                 &lt;Switch
                   checked={settings.cognitive.focusAssistance}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt;
-<span class="cstat-no" title="statement not covered" >                    handleSettingChange('cognitive', 'focusAssistance', value)</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                    handleSettingChange('cognitive', 'focusAssistance', value)
                   }
                 /&gt;
               &lt;/div&gt;
@@ -1508,8 +1508,8 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
                 &lt;/div&gt;
                 &lt;Switch
                   checked={settings.dyslexia.readableFont}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt;
-<span class="cstat-no" title="statement not covered" >                    handleSettingChange('dyslexia', 'readableFont', value)</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                    handleSettingChange('dyslexia', 'readableFont', value)
                   }
                 /&gt;
               &lt;/div&gt;
@@ -1521,8 +1521,8 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
                 &lt;/div&gt;
                 &lt;Switch
                   checked={settings.dyslexia.textToSpeech}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt;
-<span class="cstat-no" title="statement not covered" >                    handleSettingChange('dyslexia', 'textToSpeech', value)</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                    handleSettingChange('dyslexia', 'textToSpeech', value)
                   }
                 /&gt;
               &lt;/div&gt;
@@ -1534,8 +1534,8 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
                 &lt;/div&gt;
                 &lt;Switch
                   checked={settings.dyslexia.highlightFocus}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt;
-<span class="cstat-no" title="statement not covered" >                    handleSettingChange('dyslexia', 'highlightFocus', value)</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                    handleSettingChange('dyslexia', 'highlightFocus', value)
                   }
                 /&gt;
               &lt;/div&gt;
@@ -1591,7 +1591,7 @@ const NeurodiversityPage: React.FC = <span class="cstat-no" title="statement not
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

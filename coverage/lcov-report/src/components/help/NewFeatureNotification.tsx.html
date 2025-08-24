@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/42</span>
+                <span class='fraction'>0/50</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/41</span>
+                <span class='fraction'>0/44</span>
             </div>
         
             
@@ -331,9 +331,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -565,20 +565,20 @@ interface NewFeatureNotificationProps {
 /**
  * 新機能通知コンポーネント
  */
-export const <span class="cstat-no" title="statement not covered" >NewFeatureNotification: React.FC&lt;NewFeatureNotificationProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  onDismiss,
-  autoHide = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span>
-  hideDelay = <span class="branch-0 cbranch-no" title="branch not covered" >1440,</span> // 24時間
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >NewFeatureNotification:</span> React.FC&lt;NewFeatureNotificationProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  onDismiss<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+  autoHide<span class="cstat-no" title="statement not covered" > = false<span class="cstat-no" title="statement not covered" >,</span></span>
+  hideDelay<span class="cstat-no" title="statement not covered" > = 1440, // 24時間</span>
 }) =&gt; {
   const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span>
-  const [isVisible, setIsVisible] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
+  const [isVisible<span class="cstat-no" title="statement not covered" >, s</span>etIsVisible<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // LocalStorageキー
   const NOTIFICATION_KEY = <span class="cstat-no" title="statement not covered" >'quadrant-feature-notification-dismissed';</span>
   const NOTIFICATION_TIMESTAMP_KEY = <span class="cstat-no" title="statement not covered" >'quadrant-feature-notification-timestamp';</span>
 &nbsp;
   // 初期化：以前に非表示にされているかチェック
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const dismissed = <span class="cstat-no" title="statement not covered" >localStorage.getItem(NOTIFICATION_KEY);</span>
     const timestamp = <span class="cstat-no" title="statement not covered" >localStorage.getItem(NOTIFICATION_TIMESTAMP_KEY);</span>
 &nbsp;
@@ -604,7 +604,7 @@ export const <span class="cstat-no" title="statement not covered" >NewFeatureNot
   }, [autoHide, hideDelay]);
 &nbsp;
   // 非表示処理
-  const handleDismiss = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleDismiss </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setIsVisible(false);</span>
 <span class="cstat-no" title="statement not covered" >    localStorage.setItem(NOTIFICATION_KEY, 'true');</span>
 <span class="cstat-no" title="statement not covered" >    localStorage.setItem(NOTIFICATION_TIMESTAMP_KEY, Date.now().toString());</span>
@@ -612,13 +612,13 @@ export const <span class="cstat-no" title="statement not covered" >NewFeatureNot
   };
 &nbsp;
   // 4象限ダッシュボードへナビゲート
-  const handleTryFeature = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleTryFeature </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    navigate('/quadrant-dashboard');</span>
 <span class="cstat-no" title="statement not covered" >    handleDismiss();</span>
   };
 &nbsp;
   // サイトマップへナビゲート
-  const handleViewGuide = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleViewGuide </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    navigate('/sitemap');</span>
   };
 &nbsp;
@@ -745,7 +745,7 @@ export const <span class="cstat-no" title="statement not covered" >NewFeatureNot
             使用方法を見る
           &lt;/Button&gt;
 &nbsp;
-          &lt;Button onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate('/sitemap')}</span> variant="outline" className="flex-1"&gt;
+          &lt;Button <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate('/sitemap')} v</span>ariant="outline" className="flex-1"&gt;
             &lt;Map className="w-4 h-4 mr-2" /&gt;
             サイトマップ
           &lt;/Button&gt;
@@ -775,7 +775,7 @@ export const <span class="cstat-no" title="statement not covered" >NewFeatureNot
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/26</span>
+                <span class='fraction'>0/39</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/26</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
@@ -229,38 +229,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -295,6 +276,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -302,6 +301,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -351,25 +351,25 @@ import { KnowledgeEntry } from '@/types/knowledge';
 <span class="cstat-no" title="statement not covered" >import { format } from 'date-fns';</span>
 <span class="cstat-no" title="statement not covered" >import { ja } from 'date-fns/locale';</span>
 &nbsp;
-const KnowledgeBase: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const [entries, setEntries] = <span class="cstat-no" title="statement not covered" >useState&lt;KnowledgeEntry[]&gt;([]);</span>
-  const [searchTerm, setSearchTerm] = <span class="cstat-no" title="statement not covered" >useState('');</span>
-  const [selectedCategory, setSelectedCategory] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('all');</span>
+const <span class="fstat-no" title="function not covered" >KnowledgeBase:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const [entries<span class="cstat-no" title="statement not covered" >, s</span>etEntries<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;KnowledgeEntry[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [searchTerm<span class="cstat-no" title="statement not covered" >, s</span>etSearchTerm<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [selectedCategory<span class="cstat-no" title="statement not covered" >, s</span>etSelectedCategory<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('all')<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 知識エントリーの取得
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    loadKnowledgeEntries();</span>
   }, []);
 &nbsp;
-  const loadKnowledgeEntries = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >loadKnowledgeEntries<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span></span>sync () =&gt; {</span></span></span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // APIから取得（実装予定）
       // const data = await KnowledgeService.getAll();
       // setEntries(data);
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('知識ベースの読み込みエラー:', error);</span>
-    }
-  };
+    }<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
   // フィルタリング
   const filteredEntries = <span class="cstat-no" title="statement not covered" >entries.filter(<span class="fstat-no" title="function not covered" >(e</span>ntry) =&gt; {</span>
@@ -397,7 +397,7 @@ const KnowledgeBase: React.FC = <span class="cstat-no" title="statement not cove
             &lt;Input
               placeholder="用語や定義を検索..."
               value={searchTerm}
-              onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setSearchTerm(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >              onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setSearchTerm(e.target.value)}</span>
               className="pl-10"
             /&gt;
           &lt;/div&gt;
@@ -415,8 +415,8 @@ const KnowledgeBase: React.FC = <span class="cstat-no" title="statement not cove
 &nbsp;
         &lt;TabsContent value={selectedCategory} className="mt-6"&gt;
           &lt;div className="grid gap-4"&gt;
-            {filteredEntries.map(<span class="fstat-no" title="function not covered" >(e</span>ntry) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;Card key={entry.id}&gt;</span>
+            {filteredEntries.map(<span class="fstat-no" title="function not covered" >(e</span>ntry<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;Card key={entry.id}&gt;
                 &lt;CardHeader&gt;
                   &lt;div className="flex items-start justify-between"&gt;
                     &lt;CardTitle className="text-xl"&gt;{entry.term}&lt;/CardTitle&gt;
@@ -439,8 +439,8 @@ const KnowledgeBase: React.FC = <span class="cstat-no" title="statement not cove
                     &lt;div className="flex items-center gap-2 mt-4"&gt;
                       &lt;Tag className="h-4 w-4 text-muted-foreground" /&gt;
                       &lt;div className="flex flex-wrap gap-1"&gt;
-                        {entry.tags.map(<span class="fstat-no" title="function not covered" >(t</span>ag, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                          &lt;Badge key={index} v</span>ariant="secondary" className="text-xs"&gt;
+                        {entry.tags.map(<span class="fstat-no" title="function not covered" >(t</span>ag, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                          &lt;Badge key={index} variant="secondary" className="text-xs"&gt;
                             {tag}
                           &lt;/Badge&gt;
                         ))}
@@ -487,7 +487,7 @@ const KnowledgeBase: React.FC = <span class="cstat-no" title="statement not cove
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

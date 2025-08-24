@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
@@ -942,7 +942,7 @@
 <a name='L877'></a><a href='#L877'>877</a>
 <a name='L878'></a><a href='#L878'>878</a>
 <a name='L879'></a><a href='#L879'>879</a>
-<a name='L880'></a><a href='#L880'>880</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L880'></a><a href='#L880'>880</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1821,7 +1821,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>/**</span></span>
  * 🌟 拡張バッジカテゴリシステム
  * 12週間計画と全分野を網羅する追加バッジ定義
  */
@@ -2683,14 +2683,14 @@ export const <span class="cstat-no" title="statement not covered" >EXTENDED_BADG
   week5to8Badges: WEEK_5_8_BADGES.length,
   additionalSpecialtyBadges: ADDITIONAL_SPECIALTY_BADGES.length,
   totalExtendedBadges: ALL_EXTENDED_BADGES.length,
-  totalPoints: ALL_EXTENDED_BADGES.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + badge.points,</span> 0),
-  totalEstimatedHours: ALL_EXTENDED_BADGES.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + badge.estimatedHours,</span> 0),
+  totalPoints: ALL_EXTENDED_BADGES.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt; sum + badge.points, 0</span>),
+  totalEstimatedHours: ALL_EXTENDED_BADGES.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt; sum + badge.estimatedHours, 0</span>),
   difficultyDistribution: {
-    legendary: ALL_EXTENDED_BADGES.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.difficulty === 'legendary')</span>.length,
-    platinum: ALL_EXTENDED_BADGES.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.difficulty === 'platinum')</span>.length,
-    gold: ALL_EXTENDED_BADGES.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.difficulty === 'gold')</span>.length,
-    silver: ALL_EXTENDED_BADGES.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.difficulty === 'silver')</span>.length,
-    bronze: ALL_EXTENDED_BADGES.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.difficulty === 'bronze')</span>.length,
+    legendary: ALL_EXTENDED_BADGES.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.difficulty === 'legendary').</span>length,
+    platinum: ALL_EXTENDED_BADGES.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.difficulty === 'platinum').</span>length,
+    gold: ALL_EXTENDED_BADGES.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.difficulty === 'gold').</span>length,
+    silver: ALL_EXTENDED_BADGES.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.difficulty === 'silver').</span>length,
+    bronze: ALL_EXTENDED_BADGES.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.difficulty === 'bronze').</span>length,
   },
   categoryDistribution: ALL_EXTENDED_BADGES.reduce(
 <span class="fstat-no" title="function not covered" >    (a</span>cc, badge) =&gt; {
@@ -2707,7 +2707,7 @@ export const <span class="cstat-no" title="statement not covered" >EXTENDED_BADG
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

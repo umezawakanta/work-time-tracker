@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/70</span>
+                <span class='fraction'>0/82</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/32</span>
+                <span class='fraction'>0/43</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/63</span>
+                <span class='fraction'>0/65</span>
             </div>
         
             
@@ -409,23 +409,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -593,13 +593,13 @@ interface PomodoroWorkTimeEntry extends WorkTimeEntry {
   };
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >WorkTimeList: React.FC&lt;WorkTimeListProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> workTimeEntries }) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >WorkTimeList:</span> React.FC&lt;WorkTimeListProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{ workTimeEntries<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span>
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
   // const { locale } = useLocale(); // LocaleProvider issue - using default locale
   const locale = <span class="cstat-no" title="statement not covered" >'ja-JP';</span> // デフォルトロケール設定
-  const [selectedEntries, setSelectedEntries] = <span class="cstat-no" title="statement not covered" >React.useState&lt;string[]&gt;([]);</span>
+  const [selectedEntries<span class="cstat-no" title="statement not covered" >, s</span>etSelectedEntries<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >R</span>eact.useState&lt;string[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const formatDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ateString: string | undefined) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatDate </span>= <span class="cstat-no" title="statement not covered" >(dateString: string | undefined) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!dateString) <span class="cstat-no" title="statement not covered" >return '未設定';</span></span>
 &nbsp;
     // YYYY-MM-DD形式の場合は適切なDate文字列に変換してフォーマット
@@ -622,7 +622,7 @@ export const <span class="cstat-no" title="statement not covered" >WorkTimeList:
     }
   };
 &nbsp;
-  const formatTime = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ateString: string | undefined) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatTime </span>= <span class="cstat-no" title="statement not covered" >(dateString: string | undefined) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!dateString) <span class="cstat-no" title="statement not covered" >return '未設定';</span></span>
 &nbsp;
     // 既にHH:MM形式の文字列の場合はそのまま返す（ポモドーロエントリ対応）
@@ -639,41 +639,41 @@ export const <span class="cstat-no" title="statement not covered" >WorkTimeList:
     }
   };
 &nbsp;
-  const formatDuration = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>uration: number | undefined) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatDuration </span>= <span class="cstat-no" title="statement not covered" >(duration: number | undefined) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (duration === undefined) <span class="cstat-no" title="statement not covered" >return '未設定';</span></span>
     const hours = <span class="cstat-no" title="statement not covered" >Math.floor(duration / 3600);</span>
     const minutes = <span class="cstat-no" title="statement not covered" >Math.floor((duration % 3600) / 60);</span>
 <span class="cstat-no" title="statement not covered" >    return `${hours}時間${minutes}分`;</span>
   };
 &nbsp;
-  const handleCheckboxChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>ntryId: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setSelectedEntries(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >      prev.includes(entryId) ? prev.filter(<span class="fstat-no" title="function not covered" >(i</span>d) =&gt; <span class="cstat-no" title="statement not covered" >id !== entryId)</span> : [...prev, entryId]</span>
+  const <span class="fstat-no" title="function not covered" >handleCheckboxChange </span>= <span class="cstat-no" title="statement not covered" >(entryId: string) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setSelectedEntries(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+      prev.includes(entryId) ? prev.filter(<span class="fstat-no" title="function not covered" >(i</span>d<span class="cstat-no" title="statement not covered" >) =&gt; id !== entryId) </span>: [...prev, entryId]
     );
   };
 &nbsp;
-  const handleDelete = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    for (const entryId of selectedEntries) {</span>
-<span class="cstat-no" title="statement not covered" >      try {</span>
-<span class="cstat-no" title="statement not covered" >        await dispatch(deleteWorkTimeEntry(entryId)).unwrap();</span>
+  const <span class="fstat-no" title="function not covered" >handleDelete<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span></span>sync () =&gt; {</span></span></span></span>
+    for (const <span class="cstat-no" title="statement not covered" >entryId<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > of s</span></span>electedEntries<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>) {</span></span>
+      try {
+        await dispatch(deleteWorkTimeEntry(entryId)).unwrap()<span class="cstat-no" title="statement not covered" >;</span>
       } catch (error) {
 <span class="cstat-no" title="statement not covered" >        console.error(`Failed to delete entry ${entryId}:`, error);</span>
 <span class="cstat-no" title="statement not covered" >        toast({</span>
           title: 'エラー',
           description: `エントリー ${entryId} の削除に失敗しました。`,
           variant: 'destructive',
-        });
+        });<span class="cstat-no" title="statement not covered" ></span>
       }
     }
 <span class="cstat-no" title="statement not covered" >    setSelectedEntries([]);</span>
 <span class="cstat-no" title="statement not covered" >    toast({</span>
       title: '成功',
       description: '選択されたエントリーが削除されました。',
-    });
-  };
+    });<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
   // ポモドーロエントリかどうかを判定
-  const isPomodoroEntry = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>ntry: WorkTimeEntry): entry is PomodoroWorkTimeEntry =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >isPomodoroEntry </span>= <span class="cstat-no" title="statement not covered" >(entry: WorkTimeEntry): entry is PomodoroWorkTimeEntry =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return (entry as any).isFromPomodoro === true;</span>
   };
 &nbsp;
@@ -716,7 +716,7 @@ export const <span class="cstat-no" title="statement not covered" >WorkTimeList:
                     &lt;Checkbox
                       id={`select-${entry._id}`}
                       checked={selectedEntries.includes(entry._id || '')}
-                      onCheckedChange={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleCheckboxChange(entry._id || '')}</span>
+<span class="fstat-no" title="function not covered" >                      onCheckedChange<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleCheckboxChange(entry._id || '')}</span>
                     /&gt;
 &nbsp;
                     &lt;div className="flex-1"&gt;
@@ -805,7 +805,7 @@ export const <span class="cstat-no" title="statement not covered" >WorkTimeList:
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

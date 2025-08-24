@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/26</span>
             </div>
         
             
@@ -175,25 +175,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -201,6 +200,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -250,31 +250,31 @@ interface DebtListProps {
   onBalanceUpdate: (accountId: string, isAsset: boolean) =&gt; void;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >DebtList: React.FC&lt;DebtListProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> debtEntries, onBalanceUpdate }) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >DebtList:</span> React.FC&lt;DebtListProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{ debtEntries<span class="cstat-no" title="statement not covered" >, onBalanceUpdate<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span>
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
-  const { locale } = <span class="cstat-no" title="statement not covered" >useLocale();</span>
+  const { locale<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useLocale();</span></span>
 &nbsp;
-  const formatDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ateString: string | undefined) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatDate </span>= <span class="cstat-no" title="statement not covered" >(dateString: string | undefined) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!dateString) <span class="cstat-no" title="statement not covered" >return '未設定';</span></span>
 <span class="cstat-no" title="statement not covered" >    return formatDateAndTime(dateString, locale, { dateStyle: 'short' });</span>
   };
 &nbsp;
-  const handleDeleteDebt = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(id: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      await dispatch(deleteDebtEntry(id)).unwrap();</span>
+  const <span class="fstat-no" title="function not covered" >handleDeleteDebt<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span>sync (i</span>d: string<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >) =&gt; {</span></span></span></span></span>
+    try {
+      await dispatch(deleteDebtEntry(id)).unwrap();
 <span class="cstat-no" title="statement not covered" >      toast({</span>
         title: '成功',
         description: '負債情報が削除されました。',
-      });
+      });<span class="cstat-no" title="statement not covered" ></span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Failed to delete debt entry:', error);</span>
 <span class="cstat-no" title="statement not covered" >      toast({</span>
         title: 'エラー',
         description: error instanceof Error ? error.message : '負債情報の削除に失敗しました。',
         variant: 'destructive',
-      });
+      });<span class="cstat-no" title="statement not covered" ></span>
     }
-  };
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;Card&gt;
@@ -284,8 +284,8 @@ export const <span class="cstat-no" title="statement not covered" >DebtList: Rea
       &lt;CardContent&gt;
         {debtEntries.length &gt; 0 ? (
           &lt;div&gt;
-            {debtEntries.map(<span class="fstat-no" title="function not covered" >(e</span>ntry) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;div key={entry._id} c</span>lassName="flex items-center justify-between py-2 border-b"&gt;
+            {debtEntries.map(<span class="fstat-no" title="function not covered" >(e</span>ntry<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;div key={entry._id} className="flex items-center justify-between py-2 border-b"&gt;
                 &lt;div&gt;
                   &lt;p className="font-semibold"&gt;{entry.account}&lt;/p&gt;
                   &lt;p className="text-sm text-gray-500"&gt;{formatDate(entry.date)}&lt;/p&gt;
@@ -296,14 +296,14 @@ export const <span class="cstat-no" title="statement not covered" >DebtList: Rea
                   &lt;Button
                     variant="ghost"
                     size="sm"
-                    onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >onBalanceUpdate(entry._id || '', false)}</span>
+<span class="fstat-no" title="function not covered" >                    onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; onBalanceUpdate(entry._id || '', false)}</span>
                   &gt;
                     &lt;PencilIcon className="h-4 w-4" /&gt;
                   &lt;/Button&gt;
                   &lt;Button
                     variant="ghost"
                     size="sm"
-                    onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleDeleteDebt(entry._id || '')}</span>
+<span class="fstat-no" title="function not covered" >                    onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleDeleteDebt(entry._id || '')}</span>
                   &gt;
                     &lt;Trash2Icon className="h-4 w-4" /&gt;
                   &lt;/Button&gt;
@@ -325,7 +325,7 @@ export const <span class="cstat-no" title="statement not covered" >DebtList: Rea
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

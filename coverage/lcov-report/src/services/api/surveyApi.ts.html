@@ -627,7 +627,7 @@ interface SurveyApiResponse {
 &nbsp;
 export const <span class="cstat-no" title="statement not covered" >surveyApi = {</span>
   // すべての調査を取得
-  getAll: <span class="fstat-no" title="function not covered" >(): Promise&lt;AxiosResponse&lt;SurveyApiResponse[]&gt;&gt; =</span>&gt; {
+<span class="fstat-no" title="function not covered" >  getAll:</span> (): Promise&lt;AxiosResponse&lt;SurveyApiResponse[]&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >    return USE_MOCK_DATA</span>
       ? Promise.resolve({
           data: mockSurveys,
@@ -644,10 +644,10 @@ export const <span class="cstat-no" title="statement not covered" >surveyApi = {
   },
 &nbsp;
   // IDで調査と支持率データを取得
-  getById: <span class="fstat-no" title="function not covered" >(i</span>d: string): Promise&lt;AxiosResponse&lt;SurveyApiResponse&gt;&gt; =&gt; {
+<span class="fstat-no" title="function not covered" >  getById:</span> (id: string): Promise&lt;AxiosResponse&lt;SurveyApiResponse&gt;&gt; =&gt; {
     // モックの場合は配列から該当IDの調査を探す
 <span class="cstat-no" title="statement not covered" >    if (USE_MOCK_DATA) {</span>
-      const survey = <span class="cstat-no" title="statement not covered" >mockSurveys.find(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.survey._id === id)</span>;</span>
+      const survey = <span class="cstat-no" title="statement not covered" >mockSurveys.find(<span class="fstat-no" title="function not covered" >(s<span class="cstat-no" title="statement not covered" ></span>) =&gt; s.survey._id === id);</span></span>
 <span class="cstat-no" title="statement not covered" >      if (survey) {</span>
 <span class="cstat-no" title="statement not covered" >        return Promise.resolve({</span>
           data: survey,
@@ -669,7 +669,7 @@ export const <span class="cstat-no" title="statement not covered" >surveyApi = {
   },
 &nbsp;
   // 最新の調査結果を取得
-  getLatest: <span class="fstat-no" title="function not covered" >(): Promise&lt;AxiosResponse&lt;SurveyApiResponse&gt;&gt; =</span>&gt; {
+<span class="fstat-no" title="function not covered" >  getLatest:</span> (): Promise&lt;AxiosResponse&lt;SurveyApiResponse&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >    if (USE_MOCK_DATA) {</span>
       // モックの場合、最初の調査を最新として返す
 <span class="cstat-no" title="statement not covered" >      return Promise.resolve({</span>
@@ -689,7 +689,7 @@ export const <span class="cstat-no" title="statement not covered" >surveyApi = {
   },
 &nbsp;
   // 新規調査と支持率データを作成
-  create: <span class="fstat-no" title="function not covered" >(</span>
+<span class="fstat-no" title="function not covered" >  create:</span> (
     survey: Omit&lt;Survey, '_id'&gt;,
     supportRates: Omit&lt;SupportRate, '_id' | 'surveyId'&gt;[]
   ): Promise&lt;AxiosResponse&lt;SurveyApiResponse&gt;&gt; =&gt; {
@@ -698,7 +698,7 @@ export const <span class="cstat-no" title="statement not covered" >surveyApi = {
           data: {
             message: '調査結果が正常に登録されました',
             survey: { ...survey, _id: String(Math.floor(Math.random() * 1000)) },
-            supportRates: supportRates.map(<span class="fstat-no" title="function not covered" >(r</span>ate, index) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+            supportRates: supportRates.map(<span class="fstat-no" title="function not covered" >(r</span>ate, index<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
               ...rate,
               _id: String(Math.floor(Math.random() * 1000) + index),
               surveyId: String(Math.floor(Math.random() * 1000)),
@@ -727,7 +727,7 @@ export const <span class="cstat-no" title="statement not covered" >surveyApi = {
   },
 &nbsp;
   // 調査と支持率データを更新
-  update: <span class="fstat-no" title="function not covered" >(</span>
+<span class="fstat-no" title="function not covered" >  update:</span> (
     surveyId: string,
     survey: Omit&lt;Survey, '_id'&gt;,
     supportRates: Omit&lt;SupportRate, '_id' | 'surveyId'&gt;[]
@@ -738,7 +738,7 @@ export const <span class="cstat-no" title="statement not covered" >surveyApi = {
         data: {
           message: '調査結果が正常に更新されました',
           survey: { ...survey, _id: surveyId },
-          supportRates: supportRates.map(<span class="fstat-no" title="function not covered" >(r</span>ate, index) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+          supportRates: supportRates.map(<span class="fstat-no" title="function not covered" >(r</span>ate, index<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
             ...rate,
             _id: String(Math.floor(Math.random() * 1000) + index),
             surveyId: surveyId,
@@ -769,7 +769,7 @@ export const <span class="cstat-no" title="statement not covered" >surveyApi = {
   },
 &nbsp;
   // 調査と関連する支持率データを削除
-  deleteSurvey: <span class="fstat-no" title="function not covered" >(s</span>urveyId: string): Promise&lt;AxiosResponse&lt;{ message: string }&gt;&gt; =&gt; {
+<span class="fstat-no" title="function not covered" >  deleteSurvey:</span> (surveyId: string): Promise&lt;AxiosResponse&lt;{ message: string }&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >    if (USE_MOCK_DATA) {</span>
 <span class="cstat-no" title="statement not covered" >      return Promise.resolve({</span>
         data: { message: '調査データが正常に削除されました' },
@@ -794,7 +794,7 @@ export const <span class="cstat-no" title="statement not covered" >surveyApi = {
   },
 &nbsp;
   // 政党一覧を取得
-  getParties: <span class="fstat-no" title="function not covered" >(): Promise&lt;AxiosResponse&lt;PoliticalParty[]&gt;&gt; =</span>&gt; {
+<span class="fstat-no" title="function not covered" >  getParties:</span> (): Promise&lt;AxiosResponse&lt;PoliticalParty[]&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >    return USE_MOCK_DATA</span>
       ? Promise.resolve({
           data: mockParties,
@@ -817,7 +817,7 @@ export const <span class="cstat-no" title="statement not covered" >surveyApi = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

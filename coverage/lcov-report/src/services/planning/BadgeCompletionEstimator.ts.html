@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/134</span>
+                <span class='fraction'>0/144</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/24</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/36</span>
+                <span class='fraction'>0/37</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/121</span>
+                <span class='fraction'>0/126</span>
             </div>
         
             
@@ -1078,18 +1078,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1114,7 +1114,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1900,7 +1900,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1925,12 +1925,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2034,20 +2034,20 @@ export interface WeeklyPlan {
 /**
  * 🎯 バッジ完了予測サービス - 作業時間・達成予定日の算出
  */
-class BadgeCompletionEstimator {
+class BadgeCompletionEstimator<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
   private static <span class="cstat-no" title="statement not covered" >instance: BadgeCompletionEstimator | null = n</span>ull;
-  private <span class="cstat-no" title="statement not covered" >badgeEstimates: Map&lt;string, BadgeEstimate&gt; = new Map();</span>
-  private <span class="cstat-no" title="statement not covered" >workSchedule: WorkSchedule;</span>
+  private badgeEstimates: Map&lt;string, BadgeEstimate&gt; = new Map();
+  private workSchedule: WorkSchedule;
   private <span class="cstat-no" title="statement not covered" >velocityHistory: number[] = []; /</span>/ 過去の完了速度
 &nbsp;
-<span class="fstat-no" title="function not covered" >  private constructor() {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  private constructor() {</span></span>
 <span class="cstat-no" title="statement not covered" >    this.workSchedule = this.initializeWorkSchedule();</span>
 <span class="cstat-no" title="statement not covered" >    this.initializeBadgeEstimates();</span>
 <span class="cstat-no" title="statement not covered" >    this.calculateVelocityHistory();</span>
 <span class="cstat-no" title="statement not covered" >    console.log('🎯 Badge Completion Estimator initialized');</span>
-  }
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >static </span>getInstance(): BadgeCompletionEstimator {
+  public static <span class="fstat-no" title="function not covered" >getInstance(</span>): BadgeCompletionEstimator {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!BadgeCompletionEstimator.instance) {</span>
 <span class="cstat-no" title="statement not covered" >      BadgeCompletionEstimator.instance = new BadgeCompletionEstimator();</span>
     }
@@ -2070,7 +2070,7 @@ class BadgeCompletionEstimator {
   /**
    * ⏱️ バッジ見積もり初期化
    */
-  private <span class="fstat-no" title="function not covered" >initializeBadgeEstimates(</span>): void {
+  private <span class="fstat-no" title="function not covered" >initializeBadgeEstimates<span class="cstat-no" title="statement not covered" >(</span>): void {</span>
     const badgeTimeEstimates: BadgeEstimate[] = <span class="cstat-no" title="statement not covered" >[</span>
       // 完了済みバッジ
       {
@@ -2699,15 +2699,15 @@ class BadgeCompletionEstimator {
     const estimates = <span class="cstat-no" title="statement not covered" >Array.from(this.badgeEstimates.values());</span>
 &nbsp;
     const totalBadges = <span class="cstat-no" title="statement not covered" >estimates.length;</span>
-    const completedBadges = <span class="cstat-no" title="statement not covered" >estimates.filter(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.isCompleted)</span>.length;</span>
+    const completedBadges = <span class="cstat-no" title="statement not covered" >estimates.filter(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; e.isCompleted).</span>length;</span>
     const remainingBadges = <span class="cstat-no" title="statement not covered" >totalBadges - completedBadges;</span>
 &nbsp;
-    const totalEstimatedHours = <span class="cstat-no" title="statement not covered" >estimates.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, e) =&gt; <span class="cstat-no" title="statement not covered" >sum + e.estimatedHours,</span> 0);</span>
-    const totalRemainingHours = <span class="cstat-no" title="statement not covered" >estimates.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, e) =&gt; <span class="cstat-no" title="statement not covered" >sum + e.remainingHours,</span> 0);</span>
+    const totalEstimatedHours = <span class="cstat-no" title="statement not covered" >estimates.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, e<span class="cstat-no" title="statement not covered" >) =&gt; sum + e.estimatedHours, 0</span>);</span>
+    const totalRemainingHours = <span class="cstat-no" title="statement not covered" >estimates.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, e<span class="cstat-no" title="statement not covered" >) =&gt; sum + e.remainingHours, 0</span>);</span>
 &nbsp;
     // 現在の速度（直近4週平均）
     const currentVelocity =
-<span class="cstat-no" title="statement not covered" >      this.velocityHistory.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, v) =&gt; <span class="cstat-no" title="statement not covered" >sum + v,</span> 0) / this.velocityHistory.length;</span>
+<span class="cstat-no" title="statement not covered" >      this.velocityHistory.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, v<span class="cstat-no" title="statement not covered" >) =&gt; sum + v, 0</span>) / this.velocityHistory.length;</span>
 &nbsp;
     // 全体完了予定日
     const weeksToComplete = <span class="cstat-no" title="statement not covered" >Math.ceil(totalRemainingHours / this.workSchedule.weeklyHours);</span>
@@ -2739,27 +2739,27 @@ class BadgeCompletionEstimator {
   private <span class="fstat-no" title="function not covered" >generateMilestones(</span>estimates: BadgeEstimate[]): TimelineMilestone[] {
     const milestones: TimelineMilestone[] = <span class="cstat-no" title="statement not covered" >[];</span>
     const inProgressBadges = <span class="cstat-no" title="statement not covered" >estimates</span>
-      .filter(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >!e.isCompleted &amp;&amp; e.isUnlocked)</span>
-      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >a.remainingHours - b.remainingHours)</span>;
+      .filter(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; !e.isCompleted &amp;&amp; e.isUnlocked)</span>
+      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; a.remainingHours - b.remainingHours);</span>
 &nbsp;
     let cumulativeHours = <span class="cstat-no" title="statement not covered" >0;</span>
     let cumulativeProgress = <span class="cstat-no" title="statement not covered" >0;</span>
-    const totalRemainingHours = <span class="cstat-no" title="statement not covered" >estimates.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, e) =&gt; <span class="cstat-no" title="statement not covered" >sum + e.remainingHours,</span> 0);</span>
+    const totalRemainingHours = <span class="cstat-no" title="statement not covered" >estimates.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, e<span class="cstat-no" title="statement not covered" >) =&gt; sum + e.remainingHours, 0</span>);</span>
 &nbsp;
     // 短期マイルストーン（1-2週間以内）
-    const shortTermBadges = <span class="cstat-no" title="statement not covered" >inProgressBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.remainingHours &lt;= 10)</span>;</span>
+    const shortTermBadges = <span class="cstat-no" title="statement not covered" >inProgressBadges.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.remainingHours &lt;= 10);</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (shortTermBadges.length &gt; 0) {</span>
       const completionDate = <span class="cstat-no" title="statement not covered" >new Date();</span>
 <span class="cstat-no" title="statement not covered" >      completionDate.setDate(completionDate.getDate() + 7);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      cumulativeHours += shortTermBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b) =&gt; <span class="cstat-no" title="statement not covered" >sum + b.remainingHours,</span> 0);</span>
+<span class="cstat-no" title="statement not covered" >      cumulativeHours += shortTermBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b<span class="cstat-no" title="statement not covered" >) =&gt; sum + b.remainingHours, 0</span>);</span>
 <span class="cstat-no" title="statement not covered" >      cumulativeProgress = (cumulativeHours / totalRemainingHours) * 100;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      milestones.push({</span>
         date: completionDate.toISOString(),
         title: '🎯 短期目標達成',
         description: `${shortTermBadges.length}個のバッジ完成`,
-        badgesCompleted: shortTermBadges.map(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.badgeName)</span>,
+        badgesCompleted: shortTermBadges.map(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.badgeName),</span>
         cumulativeProgress,
         category: 'short_term',
       });
@@ -2767,39 +2767,39 @@ class BadgeCompletionEstimator {
 &nbsp;
     // 中期マイルストーン（1ヶ月以内）
     const mediumTermBadges = <span class="cstat-no" title="statement not covered" >inProgressBadges.filter(</span>
-<span class="fstat-no" title="function not covered" >      (b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.remainingHours &gt; 10 &amp;&amp; b.remainingHours &lt;= 40</span>
+<span class="fstat-no" title="function not covered" >      (b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.remainingHours &gt; 10 &amp;&amp; b.remainingHours &lt;= 40</span>
     );
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (mediumTermBadges.length &gt; 0) {</span>
       const completionDate = <span class="cstat-no" title="statement not covered" >new Date();</span>
 <span class="cstat-no" title="statement not covered" >      completionDate.setDate(completionDate.getDate() + 30);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      cumulativeHours += mediumTermBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b) =&gt; <span class="cstat-no" title="statement not covered" >sum + b.remainingHours,</span> 0);</span>
+<span class="cstat-no" title="statement not covered" >      cumulativeHours += mediumTermBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b<span class="cstat-no" title="statement not covered" >) =&gt; sum + b.remainingHours, 0</span>);</span>
 <span class="cstat-no" title="statement not covered" >      cumulativeProgress = (cumulativeHours / totalRemainingHours) * 100;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      milestones.push({</span>
         date: completionDate.toISOString(),
         title: '🚀 中期目標達成',
         description: `${mediumTermBadges.length}個の高難度バッジ完成`,
-        badgesCompleted: mediumTermBadges.map(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.badgeName)</span>,
+        badgesCompleted: mediumTermBadges.map(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.badgeName),</span>
         cumulativeProgress,
         category: 'medium_term',
       });
     }
 &nbsp;
     // 長期マイルストーン（3ヶ月以内）
-    const longTermBadges = <span class="cstat-no" title="statement not covered" >inProgressBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.remainingHours &gt; 40)</span>;</span>
+    const longTermBadges = <span class="cstat-no" title="statement not covered" >inProgressBadges.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.remainingHours &gt; 40);</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (longTermBadges.length &gt; 0) {</span>
       const completionDate = <span class="cstat-no" title="statement not covered" >new Date();</span>
 <span class="cstat-no" title="statement not covered" >      completionDate.setDate(completionDate.getDate() + 90);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      cumulativeHours += longTermBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b) =&gt; <span class="cstat-no" title="statement not covered" >sum + b.remainingHours,</span> 0);</span>
+<span class="cstat-no" title="statement not covered" >      cumulativeHours += longTermBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b<span class="cstat-no" title="statement not covered" >) =&gt; sum + b.remainingHours, 0</span>);</span>
 <span class="cstat-no" title="statement not covered" >      cumulativeProgress = 100; </span>// 全て完了
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      milestones.push({</span>
         date: completionDate.toISOString(),
         title: '🏆 究極目標達成',
         description: `${longTermBadges.length}個のレジェンダリーバッジ完成`,
-        badgesCompleted: longTermBadges.map(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.badgeName)</span>,
+        badgesCompleted: longTermBadges.map(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.badgeName),</span>
         cumulativeProgress,
         category: 'long_term',
       });
@@ -2814,7 +2814,7 @@ class BadgeCompletionEstimator {
   private <span class="fstat-no" title="function not covered" >generateWeeklyPlan(</span>estimates: BadgeEstimate[]): WeeklyPlan[] {
     const weeklyPlans: WeeklyPlan[] = <span class="cstat-no" title="statement not covered" >[];</span>
     const inProgressBadges = <span class="cstat-no" title="statement not covered" >estimates</span>
-      .filter(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >!e.isCompleted &amp;&amp; e.isUnlocked)</span>
+      .filter(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; !e.isCompleted &amp;&amp; e.isUnlocked)</span>
       .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; {
         // 優先度とディフィカルティでソート
         const priorityScore = <span class="cstat-no" title="statement not covered" >{ high: 3, medium: 2, low: 1 };</span>
@@ -2839,9 +2839,9 @@ class BadgeCompletionEstimator {
       const weeklyHours = <span class="cstat-no" title="statement not covered" >this.workSchedule.weeklyHours;</span>
       let remainingHours = <span class="cstat-no" title="statement not covered" >weeklyHours;</span>
       const targetBadges: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
-      let estimatedCompletions = <span class="cstat-no" title="statement not covered" >0;</span>
+      let estimatedCompletions = <span class="cstat-no" title="statement not covered" >0;<span class="cstat-no" title="statement not covered" ></span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      for (const badge of inProgressBadges) {</span>
+<span class="cstat-no" title="statement not covered" >      for (const badge<span class="cstat-no" title="statement not covered" > of i</span>nProgressBadges<span class="cstat-no" title="statement not covered" >) {</span></span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (remainingHours &lt;= 0) <span class="cstat-no" title="statement not covered" >break;</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (badge.remainingHours &lt;= remainingHours) {</span>
@@ -2856,9 +2856,9 @@ class BadgeCompletionEstimator {
         }
       }
 &nbsp;
-      // カテゴリフォーカス決定
+<span class="cstat-no" title="statement not covered" >      // カテゴリフォーカス決定</span>
       const categories = <span class="cstat-no" title="statement not covered" >targetBadges.map(</span>
-<span class="fstat-no" title="function not covered" >        (i</span>d) =&gt; <span class="cstat-no" title="statement not covered" >estimates.find(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.badgeId === id)</span>?.category || 'general'</span>
+<span class="fstat-no" title="function not covered" >        (i</span>d<span class="cstat-no" title="statement not covered" >) =&gt; estimates.find(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; e.badgeId === id)?</span>.category || 'general'</span>
       );
       const categoryFocus = <span class="cstat-no" title="statement not covered" >categories[0] || 'general';</span>
 &nbsp;
@@ -2881,12 +2881,12 @@ class BadgeCompletionEstimator {
   public <span class="fstat-no" title="function not covered" >updateWorkSchedule(</span>schedule: Partial&lt;WorkSchedule&gt;): void {
 <span class="cstat-no" title="statement not covered" >    this.workSchedule = { ...this.workSchedule, ...schedule };</span>
 &nbsp;
-    // 全ての見積もりを再計算
-<span class="cstat-no" title="statement not covered" >    for (const estimate of this.badgeEstimates.values()) {</span>
+<span class="cstat-no" title="statement not covered" >    // 全ての見積もりを再計算</span>
+<span class="cstat-no" title="statement not covered" >    for (const estimate<span class="cstat-no" title="statement not covered" > of t</span>his.badgeEstimates.values()<span class="cstat-no" title="statement not covered" >) {</span></span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!estimate.isCompleted) {</span>
 <span class="cstat-no" title="statement not covered" >        estimate.estimatedCompletionDate = this.calculateCompletionDate(estimate.remainingHours);</span>
       }
-    }
+    }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    console.log('🔧 Work schedule updated', this.workSchedule);</span>
 &nbsp;
@@ -2909,7 +2909,7 @@ class BadgeCompletionEstimator {
    */
   public <span class="fstat-no" title="function not covered" >getPrioritizedBadges(</span>): BadgeEstimate[] {
 <span class="cstat-no" title="statement not covered" >    return Array.from(this.badgeEstimates.values())</span>
-      .filter(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >!e.isCompleted)</span>
+      .filter(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; !e.isCompleted)</span>
       .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; {
         // 優先度 -&gt; 残り時間の短い順
         const priorityScore = <span class="cstat-no" title="statement not covered" >{ high: 3, medium: 2, low: 1 };</span>
@@ -2938,7 +2938,7 @@ export const <span class="cstat-no" title="statement not covered" >badgeCompleti
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

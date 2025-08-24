@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/44</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/26</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
@@ -281,14 +281,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -440,22 +440,22 @@ interface TodoTabsProps {
  * Todo Tabs Component
  * Handles tab navigation and content rendering
  */
-export const <span class="cstat-no" title="statement not covered" >TodoTabs: React.FC&lt;TodoTabsProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  selectedTab,
-  onTabChange,
-  todos,
-  todoHistory,
-  dailyHistory,
-  hasPremium,
-  filterControls,
-  onAnalyzeRequest,
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >TodoTabs:</span> React.FC&lt;TodoTabsProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  selectedTab<span class="cstat-no" title="statement not covered" >,</span>
+  onTabChange<span class="cstat-no" title="statement not covered" >,</span>
+  todos<span class="cstat-no" title="statement not covered" >,</span>
+  todoHistory<span class="cstat-no" title="statement not covered" >,</span>
+  dailyHistory<span class="cstat-no" title="statement not covered" >,</span>
+  hasPremium<span class="cstat-no" title="statement not covered" >,</span>
+  filterControls<span class="cstat-no" title="statement not covered" >,</span>
+  onAnalyzeRequest<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
-  const [showAnalysis, setShowAnalysis] = <span class="cstat-no" title="statement not covered" >React.useState&lt;boolean&gt;(false);</span>
-  const [showAddForm, setShowAddForm] = <span class="cstat-no" title="statement not covered" >React.useState&lt;boolean&gt;(false);</span>
-  const [autoAdjustEnabled, setAutoAdjustEnabled] = <span class="cstat-no" title="statement not covered" >React.useState&lt;boolean&gt;(true);</span>
+  const [showAnalysis<span class="cstat-no" title="statement not covered" >, s</span>etShowAnalysis<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >R</span>eact.useState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showAddForm<span class="cstat-no" title="statement not covered" >, s</span>etShowAddForm<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >R</span>eact.useState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [autoAdjustEnabled<span class="cstat-no" title="statement not covered" >, s</span>etAutoAdjustEnabled<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >R</span>eact.useState&lt;boolean&gt;(true)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // Auto-open AddTodoForm if URL has ?add=1
-<span class="cstat-no" title="statement not covered" >  React.useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  React.useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const q = <span class="cstat-no" title="statement not covered" >new URLSearchParams(window.location.search);</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (q.get('add') === '1') {</span>
@@ -464,12 +464,12 @@ export const <span class="cstat-no" title="statement not covered" >TodoTabs: Rea
     } catch {}
   }, []);
 &nbsp;
-  const handleAdjustPriorities = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): void =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleAdjustPriorities </span>= <span class="cstat-no" title="statement not covered" >(): void =&gt; {</span>
     // This will be implemented with actual priority adjustment logic
 <span class="cstat-no" title="statement not covered" >    console.log('Adjusting priorities...');</span>
   };
 &nbsp;
-  const handleTabChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>alue: string): void =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleTabChange </span>= <span class="cstat-no" title="statement not covered" >(value: string): void =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    onTabChange(value as TabType);</span>
   };
 &nbsp;
@@ -526,7 +526,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoTabs: Rea
         {/* タスク追加フォームを表示 */}
         &lt;AddTodoForm
           isVisible={showAddForm}
-          onClose={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowAddForm(false)}</span>
+<span class="fstat-no" title="function not covered" >          onClose<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowAddForm(false)}</span>
           isPremium={hasPremium}
         /&gt;
 &nbsp;
@@ -550,7 +550,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoTabs: Rea
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

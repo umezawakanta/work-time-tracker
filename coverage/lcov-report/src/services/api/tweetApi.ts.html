@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/28</span>
+                <span class='fraction'>0/46</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/24</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
@@ -109,7 +109,7 @@
 <a name='L44'></a><a href='#L44'>44</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -124,74 +124,74 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { api } from './apiConfig';</span>
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >createTweet = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(content: string, image: string | null) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const formData = <span class="cstat-no" title="statement not covered" >new FormData();</span>
-<span class="cstat-no" title="statement not covered" >    formData.append('content', content);</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (image) {</span>
-      const blob = <span class="cstat-no" title="statement not covered" >await fetch(image).then(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.blob())</span>;</span>
-<span class="cstat-no" title="statement not covered" >      formData.append('image', blob, 'image.png');</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >createTweet<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span></span>sync (c</span>ontent: string, image: string | null<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >) =&gt; {</span></span></span></span>
+  try {
+    const <span class="cstat-no" title="statement not covered" >formData = new FormData();</span>
+<span class="cstat-no" title="statement not covered" >    formData.append('content', content);<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span></span></span>
+    if (image<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >) {</span></span>
+      const <span class="cstat-no" title="statement not covered" >blob = await f</span>etch(image).then(<span class="fstat-no" title="function not covered" >(r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.blob());</span>
+<span class="cstat-no" title="statement not covered" >      formData.append('image', blob, 'image.png');<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
     }
-    const response = <span class="cstat-no" title="statement not covered" >await api.post('/tweets', formData, {</span>
+    const <span class="cstat-no" title="statement not covered" >response<span class="cstat-no" title="statement not covered" > = await a</span>pi.post('/tweets', formData, {</span>
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-<span class="cstat-no" title="statement not covered" >    return response.data;</span>
+    return response.data<span class="cstat-no" title="statement not covered" >;</span>
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Create tweet error:', error);</span>
-<span class="cstat-no" title="statement not covered" >    throw error;</span>
+<span class="cstat-no" title="statement not covered" >    console.error('Create tweet error:', error);<span class="cstat-no" title="statement not covered" ></span></span>
+    throw error;
   }
-};
+}<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >getTweets = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(search?: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const response = <span class="cstat-no" title="statement not covered" >await api.get('/tweets', {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getTweets<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span></span>sync (s</span>earch?: string<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >) =&gt; {</span></span></span></span></span>
+  try {
+    const <span class="cstat-no" title="statement not covered" >response<span class="cstat-no" title="statement not covered" > = await a</span>pi.get('/tweets', {</span>
       params: { search },
     });
-<span class="cstat-no" title="statement not covered" >    return response.data;</span>
+    return response.data<span class="cstat-no" title="statement not covered" >;</span>
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Get tweets error:', error);</span>
-<span class="cstat-no" title="statement not covered" >    throw error;</span>
+<span class="cstat-no" title="statement not covered" >    console.error('Get tweets error:', error);<span class="cstat-no" title="statement not covered" ></span></span>
+    throw error;
   }
-};
+}<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >updateTweet = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(id: string, content: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const response = <span class="cstat-no" title="statement not covered" >await api.put(`/tweets/${id}`, { content });</span>
-<span class="cstat-no" title="statement not covered" >    return response.data;</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >updateTweet<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span></span>sync (i</span>d: string, content: string<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >) =&gt; {</span></span></span></span></span>
+  try {
+    const <span class="cstat-no" title="statement not covered" >response<span class="cstat-no" title="statement not covered" > = await a</span>pi.put(`/tweets/${id}`, { content });</span>
+    return response.data<span class="cstat-no" title="statement not covered" >;</span>
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Update tweet error:', error);</span>
-<span class="cstat-no" title="statement not covered" >    throw error;</span>
+<span class="cstat-no" title="statement not covered" >    console.error('Update tweet error:', error);<span class="cstat-no" title="statement not covered" ></span></span>
+    throw error;
   }
-};
+}<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -199,7 +199,7 @@ export const <span class="cstat-no" title="statement not covered" >updateTweet =
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

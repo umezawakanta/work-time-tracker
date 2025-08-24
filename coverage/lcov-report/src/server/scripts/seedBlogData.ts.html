@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/22</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/22</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
@@ -350,21 +350,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -372,14 +362,24 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import mongoose from 'mongoose';</span>
 <span class="cstat-no" title="statement not covered" >import { BlogPost } from '../models/BlogPost.js';</span>
@@ -509,16 +509,16 @@ Work Time Trackerを使用して、自分がどのように時間を使ってい
   },
 ];
 &nbsp;
-async function <span class="fstat-no" title="function not covered" >seedBlogData(</span>) {
-<span class="cstat-no" title="statement not covered" >  try {</span>
-<span class="cstat-no" title="statement not covered" >    console.log('📚 Connecting to MongoDB...');</span>
-<span class="cstat-no" title="statement not covered" >    await connectDB();</span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async function <span class="fstat-no" title="function not covered" >s</span></span>eedBlogData<span class="cstat-no" title="statement not covered" >(</span>) {</span></span>
+  try {
+<span class="cstat-no" title="statement not covered" >    console.log('📚 Connecting to MongoDB...');<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+    await connectDB();
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    console.log('🗑️ Clearing existing blog posts...');</span>
-<span class="cstat-no" title="statement not covered" >    await BlogPost.deleteMany({});</span>
+<span class="cstat-no" title="statement not covered" >    console.log('🗑️ Clearing existing blog posts...');<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+    await BlogPost.deleteMany({});
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    console.log('📝 Creating sample blog posts...');</span>
-    const createdPosts = <span class="cstat-no" title="statement not covered" >await BlogPost.insertMany(sampleBlogPosts);</span>
+<span class="cstat-no" title="statement not covered" >    console.log('📝 Creating sample blog posts...');<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+    const <span class="cstat-no" title="statement not covered" >createdPosts = await B</span>logPost.insertMany(sampleBlogPosts);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    console.log('✅ Sample blog data seeded successfully!');</span>
 <span class="cstat-no" title="statement not covered" >    console.log(`📊 Created ${createdPosts.length} blog posts:`);</span>
@@ -528,17 +528,17 @@ async function <span class="fstat-no" title="function not covered" >seedBlogData
     });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    console.log('\n🎉 You can now view these posts in your application!');</span>
-<span class="cstat-no" title="statement not covered" >    console.log('🌐 Visit: http://localhost:3000/blog');</span>
+<span class="cstat-no" title="statement not covered" >    console.log('🌐 Visit: http://localhost:3000/blog');<span class="cstat-no" title="statement not covered" ></span></span>
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('❌ Error seeding blog data:', error);</span>
+<span class="cstat-no" title="statement not covered" >    console.error('❌ Error seeding blog data:', error);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
   } finally {
-<span class="cstat-no" title="statement not covered" >    await mongoose.connection.close();</span>
+    await mongoose.connection.close();
 <span class="cstat-no" title="statement not covered" >    console.log('🔌 Database connection closed');</span>
-<span class="cstat-no" title="statement not covered" >    process.exit(0);</span>
+<span class="cstat-no" title="statement not covered" >    process.exit(0);<span class="cstat-no" title="statement not covered" ></span></span>
   }
-}
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-// スクリプト実行
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >// スクリプト実行</span></span>
 <span class="cstat-no" title="statement not covered" >seedBlogData();</span>
 &nbsp;</pre></td></tr></table></pre>
 
@@ -547,7 +547,7 @@ async function <span class="fstat-no" title="function not covered" >seedBlogData
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

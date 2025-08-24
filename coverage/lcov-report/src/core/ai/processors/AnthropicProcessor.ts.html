@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
@@ -93,54 +93,54 @@
 <a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { BaseAIProcessor } from './BaseAIProcessor';</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export class A</span>nthropicProcessor extends BaseAIProcessor {
-<span class="fstat-no" title="function not covered" >  constructor() {</span>
+<span class="cstat-no" title="statement not covered" >export class A</span>nthropicProcessor <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >extends B</span>aseAIProcessor {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  constructor() {</span></span>
 <span class="cstat-no" title="statement not covered" >    super();</span>
-<span class="cstat-no" title="statement not covered" >    this.logger.setContext('AnthropicProcessor');</span>
-  }
+<span class="cstat-no" title="statement not covered" >    this.logger.setContext('AnthropicProcessor');<span class="cstat-no" title="statement not covered" ></span></span>
+  }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
 &nbsp;
-<span class="fstat-no" title="function not covered" >  async </span>process(input: any): Promise&lt;any&gt; {
-<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >p</span>rocess<span class="cstat-no" title="statement not covered" >(</span>i</span>nput: any<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >): Promise&lt;any&gt; {</span></span></span>
+    try {
 <span class="cstat-no" title="statement not covered" >      this.logger.debug('Anthropic処理開始');</span>
 &nbsp;
       // 簡略化された実装
-      const result = <span class="cstat-no" title="statement not covered" >{</span>
+      const <span class="cstat-no" title="statement not covered" >result = {</span>
         processed: true,
         processor: 'Anthropic',
         data: input,
       };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      this.logger.debug('Anthropic処理完了');</span>
-<span class="cstat-no" title="statement not covered" >      return result;</span>
+<span class="cstat-no" title="statement not covered" >      this.logger.debug('Anthropic処理完了');<span class="cstat-no" title="statement not covered" ></span></span>
+      return result<span class="cstat-no" title="statement not covered" >;</span>
     } catch (error) {
-<span class="cstat-no" title="statement not covered" >      this.logger.error('Anthropic処理エラー', error);</span>
-<span class="cstat-no" title="statement not covered" >      throw error;</span>
+<span class="cstat-no" title="statement not covered" >      this.logger.error('Anthropic処理エラー', error);<span class="cstat-no" title="statement not covered" ></span></span>
+      throw error;
     }
   }
 }
@@ -151,7 +151,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

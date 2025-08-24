@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -210,13 +210,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -334,14 +334,14 @@ interface ChartToolbarProps {
   isFullscreen: boolean; // フルスクリーン状態を視覚的に示すために使用
 }
 &nbsp;
-const ChartToolbar: React.FC&lt;ChartToolbarProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span></span>
-  onDownloadImage,
-  onDownloadCSV,
-  onShare,
-  onToggleFullscreen,
-  onChangeChartType,
-  chartType,
-  isFullscreen,
+const <span class="fstat-no" title="function not covered" >ChartToolbar:</span> React.FC&lt;ChartToolbarProps&gt; = <span class="cstat-no" title="statement not covered" >({</span>
+  onDownloadImage<span class="cstat-no" title="statement not covered" >,</span>
+  onDownloadCSV<span class="cstat-no" title="statement not covered" >,</span>
+  onShare<span class="cstat-no" title="statement not covered" >,</span>
+  onToggleFullscreen<span class="cstat-no" title="statement not covered" >,</span>
+  onChangeChartType<span class="cstat-no" title="statement not covered" >,</span>
+  chartType<span class="cstat-no" title="statement not covered" >,</span>
+  isFullscreen<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className="flex items-center gap-2"&gt;
@@ -362,15 +362,15 @@ const ChartToolbar: React.FC&lt;ChartToolbarProps&gt; = <span class="cstat-no" t
                 &lt;/Button&gt;
               &lt;/DropdownMenuTrigger&gt;
               &lt;DropdownMenuContent align="end"&gt;
-                &lt;DropdownMenuItem onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >onChangeChartType('line')}</span>&gt;
+                &lt;DropdownMenuItem <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; onChangeChartType('line')}&gt;</span>
                   &lt;LineChart className="h-4 w-4 mr-2" /&gt;
                   折れ線グラフ
                 &lt;/DropdownMenuItem&gt;
-                &lt;DropdownMenuItem onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >onChangeChartType('bar')}</span>&gt;
+                &lt;DropdownMenuItem <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; onChangeChartType('bar')}&gt;</span>
                   &lt;BarChart3 className="h-4 w-4 mr-2" /&gt;
                   棒グラフ
                 &lt;/DropdownMenuItem&gt;
-                &lt;DropdownMenuItem onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >onChangeChartType('pie')}</span>&gt;
+                &lt;DropdownMenuItem <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; onChangeChartType('pie')}&gt;</span>
                   &lt;PieChart className="h-4 w-4 mr-2" /&gt;
                   円グラフ
                 &lt;/DropdownMenuItem&gt;
@@ -445,7 +445,7 @@ const ChartToolbar: React.FC&lt;ChartToolbarProps&gt; = <span class="cstat-no" t
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

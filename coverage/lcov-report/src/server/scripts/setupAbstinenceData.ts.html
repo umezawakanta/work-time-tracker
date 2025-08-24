@@ -25,21 +25,21 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
@@ -97,15 +97,15 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -113,9 +113,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -124,26 +124,26 @@
 <span class="cstat-no" title="statement not covered" >import { INITIAL_ACHIEVEMENTS } from '../data/initialAchievements.js';</span>
 <span class="cstat-no" title="statement not covered" >import { connectDB } from '../config/database.js';</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export a</span>sync function <span class="fstat-no" title="function not covered" >setupAbstinenceData(</span>) {
-<span class="cstat-no" title="statement not covered" >  try {</span>
-<span class="cstat-no" title="statement not covered" >    await connectDB();</span>
+<span class="cstat-no" title="statement not covered" >export <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync function <span class="fstat-no" title="function not covered" >s</span></span>etupAbstinenceData<span class="cstat-no" title="statement not covered" >(</span>) {</span></span></span>
+  try {
+    await connectDB()<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
     // 既存のアチーブメントデータをクリア
-<span class="cstat-no" title="statement not covered" >    await Achievement.deleteMany({});</span>
+    await Achievement.deleteMany({})<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
     // 初期アチーブメントデータを挿入
-<span class="cstat-no" title="statement not covered" >    await Achievement.insertMany(INITIAL_ACHIEVEMENTS);</span>
+    await Achievement.insertMany(INITIAL_ACHIEVEMENTS);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    console.log('✅ 欲望制御システムの初期データをセットアップしました');</span>
-<span class="cstat-no" title="statement not covered" >    console.log(`📊 ${INITIAL_ACHIEVEMENTS.length}個のアチーブメントを追加`);</span>
+<span class="cstat-no" title="statement not covered" >    console.log(`📊 ${INITIAL_ACHIEVEMENTS.length}個のアチーブメントを追加`);<span class="cstat-no" title="statement not covered" ></span></span>
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('❌ 初期データセットアップエラー:', error);</span>
+<span class="cstat-no" title="statement not covered" >    console.error('❌ 初期データセットアップエラー:', error);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
   } finally {
-<span class="cstat-no" title="statement not covered" >    await mongoose.disconnect();</span>
+    await mongoose.disconnect()<span class="cstat-no" title="statement not covered" >;</span>
   }
-}
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-// 直接実行された場合
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >// 直接実行された場合</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (import.meta.url === `file://${process.argv[1]}`) {</span>
 <span class="cstat-no" title="statement not covered" >  setupAbstinenceData();</span>
 }
@@ -154,7 +154,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

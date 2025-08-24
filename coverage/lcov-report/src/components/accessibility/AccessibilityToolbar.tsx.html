@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/28</span>
+                <span class='fraction'>0/41</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/36</span>
             </div>
         
             
@@ -324,15 +324,15 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -465,7 +465,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -510,6 +509,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -553,21 +553,21 @@ interface AccessibilityToolbarProps {
   className?: string;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AccessibilityToolbar: React.FC&lt;AccessibilityToolbarProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> className }) =&gt; {</span>
-  const [isExpanded, setIsExpanded] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AccessibilityToolbar:</span> React.FC&lt;AccessibilityToolbarProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{ className<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span>
+  const [isExpanded<span class="cstat-no" title="statement not covered" >, s</span>etIsExpanded<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
   const {
-    isHighContrast,
-    isReducedMotion,
-    fontSize,
-    increaseFontSize,
-    decreaseFontSize,
-    resetFontSize,
-    toggleHighContrast,
-    toggleReducedMotion,
-    announceToScreenReader,
+    isHighContrast<span class="cstat-no" title="statement not covered" >,</span>
+    isReducedMotion<span class="cstat-no" title="statement not covered" >,</span>
+    fontSize<span class="cstat-no" title="statement not covered" >,</span>
+    increaseFontSize<span class="cstat-no" title="statement not covered" >,</span>
+    decreaseFontSize<span class="cstat-no" title="statement not covered" >,</span>
+    resetFontSize<span class="cstat-no" title="statement not covered" >,</span>
+    toggleHighContrast<span class="cstat-no" title="statement not covered" >,</span>
+    toggleReducedMotion<span class="cstat-no" title="statement not covered" >,</span>
+    announceToScreenReader<span class="cstat-no" title="statement not covered" >,</span>
   } = <span class="cstat-no" title="statement not covered" >useAccessibilityContext();</span>
 &nbsp;
-  const handleToggleExpanded = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleToggleExpanded </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setIsExpanded(!isExpanded);</span>
 <span class="cstat-no" title="statement not covered" >    announceToScreenReader(</span>
       isExpanded
@@ -582,7 +582,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
       label: '高コントラスト',
       shortcut: 'Alt + H',
       active: isHighContrast,
-      onClick: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >      onClick:</span> () =&gt; {
 <span class="cstat-no" title="statement not covered" >        toggleHighContrast();</span>
 <span class="cstat-no" title="statement not covered" >        announceToScreenReader(</span>
           isHighContrast
@@ -600,7 +600,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
       label: 'アニメーション削減',
       shortcut: 'Alt + M',
       active: isReducedMotion,
-      onClick: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >      onClick:</span> () =&gt; {
 <span class="cstat-no" title="statement not covered" >        toggleReducedMotion();</span>
 <span class="cstat-no" title="statement not covered" >        announceToScreenReader(</span>
           isReducedMotion
@@ -651,7 +651,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
               &lt;/div&gt;
               &lt;div className="flex gap-2"&gt;
                 &lt;Button
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >                  onClick=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" >                    decreaseFontSize();</span>
 <span class="cstat-no" title="statement not covered" >                    announceToScreenReader(`フォントサイズを縮小: ${fontSize - 2}px`);</span>
                   }}
@@ -664,7 +664,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                   &lt;ChevronDown className="h-4 w-4" /&gt;
                 &lt;/Button&gt;
                 &lt;Button
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >                  onClick=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" >                    resetFontSize();</span>
 <span class="cstat-no" title="statement not covered" >                    announceToScreenReader('フォントサイズをリセット: 16px');</span>
                   }}
@@ -676,7 +676,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                   &lt;RotateCcw className="h-4 w-4" /&gt;
                 &lt;/Button&gt;
                 &lt;Button
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >                  onClick=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" >                    increaseFontSize();</span>
 <span class="cstat-no" title="statement not covered" >                    announceToScreenReader(`フォントサイズを拡大: ${fontSize + 2}px`);</span>
                   }}
@@ -697,8 +697,8 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                 表示設定
               &lt;/span&gt;
               &lt;div className="space-y-2"&gt;
-                {toolbarItems.map(<span class="fstat-no" title="function not covered" >(i</span>tem, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;Button</span>
+                {toolbarItems.map(<span class="fstat-no" title="function not covered" >(i</span>tem, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;Button
                     key={index}
                     onClick={item.onClick}
                     variant={item.active ? 'default' : 'outline'}
@@ -740,8 +740,8 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
                 &lt;span className="text-sm font-medium"&gt;スクリーンリーダー対応&lt;/span&gt;
               &lt;/div&gt;
               &lt;Button
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt;
-<span class="cstat-no" title="statement not covered" >                  announceToScreenReader(</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt;</span>
+                  announceToScreenReader(
                     'このサイトはスクリーンリーダーに対応しています。ナビゲーションにはTabキーとArrowキーを使用してください。',
                     'assertive'
                   )
@@ -766,7 +766,7 @@ export const <span class="cstat-no" title="statement not covered" >Accessibility
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

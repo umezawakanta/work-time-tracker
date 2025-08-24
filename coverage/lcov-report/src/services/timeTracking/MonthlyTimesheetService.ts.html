@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/146</span>
+                <span class='fraction'>0/153</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/61</span>
+                <span class='fraction'>0/83</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/30</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/133</span>
+                <span class='fraction'>0/135</span>
             </div>
         
             
@@ -577,7 +577,7 @@
 <a name='L512'></a><a href='#L512'>512</a>
 <a name='L513'></a><a href='#L513'>513</a>
 <a name='L514'></a><a href='#L514'>514</a>
-<a name='L515'></a><a href='#L515'>515</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L515'></a><a href='#L515'>515</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -649,18 +649,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -992,17 +992,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1011,6 +1010,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1091,7 +1091,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>/**</span></span>
  * 📊 月次勤怠集計サービス
  * 月単位での勤怠データ集計、有給・欠勤管理、レポート出力
  */
@@ -1162,19 +1162,19 @@ interface ExportOptions {
   language: 'ja' | 'en';
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export class M</span>onthlyTimesheetService extends EventEmitter {
-  private <span class="cstat-no" title="statement not covered" >analyticsService: WorkTimeAnalyticsService;</span>
-  private <span class="cstat-no" title="statement not covered" >monthlyData: Map&lt;string, MonthlyTimesheet[]&gt; = new Map();</span>
-  private <span class="cstat-no" title="statement not covered" >paidLeaveRecords: Map&lt;string, PaidLeaveRecord[]&gt; = new Map();</span>
+<span class="cstat-no" title="statement not covered" >export class M</span>onthlyTimesheetService <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >extends E</span>ventEmitter {</span>
+  private analyticsService: WorkTimeAnalyticsService;
+  private monthlyData: Map&lt;string, MonthlyTimesheet[]&gt; = new Map();
+  private paidLeaveRecords: Map&lt;string, PaidLeaveRecord[]&gt; = new Map();
   private <span class="cstat-no" title="statement not covered" >annualPaidLeaveEntitlement = 20; /</span>/ 年次有給休暇付与日数
 &nbsp;
-<span class="fstat-no" title="function not covered" >  constructor() {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  constructor() {</span></span>
 <span class="cstat-no" title="statement not covered" >    super();</span>
 <span class="cstat-no" title="statement not covered" >    this.analyticsService = new WorkTimeAnalyticsService();</span>
-<span class="cstat-no" title="statement not covered" >    this.initializeDemoData();</span>
+<span class="cstat-no" title="statement not covered" >    this.initializeDemoData();<span class="cstat-no" title="statement not covered" ></span></span>
   }
 &nbsp;
-  /**
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >  /**</span></span>
    * デモデータの初期化
    */
   private <span class="fstat-no" title="function not covered" >initializeDemoData(</span>): void {
@@ -1199,8 +1199,8 @@ interface ExportOptions {
       const totalOvertimeMinutes = <span class="cstat-no" title="statement not covered" >Math.floor(totalWorkMinutes * (0.1 + Math.random() * 0.2));</span> // 10-30%残業
       const totalBreakMinutes = <span class="cstat-no" title="statement not covered" >actualWorkDays * (60 + Math.floor(Math.random() * 30));</span> // 60-90分休憩
 &nbsp;
-      const attendanceRate = <span class="cstat-no" title="statement not covered" >(actualWorkDays / totalWorkDays) * 100;</span>
-      const overtimeRate = <span class="cstat-no" title="statement not covered" >(totalOvertimeMinutes / totalWorkMinutes) * 100;</span>
+      const attendanceRate = (<span class="cstat-no" title="statement not covered" >actualWorkDays / totalWorkDays) * 100;</span>
+      const overtimeRate = (<span class="cstat-no" title="statement not covered" >totalOvertimeMinutes / totalWorkMinutes) * 100;</span>
       const efficiency = <span class="cstat-no" title="statement not covered" >75 + Math.random() * 20;</span> // 75-95%効率
 &nbsp;
       // 週次データ生成
@@ -1369,7 +1369,7 @@ interface ExportOptions {
    */
 <span class="fstat-no" title="function not covered" >  getMonthlyTimesheet(</span>userId: string, year: number, month: number): MonthlyTimesheet | null {
     const userRecords = <span class="cstat-no" title="statement not covered" >this.monthlyData.get(userId) || [];</span>
-<span class="cstat-no" title="statement not covered" >    return userRecords.find(<span class="fstat-no" title="function not covered" >(r</span>ecord) =&gt; <span class="cstat-no" title="statement not covered" >record.year === year &amp;&amp; record.month === month)</span> || null;</span>
+<span class="cstat-no" title="statement not covered" >    return userRecords.find(<span class="fstat-no" title="function not covered" >(r</span>ecord<span class="cstat-no" title="statement not covered" >) =&gt; record.year === year &amp;&amp; record.month === month) </span>|| null;</span>
   }
 &nbsp;
   /**
@@ -1400,7 +1400,7 @@ interface ExportOptions {
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (year &amp;&amp; month) {</span>
 <span class="cstat-no" title="statement not covered" >      return userRecords.filter(</span>
-<span class="fstat-no" title="function not covered" >        (r</span>ecord) =&gt; <span class="cstat-no" title="statement not covered" >record.date.getFullYear() === year &amp;&amp; record.date.getMonth() + 1 === month</span>
+<span class="fstat-no" title="function not covered" >        (r</span>ecord<span class="cstat-no" title="statement not covered" >) =&gt; record.date.getFullYear() === year &amp;&amp; record.date.getMonth() + 1 === month</span>
       );
     }
 &nbsp;
@@ -1413,8 +1413,8 @@ interface ExportOptions {
 <span class="fstat-no" title="function not covered" >  submitPaidLeaveRequest(</span>
     request: Omit&lt;PaidLeaveRecord, 'id' | 'approvalStatus' | 'approvedBy' | 'approvedAt'&gt;
   ): string {
-    const id = <span class="cstat-no" title="statement not covered" >`leave-${Date.now()}`;</span>
-    const newRecord: PaidLeaveRecord = <span class="cstat-no" title="statement not covered" >{</span>
+    const id<span class="cstat-no" title="statement not covered" > = `leave-${Date.now()}`;</span>
+    const newRecord<span class="cstat-no" title="statement not covered" >: PaidLeaveRecord = {</span>
       ...request,
       id,
       approvalStatus: 'pending',
@@ -1438,7 +1438,7 @@ interface ExportOptions {
     approvedBy: string
   ): boolean {
     const userRecords = <span class="cstat-no" title="statement not covered" >this.paidLeaveRecords.get(userId) || [];</span>
-    const recordIndex = <span class="cstat-no" title="statement not covered" >userRecords.findIndex(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.id === leaveId)</span>;</span>
+    const recordIndex = <span class="cstat-no" title="statement not covered" >userRecords.findIndex(<span class="fstat-no" title="function not covered" >(r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.id === leaveId);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (recordIndex === -1) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 &nbsp;
@@ -1508,15 +1508,15 @@ interface ExportOptions {
 <span class="cstat-no" title="statement not covered" >    return [headers.join(','), data.join(',')].join('\n');</span>
   }
 &nbsp;
-  /**
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  /**</span></span>
    * PDF形式でエクスポート
    */
-<span class="fstat-no" title="function not covered" >  async </span>exportToPDF(userId: string, options: ExportOptions): Promise&lt;Blob&gt; {
+<span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >e</span>xportToPDF<span class="cstat-no" title="statement not covered" >(</span>u</span>serId: string, options: ExportOptions<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;Blob&gt; {</span></span></span>
     // 実際の実装では、jsPDFやPDFMakeを使用してPDFを生成
     // ここでは簡易的な実装
-    const csvData = <span class="cstat-no" title="statement not covered" >this.exportToCSV(userId, options);</span>
-    const blob = <span class="cstat-no" title="statement not covered" >new Blob([csvData], { type: 'application/pdf' });</span>
-<span class="cstat-no" title="statement not covered" >    return blob;</span>
+    const <span class="cstat-no" title="statement not covered" >csvData = this.exportToCSV(userId, options);</span>
+    const <span class="cstat-no" title="statement not covered" >blob = new Blob([csvData], { type: 'application/pdf' })<span class="cstat-no" title="statement not covered" >;</span></span>
+    return blob;
   }
 &nbsp;
   /**
@@ -1524,7 +1524,7 @@ interface ExportOptions {
    */
 <span class="fstat-no" title="function not covered" >  generateMonthlyComparison(</span>
     userId: string,
-    months: number = <span class="branch-0 cbranch-no" title="branch not covered" >6</span>
+<span class="cstat-no" title="statement not covered" >    months: number = 6</span>
   ): Array&lt;{
     month: string;
     workDays: number;
@@ -1536,7 +1536,7 @@ interface ExportOptions {
     const userRecords = <span class="cstat-no" title="statement not covered" >this.monthlyData.get(userId) || [];</span>
     const recentRecords = <span class="cstat-no" title="statement not covered" >userRecords.slice(0, months).reverse();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return recentRecords.map(<span class="fstat-no" title="function not covered" >(r</span>ecord) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >    return recentRecords.map(<span class="fstat-no" title="function not covered" >(r</span>ecord<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       month: `${record.month}月`,
       workDays: record.actualWorkDays,
       totalHours: Math.round(record.totalWorkMinutes / 60),
@@ -1557,7 +1557,7 @@ interface ExportOptions {
   } {
     const currentYear = <span class="cstat-no" title="statement not covered" >new Date().getFullYear();</span>
     const yearRecords = <span class="cstat-no" title="statement not covered" >this.paidLeaveRecords.get(userId) || [];</span>
-    const thisYearRecords = <span class="cstat-no" title="statement not covered" >yearRecords.filter(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.date.getFullYear() === currentYear)</span>;</span>
+    const thisYearRecords = <span class="cstat-no" title="statement not covered" >yearRecords.filter(<span class="fstat-no" title="function not covered" >(r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.date.getFullYear() === currentYear);</span></span>
 &nbsp;
     const used = <span class="cstat-no" title="statement not covered" >thisYearRecords.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, record) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      switch (record.type) {</span>
@@ -1594,7 +1594,7 @@ interface ExportOptions {
     updates: Partial&lt;MonthlyTimesheet&gt;
   ): void {
     const userRecords = <span class="cstat-no" title="statement not covered" >this.monthlyData.get(userId) || [];</span>
-    const recordIndex = <span class="cstat-no" title="statement not covered" >userRecords.findIndex(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.year === year &amp;&amp; r.month === month)</span>;</span>
+    const recordIndex = <span class="cstat-no" title="statement not covered" >userRecords.findIndex(<span class="fstat-no" title="function not covered" >(r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.year === year &amp;&amp; r.month === month);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (recordIndex !== -1) {</span>
 <span class="cstat-no" title="statement not covered" >      userRecords[recordIndex] = { ...userRecords[recordIndex], ...updates };</span>
@@ -1612,7 +1612,7 @@ interface ExportOptions {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

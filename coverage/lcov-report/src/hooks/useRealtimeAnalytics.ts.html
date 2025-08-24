@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/126</span>
+                <span class='fraction'>0/161</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/50</span>
+                <span class='fraction'>0/87</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/119</span>
+                <span class='fraction'>0/126</span>
             </div>
         
             
@@ -431,20 +431,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -681,7 +681,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -714,7 +714,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -726,11 +725,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -765,34 +765,34 @@ interface UseRealtimeAnalyticsOptions {
  * 📊 データウィザード: リアルタイム分析フック
  * WebSocket接続とライブデータ管理を行うカスタムフック
  */
-export const <span class="cstat-no" title="statement not covered" >useRealtimeAnalytics = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>o</span>ptions: UseRealtimeAnalyticsOptions = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span> =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useRealtimeAnalytics </span>= <span class="cstat-no" title="statement not covered" >(<span class="cstat-no" title="statement not covered" ></span>options: UseRealtimeAnalyticsOptions = {})</span> =&gt; {</span>
   const {
-    userId = <span class="branch-0 cbranch-no" title="branch not covered" >'current-user',</span>
+    userId<span class="cstat-no" title="statement not covered" > = 'current-user',</span>
     teamId,
-    autoConnect = <span class="branch-0 cbranch-no" title="branch not covered" >true,</span>
-    reconnectInterval = <span class="branch-0 cbranch-no" title="branch not covered" >5000,</span>
-    maxEvents = <span class="branch-0 cbranch-no" title="branch not covered" >100,</span>
-  } = <span class="cstat-no" title="statement not covered" >options;</span>
+    autoConnect<span class="cstat-no" title="statement not covered" > = true,</span>
+    reconnectInterval<span class="cstat-no" title="statement not covered" > = 5000,</span>
+    maxEvents<span class="cstat-no" title="statement not covered" > = 100,</span>
+  } = <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >options;</span></span></span></span></span>
 &nbsp;
-  const [data, setData] = <span class="cstat-no" title="statement not covered" >useState&lt;AnalyticsData&gt;({</span>
+  const [data<span class="cstat-no" title="statement not covered" >, s</span>etData<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;AnalyticsData&gt;({</span>
     activeUsers: 0,
     completionRate: 0,
     todaysTasks: 0,
     weeklyTrend: 0,
     realtimeEvents: [],
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const [isConnected, setIsConnected] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [isConnecting, setIsConnecting] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [error, setError] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;(null);</span>
-  const [lastUpdate, setLastUpdate] = <span class="cstat-no" title="statement not covered" >useState&lt;Date&gt;(new Date());</span>
+  const [isConnected<span class="cstat-no" title="statement not covered" >, s</span>etIsConnected<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isConnecting<span class="cstat-no" title="statement not covered" >, s</span>etIsConnecting<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [error<span class="cstat-no" title="statement not covered" >, s</span>etError<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [lastUpdate<span class="cstat-no" title="statement not covered" >, s</span>etLastUpdate<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Date&gt;(new Date())<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   const wsRef = <span class="cstat-no" title="statement not covered" >useRef&lt;WebSocket | null&gt;(null);</span>
   const reconnectTimeoutRef = <span class="cstat-no" title="statement not covered" >useRef&lt;NodeJS.Timeout | null&gt;(null);</span>
   const pingIntervalRef = <span class="cstat-no" title="statement not covered" >useRef&lt;NodeJS.Timeout | null&gt;(null);</span>
 &nbsp;
   // 📊 WebSocket接続
-  const connect = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const connect = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (wsRef.current?.readyState === WebSocket.OPEN) {</span>
 <span class="cstat-no" title="statement not covered" >      return; </span>// 既に接続済み
     }
@@ -802,7 +802,7 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // 動的ポート検出
-      const getWebSocketUrl = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      const <span class="fstat-no" title="function not covered" >getWebSocketUrl </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (process.env.VITE_WEBSOCKET_URL) {</span>
 <span class="cstat-no" title="statement not covered" >          return process.env.VITE_WEBSOCKET_URL;</span>
         }
@@ -834,7 +834,7 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
       // サーバーが提供している /notifications パスを使用
       const ws = <span class="cstat-no" title="statement not covered" >new WebSocket(`${wsUrl}/notifications`);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      ws.onopen = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      ws.onopen = <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >        console.log('📊 Real-time analytics connected');</span>
 <span class="cstat-no" title="statement not covered" >        setIsConnected(true);</span>
 <span class="cstat-no" title="statement not covered" >        setIsConnecting(false);</span>
@@ -858,7 +858,7 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
         );
 &nbsp;
         // ピング送信で接続維持
-<span class="cstat-no" title="statement not covered" >        pingIntervalRef.current = setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        pingIntervalRef.current = setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (ws.readyState === WebSocket.OPEN) {</span>
 <span class="cstat-no" title="statement not covered" >            ws.send(JSON.stringify({ type: 'ping' }));</span>
           }
@@ -887,7 +887,7 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
 &nbsp;
         // 自動再接続
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (autoConnect &amp;&amp; !event.wasClean) {</span>
-<span class="cstat-no" title="statement not covered" >          reconnectTimeoutRef.current = setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >          reconnectTimeoutRef.current = setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >            connect();</span>
           }, reconnectInterval);
         }
@@ -913,7 +913,7 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
 <span class="cstat-no" title="statement not covered" >      switch (message.type) {</span>
         case 'analytics_data':
 <span class="cstat-no" title="statement not covered" >          console.log('📊 Received analytics data:', message.data);</span>
-<span class="cstat-no" title="statement not covered" >          setData(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >          setData(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
             ...prev,
             ...message.data,
             realtimeEvents: prev.realtimeEvents, // 既存のイベントを保持
@@ -921,7 +921,7 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
 <span class="cstat-no" title="statement not covered" >          break;</span>
 &nbsp;
         case 'analytics_update':
-<span class="cstat-no" title="statement not covered" >          setData(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >          setData(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
             ...prev,
             ...message.data,
           }));
@@ -936,14 +936,14 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
             data: message.data || {},
           };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >          setData(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >          setData(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
             ...prev,
             realtimeEvents: [newEvent, ...prev.realtimeEvents.slice(0, maxEvents - 1)],
           }));
 &nbsp;
           // 特定イベントの処理
 <span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (message.eventType === 'task_completed') {</span>
-<span class="cstat-no" title="statement not covered" >            setData(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >            setData(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
               ...prev,
               todaysTasks: prev.todaysTasks + 1,
               completionRate: Math.min(prev.completionRate + 1, 100),
@@ -953,7 +953,7 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
         }
 &nbsp;
         case 'user_count_update':
-<span class="cstat-no" title="statement not covered" >          setData(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >          setData(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
             ...prev,
             activeUsers: message.count,
           }));
@@ -975,7 +975,7 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
   );
 &nbsp;
   // 切断
-  const disconnect = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const disconnect = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (reconnectTimeoutRef.current) {</span>
 <span class="cstat-no" title="statement not covered" >      clearTimeout(reconnectTimeoutRef.current);</span>
 <span class="cstat-no" title="statement not covered" >      reconnectTimeoutRef.current = null;</span>
@@ -996,7 +996,7 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
   }, []);
 &nbsp;
   // イベント送信
-  const sendEvent = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(e</span>ventType: string, eventData: Record&lt;string, any&gt; = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span> =&gt; {</span>
+  const sendEvent = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(e</span>ventType: string, <span class="cstat-no" title="statement not covered" >eventData: Record&lt;string, any&gt; = {})</span> =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    if (wsRef.current?.readyState === WebSocket.OPEN) {</span>
 <span class="cstat-no" title="statement not covered" >      wsRef.current.send(</span>
         JSON.stringify({
@@ -1012,39 +1012,39 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
   }, []);
 &nbsp;
   // データリフレッシュ
-  const refresh = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    if (wsRef.current?.readyState === WebSocket.OPEN) {</span>
-<span class="cstat-no" title="statement not covered" >      wsRef.current.send(JSON.stringify({ type: 'refresh' }));</span>
+  const refresh = <span class="cstat-no" title="statement not covered" >useCallback(<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>async () =&gt; {</span></span></span></span>
+    if (wsRef.current?.readyState === WebSocket.OPEN<span class="cstat-no" title="statement not covered" >) {</span>
+<span class="cstat-no" title="statement not covered" >      wsRef.current.send(JSON.stringify({ type: 'refresh' }));<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
     } else {
       // フォールバック: HTTP APIで取得
-<span class="cstat-no" title="statement not covered" >      try {</span>
-        const response = <span class="cstat-no" title="statement not covered" >await fetch('/api/analytics/current', {</span>
+      try {
+        const <span class="cstat-no" title="statement not covered" >response<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span> = await f</span>etch('/api/analytics/current', {</span>
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
         });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (response.ok) {</span>
-          const analyticsData = <span class="cstat-no" title="statement not covered" >await response.json();</span>
-<span class="cstat-no" title="statement not covered" >          setData(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+        if (response.ok<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >) {</span></span>
+          const <span class="cstat-no" title="statement not covered" >analyticsData = await r</span>esponse.json();
+<span class="cstat-no" title="statement not covered" >          setData(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
             ...prev,
             ...analyticsData,
           }));
-<span class="cstat-no" title="statement not covered" >          setLastUpdate(new Date());</span>
+<span class="cstat-no" title="statement not covered" >          setLastUpdate(new Date());<span class="cstat-no" title="statement not covered" ></span></span>
         }
       } catch (error) {
-<span class="cstat-no" title="statement not covered" >        console.error('Failed to refresh analytics data:', error);</span>
+<span class="cstat-no" title="statement not covered" >        console.error('Failed to refresh analytics data:', error);<span class="cstat-no" title="statement not covered" ></span></span>
       }
     }
   }, []);
 &nbsp;
   // 初期化
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (autoConnect) {</span>
 <span class="cstat-no" title="statement not covered" >      connect();</span>
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      disconnect();</span>
     };
   }, [connect, disconnect, autoConnect]);
@@ -1060,13 +1060,13 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
     sendEvent,
     refresh,
     // 便利なヘルパー関数
-    trackTaskCompletion: <span class="fstat-no" title="function not covered" >(t</span>askId: string, taskData: Record&lt;string, any&gt; = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span> =&gt; {
+<span class="fstat-no" title="function not covered" >    trackTaskCompletion:</span> (taskId: string, <span class="cstat-no" title="statement not covered" >taskData: Record&lt;string, any&gt; = {})</span> =&gt; {
 <span class="cstat-no" title="statement not covered" >      sendEvent('task_completed', { taskId, ...taskData });</span>
     },
-    trackTaskCreation: <span class="fstat-no" title="function not covered" >(t</span>askId: string, taskData: Record&lt;string, any&gt; = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span> =&gt; {
+<span class="fstat-no" title="function not covered" >    trackTaskCreation:</span> (taskId: string, <span class="cstat-no" title="statement not covered" >taskData: Record&lt;string, any&gt; = {})</span> =&gt; {
 <span class="cstat-no" title="statement not covered" >      sendEvent('task_created', { taskId, ...taskData });</span>
     },
-    trackUserActivity: <span class="fstat-no" title="function not covered" >(a</span>ctivityType: string, activityData: Record&lt;string, any&gt; = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span> =&gt; {
+<span class="fstat-no" title="function not covered" >    trackUserActivity:</span> (activityType: string, <span class="cstat-no" title="statement not covered" >activityData: Record&lt;string, any&gt; = {})</span> =&gt; {
 <span class="cstat-no" title="statement not covered" >      sendEvent('user_activity', { activityType, ...activityData });</span>
     },
   };
@@ -1078,7 +1078,7 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAn
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/32</span>
+                <span class='fraction'>0/38</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
@@ -475,19 +475,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -501,6 +488,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -564,6 +563,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -665,12 +665,12 @@ const RTL_TRANSLATIONS: Record&lt;string, Record&lt;string, string&gt;&gt; = <sp
   },
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >RTLSupport: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const [selectedLanguage, setSelectedLanguage] = <span class="cstat-no" title="statement not covered" >useState&lt;RTLLanguage&gt;(RTL_LANGUAGES[0]);</span>
-  const [isRTLActive, setIsRTLActive] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >RTLSupport:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const [selectedLanguage<span class="cstat-no" title="statement not covered" >, s</span>etSelectedLanguage<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;RTLLanguage&gt;(RTL_LANGUAGES[0])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isRTLActive<span class="cstat-no" title="statement not covered" >, s</span>etIsRTLActive<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const handleLanguageChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(l</span>anguageCode: string) =&gt; {</span>
-    const language = <span class="cstat-no" title="statement not covered" >RTL_LANGUAGES.find(<span class="fstat-no" title="function not covered" >(l</span>ang) =&gt; <span class="cstat-no" title="statement not covered" >lang.code === languageCode)</span>;</span>
+  const <span class="fstat-no" title="function not covered" >handleLanguageChange </span>= <span class="cstat-no" title="statement not covered" >(languageCode: string) =&gt; {</span>
+    const language = <span class="cstat-no" title="statement not covered" >RTL_LANGUAGES.find(<span class="fstat-no" title="function not covered" >(l</span>ang<span class="cstat-no" title="statement not covered" >) =&gt; lang.code === languageCode);</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (language) {</span>
 <span class="cstat-no" title="statement not covered" >      setSelectedLanguage(language);</span>
 <span class="cstat-no" title="statement not covered" >      setIsRTLActive(true);</span>
@@ -679,13 +679,13 @@ export const <span class="cstat-no" title="statement not covered" >RTLSupport: R
     }
   };
 &nbsp;
-  const resetToLTR = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >resetToLTR </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setIsRTLActive(false);</span>
 <span class="cstat-no" title="statement not covered" >    document.documentElement.dir = 'ltr';</span>
 <span class="cstat-no" title="statement not covered" >    document.documentElement.lang = 'ja';</span>
   };
 &nbsp;
-  const translate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(k</span>ey: string): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >translate </span>= <span class="cstat-no" title="statement not covered" >(key: string): string =&gt; {</span>
     const translations = <span class="cstat-no" title="statement not covered" >RTL_TRANSLATIONS[selectedLanguage.code];</span>
 <span class="cstat-no" title="statement not covered" >    return translations?.[key] || key;</span>
   };
@@ -739,8 +739,8 @@ export const <span class="cstat-no" title="statement not covered" >RTLSupport: R
               &lt;/SelectValue&gt;
             &lt;/SelectTrigger&gt;
             &lt;SelectContent&gt;
-              {RTL_LANGUAGES.map(<span class="fstat-no" title="function not covered" >(l</span>ang) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;SelectItem key={lang.code} v</span>alue={lang.code}&gt;
+              {RTL_LANGUAGES.map(<span class="fstat-no" title="function not covered" >(l</span>ang<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;SelectItem key={lang.code} value={lang.code}&gt;
                   &lt;div className="flex items-center gap-2"&gt;
                     &lt;span&gt;{lang.flag}&lt;/span&gt;
                     &lt;span&gt;{lang.nativeName}&lt;/span&gt;
@@ -752,7 +752,7 @@ export const <span class="cstat-no" title="statement not covered" >RTLSupport: R
           &lt;/Select&gt;
 &nbsp;
           &lt;div className="flex gap-2"&gt;
-            &lt;Button onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleLanguageChange(selectedLanguage.code)}</span>&gt;
+            &lt;Button <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleLanguageChange(selectedLanguage.code)}&gt;</span>
               &lt;ArrowLeft className="h-4 w-4 mr-2" /&gt;
               RTLモード有効
             &lt;/Button&gt;
@@ -826,8 +826,8 @@ export const <span class="cstat-no" title="statement not covered" >RTLSupport: R
             &lt;div&gt;
               &lt;h4 className="font-semibold mb-2"&gt;対応言語&lt;/h4&gt;
               &lt;div className="space-y-1"&gt;
-                {RTL_LANGUAGES.map(<span class="fstat-no" title="function not covered" >(l</span>ang) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div key={lang.code} c</span>lassName="flex items-center gap-2 text-sm"&gt;
+                {RTL_LANGUAGES.map(<span class="fstat-no" title="function not covered" >(l</span>ang<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;div key={lang.code} className="flex items-center gap-2 text-sm"&gt;
                     &lt;span&gt;{lang.flag}&lt;/span&gt;
                     &lt;span&gt;{lang.nativeName}&lt;/span&gt;
                   &lt;/div&gt;
@@ -862,7 +862,7 @@ export const <span class="cstat-no" title="statement not covered" >RTLSupport: R
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

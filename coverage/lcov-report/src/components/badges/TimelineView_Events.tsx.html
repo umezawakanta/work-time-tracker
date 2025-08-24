@@ -394,7 +394,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -446,6 +445,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -520,13 +520,13 @@ interface TimelineFilter {
 }
 &nbsp;
 // タイムラインイベント表示コンポーネント
-export const <span class="cstat-no" title="statement not covered" >renderTimelineEvents = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>e</span>vents: TimelineEvent[], filter: TimelineFilter) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >renderTimelineEvents </span>= <span class="cstat-no" title="statement not covered" >(</span>events: TimelineEvent[], filter: TimelineFilter) =&gt; {</span>
   // 日付でソート
   const sortedEvents = <span class="cstat-no" title="statement not covered" >[...events].sort(</span>
-<span class="fstat-no" title="function not covered" >    (a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(a.date).getTime() - new Date(b.date).getTime()</span>
+<span class="fstat-no" title="function not covered" >    (a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(a.date).getTime() - new Date(b.date).getTime()</span>
   );
 &nbsp;
-  const getEventIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ype: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getEventIcon </span>= <span class="cstat-no" title="statement not covered" >(type: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (type) {</span>
       case 'badge_start':
 <span class="cstat-no" title="statement not covered" >        return '🚀';</span>
@@ -545,7 +545,7 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
     }
   };
 &nbsp;
-  const getEventColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>mportance: string, status: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getEventColor </span>= <span class="cstat-no" title="statement not covered" >(importance: string, status: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (status === 'overdue') <span class="cstat-no" title="statement not covered" >return 'border-red-500 bg-red-50';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (status === 'cancelled') <span class="cstat-no" title="statement not covered" >return 'border-gray-500 bg-gray-50';</span></span>
 &nbsp;
@@ -563,7 +563,7 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
     }
   };
 &nbsp;
-  const getStatusBadge = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tatus: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getStatusBadge </span>= <span class="cstat-no" title="statement not covered" >(status: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (status) {</span>
       case 'actual':
 <span class="cstat-no" title="statement not covered" >        return (</span>
@@ -608,8 +608,8 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
           &lt;div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-300"&gt;&lt;/div&gt;
 &nbsp;
           &lt;div className="space-y-4"&gt;
-            {sortedEvents.map(<span class="fstat-no" title="function not covered" >(e</span>vent, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;div key={event.id} c</span>lassName="relative flex items-start gap-4"&gt;
+            {sortedEvents.map(<span class="fstat-no" title="function not covered" >(e</span>vent, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;div key={event.id} className="relative flex items-start gap-4"&gt;
                 {/* イベントマーカー */}
                 &lt;div
                   className={`relative z-10 w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm ${getEventColor(event.importance, event.status).replace('bg-', 'bg-white border-')}`}
@@ -658,8 +658,8 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
                   {event.relatedBadges &amp;&amp; event.relatedBadges.length &gt; 0 &amp;&amp; (
                     &lt;div className="flex flex-wrap gap-1"&gt;
                       &lt;span className="text-xs text-muted-foreground"&gt;関連:&lt;/span&gt;
-                      {event.relatedBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adgeId) =&gt; (
-<span class="cstat-no" title="statement not covered" >                        &lt;Badge key={badgeId} v</span>ariant="outline" className="text-xs"&gt;
+                      {event.relatedBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adgeId<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                        &lt;Badge key={badgeId} variant="outline" className="text-xs"&gt;
                           {badgeId}
                         &lt;/Badge&gt;
                       ))}
@@ -677,25 +677,25 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
           &lt;div className="grid grid-cols-2 md:grid-cols-4 gap-4"&gt;
             &lt;div className="text-center"&gt;
               &lt;div className="text-xl font-bold text-green-600"&gt;
-                {events.filter(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.type === 'badge_complete')</span>.length}
+                {events.filter(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; e.type === 'badge_complete').</span>length}
               &lt;/div&gt;
               &lt;div className="text-xs text-muted-foreground"&gt;バッジ完了&lt;/div&gt;
             &lt;/div&gt;
             &lt;div className="text-center"&gt;
               &lt;div className="text-xl font-bold text-blue-600"&gt;
-                {events.filter(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.type === 'milestone')</span>.length}
+                {events.filter(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; e.type === 'milestone').</span>length}
               &lt;/div&gt;
               &lt;div className="text-xs text-muted-foreground"&gt;マイルストーン&lt;/div&gt;
             &lt;/div&gt;
             &lt;div className="text-center"&gt;
               &lt;div className="text-xl font-bold text-red-600"&gt;
-                {events.filter(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.type === 'risk')</span>.length}
+                {events.filter(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; e.type === 'risk').</span>length}
               &lt;/div&gt;
               &lt;div className="text-xs text-muted-foreground"&gt;リスクイベント&lt;/div&gt;
             &lt;/div&gt;
             &lt;div className="text-center"&gt;
               &lt;div className="text-xl font-bold text-orange-600"&gt;
-                {events.filter(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.status === 'planned')</span>.length}
+                {events.filter(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; e.status === 'planned').</span>length}
               &lt;/div&gt;
               &lt;div className="text-xs text-muted-foreground"&gt;予定イベント&lt;/div&gt;
             &lt;/div&gt;
@@ -712,7 +712,7 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

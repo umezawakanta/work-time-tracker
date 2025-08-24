@@ -25,21 +25,21 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/29</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
@@ -135,7 +135,7 @@
 <a name='L70'></a><a href='#L70'>70</a>
 <a name='L71'></a><a href='#L71'>71</a>
 <a name='L72'></a><a href='#L72'>72</a>
-<a name='L73'></a><a href='#L73'>73</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L73'></a><a href='#L73'>73</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -199,7 +199,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -207,7 +207,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>/**</span></span>
  * Error handling utilities for type-safe error management
  */
 &nbsp;
@@ -220,14 +220,14 @@ export interface AppError {
 /**
  * Type guard to check if error is an Error instance
  */
-export const <span class="cstat-no" title="statement not covered" >isError = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>e</span>rror: unknown): error is Error =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >isError </span>= <span class="cstat-no" title="statement not covered" >(</span>error: unknown): error is Error =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return error instanceof Error;</span>
 };
 &nbsp;
 /**
  * Type guard to check if error is an AppError
  */
-export const <span class="cstat-no" title="statement not covered" >isAppError = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>e</span>rror: unknown): error is AppError =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >isAppError </span>= <span class="cstat-no" title="statement not covered" >(</span>error: unknown): error is AppError =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return (</span>
     typeof error === 'object' &amp;&amp;
     error !== null &amp;&amp;
@@ -239,7 +239,7 @@ export const <span class="cstat-no" title="statement not covered" >isAppError = 
 /**
  * Safely extract error message from unknown error
  */
-export const <span class="cstat-no" title="statement not covered" >getErrorMessage = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>e</span>rror: unknown): string =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getErrorMessage </span>= <span class="cstat-no" title="statement not covered" >(</span>error: unknown): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (isError(error)) {</span>
 <span class="cstat-no" title="statement not covered" >    return error.message;</span>
   }
@@ -258,7 +258,7 @@ export const <span class="cstat-no" title="statement not covered" >getErrorMessa
 /**
  * Create a standardized error object
  */
-export const <span class="cstat-no" title="statement not covered" >createAppError = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>m</span>essage: string, code?: string, details?: unknown): AppError =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >createAppError </span>= <span class="cstat-no" title="statement not covered" >(</span>message: string, code?: string, details?: unknown<span class="cstat-no" title="statement not covered" >): AppError =&gt; ({</span></span>
   message,
   code,
   details,
@@ -267,15 +267,15 @@ export const <span class="cstat-no" title="statement not covered" >createAppErro
 /**
  * Async error handler wrapper
  */
-export const <span class="cstat-no" title="statement not covered" >withErrorHandling = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >&lt;</span>T extends readonly unknown[], R&gt;(</span></span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >withErrorHandling </span>= <span class="cstat-no" title="statement not covered" >&lt;</span>T extends readonly unknown[], R&gt;(</span>
   fn: (...args: T) =&gt; Promise&lt;R&gt;
 ) =&gt; {
-<span class="cstat-no" title="statement not covered" >  return <span class="fstat-no" title="function not covered" >async </span>(...args: T): Promise&lt;R&gt; =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      return await fn(...args);</span>
+<span class="cstat-no" title="statement not covered" >  return <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async (...args: T): Promise&lt;R&gt; =&gt; {</span></span></span></span></span>
+    try {
+      return await fn(...args)<span class="cstat-no" title="statement not covered" >;</span>
     } catch (error) {
-      const errorMessage = <span class="cstat-no" title="statement not covered" >getErrorMessage(error);</span>
-<span class="cstat-no" title="statement not covered" >      throw createAppError(errorMessage, 'EXECUTION_ERROR', error);</span>
+      const <span class="cstat-no" title="statement not covered" >errorMessage = getErrorMessage(error)<span class="cstat-no" title="statement not covered" >;</span></span>
+      throw createAppError(errorMessage, 'EXECUTION_ERROR', error)<span class="cstat-no" title="statement not covered" >;</span>
     }
   };
 };
@@ -286,7 +286,7 @@ export const <span class="cstat-no" title="statement not covered" >withErrorHand
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

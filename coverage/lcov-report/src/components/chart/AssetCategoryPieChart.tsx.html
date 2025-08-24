@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
@@ -251,7 +251,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -266,16 +265,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -283,6 +276,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -291,6 +290,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -344,7 +344,7 @@ interface CustomTooltipProps {
 }
 &nbsp;
 // カスタムツールチップコンポーネント
-const CustomTooltip: React.FC&lt;CustomTooltipProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> active, payload }) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >CustomTooltip:</span> React.FC&lt;CustomTooltipProps&gt; = <span class="cstat-no" title="statement not covered" >({ active<span class="cstat-no" title="statement not covered" >, payload<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (active &amp;&amp; payload &amp;&amp; payload.length) {</span>
     const data = <span class="cstat-no" title="statement not covered" >payload[0].payload;</span>
 <span class="cstat-no" title="statement not covered" >    return (</span>
@@ -362,15 +362,15 @@ const CustomTooltip: React.FC&lt;CustomTooltipProps&gt; = <span class="cstat-no"
 type CustomLegendProps = RechartsLegendProps;
 &nbsp;
 // カスタムレジェンドコンポーネント
-const CustomLegend: React.FC&lt;CustomLegendProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>rops) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >CustomLegend:</span> React.FC&lt;CustomLegendProps&gt; = <span class="cstat-no" title="statement not covered" >(props) =&gt; {</span>
   const { payload } = <span class="cstat-no" title="statement not covered" >props;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!payload) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;ul className="legend-container"&gt;
-      {payload.map(<span class="fstat-no" title="function not covered" >(e</span>ntry, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >        &lt;li key={`legend-item-${index}`} c</span>lassName="legend-item"&gt;
+      {payload.map(<span class="fstat-no" title="function not covered" >(e</span>ntry, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+        &lt;li key={`legend-item-${index}`} className="legend-item"&gt;
           {/* SVG要素を使用してカラーボックスを実装 */}
           &lt;span className="legend-color-indicator" aria-hidden="true"&gt;
             &lt;svg width="12" height="12" viewBox="0 0 12 12"&gt;
@@ -384,7 +384,7 @@ const CustomLegend: React.FC&lt;CustomLegendProps&gt; = <span class="cstat-no" t
   );
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AssetCategoryPieChart: React.FC&lt;AssetCategoryPieChartProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> data }) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AssetCategoryPieChart:</span> React.FC&lt;AssetCategoryPieChartProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{ data<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span>
   // データが空の場合は代替表示
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!data || data.length === 0) {</span>
 <span class="cstat-no" title="statement not covered" >    return (</span>
@@ -407,8 +407,8 @@ export const <span class="cstat-no" title="statement not covered" >AssetCategory
           fill="#8884d8"
           dataKey="value"
         &gt;
-          {data.map(<span class="fstat-no" title="function not covered" >(_</span>, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;Cell key={`cell-${index}`} f</span>ill={COLORS[index % COLORS.length]} /&gt;
+          {data.map(<span class="fstat-no" title="function not covered" >(_</span>, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} /&gt;
           ))}
         &lt;/Pie&gt;
         &lt;Tooltip content={&lt;CustomTooltip /&gt;} /&gt;
@@ -424,7 +424,7 @@ export const <span class="cstat-no" title="statement not covered" >AssetCategory
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

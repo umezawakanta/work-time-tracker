@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/31</span>
+                <span class='fraction'>0/41</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/28</span>
+                <span class='fraction'>0/29</span>
             </div>
         
             
@@ -225,14 +225,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -240,6 +234,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -305,12 +305,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -357,31 +357,31 @@ interface ReadingListItem {
   notes: string;
 }
 &nbsp;
-const ReadingList: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const [items, setItems] = <span class="cstat-no" title="statement not covered" >useState&lt;ReadingListItem[]&gt;([]);</span>
-  const [newItem, setNewItem] = <span class="cstat-no" title="statement not covered" >useState&lt;Omit&lt;ReadingListItem, 'id'&gt;&gt;({</span>
+const <span class="fstat-no" title="function not covered" >ReadingList:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const [items<span class="cstat-no" title="statement not covered" >, s</span>etItems<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;ReadingListItem[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [newItem<span class="cstat-no" title="statement not covered" >, s</span>etNewItem<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Omit&lt;ReadingListItem, 'id'&gt;&gt;({</span>
     title: '',
     author: '',
     priority: 1,
     notes: '',
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const handleInputChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: React.ChangeEvent&lt;HTMLInputElement | HTMLTextAreaElement&gt;) =&gt; {</span>
-    const { name, value } = <span class="cstat-no" title="statement not covered" >e.target;</span>
-<span class="cstat-no" title="statement not covered" >    setNewItem(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, [name]: value })</span>);</span>
+  const <span class="fstat-no" title="function not covered" >handleInputChange </span>= <span class="cstat-no" title="statement not covered" >(e: React.ChangeEvent&lt;HTMLInputElement | HTMLTextAreaElement&gt;) =&gt; {</span>
+    const { name<span class="cstat-no" title="statement not covered" >, value<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >e.target;</span></span></span>
+<span class="cstat-no" title="statement not covered" >    setNewItem(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, [name]: value }))</span>;</span>
   };
 &nbsp;
-  const handleAddItem = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleAddItem </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const id = <span class="cstat-no" title="statement not covered" >Math.random().toString(36).substr(2, 9);</span>
-<span class="cstat-no" title="statement not covered" >    setItems(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >[...prev, { ...newItem, id }])</span>;</span>
+<span class="cstat-no" title="statement not covered" >    setItems(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; [...prev, { ...newItem, id }])</span>;</span>
 <span class="cstat-no" title="statement not covered" >    setNewItem({ title: '', author: '', priority: 1, notes: '' });</span>
   };
 &nbsp;
-  const handleDragEnd = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>esult: DropResult) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleDragEnd </span>= <span class="cstat-no" title="statement not covered" >(result: DropResult) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!result.destination) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
     const newItems = <span class="cstat-no" title="statement not covered" >Array.from(items);</span>
-    const [reorderedItem] = <span class="cstat-no" title="statement not covered" >newItems.splice(result.source.index, 1);</span>
+    const [reorderedItem<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >n</span>ewItems.splice(result.source.index, 1)<span class="cstat-no" title="statement not covered" >;</span></span>
 <span class="cstat-no" title="statement not covered" >    newItems.splice(result.destination.index, 0, reorderedItem);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    setItems(newItems);</span>
@@ -443,13 +443,13 @@ const ReadingList: React.FC = <span class="cstat-no" title="statement not covere
       &lt;/Card&gt;
 &nbsp;
       &lt;DragDropContext onDragEnd={handleDragEnd}&gt;
-        &lt;Droppable droppableId="reading-list"&gt;
-          {<span class="fstat-no" title="function not covered" >(p</span>rovided) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;div {...provided.droppableProps} ref={provided.innerRef}&gt;</span>
-              {items.map(<span class="fstat-no" title="function not covered" >(i</span>tem, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;Draggable key={item.id} d</span>raggableId={item.id} index={index}&gt;
-                  {<span class="fstat-no" title="function not covered" >(p</span>rovided) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;Card</span>
+        &lt;Droppable droppableId="reading-list"<span class="fstat-no" title="function not covered" >&gt;</span>
+          {(provided<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;div {...provided.droppableProps} ref={provided.innerRef}&gt;
+              {items.map(<span class="fstat-no" title="function not covered" >(i</span>tem, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;Draggable key={item.id} draggableId={item.id} index={index<span class="fstat-no" title="function not covered" >}&gt;</span>
+                  {(provided<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                    &lt;Card
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
@@ -487,7 +487,7 @@ const ReadingList: React.FC = <span class="cstat-no" title="statement not covere
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

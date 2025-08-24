@@ -25,21 +25,21 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
@@ -130,25 +130,25 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { api } from './apiConfig';</span>
 import type { PublicUser } from '@/types/admin';
 &nbsp;
@@ -168,13 +168,13 @@ export interface ListUsersResponse {
   totalPages: number;
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export a</span>sync function <span class="fstat-no" title="function not covered" >listUsers(</span>params: ListUsersParams = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span>: Promise&lt;ListUsersResponse&gt; {
-  const { q = <span class="branch-0 cbranch-no" title="branch not covered" >'',</span> page = <span class="branch-0 cbranch-no" title="branch not covered" >1,</span> limit = <span class="branch-0 cbranch-no" title="branch not covered" >20,</span> sort = <span class="branch-0 cbranch-no" title="branch not covered" >'-createdAt' </span>} = <span class="cstat-no" title="statement not covered" >params;</span>
-  const res = <span class="cstat-no" title="statement not covered" >await api.get&lt;ListUsersResponse&gt;('/admin/users', {</span>
+<span class="cstat-no" title="statement not covered" >export <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync function <span class="fstat-no" title="function not covered" >l</span></span>istUsers<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(<span class="cstat-no" title="statement not covered" ></span>p</span></span>arams: ListUsersParams = {}<span class="cstat-no" title="statement not covered" >): Promise&lt;ListUsersResponse&gt; {</span></span></span></span>
+  const { q = '', page = 1, limit = 20, sort = '-createdAt'<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > } = p</span>arams;</span>
+  const <span class="cstat-no" title="statement not covered" >res<span class="cstat-no" title="statement not covered" > = await a</span>pi.get&lt;ListUsersResponse&gt;('/admin/users', {</span>
     params: { q, page, limit, sort },
   });
-<span class="cstat-no" title="statement not covered" >  return res.data;</span>
-}
+  return res.data;
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 export type UpdateUserPayload = Partial&lt;{
   role: 'user' | 'admin';
@@ -188,10 +188,10 @@ export interface UpdateUserResponse {
   data: PublicUser;
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export a</span>sync function <span class="fstat-no" title="function not covered" >updateUser(</span>id: string, payload: UpdateUserPayload): Promise&lt;PublicUser&gt; {
-  const res = <span class="cstat-no" title="statement not covered" >await api.patch&lt;UpdateUserResponse&gt;(`/admin/users/${id}`, payload);</span>
-<span class="cstat-no" title="statement not covered" >  return res.data.data;</span>
-}
+<span class="cstat-no" title="statement not covered" >export <span class="fstat-no" title="function not covered" >a</span>sync function <span class="fstat-no" title="function not covered" >u</span>pdateUser<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>i</span></span>d: string, payload: UpdateUserPayload<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >): Promise&lt;PublicUser&gt; {</span></span></span></span></span>
+  const <span class="cstat-no" title="statement not covered" >res<span class="cstat-no" title="statement not covered" > = await a</span>pi.patch&lt;UpdateUserResponse&gt;(`/admin/users/${id}`, payload);</span>
+  return res.data.data;
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -199,7 +199,7 @@ export interface UpdateUserResponse {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

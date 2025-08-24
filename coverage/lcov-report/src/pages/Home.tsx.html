@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">36.44% </span>
+                <span class="strong">40.49% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>39/107</span>
+                <span class='fraction'>49/121</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">3.7% </span>
+                <span class="strong">2.77% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/27</span>
+                <span class='fraction'>1/36</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">15% </span>
+                <span class="strong">18.18% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/20</span>
+                <span class='fraction'>4/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">39.17% </span>
+                <span class="strong">40.62% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>38/97</span>
+                <span class='fraction'>39/96</span>
             </div>
         
             
@@ -819,8 +819,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -828,7 +828,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
@@ -1160,7 +1160,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1222,6 +1221,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1474,26 +1474,26 @@ const Home: React.FC = () =&gt; {
     }
   }, [isAuthenticated]);
 &nbsp;
-  const initializeDashboard = <span class="fstat-no" title="function not covered" >async </span>() =&gt; {
-<span class="cstat-no" title="statement not covered" >    setIsLoading(true);</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      await dispatch(fetchTodoItems());</span>
-<span class="cstat-no" title="statement not covered" >      calculateStats();</span>
+  const <span class="fstat-no" title="function not covered" >initializeDashboard </span>= <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" >    setIsLoading(true);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+    try {
+      await dispatch(fetchTodoItems());
+<span class="cstat-no" title="statement not covered" >      calculateStats();<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Dashboard initialization failed:', error);</span>
-<span class="cstat-no" title="statement not covered" >      toast.error('ダッシュボードの初期化に失敗しました');</span>
+<span class="cstat-no" title="statement not covered" >      toast.error('ダッシュボードの初期化に失敗しました');<span class="cstat-no" title="statement not covered" ></span></span>
     } finally {
-<span class="cstat-no" title="statement not covered" >      setIsLoading(false);</span>
+<span class="cstat-no" title="statement not covered" >      setIsLoading(false);<span class="cstat-no" title="statement not covered" ></span></span>
     }
   };
 &nbsp;
   // Calculate real stats from data
-  const calculateStats = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+  const <span class="fstat-no" title="function not covered" >calculateStats </span>= () =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const today = <span class="cstat-no" title="statement not covered" >new Date().toDateString();</span>
 &nbsp;
       // 安全な null/undefined チェックを追加
-      const validTodos = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo != null &amp;&amp; typeof todo === 'object')</span>;</span>
+      const validTodos = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo<span class="cstat-no" title="statement not covered" >) =&gt; todo != null &amp;&amp; typeof todo === 'object');</span></span>
 &nbsp;
       const todayTodos = <span class="cstat-no" title="statement not covered" >validTodos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!todo.createdAt) <span class="cstat-no" title="statement not covered" >return false;</span></span>
@@ -1506,7 +1506,7 @@ const Home: React.FC = () =&gt; {
         }
       });
 &nbsp;
-      const completedToday = <span class="cstat-no" title="statement not covered" >todayTodos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo.completed)</span>.length;</span>
+      const completedToday = <span class="cstat-no" title="statement not covered" >todayTodos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo<span class="cstat-no" title="statement not covered" >) =&gt; todo.completed).</span>length;</span>
       const totalToday = <span class="cstat-no" title="statement not covered" >Math.max(todayTodos.length, 1);</span>
       const completionRate = <span class="cstat-no" title="statement not covered" >Math.round((completedToday / totalToday) * 100);</span>
 &nbsp;
@@ -1533,7 +1533,7 @@ const Home: React.FC = () =&gt; {
       }
 &nbsp;
       // Simple gamification stats
-      const totalCompleted = <span class="cstat-no" title="statement not covered" >validTodos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo.completed)</span>.length;</span>
+      const totalCompleted = <span class="cstat-no" title="statement not covered" >validTodos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo<span class="cstat-no" title="statement not covered" >) =&gt; todo.completed).</span>length;</span>
       const currentLevel = <span class="cstat-no" title="statement not covered" >Math.floor(totalCompleted / 10) + 1;</span>
       const xp = <span class="cstat-no" title="statement not covered" >totalCompleted * 25;</span>
       const nextLevelXP = <span class="cstat-no" title="statement not covered" >currentLevel * 250;</span>
@@ -1628,7 +1628,7 @@ const Home: React.FC = () =&gt; {
   ];
 &nbsp;
   // Welcome message based on time
-  const getWelcomeMessage = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+  const <span class="fstat-no" title="function not covered" >getWelcomeMessage </span>= () =&gt; {
     const hour = <span class="cstat-no" title="statement not covered" >new Date().getHours();</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (hour &lt; 12) <span class="cstat-no" title="statement not covered" >return 'おはようございます';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (hour &lt; 18) <span class="cstat-no" title="statement not covered" >return 'こんにちは';</span></span>
@@ -1643,7 +1643,7 @@ const Home: React.FC = () =&gt; {
             &lt;HomeIcon className="w-16 h-16 mx-auto mb-4 text-blue-600" /&gt;
             &lt;h1 className="text-2xl font-bold text-gray-900 mb-2"&gt;Work Time Tracker&lt;/h1&gt;
             &lt;p className="text-gray-600 mb-6"&gt;ログインしてダッシュボードにアクセスしてください&lt;/p&gt;
-            &lt;Button onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate('/login')}</span> className="w-full"&gt;
+            &lt;Button <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate('/login')} c</span>lassName="w-full"&gt;
               ログイン
             &lt;/Button&gt;
           &lt;/CardContent&gt;
@@ -1678,7 +1678,7 @@ const Home: React.FC = () =&gt; {
           &lt;div className="flex flex-col sm:flex-row items-center justify-center gap-3"&gt;
             &lt;Button
               className="px-6 py-6 text-base md:text-lg"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate('/ai-assistant')}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate('/ai-assistant')}</span>
               aria-label="AI秘書を使う"
             &gt;
               AI秘書を使う
@@ -1686,7 +1686,7 @@ const Home: React.FC = () =&gt; {
             &lt;Button
               variant="outline"
               className="px-6 py-6 text-base md:text-lg"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate('/assessments')}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate('/assessments')}</span>
               aria-label="自己診断を始める"
             &gt;
               自己診断を始める
@@ -1817,8 +1817,8 @@ const Home: React.FC = () =&gt; {
               &lt;h3 className="text-2xl font-bold text-gray-900 mb-1"&gt;{stats.streakDays}&lt;/h3&gt;
               &lt;p className="text-gray-600 text-sm mb-3"&gt;日間継続&lt;/p&gt;
               &lt;div className="flex items-center gap-1"&gt;
-                {[...Array(7)].map(<span class="fstat-no" title="function not covered" >(_</span>, i) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div</span>
+                {[...Array(7)].map(<span class="fstat-no" title="function not covered" >(_</span>, i<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;div
                     key={i}
                     className={cn(
                       'w-3 h-3 rounded-full',
@@ -1877,8 +1877,8 @@ const Home: React.FC = () =&gt; {
           &lt;/h2&gt;
 &nbsp;
           &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
-            {quickActions.map(<span class="fstat-no" title="function not covered" >(a</span>ction) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;Card</span>
+            {quickActions.map(<span class="fstat-no" title="function not covered" >(a</span>ction<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;Card
                 key={action.id}
                 className={cn(
                   'group cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105',
@@ -1886,7 +1886,7 @@ const Home: React.FC = () =&gt; {
                     ? 'bg-gradient-to-br from-white via-white to-blue-50'
                     : 'bg-white/70 backdrop-blur'
                 )}
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate(action.path)}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate(action.path)}</span>
               &gt;
                 &lt;CardContent className="p-6"&gt;
                   &lt;div className="flex items-start justify-between mb-4"&gt;
@@ -1952,7 +1952,7 @@ const Home: React.FC = () =&gt; {
               &lt;/div&gt;
 &nbsp;
               &lt;Button
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate('/ai-gamification')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate('/ai-gamification')}</span>
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               &gt;
                 &lt;PlayCircle className="w-4 h-4 mr-2" /&gt;
@@ -2010,7 +2010,7 @@ const Home: React.FC = () =&gt; {
                 限定バッジ、高度なAI分析、チーム機能など、プレミアム限定の機能で生産性を次のレベルへ
               &lt;/p&gt;
               &lt;Button
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate('/subscription-management')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate('/subscription-management')}</span>
                 className="bg-white text-purple-600 hover:bg-gray-100 font-bold px-8 py-3"
               &gt;
                 プレミアムを始める
@@ -2022,7 +2022,7 @@ const Home: React.FC = () =&gt; {
         {/* Quick Add Todo */}
         &lt;div className="fixed bottom-6 right-6"&gt;
           &lt;Button
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate('/todos')}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate('/todos')}</span>
             className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110"
           &gt;
             &lt;Plus className="w-8 h-8" /&gt;
@@ -2041,7 +2041,7 @@ export default Home;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

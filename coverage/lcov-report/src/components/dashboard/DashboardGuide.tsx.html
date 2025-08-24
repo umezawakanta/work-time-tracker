@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/47</span>
+                <span class='fraction'>0/55</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/30</span>
+                <span class='fraction'>0/39</span>
             </div>
         
             
@@ -815,25 +815,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -849,6 +830,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -859,6 +849,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -980,10 +980,10 @@ interface DashboardGuideProps {
   className?: string;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >DashboardGuide: React.FC&lt;DashboardGuideProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> onClose, className }) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >DashboardGuide:</span> React.FC&lt;DashboardGuideProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{ onClose<span class="cstat-no" title="statement not covered" >, className<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span>
   const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span>
-  const [currentStep, setCurrentStep] = <span class="cstat-no" title="statement not covered" >useState(0);</span>
-  const [completedSteps, setCompletedSteps] = <span class="cstat-no" title="statement not covered" >useState&lt;Set&lt;string&gt;&gt;(new Set());</span>
+  const [currentStep<span class="cstat-no" title="statement not covered" >, s</span>etCurrentStep<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(0)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [completedSteps<span class="cstat-no" title="statement not covered" >, s</span>etCompletedSteps<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Set&lt;string&gt;&gt;(new Set())<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   const guideSteps: GuideStep[] = <span class="cstat-no" title="statement not covered" >[</span>
     {
@@ -1007,7 +1007,7 @@ export const <span class="cstat-no" title="statement not covered" >DashboardGuid
       icon: &lt;Heart className="h-8 w-8 text-pink-500" /&gt;,
       action: {
         text: '🤗 AIに相談してみる',
-        onClick: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >        onClick:</span> () =&gt; {
           const event = <span class="cstat-no" title="statement not covered" >new CustomEvent('openLifeSupportBot', {</span>
             detail: { action: 'life-support' },
           });
@@ -1151,15 +1151,15 @@ export const <span class="cstat-no" title="statement not covered" >DashboardGuid
     },
   ];
 &nbsp;
-  const handleStepComplete = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tepId: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setCompletedSteps(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >new Set([...prev, stepId]))</span>;</span>
+  const <span class="fstat-no" title="function not covered" >handleStepComplete </span>= <span class="cstat-no" title="statement not covered" >(stepId: string) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setCompletedSteps(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; new Set([...prev, stepId]));</span></span>
   };
 &nbsp;
   const currentStepData = <span class="cstat-no" title="statement not covered" >guideSteps[currentStep];</span>
   const isLastStep = <span class="cstat-no" title="statement not covered" >currentStep === guideSteps.length - 1;</span>
   const isFirstStep = <span class="cstat-no" title="statement not covered" >currentStep === 0;</span>
 &nbsp;
-  const getPriorityColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>riority: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getPriorityColor </span>= <span class="cstat-no" title="statement not covered" >(priority: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (priority) {</span>
       case 'high':
 <span class="cstat-no" title="statement not covered" >        return 'bg-red-100 text-red-700 border-red-200';</span>
@@ -1172,7 +1172,7 @@ export const <span class="cstat-no" title="statement not covered" >DashboardGuid
     }
   };
 &nbsp;
-  const getCategoryColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>ategory: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getCategoryColor </span>= <span class="cstat-no" title="statement not covered" >(category: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (category) {</span>
       case '必須機能':
 <span class="cstat-no" title="statement not covered" >        return 'bg-blue-100 text-blue-700 border-blue-200';</span>
@@ -1246,8 +1246,8 @@ export const <span class="cstat-no" title="statement not covered" >DashboardGuid
             主な機能
           &lt;/h4&gt;
           &lt;div className="grid grid-cols-1 gap-2"&gt;
-            {currentStepData.features.map(<span class="fstat-no" title="function not covered" >(f</span>eature, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;div key={index} c</span>lassName="flex items-center gap-2 text-sm text-slate-700"&gt;
+            {currentStepData.features.map(<span class="fstat-no" title="function not covered" >(f</span>eature, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;div key={index} className="flex items-center gap-2 text-sm text-slate-700"&gt;
                 &lt;CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" /&gt;
                 {feature}
               &lt;/div&gt;
@@ -1259,7 +1259,7 @@ export const <span class="cstat-no" title="statement not covered" >DashboardGuid
         {currentStepData.action &amp;&amp; (
           &lt;div className="text-center"&gt;
             &lt;Button
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >              onClick=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" >                if (currentStepData.action?.path) {</span>
 <span class="cstat-no" title="statement not covered" >                  navigate(currentStepData.action.path);</span>
                 } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (currentStepData.action?.onClick) {</span>
@@ -1279,7 +1279,7 @@ export const <span class="cstat-no" title="statement not covered" >DashboardGuid
         &lt;div className="flex items-center justify-between pt-4 border-t"&gt;
           &lt;Button
             variant="outline"
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setCurrentStep(Math.max(0, currentStep - 1))}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setCurrentStep(Math.max(0, currentStep - 1))}</span>
             disabled={isFirstStep}
             className="flex items-center gap-2"
           &gt;
@@ -1288,10 +1288,10 @@ export const <span class="cstat-no" title="statement not covered" >DashboardGuid
           &lt;/Button&gt;
 &nbsp;
           &lt;div className="flex gap-2"&gt;
-            {guideSteps.map(<span class="fstat-no" title="function not covered" >(_</span>, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;button</span>
+            {guideSteps.map(<span class="fstat-no" title="function not covered" >(_</span>, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;button
                 key={index}
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setCurrentStep(index)}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setCurrentStep(index)}</span>
                 className={cn(
                   'w-3 h-3 rounded-full transition-all duration-200',
                   index === currentStep
@@ -1306,7 +1306,7 @@ export const <span class="cstat-no" title="statement not covered" >DashboardGuid
 &nbsp;
           &lt;Button
             variant="outline"
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >            onClick=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" >              if (isLastStep) {</span>
 <span class="cstat-no" title="statement not covered" >                onClose?.();</span>
               } else {
@@ -1363,7 +1363,7 @@ export const <span class="cstat-no" title="statement not covered" >DashboardGuid
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

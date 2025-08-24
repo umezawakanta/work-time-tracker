@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/10</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
@@ -238,7 +238,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -306,7 +306,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -329,6 +328,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -386,7 +386,7 @@ interface ViewSettingsProps {
  * 高度なビュー設定とソートオプション
  */
 export const <span class="cstat-no" title="statement not covered" >ViewSettings: React.FC&lt;ViewSettingsProps&gt; = React.memo(</span>
-<span class="fstat-no" title="function not covered" >  ({</span> viewMode, onViewModeChange, sortOption = <span class="branch-0 cbranch-no" title="branch not covered" >'priority',</span> onSortOptionChange }) =&gt; {
+<span class="fstat-no" title="function not covered" >  ({ v</span>iewMode<span class="cstat-no" title="statement not covered" >, onViewModeChange<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >, sortOption<span class="cstat-no" title="statement not covered" > </span>= 'priority', o</span>nSortOptionChange<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span>
     const sortOptions = <span class="cstat-no" title="statement not covered" >[</span>
       {
         value: 'priority' as SortOption,
@@ -452,10 +452,10 @@ export const <span class="cstat-no" title="statement not covered" >ViewSettings:
               &lt;/DropdownMenuLabel&gt;
               &lt;DropdownMenuRadioGroup
                 value={viewMode}
-                onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >onViewModeChange(value as ViewMode)}</span>
+<span class="fstat-no" title="function not covered" >                onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; onViewModeChange(value as ViewMode)}</span>
               &gt;
-                {viewModes.map(<span class="fstat-no" title="function not covered" >(m</span>ode) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;DropdownMenuRadioItem</span>
+                {viewModes.map(<span class="fstat-no" title="function not covered" >(m</span>ode<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;DropdownMenuRadioItem
                     key={mode.value}
                     value={mode.value}
                     className="flex flex-col items-start py-2"
@@ -475,10 +475,10 @@ export const <span class="cstat-no" title="statement not covered" >ViewSettings:
               &lt;DropdownMenuLabel className="text-xs text-muted-foreground"&gt;
                 並び順
               &lt;/DropdownMenuLabel&gt;
-              {sortOptions.map(<span class="fstat-no" title="function not covered" >(o</span>ption) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;DropdownMenuItem</span>
+              {sortOptions.map(<span class="fstat-no" title="function not covered" >(o</span>ption<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;DropdownMenuItem
                   key={option.value}
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >onSortOptionChange(option.value)}</span>
+<span class="fstat-no" title="function not covered" >                  onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; onSortOptionChange(option.value)}</span>
                   className={sortOption === option.value ? 'bg-accent' : ''}
                 &gt;
                   &lt;div className="flex items-center justify-between w-full"&gt;
@@ -514,7 +514,7 @@ export const <span class="cstat-no" title="statement not covered" >ViewSettings:
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

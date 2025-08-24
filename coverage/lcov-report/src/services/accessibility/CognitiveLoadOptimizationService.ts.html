@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/131</span>
+                <span class='fraction'>0/135</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/43</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/35</span>
+                <span class='fraction'>0/36</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/127</span>
+                <span class='fraction'>0/131</span>
             </div>
         
             
@@ -450,15 +450,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -666,7 +666,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -681,11 +681,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -731,7 +731,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -810,17 +810,17 @@ export interface CognitiveMetrics {
  * 🧠 ニューロダイバーシティ推進者: 認知負荷最適化サービス
  * 認知的負荷軽減と情報処理支援
  */
-class CognitiveLoadOptimizationService {
+class CognitiveLoadOptimizationService<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
   private static <span class="cstat-no" title="statement not covered" >instance: CognitiveLoadOptimizationService | null = n</span>ull;
-  private <span class="cstat-no" title="statement not covered" >activeProfile: CognitiveLoadProfile | null = null;</span>
-  private <span class="cstat-no" title="statement not covered" >cognitiveTimer: NodeJS.Timeout | null = null;</span>
+  private activeProfile: CognitiveLoadProfile | null = null;
+  private cognitiveTimer: NodeJS.Timeout | null = null;
 &nbsp;
-<span class="fstat-no" title="function not covered" >  private constructor() {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  private constructor() {</span></span>
 <span class="cstat-no" title="statement not covered" >    this.initializeService();</span>
 <span class="cstat-no" title="statement not covered" >    this.loadDefaultProfile();</span>
-  }
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >static </span>getInstance(): CognitiveLoadOptimizationService {
+  public static <span class="fstat-no" title="function not covered" >getInstance(</span>): CognitiveLoadOptimizationService {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!CognitiveLoadOptimizationService.instance) {</span>
 <span class="cstat-no" title="statement not covered" >      CognitiveLoadOptimizationService.instance = new CognitiveLoadOptimizationService();</span>
     }
@@ -958,7 +958,7 @@ class CognitiveLoadOptimizationService {
     const complexElements = <span class="cstat-no" title="statement not covered" >document.querySelectorAll(</span>
       '.advanced-settings, .expert-mode, .detailed-options'
     );
-<span class="cstat-no" title="statement not covered" >    complexElements.forEach(<span class="fstat-no" title="function not covered" >(e</span>l) =&gt; ((<span class="cstat-no" title="statement not covered" >el as HTMLElement).style.display = 'none')</span>);</span>
+<span class="cstat-no" title="statement not covered" >    complexElements.forEach(<span class="fstat-no" title="function not covered" >(e</span>l<span class="cstat-no" title="statement not covered" >) =&gt; ((el as HTMLElement).style.display = 'none'))</span>;</span>
   }
 &nbsp;
   private <span class="fstat-no" title="function not covered" >reduceChoiceOverload(</span>): void {
@@ -969,7 +969,7 @@ class CognitiveLoadOptimizationService {
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (items.length &gt; 5) {</span>
         const moreButton = <span class="cstat-no" title="statement not covered" >document.createElement('button');</span>
 <span class="cstat-no" title="statement not covered" >        moreButton.textContent = 'さらに表示...';</span>
-<span class="cstat-no" title="statement not covered" >        moreButton.onclick = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        moreButton.onclick = <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >          items.forEach(<span class="fstat-no" title="function not covered" >(i</span>tem, index) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (index &gt;= 5) (<span class="cstat-no" title="statement not covered" >item as HTMLElement).style.display = 'block';</span></span>
           });
@@ -1026,7 +1026,7 @@ class CognitiveLoadOptimizationService {
     });
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >breakdownTasks(</span>): void {
+  private <span class="fstat-no" title="function not covered" >breakdownTasks<span class="cstat-no" title="statement not covered" >(</span>): void {</span>
     // 複雑なタスクを分割
     const complexForms = <span class="cstat-no" title="statement not covered" >document.querySelectorAll('form[data-complex="true"]');</span>
 <span class="cstat-no" title="statement not covered" >    complexForms.forEach(<span class="fstat-no" title="function not covered" >(f</span>orm) =&gt; {</span>
@@ -1040,10 +1040,10 @@ class CognitiveLoadOptimizationService {
   private <span class="fstat-no" title="function not covered" >addVisualCues(</span>): void {
     // 重要な要素にビジュアルキュー追加
     const important = <span class="cstat-no" title="statement not covered" >document.querySelectorAll('[data-important="true"], .required');</span>
-<span class="cstat-no" title="statement not covered" >    important.forEach(<span class="fstat-no" title="function not covered" >(e</span>l) =&gt; <span class="cstat-no" title="statement not covered" >el.classList.add('important'))</span>;</span>
+<span class="cstat-no" title="statement not covered" >    important.forEach(<span class="fstat-no" title="function not covered" >(e</span>l<span class="cstat-no" title="statement not covered" >) =&gt; el.classList.add('important'));</span></span>
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >createTaskWizard(</span>form: HTMLFormElement, sections: NodeListOf&lt;Element&gt;): void {
+  private <span class="fstat-no" title="function not covered" >createTaskWizard(</span>form: HTMLFormElement, sections: NodeListOf&lt;Element&gt;<span class="cstat-no" title="statement not covered" >): void {</span>
     const wizard = <span class="cstat-no" title="statement not covered" >document.createElement('div');</span>
 <span class="cstat-no" title="statement not covered" >    wizard.className = 'task-wizard';</span>
 &nbsp;
@@ -1060,7 +1060,7 @@ class CognitiveLoadOptimizationService {
 &nbsp;
     let currentStep = <span class="cstat-no" title="statement not covered" >0;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    navigation.querySelector('#next-step')?.addEventListener('click', <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    navigation.querySelector('#next-step')?.addEventListener('click', <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (currentStep &lt; sections.length - 1) {</span>
         (<span class="cstat-no" title="statement not covered" >sections[currentStep] as HTMLElement).style.display = 'none';</span>
 <span class="cstat-no" title="statement not covered" >        currentStep++;</span>
@@ -1069,7 +1069,7 @@ class CognitiveLoadOptimizationService {
       }
     });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    navigation.querySelector('#prev-step')?.addEventListener('click', <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    navigation.querySelector('#prev-step')?.addEventListener('click', <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (currentStep &gt; 0) {</span>
         (<span class="cstat-no" title="statement not covered" >sections[currentStep] as HTMLElement).style.display = 'none';</span>
 <span class="cstat-no" title="statement not covered" >        currentStep--;</span>
@@ -1091,9 +1091,9 @@ class CognitiveLoadOptimizationService {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (stepText) <span class="cstat-no" title="statement not covered" >stepText.textContent = `ステップ ${step + 1} / ${total}`;</span></span>
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >setupCognitiveMonitoring(</span>): void {
+  private <span class="fstat-no" title="function not covered" >setupCognitiveMonitoring<span class="cstat-no" title="statement not covered" >(</span>): void {</span>
     // 認知負荷監視
-<span class="cstat-no" title="statement not covered" >    this.cognitiveTimer = setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    this.cognitiveTimer = setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
       const metrics = <span class="cstat-no" title="statement not covered" >this.measureCognitiveLoad();</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (metrics.cognitiveEffort &gt; 80) {</span>
 <span class="cstat-no" title="statement not covered" >        this.suggestBreak();</span>
@@ -1150,7 +1150,7 @@ export const <span class="cstat-no" title="statement not covered" >cognitiveLoad
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

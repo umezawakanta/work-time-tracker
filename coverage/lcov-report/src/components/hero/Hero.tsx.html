@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">60% </span>
+                <span class="strong">74.28% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>12/20</span>
+                <span class='fraction'>26/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">87.5% </span>
+                <span class="strong">61.11% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>7/8</span>
+                <span class='fraction'>11/18</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">61.11% </span>
+                <span class="strong">73.07% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/18</span>
+                <span class='fraction'>19/26</span>
             </div>
         
             
@@ -228,14 +228,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -360,7 +360,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { HERO_COPY } from '@/constants/copy';
 import HeroBackgroundImage from '@/components/hero/HeroBackgroundImage';
-const AIPriorityTaskModal = lazy(<span class="fstat-no" title="function not covered" >() =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > import('</span>@/components/ai/AIPriorityTaskModal'))</span>;
+const AIPriorityTaskModal = lazy(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>import('</span>@/components/ai/AIPriorityTaskModal'))</span>;</span>
 import { trackCtaClick } from '@/lib/track';
 &nbsp;
 export interface HeroProps {
@@ -425,7 +425,7 @@ export const Hero: React.FC&lt;HeroProps&gt; = ({
           &lt;div className="flex flex-col sm:flex-row gap-4 justify-center"&gt;
             &lt;Button
               size="lg"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >              onClick=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" >                trackCtaClick({</span>
                   id: 'hero_primary_start_now',
                   label: ctaPrimaryText,
@@ -443,7 +443,7 @@ export const Hero: React.FC&lt;HeroProps&gt; = ({
             &lt;Button
               size="lg"
               variant="outline"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >              onClick=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" >                trackCtaClick({</span>
                   id: 'hero_secondary_setup_3min',
                   label: ctaSecondaryText,
@@ -466,7 +466,7 @@ export const Hero: React.FC&lt;HeroProps&gt; = ({
               variant="secondary"
               aria-label="今日の最重要タスクの提案を開く"
               className="bg-white/90 text-slate-900 hover:bg-white"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >              onClick=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" >                trackCtaClick({</span>
                   id: 'hero_ai_suggest_today',
                   label: '今日の最重要タスクを提案',
@@ -475,7 +475,7 @@ export const Hero: React.FC&lt;HeroProps&gt; = ({
                 });
 <span class="cstat-no" title="statement not covered" >                setOpenPriorityModal(true);</span>
               }}
-              onMouseEnter={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >              onMouseEnter=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >                import('</span>@/components/ai/AIPriorityTaskModal');</span>
               }}
             &gt;
@@ -508,7 +508,7 @@ export default Hero;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

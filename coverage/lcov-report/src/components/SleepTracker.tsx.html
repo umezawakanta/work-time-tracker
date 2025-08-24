@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/302</span>
+                <span class='fraction'>0/342</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/217</span>
+                <span class='fraction'>0/234</span>
             </div>
         
             
@@ -1362,7 +1362,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1892,7 +1892,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2006,7 +2006,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2025,6 +2024,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2435,7 +2435,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2454,6 +2453,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2568,23 +2568,23 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
   const sleepRecords = <span class="cstat-no" title="statement not covered" >useSelector(selectSleepRecords);</span>
   const status = <span class="cstat-no" title="statement not covered" >useSelector(selectSleepTrackerStatus);</span>
   const error = <span class="cstat-no" title="statement not covered" >useSelector(selectSleepTrackerError);</span>
-  const [currentDate, setCurrentDate] = <span class="cstat-no" title="statement not covered" >useState(new Date());</span>
-  const [editRecord, setEditRecord] = <span class="cstat-no" title="statement not covered" >useState&lt;SleepRecord | null&gt;(null);</span>
-  const [newRecord, setNewRecord] = <span class="cstat-no" title="statement not covered" >useState&lt;Partial&lt;SleepRecord&gt;&gt;({</span>
+  const [currentDate<span class="cstat-no" title="statement not covered" >, s</span>etCurrentDate<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(new Date())<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [editRecord<span class="cstat-no" title="statement not covered" >, s</span>etEditRecord<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;SleepRecord | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [newRecord<span class="cstat-no" title="statement not covered" >, s</span>etNewRecord<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Partial&lt;SleepRecord&gt;&gt;({</span>
     date: format(new Date(), 'yyyy-MM-dd'),
-  });
-  const [isEditDialogOpen, setIsEditDialogOpen] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [isAddDialogOpen, setIsAddDialogOpen] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [dateForCalendar, setDateForCalendar] = <span class="cstat-no" title="statement not covered" >useState&lt;Date&gt;(new Date());</span>
-  const [sleepQuality, setSleepQuality] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('neutral');</span>
-  const [sleepNotes, setSleepNotes] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('');</span>
-  const [selectedTimeRange, setSelectedTimeRange] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('week');</span>
-  const [isQuickLogMode, setIsQuickLogMode] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(true);</span>
-  const [showTrends, setShowTrends] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(true);</span>
-  const [showInsights, setShowInsights] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(true);</span>
-  const [sleepGoal, setSleepGoal] = <span class="cstat-no" title="statement not covered" >useState&lt;number&gt;(8);</span>
+  })<span class="cstat-no" title="statement not covered" >;</span>
+  const [isEditDialogOpen<span class="cstat-no" title="statement not covered" >, s</span>etIsEditDialogOpen<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isAddDialogOpen<span class="cstat-no" title="statement not covered" >, s</span>etIsAddDialogOpen<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [dateForCalendar<span class="cstat-no" title="statement not covered" >, s</span>etDateForCalendar<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Date&gt;(new Date())<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [sleepQuality<span class="cstat-no" title="statement not covered" >, s</span>etSleepQuality<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('neutral')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [sleepNotes<span class="cstat-no" title="statement not covered" >, s</span>etSleepNotes<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [selectedTimeRange<span class="cstat-no" title="statement not covered" >, s</span>etSelectedTimeRange<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('week')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isQuickLogMode<span class="cstat-no" title="statement not covered" >, s</span>etIsQuickLogMode<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(true)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showTrends<span class="cstat-no" title="statement not covered" >, s</span>etShowTrends<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(true)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showInsights<span class="cstat-no" title="statement not covered" >, s</span>etShowInsights<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(true)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [sleepGoal<span class="cstat-no" title="statement not covered" >, s</span>etSleepGoal<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;number&gt;(8)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (status === 'idle') {</span>
 <span class="cstat-no" title="statement not covered" >      dispatch(fetchSleepRecords());</span>
     }
@@ -2592,15 +2592,15 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
 &nbsp;
   // ユーザーが今日の記録をしたかをチェック
   const todayRecord = <span class="cstat-no" title="statement not covered" >sleepRecords.find(</span>
-<span class="fstat-no" title="function not covered" >    (r</span>ecord: SleepRecord) =&gt; <span class="cstat-no" title="statement not covered" >record.date === format(new Date(), 'yyyy-MM-dd')</span>
+<span class="fstat-no" title="function not covered" >    (r</span>ecord: SleepRecord<span class="cstat-no" title="statement not covered" >) =&gt; record.date === format(new Date(), 'yyyy-MM-dd')</span>
   );
 &nbsp;
   // 簡易記録モード - ワンタップで記録
-  const logTime = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ype: 'wakeUp' | 'bedtime') =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >logTime </span>= <span class="cstat-no" title="statement not covered" >(type: 'wakeUp' | 'bedtime') =&gt; {</span>
     const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
     const today = <span class="cstat-no" title="statement not covered" >format(now, 'yyyy-MM-dd');</span>
 &nbsp;
-    const existingRecord = <span class="cstat-no" title="statement not covered" >sleepRecords.find(<span class="fstat-no" title="function not covered" >(r</span>ecord: SleepRecord) =&gt; <span class="cstat-no" title="statement not covered" >record.date === today)</span>;</span>
+    const existingRecord = <span class="cstat-no" title="statement not covered" >sleepRecords.find(<span class="fstat-no" title="function not covered" >(r</span>ecord: SleepRecord<span class="cstat-no" title="statement not covered" >) =&gt; record.date === today);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    if (existingRecord) {</span>
 <span class="cstat-no" title="statement not covered" >      dispatch(</span>
@@ -2637,7 +2637,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
     }
   };
 &nbsp;
-  const formatTime = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>imeString: string | null, isBedtime: boolean = <span class="branch-0 cbranch-no" title="branch not covered" >false)</span> =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatTime </span>= <span class="cstat-no" title="statement not covered" >(timeString: string | null, <span class="cstat-no" title="statement not covered" >isBedtime: boolean = false)</span> =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!timeString) <span class="cstat-no" title="statement not covered" >return '--:--';</span></span>
     const date = <span class="cstat-no" title="statement not covered" >parseISO(timeString);</span>
     let hours = <span class="cstat-no" title="statement not covered" >date.getHours();</span>
@@ -2651,7 +2651,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
 <span class="cstat-no" title="statement not covered" >    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;</span>
   };
 &nbsp;
-  const calculateSleepDuration = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(w</span>akeUp: string | null, bedtime: string | null) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateSleepDuration </span>= <span class="cstat-no" title="statement not covered" >(wakeUp: string | null, bedtime: string | null) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!wakeUp || !bedtime) <span class="cstat-no" title="statement not covered" >return null;</span></span>
     let wakeUpTime = <span class="cstat-no" title="statement not covered" >parseISO(wakeUp);</span>
     let bedTime = <span class="cstat-no" title="statement not covered" >parseISO(bedtime);</span>
@@ -2667,12 +2667,12 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
     }
 &nbsp;
     const durationHours = <span class="cstat-no" title="statement not covered" >differenceInHours(wakeUpTime, bedTime);</span>
-    const durationMinutes = <span class="cstat-no" title="statement not covered" >((wakeUpTime.getTime() - bedTime.getTime()) / (1000 * 60)) % 60;</span>
+    const durationMinutes = (<span class="cstat-no" title="statement not covered" >(wakeUpTime.getTime() - bedTime.getTime()) / (1000 * 60)) % 60;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return parseFloat((durationHours + durationMinutes / 60).toFixed(1));</span>
   };
 &nbsp;
-  const handleAddRecord = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleAddRecord </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (newRecord.date &amp;&amp; (newRecord.wakeUp || newRecord.bedtime)) {</span>
 <span class="cstat-no" title="statement not covered" >      dispatch(</span>
         addSleepRecord({
@@ -2688,7 +2688,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
     }
   };
 &nbsp;
-  const handleUpdateRecord = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleUpdateRecord </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (editRecord &amp;&amp; editRecord._id) {</span>
 <span class="cstat-no" title="statement not covered" >      dispatch(</span>
         updateSleepRecord({
@@ -2707,20 +2707,20 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
     }
   };
 &nbsp;
-  const handleDeleteRecord = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>d: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleDeleteRecord </span>= <span class="cstat-no" title="statement not covered" >(id: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (confirm('このレコードを削除してもよろしいですか？')) {</span>
 <span class="cstat-no" title="statement not covered" >      dispatch(deleteSleepRecord(id));</span>
     }
   };
 &nbsp;
-  const openEditDialog = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>ecord: SleepRecord) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >openEditDialog </span>= <span class="cstat-no" title="statement not covered" >(record: SleepRecord) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setEditRecord({ ...record });</span>
 <span class="cstat-no" title="statement not covered" >    setSleepQuality(record.quality || 'neutral');</span>
 <span class="cstat-no" title="statement not covered" >    setSleepNotes(record.notes || '');</span>
 <span class="cstat-no" title="statement not covered" >    setIsEditDialogOpen(true);</span>
   };
 &nbsp;
-  const handleDateSelect = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ate: Date | undefined) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleDateSelect </span>= <span class="cstat-no" title="statement not covered" >(date: Date | undefined) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (date) {</span>
 <span class="cstat-no" title="statement not covered" >      setDateForCalendar(date);</span>
 <span class="cstat-no" title="statement not covered" >      setNewRecord({ ...newRecord, date: format(date, 'yyyy-MM-dd') });</span>
@@ -2728,7 +2728,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
   };
 &nbsp;
   // 睡眠の質に応じた色とアイコンを取得
-  const getSleepQualityInfo = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(q</span>uality: string | undefined) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getSleepQualityInfo </span>= <span class="cstat-no" title="statement not covered" >(quality: string | undefined) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (quality) {</span>
       case 'good':
 <span class="cstat-no" title="statement not covered" >        return { color: 'text-green-500', icon: &lt;Smile className="h-6 w-6" /&gt; };</span>
@@ -2740,18 +2740,18 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
   };
 &nbsp;
   // 睡眠時間のトレンド分析（改善または悪化）
-  const analyzeSleepTrend = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >analyzeSleepTrend </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (sleepRecords.length &lt; 5) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
     const recentRecords = <span class="cstat-no" title="statement not covered" >[...sleepRecords]</span>
-      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(b.date).getTime() - new Date(a.date).getTime())</span>
+      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(b.date).getTime() - new Date(a.date).getTime())</span>
       .slice(0, 7)
-      .filter(<span class="fstat-no" title="function not covered" >(r</span>ecord) =&gt; <span class="cstat-no" title="statement not covered" >record.wakeUp &amp;&amp; record.bedtime)</span>
-      .map(<span class="fstat-no" title="function not covered" >(r</span>ecord) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+      .filter(<span class="fstat-no" title="function not covered" >(r</span>ecord<span class="cstat-no" title="statement not covered" >) =&gt; record.wakeUp &amp;&amp; record.bedtime)</span>
+      .map(<span class="fstat-no" title="function not covered" >(r</span>ecord<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
         date: record.date,
         duration: calculateSleepDuration(record.wakeUp, record.bedtime) || 0,
       }))
-      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(a.date).getTime() - new Date(b.date).getTime())</span>;
+      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(a.date).getTime() - new Date(b.date).getTime());</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (recentRecords.length &lt; 3) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
@@ -2761,12 +2761,12 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
     const secondHalf = <span class="cstat-no" title="statement not covered" >recentRecords.slice(midPoint);</span>
 &nbsp;
     const firstHalfAvg =
-<span class="cstat-no" title="statement not covered" >      firstHalf.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, record) =&gt; <span class="cstat-no" title="statement not covered" >sum + record.duration,</span> 0) / firstHalf.length;</span>
+<span class="cstat-no" title="statement not covered" >      firstHalf.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, record<span class="cstat-no" title="statement not covered" >) =&gt; sum + record.duration, 0</span>) / firstHalf.length;</span>
     const secondHalfAvg =
-<span class="cstat-no" title="statement not covered" >      secondHalf.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, record) =&gt; <span class="cstat-no" title="statement not covered" >sum + record.duration,</span> 0) / secondHalf.length;</span>
+<span class="cstat-no" title="statement not covered" >      secondHalf.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, record<span class="cstat-no" title="statement not covered" >) =&gt; sum + record.duration, 0</span>) / secondHalf.length;</span>
 &nbsp;
     const diff = <span class="cstat-no" title="statement not covered" >secondHalfAvg - firstHalfAvg;</span>
-    const diffPercentage = <span class="cstat-no" title="statement not covered" >(diff / firstHalfAvg) * 100;</span>
+    const diffPercentage = (<span class="cstat-no" title="statement not covered" >diff / firstHalfAvg) * 100;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (Math.abs(diffPercentage) &lt; 5) <span class="cstat-no" title="statement not covered" >return null; </span></span>// 変化が少ない場合は表示しない
 &nbsp;
@@ -2795,15 +2795,15 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
   );
 &nbsp;
   // 理想的な睡眠時間との比較
-  const getAverageSleepDuration = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getAverageSleepDuration </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const recordsWithDuration = <span class="cstat-no" title="statement not covered" >sleepRecords</span>
-      .filter(<span class="fstat-no" title="function not covered" >(r</span>ecord: SleepRecord) =&gt; <span class="cstat-no" title="statement not covered" >record.wakeUp &amp;&amp; record.bedtime)</span>
-      .map(<span class="fstat-no" title="function not covered" >(r</span>ecord: SleepRecord) =&gt; <span class="cstat-no" title="statement not covered" >calculateSleepDuration(record.wakeUp, record.bedtime) || 0)</span>;
+      .filter(<span class="fstat-no" title="function not covered" >(r</span>ecord: SleepRecord<span class="cstat-no" title="statement not covered" >) =&gt; record.wakeUp &amp;&amp; record.bedtime)</span>
+      .map(<span class="fstat-no" title="function not covered" >(r</span>ecord: SleepRecord<span class="cstat-no" title="statement not covered" >) =&gt; calculateSleepDuration(record.wakeUp, record.bedtime) || 0);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (recordsWithDuration.length === 0) <span class="cstat-no" title="statement not covered" >return 0;</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return (</span>
-      recordsWithDuration.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, duration) =&gt; <span class="cstat-no" title="statement not covered" >sum + duration,</span> 0) / recordsWithDuration.length
+      recordsWithDuration.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, duration<span class="cstat-no" title="statement not covered" >) =&gt; sum + duration, 0</span>) / recordsWithDuration.length
     );
   };
 &nbsp;
@@ -2811,9 +2811,9 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
   const sleepGoalDifference = <span class="cstat-no" title="statement not covered" >averageSleepDuration - sleepGoal;</span>
 &nbsp;
   // チャート用のデータを取得する関数
-  const getChartData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getChartData </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     // レコードをソートして、選択された期間に応じてフィルタリング
-    let filteredRecords = <span class="cstat-no" title="statement not covered" >[...sleepRecords];</span>
+    let filteredRecords<span class="cstat-no" title="statement not covered" > = [...sleepRecords];</span>
     const today = <span class="cstat-no" title="statement not covered" >new Date();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    if (selectedTimeRange === 'week') {</span>
@@ -2851,17 +2851,17 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
           quality: record.quality || 'neutral',
         };
       })
-      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(a.date).getTime() - new Date(b.date).getTime())</span>;
+      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(a.date).getTime() - new Date(b.date).getTime());</span>
   };
 &nbsp;
   const chartData = <span class="cstat-no" title="statement not covered" >getChartData();</span>
 &nbsp;
   // 睡眠スコアの計算（0-100のスケール）
-  const calculateSleepScore = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateSleepScore </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (sleepRecords.length === 0) <span class="cstat-no" title="statement not covered" >return 0;</span></span>
 &nbsp;
     const recentRecords = <span class="cstat-no" title="statement not covered" >[...sleepRecords]</span>
-      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(b.date).getTime() - new Date(a.date).getTime())</span>
+      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(b.date).getTime() - new Date(a.date).getTime())</span>
       .slice(0, 7);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (recentRecords.length === 0) <span class="cstat-no" title="statement not covered" >return 0;</span></span>
@@ -2912,14 +2912,14 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
     });
 &nbsp;
     // 平均スコアを計算
-    const averageScore = <span class="cstat-no" title="statement not covered" >scores.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, score) =&gt; <span class="cstat-no" title="statement not covered" >sum + score,</span> 0) / scores.length;</span>
+    const averageScore = <span class="cstat-no" title="statement not covered" >scores.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, score<span class="cstat-no" title="statement not covered" >) =&gt; sum + score, 0</span>) / scores.length;</span>
 <span class="cstat-no" title="statement not covered" >    return Math.round(averageScore);</span>
   };
 &nbsp;
   const sleepScore = <span class="cstat-no" title="statement not covered" >calculateSleepScore();</span>
 &nbsp;
   // 睡眠スコアのグレード（A, B, C, D, F）
-  const getSleepScoreGrade = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>core: number) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getSleepScoreGrade </span>= <span class="cstat-no" title="statement not covered" >(score: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (score &gt;= 90) <span class="cstat-no" title="statement not covered" >return { grade: 'A+', color: 'text-green-600' };</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (score &gt;= 80) <span class="cstat-no" title="statement not covered" >return { grade: 'A', color: 'text-green-500' };</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (score &gt;= 70) <span class="cstat-no" title="statement not covered" >return { grade: 'B', color: 'text-blue-500' };</span></span>
@@ -2931,7 +2931,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
   const sleepScoreGrade = <span class="cstat-no" title="statement not covered" >getSleepScoreGrade(sleepScore);</span>
 &nbsp;
   // 週ごとの表示を行う関数
-  const renderWeekView = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >renderWeekView </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const startOfWeek = <span class="cstat-no" title="statement not covered" >new Date(currentDate);</span>
 <span class="cstat-no" title="statement not covered" >    startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());</span>
 &nbsp;
@@ -2939,7 +2939,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
       const date = <span class="cstat-no" title="statement not covered" >new Date(startOfWeek);</span>
 <span class="cstat-no" title="statement not covered" >      date.setDate(startOfWeek.getDate() + i);</span>
       const dateString = <span class="cstat-no" title="statement not covered" >format(date, 'yyyy-MM-dd');</span>
-      const record = <span class="cstat-no" title="statement not covered" >sleepRecords.find(<span class="fstat-no" title="function not covered" >(r</span>: SleepRecord) =&gt; <span class="cstat-no" title="statement not covered" >r.date === dateString)</span>;</span>
+      const record = <span class="cstat-no" title="statement not covered" >sleepRecords.find(<span class="fstat-no" title="function not covered" >(r</span>: SleepRecord<span class="cstat-no" title="statement not covered" >) =&gt; r.date === dateString);</span></span>
       const duration = <span class="cstat-no" title="statement not covered" >record ? calculateSleepDuration(record.wakeUp, record.bedtime) : null;</span>
       const quality = <span class="cstat-no" title="statement not covered" >record?.quality || 'neutral';</span>
       const qualityInfo = <span class="cstat-no" title="statement not covered" >getSleepQualityInfo(quality);</span>
@@ -2975,10 +2975,10 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
   };
 &nbsp;
   // リスト表示を行う関数
-  const renderListView = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >renderListView </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     // 日付降順でソート
     const sortedRecords = <span class="cstat-no" title="statement not covered" >[...sleepRecords]</span>
-      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(b.date).getTime() - new Date(a.date).getTime())</span>
+      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(b.date).getTime() - new Date(a.date).getTime())</span>
       .slice(0, 14); // 直近14日間のデータのみ表示
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return (</span>
@@ -3019,10 +3019,10 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
                     &lt;span&gt;{record ? formatTime(record.bedtime, true) : '--:--'}&lt;/span&gt;
                   &lt;/span&gt;
                 &lt;/div&gt;
-                &lt;Button variant="ghost" size="icon" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >openEditDialog(record)}</span>&gt;
+                &lt;Button variant="ghost" size="icon" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; openEditDialog(record)}&gt;</span>
                   &lt;Edit className="h-4 w-4" /&gt;
                 &lt;/Button&gt;
-                &lt;Button variant="ghost" size="icon" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleDeleteRecord(record._id)}</span>&gt;
+                &lt;Button variant="ghost" size="icon" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleDeleteRecord(record._id)}&gt;</span>
                   &lt;Trash2 className="h-4 w-4" /&gt;
                 &lt;/Button&gt;
               &lt;/div&gt;
@@ -3034,11 +3034,11 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
   };
 &nbsp;
   // 睡眠パターン分析
-  const analyzeSleepPatterns = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >analyzeSleepPatterns </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (sleepRecords.length &lt; 7) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
     // 平均起床時間と就寝時間を計算
-    const validRecords = <span class="cstat-no" title="statement not covered" >sleepRecords.filter(<span class="fstat-no" title="function not covered" >(r</span>ecord) =&gt; <span class="cstat-no" title="statement not covered" >record.wakeUp &amp;&amp; record.bedtime)</span>;</span>
+    const validRecords = <span class="cstat-no" title="statement not covered" >sleepRecords.filter(<span class="fstat-no" title="function not covered" >(r</span>ecord<span class="cstat-no" title="statement not covered" >) =&gt; record.wakeUp &amp;&amp; record.bedtime);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (validRecords.length &lt; 5) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
@@ -3057,8 +3057,8 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
 <span class="cstat-no" title="statement not covered" >      return hours + date.getMinutes() / 60;</span>
     });
 &nbsp;
-    const avgWakeUpTime = <span class="cstat-no" title="statement not covered" >wakeUpTimes.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, time) =&gt; <span class="cstat-no" title="statement not covered" >sum + time,</span> 0) / wakeUpTimes.length;</span>
-    const avgBedTime = <span class="cstat-no" title="statement not covered" >bedTimes.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, time) =&gt; <span class="cstat-no" title="statement not covered" >sum + time,</span> 0) / bedTimes.length;</span>
+    const avgWakeUpTime = <span class="cstat-no" title="statement not covered" >wakeUpTimes.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, time<span class="cstat-no" title="statement not covered" >) =&gt; sum + time, 0</span>) / wakeUpTimes.length;</span>
+    const avgBedTime = <span class="cstat-no" title="statement not covered" >bedTimes.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, time<span class="cstat-no" title="statement not covered" >) =&gt; sum + time, 0</span>) / bedTimes.length;</span>
 &nbsp;
     // 平均起床時間を時間:分形式に変換
     const avgWakeUpHours = <span class="cstat-no" title="statement not covered" >Math.floor(avgWakeUpTime);</span>
@@ -3101,15 +3101,15 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
   }
 &nbsp;
   // 睡眠の質のカスタマイズセレクター
-  const renderQualitySelector = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; (</span>
-<span class="cstat-no" title="statement not covered" >    &lt;div className="flex flex-col space-y-2"&gt;</span>
+  const <span class="fstat-no" title="function not covered" >renderQualitySelector<span class="cstat-no" title="statement not covered" > </span>= <span class="cstat-no" title="statement not covered" >() =&gt; (</span></span>
+    &lt;div className="flex flex-col space-y-2"&gt;
       &lt;label htmlFor="sleep-quality" className="text-sm font-medium"&gt;
         睡眠の質
       &lt;/label&gt;
       &lt;div className="flex space-x-4"&gt;
         &lt;button
           type="button"
-          onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setSleepQuality('good')}</span>
+<span class="fstat-no" title="function not covered" >          onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setSleepQuality('good')}</span>
           className={`flex flex-col items-center p-2 rounded-lg ${
             sleepQuality === 'good'
               ? 'bg-green-100 border-2 border-green-500'
@@ -3121,7 +3121,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
         &lt;/button&gt;
         &lt;button
           type="button"
-          onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setSleepQuality('neutral')}</span>
+<span class="fstat-no" title="function not covered" >          onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setSleepQuality('neutral')}</span>
           className={`flex flex-col items-center p-2 rounded-lg ${
             sleepQuality === 'neutral'
               ? 'bg-yellow-100 border-2 border-yellow-500'
@@ -3133,7 +3133,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
         &lt;/button&gt;
         &lt;button
           type="button"
-          onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setSleepQuality('bad')}</span>
+<span class="fstat-no" title="function not covered" >          onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setSleepQuality('bad')}</span>
           className={`flex flex-col items-center p-2 rounded-lg ${
             sleepQuality === 'bad'
               ? 'bg-red-100 border-2 border-red-500'
@@ -3155,14 +3155,14 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
           {isQuickLogMode ? (
             &lt;&gt;
               &lt;Button
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >logTime('wakeUp')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; logTime('wakeUp')}</span>
                 className="flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600"
               &gt;
                 &lt;Sun className="mr-2" /&gt;
                 起床
               &lt;/Button&gt;
               &lt;Button
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >logTime('bedtime')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; logTime('bedtime')}</span>
                 className="flex items-center bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
               &gt;
                 &lt;Moon className="mr-2" /&gt;
@@ -3216,8 +3216,8 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
                       id="new-wakeup"
                       type="time"
                       value={newRecord.wakeUp ? format(parseISO(newRecord.wakeUp), 'HH:mm') : ''}
-                      onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt;
-<span class="cstat-no" title="statement not covered" >                        setNewRecord({</span>
+<span class="fstat-no" title="function not covered" >                      onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                        setNewRecord({
                           ...newRecord,
                           wakeUp: `${newRecord.date}T${e.target.value}:00`,
                         })
@@ -3233,8 +3233,8 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
                       id="new-bedtime"
                       type="time"
                       value={newRecord.bedtime ? format(parseISO(newRecord.bedtime), 'HH:mm') : ''}
-                      onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt;
-<span class="cstat-no" title="statement not covered" >                        setNewRecord({</span>
+<span class="fstat-no" title="function not covered" >                      onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                        setNewRecord({
                           ...newRecord,
                           bedtime: `${newRecord.date}T${e.target.value}:00`,
                         })
@@ -3250,7 +3250,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
                     &lt;Input
                       id="new-notes"
                       value={sleepNotes}
-                      onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setSleepNotes(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                      onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setSleepNotes(e.target.value)}</span>
                       placeholder="睡眠のメモ（任意）"
                       className="col-span-3"
                     /&gt;
@@ -3264,7 +3264,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
           )}
           &lt;div className="ml-2"&gt;
             &lt;button
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsQuickLogMode(!isQuickLogMode)}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsQuickLogMode(!isQuickLogMode)}</span>
               className="text-xs underline text-gray-500 hover:text-gray-700"
             &gt;
               {isQuickLogMode ? '詳細入力に切り替え' : 'クイックモードに切り替え'}
@@ -3339,7 +3339,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
                 &lt;Button
                   variant="outline"
                   size="sm"
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setSleepGoal(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >Math.max(4, prev - 0.5))</span>}</span>
+<span class="fstat-no" title="function not covered" >                  onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setSleepGoal(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; Math.max(4, prev - 0.5))}</span></span>
                 &gt;
                   -
                 &lt;/Button&gt;
@@ -3347,7 +3347,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
                 &lt;Button
                   variant="outline"
                   size="sm"
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setSleepGoal(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >Math.min(12, prev + 0.5))</span>}</span>
+<span class="fstat-no" title="function not covered" >                  onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setSleepGoal(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; Math.min(12, prev + 0.5))}</span></span>
                 &gt;
                   +
                 &lt;/Button&gt;
@@ -3362,7 +3362,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
                   &lt;input
                     type="checkbox"
                     checked={showTrends}
-                    onChange={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowTrends(!showTrends)}</span>
+<span class="fstat-no" title="function not covered" >                    onChange<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowTrends(!showTrends)}</span>
                   /&gt;
                   &lt;span&gt;トレンド表示&lt;/span&gt;
                 &lt;/label&gt;
@@ -3370,7 +3370,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
                   &lt;input
                     type="checkbox"
                     checked={showInsights}
-                    onChange={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowInsights(!showInsights)}</span>
+<span class="fstat-no" title="function not covered" >                    onChange<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowInsights(!showInsights)}</span>
                   /&gt;
                   &lt;span&gt;インサイト表示&lt;/span&gt;
                 &lt;/label&gt;
@@ -3469,7 +3469,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
                 &lt;XAxis dataKey="date" /&gt;
                 &lt;YAxis domain={[0, 12]} ticks={[0, 3, 6, 9, 12]} /&gt;
                 &lt;Tooltip
-                  formatter={<span class="fstat-no" title="function not covered" >(v</span>alue: number, name: string) =&gt; {
+<span class="fstat-no" title="function not covered" >                  formatter=</span>{(value: number, name: string) =&gt; {
 <span class="cstat-no" title="statement not covered" >                    switch (name) {</span>
                       case '睡眠時間':
 <span class="cstat-no" title="statement not covered" >                        return [`${value}時間`, name];</span>
@@ -3511,7 +3511,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
             &lt;Button
               variant="outline"
               size="icon"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setCurrentDate(<span class="fstat-no" title="function not covered" >(d</span>ate) =&gt; <span class="cstat-no" title="statement not covered" >addDays(date, -7))</span>}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setCurrentDate(<span class="fstat-no" title="function not covered" >(d</span>ate<span class="cstat-no" title="statement not covered" >) =&gt; addDays(date, -7))}</span></span>
             &gt;
               &lt;ChevronLeft className="h-4 w-4" /&gt;
             &lt;/Button&gt;
@@ -3521,7 +3521,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
             &lt;Button
               variant="outline"
               size="icon"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setCurrentDate(<span class="fstat-no" title="function not covered" >(d</span>ate) =&gt; <span class="cstat-no" title="statement not covered" >addDays(date, 7))</span>}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setCurrentDate(<span class="fstat-no" title="function not covered" >(d</span>ate<span class="cstat-no" title="statement not covered" >) =&gt; addDays(date, 7))}</span></span>
             &gt;
               &lt;ChevronRight className="h-4 w-4" /&gt;
             &lt;/Button&gt;
@@ -3633,7 +3633,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
                 id="edit-date"
                 type="date"
                 value={editRecord?.date || ''}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setEditRecord({ ...editRecord!, date: e.target.value })}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setEditRecord({ ...editRecord!, date: e.target.value })}</span>
                 className="col-span-3"
               /&gt;
             &lt;/div&gt;
@@ -3645,8 +3645,8 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
                 id="edit-wakeup"
                 type="time"
                 value={editRecord?.wakeUp ? format(parseISO(editRecord.wakeUp), 'HH:mm') : ''}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt;
-<span class="cstat-no" title="statement not covered" >                  setEditRecord({</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                  setEditRecord({
                     ...editRecord!,
                     wakeUp: `${editRecord!.date}T${e.target.value}:00`,
                   })
@@ -3662,8 +3662,8 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
                 id="edit-bedtime"
                 type="time"
                 value={editRecord?.bedtime ? format(parseISO(editRecord.bedtime), 'HH:mm') : ''}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt;
-<span class="cstat-no" title="statement not covered" >                  setEditRecord({</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                  setEditRecord({
                     ...editRecord!,
                     bedtime: `${editRecord!.date}T${e.target.value}:00`,
                   })
@@ -3679,7 +3679,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
               &lt;Input
                 id="edit-notes"
                 value={sleepNotes}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setSleepNotes(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setSleepNotes(e.target.value)}</span>
                 placeholder="睡眠のメモ（任意）"
                 className="col-span-3"
               /&gt;
@@ -3700,7 +3700,7 @@ import { SleepRecord } from '@/store/sleepTrackerSlice';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

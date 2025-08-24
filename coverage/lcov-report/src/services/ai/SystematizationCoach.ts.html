@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/29</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>0/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -160,30 +160,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -192,7 +182,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -234,24 +234,24 @@ interface PersonalizedSystem {
   automationLevel: 'low' | 'medium' | 'high';
 }
 &nbsp;
-class SystematizationCoach {
-<span class="fstat-no" title="function not covered" >  async </span>analyzeUserPattern(userId: string): Promise&lt;SystematizationAnalysis&gt; {
-    const userData = <span class="cstat-no" title="statement not covered" >await this.getUserData(userId);</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>class S</span></span>ystematizationCoach<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span></span>
+<span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >a</span>nalyzeUserPattern<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>u</span></span>serId: string<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >): Promise&lt;SystematizationAnalysis&gt; {</span></span></span></span></span>
+    const <span class="cstat-no" title="statement not covered" >userData<span class="cstat-no" title="statement not covered" > = await t</span>his.getUserData(userId);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return {</span>
-      currentLevel: this.calculateSystematizationLevel(userData),
-      strongAreas: this.identifyStrengths(userData),
-      improvementAreas: this.identifyGaps(userData),
-      nextSteps: this.generateNextSteps(userData),
-      customRecommendations: await this.generatePersonalizedSystems(userData),
+    return {
+      currentLevel: this.calculateSystematizationLevel(userData)<span class="cstat-no" title="statement not covered" >,</span>
+      strongAreas: this.identifyStrengths(userData)<span class="cstat-no" title="statement not covered" >,</span>
+      improvementAreas: this.identifyGaps(userData)<span class="cstat-no" title="statement not covered" >,</span>
+      nextSteps: this.generateNextSteps(userData)<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+      customRecommendations: await this.generatePersonalizedSystems(userData)<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
     };
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" >  async </span>generatePersonalizedSystems(userData: UserData): Promise&lt;PersonalizedSystem[]&gt; {
+<span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >g</span>eneratePersonalizedSystems<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>u</span></span>serData: UserData<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;PersonalizedSystem[]&gt; {</span></span></span></span>
     // ユーザーの行動パターン、成功体験、失敗パターンを分析
     // 個人に最適化された仕組みを提案
 &nbsp;
-    const recommendations = <span class="cstat-no" title="statement not covered" >[</span>
+    const <span class="cstat-no" title="statement not covered" >recommendations = [</span>
       {
         title: 'あなた専用の朝活システム',
         description: 'あなたの起床パターンとエネルギーレベルに最適化',
@@ -259,14 +259,14 @@ class SystematizationCoach {
         setupSteps: ['早起きアラーム設定', '朝の習慣作り', 'エネルギー測定'],
         automationLevel: 'high' as const,
       },
-    ];
+    ]<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return recommendations;</span>
+    return recommendations;
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" >  async </span>getUserData(userId: string): Promise&lt;UserData&gt; {
+<span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >g</span>etUserData<span class="cstat-no" title="statement not covered" >(</span>u</span>serId: string<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;UserData&gt; {</span></span></span>
     // Implementation here
-<span class="cstat-no" title="statement not covered" >    return { id: userId, behaviors: [], preferences: {}, history: [] };</span>
+    return { id: userId, behaviors: [], preferences: {}, history: [] };
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  calculateSystematizationLevel(</span>userData: UserData): number {
@@ -292,7 +292,7 @@ class SystematizationCoach {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

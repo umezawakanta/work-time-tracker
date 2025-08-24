@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/58</span>
+                <span class='fraction'>0/54</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/54</span>
+                <span class='fraction'>0/49</span>
             </div>
         
             
@@ -314,24 +314,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -341,19 +323,37 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -529,21 +529,21 @@ export interface RetryStrategyOptions {
  * APIクライアント設定
  * APIクライアントの動作を設定するクラス
  */
-<span class="cstat-no" title="statement not covered" >export class A</span>piClientConfig implements IApiClientConfig {
-  public <span class="cstat-no" title="statement not covered" >baseUrl: string;</span>
-  public <span class="cstat-no" title="statement not covered" >apiVersion: string;</span>
-  public <span class="cstat-no" title="statement not covered" >requestTimeoutMs: number;</span>
-  public <span class="cstat-no" title="statement not covered" >maxRetries: number;</span>
-  public <span class="cstat-no" title="statement not covered" >retryDelay: number;</span>
-  public <span class="cstat-no" title="statement not covered" >graphqlEndpoint: string;</span>
-  public <span class="cstat-no" title="statement not covered" >headers: Record&lt;string, string&gt;;</span>
+<span class="cstat-no" title="statement not covered" >export class A</span>piClientConfig<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > implements IApiClientConfig {</span></span>
+  public baseUrl: string;
+  public apiVersion: string;
+  public requestTimeoutMs: number;
+  public maxRetries: number;
+  public retryDelay: number;
+  public graphqlEndpoint: string;
+  public headers: Record&lt;string, string&gt;;
 &nbsp;
   private static <span class="cstat-no" title="statement not covered" >instance: ApiClientConfig | null = n</span>ull;
 &nbsp;
   /**
    * シングルトンインスタンスを取得
    */
-  public <span class="fstat-no" title="function not covered" >static </span>getInstance(): ApiClientConfig {
+  public static <span class="fstat-no" title="function not covered" >getInstance(</span>): ApiClientConfig {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!ApiClientConfig.instance) {</span>
 <span class="cstat-no" title="statement not covered" >      ApiClientConfig.instance = new ApiClientConfig();</span>
     }
@@ -554,7 +554,7 @@ export interface RetryStrategyOptions {
    * コンストラクタ
    * プライベートコンストラクタでシングルトンパターンを実現
    */
-<span class="fstat-no" title="function not covered" >  private constructor() {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  private constructor() {</span></span>
     // デフォルト設定
 <span class="cstat-no" title="statement not covered" >    this.baseUrl = this.getEnvVariable('NEXT_PUBLIC_API_BASE_URL', 'https://api.example.com');</span>
 <span class="cstat-no" title="statement not covered" >    this.apiVersion = this.getEnvVariable('NEXT_PUBLIC_API_VERSION', 'v1');</span>
@@ -569,7 +569,7 @@ export interface RetryStrategyOptions {
     };
   }
 &nbsp;
-  /**
+<span class="cstat-no" title="statement not covered" >  /**</span>
    * 環境変数を安全に取得
    * @param key 環境変数のキー
    * @param defaultValue デフォルト値
@@ -718,7 +718,7 @@ export interface RetryStrategyOptions {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

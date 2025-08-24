@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/47</span>
+                <span class='fraction'>0/56</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/46</span>
+                <span class='fraction'>0/47</span>
             </div>
         
             
@@ -524,7 +524,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -963,25 +963,25 @@ import { toast } from 'react-hot-toast';
  * 🎯 バッジ完了予測ページ - 全バッジ獲得までの作業時間・達成予定日・マイルストーン表示
  * 🎮 Game Loop統合: プロシージネーション削減効果による予測精度向上
  */
-const BadgeCompletionPage: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+const <span class="fstat-no" title="function not covered" >BadgeCompletionPage:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
   // ゲームループシステム統合状態
-  const [gameLoopStats, setGameLoopStats] = <span class="cstat-no" title="statement not covered" >useState&lt;GameLoopStats | null&gt;(null);</span>
-  const [showGameLoopIntegration, setShowGameLoopIntegration] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [integrationRefreshInterval, setIntegrationRefreshInterval] =
-<span class="cstat-no" title="statement not covered" >    useState&lt;NodeJS.Timeout | null&gt;(null);</span>
+  const [gameLoopStats<span class="cstat-no" title="statement not covered" >, s</span>etGameLoopStats<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;GameLoopStats | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showGameLoopIntegration<span class="cstat-no" title="statement not covered" >, s</span>etShowGameLoopIntegration<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [integrationRefreshInterval<span class="cstat-no" title="statement not covered" >, s</span>etIntegrationRefreshInterval<span class="cstat-no" title="statement not covered" >] =</span>
+<span class="cstat-no" title="statement not covered" >    useState&lt;NodeJS.Timeout | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    document.title = 'バッジ完了予測 | Work Time Tracker';</span>
 <span class="cstat-no" title="statement not covered" >    initializeGameLoopIntegration();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (integrationRefreshInterval) {</span>
 <span class="cstat-no" title="statement not covered" >        clearInterval(integrationRefreshInterval);</span>
       }
     };
   }, []);
 &nbsp;
-  const initializeGameLoopIntegration = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >initializeGameLoopIntegration </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // 実際のGameLoopTaskServiceからデータを取得
       const gameLoopService = <span class="cstat-no" title="statement not covered" >gameLoopTaskService;</span>
@@ -1002,7 +1002,7 @@ const BadgeCompletionPage: React.FC = <span class="cstat-no" title="statement no
 <span class="cstat-no" title="statement not covered" >      setShowGameLoopIntegration(true);</span>
 &nbsp;
       // 5分ごとに統計を更新（リアルタイムデータ）
-      const interval = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      const interval = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >        try {</span>
           const updatedUserStats = <span class="cstat-no" title="statement not covered" >gameLoopService.getGameLoopStats();</span>
           const updatedStats = <span class="cstat-no" title="statement not covered" >{</span>
@@ -1029,7 +1029,7 @@ const BadgeCompletionPage: React.FC = <span class="cstat-no" title="statement no
     }
   };
 &nbsp;
-  const calculateGameLoopImpact = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateGameLoopImpact </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!gameLoopStats) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
     // プロシージネーション削減効果計算
@@ -1199,7 +1199,7 @@ const BadgeCompletionPage: React.FC = <span class="cstat-no" title="statement no
                   {/* アクションボタン */}
                   &lt;div className="mt-6 flex justify-center gap-3"&gt;
                     &lt;Button
-                      onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >window.open('/game-loop-tasks', '_blank')}</span>
+<span class="fstat-no" title="function not covered" >                      onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; window.open('/game-loop-tasks', '_blank')}</span>
                       className="bg-green-600 hover:bg-green-700"
                     &gt;
                       &lt;Gamepad2 className="h-4 w-4 mr-2" /&gt;
@@ -1207,7 +1207,7 @@ const BadgeCompletionPage: React.FC = <span class="cstat-no" title="statement no
                     &lt;/Button&gt;
                     &lt;Button
                       variant="outline"
-                      onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >window.open('/integrated-dashboard', '_blank')}</span>
+<span class="fstat-no" title="function not covered" >                      onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; window.open('/integrated-dashboard', '_blank')}</span>
                     &gt;
                       &lt;TrendingUp className="h-4 w-4 mr-2" /&gt;
                       統合ダッシュボード
@@ -1399,7 +1399,7 @@ const BadgeCompletionPage: React.FC = <span class="cstat-no" title="statement no
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

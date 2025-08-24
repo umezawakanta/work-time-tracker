@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/90</span>
+                <span class='fraction'>0/110</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/31</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/40</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/82</span>
+                <span class='fraction'>0/87</span>
             </div>
         
             
@@ -792,7 +792,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -949,12 +949,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -970,12 +970,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1268,7 +1268,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1283,8 +1282,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1334,6 +1333,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1432,8 +1432,8 @@ interface VisualizationInsight {
   confidence: number;
 }
 &nbsp;
-const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const [dashboardState, setDashboardState] = <span class="cstat-no" title="statement not covered" >useState&lt;DashboardState&gt;({</span>
+const <span class="fstat-no" title="function not covered" >DataVisualizationDashboard:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const [dashboardState<span class="cstat-no" title="statement not covered" >, s</span>etDashboardState<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;DashboardState&gt;({</span>
     activeTab: 'charts',
     selectedChart: null,
     selected3DVisualization: null,
@@ -1441,18 +1441,18 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
     isPlaying: false,
     realTimeEnabled: false,
     performanceMode: 'medium',
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const [chartMetrics, setChartMetrics] = <span class="cstat-no" title="statement not covered" >useState&lt;ChartMetrics[]&gt;([]);</span>
-  const [insights, setInsights] = <span class="cstat-no" title="statement not covered" >useState&lt;VisualizationInsight[]&gt;([]);</span>
-  const [isFullscreen, setIsFullscreen] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [chartMetrics<span class="cstat-no" title="statement not covered" >, s</span>etChartMetrics<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;ChartMetrics[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [insights<span class="cstat-no" title="statement not covered" >, s</span>etInsights<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;VisualizationInsight[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isFullscreen<span class="cstat-no" title="statement not covered" >, s</span>etIsFullscreen<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
   const canvasRef = <span class="cstat-no" title="statement not covered" >useRef&lt;HTMLCanvasElement&gt;(null);</span>
   const containerRef = <span class="cstat-no" title="statement not covered" >useRef&lt;HTMLDivElement&gt;(null);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    initializeDashboard();</span>
 <span class="cstat-no" title="statement not covered" >    setupRealTimeUpdates();</span>
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      cleanup();</span>
     };
   }, []);
@@ -1460,7 +1460,7 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
   /**
    * 📊 ダッシュボード初期化
    */
-  const initializeDashboard = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >initializeDashboard </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     // サンプルチャートメトリクス
     const sampleMetrics: ChartMetrics[] = <span class="cstat-no" title="statement not covered" >[</span>
       {
@@ -1536,23 +1536,23 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
   /**
    * 🔄 リアルタイム更新設定
    */
-  const setupRealTimeUpdates = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const interval = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >setupRealTimeUpdates </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+    const interval = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (dashboardState.realTimeEnabled) {</span>
 <span class="cstat-no" title="statement not covered" >        updateMetrics();</span>
 <span class="cstat-no" title="statement not covered" >        generateNewInsights();</span>
       }
     }, 5000);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >clearInterval(interval);</span></span>
+<span class="cstat-no" title="statement not covered" >    return <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; c</span>learInterval(interval);</span></span>
   };
 &nbsp;
   /**
    * 📊 メトリクス更新
    */
-  const updateMetrics = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setChartMetrics(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >      prev.map(<span class="fstat-no" title="function not covered" >(m</span>etric) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+  const <span class="fstat-no" title="function not covered" >updateMetrics </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setChartMetrics(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+      prev.map(<span class="fstat-no" title="function not covered" >(m</span>etric<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
         ...metric,
         renderTime: metric.renderTime + (Math.random() - 0.5) * 2,
         fps: Math.max(30, Math.min(60, metric.fps + (Math.random() - 0.5) * 5)),
@@ -1564,7 +1564,7 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
   /**
    * 💡 新しいインサイト生成
    */
-  const generateNewInsights = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >generateNewInsights </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const newInsight: VisualizationInsight = <span class="cstat-no" title="statement not covered" >{</span>
       id: `insight_${Date.now()}`,
       type: ['trend', 'anomaly', 'correlation', 'prediction'][Math.floor(Math.random() * 4)] as any,
@@ -1574,14 +1574,14 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
       confidence: Math.random() * 0.3 + 0.7,
     };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    setInsights(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >[newInsight, ...prev.slice(0, 4)])</span>;</span>
+<span class="cstat-no" title="statement not covered" >    setInsights(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; [newInsight, ...prev.slice(0, 4)])</span>;</span>
   };
 &nbsp;
   /**
    * 🎬 ストーリー再生
    */
-  const playStory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(storyId: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setDashboardState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, isPlaying: true, selectedStory: storyId })</span>);</span>
+  const <span class="fstat-no" title="function not covered" >playStory<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span>sync (s</span>toryId: string<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >) =&gt; {</span></span></span>
+<span class="cstat-no" title="statement not covered" >    setDashboardState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, isPlaying: true, selectedStory: storyId }))</span>;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // dataStorytellingService.playStory(storyId);
@@ -1593,8 +1593,8 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
       });
 &nbsp;
       // 5秒後に自動停止（デモ用）
-<span class="cstat-no" title="statement not covered" >      setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >        setDashboardState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, isPlaying: false })</span>);</span>
+<span class="cstat-no" title="statement not covered" >      setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+<span class="cstat-no" title="statement not covered" >        setDashboardState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, isPlaying: false }))</span>;</span>
       }, 5000);
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      toast({</span>
@@ -1602,13 +1602,13 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
         description: 'ストーリーの再生に失敗しました',
         variant: 'destructive',
       });
-    }
-  };
+    }<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
   /**
    * 📤 チャートエクスポート
    */
-  const exportChart = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(chartId: string, format: 'png' | 'svg' | 'pdf' | 'json') =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >exportChart<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span>sync (c</span>hartId: string, format: 'png' | 'svg' | 'pdf' | 'json'<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >) =&gt; {</span></span></span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // const result = await interactiveChartService.exportChart(chartId, { format });
 &nbsp;
@@ -1623,14 +1623,14 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
         description: 'チャートのエクスポートに失敗しました',
         variant: 'destructive',
       });
-    }
-  };
+    }<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
   /**
    * 🔧 パフォーマンスモード変更
    */
-  const changePerformanceMode = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(m</span>ode: 'low' | 'medium' | 'high' | 'ultra') =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setDashboardState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, performanceMode: mode })</span>);</span>
+  const <span class="fstat-no" title="function not covered" >changePerformanceMode </span>= <span class="cstat-no" title="statement not covered" >(mode: 'low' | 'medium' | 'high' | 'ultra') =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setDashboardState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, performanceMode: mode }))</span>;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    toast({</span>
       title: 'パフォーマンスモード変更',
@@ -1642,8 +1642,8 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
   /**
    * 🔄 リアルタイム切り替え
    */
-  const toggleRealTime = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setDashboardState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+  const <span class="fstat-no" title="function not covered" >toggleRealTime </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setDashboardState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       realTimeEnabled: !prev.realTimeEnabled,
     }));
@@ -1658,7 +1658,7 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
   /**
    * 🔄 クリーンアップ
    */
-  const cleanup = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >cleanup </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     // リアルタイム更新停止
     // アニメーション停止
     // リソース解放
@@ -1667,7 +1667,7 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
   /**
    * 🎨 インサイトアイコン取得
    */
-  const getInsightIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ype: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getInsightIcon </span>= <span class="cstat-no" title="statement not covered" >(type: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (type) {</span>
       case 'trend':
 <span class="cstat-no" title="statement not covered" >        return &lt;TrendingUp className="h-4 w-4" /&gt;;</span>
@@ -1685,7 +1685,7 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
   /**
    * 🎨 重要度色取得
    */
-  const getSignificanceColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>ignificance: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getSignificanceColor </span>= <span class="cstat-no" title="statement not covered" >(significance: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (significance) {</span>
       case 'critical':
 <span class="cstat-no" title="statement not covered" >        return 'bg-red-500 text-white';</span>
@@ -1735,7 +1735,7 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
             &lt;/SelectContent&gt;
           &lt;/Select&gt;
 &nbsp;
-          &lt;Button variant="outline" size="sm" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsFullscreen(!isFullscreen)}</span>&gt;
+          &lt;Button variant="outline" size="sm" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsFullscreen(!isFullscreen)}&gt;</span>
             &lt;Maximize className="h-4 w-4" /&gt;
           &lt;/Button&gt;
         &lt;/div&gt;
@@ -1762,7 +1762,7 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
                 &lt;p className="text-sm font-medium text-gray-600"&gt;データポイント&lt;/p&gt;
                 &lt;p className="text-2xl font-bold text-green-600"&gt;
                   {chartMetrics
-                    .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, metric) =&gt; <span class="cstat-no" title="statement not covered" >sum + metric.dataPoints,</span> 0)
+                    .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, metric<span class="cstat-no" title="statement not covered" >) =&gt; sum + metric.dataPoints, 0</span>)
                     .toLocaleString()}
                 &lt;/p&gt;
               &lt;/div&gt;
@@ -1778,7 +1778,7 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
                 &lt;p className="text-sm font-medium text-gray-600"&gt;平均FPS&lt;/p&gt;
                 &lt;p className="text-2xl font-bold text-purple-600"&gt;
                   {Math.round(
-                    chartMetrics.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, metric) =&gt; <span class="cstat-no" title="statement not covered" >sum + metric.fps,</span> 0) /
+                    chartMetrics.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, metric<span class="cstat-no" title="statement not covered" >) =&gt; sum + metric.fps, 0</span>) /
                       chartMetrics.length || 0
                   )}
                 &lt;/p&gt;
@@ -1822,7 +1822,7 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
             &lt;CardContent className="h-full p-0"&gt;
               &lt;Tabs
                 value={dashboardState.activeTab}
-                onValueChange={<span class="fstat-no" title="function not covered" >(t</span>ab) =&gt; <span class="cstat-no" title="statement not covered" >setDashboardState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, activeTab: tab })</span>)}</span>
+<span class="fstat-no" title="function not covered" >                onValueChange=</span>{(tab<span class="cstat-no" title="statement not covered" >) =&gt; setDashboardState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, activeTab: tab }))</span>}</span>
                 className="h-full"
               &gt;
                 &lt;TabsList className="grid w-full grid-cols-3"&gt;
@@ -1865,7 +1865,7 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
                       &lt;div className="flex gap-2"&gt;
                         &lt;Button
                           size="sm"
-                          onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >playStory('sample-story')}</span>
+<span class="fstat-no" title="function not covered" >                          onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; playStory('sample-story')}</span>
                           disabled={dashboardState.isPlaying}
                         &gt;
                           {dashboardState.isPlaying ? (
@@ -1917,8 +1917,8 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
               &lt;CardTitle className="text-sm"&gt;アクティブチャート&lt;/CardTitle&gt;
             &lt;/CardHeader&gt;
             &lt;CardContent className="space-y-3"&gt;
-              {chartMetrics.map(<span class="fstat-no" title="function not covered" >(m</span>etric) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div</span>
+              {chartMetrics.map(<span class="fstat-no" title="function not covered" >(m</span>etric<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div
                   key={metric.id}
                   className="flex items-center justify-between p-2 border rounded"
                 &gt;
@@ -1932,7 +1932,7 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
                     &lt;Badge variant={metric.status === 'active' ? 'default' : 'secondary'}&gt;
                       {metric.fps}fps
                     &lt;/Badge&gt;
-                    &lt;Button variant="ghost" size="sm" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >exportChart(metric.id, 'png')}</span>&gt;
+                    &lt;Button variant="ghost" size="sm" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; exportChart(metric.id, 'png')}&gt;</span>
                       &lt;Download className="h-3 w-3" /&gt;
                     &lt;/Button&gt;
                   &lt;/div&gt;
@@ -1947,8 +1947,8 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
               &lt;CardTitle className="text-sm"&gt;AIインサイト&lt;/CardTitle&gt;
             &lt;/CardHeader&gt;
             &lt;CardContent className="space-y-3"&gt;
-              {insights.map(<span class="fstat-no" title="function not covered" >(i</span>nsight) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div key={insight.id} c</span>lassName="p-3 border rounded-lg"&gt;
+              {insights.map(<span class="fstat-no" title="function not covered" >(i</span>nsight<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div key={insight.id} className="p-3 border rounded-lg"&gt;
                   &lt;div className="flex items-start justify-between mb-2"&gt;
                     &lt;div className="flex items-center gap-2"&gt;
                       {getInsightIcon(insight.type)}
@@ -1981,8 +1981,8 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
               &lt;CardTitle className="text-sm"&gt;パフォーマンス&lt;/CardTitle&gt;
             &lt;/CardHeader&gt;
             &lt;CardContent className="space-y-3"&gt;
-              {chartMetrics.map(<span class="fstat-no" title="function not covered" >(m</span>etric) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div key={metric.id}&gt;</span>
+              {chartMetrics.map(<span class="fstat-no" title="function not covered" >(m</span>etric<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div key={metric.id}&gt;
                   &lt;div className="flex items-center justify-between text-sm"&gt;
                     &lt;span&gt;{metric.name}&lt;/span&gt;
                     &lt;span className="text-gray-500"&gt;{metric.renderTime.toFixed(1)}ms&lt;/span&gt;
@@ -2017,7 +2017,7 @@ const DataVisualizationDashboard: React.FC = <span class="cstat-no" title="state
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

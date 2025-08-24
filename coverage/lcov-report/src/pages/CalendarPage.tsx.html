@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/58</span>
+                <span class='fraction'>0/65</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/38</span>
+                <span class='fraction'>0/60</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/52</span>
+                <span class='fraction'>0/53</span>
             </div>
         
             
@@ -443,7 +443,7 @@
 <a name='L378'></a><a href='#L378'>378</a>
 <a name='L379'></a><a href='#L379'>379</a>
 <a name='L380'></a><a href='#L380'>380</a>
-<a name='L381'></a><a href='#L381'>381</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L381'></a><a href='#L381'>381</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -823,7 +823,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span></span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >import React, { useState, useEffect } from 'react';</span>
 <span class="cstat-no" title="statement not covered" >import TaskCalendarView from '@/components/calendar/TaskCalendarView';</span>
@@ -847,19 +847,19 @@ import { Progress } from '@/components/ui/progress';
 import { toast } from 'react-hot-toast';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >export default function <span class="fstat-no" title="function not covered" >C</span>alendarPage(</span>) {
-  const todos = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.items)</span>;</span>
-  const hasActiveSubscription = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.user.hasActiveSubscription)</span>;</span>
+  const todos = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.todo.items);</span></span>
+  const hasActiveSubscription = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.user.hasActiveSubscription);</span></span>
 &nbsp;
   // ゲームループシステム統合状態
-  const [gameLoopStats, setGameLoopStats] = <span class="cstat-no" title="statement not covered" >useState&lt;GameLoopStats | null&gt;(null);</span>
-  const [showGameLoopIntegration, setShowGameLoopIntegration] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [gameLoopStats<span class="cstat-no" title="statement not covered" >, s</span>etGameLoopStats<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;GameLoopStats | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showGameLoopIntegration<span class="cstat-no" title="statement not covered" >, s</span>etShowGameLoopIntegration<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // ゲームループ統合初期化
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    initializeGameLoopIntegration();</span>
   }, []);
 &nbsp;
-  const initializeGameLoopIntegration = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >initializeGameLoopIntegration </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const stats = <span class="cstat-no" title="statement not covered" >gameLoopTaskService.getGameLoopStats();</span>
 <span class="cstat-no" title="statement not covered" >      setGameLoopStats(stats);</span>
@@ -871,7 +871,7 @@ import { toast } from 'react-hot-toast';
   };
 &nbsp;
   // ゲームループによるスケジュール管理効果計算
-  const calculateScheduleEffects = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateScheduleEffects </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!gameLoopStats) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
     const completedToday = <span class="cstat-no" title="statement not covered" >gameLoopStats.tasksCompletedToday || 0;</span>
@@ -901,7 +901,7 @@ import { toast } from 'react-hot-toast';
   const scheduleEffects = <span class="cstat-no" title="statement not covered" >calculateScheduleEffects();</span>
 &nbsp;
   // カレンダー統計を計算
-  const stats = <span class="cstat-no" title="statement not covered" >React.useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const stats = <span class="cstat-no" title="statement not covered" >React.useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const today = <span class="cstat-no" title="statement not covered" >new Date();</span>
     const todayTasks = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!todo.deadline) <span class="cstat-no" title="statement not covered" >return false;</span></span>
@@ -926,7 +926,7 @@ import { toast } from 'react-hot-toast';
       todayTasks: todayTasks.length,
       overdueTasks: overdueTasks.length,
       upcomingTasks: upcomingTasks.length,
-      completedToday: todayTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; <span class="cstat-no" title="statement not covered" >task.completed)</span>.length,
+      completedToday: todayTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt; task.completed).</span>length,
     };
   }, [todos]);
 &nbsp;
@@ -1080,7 +1080,7 @@ import { toast } from 'react-hot-toast';
             &lt;Gamepad2 className="h-5 w-5 text-indigo-600" /&gt;
             &lt;div&gt;
               &lt;p className="text-sm font-medium text-indigo-900"&gt;ゲームループタスク&lt;/p&gt;
-              &lt;Button variant="outline" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >window.open('/game-loop-tasks', '_blank')}</span>&gt;
+              &lt;Button variant="outline" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; window.open('/game-loop-tasks', '_blank')}&gt;</span>
                 &lt;Gamepad2 className="h-4 w-4 mr-2" /&gt;
                 ゲームループタスク
               &lt;/Button&gt;
@@ -1095,7 +1095,7 @@ import { toast } from 'react-hot-toast';
               &lt;p className="text-sm font-medium text-teal-900"&gt;統合ダッシュボード&lt;/p&gt;
               &lt;Button
                 variant="outline"
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >window.open('/integrated-dashboard', '_blank')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; window.open('/integrated-dashboard', '_blank')}</span>
               &gt;
                 &lt;TrendingUp className="h-4 w-4 mr-2" /&gt;
                 統合ダッシュボード
@@ -1210,7 +1210,7 @@ import { toast } from 'react-hot-toast';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

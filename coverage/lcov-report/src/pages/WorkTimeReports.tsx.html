@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/42</span>
+                <span class='fraction'>0/49</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/39</span>
+                <span class='fraction'>0/40</span>
             </div>
         
             
@@ -268,7 +268,7 @@
 <a name='L203'></a><a href='#L203'>203</a>
 <a name='L204'></a><a href='#L204'>204</a>
 <a name='L205'></a><a href='#L205'>205</a>
-<a name='L206'></a><a href='#L206'>206</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L206'></a><a href='#L206'>206</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -473,7 +473,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span></span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >import { useState, useEffect } from 'react';</span>
 <span class="cstat-no" title="statement not covered" >import { useSelector, useDispatch } from 'react-redux';</span>
@@ -496,24 +496,24 @@ import { RootState, AppDispatch } from '@/store';
   const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span>
   // const { locale } = useLocale(); // LocaleProvider issue - using default locale
   const locale = <span class="cstat-no" title="statement not covered" >'ja-JP';</span> // デフォルトロケール設定
-  const workTimeEntries = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.workTime.entries)</span>;</span>
-  const isLoading = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.workTime.isLoading)</span>;</span>
-  const error = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.workTime.error)</span>;</span>
+  const workTimeEntries = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.workTime.entries);</span></span>
+  const isLoading = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.workTime.isLoading);</span></span>
+  const error = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.workTime.error);</span></span>
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
 &nbsp;
   // ゲームループシステム統計
-  const [gameLoopStats, setGameLoopStats] = <span class="cstat-no" title="statement not covered" >useState&lt;GameLoopStats | null&gt;(null);</span>
-  const [showGameLoopIntegration, setShowGameLoopIntegration] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [gameLoopStats<span class="cstat-no" title="statement not covered" >, s</span>etGameLoopStats<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;GameLoopStats | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showGameLoopIntegration<span class="cstat-no" title="statement not covered" >, s</span>etShowGameLoopIntegration<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  useReportData();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // ページ表示時に最新データを取得
 <span class="cstat-no" title="statement not covered" >    dispatch(fetchWorkTimeEntries());</span>
   }, [dispatch]);
 &nbsp;
   // ゲームループ統計読み込み
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const stats = <span class="cstat-no" title="statement not covered" >gameLoopTaskService.getGameLoopStats();</span>
 <span class="cstat-no" title="statement not covered" >      setGameLoopStats(stats);</span>
@@ -561,7 +561,7 @@ import { RootState, AppDispatch } from '@/store';
               &lt;Button
                 variant="outline"
                 size="sm"
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate('/game-loop-tasks')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; navigate('/game-loop-tasks')}</span>
                 className="bg-white hover:bg-purple-50"
               &gt;
                 &lt;Zap className="w-4 h-4 mr-2" /&gt;
@@ -685,7 +685,7 @@ import { RootState, AppDispatch } from '@/store';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

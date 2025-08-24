@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/46</span>
+                <span class='fraction'>0/74</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>0/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/40</span>
+                <span class='fraction'>0/37</span>
             </div>
         
             
@@ -175,23 +175,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -201,17 +190,15 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -219,9 +206,22 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -251,66 +251,66 @@ interface UseTeamMembersReturn {
   removeMember: (memberId: string) =&gt; Promise&lt;boolean&gt;;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >useTeamMembers = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>p</span>rojectId: string): UseTeamMembersReturn =&gt; {</span>
-  const [teamMembers, setTeamMembers] = <span class="cstat-no" title="statement not covered" >useState&lt;TeamMember[]&gt;([]);</span>
-  const [isLoading, setIsLoading] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [error, setError] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;(null);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useTeamMembers </span>= <span class="cstat-no" title="statement not covered" >(</span>projectId: string): UseTeamMembersReturn =&gt; {</span>
+  const [teamMembers<span class="cstat-no" title="statement not covered" >, s</span>etTeamMembers<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;TeamMember[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isLoading<span class="cstat-no" title="statement not covered" >, s</span>etIsLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [error<span class="cstat-no" title="statement not covered" >, s</span>etError<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const refreshMembers = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!projectId) <span class="cstat-no" title="statement not covered" >return;</span></span>
+  const refreshMembers = <span class="cstat-no" title="statement not covered" >useCallback(<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>async () =&gt; {</span></span></span></span>
+    if (!projectId<span class="cstat-no" title="statement not covered" >) return;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    setIsLoading(true);</span>
-<span class="cstat-no" title="statement not covered" >    setError(null);</span>
+<span class="cstat-no" title="statement not covered" >    setError(null);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const members = <span class="cstat-no" title="statement not covered" >await teamMemberService.getTeamMembers(projectId);</span>
-<span class="cstat-no" title="statement not covered" >      setTeamMembers(members);</span>
+    try {
+      const <span class="cstat-no" title="statement not covered" >members = await t</span>eamMemberService.getTeamMembers(projectId);
+<span class="cstat-no" title="statement not covered" >      setTeamMembers(members);<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (err) {
-<span class="cstat-no" title="statement not covered" >      setError(err instanceof Error ? err.message : 'チームメンバーの取得に失敗しました');</span>
+<span class="cstat-no" title="statement not covered" >      setError(err instanceof Error ? err.message : 'チームメンバーの取得に失敗しました');<span class="cstat-no" title="statement not covered" ></span></span>
     } finally {
-<span class="cstat-no" title="statement not covered" >      setIsLoading(false);</span>
+<span class="cstat-no" title="statement not covered" >      setIsLoading(false);<span class="cstat-no" title="statement not covered" ></span></span>
     }
   }, [projectId]);
 &nbsp;
-  const addMember = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>(memberData: Omit&lt;TeamMember, 'id'&gt;): Promise&lt;boolean&gt; =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const newMember = <span class="cstat-no" title="statement not covered" >await teamMemberService.createTeamMember(memberData);</span>
-<span class="cstat-no" title="statement not covered" >      setTeamMembers(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >[...prev, newMember])</span>;</span>
-<span class="cstat-no" title="statement not covered" >      return true;</span>
+  const addMember = <span class="cstat-no" title="statement not covered" >useCallback<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(<span class="fstat-no" title="function not covered" >a</span>sync (m</span>emberData: Omit&lt;TeamMember, 'id'&gt;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >): Promise&lt;boolean&gt; =&gt; {</span></span></span></span></span></span>
+    try {
+      const <span class="cstat-no" title="statement not covered" >newMember = await t</span>eamMemberService.createTeamMember(memberData);
+<span class="cstat-no" title="statement not covered" >      setTeamMembers(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; [...prev, newMember])</span>;<span class="cstat-no" title="statement not covered" ></span></span>
+      return true<span class="cstat-no" title="statement not covered" >;</span>
     } catch (error) {
-<span class="cstat-no" title="statement not covered" >      console.error('Add member error:', error);</span>
-<span class="cstat-no" title="statement not covered" >      return false;</span>
+<span class="cstat-no" title="statement not covered" >      console.error('Add member error:', error);<span class="cstat-no" title="statement not covered" ></span></span>
+      return false;
     }
-  }, []);
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >, [</span></span>]);
 &nbsp;
-  const updateMember = <span class="cstat-no" title="statement not covered" >useCallback(</span>
-<span class="fstat-no" title="function not covered" >    async </span>(memberId: string, updates: Partial&lt;TeamMember&gt;): Promise&lt;boolean&gt; =&gt; {
-<span class="cstat-no" title="statement not covered" >      try {</span>
-        const updatedMember = <span class="cstat-no" title="statement not covered" >await teamMemberService.updateTeamMember(memberId, updates);</span>
-<span class="cstat-no" title="statement not covered" >        setTeamMembers(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >          prev.map(<span class="fstat-no" title="function not covered" >(m</span>ember) =&gt; (<span class="cstat-no" title="statement not covered" >member.id === memberId ? updatedMember : member)</span>)</span>
-        );
-<span class="cstat-no" title="statement not covered" >        return true;</span>
+  const updateMember = <span class="cstat-no" title="statement not covered" >useCallback<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
+<span class="fstat-no" title="function not covered" >    async (m</span>emberId: string, updates: Partial&lt;TeamMember&gt;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >): Promise&lt;boolean&gt; =&gt; {</span></span></span></span>
+      try {
+        const <span class="cstat-no" title="statement not covered" >updatedMember = await t</span>eamMemberService.updateTeamMember(memberId, updates);
+<span class="cstat-no" title="statement not covered" >        setTeamMembers(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+          prev.map(<span class="fstat-no" title="function not covered" >(m</span>ember<span class="cstat-no" title="statement not covered" >) =&gt; (member.id === memberId ? updatedMember : member))</span>
+        );<span class="cstat-no" title="statement not covered" ></span>
+        return true<span class="cstat-no" title="statement not covered" >;</span>
       } catch (error) {
-<span class="cstat-no" title="statement not covered" >        console.error('Update member error:', error);</span>
-<span class="cstat-no" title="statement not covered" >        return false;</span>
+<span class="cstat-no" title="statement not covered" >        console.error('Update member error:', error);<span class="cstat-no" title="statement not covered" ></span></span>
+        return false;
       }
-    },
+    }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >,</span></span>
     []
   );
 &nbsp;
-  const removeMember = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>(memberId: string): Promise&lt;boolean&gt; =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      await teamMemberService.deleteTeamMember(memberId);</span>
-<span class="cstat-no" title="statement not covered" >      setTeamMembers(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >prev.filter(<span class="fstat-no" title="function not covered" >(m</span>ember) =&gt; <span class="cstat-no" title="statement not covered" >member.id !== memberId)</span>)</span>;</span>
-<span class="cstat-no" title="statement not covered" >      return true;</span>
+  const removeMember = <span class="cstat-no" title="statement not covered" >useCallback<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(<span class="fstat-no" title="function not covered" >a</span>sync (m</span>emberId: string<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >): Promise&lt;boolean&gt; =&gt; {</span></span></span></span></span></span>
+    try {
+      await teamMemberService.deleteTeamMember(memberId);
+<span class="cstat-no" title="statement not covered" >      setTeamMembers(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; prev.filter(<span class="fstat-no" title="function not covered" >(m</span>ember<span class="cstat-no" title="statement not covered" >) =&gt; member.id !== memberId))</span>;<span class="cstat-no" title="statement not covered" ></span></span></span>
+      return true<span class="cstat-no" title="statement not covered" >;</span>
     } catch (error) {
-<span class="cstat-no" title="statement not covered" >      console.error('Remove member error:', error);</span>
-<span class="cstat-no" title="statement not covered" >      return false;</span>
+<span class="cstat-no" title="statement not covered" >      console.error('Remove member error:', error);<span class="cstat-no" title="statement not covered" ></span></span>
+      return false;
     }
-  }, []);
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >, [</span></span>]);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    refreshMembers();</span>
   }, [refreshMembers]);
 &nbsp;
@@ -331,7 +331,7 @@ export const <span class="cstat-no" title="statement not covered" >useTeamMember
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

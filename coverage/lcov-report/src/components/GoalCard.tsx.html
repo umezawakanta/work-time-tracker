@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/59</span>
+                <span class='fraction'>0/66</span>
             </div>
         
             
@@ -709,11 +709,11 @@ interface GoalCardProps {
   onClick?: () =&gt; void;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >GoalCard: React.FC&lt;GoalCardProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> goal, onEdit, onDelete, onClick }) =&gt; {</span>
-  const [showDetails, setShowDetails] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >GoalCard:</span> React.FC&lt;GoalCardProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{ goal<span class="cstat-no" title="statement not covered" >, onEdit<span class="cstat-no" title="statement not covered" >, onDelete<span class="cstat-no" title="statement not covered" >, onClick<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span></span></span>
+  const [showDetails<span class="cstat-no" title="statement not covered" >, s</span>etShowDetails<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 優先度に応じた色を返す
-  const getPriorityColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>riority: Goal['priority']) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getPriorityColor </span>= <span class="cstat-no" title="statement not covered" >(priority: Goal['priority']) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (priority) {</span>
       case 'high':
 <span class="cstat-no" title="statement not covered" >        return 'bg-red-100 text-red-800 border-red-200';</span>
@@ -727,7 +727,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalCard: Rea
   };
 &nbsp;
   // ステータスに応じた色を返す
-  const getStatusColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tatus: Goal['status']) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getStatusColor </span>= <span class="cstat-no" title="statement not covered" >(status: Goal['status']) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (status) {</span>
       case 'active':
 <span class="cstat-no" title="statement not covered" >        return 'bg-blue-100 text-blue-800 border-blue-200';</span>
@@ -741,7 +741,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalCard: Rea
   };
 &nbsp;
   // ステータスアイコンを返す
-  const getStatusIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tatus: Goal['status']) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getStatusIcon </span>= <span class="cstat-no" title="statement not covered" >(status: Goal['status']) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (status) {</span>
       case 'active':
 <span class="cstat-no" title="statement not covered" >        return &lt;Play className="h-4 w-4" /&gt;;</span>
@@ -755,7 +755,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalCard: Rea
   };
 &nbsp;
   // 進捗に応じたプログレスバーの色を返す
-  const getProgressColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>rogress: number) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getProgressColor </span>= <span class="cstat-no" title="statement not covered" >(progress: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (progress &gt;= 90) <span class="cstat-no" title="statement not covered" >return 'bg-green-500';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (progress &gt;= 70) <span class="cstat-no" title="statement not covered" >return 'bg-blue-500';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (progress &gt;= 50) <span class="cstat-no" title="statement not covered" >return 'bg-yellow-500';</span></span>
@@ -764,7 +764,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalCard: Rea
   };
 &nbsp;
   // 目標日までの残り日数を計算
-  const getDaysRemaining = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getDaysRemaining </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const targetDate = <span class="cstat-no" title="statement not covered" >parseISO(goal.targetDate);</span>
       const today = <span class="cstat-no" title="statement not covered" >new Date();</span>
@@ -775,7 +775,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalCard: Rea
   };
 &nbsp;
   // 日付をフォーマット
-  const formatDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ateString: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatDate </span>= <span class="cstat-no" title="statement not covered" >(dateString: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      return format(parseISO(dateString), 'yyyy/MM/dd');</span>
     } catch {
@@ -785,7 +785,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalCard: Rea
 &nbsp;
   const daysRemaining = <span class="cstat-no" title="statement not covered" >getDaysRemaining();</span>
 &nbsp;
-  const handleCardClick = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: React.MouseEvent) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleCardClick </span>= <span class="cstat-no" title="statement not covered" >(e: React.MouseEvent) =&gt; {</span>
     // ドロップダウンメニューやボタンクリック時は親要素のクリックイベントを実行しない
     const target = <span class="cstat-no" title="statement not covered" >e.target as HTMLElement;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (target.closest('[data-prevent-click]')) {</span>
@@ -824,7 +824,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalCard: Rea
                     編集
                   &lt;/DropdownMenuItem&gt;
                 )}
-                &lt;DropdownMenuItem onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowDetails(!showDetails)}</span>&gt;
+                &lt;DropdownMenuItem <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowDetails(!showDetails)}&gt;</span>
                   &lt;Calendar className="h-4 w-4 mr-2" /&gt;
                   詳細表示
                 &lt;/DropdownMenuItem&gt;
@@ -936,7 +936,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalCard: Rea
             &lt;Button
               variant="outline"
               size="sm"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowDetails(!showDetails)}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowDetails(!showDetails)}</span>
               className="flex-1"
             &gt;
               &lt;Calendar className="h-3 w-3 mr-1" /&gt;
@@ -955,7 +955,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalCard: Rea
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

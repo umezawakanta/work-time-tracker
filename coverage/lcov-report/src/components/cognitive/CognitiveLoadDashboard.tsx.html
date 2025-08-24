@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/89</span>
+                <span class='fraction'>0/120</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/87</span>
+                <span class='fraction'>0/90</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/88</span>
+                <span class='fraction'>0/93</span>
             </div>
         
             
@@ -887,18 +887,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1103,7 +1103,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1121,6 +1120,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1478,8 +1478,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1545,7 +1545,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1561,6 +1560,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1644,50 +1644,50 @@ interface CognitiveLoadDashboardProps {
   compactMode?: boolean;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >CognitiveLoadDashboard: React.FC&lt;CognitiveLoadDashboardProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  userId = <span class="branch-0 cbranch-no" title="branch not covered" >'demo-user',</span>
-  autoStart = <span class="branch-0 cbranch-no" title="branch not covered" >true,</span>
-  compactMode = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span>
-}) =&gt; {
-  const [currentMetrics, setCurrentMetrics] = <span class="cstat-no" title="statement not covered" >useState&lt;CognitiveLoadMetrics | null&gt;(null);</span>
-  const [metricsHistory, setMetricsHistory] = <span class="cstat-no" title="statement not covered" >useState&lt;CognitiveLoadMetrics[]&gt;([]);</span>
-  const [alerts, setAlerts] = <span class="cstat-no" title="statement not covered" >useState&lt;CognitiveLoadAlert[]&gt;([]);</span>
-  const [isMonitoring, setIsMonitoring] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [autoAdaptation, setAutoAdaptation] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
-  const [activeTab, setActiveTab] = <span class="cstat-no" title="statement not covered" >useState&lt;'overview' | 'details' | 'adaptation' | 'history'&gt;(</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >CognitiveLoadDashboard:</span> React.FC&lt;CognitiveLoadDashboardProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  userId<span class="cstat-no" title="statement not covered" > = 'demo-user'<span class="cstat-no" title="statement not covered" >,</span></span>
+  autoStart<span class="cstat-no" title="statement not covered" > = true<span class="cstat-no" title="statement not covered" >,</span></span>
+  compactMode<span class="cstat-no" title="statement not covered" > = false,</span>
+}) =&gt;<span class="cstat-no" title="statement not covered" > {</span>
+  const [currentMetrics<span class="cstat-no" title="statement not covered" >, s</span>etCurrentMetrics<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;CognitiveLoadMetrics | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [metricsHistory<span class="cstat-no" title="statement not covered" >, s</span>etMetricsHistory<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;CognitiveLoadMetrics[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [alerts<span class="cstat-no" title="statement not covered" >, s</span>etAlerts<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;CognitiveLoadAlert[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isMonitoring<span class="cstat-no" title="statement not covered" >, s</span>etIsMonitoring<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [autoAdaptation<span class="cstat-no" title="statement not covered" >, s</span>etAutoAdaptation<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [activeTab<span class="cstat-no" title="statement not covered" >, s</span>etActiveTab<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;'overview' | 'details' | 'adaptation' | 'history'&gt;(</span>
     'overview'
-  );
+  )<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
   // 適応UIフック
-  const { adaptationState, currentTheme, setCustomAdaptation, resetAdaptations } = <span class="cstat-no" title="statement not covered" >useAdaptiveUI();</span>
+  const { adaptationState<span class="cstat-no" title="statement not covered" >, currentTheme<span class="cstat-no" title="statement not covered" >, setCustomAdaptation<span class="cstat-no" title="statement not covered" >, resetAdaptations<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useAdaptiveUI();</span></span></span></span></span>
 &nbsp;
   // 監視システムの初期化
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (autoStart) {</span>
 <span class="cstat-no" title="statement not covered" >      startMonitoring();</span>
     }
 &nbsp;
     // イベントリスナーの設定
-    const handleMetricsCalculated = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(m</span>etrics: CognitiveLoadMetrics) =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleMetricsCalculated </span>= <span class="cstat-no" title="statement not covered" >(metrics: CognitiveLoadMetrics) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setCurrentMetrics(metrics);</span>
 <span class="cstat-no" title="statement not covered" >      setMetricsHistory(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; {</span>
-        const newHistory = <span class="cstat-no" title="statement not covered" >[...prev, metrics];</span>
+        const newHistory<span class="cstat-no" title="statement not covered" > = [...prev, metrics];</span>
 <span class="cstat-no" title="statement not covered" >        return newHistory.slice(-50); </span>// 最新50件のみ保持
       });
     };
 &nbsp;
-    const handleAlert = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(a</span>lert: CognitiveLoadAlert) =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleAlert </span>= <span class="cstat-no" title="statement not covered" >(alert: CognitiveLoadAlert) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setAlerts(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; {</span>
-        const newAlerts = <span class="cstat-no" title="statement not covered" >[alert, ...prev];</span>
+        const newAlerts<span class="cstat-no" title="statement not covered" > = [alert, ...prev];</span>
 <span class="cstat-no" title="statement not covered" >        return newAlerts.slice(0, 10); </span>// 最新10件のみ保持
       });
     };
 &nbsp;
-    const handleMonitoringStarted = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleMonitoringStarted </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setIsMonitoring(true);</span>
     };
 &nbsp;
-    const handleMonitoringStopped = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleMonitoringStopped </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setIsMonitoring(false);</span>
     };
 &nbsp;
@@ -1696,7 +1696,7 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
 <span class="cstat-no" title="statement not covered" >    realtimeCognitiveLoadMonitor.on('monitoringStarted', handleMonitoringStarted);</span>
 <span class="cstat-no" title="statement not covered" >    realtimeCognitiveLoadMonitor.on('monitoringStopped', handleMonitoringStopped);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      realtimeCognitiveLoadMonitor.off('cognitiveLoadCalculated', handleMetricsCalculated);</span>
 <span class="cstat-no" title="statement not covered" >      realtimeCognitiveLoadMonitor.off('cognitiveLoadAlert', handleAlert);</span>
 <span class="cstat-no" title="statement not covered" >      realtimeCognitiveLoadMonitor.off('monitoringStarted', handleMonitoringStarted);</span>
@@ -1704,15 +1704,15 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
     };
   }, [autoStart, userId]);
 &nbsp;
-  const startMonitoring = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >startMonitoring </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    realtimeCognitiveLoadMonitor.startMonitoring(userId);</span>
   };
 &nbsp;
-  const stopMonitoring = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >stopMonitoring </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    realtimeCognitiveLoadMonitor.stopMonitoring();</span>
   };
 &nbsp;
-  const toggleMonitoring = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >toggleMonitoring </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    if (isMonitoring) {</span>
 <span class="cstat-no" title="statement not covered" >      stopMonitoring();</span>
     } else {
@@ -1720,7 +1720,7 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
     }
   };
 &nbsp;
-  const getLoadLevelColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(l</span>evel: CognitiveLoadLevel): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getLoadLevelColor </span>= <span class="cstat-no" title="statement not covered" >(level: CognitiveLoadLevel): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (level) {</span>
       case 'minimal':
 <span class="cstat-no" title="statement not covered" >        return 'text-green-600 bg-green-50';</span>
@@ -1737,7 +1737,7 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
     }
   };
 &nbsp;
-  const getLoadLevelIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(l</span>evel: CognitiveLoadLevel) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getLoadLevelIcon </span>= <span class="cstat-no" title="statement not covered" >(level: CognitiveLoadLevel) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (level) {</span>
       case 'minimal':
 <span class="cstat-no" title="statement not covered" >        return &lt;CheckCircle className="h-4 w-4" /&gt;;</span>
@@ -1754,7 +1754,7 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
     }
   };
 &nbsp;
-  const formatMetricsForRadar = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(m</span>etrics: CognitiveLoadMetrics) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatMetricsForRadar </span>= <span class="cstat-no" title="statement not covered" >(metrics: CognitiveLoadMetrics) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return [</span>
       { subject: '注意力', value: metrics.attention.focusStability * 100 },
       { subject: '処理速度', value: metrics.processing.efficiency * 100 },
@@ -1861,8 +1861,8 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
       {/* アラート表示 */}
       {alerts.length &gt; 0 &amp;&amp; (
         &lt;div className="space-y-2"&gt;
-          {alerts.slice(0, 3).map(<span class="fstat-no" title="function not covered" >(a</span>lert) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;Alert</span>
+          {alerts.slice(0, 3).map(<span class="fstat-no" title="function not covered" >(a</span>lert<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;Alert
               key={alert.id}
               className={`border-l-4 ${
                 alert.level === 'critical'
@@ -1877,8 +1877,8 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
                 &lt;strong&gt;{alert.message}&lt;/strong&gt;
                 {alert.recommendations.length &gt; 0 &amp;&amp; (
                   &lt;ul className="mt-2 text-sm"&gt;
-                    {alert.recommendations.map(<span class="fstat-no" title="function not covered" >(r</span>ec, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;li key={index} c</span>lassName="ml-4"&gt;
+                    {alert.recommendations.map(<span class="fstat-no" title="function not covered" >(r</span>ec, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                      &lt;li key={index} className="ml-4"&gt;
                         • {rec}
                       &lt;/li&gt;
                     ))}
@@ -1958,7 +1958,7 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
       )}
 &nbsp;
       {/* タブナビゲーション */}
-      &lt;Tabs value={activeTab} onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >setActiveTab(value as any)}</span>&gt;
+      &lt;Tabs value={activeTab} <span class="fstat-no" title="function not covered" >onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; setActiveTab(value as any)}&gt;</span>
         &lt;TabsList className="grid w-full grid-cols-4"&gt;
           &lt;TabsTrigger value="overview"&gt;概要&lt;/TabsTrigger&gt;
           &lt;TabsTrigger value="details"&gt;詳細分析&lt;/TabsTrigger&gt;
@@ -2015,12 +2015,12 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
                       &lt;CartesianGrid strokeDasharray="3 3" /&gt;
                       &lt;XAxis
                         dataKey="timestamp"
-                        tickFormatter={<span class="fstat-no" title="function not covered" >(t</span>ime) =&gt; <span class="cstat-no" title="statement not covered" >new Date(time).toLocaleTimeString()}</span>
+<span class="fstat-no" title="function not covered" >                        tickFormatter=</span>{(time<span class="cstat-no" title="statement not covered" >) =&gt; new Date(time).toLocaleTimeString()}</span>
                       /&gt;
                       &lt;YAxis domain={[0, 10]} /&gt;
                       &lt;Tooltip
-                        labelFormatter={<span class="fstat-no" title="function not covered" >(t</span>ime) =&gt; <span class="cstat-no" title="statement not covered" >new Date(time).toLocaleString()}</span>
-                        formatter={<span class="fstat-no" title="function not covered" >(v</span>alue: number) =&gt; <span class="cstat-no" title="statement not covered" >[value.toFixed(2), '認知負荷']}</span>
+<span class="fstat-no" title="function not covered" >                        labelFormatter=</span>{(time<span class="cstat-no" title="statement not covered" >) =&gt; new Date(time).toLocaleString()}</span>
+<span class="fstat-no" title="function not covered" >                        formatter=</span>{(value: number<span class="cstat-no" title="statement not covered" >) =&gt; [value.toFixed(2), '認知負荷']}</span>
                       /&gt;
                       &lt;Line
                         type="monotone"
@@ -2236,8 +2236,8 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
               &lt;/CardHeader&gt;
               &lt;CardContent className="space-y-4"&gt;
                 &lt;div className="space-y-3"&gt;
-                  {Object.entries(adaptationState.adaptations).map(<span class="fstat-no" title="function not covered" >([</span>key, value]) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;div key={key} c</span>lassName="flex items-center justify-between"&gt;
+                  {Object.entries(adaptationState.adaptations).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([k</span></span>ey<span class="cstat-no" title="statement not covered" >, v</span>alue<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; (</span></span>
+                    &lt;div key={key} className="flex items-center justify-between"&gt;
                       &lt;Label htmlFor={key} className="text-sm"&gt;
                         {key === 'simplifiedLayout' &amp;&amp; '簡略化レイアウト'}
                         {key === 'reducedAnimations' &amp;&amp; 'アニメーション削減'}
@@ -2251,7 +2251,7 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
                       &lt;Switch
                         id={key}
                         checked={value}
-                        onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >setCustomAdaptation({ [key]: checked })}</span>
+<span class="fstat-no" title="function not covered" >                        onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; setCustomAdaptation({ [key]: checked })}</span>
                       /&gt;
                     &lt;/div&gt;
                   ))}
@@ -2277,10 +2277,10 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
                     &lt;CartesianGrid strokeDasharray="3 3" /&gt;
                     &lt;XAxis
                       dataKey="timestamp"
-                      tickFormatter={<span class="fstat-no" title="function not covered" >(t</span>ime) =&gt; <span class="cstat-no" title="statement not covered" >new Date(time).toLocaleTimeString()}</span>
+<span class="fstat-no" title="function not covered" >                      tickFormatter=</span>{(time<span class="cstat-no" title="statement not covered" >) =&gt; new Date(time).toLocaleTimeString()}</span>
                     /&gt;
                     &lt;YAxis domain={[0, 10]} /&gt;
-                    &lt;Tooltip labelFormatter={<span class="fstat-no" title="function not covered" >(t</span>ime) =&gt; <span class="cstat-no" title="statement not covered" >new Date(time).toLocaleString()}</span> /&gt;
+                    &lt;Tooltip <span class="fstat-no" title="function not covered" >labelFormatter=</span>{(time<span class="cstat-no" title="statement not covered" >) =&gt; new Date(time).toLocaleString()} /&gt;</span>
                     &lt;Area
                       type="monotone"
                       dataKey="overall"
@@ -2303,8 +2303,8 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
               &lt;/CardHeader&gt;
               &lt;CardContent&gt;
                 &lt;div className="space-y-3"&gt;
-                  {alerts.map(<span class="fstat-no" title="function not covered" >(a</span>lert) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;div key={alert.id} c</span>lassName="border rounded-lg p-3"&gt;
+                  {alerts.map(<span class="fstat-no" title="function not covered" >(a</span>lert<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                    &lt;div key={alert.id} className="border rounded-lg p-3"&gt;
                       &lt;div className="flex items-center justify-between mb-2"&gt;
                         &lt;Badge className={getLoadLevelColor(alert.level)}&gt;
                           {getLoadLevelIcon(alert.level)}
@@ -2317,8 +2317,8 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
                       &lt;p className="text-sm font-medium"&gt;{alert.message}&lt;/p&gt;
                       {alert.recommendations.length &gt; 0 &amp;&amp; (
                         &lt;ul className="mt-2 text-xs text-gray-600"&gt;
-                          {alert.recommendations.map(<span class="fstat-no" title="function not covered" >(r</span>ec, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                            &lt;li key={index} c</span>lassName="ml-4"&gt;
+                          {alert.recommendations.map(<span class="fstat-no" title="function not covered" >(r</span>ec, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                            &lt;li key={index} className="ml-4"&gt;
                               • {rec}
                             &lt;/li&gt;
                           ))}
@@ -2344,7 +2344,7 @@ export const <span class="cstat-no" title="statement not covered" >CognitiveLoad
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/114</span>
+                <span class='fraction'>0/127</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/44</span>
+                <span class='fraction'>0/46</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/30</span>
+                <span class='fraction'>0/32</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/102</span>
+                <span class='fraction'>0/104</span>
             </div>
         
             
@@ -737,8 +737,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1017,7 +1017,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1064,6 +1063,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1103,7 +1103,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1137,6 +1136,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1281,29 +1281,29 @@ interface DailyGoal {
   timeSpent: number;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePlanningDashboard: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const [weeklyPlan, setWeeklyPlan] = <span class="cstat-no" title="statement not covered" >useState&lt;WeeklyPlan | null&gt;(null);</span>
-  const [dailyGoals, setDailyGoals] = <span class="cstat-no" title="statement not covered" >useState&lt;DailyGoal[]&gt;([]);</span>
-  const [loading, setLoading] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >WeeklyBadgePlanningDashboard:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const [weeklyPlan<span class="cstat-no" title="statement not covered" >, s</span>etWeeklyPlan<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;WeeklyPlan | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [dailyGoals<span class="cstat-no" title="statement not covered" >, s</span>etDailyGoals<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;DailyGoal[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [loading<span class="cstat-no" title="statement not covered" >, s</span>etLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    generateWeeklyPlan();</span>
   }, []);
 &nbsp;
   /**
    * 🗓️ 週次計画生成
    */
-  const generateWeeklyPlan = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >generateWeeklyPlan<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span></span>sync () =&gt; {</span></span></span>
 <span class="cstat-no" title="statement not covered" >    setLoading(true);</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const goals = <span class="cstat-no" title="statement not covered" >expandedBadgeService.generateWeeklyGoals();</span>
-      const startDate = <span class="cstat-no" title="statement not covered" >getWeekStartDate();</span>
-      const endDate = <span class="cstat-no" title="statement not covered" >getWeekEndDate(startDate);</span>
+      const <span class="cstat-no" title="statement not covered" >goals = expandedBadgeService.generateWeeklyGoals();</span>
+      const <span class="cstat-no" title="statement not covered" >startDate = getWeekStartDate();</span>
+      const <span class="cstat-no" title="statement not covered" >endDate = getWeekEndDate(startDate);</span>
 &nbsp;
-      const plan: WeeklyPlan = <span class="cstat-no" title="statement not covered" >{</span>
+      const <span class="cstat-no" title="statement not covered" >plan: WeeklyPlan = {</span>
         weekStartDate: startDate.toISOString(),
         weekEndDate: endDate.toISOString(),
-        targetBadges: goals.targetBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+        targetBadges: goals.targetBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
           id: badge.id,
           name: badge.name,
           category: badge.category,
@@ -1323,13 +1323,13 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
 <span class="cstat-no" title="statement not covered" >      console.error('週次計画生成エラー:', error);</span>
     } finally {
 <span class="cstat-no" title="statement not covered" >      setLoading(false);</span>
-    }
-  };
+    }<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
   /**
    * 📅 日次目標生成
    */
-  const generateDailyGoals = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>lan: WeeklyPlan) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >generateDailyGoals </span>= <span class="cstat-no" title="statement not covered" >(plan: WeeklyPlan) =&gt; {</span>
     const goals: DailyGoal[] = <span class="cstat-no" title="statement not covered" >[];</span>
     const workDays = <span class="cstat-no" title="statement not covered" >5;</span> // 平日のみ
 &nbsp;
@@ -1358,7 +1358,7 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
   /**
    * 📊 進捗計算ヘルパー関数
    */
-  const calculateBadgeHours = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ifficulty: string, progress: number): number =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateBadgeHours </span>= <span class="cstat-no" title="statement not covered" >(difficulty: string, progress: number): number =&gt; {</span>
     const baseHours =
 <span class="cstat-no" title="statement not covered" >      {</span>
         bronze: 5,
@@ -1371,33 +1371,33 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
 <span class="cstat-no" title="statement not covered" >    return Math.round(baseHours * (1 - progress / 100));</span>
   };
 &nbsp;
-  const calculatePriority = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>rogress: number, difficulty: string): 'high' | 'medium' | 'low' =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculatePriority </span>= <span class="cstat-no" title="statement not covered" >(progress: number, difficulty: string): 'high' | 'medium' | 'low' =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (progress &gt; 70 || difficulty === 'bronze') <span class="cstat-no" title="statement not covered" >return 'high';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (progress &gt; 40 || difficulty === 'silver') <span class="cstat-no" title="statement not covered" >return 'medium';</span></span>
 <span class="cstat-no" title="statement not covered" >    return 'low';</span>
   };
 &nbsp;
-  const getWeekStartDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): Date =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getWeekStartDate </span>= <span class="cstat-no" title="statement not covered" >(): Date =&gt; {</span>
     const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
     const startOfWeek = <span class="cstat-no" title="statement not covered" >new Date(now);</span>
 <span class="cstat-no" title="statement not covered" >    startOfWeek.setDate(now.getDate() - now.getDay());</span>
 <span class="cstat-no" title="statement not covered" >    return startOfWeek;</span>
   };
 &nbsp;
-  const getWeekEndDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tartDate: Date): Date =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getWeekEndDate </span>= <span class="cstat-no" title="statement not covered" >(startDate: Date): Date =&gt; {</span>
     const endDate = <span class="cstat-no" title="statement not covered" >new Date(startDate);</span>
 <span class="cstat-no" title="statement not covered" >    endDate.setDate(startDate.getDate() + 6);</span>
 <span class="cstat-no" title="statement not covered" >    return endDate;</span>
   };
 &nbsp;
-  const formatDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>soString: string): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatDate </span>= <span class="cstat-no" title="statement not covered" >(isoString: string): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return new Date(isoString).toLocaleDateString('ja-JP', {</span>
       month: 'short',
       day: 'numeric',
     });
   };
 &nbsp;
-  const getPriorityColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>riority: string): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getPriorityColor </span>= <span class="cstat-no" title="statement not covered" >(priority: string): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (priority) {</span>
       case 'high':
 <span class="cstat-no" title="statement not covered" >        return 'bg-red-100 text-red-800';</span>
@@ -1410,7 +1410,7 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
     }
   };
 &nbsp;
-  const getDifficultyIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ifficulty: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getDifficultyIcon </span>= <span class="cstat-no" title="statement not covered" >(difficulty: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (difficulty) {</span>
       case 'bronze':
 <span class="cstat-no" title="statement not covered" >        return '🥉';</span>
@@ -1427,12 +1427,12 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
     }
   };
 &nbsp;
-  const getWeeklyStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getWeeklyStats </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!weeklyPlan) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
-    const totalProgress = <span class="cstat-no" title="statement not covered" >dailyGoals.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, goal) =&gt; <span class="cstat-no" title="statement not covered" >sum + goal.actualProgress,</span> 0);</span>
-    const totalTimeSpent = <span class="cstat-no" title="statement not covered" >dailyGoals.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, goal) =&gt; <span class="cstat-no" title="statement not covered" >sum + goal.timeSpent,</span> 0);</span>
-    const completedGoals = <span class="cstat-no" title="statement not covered" >dailyGoals.filter(<span class="fstat-no" title="function not covered" >(g</span>oal) =&gt; <span class="cstat-no" title="statement not covered" >goal.completed)</span>.length;</span>
+    const totalProgress = <span class="cstat-no" title="statement not covered" >dailyGoals.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, goal<span class="cstat-no" title="statement not covered" >) =&gt; sum + goal.actualProgress, 0</span>);</span>
+    const totalTimeSpent = <span class="cstat-no" title="statement not covered" >dailyGoals.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, goal<span class="cstat-no" title="statement not covered" >) =&gt; sum + goal.timeSpent, 0</span>);</span>
+    const completedGoals = <span class="cstat-no" title="statement not covered" >dailyGoals.filter(<span class="fstat-no" title="function not covered" >(g</span>oal<span class="cstat-no" title="statement not covered" >) =&gt; goal.completed).</span>length;</span>
     const completionRate = <span class="cstat-no" title="statement not covered" >dailyGoals.length &gt; 0 ? (completedGoals / dailyGoals.length) * 100 : 0;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
@@ -1444,16 +1444,16 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
     };
   };
 &nbsp;
-  const calculateEstimatedCompletion = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): string =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateEstimatedCompletion </span>= <span class="cstat-no" title="statement not covered" >(): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!weeklyPlan) <span class="cstat-no" title="statement not covered" >return '';</span></span>
 &nbsp;
     const avgProgressPerDay =
 <span class="cstat-no" title="statement not covered" >      dailyGoals.length &gt; 0</span>
-        ? dailyGoals.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, goal) =&gt; <span class="cstat-no" title="statement not covered" >sum + goal.actualProgress,</span> 0) / dailyGoals.length
+        ? dailyGoals.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, goal<span class="cstat-no" title="statement not covered" >) =&gt; sum + goal.actualProgress, 0</span>) / dailyGoals.length
         : 5;
 &nbsp;
     const remainingProgress = <span class="cstat-no" title="statement not covered" >weeklyPlan.targetBadges.reduce(</span>
-<span class="fstat-no" title="function not covered" >      (s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + (100 - badge.progress),</span>
+<span class="fstat-no" title="function not covered" >      (s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt; sum + (100 - badge.progress),</span>
       0
     );
 &nbsp;
@@ -1603,8 +1603,8 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
                   &lt;div&gt;
                     &lt;span className="block mb-2"&gt;重点分野:&lt;/span&gt;
                     &lt;div className="flex flex-wrap gap-2"&gt;
-                      {weeklyPlan.focusAreas.map(<span class="fstat-no" title="function not covered" >(a</span>rea, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                        &lt;Badge key={index} c</span>lassName="bg-blue-100 text-blue-800"&gt;
+                      {weeklyPlan.focusAreas.map(<span class="fstat-no" title="function not covered" >(a</span>rea, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                        &lt;Badge key={index} className="bg-blue-100 text-blue-800"&gt;
                           {area}
                         &lt;/Badge&gt;
                       ))}
@@ -1624,8 +1624,8 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
               &lt;/CardHeader&gt;
               &lt;CardContent&gt;
                 &lt;div className="space-y-4"&gt;
-                  {weeklyPlan.targetBadges.slice(0, 3).map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;div key={badge.id} c</span>lassName="space-y-2"&gt;
+                  {weeklyPlan.targetBadges.slice(0, 3).map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                    &lt;div key={badge.id} className="space-y-2"&gt;
                       &lt;div className="flex items-center justify-between"&gt;
                         &lt;span className="text-sm font-medium"&gt;{badge.name}&lt;/span&gt;
                         &lt;span className="text-sm text-gray-600"&gt;{badge.progress}%&lt;/span&gt;
@@ -1648,8 +1648,8 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
             &lt;/CardHeader&gt;
             &lt;CardContent&gt;
               &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"&gt;
-                {expandedBadgeService.getWeeklyRecommendations().map(<span class="fstat-no" title="function not covered" >(r</span>ecommendation, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div key={index} c</span>lassName="p-4 bg-blue-50 rounded-lg border border-blue-200"&gt;
+                {expandedBadgeService.getWeeklyRecommendations().map(<span class="fstat-no" title="function not covered" >(r</span>ecommendation, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;div key={index} className="p-4 bg-blue-50 rounded-lg border border-blue-200"&gt;
                     &lt;p className="text-sm text-blue-800"&gt;{recommendation}&lt;/p&gt;
                   &lt;/div&gt;
                 ))}
@@ -1669,10 +1669,10 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
             &lt;/CardHeader&gt;
             &lt;CardContent&gt;
               &lt;div className="space-y-4"&gt;
-                {Array.from(new Set(dailyGoals.map(<span class="fstat-no" title="function not covered" >(g</span>oal) =&gt; <span class="cstat-no" title="statement not covered" >goal.date)</span>)).map(<span class="fstat-no" title="function not covered" >(d</span>ate) =&gt; {
-                  const dayGoals = <span class="cstat-no" title="statement not covered" >dailyGoals.filter(<span class="fstat-no" title="function not covered" >(g</span>oal) =&gt; <span class="cstat-no" title="statement not covered" >goal.date === date)</span>;</span>
-                  const dayProgress = <span class="cstat-no" title="statement not covered" >dayGoals.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, goal) =&gt; <span class="cstat-no" title="statement not covered" >sum + goal.actualProgress,</span> 0);</span>
-                  const dayTarget = <span class="cstat-no" title="statement not covered" >dayGoals.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, goal) =&gt; <span class="cstat-no" title="statement not covered" >sum + goal.targetProgress,</span> 0);</span>
+                {Array.from(new Set(dailyGoals.map(<span class="fstat-no" title="function not covered" >(g</span>oal<span class="cstat-no" title="statement not covered" >) =&gt; goal.date))</span>).map(<span class="fstat-no" title="function not covered" >(d</span>ate) =&gt; {
+                  const dayGoals = <span class="cstat-no" title="statement not covered" >dailyGoals.filter(<span class="fstat-no" title="function not covered" >(g</span>oal<span class="cstat-no" title="statement not covered" >) =&gt; goal.date === date);</span></span>
+                  const dayProgress = <span class="cstat-no" title="statement not covered" >dayGoals.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, goal<span class="cstat-no" title="statement not covered" >) =&gt; sum + goal.actualProgress, 0</span>);</span>
+                  const dayTarget = <span class="cstat-no" title="statement not covered" >dayGoals.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, goal<span class="cstat-no" title="statement not covered" >) =&gt; sum + goal.targetProgress, 0</span>);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                  return (</span>
                     &lt;div key={date} className="border rounded-lg p-4"&gt;
@@ -1689,8 +1689,8 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
                         &lt;/Badge&gt;
                       &lt;/div&gt;
                       &lt;div className="space-y-2"&gt;
-                        {dayGoals.map(<span class="fstat-no" title="function not covered" >(g</span>oal, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                          &lt;div</span>
+                        {dayGoals.map(<span class="fstat-no" title="function not covered" >(g</span>oal, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                          &lt;div
                             key={index}
                             className="flex items-center justify-between p-2 bg-gray-50 rounded"
                           &gt;
@@ -1721,8 +1721,8 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
         {/* バッジ詳細タブ */}
         &lt;TabsContent value="badges" className="space-y-4"&gt;
           &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"&gt;
-            {weeklyPlan.targetBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;Card key={badge.id} c</span>lassName="hover:shadow-lg transition-shadow"&gt;
+            {weeklyPlan.targetBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;Card key={badge.id} className="hover:shadow-lg transition-shadow"&gt;
                 &lt;CardHeader&gt;
                   &lt;CardTitle className="flex items-center justify-between"&gt;
                     &lt;span className="flex items-center gap-2"&gt;
@@ -1828,7 +1828,7 @@ export const <span class="cstat-no" title="statement not covered" >WeeklyBadgePl
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

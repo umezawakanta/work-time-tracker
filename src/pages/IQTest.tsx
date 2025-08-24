@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -30,8 +30,10 @@ const IQTest: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState<number>(TOTAL_TIME_SEC);
   const [submitting, setSubmitting] = useState(false);
   const [started, setStarted] = useState(false);
+  const [autoSubmitted, setAutoSubmitted] = useState(false);
   const total = useMemo(() => 20, []); // 骨組みとして20問想定（サンプルは少数）
   const { trackPageView, trackEvent } = useAnalytics();
+  const firstUnansweredRef = useRef<string | null>(null);
 
   useEffect(() => {
     loadQuestions()
@@ -49,12 +51,34 @@ const IQTest: React.FC = () => {
     return () => clearInterval(timer);
   }, [started]);
 
+  useEffect(() => {
+    if (!started) return;
+    if (timeLeft === 0 && !submitting && !autoSubmitted) {
+      setAutoSubmitted(true);
+      // 未回答は不正解として自動提出
+      toast('時間になりました。自動的に提出します。', { icon: '⏰' });
+      void submit({ allowIncomplete: true, reason: 'timeout' });
+    }
+  }, [timeLeft, started, submitting, autoSubmitted]);
+
   const unanswered = questions.filter((q) => selected[q.id] == null).length;
   const progress =
     questions.length > 0 ? ((questions.length - unanswered) / questions.length) * 100 : 0;
 
   const handleSelect = (qid: string, idx: number) => {
     setSelected((prev) => ({ ...prev, [qid]: idx }));
+  };
+
+  const scrollToFirstUnanswered = () => {
+    const q = questions.find((qq) => selected[qq.id] == null);
+    if (!q) return;
+    try {
+      const labelEl = document.getElementById(`q-${q.id}-label`);
+      labelEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const radio = document.querySelector(`input[name="${q.id}"]`) as HTMLInputElement | null;
+      radio?.focus();
+      firstUnansweredRef.current = q.id;
+    } catch {}
   };
 
   const computeScore = (): {
@@ -76,11 +100,12 @@ const IQTest: React.FC = () => {
     };
   };
 
-  const submit = async () => {
+  const submit = async (opts?: { allowIncomplete?: boolean; reason?: 'timeout' | 'user' }) => {
     if (questions.length === 0) return;
     const hasUnanswered = questions.some((q) => selected[q.id] == null);
-    if (hasUnanswered) {
-      toast.error('未選択の問題があります');
+    if (hasUnanswered && !opts?.allowIncomplete) {
+      toast.error('未回答の設問があります。未回答の設問へ移動しました。');
+      scrollToFirstUnanswered();
       return;
     }
     setSubmitting(true);
@@ -88,11 +113,11 @@ const IQTest: React.FC = () => {
       const { raw, scaled, percentile } = computeScore();
       await saveIQResult({ score: raw, total: total, scaledIQ: scaled, percentile });
       toast.success(
-        `結果を保存しました。推定IQ: ${scaled}（上位${Math.max(1, 100 - percentile)}%）`
+        `結果を保存しました（推定IQ: ${scaled} / 上位${Math.max(1, 100 - percentile)}%）`
       );
       trackEvent('assessment_saved', { type: 'iq', score: raw, scaled, percentile });
     } catch (e) {
-      toast.error('保存に失敗しました');
+      toast.error('結果の保存に失敗しました。通信環境をご確認ください。');
       trackEvent('assessment_save_failed', { type: 'iq' });
     } finally {
       setSubmitting(false);

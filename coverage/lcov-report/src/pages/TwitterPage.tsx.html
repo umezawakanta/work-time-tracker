@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/51</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
-                <span class="quiet">Functions</span>
                 <span class='fraction'>0/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/16</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/32</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -152,19 +152,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -172,16 +167,21 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -214,45 +214,45 @@ import { Tweet } from '@/types/Tweet';
 <span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
 <span class="cstat-no" title="statement not covered" >import { Search } from 'lucide-react';</span>
 &nbsp;
-const TwitterPage: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const [tweets, setTweets] = <span class="cstat-no" title="statement not covered" >useState&lt;Tweet[]&gt;([]);</span>
-  const [searchTerm, setSearchTerm] = <span class="cstat-no" title="statement not covered" >useState('');</span>
+const <span class="fstat-no" title="function not covered" >TwitterPage:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const [tweets<span class="cstat-no" title="statement not covered" >, s</span>etTweets<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Tweet[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [searchTerm<span class="cstat-no" title="statement not covered" >, s</span>etSearchTerm<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    fetchTweets();</span>
   }, []);
 &nbsp;
-  const fetchTweets = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(search?: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const fetchedTweets = <span class="cstat-no" title="statement not covered" >await getTweets(search);</span>
-<span class="cstat-no" title="statement not covered" >      setTweets(fetchedTweets);</span>
+  const <span class="fstat-no" title="function not covered" >fetchTweets<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span>sync (s</span>earch?: string<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >) =&gt; {</span></span></span></span></span>
+    try {
+      const <span class="cstat-no" title="statement not covered" >fetchedTweets = await g</span>etTweets(search);
+<span class="cstat-no" title="statement not covered" >      setTweets(fetchedTweets);<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (error) {
-<span class="cstat-no" title="statement not covered" >      console.error('Error fetching tweets:', error);</span>
+<span class="cstat-no" title="statement not covered" >      console.error('Error fetching tweets:', error);<span class="cstat-no" title="statement not covered" ></span></span>
     }
+  }<span class="cstat-no" title="statement not covered" >;</span>
+&nbsp;
+  const <span class="fstat-no" title="function not covered" >addNewTweet </span>= <span class="cstat-no" title="statement not covered" >(newTweet: Tweet) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setTweets(<span class="fstat-no" title="function not covered" >(p</span>revTweets<span class="cstat-no" title="statement not covered" >) =&gt; [newTweet, ...prevTweets])</span>;</span>
   };
 &nbsp;
-  const addNewTweet = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(n</span>ewTweet: Tweet) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setTweets(<span class="fstat-no" title="function not covered" >(p</span>revTweets) =&gt; <span class="cstat-no" title="statement not covered" >[newTweet, ...prevTweets])</span>;</span>
-  };
-&nbsp;
-  const handleSearch = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: React.FormEvent) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleSearch </span>= <span class="cstat-no" title="statement not covered" >(e: React.FormEvent) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    e.preventDefault();</span>
 <span class="cstat-no" title="statement not covered" >    fetchTweets(searchTerm);</span>
   };
 &nbsp;
-  const handleUpdateTweet = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(id: string, content: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const updatedTweet = <span class="cstat-no" title="statement not covered" >await updateTweet(id, content);</span>
-<span class="cstat-no" title="statement not covered" >      setTweets(<span class="fstat-no" title="function not covered" >(p</span>revTweets) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >        prevTweets.map(<span class="fstat-no" title="function not covered" >(t</span>weet) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >          tweet._id.toString() === id ? { ...tweet, ...updatedTweet } : tweet</span>
+  const <span class="fstat-no" title="function not covered" >handleUpdateTweet<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span>sync (i</span>d: string, content: string<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >) =&gt; {</span></span></span></span></span>
+    try {
+      const <span class="cstat-no" title="statement not covered" >updatedTweet = await u</span>pdateTweet(id, content);
+<span class="cstat-no" title="statement not covered" >      setTweets(<span class="fstat-no" title="function not covered" >(p</span>revTweets<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+        prevTweets.map(<span class="fstat-no" title="function not covered" >(t</span>weet<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+          tweet._id.toString() === id ? { ...tweet, ...updatedTweet } : tweet
         )
-      );
+      );<span class="cstat-no" title="statement not covered" ></span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Error updating tweet:', error);</span>
-      // ここでエラー処理を行う（例：エラーメッセージを表示する）
+<span class="cstat-no" title="statement not covered" >      // ここでエラー処理を行う（例：エラーメッセージを表示する）</span>
     }
-  };
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className="container mx-auto px-4 py-8"&gt;
@@ -263,7 +263,7 @@ const TwitterPage: React.FC = <span class="cstat-no" title="statement not covere
           type="text"
           placeholder="ツイートを検索..."
           value={searchTerm}
-          onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setSearchTerm(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >          onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setSearchTerm(e.target.value)}</span>
           className="flex-grow"
         /&gt;
         &lt;Button type="submit"&gt;
@@ -283,7 +283,7 @@ const TwitterPage: React.FC = <span class="cstat-no" title="statement not covere
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

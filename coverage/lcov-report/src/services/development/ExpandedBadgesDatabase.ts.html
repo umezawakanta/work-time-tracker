@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/36</span>
+                <span class='fraction'>0/37</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
@@ -5879,37 +5879,37 @@ export const <span class="cstat-no" title="statement not covered" >EXPANDED_BADG
 /**
  * 📊 バッジカテゴリ統計
  */
-export const <span class="cstat-no" title="statement not covered" >getBadgesByCategory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>c</span>ategory: BadgeCategory): DevelopmentBadge[] =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return EXPANDED_BADGES_DATABASE.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.category === category)</span>;</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getBadgesByCategory </span>= <span class="cstat-no" title="statement not covered" >(</span>category: BadgeCategory): DevelopmentBadge[] =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  return EXPANDED_BADGES_DATABASE.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.category === category);</span></span>
 };
 &nbsp;
 /**
  * 🏆 完了済みバッジ取得
  */
-export const <span class="cstat-no" title="statement not covered" >getCompletedBadges = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>): DevelopmentBadge[] =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return EXPANDED_BADGES_DATABASE.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.isCompleted)</span>;</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getCompletedBadges </span>= <span class="cstat-no" title="statement not covered" >(</span>): DevelopmentBadge[] =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  return EXPANDED_BADGES_DATABASE.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.isCompleted);</span></span>
 };
 &nbsp;
 /**
  * 📈 進行中バッジ取得
  */
-export const <span class="cstat-no" title="statement not covered" >getInProgressBadges = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>): DevelopmentBadge[] =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return EXPANDED_BADGES_DATABASE.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >!badge.isCompleted &amp;&amp; badge.progress &gt; 0)</span>;</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getInProgressBadges </span>= <span class="cstat-no" title="statement not covered" >(</span>): DevelopmentBadge[] =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  return EXPANDED_BADGES_DATABASE.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; !badge.isCompleted &amp;&amp; badge.progress &gt; 0);</span></span>
 };
 &nbsp;
 /**
  * 🔓 利用可能バッジ取得
  */
-export const <span class="cstat-no" title="statement not covered" >getAvailableBadges = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>): DevelopmentBadge[] =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return EXPANDED_BADGES_DATABASE.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.isUnlocked &amp;&amp; !badge.isCompleted)</span>;</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getAvailableBadges </span>= <span class="cstat-no" title="statement not covered" >(</span>): DevelopmentBadge[] =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  return EXPANDED_BADGES_DATABASE.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.isUnlocked &amp;&amp; !badge.isCompleted);</span></span>
 };
 &nbsp;
 /**
  * 🎯 次に取得すべきバッジ提案
  */
-export const <span class="cstat-no" title="statement not covered" >getRecommendedNextBadges = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>l</span>imit: number = <span class="branch-0 cbranch-no" title="branch not covered" >5)</span>: DevelopmentBadge[] =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return EXPANDED_BADGES_DATABASE.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.isUnlocked &amp;&amp; !badge.isCompleted)</span></span>
-    .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >b.progress - a.progress)</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getRecommendedNextBadges </span>= <span class="cstat-no" title="statement not covered" >(<span class="cstat-no" title="statement not covered" ></span>limit: number = 5)</span>: DevelopmentBadge[] =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  return EXPANDED_BADGES_DATABASE.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.isUnlocked &amp;&amp; !badge.isCompleted)</span></span>
+    .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; b.progress - a.progress)</span>
     .slice(0, limit);
 };
 &nbsp;
@@ -5926,14 +5926,14 @@ export interface BadgeStatsSummary {
   categoryBreakdown: Record&lt;BadgeCategory, number&gt;;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >getBadgeStatsSummary = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>): BadgeStatsSummary =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getBadgeStatsSummary </span>= <span class="cstat-no" title="statement not covered" >(</span>): BadgeStatsSummary =&gt; {</span>
   const total = <span class="cstat-no" title="statement not covered" >EXPANDED_BADGES_DATABASE.length;</span>
   const completed = <span class="cstat-no" title="statement not covered" >getCompletedBadges();</span>
   const inProgress = <span class="cstat-no" title="statement not covered" >getInProgressBadges();</span>
   const available = <span class="cstat-no" title="statement not covered" >getAvailableBadges();</span>
 &nbsp;
-  const totalPoints = <span class="cstat-no" title="statement not covered" >completed.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + (badge.points || 0),</span> 0);</span>
-  const completionRate = <span class="cstat-no" title="statement not covered" >(completed.length / total) * 100;</span>
+  const totalPoints = <span class="cstat-no" title="statement not covered" >completed.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt; sum + (badge.points || 0), 0</span>);</span>
+  const completionRate = (<span class="cstat-no" title="statement not covered" >completed.length / total) * 100;</span>
 &nbsp;
   const categoryBreakdown: Record&lt;string, number&gt; = <span class="cstat-no" title="statement not covered" >{};</span>
 <span class="cstat-no" title="statement not covered" >  EXPANDED_BADGES_DATABASE.forEach(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; {</span>
@@ -5959,7 +5959,7 @@ export const <span class="cstat-no" title="statement not covered" >getBadgeStats
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

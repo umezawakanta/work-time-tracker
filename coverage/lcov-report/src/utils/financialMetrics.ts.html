@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/75</span>
+                <span class='fraction'>0/76</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/36</span>
+                <span class='fraction'>0/46</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/72</span>
+                <span class='fraction'>0/73</span>
             </div>
         
             
@@ -248,7 +248,7 @@
 <a name='L183'></a><a href='#L183'>183</a>
 <a name='L184'></a><a href='#L184'>184</a>
 <a name='L185'></a><a href='#L185'>185</a>
-<a name='L186'></a><a href='#L186'>186</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L186'></a><a href='#L186'>186</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -433,7 +433,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>/**</span></span>
  * 財務指標計算のためのユーティリティ関数
  */
 &nbsp;
@@ -445,7 +445,7 @@ import { AssetEntry, DebtEntry, FinancialMetrics } from '@/types';
  * @param debtEntries 負債エントリの配列
  * @returns 計算された財務指標
  */
-export const <span class="cstat-no" title="statement not covered" >calculateFinancialMetrics = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>a</span>ssetEntries: AssetEntry[], debtEntries: DebtEntry[]) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >calculateFinancialMetrics </span>= <span class="cstat-no" title="statement not covered" >(</span>assetEntries: AssetEntry[], debtEntries: DebtEntry[]) =&gt; {</span>
   // 口座ごとに最新の資産情報を取得
   const latestAssetByAccount = <span class="cstat-no" title="statement not covered" >new Map&lt;string, AssetEntry&gt;();</span>
 <span class="cstat-no" title="statement not covered" >  assetEntries.forEach(<span class="fstat-no" title="function not covered" >(e</span>ntry) =&gt; {</span>
@@ -466,13 +466,13 @@ export const <span class="cstat-no" title="statement not covered" >calculateFina
 &nbsp;
   // 最新のエントリを使って総資産を計算
   const totalAssets = <span class="cstat-no" title="statement not covered" >Array.from(latestAssetByAccount.values()).reduce(</span>
-<span class="fstat-no" title="function not covered" >    (s</span>um, entry) =&gt; <span class="cstat-no" title="statement not covered" >sum + entry.value,</span>
+<span class="fstat-no" title="function not covered" >    (s</span>um, entry<span class="cstat-no" title="statement not covered" >) =&gt; sum + entry.value,</span>
     0
   );
 &nbsp;
   // 最新のエントリを使って総負債を計算
   const totalDebts = <span class="cstat-no" title="statement not covered" >Array.from(latestDebtByAccount.values()).reduce(</span>
-<span class="fstat-no" title="function not covered" >    (s</span>um, entry) =&gt; <span class="cstat-no" title="statement not covered" >sum + entry.value,</span>
+<span class="fstat-no" title="function not covered" >    (s</span>um, entry<span class="cstat-no" title="statement not covered" >) =&gt; sum + entry.value,</span>
     0
   );
 &nbsp;
@@ -482,7 +482,7 @@ export const <span class="cstat-no" title="statement not covered" >calculateFina
 &nbsp;
   // 過去の資産データを日付でソート（古い順）
   const sortedAssetEntries = <span class="cstat-no" title="statement not covered" >[...assetEntries].sort(</span>
-<span class="fstat-no" title="function not covered" >    (a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(a.date).getTime() - new Date(b.date).getTime()</span>
+<span class="fstat-no" title="function not covered" >    (a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(a.date).getTime() - new Date(b.date).getTime()</span>
   );
 &nbsp;
   // 資産成長率（直近の増減率を計算）
@@ -510,7 +510,7 @@ export const <span class="cstat-no" title="statement not covered" >calculateFina
     });
 &nbsp;
     // 日付でソート
-<span class="cstat-no" title="statement not covered" >    dateValuePairs.sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(a.date).getTime() - new Date(b.date).getTime())</span>;</span>
+<span class="cstat-no" title="statement not covered" >    dateValuePairs.sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(a.date).getTime() - new Date(b.date).getTime());</span></span>
 &nbsp;
     // 少なくとも2つのポイントがある場合、成長率を計算
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (dateValuePairs.length &gt;= 2) {</span>
@@ -533,7 +533,7 @@ export const <span class="cstat-no" title="statement not covered" >calculateFina
       const name = <span class="cstat-no" title="statement not covered" >asset.account.toLowerCase();</span>
 <span class="cstat-no" title="statement not covered" >      return name.includes('現金') || name.includes('銀行') || name.includes('預金');</span>
     })
-    .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, asset) =&gt; <span class="cstat-no" title="statement not covered" >sum + asset.value,</span> 0);
+    .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, asset<span class="cstat-no" title="statement not covered" >) =&gt; sum + asset.value, 0</span>);
 &nbsp;
   const monthlyExpenses = <span class="cstat-no" title="statement not covered" >300000;</span> // 仮定値（実際にはデータから計算）
   const emergencyFundRatio = <span class="cstat-no" title="statement not covered" >monthlyExpenses &gt; 0 ? cashAssets / monthlyExpenses : 0;</span>
@@ -544,7 +544,7 @@ export const <span class="cstat-no" title="statement not covered" >calculateFina
       const name = <span class="cstat-no" title="statement not covered" >asset.account.toLowerCase();</span>
 <span class="cstat-no" title="statement not covered" >      return name.includes('株') || name.includes('投資') || name.includes('fund');</span>
     })
-    .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, asset) =&gt; <span class="cstat-no" title="statement not covered" >sum + asset.value,</span> 0);
+    .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, asset<span class="cstat-no" title="statement not covered" >) =&gt; sum + asset.value, 0</span>);
 &nbsp;
   const investmentAllocation = <span class="cstat-no" title="statement not covered" >totalAssets &gt; 0 ? (investmentAssets / totalAssets) * 100 : 0;</span>
 &nbsp;
@@ -555,7 +555,7 @@ export const <span class="cstat-no" title="statement not covered" >calculateFina
       const name = <span class="cstat-no" title="statement not covered" >debt.account.toLowerCase();</span>
 <span class="cstat-no" title="statement not covered" >      return !name.includes('住宅') &amp;&amp; !name.includes('ローン');</span>
     })
-    .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, debt) =&gt; <span class="cstat-no" title="statement not covered" >sum + debt.value,</span> 0);
+    .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, debt<span class="cstat-no" title="statement not covered" >) =&gt; sum + debt.value, 0</span>);
 &nbsp;
   const liquidityRatio =
 <span class="cstat-no" title="statement not covered" >    currentDebts &gt; 0 ? liquidAssets / currentDebts : liquidAssets &gt; 0 ? 999 : 0;</span>
@@ -583,7 +583,7 @@ export const <span class="cstat-no" title="statement not covered" >calculateFina
  * @param metrics 財務指標
  * @returns 改善提案の配列
  */
-export const <span class="cstat-no" title="statement not covered" >generateFinancialSuggestions = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>m</span>etrics: FinancialMetrics): string[] =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >generateFinancialSuggestions </span>= <span class="cstat-no" title="statement not covered" >(</span>metrics: FinancialMetrics): string[] =&gt; {</span>
   const suggestions: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
   // 緊急資金に関する提案
@@ -625,7 +625,7 @@ export const <span class="cstat-no" title="statement not covered" >generateFinan
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

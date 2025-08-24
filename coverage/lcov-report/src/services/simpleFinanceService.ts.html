@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/62</span>
+                <span class='fraction'>0/65</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/61</span>
+                <span class='fraction'>0/62</span>
             </div>
         
             
@@ -241,7 +241,7 @@
 <a name='L176'></a><a href='#L176'>176</a>
 <a name='L177'></a><a href='#L177'>177</a>
 <a name='L178'></a><a href='#L178'>178</a>
-<a name='L179'></a><a href='#L179'>179</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L179'></a><a href='#L179'>179</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -419,7 +419,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>/**</span></span>
  * 🏦 簡易財務サービス - ADHD/ASD特化型財務管理
  * 既存の型システムと互換性のある実装
  */
@@ -443,10 +443,10 @@ interface SimpleFinancialSummary {
   adhdInsights: string[];
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export class S</span>impleFinanceService {
+<span class="cstat-no" title="statement not covered" >export class S</span>impleFinanceService<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
   private static instance: SimpleFinanceService;
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >static </span>getInstance(): SimpleFinanceService {
+  public static <span class="fstat-no" title="function not covered" >getInstance(</span>): SimpleFinanceService {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!SimpleFinanceService.instance) {</span>
 <span class="cstat-no" title="statement not covered" >      SimpleFinanceService.instance = new SimpleFinanceService();</span>
     }
@@ -473,12 +473,12 @@ interface SimpleFinancialSummary {
 &nbsp;
     // 簡易収入・支出計算
     const assetIncrease = <span class="cstat-no" title="statement not covered" >thisMonthAssets</span>
-      .filter(<span class="fstat-no" title="function not covered" >(e</span>ntry) =&gt; <span class="cstat-no" title="statement not covered" >entry.value &gt; 0)</span>
-      .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry) =&gt; <span class="cstat-no" title="statement not covered" >sum + entry.value,</span> 0);
+      .filter(<span class="fstat-no" title="function not covered" >(e</span>ntry<span class="cstat-no" title="statement not covered" >) =&gt; entry.value &gt; 0)</span>
+      .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry<span class="cstat-no" title="statement not covered" >) =&gt; sum + entry.value, 0</span>);
 &nbsp;
     const assetDecrease = <span class="cstat-no" title="statement not covered" >thisMonthAssets</span>
-      .filter(<span class="fstat-no" title="function not covered" >(e</span>ntry) =&gt; <span class="cstat-no" title="statement not covered" >entry.value &lt; 0)</span>
-      .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry) =&gt; <span class="cstat-no" title="statement not covered" >sum + Math.abs(entry.value),</span> 0);
+      .filter(<span class="fstat-no" title="function not covered" >(e</span>ntry<span class="cstat-no" title="statement not covered" >) =&gt; entry.value &lt; 0)</span>
+      .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry<span class="cstat-no" title="statement not covered" >) =&gt; sum + Math.abs(entry.value), 0</span>);
 &nbsp;
     // 概算値
     const monthlyIncome = <span class="cstat-no" title="statement not covered" >Math.max(assetIncrease, 200000);</span> // 最低20万円として仮定
@@ -487,7 +487,7 @@ interface SimpleFinancialSummary {
     const savingsRate = <span class="cstat-no" title="statement not covered" >monthlyIncome &gt; 0 ? (savings / monthlyIncome) * 100 : 0;</span>
 &nbsp;
     // 週次予算（月収の20%を基準）
-    const weeklyBudgetLimit = <span class="cstat-no" title="statement not covered" >(monthlyIncome * 0.2) / 4.33;</span>
+    const weeklyBudgetLimit = (<span class="cstat-no" title="statement not covered" >monthlyIncome * 0.2) / 4.33;</span>
     const currentWeekStart = <span class="cstat-no" title="statement not covered" >this.getStartOfWeek(now);</span>
     const currentWeekEnd = <span class="cstat-no" title="statement not covered" >new Date(currentWeekStart);</span>
 <span class="cstat-no" title="statement not covered" >    currentWeekEnd.setDate(currentWeekStart.getDate() + 6);</span>
@@ -497,18 +497,18 @@ interface SimpleFinancialSummary {
         const entryDate = <span class="cstat-no" title="statement not covered" >new Date(entry.date);</span>
 <span class="cstat-no" title="statement not covered" >        return entry.value &lt; 0 &amp;&amp; entryDate &gt;= currentWeekStart &amp;&amp; entryDate &lt;= currentWeekEnd;</span>
       })
-      .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry) =&gt; <span class="cstat-no" title="statement not covered" >sum + Math.abs(entry.value),</span> 0);
+      .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry<span class="cstat-no" title="statement not covered" >) =&gt; sum + Math.abs(entry.value), 0</span>);
 &nbsp;
     const weeklyRemaining = <span class="cstat-no" title="statement not covered" >Math.max(0, weeklyBudgetLimit - weeklySpent);</span>
 &nbsp;
     // 緊急資金の計算
-    const totalAssets = <span class="cstat-no" title="statement not covered" >assetEntries.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry) =&gt; <span class="cstat-no" title="statement not covered" >sum + Math.max(0, entry.value),</span> 0);</span>
+    const totalAssets = <span class="cstat-no" title="statement not covered" >assetEntries.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry<span class="cstat-no" title="statement not covered" >) =&gt; sum + Math.max(0, entry.value), 0</span>);</span>
     const emergencyFundMonths = <span class="cstat-no" title="statement not covered" >totalAssets / (monthlyExpenses || 1);</span>
 &nbsp;
     // 次の支払い予定
     const upcomingDebt = <span class="cstat-no" title="statement not covered" >debtEntries</span>
-      .filter(<span class="fstat-no" title="function not covered" >(d</span>ebt) =&gt; <span class="cstat-no" title="statement not covered" >new Date(debt.date) &gt; now)</span>
-      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(a.date).getTime() - new Date(b.date).getTime())</span>[0];
+      .filter(<span class="fstat-no" title="function not covered" >(d</span>ebt<span class="cstat-no" title="statement not covered" >) =&gt; new Date(debt.date) &gt; now)</span>
+      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(a.date).getTime() - new Date(b.date).getTime())[</span>0];
 &nbsp;
     const nextBill = <span class="cstat-no" title="statement not covered" >upcomingDebt</span>
       ? {
@@ -604,7 +604,7 @@ export const <span class="cstat-no" title="statement not covered" >simpleFinance
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/88</span>
+                <span class='fraction'>0/112</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/41</span>
+                <span class='fraction'>0/45</span>
             </div>
         
             
@@ -865,7 +865,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -934,6 +933,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1075,28 +1075,28 @@ import { Progress } from '@/components/ui/progress';
   CoolingOffSession,
 } from '@/services/adhd/ImpulseControlService';
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >ImpulseControlDashboard: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const [currentImpulse, setCurrentImpulse] = <span class="cstat-no" title="statement not covered" >useState&lt;ImpulseEntry | null&gt;(null);</span>
-  const [coolingOffSession, setCoolingOffSession] = <span class="cstat-no" title="statement not covered" >useState&lt;CoolingOffSession | null&gt;(null);</span>
-  const [isRecording, setIsRecording] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [activityInput, setActivityInput] = <span class="cstat-no" title="statement not covered" >useState('');</span>
-  const [durationInput, setDurationInput] = <span class="cstat-no" title="statement not covered" >useState(30);</span>
-  const [urgencyLevel, setUrgencyLevel] = <span class="cstat-no" title="statement not covered" >useState(5);</span>
-  const [nextDaySchedule, setNextDaySchedule] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('');</span>
-  const [showEmergencyProtocol, setShowEmergencyProtocol] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >ImpulseControlDashboard:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const [currentImpulse<span class="cstat-no" title="statement not covered" >, s</span>etCurrentImpulse<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;ImpulseEntry | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [coolingOffSession<span class="cstat-no" title="statement not covered" >, s</span>etCoolingOffSession<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;CoolingOffSession | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isRecording<span class="cstat-no" title="statement not covered" >, s</span>etIsRecording<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [activityInput<span class="cstat-no" title="statement not covered" >, s</span>etActivityInput<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [durationInput<span class="cstat-no" title="statement not covered" >, s</span>etDurationInput<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(30)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [urgencyLevel<span class="cstat-no" title="statement not covered" >, s</span>etUrgencyLevel<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(5)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [nextDaySchedule<span class="cstat-no" title="statement not covered" >, s</span>etNextDaySchedule<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showEmergencyProtocol<span class="cstat-no" title="statement not covered" >, s</span>etShowEmergencyProtocol<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // イベントリスナーの設定
-    const handleImpulseRecorded = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>mpulse: ImpulseEntry) =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleImpulseRecorded </span>= <span class="cstat-no" title="statement not covered" >(impulse: ImpulseEntry) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setCurrentImpulse(impulse);</span>
 <span class="cstat-no" title="statement not covered" >      setIsRecording(false);</span>
     };
 &nbsp;
-    const handleCoolingOffStarted = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ata: { session: CoolingOffSession }) =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleCoolingOffStarted </span>= <span class="cstat-no" title="statement not covered" >(data: { session: CoolingOffSession }) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setCoolingOffSession(data.session);</span>
     };
 &nbsp;
-    const handleCoolingOffCompleted = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleCoolingOffCompleted </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setCoolingOffSession(null);</span>
     };
 &nbsp;
@@ -1104,14 +1104,14 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
 <span class="cstat-no" title="statement not covered" >    impulseControlService.on('coolingOffStarted', handleCoolingOffStarted);</span>
 <span class="cstat-no" title="statement not covered" >    impulseControlService.on('coolingOffCompleted', handleCoolingOffCompleted);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      impulseControlService.off('impulseRecorded', handleImpulseRecorded);</span>
 <span class="cstat-no" title="statement not covered" >      impulseControlService.off('coolingOffStarted', handleCoolingOffStarted);</span>
 <span class="cstat-no" title="statement not covered" >      impulseControlService.off('coolingOffCompleted', handleCoolingOffCompleted);</span>
     };
   }, []);
 &nbsp;
-  const handleRecordImpulse = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleRecordImpulse </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!activityInput.trim()) {</span>
 <span class="cstat-no" title="statement not covered" >      return;</span>
     }
@@ -1119,8 +1119,8 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
 <span class="cstat-no" title="statement not covered" >    setIsRecording(true);</span>
     const scheduleArray = <span class="cstat-no" title="statement not covered" >nextDaySchedule</span>
       .split(',')
-      .map(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.trim())</span>
-      .filter(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s)</span>;
+      .map(<span class="fstat-no" title="function not covered" >(s<span class="cstat-no" title="statement not covered" ></span>) =&gt; s.trim())</span>
+      .filter(<span class="fstat-no" title="function not covered" >(s<span class="cstat-no" title="statement not covered" ></span>) =&gt; s);</span>
 &nbsp;
     const impulse = <span class="cstat-no" title="statement not covered" >impulseControlService.recordImpulse(</span>
       activityInput,
@@ -1141,7 +1141,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
 <span class="cstat-no" title="statement not covered" >    setNextDaySchedule('');</span>
   };
 &nbsp;
-  const handleDecision = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+  const <span class="fstat-no" title="function not covered" >handleDecision </span>= <span class="cstat-no" title="statement not covered" >(</span>
     action: 'proceed' | 'delay' | 'substitute' | 'cancel',
     reasoning: string
   ) =&gt; {
@@ -1160,7 +1160,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
 <span class="cstat-no" title="statement not covered" >    setCoolingOffSession(null);</span>
   };
 &nbsp;
-  const handleStartCoolingOff = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleStartCoolingOff </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!currentImpulse) {</span>
 <span class="cstat-no" title="statement not covered" >      return;</span>
     }
@@ -1168,7 +1168,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
 <span class="cstat-no" title="statement not covered" >    impulseControlService.startCoolingOff(currentImpulse.id, 15);</span>
   };
 &nbsp;
-  const handleEmergencyProtocol = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleEmergencyProtocol </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const protocol = <span class="cstat-no" title="statement not covered" >impulseControlService.emergencyImpulseControl();</span>
 <span class="cstat-no" title="statement not covered" >    setShowEmergencyProtocol(true);</span>
 &nbsp;
@@ -1178,7 +1178,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
     }
   };
 &nbsp;
-  const getRiskColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>isk: RiskAssessment['sleepDeprivationRisk']) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getRiskColor </span>= <span class="cstat-no" title="statement not covered" >(risk: RiskAssessment['sleepDeprivationRisk']) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (risk) {</span>
       case 'critical':
 <span class="cstat-no" title="statement not covered" >        return 'text-red-600 bg-red-50 border-red-200';</span>
@@ -1191,7 +1191,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
     }
   };
 &nbsp;
-  const getUrgencyIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(l</span>evel: number) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getUrgencyIcon </span>= <span class="cstat-no" title="statement not covered" >(level: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (level &gt;= 8) <span class="cstat-no" title="statement not covered" >return &lt;AlertTriangle className="w-4 h-4 text-red-600" /&gt;;</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (level &gt;= 6) <span class="cstat-no" title="statement not covered" >return &lt;Activity className="w-4 h-4 text-orange-600" /&gt;;</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (level &gt;= 4) <span class="cstat-no" title="statement not covered" >return &lt;Clock className="w-4 h-4 text-yellow-600" /&gt;;</span></span>
@@ -1237,7 +1237,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
                   &lt;li&gt;• 明日の予定を確認する&lt;/li&gt;
                 &lt;/ul&gt;
                 &lt;Button
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowEmergencyProtocol(false)}</span>
+<span class="fstat-no" title="function not covered" >                  onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowEmergencyProtocol(false)}</span>
                   variant="outline"
                   size="sm"
                   className="bg-white border-red-300 text-red-700"
@@ -1265,7 +1265,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
                 id="activity-input"
                 type="text"
                 value={activityInput}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setActivityInput(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setActivityInput(e.target.value)}</span>
                 placeholder="例: YouTubeを見る、ゲームをする、プログラミング、読書"
                 className="w-full mt-1 p-2 border rounded-md"
               /&gt;
@@ -1280,7 +1280,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
                   id="duration-input"
                   type="number"
                   value={durationInput}
-                  onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setDurationInput(Number(e.target.value))}</span>
+<span class="fstat-no" title="function not covered" >                  onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setDurationInput(Number(e.target.value))}</span>
                   min="5"
                   max="480"
                   className="w-full mt-1 p-2 border rounded-md"
@@ -1294,7 +1294,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
                   id="urgency-input"
                   type="range"
                   value={urgencyLevel}
-                  onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setUrgencyLevel(Number(e.target.value))}</span>
+<span class="fstat-no" title="function not covered" >                  onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setUrgencyLevel(Number(e.target.value))}</span>
                   min="1"
                   max="10"
                   className="w-full mt-2"
@@ -1315,7 +1315,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
                 id="schedule-input"
                 type="text"
                 value={nextDaySchedule}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setNextDaySchedule(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setNextDaySchedule(e.target.value)}</span>
                 placeholder="例: 朝8時出勤, 重要な会議, 早朝ランニング"
                 className="w-full mt-1 p-2 border rounded-md"
               /&gt;
@@ -1355,8 +1355,8 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
               衝動を落ち着けるために少し待ちましょう。以下の活動で心を整えてください：
             &lt;/p&gt;
             &lt;div className="grid grid-cols-2 gap-2 mb-4"&gt;
-              {coolingOffSession.activities.map(<span class="fstat-no" title="function not covered" >(a</span>ctivity, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div key={index} c</span>lassName="flex items-center gap-2 p-2 bg-white rounded border"&gt;
+              {coolingOffSession.activities.map(<span class="fstat-no" title="function not covered" >(a</span>ctivity, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div key={index} className="flex items-center gap-2 p-2 bg-white rounded border"&gt;
                   &lt;div className="w-2 h-2 rounded-full bg-purple-400"&gt;&lt;/div&gt;
                   &lt;span className="text-sm"&gt;{activity}&lt;/span&gt;
                 &lt;/div&gt;
@@ -1422,8 +1422,8 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
                 &lt;div&gt;
                   &lt;h5 className="text-sm font-medium text-gray-700 mb-2"&gt;代替案:&lt;/h5&gt;
                   &lt;ul className="space-y-1"&gt;
-                    {currentImpulse.riskAssessment.alternatives.map(<span class="fstat-no" title="function not covered" >(a</span>lt, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;li key={index} c</span>lassName="text-sm text-gray-600 flex items-center gap-2"&gt;
+                    {currentImpulse.riskAssessment.alternatives.map(<span class="fstat-no" title="function not covered" >(a</span>lt, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                      &lt;li key={index} className="text-sm text-gray-600 flex items-center gap-2"&gt;
                         &lt;div className="w-1 h-1 rounded-full bg-gray-400"&gt;&lt;/div&gt;
                         {alt}
                       &lt;/li&gt;
@@ -1436,7 +1436,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
             {/* 決定ボタン */}
             &lt;div className="grid grid-cols-2 lg:grid-cols-4 gap-2 pt-4"&gt;
               &lt;Button
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleDecision('proceed', '自己責任で実行することを選択')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleDecision('proceed', '自己責任で実行することを選択')}</span>
                 variant={
                   currentImpulse.riskAssessment.recommendedAction === 'proceed'
                     ? 'default'
@@ -1449,7 +1449,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
                 実行する
               &lt;/Button&gt;
               &lt;Button
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleDecision('delay', '適切な時間に延期することを選択')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleDecision('delay', '適切な時間に延期することを選択')}</span>
                 variant={
                   currentImpulse.riskAssessment.recommendedAction === 'delay'
                     ? 'default'
@@ -1462,7 +1462,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
                 延期する
               &lt;/Button&gt;
               &lt;Button
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleDecision('substitute', '代替活動を選択')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleDecision('substitute', '代替活動を選択')}</span>
                 variant={
                   currentImpulse.riskAssessment.recommendedAction === 'substitute'
                     ? 'default'
@@ -1475,7 +1475,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
                 代替案
               &lt;/Button&gt;
               &lt;Button
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleDecision('cancel', '今回は諦めることを選択')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleDecision('cancel', '今回は諦めることを選択')}</span>
                 variant={
                   currentImpulse.riskAssessment.recommendedAction === 'cancel'
                     ? 'default'
@@ -1516,7 +1516,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
         &lt;/CardHeader&gt;
         &lt;CardContent&gt;
           &lt;Button
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >            onClick=</span>{() =&gt; {
               const analysis = <span class="cstat-no" title="statement not covered" >impulseControlService.analyzeImpulsePatterns();</span>
 <span class="cstat-no" title="statement not covered" >              console.log('衝動パターン分析:', analysis);</span>
               // 実際の実装では結果をUIに表示
@@ -1540,7 +1540,7 @@ export const <span class="cstat-no" title="statement not covered" >ImpulseContro
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

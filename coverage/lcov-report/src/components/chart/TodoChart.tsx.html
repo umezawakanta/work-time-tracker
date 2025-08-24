@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/45</span>
+                <span class='fraction'>0/61</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/41</span>
+                <span class='fraction'>0/45</span>
             </div>
         
             
@@ -323,10 +323,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -431,8 +431,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -497,7 +497,7 @@ interface Statistics {
 }
 &nbsp;
 // カスタムツールチップコンポーネント
-const CustomTooltip: React.FC&lt;TooltipProps&lt;number, string&gt;&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> active, payload, label }) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >CustomTooltip:</span> React.FC&lt;TooltipProps&lt;number, string&gt;&gt; = <span class="cstat-no" title="statement not covered" >({ active<span class="cstat-no" title="statement not covered" >, payload<span class="cstat-no" title="statement not covered" >, label<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span></span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (active &amp;&amp; payload &amp;&amp; payload.length) {</span>
 <span class="cstat-no" title="statement not covered" >    return (</span>
       &lt;div className="bg-white p-3 rounded shadow-lg border border-gray-200"&gt;
@@ -518,16 +518,16 @@ const colorSchemes = <span class="cstat-no" title="statement not covered" >{</sp
   purple: ['#8b5cf6', '#a78bfa', '#c4b5fd'],
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >TodoChart: React.FC&lt;TodoChartProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  todoHistory,
-  className = <span class="branch-0 cbranch-no" title="branch not covered" >'',</span>
-  height = <span class="branch-0 cbranch-no" title="branch not covered" >256,</span>
-  colorScheme = <span class="branch-0 cbranch-no" title="branch not covered" >'blue',</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >TodoChart:</span> React.FC&lt;TodoChartProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  todoHistory<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+  className<span class="cstat-no" title="statement not covered" > = ''<span class="cstat-no" title="statement not covered" >,</span></span>
+  height<span class="cstat-no" title="statement not covered" > = 256<span class="cstat-no" title="statement not covered" >,</span></span>
+  colorScheme<span class="cstat-no" title="statement not covered" > = 'blue',</span>
 }) =&gt; {
-  const [hoveredIndex, setHoveredIndex] = <span class="cstat-no" title="statement not covered" >useState&lt;number | null&gt;(null);</span>
+  const [hoveredIndex<span class="cstat-no" title="statement not covered" >, s</span>etHoveredIndex<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;number | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // チャートデータの整形と検証
-  const { chartData, statistics, error } = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const { chartData<span class="cstat-no" title="statement not covered" >, statistics<span class="cstat-no" title="statement not covered" >, error<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span></span></span></span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // データの検証
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!Array.isArray(todoHistory)) {</span>
@@ -550,17 +550,17 @@ export const <span class="cstat-no" title="statement not covered" >TodoChart: Re
 <span class="cstat-no" title="statement not covered" >        return new Date(a.date).getTime() - new Date(b.date).getTime();</span>
       });
 &nbsp;
-      const formatted: ChartDataItem[] = <span class="cstat-no" title="statement not covered" >sorted.map(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+      const formatted: ChartDataItem[] = <span class="cstat-no" title="statement not covered" >sorted.map(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
         ...item,
         formattedDate: format(parseISO(item.date), 'M/d', { locale: ja }),
       }));
 &nbsp;
       // 統計情報の計算
-      const counts = <span class="cstat-no" title="statement not covered" >validData.map(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >item.count)</span>;</span>
+      const counts = <span class="cstat-no" title="statement not covered" >validData.map(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; item.count);</span></span>
       const stats: Statistics = <span class="cstat-no" title="statement not covered" >{</span>
-        total: counts.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, count) =&gt; <span class="cstat-no" title="statement not covered" >sum + count,</span> 0),
+        total: counts.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, count<span class="cstat-no" title="statement not covered" >) =&gt; sum + count, 0</span>),
         average:
-          Math.round((counts.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, count) =&gt; <span class="cstat-no" title="statement not covered" >sum + count,</span> 0) / counts.length) * 10) / 10,
+          Math.round((counts.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, count<span class="cstat-no" title="statement not covered" >) =&gt; sum + count, 0</span>) / counts.length) * 10) / 10,
         max: Math.max(...counts),
         min: Math.min(...counts),
       };
@@ -573,7 +573,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoChart: Re
   }, [todoHistory]);
 &nbsp;
   // バーの色を動的に設定
-  const getBarColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>ndex: number) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getBarColor </span>= <span class="cstat-no" title="statement not covered" >(index: number) =&gt; {</span>
     const colors = <span class="cstat-no" title="statement not covered" >colorSchemes[colorScheme];</span>
     const colorIndex = <span class="cstat-no" title="statement not covered" >index % colors.length;</span>
 <span class="cstat-no" title="statement not covered" >    return hoveredIndex === index ? colors[0] : colors[colorIndex];</span>
@@ -610,7 +610,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoChart: Re
             &lt;BarChart
               data={chartData}
               margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-              onMouseLeave={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setHoveredIndex(null)}</span>
+<span class="fstat-no" title="function not covered" >              onMouseLeave<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setHoveredIndex(null)}</span>
             &gt;
               &lt;CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" /&gt;
               &lt;XAxis
@@ -625,10 +625,10 @@ export const <span class="cstat-no" title="statement not covered" >TodoChart: Re
                 dataKey="count"
                 name="完了したタスク"
                 radius={[4, 4, 0, 0]}
-                onMouseEnter={<span class="fstat-no" title="function not covered" >(_</span>, index) =&gt; <span class="cstat-no" title="statement not covered" >setHoveredIndex(index)}</span>
+<span class="fstat-no" title="function not covered" >                onMouseEnter=</span>{(_, index<span class="cstat-no" title="statement not covered" >) =&gt; setHoveredIndex(index)}</span>
               &gt;
-                {chartData.map(<span class="fstat-no" title="function not covered" >(_</span>, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;Cell key={`cell-${index}`} f</span>ill={getBarColor(index)} /&gt;
+                {chartData.map(<span class="fstat-no" title="function not covered" >(_</span>, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;Cell key={`cell-${index}`} fill={getBarColor(index)} /&gt;
                 ))}
               &lt;/Bar&gt;
             &lt;/BarChart&gt;
@@ -658,7 +658,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoChart: Re
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

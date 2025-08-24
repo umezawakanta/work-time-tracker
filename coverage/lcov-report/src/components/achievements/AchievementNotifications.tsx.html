@@ -275,8 +275,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -332,20 +332,20 @@ import { RootState } from '@/store';
 <span class="cstat-no" title="statement not covered" >import { ScrollArea } from '@/components/ui/scroll-area';</span>
 <span class="cstat-no" title="statement not covered" >import { Bell, Trophy, X, CheckCheck } from 'lucide-react';</span>
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AchievementNotifications: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AchievementNotifications:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch();</span>
-  const notifications = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.achievements.notifications)</span>;</span>
-  const unreadCount = <span class="cstat-no" title="statement not covered" >notifications.filter(<span class="fstat-no" title="function not covered" >(n</span>) =&gt; <span class="cstat-no" title="statement not covered" >!n.read)</span>.length;</span>
+  const notifications = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.achievements.notifications);</span></span>
+  const unreadCount = <span class="cstat-no" title="statement not covered" >notifications.filter(<span class="fstat-no" title="function not covered" >(n<span class="cstat-no" title="statement not covered" ></span>) =&gt; !n.read).</span>length;</span>
 &nbsp;
-  const handleMarkAsRead = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(n</span>otificationId: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleMarkAsRead </span>= <span class="cstat-no" title="statement not covered" >(notificationId: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    dispatch(markNotificationAsRead(notificationId));</span>
   };
 &nbsp;
-  const handleMarkAllAsRead = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleMarkAllAsRead </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    dispatch(markAllNotificationsAsRead());</span>
   };
 &nbsp;
-  const handleClearAll = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleClearAll </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    dispatch(clearNotifications());</span>
   };
 &nbsp;
@@ -399,15 +399,15 @@ export const <span class="cstat-no" title="statement not covered" >AchievementNo
               &lt;/div&gt;
             ) : (
               &lt;div className="space-y-3"&gt;
-                {notifications.map(<span class="fstat-no" title="function not covered" >(n</span>otification) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div</span>
+                {notifications.map(<span class="fstat-no" title="function not covered" >(n</span>otification<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;div
                     key={notification.id}
                     className={`p-3 rounded-lg border transition-all cursor-pointer ${
                       notification.read
                         ? 'bg-gray-50 border-gray-200'
                         : 'bg-blue-50 border-blue-200'
                     }`}
-                    onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleMarkAsRead(notification.id)}</span>
+<span class="fstat-no" title="function not covered" >                    onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleMarkAsRead(notification.id)}</span>
                   &gt;
                     &lt;div className="flex items-start gap-3"&gt;
                       &lt;div className="flex-shrink-0"&gt;
@@ -442,7 +442,7 @@ export const <span class="cstat-no" title="statement not covered" >AchievementNo
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

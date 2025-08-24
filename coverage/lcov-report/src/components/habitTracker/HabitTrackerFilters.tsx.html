@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>0/17</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/17</span>
             </div>
         
             
@@ -170,11 +170,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -211,7 +211,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -249,12 +249,12 @@ interface HabitTrackerFiltersProps {
 /**
  * 習慣トラッカーのフィルター機能コンポーネント
  */
-const HabitTrackerFilters = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span></span>
-  viewMode,
-  setViewMode,
-  selectedCategory,
-  setSelectedCategory,
-  habitCategories,
+const <span class="fstat-no" title="function not covered" >HabitTrackerFilters </span>= <span class="cstat-no" title="statement not covered" >({</span>
+  viewMode<span class="cstat-no" title="statement not covered" >,</span>
+  setViewMode<span class="cstat-no" title="statement not covered" >,</span>
+  selectedCategory<span class="cstat-no" title="statement not covered" >,</span>
+  setSelectedCategory<span class="cstat-no" title="statement not covered" >,</span>
+  habitCategories<span class="cstat-no" title="statement not covered" >,</span>
 }: HabitTrackerFiltersProps) =&gt; {
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;&gt;
@@ -269,11 +269,11 @@ const HabitTrackerFilters = <span class="cstat-no" title="statement not covered"
           &lt;/Button&gt;
         &lt;/DropdownMenuTrigger&gt;
         &lt;DropdownMenuContent align="end"&gt;
-          &lt;DropdownMenuItem onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setViewMode('active')}</span>&gt;進行中&lt;/DropdownMenuItem&gt;
-          &lt;DropdownMenuItem onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setViewMode('archived')}</span>&gt;
+          &lt;DropdownMenuItem <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setViewMode('active')}&gt;進行中&lt;/DropdownMenuItem&gt;</span>
+          &lt;DropdownMenuItem <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setViewMode('archived')}&gt;</span>
             アーカイブ済み
           &lt;/DropdownMenuItem&gt;
-          &lt;DropdownMenuItem onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setViewMode('all')}</span>&gt;すべて表示&lt;/DropdownMenuItem&gt;
+          &lt;DropdownMenuItem <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setViewMode('all')}&gt;すべて表示&lt;/DropdownMenuItem&gt;</span>
         &lt;/DropdownMenuContent&gt;
       &lt;/DropdownMenu&gt;
 &nbsp;
@@ -288,11 +288,11 @@ const HabitTrackerFilters = <span class="cstat-no" title="statement not covered"
           &lt;/Button&gt;
         &lt;/DropdownMenuTrigger&gt;
         &lt;DropdownMenuContent align="end"&gt;
-          &lt;DropdownMenuItem onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setSelectedCategory('all')}</span>&gt;
+          &lt;DropdownMenuItem <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setSelectedCategory('all')}&gt;</span>
             すべてのカテゴリ
           &lt;/DropdownMenuItem&gt;
-          {Object.keys(habitCategories).map(<span class="fstat-no" title="function not covered" >(c</span>ategory) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;DropdownMenuItem key={category} o</span>nClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setSelectedCategory(category)}</span>&gt;
+          {Object.keys(habitCategories).map(<span class="fstat-no" title="function not covered" >(c</span>ategory<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;DropdownMenuItem key={category} <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setSelectedCategory(category)}&gt;</span>
               {category}
             &lt;/DropdownMenuItem&gt;
           ))}
@@ -310,7 +310,7 @@ const HabitTrackerFilters = <span class="cstat-no" title="statement not covered"
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

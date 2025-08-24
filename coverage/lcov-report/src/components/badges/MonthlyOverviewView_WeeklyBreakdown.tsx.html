@@ -191,8 +191,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -203,7 +201,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -296,7 +296,7 @@
 <span class="cstat-no" title="statement not covered" >import { Calendar } from 'lucide-react';</span>
 &nbsp;
 // 週次内訳表示コンポーネント
-export const <span class="cstat-no" title="statement not covered" >renderWeeklyBreakdown = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >renderWeeklyBreakdown </span>= <span class="cstat-no" title="statement not covered" >(</span></span>
   weeklyBreakdown: Array&lt;{
     weekNumber: number;
     startDate: string;
@@ -304,9 +304,9 @@ export const <span class="cstat-no" title="statement not covered" >renderWeeklyB
     completedBadges: number;
     hoursSpent: number;
     efficiency: number;
-  }&gt;
+  }&gt;<span class="cstat-no" title="statement not covered" ></span>
 ) =&gt; (
-<span class="cstat-no" title="statement not covered" >  &lt;Card&gt;</span>
+  &lt;Card&gt;
     &lt;CardHeader&gt;
       &lt;CardTitle className="flex items-center gap-2"&gt;
         &lt;Calendar className="w-5 h-5" /&gt;
@@ -315,8 +315,8 @@ export const <span class="cstat-no" title="statement not covered" >renderWeeklyB
     &lt;/CardHeader&gt;
     &lt;CardContent&gt;
       &lt;div className="space-y-4"&gt;
-        {weeklyBreakdown.map(<span class="fstat-no" title="function not covered" >(w</span>eek) =&gt; (
-<span class="cstat-no" title="statement not covered" >          &lt;div key={week.weekNumber} c</span>lassName="border rounded-lg p-4"&gt;
+        {weeklyBreakdown.map(<span class="fstat-no" title="function not covered" >(w</span>eek<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+          &lt;div key={week.weekNumber} className="border rounded-lg p-4"&gt;
             &lt;div className="flex items-center justify-between mb-3"&gt;
               &lt;div&gt;
                 &lt;h4 className="font-medium"&gt;Week {week.weekNumber}&lt;/h4&gt;
@@ -371,20 +371,20 @@ export const <span class="cstat-no" title="statement not covered" >renderWeeklyB
         &lt;div className="grid grid-cols-2 md:grid-cols-4 gap-4"&gt;
           &lt;div className="text-center"&gt;
             &lt;div className="text-xl font-bold text-blue-600"&gt;
-              {weeklyBreakdown.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, week) =&gt; <span class="cstat-no" title="statement not covered" >sum + week.completedBadges,</span> 0)}
+              {weeklyBreakdown.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, week<span class="cstat-no" title="statement not covered" >) =&gt; sum + week.completedBadges, 0</span>)}
             &lt;/div&gt;
             &lt;div className="text-xs text-muted-foreground"&gt;総完了バッジ&lt;/div&gt;
           &lt;/div&gt;
           &lt;div className="text-center"&gt;
             &lt;div className="text-xl font-bold text-green-600"&gt;
-              {weeklyBreakdown.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, week) =&gt; <span class="cstat-no" title="statement not covered" >sum + week.hoursSpent,</span> 0)}h
+              {weeklyBreakdown.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, week<span class="cstat-no" title="statement not covered" >) =&gt; sum + week.hoursSpent, 0</span>)}h
             &lt;/div&gt;
             &lt;div className="text-xs text-muted-foreground"&gt;総学習時間&lt;/div&gt;
           &lt;/div&gt;
           &lt;div className="text-center"&gt;
             &lt;div className="text-xl font-bold text-purple-600"&gt;
               {Math.round(
-                weeklyBreakdown.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, week) =&gt; <span class="cstat-no" title="statement not covered" >sum + week.efficiency,</span> 0) /
+                weeklyBreakdown.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, week<span class="cstat-no" title="statement not covered" >) =&gt; sum + week.efficiency, 0</span>) /
                   weeklyBreakdown.length
               )}
               %
@@ -393,7 +393,7 @@ export const <span class="cstat-no" title="statement not covered" >renderWeeklyB
           &lt;/div&gt;
           &lt;div className="text-center"&gt;
             &lt;div className="text-xl font-bold text-orange-600"&gt;
-              {Math.max(...weeklyBreakdown.map(<span class="fstat-no" title="function not covered" >(w</span>) =&gt; <span class="cstat-no" title="statement not covered" >w.efficiency)</span>)}%
+              {Math.max(...weeklyBreakdown.map(<span class="fstat-no" title="function not covered" >(w<span class="cstat-no" title="statement not covered" ></span>) =&gt; w.efficiency))</span>}%
             &lt;/div&gt;
             &lt;div className="text-xs text-muted-foreground"&gt;最高効率&lt;/div&gt;
           &lt;/div&gt;
@@ -409,7 +409,7 @@ export const <span class="cstat-no" title="statement not covered" >renderWeeklyB
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

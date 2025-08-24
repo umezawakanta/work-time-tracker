@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/57</span>
+                <span class='fraction'>0/70</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/58</span>
+                <span class='fraction'>0/64</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/57</span>
+                <span class='fraction'>0/62</span>
             </div>
         
             
@@ -393,11 +393,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -553,8 +553,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -682,15 +682,15 @@ interface LabelProps {
   value: number;
 }
 &nbsp;
-const PoliticalLineChart: React.FC&lt;PoliticalLineChartProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span></span>
-  data,
-  parties,
-  mediaOutlet,
-  chartType = <span class="branch-0 cbranch-no" title="branch not covered" >'line',</span>
-  highlightedParties = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span>
+const <span class="fstat-no" title="function not covered" >PoliticalLineChart:</span> React.FC&lt;PoliticalLineChartProps&gt; = <span class="cstat-no" title="statement not covered" >({</span>
+  data<span class="cstat-no" title="statement not covered" >,</span>
+  parties<span class="cstat-no" title="statement not covered" >,</span>
+  mediaOutlet<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+  chartType<span class="cstat-no" title="statement not covered" > = 'line'<span class="cstat-no" title="statement not covered" >,</span></span>
+  highlightedParties<span class="cstat-no" title="statement not covered" > = [],</span>
 }) =&gt; {
   // 表示順序を調整（支持率が高い順）
-  const generateLines = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >generateLines </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!data || data.length === 0) {</span>
 <span class="cstat-no" title="statement not covered" >      return [];</span>
     }
@@ -744,7 +744,7 @@ const PoliticalLineChart: React.FC&lt;PoliticalLineChartProps&gt; = <span class=
                   fill: party.colorCode,
                   fontSize: 14,
                   fontWeight: 'bold',
-                  formatter: <span class="fstat-no" title="function not covered" >(v</span>alue: number) =&gt; <span class="cstat-no" title="statement not covered" >`${value?.toFixed(1) || ''}%`,</span>
+<span class="fstat-no" title="function not covered" >                  formatter:</span> (value: number<span class="cstat-no" title="statement not covered" >) =&gt; `${value?.toFixed(1) || ''}%`,</span>
                 }
               : false
           }
@@ -755,7 +755,7 @@ const PoliticalLineChart: React.FC&lt;PoliticalLineChartProps&gt; = <span class=
 <span class="cstat-no" title="statement not covered" >    return lines;</span>
   };
 &nbsp;
-  const generateBars = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >generateBars </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!data || data.length === 0) {</span>
 <span class="cstat-no" title="statement not covered" >      return null;</span>
     }
@@ -796,7 +796,7 @@ const PoliticalLineChart: React.FC&lt;PoliticalLineChartProps&gt; = <span class=
     );
   };
 &nbsp;
-  const generatePie = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >generatePie </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!data || data.length === 0) {</span>
 <span class="cstat-no" title="statement not covered" >      return null;</span>
     }
@@ -814,12 +814,12 @@ const PoliticalLineChart: React.FC&lt;PoliticalLineChartProps&gt; = <span class=
           color: highlightedParties.includes(party.shortName) ? 'gold' : party.colorCode,
         };
       })
-      .filter(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >item.value &gt; 0)</span>
-      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >b.value - a.value)</span>;
+      .filter(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; item.value &gt; 0)</span>
+      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; b.value - a.value);</span>
 &nbsp;
     // renderCustomizedLabel の修正
-    const renderCustomizedLabel = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>rops: LabelProps) =&gt; {</span>
-      const { cx, cy, midAngle, innerRadius, outerRadius, name, value } = <span class="cstat-no" title="statement not covered" >props;</span>
+    const <span class="fstat-no" title="function not covered" >renderCustomizedLabel </span>= <span class="cstat-no" title="statement not covered" >(props: LabelProps) =&gt; {</span>
+      const { cx, cy, midAngle, innerRadius, outerRadius, name, value } = <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >props;</span></span></span></span></span></span></span>
       const RADIAN = <span class="cstat-no" title="statement not covered" >Math.PI / 180;</span>
       const radius = <span class="cstat-no" title="statement not covered" >25 + innerRadius + (outerRadius - innerRadius);</span>
       const x = <span class="cstat-no" title="statement not covered" >cx + radius * Math.cos(-midAngle * RADIAN);</span>
@@ -843,8 +843,8 @@ const PoliticalLineChart: React.FC&lt;PoliticalLineChartProps&gt; = <span class=
           outerRadius={200}
           label={renderCustomizedLabel}
         &gt;
-          {pieData.map(<span class="fstat-no" title="function not covered" >(e</span>ntry, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;Cell key={`cell-${index}`} f</span>ill={entry.color} /&gt;
+          {pieData.map(<span class="fstat-no" title="function not covered" >(e</span>ntry, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;Cell key={`cell-${index}`} fill={entry.color} /&gt;
           ))}
         &lt;/Pie&gt;
         &lt;Tooltip /&gt;
@@ -909,7 +909,7 @@ const PoliticalLineChart: React.FC&lt;PoliticalLineChartProps&gt; = <span class=
                   marginTop: '20px',
                   bottom: '20px',
                 }}
-                formatter={<span class="fstat-no" title="function not covered" >(v</span>alue: string) =&gt; <span class="cstat-no" title="statement not covered" >value.split('(')[0]}</span>
+<span class="fstat-no" title="function not covered" >                formatter=</span>{(value: string<span class="cstat-no" title="statement not covered" >) =&gt; value.split('(')[0]}</span>
               /&gt;
               {generateLines()}
             &lt;/LineChart&gt;
@@ -940,7 +940,7 @@ const PoliticalLineChart: React.FC&lt;PoliticalLineChartProps&gt; = <span class=
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/76</span>
+                <span class='fraction'>0/83</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/64</span>
+                <span class='fraction'>0/66</span>
             </div>
         
             
@@ -756,7 +756,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -832,20 +831,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -898,19 +898,19 @@ interface BurndownData {
   remaining: number;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >ProductivityDashboard: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const todos = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.items)</span>;</span>
-  const todoHistory = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.todoHistory)</span>;</span>
-  const dailyHistory = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.dailyHistory)</span>;</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >ProductivityDashboard:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const todos = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.todo.items);</span></span>
+  const todoHistory = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.todo.todoHistory);</span></span>
+  const dailyHistory = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.todo.dailyHistory);</span></span>
 &nbsp;
   // ダッシュボード統計の計算
-  const dashboardStats = <span class="cstat-no" title="statement not covered" >useMemo&lt;DashboardStats&gt;(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const dashboardStats = <span class="cstat-no" title="statement not covered" >useMemo&lt;DashboardStats&gt;(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
     const today = <span class="cstat-no" title="statement not covered" >now.toDateString();</span>
 &nbsp;
     const totalTasks = <span class="cstat-no" title="statement not covered" >todos.length;</span>
-    const completedTasks = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.completed)</span>.length;</span>
-    const pendingTasks = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >!t.completed)</span>.length;</span>
+    const completedTasks = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.completed).</span>length;</span>
+    const pendingTasks = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; !t.completed).</span>length;</span>
 &nbsp;
     const overdueTasks = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (t.completed || !t.deadline) <span class="cstat-no" title="statement not covered" >return false;</span></span>
@@ -922,7 +922,7 @@ export const <span class="cstat-no" title="statement not covered" >ProductivityD
     // 過去7日間の平均タスク数
     const last7Days = <span class="cstat-no" title="statement not covered" >Object.entries(todoHistory)</span>
       .slice(-7)
-      .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, [_, count]) =&gt; <span class="cstat-no" title="statement not covered" >sum + count,</span> 0);
+      .reduce(<span class="fstat-no" title="function not covered" >(s</span>um<span class="cstat-no" title="statement not covered" >, [_<span class="cstat-no" title="statement not covered" ></span>, c</span>ount<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; s</span>um + count, 0</span>);
     const averageTasksPerDay = <span class="cstat-no" title="statement not covered" >Math.round((last7Days / 7) * 10) / 10;</span>
 &nbsp;
     // 連続達成日数の計算
@@ -933,7 +933,7 @@ export const <span class="cstat-no" title="statement not covered" >ProductivityD
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!t.deadline) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 <span class="cstat-no" title="statement not covered" >      return new Date(t.deadline).toDateString() === today;</span>
     });
-    const todayCompleted = <span class="cstat-no" title="statement not covered" >todayTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.completed)</span>.length;</span>
+    const todayCompleted = <span class="cstat-no" title="statement not covered" >todayTasks.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.completed).</span>length;</span>
     const todayProgress =
 <span class="cstat-no" title="statement not covered" >      todayTasks.length &gt; 0 ? Math.round((todayCompleted / todayTasks.length) * 100) : 0;</span>
 &nbsp;
@@ -950,8 +950,8 @@ export const <span class="cstat-no" title="statement not covered" >ProductivityD
   }, [todos, todoHistory, dailyHistory]);
 &nbsp;
   // 生産性トレンドデータの生成
-  const productivityTrend = <span class="cstat-no" title="statement not covered" >useMemo&lt;ProductivityTrend[]&gt;(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    return dailyHistory.slice(-30).map(<span class="fstat-no" title="function not covered" >(d</span>ay, index) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+  const productivityTrend = <span class="cstat-no" title="statement not covered" >useMemo&lt;ProductivityTrend[]&gt;(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+<span class="cstat-no" title="statement not covered" >    return dailyHistory.slice(-30).map(<span class="fstat-no" title="function not covered" >(d</span>ay, index<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       date: day.date,
       completedTasks: day.count,
       hoursWorked: Math.round((day.count * 1.5 + Math.random() * 2) * 10) / 10, // 推定作業時間
@@ -960,8 +960,8 @@ export const <span class="cstat-no" title="statement not covered" >ProductivityD
   }, [dailyHistory]);
 &nbsp;
   // バーンダウンデータの生成
-  const burndownData = <span class="cstat-no" title="statement not covered" >useMemo&lt;BurndownData[]&gt;(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const activeTasks = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >!t.completed)</span>;</span>
+  const burndownData = <span class="cstat-no" title="statement not covered" >useMemo&lt;BurndownData[]&gt;(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+    const activeTasks = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; !t.completed);</span></span>
     const totalRemaining = <span class="cstat-no" title="statement not covered" >activeTasks.length;</span>
     const daysInPeriod = <span class="cstat-no" title="statement not covered" >14;</span> // 2週間のバーンダウン
 &nbsp;
@@ -982,7 +982,7 @@ export const <span class="cstat-no" title="statement not covered" >ProductivityD
   }, [todos]);
 &nbsp;
   // カテゴリ別分布データ
-  const categoryDistribution = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const categoryDistribution = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const distribution: Record&lt;string, number&gt; = <span class="cstat-no" title="statement not covered" >{};</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    todos.forEach(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; {</span>
@@ -995,7 +995,7 @@ export const <span class="cstat-no" title="statement not covered" >ProductivityD
 &nbsp;
   // メトリクス概要データ
   const metricsData = <span class="cstat-no" title="statement not covered" >useMemo(</span>
-<span class="fstat-no" title="function not covered" >    () =</span>&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >    () =&gt; ({</span></span>
       productivity: {
         completionRate: dashboardStats.completionRate,
         averageTasksPerDay: dashboardStats.averageTasksPerDay,
@@ -1017,7 +1017,7 @@ export const <span class="cstat-no" title="statement not covered" >ProductivityD
         totalTasks: dashboardStats.totalTasks,
         completedTasks: dashboardStats.completedTasks,
         overdueTasks: dashboardStats.overdueTasks,
-        highPriorityTasks: todos.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.isPrioritized || t.priority &lt;= 2)</span>.length,
+        highPriorityTasks: todos.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.isPrioritized || t.priority &lt;= 2).</span>length,
         categoryDistribution: categoryDistribution,
       },
     }),
@@ -1150,8 +1150,8 @@ export const <span class="cstat-no" title="statement not covered" >ProductivityD
                   &lt;p className="text-2xl font-bold text-green-600 dark:text-green-400"&gt;
                     {
                       todos.filter(
-<span class="fstat-no" title="function not covered" >                        (t</span>) =&gt;
-<span class="cstat-no" title="statement not covered" >                          t.completed &amp;&amp;</span>
+<span class="fstat-no" title="function not covered" >                        (t<span class="cstat-no" title="statement not covered" ></span>) =&gt;</span>
+                          t.completed &amp;&amp;
                           t.deadline &amp;&amp;
                           new Date(t.deadline).toDateString() === new Date().toDateString()
                       ).length
@@ -1163,8 +1163,8 @@ export const <span class="cstat-no" title="statement not covered" >ProductivityD
                   &lt;p className="text-2xl font-bold text-blue-600 dark:text-blue-400"&gt;
                     {
                       todos.filter(
-<span class="fstat-no" title="function not covered" >                        (t</span>) =&gt;
-<span class="cstat-no" title="statement not covered" >                          !t.completed &amp;&amp;</span>
+<span class="fstat-no" title="function not covered" >                        (t<span class="cstat-no" title="statement not covered" ></span>) =&gt;</span>
+                          !t.completed &amp;&amp;
                           t.deadline &amp;&amp;
                           new Date(t.deadline).toDateString() === new Date().toDateString()
                       ).length
@@ -1230,16 +1230,16 @@ function <span class="fstat-no" title="function not covered" >calculateStreakDay
 &nbsp;
   let streak = <span class="cstat-no" title="statement not covered" >0;</span>
   const sortedHistory = <span class="cstat-no" title="statement not covered" >[...dailyHistory].sort(</span>
-<span class="fstat-no" title="function not covered" >    (a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(b.date).getTime() - new Date(a.date).getTime()</span>
-  );
+<span class="fstat-no" title="function not covered" >    (a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(b.date).getTime() - new Date(a.date).getTime()</span>
+  );<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  for (const day of sortedHistory) {</span>
+<span class="cstat-no" title="statement not covered" >  for (const day<span class="cstat-no" title="statement not covered" > of s</span>ortedHistory<span class="cstat-no" title="statement not covered" >) {</span></span>
 <span class="cstat-no" title="statement not covered" >    if (day.count &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >      streak++;</span>
     } else {
 <span class="cstat-no" title="statement not covered" >      break;</span>
     }
-  }
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return streak;</span>
 }
@@ -1252,7 +1252,7 @@ function <span class="fstat-no" title="function not covered" >calculateStreakDay
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

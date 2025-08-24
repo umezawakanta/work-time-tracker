@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/52</span>
+                <span class='fraction'>0/86</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/52</span>
+                <span class='fraction'>0/67</span>
             </div>
         
             
@@ -362,22 +362,22 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -396,7 +396,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -605,35 +605,35 @@ type ViewMode = 'active' | 'all' | 'archived';
 // タブの型定義
 type TabType = 'list' | 'stats' | 'calendar';
 &nbsp;
-const HabitTracker = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const [isExpanded, setIsExpanded] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
-  const [viewMode, setViewMode] = <span class="cstat-no" title="statement not covered" >useState&lt;ViewMode&gt;('active');</span>
-  const [selectedCategory, setSelectedCategory] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('all');</span>
-  const [currentTab, setCurrentTab] = <span class="cstat-no" title="statement not covered" >useState&lt;TabType&gt;('list');</span>
-  const [newHabit, setNewHabit] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('');</span>
-  const [showAddForm, setShowAddForm] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
+const <span class="fstat-no" title="function not covered" >HabitTracker </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const [isExpanded<span class="cstat-no" title="statement not covered" >, s</span>etIsExpanded<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [viewMode<span class="cstat-no" title="statement not covered" >, s</span>etViewMode<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;ViewMode&gt;('active')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [selectedCategory<span class="cstat-no" title="statement not covered" >, s</span>etSelectedCategory<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('all')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [currentTab<span class="cstat-no" title="statement not covered" >, s</span>etCurrentTab<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;TabType&gt;('list')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [newHabit<span class="cstat-no" title="statement not covered" >, s</span>etNewHabit<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showAddForm<span class="cstat-no" title="statement not covered" >, s</span>etShowAddForm<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   const {
-    currentDate,
-    stats,
-    isLoading,
-    error,
-    showCongrats,
-    toggleHabit,
-    handleMonthChange,
-    getHabitData,
-    addCustomHabit,
-    archiveHabit,
-    unarchiveHabit,
-    deleteHabit,
-    getActiveHabits,
-    getArchivedHabits,
-    getAllHabits,
-    getCategoryHabits,
+    currentDate<span class="cstat-no" title="statement not covered" >,</span>
+    stats<span class="cstat-no" title="statement not covered" >,</span>
+    isLoading<span class="cstat-no" title="statement not covered" >,</span>
+    error<span class="cstat-no" title="statement not covered" >,</span>
+    showCongrats<span class="cstat-no" title="statement not covered" >,</span>
+    toggleHabit<span class="cstat-no" title="statement not covered" >,</span>
+    handleMonthChange<span class="cstat-no" title="statement not covered" >,</span>
+    getHabitData<span class="cstat-no" title="statement not covered" >,</span>
+    addCustomHabit<span class="cstat-no" title="statement not covered" >,</span>
+    archiveHabit<span class="cstat-no" title="statement not covered" >,</span>
+    unarchiveHabit<span class="cstat-no" title="statement not covered" >,</span>
+    deleteHabit<span class="cstat-no" title="statement not covered" >,</span>
+    getActiveHabits<span class="cstat-no" title="statement not covered" >,</span>
+    getArchivedHabits<span class="cstat-no" title="statement not covered" >,</span>
+    getAllHabits<span class="cstat-no" title="statement not covered" >,</span>
+    getCategoryHabits<span class="cstat-no" title="statement not covered" >,</span>
   } = <span class="cstat-no" title="statement not covered" >useHabitTracker(defaultHabits);</span>
 &nbsp;
   // 表示する習慣のリストを取得
-  const getVisibleHabits = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): string[] =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getVisibleHabits </span>= <span class="cstat-no" title="statement not covered" >(): string[] =&gt; {</span>
     let habitsList: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
     // ビューモードによるフィルタリング
@@ -647,8 +647,8 @@ const HabitTracker = <span class="cstat-no" title="statement not covered" ><span
 &nbsp;
     // カテゴリによるフィルタリング
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (selectedCategory !== 'all') {</span>
-<span class="cstat-no" title="statement not covered" >      habitsList = habitsList.filter(<span class="fstat-no" title="function not covered" >(h</span>abit) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >        getCategoryHabits(selectedCategory).includes(habit)</span>
+<span class="cstat-no" title="statement not covered" >      habitsList = habitsList.filter(<span class="fstat-no" title="function not covered" >(h</span>abit<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+        getCategoryHabits(selectedCategory).includes(habit)
       );
     }
 &nbsp;
@@ -656,7 +656,7 @@ const HabitTracker = <span class="cstat-no" title="statement not covered" ><span
   };
 &nbsp;
   // 新しい習慣を追加
-  const handleAddHabit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleAddHabit </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (newHabit.trim()) {</span>
 <span class="cstat-no" title="statement not covered" >      addCustomHabit(newHabit.trim());</span>
 <span class="cstat-no" title="statement not covered" >      setNewHabit('');</span>
@@ -699,7 +699,7 @@ const HabitTracker = <span class="cstat-no" title="statement not covered" ><span
     &lt;Card className="w-full shadow-sm"&gt;
       &lt;CardHeader
         className="cursor-pointer hover:bg-gray-50 transition-colors flex flex-row items-center justify-between space-y-0 pb-2"
-        onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsExpanded(!isExpanded)}</span>
+<span class="fstat-no" title="function not covered" >        onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsExpanded(!isExpanded)}</span>
       &gt;
         &lt;CardTitle className="text-md font-semibold flex items-center gap-2"&gt;
           &lt;Target className="h-5 w-5 text-primary" aria-hidden="true" /&gt;
@@ -742,7 +742,7 @@ const HabitTracker = <span class="cstat-no" title="statement not covered" ><span
                   size="sm"
                   variant="ghost"
                   className="h-8"
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowAddForm(!showAddForm)}</span>
+<span class="fstat-no" title="function not covered" >                  onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowAddForm(!showAddForm)}</span>
                 &gt;
                   &lt;Plus className="h-4 w-4" /&gt;
                 &lt;/Button&gt;
@@ -753,14 +753,14 @@ const HabitTracker = <span class="cstat-no" title="statement not covered" ><span
               &lt;div className="mb-4 flex items-center gap-2 bg-gray-50 p-3 rounded-md"&gt;
                 &lt;Input
                   value={newHabit}
-                  onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setNewHabit(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                  onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setNewHabit(e.target.value)}</span>
                   placeholder="新しい習慣を入力"
                   className="flex-1"
                 /&gt;
                 &lt;Button size="sm" onClick={handleAddHabit} disabled={!newHabit.trim()}&gt;
                   追加
                 &lt;/Button&gt;
-                &lt;Button size="sm" variant="ghost" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowAddForm(false)}</span>&gt;
+                &lt;Button size="sm" variant="ghost" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowAddForm(false)}&gt;</span>
                   キャンセル
                 &lt;/Button&gt;
               &lt;/div&gt;
@@ -807,7 +807,7 @@ const HabitTracker = <span class="cstat-no" title="statement not covered" ><span
             &lt;div className="flex items-center gap-2"&gt;
               &lt;Flame className="h-3 w-3 text-orange-500" /&gt;
               &lt;span&gt;
-                合計{Object.values(stats).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, stat) =&gt; <span class="cstat-no" title="statement not covered" >sum + stat.currentStreak,</span> 0)}
+                合計{Object.values(stats).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, stat<span class="cstat-no" title="statement not covered" >) =&gt; sum + stat.currentStreak, 0</span>)}
                 日継続中
               &lt;/span&gt;
             &lt;/div&gt;
@@ -826,7 +826,7 @@ const HabitTracker = <span class="cstat-no" title="statement not covered" ><span
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/119</span>
+                <span class='fraction'>0/159</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/58</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/105</span>
+                <span class='fraction'>0/107</span>
             </div>
         
             
@@ -321,8 +321,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -331,7 +331,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -346,12 +346,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -481,7 +481,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -564,70 +564,70 @@ interface UseQualityMetricsReturn {
   lastUpdated: Date | null;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >useQualityMetrics = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
-  autoRefresh = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span>
-  refreshInterval = <span class="branch-0 cbranch-no" title="branch not covered" >300000</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useQualityMetrics </span>= <span class="cstat-no" title="statement not covered" >(</span></span>
+  autoRefresh<span class="cstat-no" title="statement not covered" > = false,</span>
+  refreshInterval<span class="cstat-no" title="statement not covered" > = 300000</span>
 ): UseQualityMetricsReturn =&gt; {
-  const [metrics, setMetrics] = <span class="cstat-no" title="statement not covered" >useState&lt;QualityMetrics | null&gt;(null);</span>
-  const [isLoading, setIsLoading] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
-  const [isRefreshing, setIsRefreshing] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [error, setError] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;(null);</span>
-  const [lastUpdated, setLastUpdated] = <span class="cstat-no" title="statement not covered" >useState&lt;Date | null&gt;(null);</span>
+  const [metrics<span class="cstat-no" title="statement not covered" >, s</span>etMetrics<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;QualityMetrics | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isLoading<span class="cstat-no" title="statement not covered" >, s</span>etIsLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isRefreshing<span class="cstat-no" title="statement not covered" >, s</span>etIsRefreshing<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [error<span class="cstat-no" title="statement not covered" >, s</span>etError<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [lastUpdated<span class="cstat-no" title="statement not covered" >, s</span>etLastUpdated<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Date | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const loadMetrics = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      setError(null);</span>
-      const data = <span class="cstat-no" title="statement not covered" >await qualityAnalysisService.getQualityMetrics();</span>
+  const loadMetrics = <span class="cstat-no" title="statement not covered" >useCallback(<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span></span></span>
+    try {
+<span class="cstat-no" title="statement not covered" >      setError(null);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+      const <span class="cstat-no" title="statement not covered" >data = await q</span>ualityAnalysisService.getQualityMetrics();
 <span class="cstat-no" title="statement not covered" >      setMetrics(data);</span>
-<span class="cstat-no" title="statement not covered" >      setLastUpdated(new Date());</span>
+<span class="cstat-no" title="statement not covered" >      setLastUpdated(new Date());<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (err) {
-      const errorMessage = <span class="cstat-no" title="statement not covered" >err instanceof Error ? err.message : 'Failed to load quality metrics';</span>
+      const <span class="cstat-no" title="statement not covered" >errorMessage = err instanceof Error ? err.message : 'Failed to load quality metrics';</span>
 <span class="cstat-no" title="statement not covered" >      setError(errorMessage);</span>
-<span class="cstat-no" title="statement not covered" >      console.error('Failed to load quality metrics:', err);</span>
+<span class="cstat-no" title="statement not covered" >      console.error('Failed to load quality metrics:', err);<span class="cstat-no" title="statement not covered" ></span></span>
     } finally {
-<span class="cstat-no" title="statement not covered" >      setIsLoading(false);</span>
+<span class="cstat-no" title="statement not covered" >      setIsLoading(false);<span class="cstat-no" title="statement not covered" ></span></span>
     }
   }, []);
 &nbsp;
-  const refreshMetrics = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
+  const refreshMetrics = <span class="cstat-no" title="statement not covered" >useCallback(<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span></span></span>
+    try {
 <span class="cstat-no" title="statement not covered" >      setIsRefreshing(true);</span>
 <span class="cstat-no" title="statement not covered" >      setError(null);</span>
 &nbsp;
-      // レポートの更新をトリガー
-<span class="cstat-no" title="statement not covered" >      await qualityAnalysisService.refreshReports();</span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      // レポートの更新をトリガー</span></span>
+      await qualityAnalysisService.refreshReports()<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
       // 少し待ってから新しいデータを取得
-<span class="cstat-no" title="statement not covered" >      await new Promise(<span class="fstat-no" title="function not covered" >(r</span>esolve) =&gt; <span class="cstat-no" title="statement not covered" >setTimeout(resolve, 2000))</span>;</span>
+      await new Promise(<span class="fstat-no" title="function not covered" >(r</span>esolve<span class="cstat-no" title="statement not covered" >) =&gt; setTimeout(resolve, 2000))<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >;</span></span></span>
 &nbsp;
-      const data = <span class="cstat-no" title="statement not covered" >await qualityAnalysisService.getQualityMetrics();</span>
+      const <span class="cstat-no" title="statement not covered" >data = await q</span>ualityAnalysisService.getQualityMetrics();
 <span class="cstat-no" title="statement not covered" >      setMetrics(data);</span>
-<span class="cstat-no" title="statement not covered" >      setLastUpdated(new Date());</span>
+<span class="cstat-no" title="statement not covered" >      setLastUpdated(new Date());<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (err) {
-      const errorMessage = <span class="cstat-no" title="statement not covered" >err instanceof Error ? err.message : 'Failed to refresh quality metrics';</span>
+      const <span class="cstat-no" title="statement not covered" >errorMessage = err instanceof Error ? err.message : 'Failed to refresh quality metrics';</span>
 <span class="cstat-no" title="statement not covered" >      setError(errorMessage);</span>
-<span class="cstat-no" title="statement not covered" >      console.error('Failed to refresh quality metrics:', err);</span>
+<span class="cstat-no" title="statement not covered" >      console.error('Failed to refresh quality metrics:', err);<span class="cstat-no" title="statement not covered" ></span></span>
     } finally {
-<span class="cstat-no" title="statement not covered" >      setIsRefreshing(false);</span>
+<span class="cstat-no" title="statement not covered" >      setIsRefreshing(false);<span class="cstat-no" title="statement not covered" ></span></span>
     }
   }, []);
 &nbsp;
   // 初回ロード
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    loadMetrics();</span>
   }, [loadMetrics]);
 &nbsp;
   // 自動更新
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!autoRefresh || refreshInterval &lt;= 0) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
-    const interval = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const interval = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!isLoading &amp;&amp; !isRefreshing) {</span>
 <span class="cstat-no" title="statement not covered" >        loadMetrics();</span>
       }
     }, refreshInterval);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >clearInterval(interval);</span></span>
+<span class="cstat-no" title="statement not covered" >    return <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; c</span>learInterval(interval);</span></span>
   }, [autoRefresh, refreshInterval, isLoading, isRefreshing, loadMetrics]);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
@@ -642,11 +642,11 @@ export const <span class="cstat-no" title="statement not covered" >useQualityMet
 };
 &nbsp;
 // 品質トレンド分析フック
-export const <span class="cstat-no" title="statement not covered" >useQualityTrends = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>d</span>ays = <span class="branch-0 cbranch-no" title="branch not covered" >30)</span> =&gt; {</span>
-  const { metrics } = <span class="cstat-no" title="statement not covered" >useQualityMetrics();</span>
-  const [trends, setTrends] = <span class="cstat-no" title="statement not covered" >useState&lt;any[]&gt;([]);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useQualityTrends </span>= <span class="cstat-no" title="statement not covered" >(</span>days<span class="cstat-no" title="statement not covered" > = 30)</span> =&gt; {</span>
+  const { metrics<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useQualityMetrics();</span></span>
+  const [trends<span class="cstat-no" title="statement not covered" >, s</span>etTrends<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;any[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (metrics?.trends) {</span>
       // 指定された日数分のトレンドデータを抽出
       const recentTrends = <span class="cstat-no" title="statement not covered" >metrics.trends.slice(-days);</span>
@@ -661,8 +661,8 @@ export const <span class="cstat-no" title="statement not covered" >useQualityTre
       const recent = <span class="cstat-no" title="statement not covered" >trends.slice(-7);</span> // 最近1週間
       const older = <span class="cstat-no" title="statement not covered" >trends.slice(-14, -7);</span> // その前の1週間
 &nbsp;
-      const recentAvg = <span class="cstat-no" title="statement not covered" >recent.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + item[metric],</span> 0) / recent.length;</span>
-      const olderAvg = <span class="cstat-no" title="statement not covered" >older.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + item[metric],</span> 0) / older.length;</span>
+      const recentAvg = <span class="cstat-no" title="statement not covered" >recent.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item<span class="cstat-no" title="statement not covered" >) =&gt; sum + item[metric], 0</span>) / recent.length;</span>
+      const olderAvg = <span class="cstat-no" title="statement not covered" >older.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item<span class="cstat-no" title="statement not covered" >) =&gt; sum + item[metric], 0</span>) / older.length;</span>
 &nbsp;
       const difference = <span class="cstat-no" title="statement not covered" >recentAvg - olderAvg;</span>
 &nbsp;
@@ -673,7 +673,7 @@ export const <span class="cstat-no" title="statement not covered" >useQualityTre
     [trends]
   );
 &nbsp;
-  const getTrendInsights = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const getTrendInsights = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const insights = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
     const testCoverageTrend = <span class="cstat-no" title="statement not covered" >calculateTrendDirection('testCoverage');</span>
@@ -716,18 +716,18 @@ export const <span class="cstat-no" title="statement not covered" >useQualityTre
 };
 &nbsp;
 // 品質アラートフック
-export const <span class="cstat-no" title="statement not covered" >useQualityAlerts = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const { metrics } = <span class="cstat-no" title="statement not covered" >useQualityMetrics();</span>
-  const [alerts, setAlerts] = <span class="cstat-no" title="statement not covered" >useState&lt;</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useQualityAlerts </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const { metrics<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useQualityMetrics();</span></span>
+  const [alerts<span class="cstat-no" title="statement not covered" >, s</span>etAlerts<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;</span>
     Array&lt;{
       type: 'error' | 'warning' | 'info';
       message: string;
       action?: string;
       timestamp: Date;
     }&gt;
-  &gt;([]);
+  &gt;([])<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!metrics) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
     const newAlerts = <span class="cstat-no" title="statement not covered" >[];</span>
@@ -779,10 +779,10 @@ export const <span class="cstat-no" title="statement not covered" >useQualityAle
   }, [metrics]);
 &nbsp;
   const dismissAlert = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(i</span>ndex: number) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setAlerts(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >prev.filter(<span class="fstat-no" title="function not covered" >(_</span>, i) =&gt; <span class="cstat-no" title="statement not covered" >i !== index)</span>)</span>;</span>
+<span class="cstat-no" title="statement not covered" >    setAlerts(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; prev.filter(<span class="fstat-no" title="function not covered" >(_</span>, i<span class="cstat-no" title="statement not covered" >) =&gt; i !== index))</span>;</span></span>
   }, []);
 &nbsp;
-  const clearAllAlerts = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const clearAllAlerts = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    setAlerts([]);</span>
   }, []);
 &nbsp;
@@ -791,8 +791,8 @@ export const <span class="cstat-no" title="statement not covered" >useQualityAle
     dismissAlert,
     clearAllAlerts,
     hasAlerts: alerts.length &gt; 0,
-    errorCount: alerts.filter(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.type === 'error')</span>.length,
-    warningCount: alerts.filter(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.type === 'warning')</span>.length,
+    errorCount: alerts.filter(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; a.type === 'error').</span>length,
+    warningCount: alerts.filter(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; a.type === 'warning').</span>length,
   };
 };
 &nbsp;</pre></td></tr></table></pre>
@@ -802,7 +802,7 @@ export const <span class="cstat-no" title="statement not covered" >useQualityAle
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

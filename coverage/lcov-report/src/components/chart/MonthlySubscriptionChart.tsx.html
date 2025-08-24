@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/30</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
@@ -223,7 +223,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -353,8 +353,8 @@ interface MonthData {
   totalAmount: number;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >MonthlySubscriptionChart: React.FC&lt;MonthlySubscriptionChartProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  subscriptions,
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >MonthlySubscriptionChart:</span> React.FC&lt;MonthlySubscriptionChartProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  subscriptions<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
   const monthNames = <span class="cstat-no" title="statement not covered" >[</span>
     '1月',
@@ -373,18 +373,18 @@ export const <span class="cstat-no" title="statement not covered" >MonthlySubscr
 &nbsp;
   const monthlyData: MonthData[] = <span class="cstat-no" title="statement not covered" >monthNames.map(<span class="fstat-no" title="function not covered" >(m</span>onth, index) =&gt; {</span>
     const monthSubscriptions = <span class="cstat-no" title="statement not covered" >subscriptions.filter(<span class="fstat-no" title="function not covered" >(s</span>ub) =&gt; {</span>
-      const [, monthStr] = <span class="cstat-no" title="statement not covered" >String(sub.billingDate).split('/');</span>
+      const [, monthStr<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >S</span>tring(sub.billingDate).split('/')<span class="cstat-no" title="statement not covered" >;</span></span>
 <span class="cstat-no" title="statement not covered" >      return parseInt(monthStr) === index + 1;</span>
     });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
       month,
       subscriptions: monthSubscriptions,
-      totalAmount: monthSubscriptions.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, sub) =&gt; <span class="cstat-no" title="statement not covered" >sum + sub.amount,</span> 0),
+      totalAmount: monthSubscriptions.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, sub<span class="cstat-no" title="statement not covered" >) =&gt; sum + sub.amount, 0</span>),
     };
   });
 &nbsp;
-  const allSubscriptionNames = <span class="cstat-no" title="statement not covered" >Array.from(new Set(subscriptions.map(<span class="fstat-no" title="function not covered" >(s</span>ub) =&gt; <span class="cstat-no" title="statement not covered" >sub.name)</span>));</span>
+  const allSubscriptionNames = <span class="cstat-no" title="statement not covered" >Array.from(new Set(subscriptions.map(<span class="fstat-no" title="function not covered" >(s</span>ub<span class="cstat-no" title="statement not covered" >) =&gt; sub.name))</span>);</span>
   const colorScale = <span class="cstat-no" title="statement not covered" >[</span>
     'rgba(255, 99, 132, 0.6)',
     'rgba(54, 162, 235, 0.6)',
@@ -394,10 +394,10 @@ export const <span class="cstat-no" title="statement not covered" >MonthlySubscr
     'rgba(255, 159, 64, 0.6)',
   ];
 &nbsp;
-  const datasets = <span class="cstat-no" title="statement not covered" >allSubscriptionNames.map(<span class="fstat-no" title="function not covered" >(n</span>ame, index) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+  const datasets = <span class="cstat-no" title="statement not covered" >allSubscriptionNames.map(<span class="fstat-no" title="function not covered" >(n</span>ame, index<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
     label: name,
     data: monthlyData.map(
-<span class="fstat-no" title="function not covered" >      (d</span>ata) =&gt; <span class="cstat-no" title="statement not covered" >data.subscriptions.find(<span class="fstat-no" title="function not covered" >(s</span>ub) =&gt; <span class="cstat-no" title="statement not covered" >sub.name === name)</span>?.amount || 0</span>
+<span class="fstat-no" title="function not covered" >      (d</span>ata<span class="cstat-no" title="statement not covered" >) =&gt; data.subscriptions.find(<span class="fstat-no" title="function not covered" >(s</span>ub<span class="cstat-no" title="statement not covered" >) =&gt; sub.name === name)?</span>.amount || 0</span>
     ),
     backgroundColor: colorScale[index % colorScale.length],
   }));
@@ -420,7 +420,7 @@ export const <span class="cstat-no" title="statement not covered" >MonthlySubscr
       },
       tooltip: {
         callbacks: {
-          afterTitle: <span class="fstat-no" title="function not covered" >(c</span>ontext) =&gt; {
+<span class="fstat-no" title="function not covered" >          afterTitle:</span> (context) =&gt; {
             const monthIndex = <span class="cstat-no" title="statement not covered" >context[0].dataIndex;</span>
             const totalAmount = <span class="cstat-no" title="statement not covered" >monthlyData[monthIndex].totalAmount;</span>
 <span class="cstat-no" title="statement not covered" >            return `合計: ${totalAmount.toLocaleString()}円`;</span>
@@ -463,7 +463,7 @@ export const <span class="cstat-no" title="statement not covered" >MonthlySubscr
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

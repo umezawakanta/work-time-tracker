@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/144</span>
+                <span class='fraction'>0/148</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/40</span>
+                <span class='fraction'>0/50</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/32</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/126</span>
+                <span class='fraction'>0/127</span>
             </div>
         
             
@@ -756,7 +756,7 @@
 <a name='L691'></a><a href='#L691'>691</a>
 <a name='L692'></a><a href='#L692'>692</a>
 <a name='L693'></a><a href='#L693'>693</a>
-<a name='L694'></a><a href='#L694'>694</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L694'></a><a href='#L694'>694</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -878,16 +878,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1449,7 +1449,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>/**</span></span>
  * ⚙️ 勤務パターン設定サービス
  * 標準勤務時間・休憩時間・残業計算基準・労働時間上限設定
  * ADHD/ASD特性に応じた個人最適化機能
@@ -1570,17 +1570,17 @@ interface ValidationError {
   code: string;
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export class W</span>orkPatternSettingsService extends EventEmitter {
-  private <span class="cstat-no" title="statement not covered" >userSettings: Map&lt;string, WorkPatternSettings[]&gt; = new Map();</span>
-  private <span class="cstat-no" title="statement not covered" >templates: WorkPatternTemplate[] = [];</span>
+<span class="cstat-no" title="statement not covered" >export class W</span>orkPatternSettingsService <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >extends E</span>ventEmitter {</span>
+  private userSettings: Map&lt;string, WorkPatternSettings[]&gt; = new Map();
+  private templates: WorkPatternTemplate[] = [];
 &nbsp;
-<span class="fstat-no" title="function not covered" >  constructor() {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  constructor() {</span></span>
 <span class="cstat-no" title="statement not covered" >    super();</span>
 <span class="cstat-no" title="statement not covered" >    this.initializeTemplates();</span>
-<span class="cstat-no" title="statement not covered" >    this.initializeDemoData();</span>
+<span class="cstat-no" title="statement not covered" >    this.initializeDemoData();<span class="cstat-no" title="statement not covered" ></span></span>
   }
 &nbsp;
-  /**
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >  /**</span></span>
    * テンプレートの初期化
    */
   private <span class="fstat-no" title="function not covered" >initializeTemplates(</span>): void {
@@ -1776,7 +1776,7 @@ interface ValidationError {
    */
 <span class="fstat-no" title="function not covered" >  getActivePattern(</span>userId: string): WorkPatternSettings | null {
     const patterns = <span class="cstat-no" title="statement not covered" >this.getUserPatterns(userId);</span>
-<span class="cstat-no" title="statement not covered" >    return patterns.find(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.isActive)</span> || null;</span>
+<span class="cstat-no" title="statement not covered" >    return patterns.find(<span class="fstat-no" title="function not covered" >(p<span class="cstat-no" title="statement not covered" ></span>) =&gt; p.isActive) </span>|| null;</span>
   }
 &nbsp;
   /**
@@ -1784,7 +1784,7 @@ interface ValidationError {
    */
 <span class="fstat-no" title="function not covered" >  getDefaultPattern(</span>userId: string): WorkPatternSettings | null {
     const patterns = <span class="cstat-no" title="statement not covered" >this.getUserPatterns(userId);</span>
-<span class="cstat-no" title="statement not covered" >    return patterns.find(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.isDefault)</span> || null;</span>
+<span class="cstat-no" title="statement not covered" >    return patterns.find(<span class="fstat-no" title="function not covered" >(p<span class="cstat-no" title="statement not covered" ></span>) =&gt; p.isDefault) </span>|| null;</span>
   }
 &nbsp;
   /**
@@ -1798,7 +1798,7 @@ interface ValidationError {
    * カテゴリ別テンプレートを取得
    */
 <span class="fstat-no" title="function not covered" >  getTemplatesByCategory(</span>category: string): WorkPatternTemplate[] {
-<span class="cstat-no" title="statement not covered" >    return this.templates.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.category === category)</span>;</span>
+<span class="cstat-no" title="statement not covered" >    return this.templates.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.category === category);</span></span>
   }
 &nbsp;
   /**
@@ -1808,8 +1808,8 @@ interface ValidationError {
     userId: string,
     pattern: Omit&lt;WorkPatternSettings, 'id' | 'userId' | 'createdAt' | 'updatedAt'&gt;
   ): string {
-    const id = <span class="cstat-no" title="statement not covered" >`pattern-${Date.now()}`;</span>
-    const newPattern: WorkPatternSettings = <span class="cstat-no" title="statement not covered" >{</span>
+    const id<span class="cstat-no" title="statement not covered" > = `pattern-${Date.now()}`;</span>
+    const newPattern<span class="cstat-no" title="statement not covered" >: WorkPatternSettings = {</span>
       ...pattern,
       id,
       userId,
@@ -1835,11 +1835,11 @@ interface ValidationError {
    */
 <span class="fstat-no" title="function not covered" >  updatePattern(</span>userId: string, patternId: string, updates: Partial&lt;WorkPatternSettings&gt;): boolean {
     const userPatterns = <span class="cstat-no" title="statement not covered" >this.getUserPatterns(userId);</span>
-    const patternIndex = <span class="cstat-no" title="statement not covered" >userPatterns.findIndex(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.id === patternId)</span>;</span>
+    const patternIndex = <span class="cstat-no" title="statement not covered" >userPatterns.findIndex(<span class="fstat-no" title="function not covered" >(p<span class="cstat-no" title="statement not covered" ></span>) =&gt; p.id === patternId);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (patternIndex === -1) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 &nbsp;
-    const updatedPattern = <span class="cstat-no" title="statement not covered" >{</span>
+    const updatedPattern<span class="cstat-no" title="statement not covered" > = {</span>
       ...userPatterns[patternIndex],
       ...updates,
       updatedAt: new Date(),
@@ -1864,7 +1864,7 @@ interface ValidationError {
    */
 <span class="fstat-no" title="function not covered" >  deletePattern(</span>userId: string, patternId: string): boolean {
     const userPatterns = <span class="cstat-no" title="statement not covered" >this.getUserPatterns(userId);</span>
-    const pattern = <span class="cstat-no" title="statement not covered" >userPatterns.find(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.id === patternId)</span>;</span>
+    const pattern = <span class="cstat-no" title="statement not covered" >userPatterns.find(<span class="fstat-no" title="function not covered" >(p<span class="cstat-no" title="statement not covered" ></span>) =&gt; p.id === patternId);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!pattern) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (pattern.isDefault) {</span>
@@ -1872,12 +1872,12 @@ interface ValidationError {
 <span class="cstat-no" title="statement not covered" >      return false;</span>
     }
 &nbsp;
-    const filteredPatterns = <span class="cstat-no" title="statement not covered" >userPatterns.filter(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.id !== patternId)</span>;</span>
+    const filteredPatterns = <span class="cstat-no" title="statement not covered" >userPatterns.filter(<span class="fstat-no" title="function not covered" >(p<span class="cstat-no" title="statement not covered" ></span>) =&gt; p.id !== patternId);</span></span>
 <span class="cstat-no" title="statement not covered" >    this.userSettings.set(userId, filteredPatterns);</span>
 &nbsp;
     // 削除されたパターンがアクティブだった場合、デフォルトをアクティブにする
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (pattern.isActive) {</span>
-      const defaultPattern = <span class="cstat-no" title="statement not covered" >filteredPatterns.find(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.isDefault)</span>;</span>
+      const defaultPattern = <span class="cstat-no" title="statement not covered" >filteredPatterns.find(<span class="fstat-no" title="function not covered" >(p<span class="cstat-no" title="statement not covered" ></span>) =&gt; p.isDefault);</span></span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (defaultPattern) {</span>
 <span class="cstat-no" title="statement not covered" >        this.setActivePattern(userId, defaultPattern.id);</span>
       }
@@ -1899,7 +1899,7 @@ interface ValidationError {
     });
 &nbsp;
     // 指定されたパターンをアクティブにする
-    const targetPattern = <span class="cstat-no" title="statement not covered" >userPatterns.find(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.id === patternId)</span>;</span>
+    const targetPattern = <span class="cstat-no" title="statement not covered" >userPatterns.find(<span class="fstat-no" title="function not covered" >(p<span class="cstat-no" title="statement not covered" ></span>) =&gt; p.id === patternId);</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!targetPattern) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    targetPattern.isActive = true;</span>
@@ -1914,10 +1914,10 @@ interface ValidationError {
    * テンプレートから勤務パターンを作成
    */
 <span class="fstat-no" title="function not covered" >  createFromTemplate(</span>userId: string, templateId: string, customName?: string): string | null {
-    const template = <span class="cstat-no" title="statement not covered" >this.templates.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.id === templateId)</span>;</span>
+    const template = <span class="cstat-no" title="statement not covered" >this.templates.find(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.id === templateId);</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!template) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
-    const newPattern: Omit&lt;WorkPatternSettings, 'id' | 'userId' | 'createdAt' | 'updatedAt'&gt; = <span class="cstat-no" title="statement not covered" >{</span>
+    const newPattern<span class="cstat-no" title="statement not covered" >: Omit&lt;WorkPatternSettings, 'id' | 'userId' | 'createdAt' | 'updatedAt'&gt; = {</span>
       name: customName || template.name,
       isDefault: false,
       isActive: false,
@@ -2031,12 +2031,12 @@ interface ValidationError {
     exception: Omit&lt;WorkPatternException, 'id'&gt;
   ): string | null {
     const userPatterns = <span class="cstat-no" title="statement not covered" >this.getUserPatterns(userId);</span>
-    const pattern = <span class="cstat-no" title="statement not covered" >userPatterns.find(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.id === patternId)</span>;</span>
+    const pattern = <span class="cstat-no" title="statement not covered" >userPatterns.find(<span class="fstat-no" title="function not covered" >(p<span class="cstat-no" title="statement not covered" ></span>) =&gt; p.id === patternId);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!pattern) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
-    const exceptionId = <span class="cstat-no" title="statement not covered" >`exception-${Date.now()}`;</span>
-    const newException: WorkPatternException = <span class="cstat-no" title="statement not covered" >{</span>
+    const exceptionId<span class="cstat-no" title="statement not covered" > = `exception-${Date.now()}`;</span>
+    const newException<span class="cstat-no" title="statement not covered" >: WorkPatternException = {</span>
       ...exception,
       id: exceptionId,
     };
@@ -2055,12 +2055,12 @@ interface ValidationError {
    */
 <span class="fstat-no" title="function not covered" >  removeException(</span>userId: string, patternId: string, exceptionId: string): boolean {
     const userPatterns = <span class="cstat-no" title="statement not covered" >this.getUserPatterns(userId);</span>
-    const pattern = <span class="cstat-no" title="statement not covered" >userPatterns.find(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.id === patternId)</span>;</span>
+    const pattern = <span class="cstat-no" title="statement not covered" >userPatterns.find(<span class="fstat-no" title="function not covered" >(p<span class="cstat-no" title="statement not covered" ></span>) =&gt; p.id === patternId);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!pattern) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 &nbsp;
     const originalLength = <span class="cstat-no" title="statement not covered" >pattern.exceptions.length;</span>
-<span class="cstat-no" title="statement not covered" >    pattern.exceptions = pattern.exceptions.filter(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.id !== exceptionId)</span>;</span>
+<span class="cstat-no" title="statement not covered" >    pattern.exceptions = pattern.exceptions.filter(<span class="fstat-no" title="function not covered" >(e<span class="cstat-no" title="statement not covered" ></span>) =&gt; e.id !== exceptionId);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (pattern.exceptions.length &lt; originalLength) {</span>
 <span class="cstat-no" title="statement not covered" >      pattern.updatedAt = new Date();</span>
@@ -2149,7 +2149,7 @@ interface ValidationError {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

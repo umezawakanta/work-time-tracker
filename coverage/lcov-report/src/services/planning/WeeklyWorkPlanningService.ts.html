@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.18% </span>
+                <span class="strong">20.86% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>20/110</span>
+                <span class='fraction'>24/115</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.34% </span>
+                <span class="strong">16.21% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/23</span>
+                <span class='fraction'>6/37</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">15.15% </span>
+                <span class="strong">20% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/33</span>
+                <span class='fraction'>7/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.86% </span>
+                <span class="strong">20.18% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>20/106</span>
+                <span class='fraction'>22/109</span>
             </div>
         
             
@@ -674,7 +674,7 @@
 <a name='L609'></a><a href='#L609'>609</a>
 <a name='L610'></a><a href='#L610'>610</a>
 <a name='L611'></a><a href='#L611'>611</a>
-<a name='L612'></a><a href='#L612'>612</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L612'></a><a href='#L612'>612</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">195x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -976,6 +976,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -986,12 +992,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -999,7 +999,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1020,7 +1020,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1079,7 +1079,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1285,7 +1285,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="branch-2 cbranch-no" title="branch not covered" >/**</span>
  * 📅 週次作業計画管理システム
  * サイバーセキュリティバッジ学習計画に基づく包括的な作業スケジュール管理
  */
@@ -1632,7 +1632,7 @@ class WeeklyWorkPlanningService extends EventEmitter {
    * 🔄 進捗追跡開始
    */
   private startProgressTracking(): void {
-    this.trackingInterval = setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+    this.trackingInterval = setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{
 <span class="cstat-no" title="statement not covered" >      this.updateWeeklyProgress();</span>
 <span class="cstat-no" title="statement not covered" >      this.predictBadgeCompletion();</span>
 <span class="cstat-no" title="statement not covered" >      this.generateRecommendations();</span>
@@ -1690,8 +1690,8 @@ class WeeklyWorkPlanningService extends EventEmitter {
   /**
    * 📋 今週の作業計画取得
    */
-  public <span class="fstat-no" title="function not covered" >getCurrentWeekPlan(</span>): WeeklyWorkPlan | null {
-<span class="cstat-no" title="statement not covered" >    return TWELVE_WEEK_SECURITY_PLAN.find(<span class="fstat-no" title="function not covered" >(w</span>eek) =&gt; <span class="cstat-no" title="statement not covered" >week.weekNumber === this.currentWeek)</span> || null;</span>
+  public <span class="fstat-no" title="function not covered" >getCurrentWeekPlan<span class="cstat-no" title="statement not covered" >(</span>): WeeklyWorkPlan | null {</span>
+<span class="cstat-no" title="statement not covered" >    return TWELVE_WEEK_SECURITY_PLAN.find(<span class="fstat-no" title="function not covered" >(w</span>eek<span class="cstat-no" title="statement not covered" >) =&gt; week.weekNumber === this.currentWeek) </span>|| null;</span>
   }
 &nbsp;
   /**
@@ -1765,15 +1765,15 @@ class WeeklyWorkPlanningService extends EventEmitter {
    * 🎯 マイルストーン完了記録
    */
   public <span class="fstat-no" title="function not covered" >completeMilestone(</span>weekNumber: number, milestoneId: string): void {
-    const weekPlan = <span class="cstat-no" title="statement not covered" >TWELVE_WEEK_SECURITY_PLAN.find(<span class="fstat-no" title="function not covered" >(w</span>) =&gt; <span class="cstat-no" title="statement not covered" >w.weekNumber === weekNumber)</span>;</span>
-    const milestone = <span class="cstat-no" title="statement not covered" >weekPlan?.milestones.find(<span class="fstat-no" title="function not covered" >(m</span>) =&gt; <span class="cstat-no" title="statement not covered" >m.id === milestoneId)</span>;</span>
+    const weekPlan = <span class="cstat-no" title="statement not covered" >TWELVE_WEEK_SECURITY_PLAN.find(<span class="fstat-no" title="function not covered" >(w<span class="cstat-no" title="statement not covered" ></span>) =&gt; w.weekNumber === weekNumber);</span></span>
+    const milestone = <span class="cstat-no" title="statement not covered" >weekPlan?.milestones.find(<span class="fstat-no" title="function not covered" >(m<span class="cstat-no" title="statement not covered" ></span>) =&gt; m.id === milestoneId);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (milestone) {</span>
 <span class="cstat-no" title="statement not covered" >      milestone.status = 'completed';</span>
 &nbsp;
       const progress = <span class="cstat-no" title="statement not covered" >this.weeklyProgress.get(weekNumber);</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (progress) {</span>
-        const completedCount = <span class="cstat-no" title="statement not covered" >weekPlan!.milestones.filter(<span class="fstat-no" title="function not covered" >(m</span>) =&gt; <span class="cstat-no" title="statement not covered" >m.status === 'completed')</span>.length;</span>
+        const completedCount = <span class="cstat-no" title="statement not covered" >weekPlan!.milestones.filter(<span class="fstat-no" title="function not covered" >(m<span class="cstat-no" title="statement not covered" ></span>) =&gt; m.status === 'completed').</span>length;</span>
 <span class="cstat-no" title="statement not covered" >        progress.milestoneCompletion = (completedCount / weekPlan!.milestones.length) * 100;</span>
 <span class="cstat-no" title="statement not covered" >        this.weeklyProgress.set(weekNumber, progress);</span>
       }
@@ -1787,12 +1787,12 @@ class WeeklyWorkPlanningService extends EventEmitter {
    */
   private <span class="fstat-no" title="function not covered" >calculateOverallProgress(</span>): number {
     const totalHours = <span class="cstat-no" title="statement not covered" >TWELVE_WEEK_SECURITY_PLAN.slice(0, 4).reduce(</span>
-<span class="fstat-no" title="function not covered" >      (s</span>um, week) =&gt; <span class="cstat-no" title="statement not covered" >sum + week.targetHours,</span>
+<span class="fstat-no" title="function not covered" >      (s</span>um, week<span class="cstat-no" title="statement not covered" >) =&gt; sum + week.targetHours,</span>
       0
     );
     const completedHours = <span class="cstat-no" title="statement not covered" >Array.from(this.weeklyProgress.values())</span>
       .slice(0, 4)
-      .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, progress) =&gt; <span class="cstat-no" title="statement not covered" >sum + progress.hoursCompleted,</span> 0);
+      .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, progress<span class="cstat-no" title="statement not covered" >) =&gt; sum + progress.hoursCompleted, 0</span>);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return (completedHours / totalHours) * 100;</span>
   }
@@ -1800,14 +1800,14 @@ class WeeklyWorkPlanningService extends EventEmitter {
   private <span class="fstat-no" title="function not covered" >calculateRemainingHours(</span>): number {
 <span class="cstat-no" title="statement not covered" >    return Array.from(this.weeklyProgress.values())</span>
       .slice(0, 4)
-      .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, progress) =&gt; <span class="cstat-no" title="statement not covered" >sum + progress.hoursRemaining,</span> 0);
+      .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, progress<span class="cstat-no" title="statement not covered" >) =&gt; sum + progress.hoursRemaining, 0</span>);
   }
 &nbsp;
   private <span class="fstat-no" title="function not covered" >calculateConfidenceLevel(</span>): number {
     const avgConfidence =
 <span class="cstat-no" title="statement not covered" >      Array.from(this.weeklyProgress.values())</span>
         .slice(0, 4)
-        .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, progress) =&gt; <span class="cstat-no" title="statement not covered" >sum + progress.confidenceLevel,</span> 0) / 4;
+        .reduce(<span class="fstat-no" title="function not covered" >(s</span>um, progress<span class="cstat-no" title="statement not covered" >) =&gt; sum + progress.confidenceLevel, 0</span>) / 4;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return Math.round(avgConfidence);</span>
   }
@@ -1903,7 +1903,7 @@ export const weeklyWorkPlanningService = WeeklyWorkPlanningService.getInstance()
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

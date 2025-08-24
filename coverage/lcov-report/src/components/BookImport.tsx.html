@@ -25,21 +25,21 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/39</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
@@ -141,15 +141,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -163,16 +161,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -201,18 +201,18 @@
 <span class="cstat-no" title="statement not covered" >import { addBook } from '../store/bookSlice';</span>
 import { AppDispatch } from '../store';
 &nbsp;
-const BookImport: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const [isbn, setIsbn] = <span class="cstat-no" title="statement not covered" >useState('');</span>
+const <span class="fstat-no" title="function not covered" >BookImport:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const [isbn<span class="cstat-no" title="statement not covered" >, s</span>etIsbn<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
 &nbsp;
-  const handleImport = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const response = <span class="cstat-no" title="statement not covered" >await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);</span>
-      const data = <span class="cstat-no" title="statement not covered" >await response.json();</span>
+  const <span class="fstat-no" title="function not covered" >handleImport<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span></span>sync () =&gt; {</span></span></span></span></span>
+    try {
+      const <span class="cstat-no" title="statement not covered" >response<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > = await f</span></span>etch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);</span>
+      const <span class="cstat-no" title="statement not covered" >data<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span> = await r</span>esponse.json();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      if (data.items &amp;&amp; data.items.length &gt; 0) {</span>
-        const bookInfo = <span class="cstat-no" title="statement not covered" >data.items[0].volumeInfo;</span>
-        const newBook = <span class="cstat-no" title="statement not covered" >{</span>
+      if (data.items &amp;&amp; data.items.length &gt; 0<span class="cstat-no" title="statement not covered" >) {</span>
+        const <span class="cstat-no" title="statement not covered" >bookInfo = data.items[0].volumeInfo;</span>
+        const <span class="cstat-no" title="statement not covered" >newBook = {</span>
           title: bookInfo.title || 'Unknown Title',
           author: bookInfo.authors ? bookInfo.authors.join(', ') : 'Unknown Author',
           isbn: isbn,
@@ -225,19 +225,19 @@ const BookImport: React.FC = <span class="cstat-no" title="statement not covered
           rating: 0,
           notes: '',
           lentTo: '',
-        };
+        }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        await dispatch(addBook(newBook));</span>
+        await dispatch(addBook(newBook));
 <span class="cstat-no" title="statement not covered" >        setIsbn('');</span>
-<span class="cstat-no" title="statement not covered" >        alert('本が正常にインポートされました。');</span>
+<span class="cstat-no" title="statement not covered" >        alert('本が正常にインポートされました。');<span class="cstat-no" title="statement not covered" ></span></span>
       } else {
-<span class="cstat-no" title="statement not covered" >        alert('指定されたISBNの本が見つかりませんでした。');</span>
+<span class="cstat-no" title="statement not covered" >        alert('指定されたISBNの本が見つかりませんでした。');<span class="cstat-no" title="statement not covered" ></span></span>
       }
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('本のインポート中にエラーが発生しました:', error);</span>
-<span class="cstat-no" title="statement not covered" >      alert('本のインポート中にエラーが発生しました。');</span>
+<span class="cstat-no" title="statement not covered" >      alert('本のインポート中にエラーが発生しました。');<span class="cstat-no" title="statement not covered" ></span></span>
     }
-  };
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;Card&gt;
@@ -249,7 +249,7 @@ const BookImport: React.FC = <span class="cstat-no" title="statement not covered
           type="text"
           placeholder="ISBN"
           value={isbn}
-          onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setIsbn(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >          onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setIsbn(e.target.value)}</span>
         /&gt;
         &lt;Button onClick={handleImport}&gt;インポート&lt;/Button&gt;
       &lt;/CardContent&gt;
@@ -265,7 +265,7 @@ const BookImport: React.FC = <span class="cstat-no" title="statement not covered
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

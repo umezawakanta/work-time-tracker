@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/120</span>
+                <span class='fraction'>0/132</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/46</span>
+                <span class='fraction'>0/58</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/106</span>
+                <span class='fraction'>0/110</span>
             </div>
         
             
@@ -795,10 +795,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1015,12 +1015,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1078,8 +1078,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1339,40 +1339,40 @@ interface CandidateChartsProps {
 }
 &nbsp;
 // コンポーネントの型定義を更新
-const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span></span>
-  candidates,
-  selectedPrefecture,
-  onPrefectureChange,
-  isPremium,
+const <span class="fstat-no" title="function not covered" >CandidateCharts:</span> React.FC&lt;CandidateChartsProps&gt; = <span class="cstat-no" title="statement not covered" >({</span>
+  candidates<span class="cstat-no" title="statement not covered" >,</span>
+  selectedPrefecture<span class="cstat-no" title="statement not covered" >,</span>
+  onPrefectureChange<span class="cstat-no" title="statement not covered" >,</span>
+  isPremium<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
-  const [chartsPerRow, setChartsPerRow] = <span class="cstat-no" title="statement not covered" >useState&lt;1 | 2 | 3&gt;(1);</span>
+  const [chartsPerRow<span class="cstat-no" title="statement not covered" >, s</span>etChartsPerRow<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;1 | 2 | 3&gt;(1)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 都道府県選択用の追加UI
-  const handlePrefectureChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: React.ChangeEvent&lt;HTMLSelectElement&gt;) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handlePrefectureChange </span>= <span class="cstat-no" title="statement not covered" >(e: React.ChangeEvent&lt;HTMLSelectElement&gt;) =&gt; {</span>
     const value = <span class="cstat-no" title="statement not covered" >e.target.value;</span>
 <span class="cstat-no" title="statement not covered" >    onPrefectureChange(value === 'all' ? null : value);</span>
   };
 &nbsp;
   // 選択された都道府県でフィルタリングされた候補者
-  const filteredCandidates = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const filteredCandidates = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!selectedPrefecture) <span class="cstat-no" title="statement not covered" >return candidates;</span></span>
-<span class="cstat-no" title="statement not covered" >    return candidates.filter(<span class="fstat-no" title="function not covered" >(c</span>) =&gt; <span class="cstat-no" title="statement not covered" >c.prefecture === selectedPrefecture)</span>;</span>
+<span class="cstat-no" title="statement not covered" >    return candidates.filter(<span class="fstat-no" title="function not covered" >(c<span class="cstat-no" title="statement not covered" ></span>) =&gt; c.prefecture === selectedPrefecture);</span></span>
   }, [candidates, selectedPrefecture]);
 &nbsp;
   // 以下は既存のuseMemosを更新して、filteredCandidatesを使用するように変更
-  const { partyData, prefectureData, proportionalData } = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const { partyData<span class="cstat-no" title="statement not covered" >, prefectureData<span class="cstat-no" title="statement not covered" >, proportionalData<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span></span></span></span>
     // filteredCandidatesを使用するように変更
     const partyCounts = <span class="cstat-no" title="statement not covered" >parties.map(</span>
-<span class="fstat-no" title="function not covered" >      (p</span>arty) =&gt; <span class="cstat-no" title="statement not covered" >filteredCandidates.filter(<span class="fstat-no" title="function not covered" >(c</span>) =&gt; <span class="cstat-no" title="statement not covered" >c.party === party)</span>.length</span>
+<span class="fstat-no" title="function not covered" >      (p</span>arty<span class="cstat-no" title="statement not covered" >) =&gt; filteredCandidates.filter(<span class="fstat-no" title="function not covered" >(c<span class="cstat-no" title="statement not covered" ></span>) =&gt; c.party === party).</span>length</span>
     );
 &nbsp;
     // 以下、元のコードと同様...
     const prefectureCounts = <span class="cstat-no" title="statement not covered" >prefectures.map(</span>
-<span class="fstat-no" title="function not covered" >      (p</span>refecture) =&gt; <span class="cstat-no" title="statement not covered" >filteredCandidates.filter(<span class="fstat-no" title="function not covered" >(c</span>) =&gt; <span class="cstat-no" title="statement not covered" >c.prefecture === prefecture)</span>.length</span>
+<span class="fstat-no" title="function not covered" >      (p</span>refecture<span class="cstat-no" title="statement not covered" >) =&gt; filteredCandidates.filter(<span class="fstat-no" title="function not covered" >(c<span class="cstat-no" title="statement not covered" ></span>) =&gt; c.prefecture === prefecture).</span>length</span>
     );
 &nbsp;
     const proportionalCounts = <span class="cstat-no" title="statement not covered" >proportionalBlocks.map(</span>
-<span class="fstat-no" title="function not covered" >      (b</span>lock) =&gt; <span class="cstat-no" title="statement not covered" >filteredCandidates.filter(<span class="fstat-no" title="function not covered" >(c</span>) =&gt; <span class="cstat-no" title="statement not covered" >c.proportionalBlock === block)</span>.length</span>
+<span class="fstat-no" title="function not covered" >      (b</span>lock<span class="cstat-no" title="statement not covered" >) =&gt; filteredCandidates.filter(<span class="fstat-no" title="function not covered" >(c<span class="cstat-no" title="statement not covered" ></span>) =&gt; c.proportionalBlock === block).</span>length</span>
     );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
@@ -1382,7 +1382,7 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
         datasets: [
           {
             data: partyCounts,
-            backgroundColor: parties.map(<span class="fstat-no" title="function not covered" >(p</span>arty) =&gt; <span class="cstat-no" title="statement not covered" >partyColors[party])</span>,
+            backgroundColor: parties.map(<span class="fstat-no" title="function not covered" >(p</span>arty<span class="cstat-no" title="statement not covered" >) =&gt; partyColors[party]),</span>
             borderColor: '#fff',
             borderWidth: 2,
           },
@@ -1400,7 +1400,7 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
           },
           {
             label: '選挙区数',
-            data: prefectures.map(<span class="fstat-no" title="function not covered" >(p</span>refecture) =&gt; <span class="cstat-no" title="statement not covered" >prefectureSeats[prefecture])</span>,
+            data: prefectures.map(<span class="fstat-no" title="function not covered" >(p</span>refecture<span class="cstat-no" title="statement not covered" >) =&gt; prefectureSeats[prefecture]),</span>
             backgroundColor: 'rgba(255, 159, 64, 0.6)',
             borderColor: 'rgba(255, 159, 64, 1)',
             borderWidth: 1,
@@ -1419,7 +1419,7 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
           },
           {
             label: '定数',
-            data: proportionalBlocks.map(<span class="fstat-no" title="function not covered" >(b</span>lock) =&gt; <span class="cstat-no" title="statement not covered" >proportionalBlockInfo[block].seats)</span>,
+            data: proportionalBlocks.map(<span class="fstat-no" title="function not covered" >(b</span>lock<span class="cstat-no" title="statement not covered" >) =&gt; proportionalBlockInfo[block].seats),</span>
             backgroundColor: 'rgba(75, 192, 192, 0.6)',
             borderColor: 'rgba(75, 192, 192, 1)',
             borderWidth: 1,
@@ -1471,7 +1471,7 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
       datalabels: {
         anchor: 'end',
         align: 'top',
-        formatter: <span class="fstat-no" title="function not covered" >(v</span>alue: number) =&gt; {
+<span class="fstat-no" title="function not covered" >        formatter:</span> (value: number) =&gt; {
 <span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (value &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >            return value.toString();</span>
           }
@@ -1480,7 +1480,7 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
         font: {
           weight: 'bold' as const,
         },
-        color: <span class="fstat-no" title="function not covered" >(c</span>ontext: { datasetIndex: number }) =&gt; {
+<span class="fstat-no" title="function not covered" >        color:</span> (context: { datasetIndex: number }) =&gt; {
 <span class="cstat-no" title="statement not covered" >          return context.datasetIndex === 0 ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 159, 64, 1)';</span>
         },
       },
@@ -1496,7 +1496,7 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
     },
   };
 &nbsp;
-  const proportionalBarOptions: ChartOptions&lt;'bar'&gt; = <span class="cstat-no" title="statement not covered" >{</span>
+  const proportionalBarOptions<span class="cstat-no" title="statement not covered" >: ChartOptions&lt;'bar'&gt; = {</span>
     ...barOptions,
     plugins: {
       ...barOptions.plugins,
@@ -1512,8 +1512,8 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
 &nbsp;
   const pieChartPlugin: Plugin&lt;'pie'&gt; = <span class="cstat-no" title="statement not covered" >{</span>
     id: 'pieChartLabels',
-    afterDraw: <span class="fstat-no" title="function not covered" >(c</span>hart) =&gt; {
-      const { ctx, width, height } = <span class="cstat-no" title="statement not covered" >chart;</span>
+<span class="fstat-no" title="function not covered" >    afterDraw:</span> (chart) =&gt; {
+      const { ctx, width, height } = <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >chart;</span></span></span>
 <span class="cstat-no" title="statement not covered" >      ctx.save();</span>
       const fontSize = <span class="cstat-no" title="statement not covered" >12;</span>
 <span class="cstat-no" title="statement not covered" >      ctx.font = `${fontSize}px Arial`;</span>
@@ -1522,10 +1522,10 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
 &nbsp;
       const centerX = <span class="cstat-no" title="statement not covered" >width / 2;</span>
       const centerY = <span class="cstat-no" title="statement not covered" >height / 2;</span>
-      const radius = <span class="cstat-no" title="statement not covered" >(Math.min(width, height) / 2) * 0.7;</span>
+      const radius = (<span class="cstat-no" title="statement not covered" >Math.min(width, height) / 2) * 0.7;</span>
 &nbsp;
       const total = <span class="cstat-no" title="statement not covered" >chart.data.datasets[0].data.reduce(</span>
-<span class="fstat-no" title="function not covered" >        (s</span>um, value) =&gt; <span class="cstat-no" title="statement not covered" >sum + (typeof value === 'number' ? value : 0),</span>
+<span class="fstat-no" title="function not covered" >        (s</span>um, value<span class="cstat-no" title="statement not covered" >) =&gt; sum + (typeof value === 'number' ? value : 0),</span>
         0
       );
 &nbsp;
@@ -1540,7 +1540,7 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
 <span class="cstat-no" title="statement not covered" >      chart.data.datasets[0].data.forEach(<span class="fstat-no" title="function not covered" >(v</span>alue, i) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof value !== 'number') <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
-        const sliceAngle = <span class="cstat-no" title="statement not covered" >(value / total) * (2 * Math.PI);</span>
+        const sliceAngle = (<span class="cstat-no" title="statement not covered" >value / total) * (2 * Math.PI);</span>
         const endAngle = <span class="cstat-no" title="statement not covered" >startAngle + sliceAngle;</span>
         const middleAngle = <span class="cstat-no" title="statement not covered" >startAngle + sliceAngle / 2;</span>
 &nbsp;
@@ -1560,8 +1560,8 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
         let attempts = <span class="cstat-no" title="statement not covered" >0;</span>
 <span class="cstat-no" title="statement not covered" >        while (collision &amp;&amp; attempts &lt; 50) {</span>
 <span class="cstat-no" title="statement not covered" >          collision = labelPositions.some(</span>
-<span class="fstat-no" title="function not covered" >            (p</span>os) =&gt;
-<span class="cstat-no" title="statement not covered" >              x &lt; pos.x + pos.width &amp;&amp;</span>
+<span class="fstat-no" title="function not covered" >            (p</span>os<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+              x &lt; pos.x + pos.width &amp;&amp;
               x + labelWidth &gt; pos.x &amp;&amp;
               y &lt; pos.y + pos.height &amp;&amp;
               y + labelHeight &gt; pos.y
@@ -1595,7 +1595,7 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
 <span class="cstat-no" title="statement not covered" >        ctx.lineWidth = 1;</span>
 <span class="cstat-no" title="statement not covered" >        ctx.stroke();</span>
 &nbsp;
-        const label = <span class="cstat-no" title="statement not covered" >chart.data.labels?.[i] as string;</span>
+        const label<span class="cstat-no" title="statement not covered" > = chart.data.labels?.[i] as string;</span>
         const percentage = <span class="cstat-no" title="statement not covered" >((value / total) * 100).toFixed(1);</span>
 <span class="cstat-no" title="statement not covered" >        ctx.fillStyle = '#000';</span>
 <span class="cstat-no" title="statement not covered" >        ctx.fillText(`${label}`, x, y - fontSize);</span>
@@ -1623,8 +1623,8 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
           onChange={handlePrefectureChange}
         &gt;
           &lt;option value="all"&gt;全国&lt;/option&gt;
-          {prefectures.map(<span class="fstat-no" title="function not covered" >(p</span>ref) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;option key={pref} v</span>alue={pref}&gt;
+          {prefectures.map(<span class="fstat-no" title="function not covered" >(p</span>ref<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;option key={pref} value={pref}&gt;
               {pref}
             &lt;/option&gt;
           ))}
@@ -1641,19 +1641,19 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
       {/* 以下、元のUIと同様... */}
       &lt;div className="flex justify-center space-x-4"&gt;
         &lt;Button
-          onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setChartsPerRow(1)}</span>
+<span class="fstat-no" title="function not covered" >          onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setChartsPerRow(1)}</span>
           variant={chartsPerRow === 1 ? 'default' : 'outline'}
         &gt;
           1列
         &lt;/Button&gt;
         &lt;Button
-          onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setChartsPerRow(2)}</span>
+<span class="fstat-no" title="function not covered" >          onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setChartsPerRow(2)}</span>
           variant={chartsPerRow === 2 ? 'default' : 'outline'}
         &gt;
           2列
         &lt;/Button&gt;
         &lt;Button
-          onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setChartsPerRow(3)}</span>
+<span class="fstat-no" title="function not covered" >          onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setChartsPerRow(3)}</span>
           variant={chartsPerRow === 3 ? 'default' : 'outline'}
         &gt;
           3列
@@ -1705,7 +1705,7 @@ const CandidateCharts: React.FC&lt;CandidateChartsProps&gt; = <span class="cstat
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

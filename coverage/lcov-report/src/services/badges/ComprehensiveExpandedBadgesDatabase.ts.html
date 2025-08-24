@@ -1927,8 +1927,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2837,10 +2837,10 @@ export const <span class="cstat-no" title="statement not covered" >comprehensive
 /**
  * 📊 拡張バッジ統計情報
  */
-export const <span class="cstat-no" title="statement not covered" >getExpandedBadgeStatistics = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getExpandedBadgeStatistics </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
   const totalBadges = <span class="cstat-no" title="statement not covered" >comprehensiveExpandedBadges.length;</span>
-  const unlockedBadges = <span class="cstat-no" title="statement not covered" >comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.isUnlocked)</span>.length;</span>
-  const completedBadges = <span class="cstat-no" title="statement not covered" >comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.isCompleted)</span>.length;</span>
+  const unlockedBadges = <span class="cstat-no" title="statement not covered" >comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.isUnlocked).</span>length;</span>
+  const completedBadges = <span class="cstat-no" title="statement not covered" >comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.isCompleted).</span>length;</span>
 &nbsp;
   const categorySummary = <span class="cstat-no" title="statement not covered" >comprehensiveExpandedBadges.reduce(</span>
 <span class="fstat-no" title="function not covered" >    (a</span>cc, badge) =&gt; {
@@ -2861,13 +2861,13 @@ export const <span class="cstat-no" title="statement not covered" >getExpandedBa
     completedBadges,
     completionRate: totalBadges &gt; 0 ? (completedBadges / totalBadges) * 100 : 0,
     categorySummary,
-    totalPoints: comprehensiveExpandedBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + (badge.points || 0),</span> 0),
+    totalPoints: comprehensiveExpandedBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt; sum + (badge.points || 0), 0</span>),
     difficultyBreakdown: {
-      bronze: comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.difficulty === 'bronze')</span>.length,
-      silver: comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.difficulty === 'silver')</span>.length,
-      gold: comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.difficulty === 'gold')</span>.length,
-      platinum: comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.difficulty === 'platinum')</span>.length,
-      legendary: comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.difficulty === 'legendary')</span>.length,
+      bronze: comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.difficulty === 'bronze').</span>length,
+      silver: comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.difficulty === 'silver').</span>length,
+      gold: comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.difficulty === 'gold').</span>length,
+      platinum: comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.difficulty === 'platinum').</span>length,
+      legendary: comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.difficulty === 'legendary').</span>length,
     },
   };
 };
@@ -2875,18 +2875,18 @@ export const <span class="cstat-no" title="statement not covered" >getExpandedBa
 /**
  * 🎯 カテゴリ別バッジ取得
  */
-export const <span class="cstat-no" title="statement not covered" >getBadgesByExpandedCategory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>c</span>ategory: BadgeCategory): DevelopmentBadge[] =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.category === category)</span>;</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getBadgesByExpandedCategory </span>= <span class="cstat-no" title="statement not covered" >(</span>category: BadgeCategory): DevelopmentBadge[] =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  return comprehensiveExpandedBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.category === category);</span></span>
 };
 &nbsp;
 /**
  * 🔍 バッジ検索
  */
-export const <span class="cstat-no" title="statement not covered" >searchExpandedBadges = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>q</span>uery: string): DevelopmentBadge[] =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >searchExpandedBadges </span>= <span class="cstat-no" title="statement not covered" >(</span>query: string): DevelopmentBadge[] =&gt; {</span>
   const lowercaseQuery = <span class="cstat-no" title="statement not covered" >query.toLowerCase();</span>
 <span class="cstat-no" title="statement not covered" >  return comprehensiveExpandedBadges.filter(</span>
-<span class="fstat-no" title="function not covered" >    (b</span>adge) =&gt;
-<span class="cstat-no" title="statement not covered" >      badge.name.toLowerCase().includes(lowercaseQuery) ||</span>
+<span class="fstat-no" title="function not covered" >    (b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+      badge.name.toLowerCase().includes(lowercaseQuery) ||
       badge.description.toLowerCase().includes(lowercaseQuery) ||
       badge.category.toLowerCase().includes(lowercaseQuery)
   );
@@ -2895,29 +2895,29 @@ export const <span class="cstat-no" title="statement not covered" >searchExpande
 /**
  * 🏆 次に達成可能なバッジ
  */
-export const <span class="cstat-no" title="statement not covered" >getNextAchievableExpandedBadge = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>): DevelopmentBadge | null =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getNextAchievableExpandedBadge </span>= <span class="cstat-no" title="statement not covered" >(</span>): DevelopmentBadge | null =&gt; {</span>
   const availableBadges = <span class="cstat-no" title="statement not covered" >comprehensiveExpandedBadges.filter(</span>
-<span class="fstat-no" title="function not covered" >    (b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.isUnlocked &amp;&amp; !badge.isCompleted</span>
+<span class="fstat-no" title="function not covered" >    (b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.isUnlocked &amp;&amp; !badge.isCompleted</span>
   );
 &nbsp;
   // 進捗が最も進んでいるバッジを返す
-<span class="cstat-no" title="statement not covered" >  return availableBadges.sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >b.progress - a.progress)</span>[0] || null;</span>
+<span class="cstat-no" title="statement not covered" >  return availableBadges.sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; b.progress - a.progress)[</span>0] || null;</span>
 };
 &nbsp;
 /**
  * 📈 週次目標生成
  */
-export const <span class="cstat-no" title="statement not covered" >generateWeeklyExpandedGoals = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>): {</span></span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >generateWeeklyExpandedGoals </span>= <span class="cstat-no" title="statement not covered" >(</span>): {</span>
   targetBadges: DevelopmentBadge[];
   focusAreas: string[];
   estimatedHours: number;
 } =&gt; {
   const nextBadges = <span class="cstat-no" title="statement not covered" >comprehensiveExpandedBadges</span>
-    .filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.isUnlocked &amp;&amp; !badge.isCompleted)</span>
-    .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >b.progress - a.progress)</span>
+    .filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.isUnlocked &amp;&amp; !badge.isCompleted)</span>
+    .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; b.progress - a.progress)</span>
     .slice(0, 5);
 &nbsp;
-  const focusAreas = <span class="cstat-no" title="statement not covered" >[...new Set(nextBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.category)</span>)];</span>
+  const focusAreas<span class="cstat-no" title="statement not covered" > = [...new Set(nextBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.category))</span>];</span>
   const estimatedHours = <span class="cstat-no" title="statement not covered" >nextBadges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; {</span>
     const difficultyHours = <span class="cstat-no" title="statement not covered" >{</span>
       bronze: 5,
@@ -2944,7 +2944,7 @@ export const <span class="cstat-no" title="statement not covered" >generateWeekl
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

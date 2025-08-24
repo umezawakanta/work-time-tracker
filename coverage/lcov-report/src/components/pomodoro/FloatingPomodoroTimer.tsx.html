@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/86</span>
+                <span class='fraction'>0/101</span>
             </div>
         
             
@@ -832,8 +832,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1055,13 +1055,13 @@ interface FloatingPomodoroTimerProps {
   onClose?: () =&gt; void;
 }
 &nbsp;
-const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> onClose }) =&gt; {</span>
-  const { pomodoro } = <span class="cstat-no" title="statement not covered" >usePomodoroContext();</span>
-  const { t } = <span class="cstat-no" title="statement not covered" >useInternationalization();</span>
-  const [isDragging, setIsDragging] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [showSettings, setShowSettings] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [applyImmediately, setApplyImmediately] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [taskInputValue, setTaskInputValue] = <span class="cstat-no" title="statement not covered" >useState('');</span>
+const <span class="fstat-no" title="function not covered" >FloatingPomodoroTimerComponent:</span> React.FC&lt;FloatingPomodoroTimerProps&gt; = <span class="cstat-no" title="statement not covered" >({ onClose<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span>
+  const { pomodoro<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >usePomodoroContext();</span></span>
+  const { t<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useInternationalization();</span></span>
+  const [isDragging<span class="cstat-no" title="statement not covered" >, s</span>etIsDragging<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showSettings<span class="cstat-no" title="statement not covered" >, s</span>etShowSettings<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [applyImmediately<span class="cstat-no" title="statement not covered" >, s</span>etApplyImmediately<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [taskInputValue<span class="cstat-no" title="statement not covered" >, s</span>etTaskInputValue<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
   const dragOffset = <span class="cstat-no" title="statement not covered" >useRef({ x: 0, y: 0 });</span>
   const timerRef = <span class="cstat-no" title="statement not covered" >useRef&lt;HTMLDivElement&gt;(null);</span>
 &nbsp;
@@ -1096,17 +1096,17 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
     [isDragging, pomodoro.updatePosition]
   );
 &nbsp;
-  const handleMouseUp = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const handleMouseUp = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    setIsDragging(false);</span>
   }, []);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (isDragging) {</span>
 <span class="cstat-no" title="statement not covered" >      document.addEventListener('mousemove', handleMouseMove);</span>
 <span class="cstat-no" title="statement not covered" >      document.addEventListener('mouseup', handleMouseUp);</span>
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      document.removeEventListener('mousemove', handleMouseMove);</span>
 <span class="cstat-no" title="statement not covered" >      document.removeEventListener('mouseup', handleMouseUp);</span>
     };
@@ -1139,13 +1139,13 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
   );
 &nbsp;
   // ハンドラーをメモ化
-  const handleStartTimer = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const handleStartTimer = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const taskName = <span class="cstat-no" title="statement not covered" >taskInputValue.trim();</span>
 <span class="cstat-no" title="statement not covered" >    pomodoro.startTimer(taskName || undefined);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (taskName) <span class="cstat-no" title="statement not covered" >setTaskInputValue('');</span></span>
   }, [taskInputValue, pomodoro.startTimer]);
 &nbsp;
-  const handleCloseClick = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const handleCloseClick = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (onClose) {</span>
 <span class="cstat-no" title="statement not covered" >      onClose();</span>
     }
@@ -1162,7 +1162,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
           top: pomodoro.position.y,
         }}
         onMouseDown={handleMouseDown}
-        onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >pomodoro.toggleMinimized()}</span>
+<span class="fstat-no" title="function not covered" >        onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; pomodoro.toggleMinimized()}</span>
       &gt;
         &lt;div className="flex items-center space-x-2"&gt;
           &lt;Timer size={16} /&gt;
@@ -1200,14 +1200,14 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
             &lt;/div&gt;
             &lt;div className="flex items-center space-x-1"&gt;
               &lt;button
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowSettings(!showSettings)}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowSettings(!showSettings)}</span>
                 className="p-1 hover:bg-white/20 rounded"
                 title="設定"
               &gt;
                 &lt;Settings size={14} /&gt;
               &lt;/button&gt;
               &lt;button
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >pomodoro.toggleMinimized()}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; pomodoro.toggleMinimized()}</span>
                 className="p-1 hover:bg-white/20 rounded"
                 title="最小化"
               &gt;
@@ -1266,7 +1266,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
                   id="task-input"
                   type="text"
                   value={taskInputValue}
-                  onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setTaskInputValue(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                  onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setTaskInputValue(e.target.value)}</span>
                   placeholder={t('home.work_content_placeholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 /&gt;
@@ -1323,10 +1323,10 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
 &nbsp;
             {/* モード切り替え */}
             &lt;div className="flex justify-center space-x-1"&gt;
-              {(['work', 'shortBreak', 'longBreak'] as PomodoroMode[]).map(<span class="fstat-no" title="function not covered" >(m</span>ode) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;button</span>
+              {(['work', 'shortBreak', 'longBreak'] as PomodoroMode[]).map(<span class="fstat-no" title="function not covered" >(m</span>ode<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;button
                   key={mode}
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >pomodoro.switchMode(mode)}</span>
+<span class="fstat-no" title="function not covered" >                  onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; pomodoro.switchMode(mode)}</span>
                   className={`px-3 py-1 text-xs rounded ${
                     pomodoro.currentMode === mode
                       ? getModeColor(mode)
@@ -1361,7 +1361,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
           &lt;div className="flex items-center justify-between mb-3"&gt;
             &lt;h3 className="font-medium text-gray-800"&gt;設定&lt;/h3&gt;
             &lt;button
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowSettings(false)}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowSettings(false)}</span>
               className="p-1 hover:bg-gray-100 rounded"
               title="設定を閉じる"
             &gt;
@@ -1377,7 +1377,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
                   type="checkbox"
                   id="applyImmediately"
                   checked={applyImmediately}
-                  onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setApplyImmediately(e.target.checked)}</span>
+<span class="fstat-no" title="function not covered" >                  onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setApplyImmediately(e.target.checked)}</span>
                   className="rounded"
                 /&gt;
                 &lt;label htmlFor="applyImmediately" className="text-xs text-gray-700"&gt;
@@ -1397,7 +1397,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
                 min="1"
                 max="60"
                 value={pomodoro.settings.workDuration}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e) =&gt; {
                   const newValue = <span class="cstat-no" title="statement not covered" >parseInt(e.target.value);</span>
 <span class="cstat-no" title="statement not covered" >                  if (applyImmediately) {</span>
 <span class="cstat-no" title="statement not covered" >                    pomodoro.updateSettingsImmediately({ workDuration: newValue });</span>
@@ -1417,7 +1417,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
                 min="1"
                 max="30"
                 value={pomodoro.settings.shortBreakDuration}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e) =&gt; {
                   const newValue = <span class="cstat-no" title="statement not covered" >parseInt(e.target.value);</span>
 <span class="cstat-no" title="statement not covered" >                  if (applyImmediately) {</span>
 <span class="cstat-no" title="statement not covered" >                    pomodoro.updateSettingsImmediately({ shortBreakDuration: newValue });</span>
@@ -1437,7 +1437,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
                 min="1"
                 max="60"
                 value={pomodoro.settings.longBreakDuration}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e) =&gt; {
                   const newValue = <span class="cstat-no" title="statement not covered" >parseInt(e.target.value);</span>
 <span class="cstat-no" title="statement not covered" >                  if (applyImmediately) {</span>
 <span class="cstat-no" title="statement not covered" >                    pomodoro.updateSettingsImmediately({ longBreakDuration: newValue });</span>
@@ -1457,7 +1457,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
                 min="2"
                 max="10"
                 value={pomodoro.settings.longBreakInterval}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e) =&gt; {
                   const newValue = <span class="cstat-no" title="statement not covered" >parseInt(e.target.value);</span>
 <span class="cstat-no" title="statement not covered" >                  if (applyImmediately) {</span>
 <span class="cstat-no" title="statement not covered" >                    pomodoro.updateSettingsImmediately({ longBreakInterval: newValue });</span>
@@ -1476,7 +1476,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
                 type="checkbox"
                 id="autoStartBreaks"
                 checked={pomodoro.settings.autoStartBreaks}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >pomodoro.updateSettings({ autoStartBreaks: e.target.checked })}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; pomodoro.updateSettings({ autoStartBreaks: e.target.checked })}</span>
                 className="rounded"
               /&gt;
               &lt;label htmlFor="autoStartBreaks" className="text-xs text-gray-600"&gt;
@@ -1489,7 +1489,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
                 type="checkbox"
                 id="autoStartPomodoros"
                 checked={pomodoro.settings.autoStartPomodoros}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >pomodoro.updateSettings({ autoStartPomodoros: e.target.checked })}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; pomodoro.updateSettings({ autoStartPomodoros: e.target.checked })}</span>
                 className="rounded"
               /&gt;
               &lt;label htmlFor="autoStartPomodoros" className="text-xs text-gray-600"&gt;
@@ -1503,7 +1503,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
                 type="checkbox"
                 id="notificationSound"
                 checked={pomodoro.settings.notificationSound}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >pomodoro.updateSettings({ notificationSound: e.target.checked })}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; pomodoro.updateSettings({ notificationSound: e.target.checked })}</span>
                 className="rounded"
               /&gt;
               &lt;label htmlFor="notificationSound" className="text-xs text-gray-600"&gt;
@@ -1522,7 +1522,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
                   max="1"
                   step="0.1"
                   value={pomodoro.settings.volume}
-                  onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >pomodoro.updateSettings({ volume: parseFloat(e.target.value) })}</span>
+<span class="fstat-no" title="function not covered" >                  onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; pomodoro.updateSettings({ volume: parseFloat(e.target.value) })}</span>
                   className="w-full"
                   title="通知音の音量を調整"
                 /&gt;
@@ -1543,7 +1543,7 @@ export const <span class="cstat-no" title="statement not covered" >FloatingPomod
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/131</span>
+                <span class='fraction'>0/155</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/29</span>
+                <span class='fraction'>0/31</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/115</span>
+                <span class='fraction'>0/119</span>
             </div>
         
             
@@ -656,9 +656,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -956,7 +956,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -966,6 +965,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1045,7 +1045,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1164,30 +1164,30 @@ interface RealtimeAdaptationProviderProps {
   adaptationThreshold?: number;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >RealtimeAdaptationProvider: React.FC&lt;RealtimeAdaptationProviderProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  children,
-  autoStart = <span class="branch-0 cbranch-no" title="branch not covered" >true,</span>
-  adaptationThreshold = <span class="branch-0 cbranch-no" title="branch not covered" >0.7,</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >RealtimeAdaptationProvider:</span> React.FC&lt;RealtimeAdaptationProviderProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  children<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+  autoStart<span class="cstat-no" title="statement not covered" > = true<span class="cstat-no" title="statement not covered" >,</span></span>
+  adaptationThreshold<span class="cstat-no" title="statement not covered" > = 0.7,</span>
 }) =&gt; {
-  const [state, setState] = <span class="cstat-no" title="statement not covered" >useState&lt;RealtimeAdaptationState&gt;(initialState);</span>
-  const [detector, setDetector] = <span class="cstat-no" title="statement not covered" >useState&lt;BehavioralPatternDetector | null&gt;(null);</span>
-  const [isTracking, setIsTracking] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [state<span class="cstat-no" title="statement not covered" >, s</span>etState<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;RealtimeAdaptationState&gt;(initialState)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [detector<span class="cstat-no" title="statement not covered" >, s</span>etDetector<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;BehavioralPatternDetector | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isTracking<span class="cstat-no" title="statement not covered" >, s</span>etIsTracking<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
   const sessionStartTime = <span class="cstat-no" title="statement not covered" >useRef&lt;Date&gt;(new Date());</span>
   const adaptationThresholdRef = <span class="cstat-no" title="statement not covered" >useRef(adaptationThreshold);</span>
 &nbsp;
   // 適応的UIシステムとの連携 - 一時的に無効化（コンテキストエラー修正）
   // TODO: AdaptiveUIProvider のコンテキスト問題を解決後に再有効化
-  const updateCognitiveState = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: any) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >updateCognitiveState </span>= <span class="cstat-no" title="statement not covered" >(state: any) =&gt; {</span>
     // プレースホルダー関数 - 引数を受け取るが何もしない
 <span class="cstat-no" title="statement not covered" >    console.log('updateCognitiveState called with:', state);</span>
   };
-  const updateSettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>ettings: any) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >updateSettings </span>= <span class="cstat-no" title="statement not covered" >(settings: any) =&gt; {</span>
     // プレースホルダー関数 - 引数を受け取るが何もしない
 <span class="cstat-no" title="statement not covered" >    console.log('updateSettings called with:', settings);</span>
   };
 &nbsp;
   // 行動パターン検出器の初期化
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const behavioralDetector = <span class="cstat-no" title="statement not covered" >new BehavioralPatternDetector();</span>
 <span class="cstat-no" title="statement not covered" >    setDetector(behavioralDetector);</span>
 &nbsp;
@@ -1200,10 +1200,10 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (autoStart) {</span>
 <span class="cstat-no" title="statement not covered" >      behavioralDetector.startTracking();</span>
 <span class="cstat-no" title="statement not covered" >      setIsTracking(true);</span>
-<span class="cstat-no" title="statement not covered" >      setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, isActive: true })</span>);</span>
+<span class="cstat-no" title="statement not covered" >      setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, isActive: true }))</span>;</span>
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      behavioralDetector.removeAllListeners();</span>
 <span class="cstat-no" title="statement not covered" >      behavioralDetector.stopTracking();</span>
     };
@@ -1216,7 +1216,7 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
 <span class="fstat-no" title="function not covered" >    (c</span>ognitiveState: any) =&gt; {
 <span class="cstat-no" title="statement not covered" >      console.log('🧠 認知状態が更新されました:', cognitiveState);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >      setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
         ...prev,
         cognitiveState: {
           attention: cognitiveState.current.attention,
@@ -1336,7 +1336,7 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
    * ユーザー操作の記録処理
    */
   const handleInteractionRecorded = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(i</span>nteraction: any) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       sessionMetrics: {
         ...prev.sessionMetrics,
@@ -1351,7 +1351,7 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
   const handleSessionFinalized = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(s</span>essionData: any) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    console.log('📊 セッションが終了しました:', sessionData);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       isActive: false,
       sessionMetrics: {
@@ -1373,13 +1373,13 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
   /**
    * 追跡開始
    */
-  const startTracking = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const startTracking = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (detector) {</span>
 <span class="cstat-no" title="statement not covered" >      detector.startTracking();</span>
 <span class="cstat-no" title="statement not covered" >      setIsTracking(true);</span>
 <span class="cstat-no" title="statement not covered" >      sessionStartTime.current = new Date();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >      setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
         ...prev,
         isActive: true,
         sessionMetrics: {
@@ -1404,12 +1404,12 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
   /**
    * 追跡停止
    */
-  const stopTracking = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const stopTracking = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (detector) {</span>
 <span class="cstat-no" title="statement not covered" >      detector.stopTracking();</span>
 <span class="cstat-no" title="statement not covered" >      setIsTracking(false);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >      setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
         ...prev,
         isActive: false,
       }));
@@ -1428,7 +1428,7 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
   /**
    * 現在の認知状態取得
    */
-  const getCurrentCognitiveState = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const getCurrentCognitiveState = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (detector) {</span>
 <span class="cstat-no" title="statement not covered" >      return detector.getCurrentCognitiveState();</span>
     }
@@ -1439,12 +1439,12 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
    * 適応イベントの追加
    */
   const addAdaptationEvent = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(e</span>vent: Omit&lt;AdaptationEvent, 'timestamp'&gt;) =&gt; {</span>
-    const adaptationEvent: AdaptationEvent = <span class="cstat-no" title="statement not covered" >{</span>
+    const adaptationEvent<span class="cstat-no" title="statement not covered" >: AdaptationEvent = {</span>
       ...event,
       timestamp: new Date(),
     };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       adaptationHistory: [...prev.adaptationHistory.slice(-49), adaptationEvent], // 最新50件を保持
       sessionMetrics: {
@@ -1464,10 +1464,10 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
    */
   const updateUserResponse = <span class="cstat-no" title="statement not covered" >useCallback(</span>
 <span class="fstat-no" title="function not covered" >    (e</span>ventIndex: number, response: AdaptationEvent['userResponse']) =&gt; {
-<span class="cstat-no" title="statement not covered" >      setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >      setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
         ...prev,
-        adaptationHistory: prev.adaptationHistory.map(<span class="fstat-no" title="function not covered" >(e</span>vent, index) =&gt;
-<span class="cstat-no" title="statement not covered" >          index === eventIndex ? { ...event, userResponse: response } : event</span>
+        adaptationHistory: prev.adaptationHistory.map(<span class="fstat-no" title="function not covered" >(e</span>vent, index<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+          index === eventIndex ? { ...event, userResponse: response } : event
         ),
       }));
     },
@@ -1475,13 +1475,13 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
   );
 &nbsp;
   // セッション継続時間の定期更新
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!isTracking) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
-    const interval = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const interval = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
       const currentDuration = <span class="cstat-no" title="statement not covered" >Date.now() - sessionStartTime.current.getTime();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >      setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
         ...prev,
         sessionMetrics: {
           ...prev.sessionMetrics,
@@ -1490,19 +1490,19 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
       }));
     }, 1000);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >clearInterval(interval);</span></span>
+<span class="cstat-no" title="statement not covered" >    return <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; c</span>learInterval(interval);</span></span>
   }, [isTracking]);
 &nbsp;
   // 平均値の計算
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (state.adaptationHistory.length &gt; 0) {</span>
       const cognitiveEvents = <span class="cstat-no" title="statement not covered" >state.adaptationHistory.filter(</span>
-<span class="fstat-no" title="function not covered" >        (e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.type === 'ui_adjustment' &amp;&amp; e.trigger.includes('cognitive')</span>
+<span class="fstat-no" title="function not covered" >        (e<span class="cstat-no" title="statement not covered" ></span>) =&gt; e.type === 'ui_adjustment' &amp;&amp; e.trigger.includes('cognitive')</span>
       );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (cognitiveEvents.length &gt; 0) {</span>
         // 簡略化された平均計算
-<span class="cstat-no" title="statement not covered" >        setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >        setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
           ...prev,
           sessionMetrics: {
             ...prev.sessionMetrics,
@@ -1535,7 +1535,7 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
 /**
  * リアルタイム適応システムのフック
  */
-export const <span class="cstat-no" title="statement not covered" >useRealtimeAdaptation = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useRealtimeAdaptation </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
   const context = <span class="cstat-no" title="statement not covered" >useContext(RealtimeAdaptationContext);</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!context) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('useRealtimeAdaptation must be used within a RealtimeAdaptationProvider');</span>
@@ -1546,18 +1546,18 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAd
 /**
  * 認知状態監視フック
  */
-export const <span class="cstat-no" title="statement not covered" >useCognitiveMonitoring = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const { state, getCurrentCognitiveState } = <span class="cstat-no" title="statement not covered" >useRealtimeAdaptation();</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useCognitiveMonitoring </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const { state<span class="cstat-no" title="statement not covered" >, getCurrentCognitiveState<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useRealtimeAdaptation();</span></span></span>
 &nbsp;
-  const [cognitiveMetrics, setCognitiveMetrics] = <span class="cstat-no" title="statement not covered" >useState({</span>
+  const [cognitiveMetrics<span class="cstat-no" title="statement not covered" >, s</span>etCognitiveMetrics<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState({</span>
     currentState: state.cognitiveState,
     isOptimal: false,
     needsBreak: false,
     recommendations: state.currentRecommendations,
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const { attention, energy, stress, cognitiveLoad } = <span class="cstat-no" title="statement not covered" >state.cognitiveState;</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+    const { attention<span class="cstat-no" title="statement not covered" >, energy<span class="cstat-no" title="statement not covered" >, stress<span class="cstat-no" title="statement not covered" >, cognitiveLoad<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >state.cognitiveState;</span></span></span></span></span>
 &nbsp;
     const isOptimal = <span class="cstat-no" title="statement not covered" >attention &gt; 70 &amp;&amp; energy &gt; 60 &amp;&amp; stress &lt; 50 &amp;&amp; cognitiveLoad &lt; 60;</span>
     const needsBreak = <span class="cstat-no" title="statement not covered" >energy &lt; 30 || stress &gt; 80 || cognitiveLoad &gt; 90;</span>
@@ -1576,8 +1576,8 @@ export const <span class="cstat-no" title="statement not covered" >useCognitiveM
 /**
  * セッション統計フック
  */
-export const <span class="cstat-no" title="statement not covered" >useSessionStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const { state } = <span class="cstat-no" title="statement not covered" >useRealtimeAdaptation();</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useSessionStats </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const { state<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useRealtimeAdaptation();</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
     duration: Math.round(state.sessionMetrics.sessionDuration / 1000 / 60), // 分
@@ -1597,7 +1597,7 @@ export const <span class="cstat-no" title="statement not covered" >useSessionSta
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

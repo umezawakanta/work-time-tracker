@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/63</span>
+                <span class='fraction'>0/66</span>
             </div>
         
             
@@ -457,7 +457,7 @@ export interface QuitSmokingState {
 &nbsp;
 const LS_KEY_STATE = <span class="cstat-no" title="statement not covered" >'quitSmoking:state:v1';</span>
 &nbsp;
-const defaultSettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): QuitSmokingSettings =</span>&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+const <span class="fstat-no" title="function not covered" >defaultSettings<span class="cstat-no" title="statement not covered" > </span>= <span class="cstat-no" title="statement not covered" >(): QuitSmokingSettings =&gt; ({</span></span>
   quitDateIso: new Date().toISOString(),
   pricePerPack: 700,
   cigarettesPerPack: 20,
@@ -466,7 +466,7 @@ const defaultSettings = <span class="cstat-no" title="statement not covered" ><s
   triggers: ['朝の習慣', '仕事の休憩', '食後', 'ストレス', '飲酒時'],
 });
 &nbsp;
-const initialState = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): QuitSmokingState =</span>&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+const <span class="fstat-no" title="function not covered" >initialState<span class="cstat-no" title="statement not covered" > </span>= <span class="cstat-no" title="statement not covered" >(): QuitSmokingState =&gt; ({</span></span>
   settings: defaultSettings(),
   cravings: [],
   messages: [
@@ -537,48 +537,48 @@ export interface UseQuitSmokingReturn {
 }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >u</span>seQuitSmoking(</span>): UseQuitSmokingReturn {
-  const [state, setState] = <span class="cstat-no" title="statement not covered" >useState&lt;QuitSmokingState&gt;(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >loadStateFromLocalStorage())</span>;</span>
+  const [state<span class="cstat-no" title="statement not covered" >, s</span>etState<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;QuitSmokingState&gt;(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; l</span>oadStateFromLocalStorage())<span class="cstat-no" title="statement not covered" >;</span></span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    saveStateToLocalStorage(state);</span>
   }, [state]);
 &nbsp;
   const stats = <span class="cstat-no" title="statement not covered" >useMemo(</span>
-<span class="fstat-no" title="function not covered" >    () =</span>&gt; <span class="cstat-no" title="statement not covered" >computeStats(state.settings, state.lastSlipIso),</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >    () =&gt; c</span>omputeStats(state.settings, state.lastSlipIso),</span>
     [state.settings, state.lastSlipIso]
   );
 &nbsp;
-  const updateSettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>artial: Partial&lt;QuitSmokingSettings&gt;) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, settings: { ...prev.settings, ...partial } })</span>);</span>
+  const <span class="fstat-no" title="function not covered" >updateSettings </span>= <span class="cstat-no" title="statement not covered" >(partial: Partial&lt;QuitSmokingSettings&gt;) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, settings: { ...prev.settings, ...partial } }))</span>;</span>
   };
 &nbsp;
-  const logCraving = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>ntry: Omit&lt;CravingEntry, 'id' | 'timestampIso'&gt;) =&gt; {</span>
-    const newEntry: CravingEntry = <span class="cstat-no" title="statement not covered" >{</span>
+  const <span class="fstat-no" title="function not covered" >logCraving </span>= <span class="cstat-no" title="statement not covered" >(entry: Omit&lt;CravingEntry, 'id' | 'timestampIso'&gt;) =&gt; {</span>
+    const newEntry<span class="cstat-no" title="statement not covered" >: CravingEntry = {</span>
       ...entry,
       id: `craving_${Date.now()}`,
       timestampIso: new Date().toISOString(),
     };
-<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, cravings: [newEntry, ...prev.cravings].slice(0, 200) })</span>);</span>
+<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, cravings: [newEntry, ...prev.cravings].slice(0, 200) }))</span>;</span>
   };
 &nbsp;
-  const appendMessage = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>ole: CoachRole, content: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >appendMessage </span>= <span class="cstat-no" title="statement not covered" >(role: CoachRole, content: string) =&gt; {</span>
     const msg: CoachMessage = <span class="cstat-no" title="statement not covered" >{</span>
       id: `${role}_${Date.now()}`,
       role,
       timestampIso: new Date().toISOString(),
       content,
     };
-<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, messages: [...prev.messages, msg].slice(-200) })</span>);</span>
+<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, messages: [...prev.messages, msg].slice(-200) }))</span>;</span>
   };
 &nbsp;
-  const registerSlip = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(n</span>ote?: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, lastSlipIso: new Date().toISOString() })</span>);</span>
+  const <span class="fstat-no" title="function not covered" >registerSlip </span>= <span class="cstat-no" title="statement not covered" >(note?: string) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, lastSlipIso: new Date().toISOString() }))</span>;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (note) {</span>
 <span class="cstat-no" title="statement not covered" >      appendMessage('system', `スリップを記録: ${note}`);</span>
     }
   };
 &nbsp;
-  const resetAll = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >resetAll </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setState(initialState());</span>
   };
 &nbsp;
@@ -604,7 +604,7 @@ export interface UseQuitSmokingReturn {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

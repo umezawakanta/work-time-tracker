@@ -295,12 +295,10 @@ export default defineConfig(({ command, mode }) => {
         '@styles': path.resolve(__dirname, './src/styles'),
         // Lodash ESM compatibility
         lodash: 'lodash',
-        // React 19 compatibility - force specific versions and prevent duplicates
-        react: path.resolve(__dirname, './node_modules/react'),
-        'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
         'react-is': 'react-is',
         'prop-types': 'prop-types',
       },
+      dedupe: ['react', 'react-dom'],
     },
 
     // 環境変数

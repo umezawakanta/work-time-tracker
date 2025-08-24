@@ -320,7 +320,7 @@
 <span class="cstat-no" title="statement not covered" >import { f</span>irebaseConfig } from './index';
 &nbsp;
 // Firebase設定の検証
-const validateFirebaseConfig = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): boolean =</span>&gt; {</span>
+const <span class="fstat-no" title="function not covered" >validateFirebaseConfig </span>= <span class="cstat-no" title="statement not covered" >(): boolean =&gt; {</span>
   const requiredFields = <span class="cstat-no" title="statement not covered" >[</span>
     'apiKey',
     'authDomain',
@@ -331,7 +331,7 @@ const validateFirebaseConfig = <span class="cstat-no" title="statement not cover
   ];
 &nbsp;
   const missingFields = <span class="cstat-no" title="statement not covered" >requiredFields.filter(</span>
-<span class="fstat-no" title="function not covered" >    (f</span>ield) =&gt; <span class="cstat-no" title="statement not covered" >!firebaseConfig[field as keyof typeof firebaseConfig]</span>
+<span class="fstat-no" title="function not covered" >    (f</span>ield<span class="cstat-no" title="statement not covered" >) =&gt; !firebaseConfig[field as keyof typeof firebaseConfig]</span>
   );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (missingFields.length &gt; 0) {</span>
@@ -372,7 +372,7 @@ let analytics: any = <span class="cstat-no" title="statement not covered" >null;
 &nbsp;
     // Analytics は本番環境でのみ有効化
 <span class="cstat-no" title="statement not covered" >    if (process.env.NODE_ENV !== 'development') {</span>
-<span class="cstat-no" title="statement not covered" >      analytics = isSupported().then(<span class="fstat-no" title="function not covered" >(y</span>es) =&gt; (<span class="cstat-no" title="statement not covered" >yes ? getAnalytics(app) : null)</span>);</span>
+<span class="cstat-no" title="statement not covered" >      analytics = isSupported().then(<span class="fstat-no" title="function not covered" >(y</span>es<span class="cstat-no" title="statement not covered" >) =&gt; (yes ? getAnalytics(app) : null))</span>;</span>
     } else {
 <span class="cstat-no" title="statement not covered" >      analytics = Promise.resolve(null);</span>
 <span class="cstat-no" title="statement not covered" >      console.log('🚧 Development: Firebase Analytics disabled');</span>
@@ -388,28 +388,28 @@ let analytics: any = <span class="cstat-no" title="statement not covered" >null;
   // モックオブジェクトを提供
 <span class="cstat-no" title="statement not covered" >  auth = {</span>
     currentUser: null,
-    onAuthStateChanged: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {},</span>
-    signInWithEmailAndPassword: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >Promise.reject(new Error('Firebase not configured')),</span>
-    createUserWithEmailAndPassword: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >Promise.reject(new Error('Firebase not configured')),</span>
-    signOut: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >Promise.resolve(),</span>
+<span class="fstat-no" title="function not covered" >    onAuthStateChanged<span class="cstat-no" title="statement not covered" >:</span> () =&gt; <span class="fstat-no" title="function not covered" >() =&gt; </span>{},</span>
+<span class="fstat-no" title="function not covered" >    signInWithEmailAndPassword<span class="cstat-no" title="statement not covered" >:</span> () =&gt; Promise.reject(new Error('Firebase not configured')),</span>
+<span class="fstat-no" title="function not covered" >    createUserWithEmailAndPassword<span class="cstat-no" title="statement not covered" >:</span> () =&gt; Promise.reject(new Error('Firebase not configured')),</span>
+<span class="fstat-no" title="function not covered" >    signOut<span class="cstat-no" title="statement not covered" >:</span> () =&gt; Promise.resolve(),</span>
   };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  db = {</span>
-    collection: <span class="fstat-no" title="function not covered" >() =</span>&gt; (<span class="cstat-no" title="statement not covered" >{</span>
-      add: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >Promise.reject(new Error('Firebase not configured')),</span>
-      doc: <span class="fstat-no" title="function not covered" >() =</span>&gt; (<span class="cstat-no" title="statement not covered" >{</span>
-        get: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >Promise.reject(new Error('Firebase not configured')),</span>
-        set: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >Promise.reject(new Error('Firebase not configured')),</span>
-        update: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >Promise.reject(new Error('Firebase not configured')),</span>
-        delete: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >Promise.reject(new Error('Firebase not configured')),</span>
+<span class="fstat-no" title="function not covered" >    collection<span class="cstat-no" title="statement not covered" >:</span> () =&gt; ({</span>
+<span class="fstat-no" title="function not covered" >      add<span class="cstat-no" title="statement not covered" >:</span> () =&gt; Promise.reject(new Error('Firebase not configured')),</span>
+<span class="fstat-no" title="function not covered" >      doc<span class="cstat-no" title="statement not covered" >:</span> () =&gt; ({</span>
+<span class="fstat-no" title="function not covered" >        get<span class="cstat-no" title="statement not covered" >:</span> () =&gt; Promise.reject(new Error('Firebase not configured')),</span>
+<span class="fstat-no" title="function not covered" >        set<span class="cstat-no" title="statement not covered" >:</span> () =&gt; Promise.reject(new Error('Firebase not configured')),</span>
+<span class="fstat-no" title="function not covered" >        update<span class="cstat-no" title="statement not covered" >:</span> () =&gt; Promise.reject(new Error('Firebase not configured')),</span>
+<span class="fstat-no" title="function not covered" >        delete<span class="cstat-no" title="statement not covered" >:</span> () =&gt; Promise.reject(new Error('Firebase not configured')),</span>
       }),
     }),
   };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  storage = {</span>
-    ref: <span class="fstat-no" title="function not covered" >() =</span>&gt; (<span class="cstat-no" title="statement not covered" >{</span>
-      put: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >Promise.reject(new Error('Firebase not configured')),</span>
-      getDownloadURL: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >Promise.reject(new Error('Firebase not configured')),</span>
+<span class="fstat-no" title="function not covered" >    ref<span class="cstat-no" title="statement not covered" >:</span> () =&gt; ({</span>
+<span class="fstat-no" title="function not covered" >      put<span class="cstat-no" title="statement not covered" >:</span> () =&gt; Promise.reject(new Error('Firebase not configured')),</span>
+<span class="fstat-no" title="function not covered" >      getDownloadURL<span class="cstat-no" title="statement not covered" >:</span> () =&gt; Promise.reject(new Error('Firebase not configured')),</span>
     }),
   };
 &nbsp;
@@ -417,15 +417,15 @@ let analytics: any = <span class="cstat-no" title="statement not covered" >null;
 }
 &nbsp;
 // 設定とサービスをエクスポート
-export { <span class="cstat-no" title="statement not covered" >app,</span> <span class="cstat-no" title="statement not covered" >auth,</span> <span class="cstat-no" title="statement not covered" >db,</span> <span class="cstat-no" title="statement not covered" >storage,</span> <span class="cstat-no" title="statement not covered" >analytics </span>};
+export { <span class="cstat-no" title="statement not covered" >app, <span class="cstat-no" title="statement not covered" >a</span>uth, <span class="cstat-no" title="statement not covered" >d</span>b, <span class="cstat-no" title="statement not covered" >s</span>torage, <span class="cstat-no" title="statement not covered" >a</span>nalytics };</span>
 export {
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  signInWithEmailAndPassword,</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  createUserWithEmailAndPassword,</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  signOut,</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  sendPasswordResetEmail,</span></span>
 };
-export { isFirebaseConfigValid as <span class="cstat-no" title="statement not covered" >isFirebaseEnabled </span>};
-export { <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >firebaseConfig </span>};</span>
+export { isFirebaseConfigValid as <span class="cstat-no" title="statement not covered" >isFirebaseEnabled };</span>
+export { <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >firebaseConfig };</span></span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -433,7 +433,7 @@ export { <span class="cstat-no" title="statement not covered" ><span class="fsta
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

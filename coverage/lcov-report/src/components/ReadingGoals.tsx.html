@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
@@ -169,7 +169,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -215,8 +215,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -251,32 +251,32 @@ interface Goal {
   achieved: number;
 }
 &nbsp;
-const ReadingGoals: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const [goals, setGoals] = <span class="cstat-no" title="statement not covered" >useState&lt;Goal[]&gt;([]);</span>
-  const [newGoal, setNewGoal] = <span class="cstat-no" title="statement not covered" >useState&lt;Goal&gt;({</span>
+const <span class="fstat-no" title="function not covered" >ReadingGoals:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const [goals<span class="cstat-no" title="statement not covered" >, s</span>etGoals<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Goal[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [newGoal<span class="cstat-no" title="statement not covered" >, s</span>etNewGoal<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Goal&gt;({</span>
     year: new Date().getFullYear(),
     target: 0,
     achieved: 0,
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const savedGoals = <span class="cstat-no" title="statement not covered" >localStorage.getItem('readingGoals');</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (savedGoals) {</span>
 <span class="cstat-no" title="statement not covered" >      setGoals(JSON.parse(savedGoals));</span>
     }
   }, []);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    localStorage.setItem('readingGoals', JSON.stringify(goals));</span>
   }, [goals]);
 &nbsp;
-  const handleAddGoal = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleAddGoal </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setGoals([...goals, newGoal]);</span>
 <span class="cstat-no" title="statement not covered" >    setNewGoal({ year: new Date().getFullYear(), target: 0, achieved: 0 });</span>
   };
 &nbsp;
-  const handleUpdateAchieved = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>ndex: number, value: number) =&gt; {</span>
-    const updatedGoals = <span class="cstat-no" title="statement not covered" >[...goals];</span>
+  const <span class="fstat-no" title="function not covered" >handleUpdateAchieved </span>= <span class="cstat-no" title="statement not covered" >(index: number, value: number) =&gt; {</span>
+    const updatedGoals<span class="cstat-no" title="statement not covered" > = [...goals];</span>
 <span class="cstat-no" title="statement not covered" >    updatedGoals[index].achieved = value;</span>
 <span class="cstat-no" title="statement not covered" >    setGoals(updatedGoals);</span>
   };
@@ -292,19 +292,19 @@ const ReadingGoals: React.FC = <span class="cstat-no" title="statement not cover
             type="number"
             placeholder="年"
             value={newGoal.year}
-            onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setNewGoal({ ...newGoal, year: parseInt(e.target.value) })}</span>
+<span class="fstat-no" title="function not covered" >            onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setNewGoal({ ...newGoal, year: parseInt(e.target.value) })}</span>
           /&gt;
           &lt;Input
             type="number"
             placeholder="目標冊数"
             value={newGoal.target}
-            onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setNewGoal({ ...newGoal, target: parseInt(e.target.value) })}</span>
+<span class="fstat-no" title="function not covered" >            onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setNewGoal({ ...newGoal, target: parseInt(e.target.value) })}</span>
           /&gt;
           &lt;Button onClick={handleAddGoal}&gt;追加&lt;/Button&gt;
         &lt;/CardContent&gt;
       &lt;/Card&gt;
-      {goals.map(<span class="fstat-no" title="function not covered" >(g</span>oal, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >        &lt;Card key={index}&gt;</span>
+      {goals.map(<span class="fstat-no" title="function not covered" >(g</span>oal, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+        &lt;Card key={index}&gt;
           &lt;CardHeader&gt;
             &lt;CardTitle&gt;{goal.year}年の読書目標&lt;/CardTitle&gt;
           &lt;/CardHeader&gt;
@@ -316,7 +316,7 @@ const ReadingGoals: React.FC = <span class="cstat-no" title="statement not cover
               &lt;Input
                 type="number"
                 value={goal.achieved}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >handleUpdateAchieved(index, parseInt(e.target.value))}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; handleUpdateAchieved(index, parseInt(e.target.value))}</span>
               /&gt;
             &lt;/div&gt;
           &lt;/CardContent&gt;
@@ -334,7 +334,7 @@ const ReadingGoals: React.FC = <span class="cstat-no" title="statement not cover
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

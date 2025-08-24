@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/125</span>
+                <span class='fraction'>0/147</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/71</span>
+                <span class='fraction'>0/76</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/119</span>
+                <span class='fraction'>0/126</span>
             </div>
         
             
@@ -637,12 +637,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -931,7 +931,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -952,6 +951,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1086,7 +1086,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
@@ -1149,22 +1149,22 @@ interface HierarchicalTaskViewProps {
   onTaskDelete?: (taskId: string) =&gt; void;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >HierarchicalTaskView: React.FC&lt;HierarchicalTaskViewProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  initialTasks = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span>
-  onTaskComplete,
-  onTaskCreate,
-  onTaskUpdate,
-  onTaskDelete,
-}) =&gt; {
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >HierarchicalTaskView:</span> React.FC&lt;HierarchicalTaskViewProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  initialTasks<span class="cstat-no" title="statement not covered" > = [],</span>
+  onTaskComplete<span class="cstat-no" title="statement not covered" >,</span>
+  onTaskCreate<span class="cstat-no" title="statement not covered" >,</span>
+  onTaskUpdate<span class="cstat-no" title="statement not covered" >,</span>
+  onTaskDelete<span class="cstat-no" title="statement not covered" >,</span>
+}) =&gt;<span class="cstat-no" title="statement not covered" > {</span>
   // State Management
-  const [columns, setColumns] = <span class="cstat-no" title="statement not covered" >useState&lt;TaskColumn[]&gt;([]);</span>
-  const [tasks, setTasks] = <span class="cstat-no" title="statement not covered" >useState&lt;HierarchicalTask[]&gt;(initialTasks);</span>
-  const [newTaskTitle, setNewTaskTitle] = <span class="cstat-no" title="statement not covered" >useState('');</span>
-  const [selectedPath, setSelectedPath] = <span class="cstat-no" title="statement not covered" >useState&lt;string[]&gt;([]);</span>
+  const [columns<span class="cstat-no" title="statement not covered" >, s</span>etColumns<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;TaskColumn[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [tasks<span class="cstat-no" title="statement not covered" >, s</span>etTasks<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;HierarchicalTask[]&gt;(initialTasks)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [newTaskTitle<span class="cstat-no" title="statement not covered" >, s</span>etNewTaskTitle<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [selectedPath<span class="cstat-no" title="statement not covered" >, s</span>etSelectedPath<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // Initialize with root tasks
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const rootTasks = <span class="cstat-no" title="statement not covered" >tasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; <span class="cstat-no" title="statement not covered" >task.level === 0)</span>;</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+    const rootTasks = <span class="cstat-no" title="statement not covered" >tasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt; task.level === 0);</span></span>
 <span class="cstat-no" title="statement not covered" >    setColumns([</span>
       {
         level: 0,
@@ -1175,7 +1175,7 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
   }, [tasks]);
 &nbsp;
   // Handle task selection and column expansion
-  const handleTaskSelect = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ask: HierarchicalTask, columnIndex: number) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleTaskSelect </span>= <span class="cstat-no" title="statement not covered" >(task: HierarchicalTask, columnIndex: number) =&gt; {</span>
     const newPath = <span class="cstat-no" title="statement not covered" >selectedPath.slice(0, columnIndex + 1);</span>
 <span class="cstat-no" title="statement not covered" >    newPath[columnIndex] = task.id;</span>
 <span class="cstat-no" title="statement not covered" >    setSelectedPath(newPath);</span>
@@ -1202,7 +1202,7 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
   };
 &nbsp;
   // Handle task completion
-  const handleTaskComplete = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ask: HierarchicalTask) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleTaskComplete </span>= <span class="cstat-no" title="statement not covered" >(task: HierarchicalTask) =&gt; {</span>
     const updatedTasks = <span class="cstat-no" title="statement not covered" >updateTaskInTree(tasks, task.id, {</span>
       isCompleted: !task.isCompleted,
       completedAt: !task.isCompleted ? new Date().toISOString() : undefined,
@@ -1227,7 +1227,7 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
   };
 &nbsp;
   // Recursive task update function
-  const updateTaskInTree = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+  const <span class="fstat-no" title="function not covered" >updateTaskInTree </span>= <span class="cstat-no" title="statement not covered" >(</span>
     taskList: HierarchicalTask[],
     taskId: string,
     updates: Partial&lt;HierarchicalTask&gt;
@@ -1247,7 +1247,7 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
   };
 &nbsp;
   // Add new task to current column
-  const handleAddTask = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>arentTask?: HierarchicalTask, columnIndex?: number) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleAddTask </span>= <span class="cstat-no" title="statement not covered" >(parentTask?: HierarchicalTask, columnIndex?: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!newTaskTitle.trim()) {</span>
 <span class="cstat-no" title="statement not covered" >      toast.error('タスク名を入力してください');</span>
 <span class="cstat-no" title="statement not covered" >      return;</span>
@@ -1272,7 +1272,7 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
 <span class="cstat-no" title="statement not covered" >      setTasks(updatedTasks);</span>
     } else {
       // Add as root task
-<span class="cstat-no" title="statement not covered" >      setTasks(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >[...prev, newTask])</span>;</span>
+<span class="cstat-no" title="statement not covered" >      setTasks(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; [...prev, newTask])</span>;</span>
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    setNewTaskTitle('');</span>
@@ -1285,7 +1285,7 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
   };
 &nbsp;
   // Break down task into subtasks (using game loop approach)
-  const handleBreakdownTask = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ask: HierarchicalTask) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleBreakdownTask </span>= <span class="cstat-no" title="statement not covered" >(task: HierarchicalTask) =&gt; {</span>
     const subtasks = <span class="cstat-no" title="statement not covered" >generateSubtasks(task);</span>
 &nbsp;
     const updatedTasks = <span class="cstat-no" title="statement not covered" >updateTaskInTree(tasks, task.id, {</span>
@@ -1298,7 +1298,7 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
   };
 &nbsp;
   // Generate AI-style subtasks
-  const generateSubtasks = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>arentTask: HierarchicalTask): HierarchicalTask[] =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >generateSubtasks </span>= <span class="cstat-no" title="statement not covered" >(parentTask: HierarchicalTask): HierarchicalTask[] =&gt; {</span>
     const taskKeywords = <span class="cstat-no" title="statement not covered" >parentTask.title.toLowerCase();</span>
     let subtaskTemplates: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
@@ -1338,7 +1338,7 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
       ];
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return subtaskTemplates.map(<span class="fstat-no" title="function not covered" >(t</span>emplate, index) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >    return subtaskTemplates.map(<span class="fstat-no" title="function not covered" >(t</span>emplate, index<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       id: `subtask_${parentTask.id}_${Date.now()}_${index}`,
       title: template,
       isCompleted: false,
@@ -1352,7 +1352,7 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
   };
 &nbsp;
   // Play completion sound
-  const playCompletionSound = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >playCompletionSound </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const audioContext = <span class="cstat-no" title="statement not covered" >new (window.AudioContext || (window as any).webkitAudioContext)();</span>
       const oscillator = <span class="cstat-no" title="statement not covered" >audioContext.createOscillator();</span>
@@ -1376,11 +1376,11 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
   };
 &nbsp;
   // Calculate task statistics
-  const getTaskStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>askList: HierarchicalTask[]) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getTaskStats </span>= <span class="cstat-no" title="statement not covered" >(taskList: HierarchicalTask[]) =&gt; {</span>
     let total = <span class="cstat-no" title="statement not covered" >0;</span>
     let completed = <span class="cstat-no" title="statement not covered" >0;</span>
 &nbsp;
-    const countTasks = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>asks: HierarchicalTask[]) =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >countTasks </span>= <span class="cstat-no" title="statement not covered" >(tasks: HierarchicalTask[]) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      tasks.forEach(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        total++;</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (task.isCompleted) <span class="cstat-no" title="statement not covered" >completed++;</span></span>
@@ -1421,16 +1421,16 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
           &lt;div className="flex items-center gap-2 mb-4"&gt;
             &lt;Input
               value={newTaskTitle}
-              onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setNewTaskTitle(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >              onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setNewTaskTitle(e.target.value)}</span>
               placeholder="新しいタスクを追加..."
               className="flex-1"
-              onKeyPress={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="fstat-no" title="function not covered" >              onKeyPress=</span>{(e) =&gt; {
 <span class="cstat-no" title="statement not covered" >                <span class="missing-if-branch" title="if path not taken" >I</span>if (e.key === 'Enter') {</span>
 <span class="cstat-no" title="statement not covered" >                  handleAddTask();</span>
                 }
               }}
             /&gt;
-            &lt;Button onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleAddTask()}</span>&gt;
+            &lt;Button <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleAddTask()}&gt;</span>
               &lt;Plus className="w-4 h-4 mr-2" /&gt;
               追加
             &lt;/Button&gt;
@@ -1444,8 +1444,8 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
 &nbsp;
       {/* Horizontal Column Layout */}
       &lt;div className="flex gap-4 overflow-x-auto pb-4"&gt;
-        {columns.map(<span class="fstat-no" title="function not covered" >(c</span>olumn, columnIndex) =&gt; (
-<span class="cstat-no" title="statement not covered" >          &lt;Card</span>
+        {columns.map(<span class="fstat-no" title="function not covered" >(c</span>olumn, columnIndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+          &lt;Card
             key={column.level}
             className={cn(
               'min-w-80 max-w-80 flex-shrink-0',
@@ -1463,8 +1463,8 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
               &lt;/CardTitle&gt;
             &lt;/CardHeader&gt;
             &lt;CardContent className="space-y-2"&gt;
-              {column.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div</span>
+              {column.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div
                   key={task.id}
                   className={cn(
                     'p-3 border rounded-lg cursor-pointer transition-all duration-200',
@@ -1473,7 +1473,7 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
                       : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm',
                     column.selectedTaskId === task.id &amp;&amp; 'border-blue-500 bg-blue-50'
                   )}
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleTaskSelect(task, columnIndex)}</span>
+<span class="fstat-no" title="function not covered" >                  onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleTaskSelect(task, columnIndex)}</span>
                 &gt;
                   &lt;div className="flex items-start justify-between"&gt;
                     &lt;div className="flex items-start gap-2 flex-1"&gt;
@@ -1481,7 +1481,7 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
                         variant="ghost"
                         size="sm"
                         className="p-0 h-6 w-6"
-                        onClick={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="fstat-no" title="function not covered" >                        onClick=</span>{(e) =&gt; {
 <span class="cstat-no" title="statement not covered" >                          e.stopPropagation();</span>
 <span class="cstat-no" title="statement not covered" >                          handleTaskComplete(task);</span>
                         }}
@@ -1522,7 +1522,7 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
                           variant="ghost"
                           size="sm"
                           className="p-0 h-6 w-6"
-                          onClick={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="fstat-no" title="function not covered" >                          onClick=</span>{(e) =&gt; {
 <span class="cstat-no" title="statement not covered" >                            e.stopPropagation();</span>
 <span class="cstat-no" title="statement not covered" >                            handleBreakdownTask(task);</span>
                           }}
@@ -1590,8 +1590,8 @@ export const <span class="cstat-no" title="statement not covered" >HierarchicalT
 };
 &nbsp;
 // Helper function to find task by ID in tree structure
-const findTaskById = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>asks: HierarchicalTask[], taskId: string): HierarchicalTask | null =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  for (const task of tasks) {</span>
+const <span class="fstat-no" title="function not covered" >findTaskById </span>= <span class="cstat-no" title="statement not covered" >(tasks: HierarchicalTask[], taskId: string): HierarchicalTask | null =&gt;<span class="cstat-no" title="statement not covered" > {</span></span>
+<span class="cstat-no" title="statement not covered" >  for (const task<span class="cstat-no" title="statement not covered" > of t</span>asks<span class="cstat-no" title="statement not covered" >) {</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (task.id === taskId) {</span>
 <span class="cstat-no" title="statement not covered" >      return task;</span>
     }
@@ -1599,7 +1599,7 @@ const findTaskById = <span class="cstat-no" title="statement not covered" ><span
       const found = <span class="cstat-no" title="statement not covered" >findTaskById(task.children, taskId);</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (found) <span class="cstat-no" title="statement not covered" >return found;</span></span>
     }
-  }
+  }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  return null;</span>
 };
 &nbsp;</pre></td></tr></table></pre>
@@ -1609,7 +1609,7 @@ const findTaskById = <span class="cstat-no" title="statement not covered" ><span
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

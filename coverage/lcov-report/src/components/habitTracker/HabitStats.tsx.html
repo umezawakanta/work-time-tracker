@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>0/31</span>
             </div>
         
             
@@ -188,17 +188,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -210,6 +199,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -217,8 +217,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -260,7 +260,7 @@ interface HabitStatsProps {
 /**
  * 習慣の統計情報を表示するコンポーネント
  */
-const HabitStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> stats, getActiveHabits }: HabitStatsProps) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >HabitStats </span>= <span class="cstat-no" title="statement not covered" >({ stats<span class="cstat-no" title="statement not covered" >, getActiveHabits<span class="cstat-no" title="statement not covered" > }: HabitStatsProps) =&gt; {</span></span></span>
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className="grid grid-cols-1 md:grid-cols-2 gap-4"&gt;
       {/* 達成率トップ5 */}
@@ -273,11 +273,11 @@ const HabitStats = <span class="cstat-no" title="statement not covered" ><span c
         &lt;/CardHeader&gt;
         &lt;CardContent&gt;
           {Object.entries(stats)
-            .filter(<span class="fstat-no" title="function not covered" >([</span>habit]) =&gt; <span class="cstat-no" title="statement not covered" >getActiveHabits().includes(habit))</span>
-            .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >b[1].monthlyProgress - a[1].monthlyProgress)</span>
+            .filter(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([h</span></span>abit<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; g</span>etActiveHabits().includes(habit))</span>
+            .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; b[1].monthlyProgress - a[1].monthlyProgress)</span>
             .slice(0, 5)
-            .map(<span class="fstat-no" title="function not covered" >([</span>habit, habitStats], index) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;div key={index} c</span>lassName="mb-2"&gt;
+            .map(<span class="fstat-no" title="function not covered" >([h</span>abit<span class="cstat-no" title="statement not covered" >, h</span>abitStats<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >], i</span>ndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span></span>
+              &lt;div key={index} className="mb-2"&gt;
                 &lt;div className="flex justify-between text-sm mb-1"&gt;
                   &lt;span&gt;{habit}&lt;/span&gt;
                   &lt;span&gt;{habitStats.monthlyProgress}%&lt;/span&gt;
@@ -287,7 +287,7 @@ const HabitStats = <span class="cstat-no" title="statement not covered" ><span c
             ))}
 &nbsp;
           {/* データがない場合のフォールバック */}
-          {Object.entries(stats).filter(<span class="fstat-no" title="function not covered" >([</span>habit]) =&gt; <span class="cstat-no" title="statement not covered" >getActiveHabits().includes(habit))</span>.length ===
+          {Object.entries(stats).filter(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([h</span></span>abit<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; g</span>etActiveHabits().includes(habit)).</span>length ===
             0 &amp;&amp; &lt;div className="text-center py-4 text-gray-500"&gt;表示するデータがありません&lt;/div&gt;}
         &lt;/CardContent&gt;
       &lt;/Card&gt;
@@ -302,11 +302,11 @@ const HabitStats = <span class="cstat-no" title="statement not covered" ><span c
         &lt;/CardHeader&gt;
         &lt;CardContent&gt;
           {Object.entries(stats)
-            .filter(<span class="fstat-no" title="function not covered" >([</span>habit]) =&gt; <span class="cstat-no" title="statement not covered" >getActiveHabits().includes(habit))</span>
-            .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >b[1].longestStreak - a[1].longestStreak)</span>
+            .filter(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([h</span></span>abit<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; g</span>etActiveHabits().includes(habit))</span>
+            .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; b[1].longestStreak - a[1].longestStreak)</span>
             .slice(0, 5)
-            .map(<span class="fstat-no" title="function not covered" >([</span>habit, habitStats], index) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;div</span>
+            .map(<span class="fstat-no" title="function not covered" >([h</span>abit<span class="cstat-no" title="statement not covered" >, h</span>abitStats<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >], i</span>ndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span></span>
+              &lt;div
                 key={index}
                 className="flex justify-between items-center mb-2 pb-2 border-b last:border-0"
               &gt;
@@ -318,7 +318,7 @@ const HabitStats = <span class="cstat-no" title="statement not covered" ><span c
             ))}
 &nbsp;
           {/* データがない場合のフォールバック */}
-          {Object.entries(stats).filter(<span class="fstat-no" title="function not covered" >([</span>habit]) =&gt; <span class="cstat-no" title="statement not covered" >getActiveHabits().includes(habit))</span>.length ===
+          {Object.entries(stats).filter(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([h</span></span>abit<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; g</span>etActiveHabits().includes(habit)).</span>length ===
             0 &amp;&amp; &lt;div className="text-center py-4 text-gray-500"&gt;表示するデータがありません&lt;/div&gt;}
         &lt;/CardContent&gt;
       &lt;/Card&gt;
@@ -334,7 +334,7 @@ const HabitStats = <span class="cstat-no" title="statement not covered" ><span c
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/26</span>
+                <span class='fraction'>0/35</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/26</span>
+                <span class='fraction'>0/35</span>
             </div>
         
             
@@ -313,15 +313,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -479,7 +479,7 @@ interface HabitListProps {
  * @param {number} percentage - 達成率（0-100）
  * @returns {React.ReactElement} バッジ要素
  */
-const getAchievementBadge = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>ercentage: number): React.ReactElement =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >getAchievementBadge </span>= <span class="cstat-no" title="statement not covered" >(percentage: number): React.ReactElement =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  if (percentage &gt;= 90) {</span>
 <span class="cstat-no" title="statement not covered" >    return &lt;Badge className="bg-green-500"&gt;優秀&lt;/Badge&gt;;</span>
   } else <span class="cstat-no" title="statement not covered" >if (percentage &gt;= 70) {</span>
@@ -494,16 +494,16 @@ const getAchievementBadge = <span class="cstat-no" title="statement not covered"
 /**
  * 習慣一覧表示コンポーネント
  */
-const HabitList = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span></span>
-  visibleHabits,
-  stats,
-  currentDate,
-  getHabitData,
-  toggleHabit,
-  archiveHabit,
-  unarchiveHabit,
-  deleteHabit,
-  viewMode,
+const <span class="fstat-no" title="function not covered" >HabitList </span>= <span class="cstat-no" title="statement not covered" >({</span>
+  visibleHabits<span class="cstat-no" title="statement not covered" >,</span>
+  stats<span class="cstat-no" title="statement not covered" >,</span>
+  currentDate<span class="cstat-no" title="statement not covered" >,</span>
+  getHabitData<span class="cstat-no" title="statement not covered" >,</span>
+  toggleHabit<span class="cstat-no" title="statement not covered" >,</span>
+  archiveHabit<span class="cstat-no" title="statement not covered" >,</span>
+  unarchiveHabit<span class="cstat-no" title="statement not covered" >,</span>
+  deleteHabit<span class="cstat-no" title="statement not covered" >,</span>
+  viewMode<span class="cstat-no" title="statement not covered" >,</span>
 }: HabitListProps) =&gt; {
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className="overflow-x-auto"&gt;
@@ -541,7 +541,7 @@ const HabitList = <span class="cstat-no" title="statement not covered" ><span cl
                 &lt;TableCell&gt;
                   &lt;Checkbox
                     checked={getHabitData(habit)[currentDate.getDate() - 1] || false}
-                    onCheckedChange={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >toggleHabit(habit, currentDate.getDate() - 1)}</span>
+<span class="fstat-no" title="function not covered" >                    onCheckedChange<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; toggleHabit(habit, currentDate.getDate() - 1)}</span>
                     aria-label={`${habit}を今日達成したかどうか`}
                   /&gt;
                 &lt;/TableCell&gt;
@@ -585,15 +585,15 @@ const HabitList = <span class="cstat-no" title="statement not covered" ><span cl
                     &lt;/DropdownMenuTrigger&gt;
                     &lt;DropdownMenuContent align="end"&gt;
                       {viewMode !== 'archived' ? (
-                        &lt;DropdownMenuItem onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >archiveHabit(habit)}</span>&gt;
+                        &lt;DropdownMenuItem <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; archiveHabit(habit)}&gt;</span>
                           アーカイブする
                         &lt;/DropdownMenuItem&gt;
                       ) : (
-                        &lt;DropdownMenuItem onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >unarchiveHabit(habit)}</span>&gt;
+                        &lt;DropdownMenuItem <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; unarchiveHabit(habit)}&gt;</span>
                           アーカイブから戻す
                         &lt;/DropdownMenuItem&gt;
                       )}
-                      &lt;DropdownMenuItem className="text-red-600" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >deleteHabit(habit)}</span>&gt;
+                      &lt;DropdownMenuItem className="text-red-600" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; deleteHabit(habit)}&gt;</span>
                         削除する
                       &lt;/DropdownMenuItem&gt;
                     &lt;/DropdownMenuContent&gt;
@@ -616,7 +616,7 @@ const HabitList = <span class="cstat-no" title="statement not covered" ><span cl
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/104</span>
+                <span class='fraction'>0/143</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/76</span>
+                <span class='fraction'>0/96</span>
             </div>
         
             
@@ -737,10 +737,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -855,12 +855,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -971,7 +971,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1089,7 +1089,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1098,6 +1097,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1113,7 +1113,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1151,6 +1150,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1253,8 +1253,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1347,31 +1347,31 @@ interface BadgeFilters {
   searchQuery: string;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >BadgeShowcase: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const [badges, setBadges] = <span class="cstat-no" title="statement not covered" >useState&lt;DevelopmentBadge[]&gt;([]);</span>
-  const [groupedBadges, setGroupedBadges] = <span class="cstat-no" title="statement not covered" >useState&lt;BadgeGrouping[]&gt;([]);</span>
-  const [filters, setFilters] = <span class="cstat-no" title="statement not covered" >useState&lt;BadgeFilters&gt;({</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >BadgeShowcase:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const [badges<span class="cstat-no" title="statement not covered" >, s</span>etBadges<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;DevelopmentBadge[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [groupedBadges<span class="cstat-no" title="statement not covered" >, s</span>etGroupedBadges<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;BadgeGrouping[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [filters<span class="cstat-no" title="statement not covered" >, s</span>etFilters<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;BadgeFilters&gt;({</span>
     category: 'all',
     difficulty: 'all',
     status: 'all',
     searchQuery: '',
-  });
-  const [selectedBadge, setSelectedBadge] = <span class="cstat-no" title="statement not covered" >useState&lt;DevelopmentBadge | null&gt;(null);</span>
-  const [viewMode, setViewMode] = <span class="cstat-no" title="statement not covered" >useState&lt;'grid' | 'list' | 'categories'&gt;('categories');</span>
-  const [stats, setStats] = <span class="cstat-no" title="statement not covered" >useState&lt;any&gt;(null);</span>
+  })<span class="cstat-no" title="statement not covered" >;</span>
+  const [selectedBadge<span class="cstat-no" title="statement not covered" >, s</span>etSelectedBadge<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;DevelopmentBadge | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [viewMode<span class="cstat-no" title="statement not covered" >, s</span>etViewMode<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;'grid' | 'list' | 'categories'&gt;('categories')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [stats<span class="cstat-no" title="statement not covered" >, s</span>etStats<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;any&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    initializeBadgeShowcase();</span>
   }, []);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    applyFilters();</span>
   }, [filters]);
 &nbsp;
   /**
    * 🚀 バッジショーケース初期化
    */
-  const initializeBadgeShowcase = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >initializeBadgeShowcase </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setBadges(EXPANDED_BADGES_DATABASE);</span>
     const summary = <span class="cstat-no" title="statement not covered" >getBadgeStatsSummary();</span>
 <span class="cstat-no" title="statement not covered" >    setStats(summary);</span>
@@ -1386,7 +1386,7 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
   /**
    * 📊 バッジグループ化
    */
-  const createBadgeGroupings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(a</span>llBadges: DevelopmentBadge[]): BadgeGrouping[] =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >createBadgeGroupings </span>= <span class="cstat-no" title="statement not covered" >(allBadges: DevelopmentBadge[]): BadgeGrouping[] =&gt; {</span>
     const categoryMap: Partial&lt;
       Record&lt;BadgeCategory, { name: string; icon: React.ElementType; color: string }&gt;
     &gt; = <span class="cstat-no" title="statement not covered" >{</span>
@@ -1423,7 +1423,7 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
 <span class="cstat-no" title="statement not covered" >          return null;</span>
         }
 &nbsp;
-        const categoryBadges = <span class="cstat-no" title="statement not covered" >allBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.category === category)</span>;</span>
+        const categoryBadges = <span class="cstat-no" title="statement not covered" >allBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.category === category);</span></span>
 <span class="cstat-no" title="statement not covered" >        return {</span>
           category,
           name: categoryInfo.name,
@@ -1432,23 +1432,23 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
           badges: categoryBadges,
         };
       })
-      .filter(<span class="fstat-no" title="function not covered" >(g</span>roup) =&gt; <span class="cstat-no" title="statement not covered" >group !== null &amp;&amp; group.badges.length &gt; 0)</span> as BadgeGrouping[];
+      .filter(<span class="fstat-no" title="function not covered" >(g</span>roup<span class="cstat-no" title="statement not covered" >) =&gt; group !== null &amp;&amp; group.badges.length &gt; 0) as BadgeGrouping[];</span>
   };
 &nbsp;
   /**
    * 🔍 フィルター適用
    */
-  const applyFilters = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    let filteredBadges = <span class="cstat-no" title="statement not covered" >[...EXPANDED_BADGES_DATABASE];</span>
+  const <span class="fstat-no" title="function not covered" >applyFilters </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+    let filteredBadges<span class="cstat-no" title="statement not covered" > = [...EXPANDED_BADGES_DATABASE];</span>
 &nbsp;
     // カテゴリフィルター
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (filters.category !== 'all') {</span>
-<span class="cstat-no" title="statement not covered" >      filteredBadges = filteredBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.category === filters.category)</span>;</span>
+<span class="cstat-no" title="statement not covered" >      filteredBadges = filteredBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.category === filters.category);</span></span>
     }
 &nbsp;
     // 難易度フィルター
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (filters.difficulty !== 'all') {</span>
-<span class="cstat-no" title="statement not covered" >      filteredBadges = filteredBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.difficulty === filters.difficulty)</span>;</span>
+<span class="cstat-no" title="statement not covered" >      filteredBadges = filteredBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.difficulty === filters.difficulty);</span></span>
     }
 &nbsp;
     // ステータスフィルター
@@ -1473,8 +1473,8 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (filters.searchQuery) {</span>
       const query = <span class="cstat-no" title="statement not covered" >filters.searchQuery.toLowerCase();</span>
 <span class="cstat-no" title="statement not covered" >      filteredBadges = filteredBadges.filter(</span>
-<span class="fstat-no" title="function not covered" >        (b</span>adge) =&gt;
-<span class="cstat-no" title="statement not covered" >          badge.name.toLowerCase().includes(query) ||</span>
+<span class="fstat-no" title="function not covered" >        (b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+          badge.name.toLowerCase().includes(query) ||
           badge.description.toLowerCase().includes(query)
       );
     }
@@ -1489,7 +1489,7 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
   /**
    * 🎨 難易度スタイル取得
    */
-  const getDifficultyStyle = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ifficulty: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getDifficultyStyle </span>= <span class="cstat-no" title="statement not covered" >(difficulty: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (difficulty) {</span>
       case 'bronze':
 <span class="cstat-no" title="statement not covered" >        return { color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200' };</span>
@@ -1509,7 +1509,7 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
   /**
    * 🏆 バッジカードレンダリング
    */
-  const renderBadgeCard = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(b</span>adge: DevelopmentBadge) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >renderBadgeCard </span>= <span class="cstat-no" title="statement not covered" >(badge: DevelopmentBadge) =&gt; {</span>
     const {
       id,
       icon,
@@ -1521,7 +1521,7 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
       difficulty,
       isCompleted,
       isUnlocked,
-    } = <span class="cstat-no" title="statement not covered" >badge;</span>
+    } = <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >badge;</span></span></span></span></span></span></span></span></span></span>
     const difficultyStyle = <span class="cstat-no" title="statement not covered" >getDifficultyStyle(difficulty);</span>
     const isInProgress = <span class="cstat-no" title="statement not covered" >!isCompleted &amp;&amp; progress &gt; 0;</span>
     const isLocked = <span class="cstat-no" title="statement not covered" >!isUnlocked;</span>
@@ -1535,7 +1535,7 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
             ${isInProgress ? 'ring-2 ring-blue-500 bg-blue-50' : ''}
             ${isLocked ? 'opacity-60 grayscale' : ''}
           `}
-        onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setSelectedBadge(badge)}</span>
+<span class="fstat-no" title="function not covered" >        onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setSelectedBadge(badge)}</span>
       &gt;
         &lt;CardContent className="p-4"&gt;
           &lt;div className="flex items-start justify-between mb-3"&gt;
@@ -1588,8 +1588,8 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
   /**
    * 📊 統計ダッシュボード
    */
-  const renderStatsDashboard = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; (</span>
-<span class="cstat-no" title="statement not covered" >    &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"&gt;</span>
+  const <span class="fstat-no" title="function not covered" >renderStatsDashboard<span class="cstat-no" title="statement not covered" > </span>= <span class="cstat-no" title="statement not covered" >() =&gt; (</span></span>
+    &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"&gt;
       &lt;Card&gt;
         &lt;CardContent className="p-4"&gt;
           &lt;div className="flex items-center justify-between"&gt;
@@ -1662,21 +1662,21 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
           &lt;Button
             variant={viewMode === 'categories' ? 'default' : 'outline'}
             size="sm"
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setViewMode('categories')}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setViewMode('categories')}</span>
           &gt;
             カテゴリ別
           &lt;/Button&gt;
           &lt;Button
             variant={viewMode === 'grid' ? 'default' : 'outline'}
             size="sm"
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setViewMode('grid')}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setViewMode('grid')}</span>
           &gt;
             グリッド
           &lt;/Button&gt;
           &lt;Button
             variant={viewMode === 'list' ? 'default' : 'outline'}
             size="sm"
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setViewMode('list')}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setViewMode('list')}</span>
           &gt;
             リスト
           &lt;/Button&gt;
@@ -1695,20 +1695,20 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
               &lt;Input
                 placeholder="バッジを検索..."
                 value={filters.searchQuery}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setFilters(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, searchQuery: e.target.value })</span>)}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setFilters(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, searchQuery: e.target.value }))</span>}</span>
                 className="pl-10"
               /&gt;
             &lt;/div&gt;
 &nbsp;
             &lt;select
               value={filters.category}
-              onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setFilters(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, category: e.target.value as any })</span>)}</span>
+<span class="fstat-no" title="function not covered" >              onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setFilters(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, category: e.target.value as any }))</span>}</span>
               className="px-3 py-2 border rounded-md text-sm"
               aria-label="カテゴリフィルター"
             &gt;
               &lt;option value="all"&gt;全カテゴリ&lt;/option&gt;
-              {groupedBadges.map(<span class="fstat-no" title="function not covered" >(g</span>roup) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;option key={group.category} v</span>alue={group.category}&gt;
+              {groupedBadges.map(<span class="fstat-no" title="function not covered" >(g</span>roup<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;option key={group.category} value={group.category}&gt;
                   {group.name}
                 &lt;/option&gt;
               ))}
@@ -1716,7 +1716,7 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
 &nbsp;
             &lt;select
               value={filters.difficulty}
-              onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setFilters(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, difficulty: e.target.value })</span>)}</span>
+<span class="fstat-no" title="function not covered" >              onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setFilters(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, difficulty: e.target.value }))</span>}</span>
               className="px-3 py-2 border rounded-md text-sm"
               aria-label="難易度フィルター"
             &gt;
@@ -1730,7 +1730,7 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
 &nbsp;
             &lt;select
               value={filters.status}
-              onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setFilters(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, status: e.target.value as any })</span>)}</span>
+<span class="fstat-no" title="function not covered" >              onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setFilters(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({ ...prev, status: e.target.value as any }))</span>}</span>
               className="px-3 py-2 border rounded-md text-sm"
               aria-label="ステータスフィルター"
             &gt;
@@ -1743,8 +1743,8 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
 &nbsp;
             &lt;Button
               variant="outline"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt;
-<span class="cstat-no" title="statement not covered" >                setFilters({ category: 'all', difficulty: 'all', status: 'all', searchQuery: '' })</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt;</span>
+                setFilters({ category: 'all', difficulty: 'all', status: 'all', searchQuery: '' })
               }
               className="flex items-center gap-2"
             &gt;
@@ -1758,8 +1758,8 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
       {/* バッジ表示 */}
       {viewMode === 'categories' &amp;&amp; (
         &lt;div className="space-y-6"&gt;
-          {groupedBadges.map(<span class="fstat-no" title="function not covered" >(g</span>roup) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;Card key={group.category}&gt;</span>
+          {groupedBadges.map(<span class="fstat-no" title="function not covered" >(g</span>roup<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;Card key={group.category}&gt;
               &lt;CardHeader&gt;
                 &lt;CardTitle className="flex items-center gap-3"&gt;
                   &lt;group.icon className={`w-6 h-6 ${group.color}`} /&gt;
@@ -1769,7 +1769,7 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
               &lt;/CardHeader&gt;
               &lt;CardContent&gt;
                 &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"&gt;
-                  {group.badges.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >renderBadgeCard(badge))</span>}
+                  {group.badges.map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; renderBadgeCard(badge))}</span>
                 &lt;/div&gt;
               &lt;/CardContent&gt;
             &lt;/Card&gt;
@@ -1779,7 +1779,7 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
 &nbsp;
       {viewMode === 'grid' &amp;&amp; (
         &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"&gt;
-          {badges.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >renderBadgeCard(badge))</span>}
+          {badges.map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; renderBadgeCard(badge))}</span>
         &lt;/div&gt;
       )}
 &nbsp;
@@ -1788,12 +1788,12 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
           &lt;CardContent className="p-0"&gt;
             &lt;div className="divide-y"&gt;
               {badges.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; {
-                const { id, icon, name, description, progress, difficulty } = <span class="cstat-no" title="statement not covered" >badge;</span>
+                const { id, icon, name, description, progress, difficulty } = <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >badge;</span></span></span></span></span></span>
 <span class="cstat-no" title="statement not covered" >                return (</span>
                   &lt;div
                     key={id}
                     className="p-4 hover:bg-muted/50 cursor-pointer flex items-center justify-between"
-                    onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setSelectedBadge(badge)}</span>
+<span class="fstat-no" title="function not covered" >                    onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setSelectedBadge(badge)}</span>
                   &gt;
                     &lt;div className="flex items-center gap-4"&gt;
                       &lt;span className="text-2xl"&gt;{icon}&lt;/span&gt;
@@ -1825,7 +1825,7 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
 &nbsp;
       {/* バッジ詳細モーダル */}
       {selectedBadge &amp;&amp;
-        (<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+        (<span class="fstat-no" title="function not covered" >() =&gt; </span>{
           const {
             icon,
             name,
@@ -1835,15 +1835,15 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
             requirements,
             points,
             completedAt,
-          } = <span class="cstat-no" title="statement not covered" >selectedBadge;</span>
+          } = <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >selectedBadge;</span></span></span></span></span></span></span></span>
 <span class="cstat-no" title="statement not covered" >          return (</span>
             &lt;div
               className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setSelectedBadge(null)}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setSelectedBadge(null)}</span>
             &gt;
               &lt;Card
                 className="max-w-2xl w-full max-h-[80vh] overflow-y-auto"
-                onClick={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.stopPropagation()}</span>
+<span class="fstat-no" title="function not covered" >                onClick=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; e.stopPropagation()}</span>
               &gt;
                 &lt;CardHeader&gt;
                   &lt;CardTitle className="flex items-center gap-3"&gt;
@@ -1871,8 +1871,8 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
                     &lt;div&gt;
                       &lt;h3 className="font-semibold mb-2"&gt;達成要件&lt;/h3&gt;
                       &lt;div className="space-y-2"&gt;
-                        {requirements.map(<span class="fstat-no" title="function not covered" >(r</span>eq, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                          &lt;div</span>
+                        {requirements.map(<span class="fstat-no" title="function not covered" >(r</span>eq, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                          &lt;div
                             key={index}
                             className="flex items-center justify-between p-2 rounded bg-muted/50"
                           &gt;
@@ -1924,7 +1924,7 @@ export const <span class="cstat-no" title="statement not covered" >BadgeShowcase
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

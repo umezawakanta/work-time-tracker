@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/90</span>
+                <span class='fraction'>0/122</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/44</span>
+                <span class='fraction'>0/49</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/89</span>
+                <span class='fraction'>0/94</span>
             </div>
         
             
@@ -525,11 +525,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -539,6 +535,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -763,8 +763,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -921,21 +921,21 @@ interface GoalTrackingProps {
 type FilterType = 'all' | 'active' | 'completed' | 'paused';
 type SortType = 'progress' | 'priority' | 'date' | 'title';
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >GoalTracking: React.FC&lt;GoalTrackingProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  goals = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span>
-  onAddGoal,
-  onEditGoal,
-  onDeleteGoal,
-}) =&gt; {
-  const [isFormOpen, setIsFormOpen] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
-  const [isDetailOpen, setIsDetailOpen] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
-  const [selectedGoal, setSelectedGoal] = <span class="cstat-no" title="statement not covered" >useState&lt;Goal | null&gt;(null);</span>
-  const [selectedGoalId, setSelectedGoalId] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;(null);</span>
-  const [activeFilter, setActiveFilter] = <span class="cstat-no" title="statement not covered" >useState&lt;FilterType&gt;('all');</span>
-  const [sortOrder, setSortOrder] = <span class="cstat-no" title="statement not covered" >useState&lt;SortType&gt;('progress');</span>
-  const [searchQuery, setSearchQuery] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('');</span>
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
-  const [goalToDelete, setGoalToDelete] = <span class="cstat-no" title="statement not covered" >useState&lt;Goal | null&gt;(null);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >GoalTracking:</span> React.FC&lt;GoalTrackingProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  goals<span class="cstat-no" title="statement not covered" > = [],</span>
+  onAddGoal<span class="cstat-no" title="statement not covered" >,</span>
+  onEditGoal<span class="cstat-no" title="statement not covered" >,</span>
+  onDeleteGoal<span class="cstat-no" title="statement not covered" >,</span>
+}) =&gt;<span class="cstat-no" title="statement not covered" > {</span>
+  const [isFormOpen<span class="cstat-no" title="statement not covered" >, s</span>etIsFormOpen<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isDetailOpen<span class="cstat-no" title="statement not covered" >, s</span>etIsDetailOpen<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [selectedGoal<span class="cstat-no" title="statement not covered" >, s</span>etSelectedGoal<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Goal | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [selectedGoalId<span class="cstat-no" title="statement not covered" >, s</span>etSelectedGoalId<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [activeFilter<span class="cstat-no" title="statement not covered" >, s</span>etActiveFilter<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;FilterType&gt;('all')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [sortOrder<span class="cstat-no" title="statement not covered" >, s</span>etSortOrder<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;SortType&gt;('progress')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [searchQuery<span class="cstat-no" title="statement not covered" >, s</span>etSearchQuery<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isDeleteConfirmOpen<span class="cstat-no" title="statement not covered" >, s</span>etIsDeleteConfirmOpen<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [goalToDelete<span class="cstat-no" title="statement not covered" >, s</span>etGoalToDelete<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Goal | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 目標のフィルタリング
   const filteredGoals = <span class="cstat-no" title="statement not covered" >goals.filter(<span class="fstat-no" title="function not covered" >(g</span>oal: Goal) =&gt; {</span>
@@ -967,15 +967,15 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
   // 統計計算
   const stats = <span class="cstat-no" title="statement not covered" >{</span>
     total: goals.length,
-    active: goals.filter(<span class="fstat-no" title="function not covered" >(g</span>: Goal) =&gt; <span class="cstat-no" title="statement not covered" >g.status === 'active')</span>.length,
-    completed: goals.filter(<span class="fstat-no" title="function not covered" >(g</span>: Goal) =&gt; <span class="cstat-no" title="statement not covered" >g.status === 'completed')</span>.length,
+    active: goals.filter(<span class="fstat-no" title="function not covered" >(g</span>: Goal<span class="cstat-no" title="statement not covered" >) =&gt; g.status === 'active').</span>length,
+    completed: goals.filter(<span class="fstat-no" title="function not covered" >(g</span>: Goal<span class="cstat-no" title="statement not covered" >) =&gt; g.status === 'completed').</span>length,
     avgProgress:
       goals.length &gt; 0
-        ? Math.round(goals.reduce(<span class="fstat-no" title="function not covered" >(s</span>um: number, g: Goal) =&gt; <span class="cstat-no" title="statement not covered" >sum + g.progress,</span> 0) / goals.length)
+        ? Math.round(goals.reduce(<span class="fstat-no" title="function not covered" >(s</span>um: number, g: Goal<span class="cstat-no" title="statement not covered" >) =&gt; sum + g.progress, 0</span>) / goals.length)
         : 0,
   };
 &nbsp;
-  const handleAddGoal = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(g</span>oalData: Omit&lt;Goal, 'id' | 'createdAt' | 'updatedAt'&gt;) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleAddGoal </span>= <span class="cstat-no" title="statement not covered" >(goalData: Omit&lt;Goal, 'id' | 'createdAt' | 'updatedAt'&gt;) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (onAddGoal) {</span>
 <span class="cstat-no" title="statement not covered" >      onAddGoal(goalData);</span>
 <span class="cstat-no" title="statement not covered" >      setIsFormOpen(false);</span>
@@ -983,7 +983,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
     }
   };
 &nbsp;
-  const handleEditGoal = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(g</span>oalData: Omit&lt;Goal, 'id' | 'createdAt' | 'updatedAt'&gt;) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleEditGoal </span>= <span class="cstat-no" title="statement not covered" >(goalData: Omit&lt;Goal, 'id' | 'createdAt' | 'updatedAt'&gt;) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (selectedGoalId &amp;&amp; onEditGoal) {</span>
 <span class="cstat-no" title="statement not covered" >      onEditGoal(selectedGoalId, goalData);</span>
 <span class="cstat-no" title="statement not covered" >      setIsDetailOpen(false);</span>
@@ -993,7 +993,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
     }
   };
 &nbsp;
-  const handleDeleteGoal = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleDeleteGoal </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (goalToDelete &amp;&amp; onDeleteGoal) {</span>
 <span class="cstat-no" title="statement not covered" >      onDeleteGoal(goalToDelete.id);</span>
 <span class="cstat-no" title="statement not covered" >      setIsDeleteConfirmOpen(false);</span>
@@ -1002,18 +1002,18 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
     }
   };
 &nbsp;
-  const openGoalDetail = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(g</span>oal: Goal) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >openGoalDetail </span>= <span class="cstat-no" title="statement not covered" >(goal: Goal) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setSelectedGoal(goal);</span>
 <span class="cstat-no" title="statement not covered" >    setSelectedGoalId(goal.id);</span>
 <span class="cstat-no" title="statement not covered" >    setIsDetailOpen(true);</span>
   };
 &nbsp;
-  const confirmDelete = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(g</span>oal: Goal) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >confirmDelete </span>= <span class="cstat-no" title="statement not covered" >(goal: Goal) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setGoalToDelete(goal);</span>
 <span class="cstat-no" title="statement not covered" >    setIsDeleteConfirmOpen(true);</span>
   };
 &nbsp;
-  const getPriorityColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>riority: Goal['priority']) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getPriorityColor </span>= <span class="cstat-no" title="statement not covered" >(priority: Goal['priority']) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (priority) {</span>
       case 'high':
 <span class="cstat-no" title="statement not covered" >        return 'bg-red-100 text-red-800 border-red-200';</span>
@@ -1026,7 +1026,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
     }
   };
 &nbsp;
-  const getStatusColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tatus: Goal['status']) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getStatusColor </span>= <span class="cstat-no" title="statement not covered" >(status: Goal['status']) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (status) {</span>
       case 'active':
 <span class="cstat-no" title="statement not covered" >        return 'bg-blue-100 text-blue-800 border-blue-200';</span>
@@ -1047,7 +1047,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
           &lt;Target className="h-6 w-6 text-blue-600" /&gt;
           &lt;h1 className="text-2xl font-bold text-gray-900"&gt;目標管理&lt;/h1&gt;
         &lt;/div&gt;
-        &lt;Button onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsFormOpen(true)}</span> className="flex items-center gap-2"&gt;
+        &lt;Button <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsFormOpen(true)} c</span>lassName="flex items-center gap-2"&gt;
           &lt;Plus className="h-4 w-4" /&gt;
           新しい目標
         &lt;/Button&gt;
@@ -1113,7 +1113,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
               &lt;Input
                 placeholder="目標を検索..."
                 value={searchQuery}
-                onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setSearchQuery(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setSearchQuery(e.target.value)}</span>
                 className="flex-1"
               /&gt;
             &lt;/div&gt;
@@ -1124,7 +1124,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
               &lt;/Label&gt;
               &lt;Select
                 value={activeFilter}
-                onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue: FilterType) =&gt; <span class="cstat-no" title="statement not covered" >setActiveFilter(value)}</span>
+<span class="fstat-no" title="function not covered" >                onValueChange=</span>{(value: FilterType<span class="cstat-no" title="statement not covered" >) =&gt; setActiveFilter(value)}</span>
               &gt;
                 &lt;SelectTrigger className="w-32"&gt;
                   &lt;SelectValue /&gt;
@@ -1142,7 +1142,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
               &lt;Label htmlFor="sort" className="text-sm font-medium"&gt;
                 ソート:
               &lt;/Label&gt;
-              &lt;Select value={sortOrder} onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue: SortType) =&gt; <span class="cstat-no" title="statement not covered" >setSortOrder(value)}</span>&gt;
+              &lt;Select value={sortOrder} <span class="fstat-no" title="function not covered" >onValueChange=</span>{(value: SortType<span class="cstat-no" title="statement not covered" >) =&gt; setSortOrder(value)}&gt;</span>
                 &lt;SelectTrigger className="w-32"&gt;
                   &lt;SelectValue /&gt;
                 &lt;/SelectTrigger&gt;
@@ -1160,13 +1160,13 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
 &nbsp;
       {/* 目標リスト */}
       &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"&gt;
-        {sortedGoals.map(<span class="fstat-no" title="function not covered" >(g</span>oal: Goal) =&gt; (
-<span class="cstat-no" title="statement not covered" >          &lt;GoalCard</span>
+        {sortedGoals.map(<span class="fstat-no" title="function not covered" >(g</span>oal: Goal<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+          &lt;GoalCard
             key={goal.id}
             goal={goal}
-            onEdit={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >openGoalDetail(goal)}</span>
-            onDelete={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >confirmDelete(goal)}</span>
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >openGoalDetail(goal)}</span>
+<span class="fstat-no" title="function not covered" >            onEdit<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; openGoalDetail(goal)}</span>
+<span class="fstat-no" title="function not covered" >            onDelete<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; confirmDelete(goal)}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; openGoalDetail(goal)}</span>
           /&gt;
         ))}
       &lt;/div&gt;
@@ -1187,7 +1187,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
                 : '新しい目標を追加して始めましょう！'}
             &lt;/p&gt;
             {!searchQuery &amp;&amp; activeFilter === 'all' &amp;&amp; (
-              &lt;Button onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsFormOpen(true)}</span> className="flex items-center gap-2"&gt;
+              &lt;Button <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsFormOpen(true)} c</span>lassName="flex items-center gap-2"&gt;
                 &lt;Plus className="h-4 w-4" /&gt;
                 最初の目標を追加
               &lt;/Button&gt;
@@ -1203,7 +1203,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
             &lt;DialogTitle&gt;新しい目標を追加&lt;/DialogTitle&gt;
             &lt;DialogDescription&gt;目標の詳細を入力してください。&lt;/DialogDescription&gt;
           &lt;/DialogHeader&gt;
-          &lt;GoalForm onSubmit={handleAddGoal} onCancel={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsFormOpen(false)}</span> /&gt;
+          &lt;GoalForm onSubmit={handleAddGoal} <span class="fstat-no" title="function not covered" >onCancel<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsFormOpen(false)} /&gt;</span>
         &lt;/DialogContent&gt;
       &lt;/Dialog&gt;
 &nbsp;
@@ -1218,7 +1218,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
             &lt;GoalForm
               initialData={selectedGoal}
               onSubmit={handleEditGoal}
-              onCancel={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >              onCancel=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" >                setIsDetailOpen(false);</span>
 <span class="cstat-no" title="statement not covered" >                setSelectedGoal(null);</span>
 <span class="cstat-no" title="statement not covered" >                setSelectedGoalId(null);</span>
@@ -1242,7 +1242,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
             &lt;/DialogDescription&gt;
           &lt;/DialogHeader&gt;
           &lt;DialogFooter&gt;
-            &lt;Button variant="outline" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsDeleteConfirmOpen(false)}</span>&gt;
+            &lt;Button variant="outline" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsDeleteConfirmOpen(false)}&gt;</span>
               キャンセル
             &lt;/Button&gt;
             &lt;Button variant="destructive" onClick={handleDeleteGoal}&gt;
@@ -1261,7 +1261,7 @@ export const <span class="cstat-no" title="statement not covered" >GoalTracking:
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

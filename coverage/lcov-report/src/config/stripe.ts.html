@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/60</span>
+                <span class='fraction'>0/61</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/52</span>
+                <span class='fraction'>0/55</span>
             </div>
         
             
@@ -502,13 +502,13 @@
 <span class="cstat-no" title="statement not covered" >import { ENV, getEnv } from '@/utils/env';</span>
 &nbsp;
 // Environment variables validation
-const validateStripeConfig = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+const <span class="fstat-no" title="function not covered" >validateStripeConfig </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
   const requiredServerKeys = <span class="cstat-no" title="statement not covered" >['STRIPE_SECRET_KEY'];</span>
   const requiredClientKeys = <span class="cstat-no" title="statement not covered" >['VITE_STRIPE_PUBLISHABLE_KEY'];</span>
 &nbsp;
   // Server-side validation (Node.js environment)
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof window === 'undefined') {</span>
-    const missingServerKeys = <span class="cstat-no" title="statement not covered" >requiredServerKeys.filter(<span class="fstat-no" title="function not covered" >(k</span>ey) =&gt; <span class="cstat-no" title="statement not covered" >!process.env[key])</span>;</span>
+    const missingServerKeys = <span class="cstat-no" title="statement not covered" >requiredServerKeys.filter(<span class="fstat-no" title="function not covered" >(k</span>ey<span class="cstat-no" title="statement not covered" >) =&gt; !process.env[key]);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (missingServerKeys.length &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >      if (process.env.NODE_ENV === 'development') {</span>
@@ -523,7 +523,7 @@ const validateStripeConfig = <span class="cstat-no" title="statement not covered
 &nbsp;
   // Client-side validation (browser environment)
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof window !== 'undefined') {</span>
-    const missingClientKeys = <span class="cstat-no" title="statement not covered" >requiredClientKeys.filter(<span class="fstat-no" title="function not covered" >(k</span>ey) =&gt; <span class="cstat-no" title="statement not covered" >!getEnv(key))</span>;</span>
+    const missingClientKeys = <span class="cstat-no" title="statement not covered" >requiredClientKeys.filter(<span class="fstat-no" title="function not covered" >(k</span>ey<span class="cstat-no" title="statement not covered" >) =&gt; !getEnv(key));</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (missingClientKeys.length &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >      if (ENV.isDev()) {</span>
@@ -643,7 +643,7 @@ export const <span class="cstat-no" title="statement not covered" >stripePlans =
 } as const;
 &nbsp;
 // Helper functions
-export const <span class="cstat-no" title="statement not covered" >formatPrice = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>a</span>mount: number, currency: string = <span class="branch-0 cbranch-no" title="branch not covered" >'jpy')</span>: string =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >formatPrice </span>= <span class="cstat-no" title="statement not covered" >(</span>amount: number, <span class="cstat-no" title="statement not covered" >currency: string = 'jpy')</span>: string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return new Intl.NumberFormat('ja-JP', {</span>
     style: 'currency',
     currency: currency.toUpperCase(),
@@ -651,7 +651,7 @@ export const <span class="cstat-no" title="statement not covered" >formatPrice =
   }).format(amount);
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >validateWebhookSignature = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >validateWebhookSignature </span>= <span class="cstat-no" title="statement not covered" >(</span></span>
   payload: string | Buffer,
   signature: string,
   secret: string
@@ -668,8 +668,8 @@ export const <span class="cstat-no" title="statement not covered" >validateWebho
 };
 &nbsp;
 // Export instances
-export { <span class="cstat-no" title="statement not covered" >stripe </span>};
-export { <span class="cstat-no" title="statement not covered" >stripePromise </span>};
+export { <span class="cstat-no" title="statement not covered" >stripe };</span>
+export { <span class="cstat-no" title="statement not covered" >stripePromise };</span>
 &nbsp;
 // Development mode helpers
 export const <span class="cstat-no" title="statement not covered" >isDevelopmentMode = process.env.NODE_ENV === 'development';</span>
@@ -721,7 +721,7 @@ export interface CreatePaymentIntentParams {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/30</span>
             </div>
         
             
@@ -604,8 +604,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -815,14 +815,14 @@
  * 🎬 アニメーションアーティスト: アニメーションショーケース
  * 基本的なアニメーション効果とマイクロインタラクションの展示
  */
-export const <span class="cstat-no" title="statement not covered" >AnimationShowcase: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const [loading, setLoading] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [liked, setLiked] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [rating, setRating] = <span class="cstat-no" title="statement not covered" >useState(3);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AnimationShowcase:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const [loading<span class="cstat-no" title="statement not covered" >, s</span>etLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [liked<span class="cstat-no" title="statement not covered" >, s</span>etLiked<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [rating<span class="cstat-no" title="statement not covered" >, s</span>etRating<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(3)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const handleLoadingDemo = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleLoadingDemo </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setLoading(true);</span>
-<span class="cstat-no" title="statement not covered" >    setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setLoading(false),</span> 3000);</span>
+<span class="cstat-no" title="statement not covered" >    setTimeout(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; s</span>etLoading(false), 3</span>000);</span>
   };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
@@ -952,7 +952,7 @@ export const <span class="cstat-no" title="statement not covered" >AnimationShow
                   &lt;h4 className="font-semibold mb-3"&gt;いいねボタン&lt;/h4&gt;
                   &lt;Button
                     variant={liked ? 'default' : 'outline'}
-                    onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setLiked(!liked)}</span>
+<span class="fstat-no" title="function not covered" >                    onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setLiked(!liked)}</span>
                     className={cn(
                       'transition-all duration-300',
                       liked ? 'scale-110 text-red-500' : 'hover:scale-105'
@@ -967,12 +967,12 @@ export const <span class="cstat-no" title="statement not covered" >AnimationShow
                 &lt;div&gt;
                   &lt;h4 className="font-semibold mb-3"&gt;星評価&lt;/h4&gt;
                   &lt;div className="flex gap-1"&gt;
-                    {[1, 2, 3, 4, 5].map(<span class="fstat-no" title="function not covered" >(s</span>tar) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;Button</span>
+                    {[1, 2, 3, 4, 5].map(<span class="fstat-no" title="function not covered" >(s</span>tar<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                      &lt;Button
                         key={star}
                         variant="ghost"
                         size="sm"
-                        onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setRating(star)}</span>
+<span class="fstat-no" title="function not covered" >                        onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setRating(star)}</span>
                         className="p-1"
                       &gt;
                         &lt;Star
@@ -1159,7 +1159,7 @@ export const <span class="cstat-no" title="statement not covered" >AnimationShow
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

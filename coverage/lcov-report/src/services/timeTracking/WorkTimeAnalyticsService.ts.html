@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/132</span>
+                <span class='fraction'>0/140</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/48</span>
+                <span class='fraction'>0/80</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/118</span>
+                <span class='fraction'>0/120</span>
             </div>
         
             
@@ -440,7 +440,7 @@
 <a name='L375'></a><a href='#L375'>375</a>
 <a name='L376'></a><a href='#L376'>376</a>
 <a name='L377'></a><a href='#L377'>377</a>
-<a name='L378'></a><a href='#L378'>378</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L378'></a><a href='#L378'>378</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -504,21 +504,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -649,7 +649,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -667,6 +666,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -744,7 +744,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -817,7 +817,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>/**</span></span>
  * 📊 勤務時間分析サービス
  * 日次・週次・月次の勤務時間データ分析と可視化
  */
@@ -880,19 +880,19 @@ interface WorkPatternAnalysis {
   recommendations: string[];
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export class W</span>orkTimeAnalyticsService extends EventEmitter {
-  private <span class="cstat-no" title="statement not covered" >workRecords: Map&lt;string, WorkRecord[]&gt; = new Map();</span>
+<span class="cstat-no" title="statement not covered" >export class W</span>orkTimeAnalyticsService <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >extends E</span>ventEmitter {</span>
+  private workRecords: Map&lt;string, WorkRecord[]&gt; = new Map();
   private <span class="cstat-no" title="statement not covered" >standardWorkHours = 8; /</span>/ 標準勤務時間
-  private <span class="cstat-no" title="statement not covered" >standardStartTime = '09:00';</span>
-  private <span class="cstat-no" title="statement not covered" >standardEndTime = '18:00';</span>
+  private standardStartTime = '09:00';
+  private standardEndTime = '18:00';
   private <span class="cstat-no" title="statement not covered" >lunchBreakDuration = 60; /</span>/ 昼休憩時間（分）
 &nbsp;
-<span class="fstat-no" title="function not covered" >  constructor() {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  constructor() {</span></span>
 <span class="cstat-no" title="statement not covered" >    super();</span>
-<span class="cstat-no" title="statement not covered" >    this.initializeDemoData();</span>
+<span class="cstat-no" title="statement not covered" >    this.initializeDemoData();<span class="cstat-no" title="statement not covered" ></span></span>
   }
 &nbsp;
-  /**
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >  /**</span></span>
    * デモデータの初期化
    */
   private <span class="fstat-no" title="function not covered" >initializeDemoData(</span>): void {
@@ -1023,7 +1023,7 @@ interface WorkPatternAnalysis {
 &nbsp;
     const averageWorkTime = <span class="cstat-no" title="statement not covered" >workDays &gt; 0 ? totalWorkTime / workDays : 0;</span>
     const efficiency =
-<span class="cstat-no" title="statement not covered" >      workDays &gt; 0 ? dailyStats.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, stat) =&gt; <span class="cstat-no" title="statement not covered" >sum + stat.efficiency,</span> 0) / workDays : 0;</span>
+<span class="cstat-no" title="statement not covered" >      workDays &gt; 0 ? dailyStats.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, stat<span class="cstat-no" title="statement not covered" >) =&gt; sum + stat.efficiency, 0</span>) / workDays : 0;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
       weekStart,
@@ -1041,9 +1041,9 @@ interface WorkPatternAnalysis {
   /**
    * 勤務パターン分析
    */
-<span class="fstat-no" title="function not covered" >  analyzeWorkPattern(</span>userId: string, days: number = <span class="branch-0 cbranch-no" title="branch not covered" >30)</span>: WorkPatternAnalysis {
+<span class="fstat-no" title="function not covered" >  analyzeWorkPattern(</span>userId: string, <span class="cstat-no" title="statement not covered" >days: number = 30)</span>: WorkPatternAnalysis {
     const records = <span class="cstat-no" title="statement not covered" >this.workRecords.get(userId) || [];</span>
-    const recentRecords = <span class="cstat-no" title="statement not covered" >records.filter(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.clockIn &amp;&amp; r.clockOut)</span>.slice(0, days);</span>
+    const recentRecords = <span class="cstat-no" title="statement not covered" >records.filter(<span class="fstat-no" title="function not covered" >(r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.clockIn &amp;&amp; r.clockOut).</span>slice(0, days);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (recentRecords.length === 0) {</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
@@ -1062,26 +1062,26 @@ interface WorkPatternAnalysis {
 &nbsp;
     // 平均到着・退社時間
     const arrivalTimes = <span class="cstat-no" title="statement not covered" >recentRecords.map(</span>
-<span class="fstat-no" title="function not covered" >      (r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.clockIn!.getHours() * 60 + r.clockIn!.getMinutes()</span>
+<span class="fstat-no" title="function not covered" >      (r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.clockIn!.getHours() * 60 + r.clockIn!.getMinutes()</span>
     );
     const departureTimes = <span class="cstat-no" title="statement not covered" >recentRecords.map(</span>
-<span class="fstat-no" title="function not covered" >      (r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.clockOut!.getHours() * 60 + r.clockOut!.getMinutes()</span>
+<span class="fstat-no" title="function not covered" >      (r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.clockOut!.getHours() * 60 + r.clockOut!.getMinutes()</span>
     );
 &nbsp;
-    const avgArrival = <span class="cstat-no" title="statement not covered" >arrivalTimes.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, time) =&gt; <span class="cstat-no" title="statement not covered" >sum + time,</span> 0) / arrivalTimes.length;</span>
+    const avgArrival = <span class="cstat-no" title="statement not covered" >arrivalTimes.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, time<span class="cstat-no" title="statement not covered" >) =&gt; sum + time, 0</span>) / arrivalTimes.length;</span>
     const avgDeparture =
-<span class="cstat-no" title="statement not covered" >      departureTimes.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, time) =&gt; <span class="cstat-no" title="statement not covered" >sum + time,</span> 0) / departureTimes.length;</span>
+<span class="cstat-no" title="statement not covered" >      departureTimes.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, time<span class="cstat-no" title="statement not covered" >) =&gt; sum + time, 0</span>) / departureTimes.length;</span>
 &nbsp;
     const averageArrivalTime = <span class="cstat-no" title="statement not covered" >this.minutesToTimeString(avgArrival);</span>
     const averageDepartureTime = <span class="cstat-no" title="statement not covered" >this.minutesToTimeString(avgDeparture);</span>
 &nbsp;
     // 残業頻度
-    const overtimeCount = <span class="cstat-no" title="statement not covered" >recentRecords.filter(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.overtimeMinutes &gt; 0)</span>.length;</span>
+    const overtimeCount = <span class="cstat-no" title="statement not covered" >recentRecords.filter(<span class="fstat-no" title="function not covered" >(r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.overtimeMinutes &gt; 0).</span>length;</span>
     const overtimeFrequency = <span class="cstat-no" title="statement not covered" >overtimeCount / recentRecords.length;</span>
 &nbsp;
     // 勤務の一貫性（到着時間の標準偏差）
     const arrivalVariance =
-<span class="cstat-no" title="statement not covered" >      arrivalTimes.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, time) =&gt; <span class="cstat-no" title="statement not covered" >sum + Math.pow(time - avgArrival, 2),</span> 0) /</span>
+<span class="cstat-no" title="statement not covered" >      arrivalTimes.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, time<span class="cstat-no" title="statement not covered" >) =&gt; sum + Math.pow(time - avgArrival, 2), 0</span>) /</span>
       arrivalTimes.length;
     const arrivalStdDev = <span class="cstat-no" title="statement not covered" >Math.sqrt(arrivalVariance);</span>
     const workConsistency = <span class="cstat-no" title="statement not covered" >Math.max(0, 1 - arrivalStdDev / 60);</span> // 1時間の標準偏差で一貫性0
@@ -1121,7 +1121,7 @@ interface WorkPatternAnalysis {
    */
 <span class="fstat-no" title="function not covered" >  generateWorkTimeChartData(</span>
     userId: string,
-    days: number = <span class="branch-0 cbranch-no" title="branch not covered" >7</span>
+<span class="cstat-no" title="statement not covered" >    days: number = 7</span>
   ): Array&lt;{
     date: string;
     scheduledTime: number;
@@ -1153,7 +1153,7 @@ interface WorkPatternAnalysis {
    * 時間文字列を分に変換
    */
   private <span class="fstat-no" title="function not covered" >parseTimeString(</span>timeString: string): number {
-    const [hours, minutes] = <span class="cstat-no" title="statement not covered" >timeString.split(':').map(Number);</span>
+    const [hours<span class="cstat-no" title="statement not covered" >, m</span>inutes<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >t</span>imeString.split(':').map(Number)<span class="cstat-no" title="statement not covered" >;</span></span>
 <span class="cstat-no" title="statement not covered" >    return hours * 60 + minutes;</span>
   }
 &nbsp;
@@ -1182,7 +1182,7 @@ interface WorkPatternAnalysis {
    */
 <span class="fstat-no" title="function not covered" >  updateWorkRecord(</span>userId: string, recordId: string, updates: Partial&lt;WorkRecord&gt;): void {
     const userRecords = <span class="cstat-no" title="statement not covered" >this.workRecords.get(userId) || [];</span>
-    const recordIndex = <span class="cstat-no" title="statement not covered" >userRecords.findIndex(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.id === recordId)</span>;</span>
+    const recordIndex = <span class="cstat-no" title="statement not covered" >userRecords.findIndex(<span class="fstat-no" title="function not covered" >(r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.id === recordId);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (recordIndex !== -1) {</span>
 <span class="cstat-no" title="statement not covered" >      userRecords[recordIndex] = { ...userRecords[recordIndex], ...updates };</span>
@@ -1201,7 +1201,7 @@ interface WorkPatternAnalysis {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

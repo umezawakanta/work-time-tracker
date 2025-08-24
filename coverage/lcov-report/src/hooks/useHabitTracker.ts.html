@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">1.53% </span>
+                <span class="strong">1.29% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>2/130</span>
+                <span class='fraction'>2/155</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/26</span>
+                <span class='fraction'>0/29</span>
             </div>
         
             
@@ -731,20 +731,20 @@ interface UseHabitTrackerReturn {
  * @param initialHabits - 初期習慣リスト
  * @returns 習慣管理に関する状態と関数
  */
-export function <span class="fstat-no" title="function not covered" >useHabitTracker(</span>initialHabits: string[] = <span class="branch-0 cbranch-no" title="branch not covered" >[])</span>: UseHabitTrackerReturn {
+export function <span class="fstat-no" title="function not covered" >useHabitTracker(<span class="cstat-no" title="statement not covered" ></span>initialHabits: string[] = [])</span>: UseHabitTrackerReturn {
   // 状態
-  const [habits, setHabits] = <span class="cstat-no" title="statement not covered" >useState&lt;string[]&gt;([]);</span>
-  const [archivedHabits, setArchivedHabits] = <span class="cstat-no" title="statement not covered" >useState&lt;string[]&gt;([]);</span>
-  const [habitsData, setHabitsData] = <span class="cstat-no" title="statement not covered" >useState&lt;Record&lt;string, boolean[]&gt;&gt;({});</span>
-  const [stats, setStats] = <span class="cstat-no" title="statement not covered" >useState&lt;Record&lt;string, HabitStats&gt;&gt;({});</span>
-  const [currentDate, setCurrentDate] = <span class="cstat-no" title="statement not covered" >useState&lt;Date&gt;(new Date());</span>
-  const [isLoading, setIsLoading] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(true);</span>
-  const [error, setError] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;(null);</span>
-  const [showCongrats, setShowCongrats] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
+  const [habits<span class="cstat-no" title="statement not covered" >, s</span>etHabits<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [archivedHabits<span class="cstat-no" title="statement not covered" >, s</span>etArchivedHabits<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [habitsData<span class="cstat-no" title="statement not covered" >, s</span>etHabitsData<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Record&lt;string, boolean[]&gt;&gt;({})<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [stats<span class="cstat-no" title="statement not covered" >, s</span>etStats<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Record&lt;string, HabitStats&gt;&gt;({})<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [currentDate<span class="cstat-no" title="statement not covered" >, s</span>etCurrentDate<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Date&gt;(new Date())<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isLoading<span class="cstat-no" title="statement not covered" >, s</span>etIsLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(true)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [error<span class="cstat-no" title="statement not covered" >, s</span>etError<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showCongrats<span class="cstat-no" title="statement not covered" >, s</span>etShowCongrats<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 習慣カテゴリーのマッピング（useMemoで最適化）
   const habitCategoryMapping = <span class="cstat-no" title="statement not covered" >useMemo&lt;Record&lt;string, string[]&gt;&gt;(</span>
-<span class="fstat-no" title="function not covered" >    () =</span>&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >    () =&gt; ({</span></span>
       健康: [
         '酒',
         'たばこ',
@@ -762,9 +762,9 @@ export function <span class="fstat-no" title="function not covered" >useHabitTra
   );
 &nbsp;
   // 初期化
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // LocalStorageからデータを読み込む
-    const loadHabitsFromStorage = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): void =</span>&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >loadHabitsFromStorage </span>= <span class="cstat-no" title="statement not covered" >(): void =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      try {</span>
         const storedHabits = <span class="cstat-no" title="statement not covered" >localStorage.getItem('habits');</span>
         const storedArchivedHabits = <span class="cstat-no" title="statement not covered" >localStorage.getItem('archivedHabits');</span>
@@ -803,7 +803,7 @@ export function <span class="fstat-no" title="function not covered" >useHabitTra
   }, [initialHabits]);
 &nbsp;
   // データ保存
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!isLoading) {</span>
 <span class="cstat-no" title="statement not covered" >      localStorage.setItem('habits', JSON.stringify(habits));</span>
 <span class="cstat-no" title="statement not covered" >      localStorage.setItem('archivedHabits', JSON.stringify(archivedHabits));</span>
@@ -812,10 +812,10 @@ export function <span class="fstat-no" title="function not covered" >useHabitTra
   }, [habits, archivedHabits, habitsData, isLoading]);
 &nbsp;
   // 統計データの計算
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (isLoading) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
-    const calculateStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): void =</span>&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >calculateStats </span>= <span class="cstat-no" title="statement not covered" >(): void =&gt; {</span>
       const newStats: Record&lt;string, HabitStats&gt; = <span class="cstat-no" title="statement not covered" >{};</span>
       const today = <span class="cstat-no" title="statement not covered" >new Date().getDate();</span>
 &nbsp;
@@ -853,7 +853,7 @@ export function <span class="fstat-no" title="function not covered" >useHabitTra
         ).getDate();
 &nbsp;
         const validDaysCount = <span class="cstat-no" title="statement not covered" >Math.min(today, daysInMonth);</span>
-        const achievedDaysCount = <span class="cstat-no" title="statement not covered" >habitData.slice(0, validDaysCount).filter(<span class="fstat-no" title="function not covered" >(d</span>ay) =&gt; <span class="cstat-no" title="statement not covered" >day)</span>.length;</span>
+        const achievedDaysCount = <span class="cstat-no" title="statement not covered" >habitData.slice(0, validDaysCount).filter(<span class="fstat-no" title="function not covered" >(d</span>ay<span class="cstat-no" title="statement not covered" >) =&gt; day).</span>length;</span>
 &nbsp;
         const monthlyProgress =
 <span class="cstat-no" title="statement not covered" >          validDaysCount &gt; 0 ? Math.round((achievedDaysCount / validDaysCount) * 100) : 0;</span>
@@ -868,7 +868,7 @@ export function <span class="fstat-no" title="function not covered" >useHabitTra
 <span class="cstat-no" title="statement not covered" >      setStats(newStats);</span>
 &nbsp;
       // 7日以上の連続達成があるか確認
-      const hasSevenDayStreak = <span class="cstat-no" title="statement not covered" >Object.values(newStats).some(<span class="fstat-no" title="function not covered" >(s</span>tat) =&gt; <span class="cstat-no" title="statement not covered" >stat.currentStreak &gt;= 7)</span>;</span>
+      const hasSevenDayStreak = <span class="cstat-no" title="statement not covered" >Object.values(newStats).some(<span class="fstat-no" title="function not covered" >(s</span>tat<span class="cstat-no" title="statement not covered" >) =&gt; stat.currentStreak &gt;= 7);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      setShowCongrats(hasSevenDayStreak);</span>
     };
@@ -879,7 +879,7 @@ export function <span class="fstat-no" title="function not covered" >useHabitTra
   // 習慣の切り替え
   const toggleHabit = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(h</span>abit: string, dayIndex: number): void =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setHabitsData(<span class="fstat-no" title="function not covered" >(p</span>revData) =&gt; {</span>
-      const habitData = <span class="cstat-no" title="statement not covered" >[...(prevData[habit] || Array(31).fill(false))];</span>
+      const habitData<span class="cstat-no" title="statement not covered" > = [...(prevData[habit] || Array(31).fill(false))];</span>
 <span class="cstat-no" title="statement not covered" >      habitData[dayIndex] = !habitData[dayIndex];</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      return {</span>
@@ -928,10 +928,10 @@ export function <span class="fstat-no" title="function not covered" >useHabitTra
 <span class="cstat-no" title="statement not covered" >        return;</span>
       }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      setHabits(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >[...prev, habitName])</span>;</span>
+<span class="cstat-no" title="statement not covered" >      setHabits(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; [...prev, habitName])</span>;</span>
 &nbsp;
       // 新しい習慣のデータ初期化
-<span class="cstat-no" title="statement not covered" >      setHabitsData(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >      setHabitsData(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
         ...prev,
         [habitName]: Array(31).fill(false),
       }));
@@ -941,42 +941,42 @@ export function <span class="fstat-no" title="function not covered" >useHabitTra
 &nbsp;
   // 習慣をアーカイブする
   const archiveHabit = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(h</span>abit: string): void =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setHabits(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >prev.filter(<span class="fstat-no" title="function not covered" >(h</span>) =&gt; <span class="cstat-no" title="statement not covered" >h !== habit)</span>)</span>;</span>
-<span class="cstat-no" title="statement not covered" >    setArchivedHabits(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >[...prev, habit])</span>;</span>
+<span class="cstat-no" title="statement not covered" >    setHabits(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; prev.filter(<span class="fstat-no" title="function not covered" >(h<span class="cstat-no" title="statement not covered" ></span>) =&gt; h !== habit))</span>;</span></span>
+<span class="cstat-no" title="statement not covered" >    setArchivedHabits(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; [...prev, habit])</span>;</span>
   }, []);
 &nbsp;
   // アーカイブから習慣を復元する
   const unarchiveHabit = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(h</span>abit: string): void =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setArchivedHabits(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >prev.filter(<span class="fstat-no" title="function not covered" >(h</span>) =&gt; <span class="cstat-no" title="statement not covered" >h !== habit)</span>)</span>;</span>
-<span class="cstat-no" title="statement not covered" >    setHabits(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >[...prev, habit])</span>;</span>
+<span class="cstat-no" title="statement not covered" >    setArchivedHabits(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; prev.filter(<span class="fstat-no" title="function not covered" >(h<span class="cstat-no" title="statement not covered" ></span>) =&gt; h !== habit))</span>;</span></span>
+<span class="cstat-no" title="statement not covered" >    setHabits(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; [...prev, habit])</span>;</span>
   }, []);
 &nbsp;
   // 習慣を削除する
   const deleteHabit = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(h</span>abit: string): void =&gt; {</span>
     // 活動中とアーカイブの両方から削除
-<span class="cstat-no" title="statement not covered" >    setHabits(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >prev.filter(<span class="fstat-no" title="function not covered" >(h</span>) =&gt; <span class="cstat-no" title="statement not covered" >h !== habit)</span>)</span>;</span>
-<span class="cstat-no" title="statement not covered" >    setArchivedHabits(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >prev.filter(<span class="fstat-no" title="function not covered" >(h</span>) =&gt; <span class="cstat-no" title="statement not covered" >h !== habit)</span>)</span>;</span>
+<span class="cstat-no" title="statement not covered" >    setHabits(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; prev.filter(<span class="fstat-no" title="function not covered" >(h<span class="cstat-no" title="statement not covered" ></span>) =&gt; h !== habit))</span>;</span></span>
+<span class="cstat-no" title="statement not covered" >    setArchivedHabits(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; prev.filter(<span class="fstat-no" title="function not covered" >(h<span class="cstat-no" title="statement not covered" ></span>) =&gt; h !== habit))</span>;</span></span>
 &nbsp;
     // データも削除
 <span class="cstat-no" title="statement not covered" >    setHabitsData(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; {</span>
-      const newData = <span class="cstat-no" title="statement not covered" >{ ...prev };</span>
+      const newData<span class="cstat-no" title="statement not covered" > = { ...prev };</span>
 <span class="cstat-no" title="statement not covered" >      delete newData[habit];</span>
 <span class="cstat-no" title="statement not covered" >      return newData;</span>
     });
   }, []);
 &nbsp;
   // アクティブな習慣を取得
-  const getActiveHabits = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(): string[] =</span>&gt; {</span>
+  const getActiveHabits = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(): string[] =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    return habits;</span>
   }, [habits]);
 &nbsp;
   // アーカイブされた習慣を取得
-  const getArchivedHabits = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(): string[] =</span>&gt; {</span>
+  const getArchivedHabits = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(): string[] =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    return archivedHabits;</span>
   }, [archivedHabits]);
 &nbsp;
   // すべての習慣を取得
-  const getAllHabits = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(): string[] =</span>&gt; {</span>
+  const getAllHabits = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(): string[] =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    return [...habits, ...archivedHabits];</span>
   }, [habits, archivedHabits]);
 &nbsp;
@@ -986,7 +986,7 @@ export function <span class="fstat-no" title="function not covered" >useHabitTra
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (category === 'その他') {</span>
         // 他のカテゴリに属さない習慣を「その他」として扱う
         const categorizedHabits = <span class="cstat-no" title="statement not covered" >Object.values(habitCategoryMapping).flat();</span>
-<span class="cstat-no" title="statement not covered" >        return [...habits, ...archivedHabits].filter(<span class="fstat-no" title="function not covered" >(h</span>abit) =&gt; <span class="cstat-no" title="statement not covered" >!categorizedHabits.includes(habit))</span>;</span>
+<span class="cstat-no" title="statement not covered" >        return [...habits, ...archivedHabits].filter(<span class="fstat-no" title="function not covered" >(h</span>abit<span class="cstat-no" title="statement not covered" >) =&gt; !categorizedHabits.includes(habit));</span></span>
       }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      return habitCategoryMapping[category] || [];</span>
@@ -1021,7 +1021,7 @@ export function <span class="fstat-no" title="function not covered" >useHabitTra
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

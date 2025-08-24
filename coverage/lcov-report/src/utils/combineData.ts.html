@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/59</span>
+                <span class='fraction'>0/60</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/20</span>
+                <span class='fraction'>0/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/51</span>
+                <span class='fraction'>0/52</span>
             </div>
         
             
@@ -242,7 +242,7 @@
 <a name='L177'></a><a href='#L177'>177</a>
 <a name='L178'></a><a href='#L178'>178</a>
 <a name='L179'></a><a href='#L179'>179</a>
-<a name='L180'></a><a href='#L180'>180</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L180'></a><a href='#L180'>180</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -421,7 +421,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>/**</span></span>
  * 資産と負債のデータを結合するユーティリティ関数
  */
 &nbsp;
@@ -434,7 +434,7 @@ import { AssetEntry, CombinedDataPoint, DebtEntry } from '@/types';
  * @param debtEntries 負債エントリの配列
  * @returns 結合されたデータポイントの配列
  */
-export const <span class="cstat-no" title="statement not covered" >combineData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >combineData </span>= <span class="cstat-no" title="statement not covered" >(</span></span>
   assetEntries: AssetEntry[],
   debtEntries: DebtEntry[]
 ): CombinedDataPoint[] =&gt; {
@@ -453,11 +453,11 @@ export const <span class="cstat-no" title="statement not covered" >combineData =
 <span class="cstat-no" title="statement not covered" >  for (let i = <span class="cstat-no" title="statement not covered" >12;</span> i &gt;= 0; i--) {</span>
     const date = <span class="cstat-no" title="statement not covered" >new Date(now);</span>
 <span class="cstat-no" title="statement not covered" >    date.setMonth(now.getMonth() - i);</span>
-    const dateStr = <span class="cstat-no" title="statement not covered" >`${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}`;</span>
+    const dateStr<span class="cstat-no" title="statement not covered" > = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}`;</span>
 &nbsp;
     // 総資産・負債のベース値を計算
-    const baseAssets = <span class="cstat-no" title="statement not covered" >assetEntries.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry) =&gt; <span class="cstat-no" title="statement not covered" >sum + entry.value,</span> 0);</span>
-    const baseDebts = <span class="cstat-no" title="statement not covered" >debtEntries.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry) =&gt; <span class="cstat-no" title="statement not covered" >sum + entry.value,</span> 0);</span>
+    const baseAssets = <span class="cstat-no" title="statement not covered" >assetEntries.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry<span class="cstat-no" title="statement not covered" >) =&gt; sum + entry.value, 0</span>);</span>
+    const baseDebts = <span class="cstat-no" title="statement not covered" >debtEntries.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, entry<span class="cstat-no" title="statement not covered" >) =&gt; sum + entry.value, 0</span>);</span>
 &nbsp;
     // より現実的な財務データ生成
     const financialData = <span class="cstat-no" title="statement not covered" >dataGenerator.generateFinancialData(baseAssets);</span>
@@ -492,7 +492,7 @@ export const <span class="cstat-no" title="statement not covered" >combineData =
   }
 &nbsp;
   // 個別の資産・負債データも追加（現在時点のみ）
-  const currentDateStr = <span class="cstat-no" title="statement not covered" >`${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}`;</span>
+  const currentDateStr<span class="cstat-no" title="statement not covered" > = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}`;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  assetEntries.forEach(<span class="fstat-no" title="function not covered" >(e</span>ntry) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    combinedData.push({</span>
@@ -521,11 +521,11 @@ export const <span class="cstat-no" title="statement not covered" >combineData =
  * @param type 抽出する種類 ('asset', 'debt', 'netWorth')
  * @returns 抽出されたデータポイント
  */
-export const <span class="cstat-no" title="statement not covered" >filterDataByType = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >filterDataByType </span>= <span class="cstat-no" title="statement not covered" >(</span></span>
   data: CombinedDataPoint[],
   type: 'asset' | 'debt' | 'netWorth'
 ): CombinedDataPoint[] =&gt; {
-<span class="cstat-no" title="statement not covered" >  return data.filter(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >item.type === type)</span>;</span>
+<span class="cstat-no" title="statement not covered" >  return data.filter(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; item.type === type);</span></span>
 };
 &nbsp;
 /**
@@ -533,7 +533,7 @@ export const <span class="cstat-no" title="statement not covered" >filterDataByT
  * @param data 結合データ
  * @returns 日付ごとのサマリーデータ
  */
-export const <span class="cstat-no" title="statement not covered" >generateDateSummary = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>d</span>ata: CombinedDataPoint[]) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >generateDateSummary </span>= <span class="cstat-no" title="statement not covered" >(</span>data: CombinedDataPoint[]) =&gt; {</span>
   const dateMap = <span class="cstat-no" title="statement not covered" >new Map&lt;</span>
     string,
     {
@@ -595,7 +595,7 @@ export const <span class="cstat-no" title="statement not covered" >generateDateS
   });
 &nbsp;
   // 結果を配列として返す
-<span class="cstat-no" title="statement not covered" >  return sortedDates.map(<span class="fstat-no" title="function not covered" >(d</span>ate) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >  return sortedDates.map(<span class="fstat-no" title="function not covered" >(d</span>ate<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
     date,
     ...dateMap.get(date)!,
   }));
@@ -607,7 +607,7 @@ export const <span class="cstat-no" title="statement not covered" >generateDateS
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

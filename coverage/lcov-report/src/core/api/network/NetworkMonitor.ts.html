@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
@@ -39,7 +39,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
@@ -107,16 +107,12 @@
 <a name='L42'></a><a href='#L42'>42</a>
 <a name='L43'></a><a href='#L43'>43</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -128,6 +124,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -144,15 +144,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >export class N</span></span>etworkMonitor {
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >export class N</span></span>etworkMonitor<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
   private static instance: NetworkMonitor;
-  private <span class="cstat-no" title="statement not covered" >listeners: Array&lt;(isOnline: boolean) =&gt; void&gt; = [];</span>
-  private <span class="cstat-no" title="statement not covered" >monitoring = false;</span>
+  private listeners: Array&lt;(isOnline: boolean) =&gt; void&gt; = [];
+  private monitoring = false;
 &nbsp;
-<span class="fstat-no" title="function not covered" >  static </span>getInstance(): NetworkMonitor {
+  static <span class="fstat-no" title="function not covered" >getInstance(</span>): NetworkMonitor {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!NetworkMonitor.instance) {</span>
 <span class="cstat-no" title="statement not covered" >      NetworkMonitor.instance = new NetworkMonitor();</span>
     }
@@ -167,12 +167,12 @@
 <span class="cstat-no" title="statement not covered" >    this.listeners.push(callback);</span>
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" >  startMonitoring(</span>): void {
+<span class="fstat-no" title="function not covered" >  startMonitoring<span class="cstat-no" title="statement not covered" >(</span>): void {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.monitoring) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    this.monitoring = true;</span>
-    const handleOnline = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.notifyListeners(true);</span></span>
-    const handleOffline = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.notifyListeners(false);</span></span>
+    const <span class="fstat-no" title="function not covered" >handleOnline<span class="cstat-no" title="statement not covered" > </span>= <span class="cstat-no" title="statement not covered" >() =&gt; this.notifyListeners(true);</span></span>
+    const <span class="fstat-no" title="function not covered" >handleOffline<span class="cstat-no" title="statement not covered" > </span>= <span class="cstat-no" title="statement not covered" >() =&gt; this.notifyListeners(false);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    window.addEventListener('online', handleOnline);</span>
 <span class="cstat-no" title="statement not covered" >    window.addEventListener('offline', handleOffline);</span>
@@ -184,9 +184,9 @@
   }
 &nbsp;
   private <span class="fstat-no" title="function not covered" >notifyListeners(</span>isOnline: boolean): void {
-<span class="cstat-no" title="statement not covered" >    this.listeners.forEach(<span class="fstat-no" title="function not covered" >(c</span>allback) =&gt; <span class="cstat-no" title="statement not covered" >callback(isOnline))</span>;</span>
+<span class="cstat-no" title="statement not covered" >    this.listeners.forEach(<span class="fstat-no" title="function not covered" >(c</span>allback<span class="cstat-no" title="statement not covered" >) =&gt; callback(isOnline));</span></span>
   }
-}
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >export default NetworkMonitor;</span>
 &nbsp;</pre></td></tr></table></pre>
@@ -196,7 +196,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

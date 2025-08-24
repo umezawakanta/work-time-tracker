@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/36</span>
+                <span class='fraction'>0/53</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/26</span>
+                <span class='fraction'>0/70</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
@@ -203,7 +203,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -301,10 +301,10 @@ export interface UseUniversalPageSyncResult {
  * 🔄 ユニバーサルページ同期フック
  * 全23ページ間のリアルタイム同期を提供
  */
-export const <span class="cstat-no" title="statement not covered" >useUniversalPageSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>c</span>urrentPageId: string): UseUniversalPageSyncResult =&gt; {</span>
-  const [pageState, setPageState] = <span class="cstat-no" title="statement not covered" >useState&lt;UniversalPageState | null&gt;(null);</span>
-  const [allPageStates, setAllPageStates] = <span class="cstat-no" title="statement not covered" >useState&lt;UniversalPageState[]&gt;([]);</span>
-  const [syncMetrics, setSyncMetrics] = <span class="cstat-no" title="statement not covered" >useState&lt;SyncMetrics&gt;({</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useUniversalPageSync </span>= <span class="cstat-no" title="statement not covered" >(</span>currentPageId: string): UseUniversalPageSyncResult =&gt; {</span>
+  const [pageState<span class="cstat-no" title="statement not covered" >, s</span>etPageState<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;UniversalPageState | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [allPageStates<span class="cstat-no" title="statement not covered" >, s</span>etAllPageStates<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;UniversalPageState[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [syncMetrics<span class="cstat-no" title="statement not covered" >, s</span>etSyncMetrics<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;SyncMetrics&gt;({</span>
     totalPages: 0,
     activeSyncs: 0,
     syncSuccessRate: 0,
@@ -312,11 +312,11 @@ export const <span class="cstat-no" title="statement not covered" >useUniversalP
     pendingUpdates: 0,
     errorCount: 0,
     lastFullSync: '',
-  });
-  const [isLoading, setIsLoading] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
-  const [error, setError] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;(null);</span>
+  })<span class="cstat-no" title="statement not covered" >;</span>
+  const [isLoading<span class="cstat-no" title="statement not covered" >, s</span>etIsLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [error<span class="cstat-no" title="statement not covered" >, s</span>etError<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const refresh = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const refresh = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const currentState = <span class="cstat-no" title="statement not covered" >universalPageSyncService.getPageState(currentPageId);</span>
       const allStates = <span class="cstat-no" title="statement not covered" >universalPageSyncService.getAllPageStates();</span>
@@ -333,14 +333,14 @@ export const <span class="cstat-no" title="statement not covered" >useUniversalP
     }
   }, [currentPageId]);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // 初期データ取得
 <span class="cstat-no" title="statement not covered" >    refresh();</span>
 &nbsp;
     // 定期更新
     const interval = <span class="cstat-no" title="statement not covered" >setInterval(refresh, 2000);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      clearInterval(interval);</span>
     };
   }, [refresh]);
@@ -359,17 +359,17 @@ export const <span class="cstat-no" title="statement not covered" >useUniversalP
  * 🏆 バッジ進捗監視フック
  * ページ間のバッジ進捗同期を監視
  */
-export const <span class="cstat-no" title="statement not covered" >useBadgeSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>p</span>ageId: string) =&gt; {</span>
-  const { pageState } = <span class="cstat-no" title="statement not covered" >useUniversalPageSync(pageId);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useBadgeSync </span>= <span class="cstat-no" title="statement not covered" >(</span>pageId: string) =&gt; {</span>
+  const { pageState<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useUniversalPageSync(pageId);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
     badgeProgress: pageState?.badgeProgress || {},
     totalBadges: Object.keys(pageState?.badgeProgress || {}).length,
     completedBadges: Object.values(pageState?.badgeProgress || {}).filter(
-<span class="fstat-no" title="function not covered" >      (p</span>rogress) =&gt; <span class="cstat-no" title="statement not covered" >progress &gt;= 100</span>
+<span class="fstat-no" title="function not covered" >      (p</span>rogress<span class="cstat-no" title="statement not covered" >) =&gt; progress &gt;= 100</span>
     ).length,
     averageProgress:
-      Object.values(pageState?.badgeProgress || {}).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, progress) =&gt; <span class="cstat-no" title="statement not covered" >sum + progress,</span> 0) /
+      Object.values(pageState?.badgeProgress || {}).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, progress<span class="cstat-no" title="statement not covered" >) =&gt; sum + progress, 0</span>) /
       Math.max(1, Object.keys(pageState?.badgeProgress || {}).length),
   };
 };
@@ -378,8 +378,8 @@ export const <span class="cstat-no" title="statement not covered" >useBadgeSync 
  * 📊 ページメトリクス監視フック
  * リアルタイムメトリクス更新を提供
  */
-export const <span class="cstat-no" title="statement not covered" >usePageMetrics = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>p</span>ageId: string) =&gt; {</span>
-  const { pageState } = <span class="cstat-no" title="statement not covered" >useUniversalPageSync(pageId);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >usePageMetrics </span>= <span class="cstat-no" title="statement not covered" >(</span>pageId: string) =&gt; {</span>
+  const { pageState<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useUniversalPageSync(pageId);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
     metrics: pageState?.metrics || {},
@@ -397,7 +397,7 @@ export const <span class="cstat-no" title="statement not covered" >usePageMetric
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/103</span>
+                <span class='fraction'>0/119</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/68</span>
+                <span class='fraction'>0/82</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/29</span>
+                <span class='fraction'>0/32</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/97</span>
+                <span class='fraction'>0/99</span>
             </div>
         
             
@@ -422,7 +422,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -441,8 +441,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -590,12 +590,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -612,13 +612,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -650,7 +650,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -740,14 +740,14 @@ export interface DataValidationOptions {
   includeWarnings?: boolean; // 警告も含める
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >useDataValidation = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >&lt;</span>T extends Record&lt;string, any&gt;&gt;(</span></span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useDataValidation </span>= <span class="cstat-no" title="statement not covered" >&lt;</span>T extends Record&lt;string, any&gt;&gt;(</span>
   validationRules: ValidationRule[],
-  options: DataValidationOptions = <span class="branch-0 cbranch-no" title="branch not covered" >{}</span>
+<span class="cstat-no" title="statement not covered" >  options: DataValidationOptions = {}</span>
 ) =&gt; {
-  const [lastValidation, setLastValidation] = <span class="cstat-no" title="statement not covered" >useState&lt;ValidationResult | null&gt;(null);</span>
-  const [isValidating, setIsValidating] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [lastValidation<span class="cstat-no" title="statement not covered" >, s</span>etLastValidation<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;ValidationResult | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isValidating<span class="cstat-no" title="statement not covered" >, s</span>etIsValidating<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const defaultOptions: Required&lt;DataValidationOptions&gt; = <span class="cstat-no" title="statement not covered" >{</span>
+  const defaultOptions<span class="cstat-no" title="statement not covered" >: Required&lt;DataValidationOptions&gt; = {</span>
     strict: false,
     stopOnFirstError: false,
     includeWarnings: true,
@@ -756,15 +756,15 @@ export const <span class="cstat-no" title="statement not covered" >useDataValida
 &nbsp;
   // 基本的な検証ルール
   const builtInValidators = <span class="cstat-no" title="statement not covered" >useMemo(</span>
-<span class="fstat-no" title="function not covered" >    () =</span>&gt; (<span class="cstat-no" title="statement not covered" >{</span>
-      required: <span class="fstat-no" title="function not covered" >(v</span>alue: any) =&gt; <span class="cstat-no" title="statement not covered" >value !== null &amp;&amp; value !== undefined &amp;&amp; value !== '',</span>
-      isString: <span class="fstat-no" title="function not covered" >(v</span>alue: any) =&gt; <span class="cstat-no" title="statement not covered" >typeof value === 'string',</span>
-      isNumber: <span class="fstat-no" title="function not covered" >(v</span>alue: any) =&gt; <span class="cstat-no" title="statement not covered" >typeof value === 'number' &amp;&amp; !isNaN(value),</span>
-      isArray: <span class="fstat-no" title="function not covered" >(v</span>alue: any) =&gt; <span class="cstat-no" title="statement not covered" >Array.isArray(value),</span>
-      isObject: <span class="fstat-no" title="function not covered" >(v</span>alue: any) =&gt;
-<span class="cstat-no" title="statement not covered" >        value !== null &amp;&amp; typeof value === 'object' &amp;&amp; !Array.isArray(value),</span>
-      isEmail: <span class="fstat-no" title="function not covered" >(v</span>alue: string) =&gt; <span class="cstat-no" title="statement not covered" >/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),</span>
-      isUrl: <span class="fstat-no" title="function not covered" >(v</span>alue: string) =&gt; {
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >    () =&gt; ({</span></span>
+<span class="fstat-no" title="function not covered" >      required:</span> (value: any<span class="cstat-no" title="statement not covered" >) =&gt; value !== null &amp;&amp; value !== undefined &amp;&amp; value !== '',</span>
+<span class="fstat-no" title="function not covered" >      isString:</span> (value: any<span class="cstat-no" title="statement not covered" >) =&gt; typeof value === 'string',</span>
+<span class="fstat-no" title="function not covered" >      isNumber:</span> (value: any<span class="cstat-no" title="statement not covered" >) =&gt; typeof value === 'number' &amp;&amp; !isNaN(value),</span>
+<span class="fstat-no" title="function not covered" >      isArray:</span> (value: any<span class="cstat-no" title="statement not covered" >) =&gt; Array.isArray(value),</span>
+<span class="fstat-no" title="function not covered" >      isObject:</span> (value: any<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+        value !== null &amp;&amp; typeof value === 'object' &amp;&amp; !Array.isArray(value),
+<span class="fstat-no" title="function not covered" >      isEmail:</span> (value: string<span class="cstat-no" title="statement not covered" >) =&gt; /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),</span>
+<span class="fstat-no" title="function not covered" >      isUrl:</span> (value: string) =&gt; {
 <span class="cstat-no" title="statement not covered" >        try {</span>
 <span class="cstat-no" title="statement not covered" >          new URL(value);</span>
 <span class="cstat-no" title="statement not covered" >          return true;</span>
@@ -772,12 +772,12 @@ export const <span class="cstat-no" title="statement not covered" >useDataValida
 <span class="cstat-no" title="statement not covered" >          return false;</span>
         }
       },
-      minLength: <span class="fstat-no" title="function not covered" >(m</span>in: number) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>alue: string) =&gt; <span class="cstat-no" title="statement not covered" >value.length &gt;= min,</span></span>
-      maxLength: <span class="fstat-no" title="function not covered" >(m</span>ax: number) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>alue: string) =&gt; <span class="cstat-no" title="statement not covered" >value.length &lt;= max,</span></span>
-      range: <span class="fstat-no" title="function not covered" >(m</span>in: number, max: number) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>alue: number) =&gt; <span class="cstat-no" title="statement not covered" >value &gt;= min &amp;&amp; value &lt;= max,</span></span>
-      isDate: <span class="fstat-no" title="function not covered" >(v</span>alue: any) =&gt; <span class="cstat-no" title="statement not covered" >value instanceof Date || !isNaN(Date.parse(value)),</span>
-      isValidId: <span class="fstat-no" title="function not covered" >(v</span>alue: string) =&gt; <span class="cstat-no" title="statement not covered" >/^[a-zA-Z0-9_-]+$/.test(value),</span>
-      noHtml: <span class="fstat-no" title="function not covered" >(v</span>alue: string) =&gt; <span class="cstat-no" title="statement not covered" >!/&lt;[^&gt;]*&gt;/g.test(value),</span>
+<span class="fstat-no" title="function not covered" >      minLength:</span> (min: number<span class="cstat-no" title="statement not covered" >) =&gt; <span class="fstat-no" title="function not covered" >(v</span>alue: string<span class="cstat-no" title="statement not covered" >) =&gt; value.length &gt;= min,</span></span>
+<span class="fstat-no" title="function not covered" >      maxLength:</span> (max: number<span class="cstat-no" title="statement not covered" >) =&gt; <span class="fstat-no" title="function not covered" >(v</span>alue: string<span class="cstat-no" title="statement not covered" >) =&gt; value.length &lt;= max,</span></span>
+<span class="fstat-no" title="function not covered" >      range:</span> (min: number, max: number<span class="cstat-no" title="statement not covered" >) =&gt; <span class="fstat-no" title="function not covered" >(v</span>alue: number<span class="cstat-no" title="statement not covered" >) =&gt; value &gt;= min &amp;&amp; value &lt;= max,</span></span>
+<span class="fstat-no" title="function not covered" >      isDate:</span> (value: any<span class="cstat-no" title="statement not covered" >) =&gt; value instanceof Date || !isNaN(Date.parse(value)),</span>
+<span class="fstat-no" title="function not covered" >      isValidId:</span> (value: string<span class="cstat-no" title="statement not covered" >) =&gt; /^[a-zA-Z0-9_-]+$/.test(value),</span>
+<span class="fstat-no" title="function not covered" >      noHtml:</span> (value: string<span class="cstat-no" title="statement not covered" >) =&gt; !/&lt;[^&gt;]*&gt;/g.test(value),</span>
     }),
     []
   );
@@ -909,19 +909,19 @@ export const <span class="cstat-no" title="statement not covered" >useDataValida
   );
 &nbsp;
   // メイン検証関数
-  const validate = <span class="cstat-no" title="statement not covered" >useCallback(</span>
-<span class="fstat-no" title="function not covered" >    async </span>(data: T): Promise&lt;ValidationResult&gt; =&gt; {
+  const validate = <span class="cstat-no" title="statement not covered" >useCallback<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
+<span class="fstat-no" title="function not covered" >    async (d</span>ata: T<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >): Promise&lt;ValidationResult&gt; =&gt; {</span></span>
 <span class="cstat-no" title="statement not covered" >      setIsValidating(true);</span>
-      const errors: ValidationError[] = <span class="cstat-no" title="statement not covered" >[];</span>
-      const warnings: ValidationWarning[] = <span class="cstat-no" title="statement not covered" >[];</span>
+      const <span class="cstat-no" title="statement not covered" >errors: ValidationError[] = [];</span>
+      const <span class="cstat-no" title="statement not covered" >warnings: ValidationWarning[] = []<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >;</span></span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      try {</span>
-<span class="cstat-no" title="statement not covered" >        for (const rule of validationRules) {</span>
-          const fieldValue = <span class="cstat-no" title="statement not covered" >data[rule.field];</span>
-          const isValid = <span class="cstat-no" title="statement not covered" >rule.validator(fieldValue, data);</span>
+      try {
+        for (const <span class="cstat-no" title="statement not covered" >rule of v</span>alidationRules<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>) {</span>
+          const <span class="cstat-no" title="statement not covered" >fieldValue = data[rule.field];</span>
+          const <span class="cstat-no" title="statement not covered" >isValid = rule.validator(fieldValue, data)<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (!isValid) {</span>
-            const error: ValidationError = <span class="cstat-no" title="statement not covered" >{</span>
+          if (!isValid<span class="cstat-no" title="statement not covered" >) {</span>
+            const <span class="cstat-no" title="statement not covered" >error: ValidationError = {</span>
               field: rule.field,
               message: rule.message,
               code: rule.code,
@@ -935,42 +935,42 @@ export const <span class="cstat-no" title="statement not covered" >useDataValida
                 field: error.field,
                 message: error.message,
               });
-            }
+            }<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (defaultOptions.stopOnFirstError &amp;&amp; error.severity === 'error') {</span>
-<span class="cstat-no" title="statement not covered" >              break;</span>
+            if (defaultOptions.stopOnFirstError &amp;&amp; error.severity === 'error'<span class="cstat-no" title="statement not covered" >) {</span>
+              break;
             }
           }
         }
 &nbsp;
-        const result: ValidationResult = <span class="cstat-no" title="statement not covered" >{</span>
+        const <span class="cstat-no" title="statement not covered" >result: ValidationResult = {</span>
           isValid: errors.length === 0,
           errors,
           warnings: defaultOptions.includeWarnings ? warnings : [],
         };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        setLastValidation(result);</span>
-<span class="cstat-no" title="statement not covered" >        return result;</span>
+<span class="cstat-no" title="statement not covered" >        setLastValidation(result);<span class="cstat-no" title="statement not covered" ></span></span>
+        return result<span class="cstat-no" title="statement not covered" >;</span>
       } catch (error) {
-        const validationError: ValidationError = <span class="cstat-no" title="statement not covered" >{</span>
+        const <span class="cstat-no" title="statement not covered" >validationError: ValidationError = {</span>
           field: 'validation',
           message: `検証中にエラーが発生しました: ${error instanceof Error ? error.message : 'Unknown error'}`,
           code: 'VALIDATION_ERROR',
           severity: 'error',
         };
 &nbsp;
-        const result: ValidationResult = <span class="cstat-no" title="statement not covered" >{</span>
+        const <span class="cstat-no" title="statement not covered" >result: ValidationResult = {</span>
           isValid: false,
           errors: [validationError],
           warnings: [],
         };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        setLastValidation(result);</span>
-<span class="cstat-no" title="statement not covered" >        return result;</span>
+<span class="cstat-no" title="statement not covered" >        setLastValidation(result);<span class="cstat-no" title="statement not covered" ></span></span>
+        return result<span class="cstat-no" title="statement not covered" >;</span>
       } finally {
-<span class="cstat-no" title="statement not covered" >        setIsValidating(false);</span>
+<span class="cstat-no" title="statement not covered" >        setIsValidating(false);<span class="cstat-no" title="statement not covered" ></span></span>
       }
-    },
+    }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >,</span></span>
     [validationRules, defaultOptions]
   );
 &nbsp;
@@ -984,7 +984,7 @@ export const <span class="cstat-no" title="statement not covered" >useDataValida
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (Array.isArray(data)) {</span>
-<span class="cstat-no" title="statement not covered" >      return data.map(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >sanitizeData(item))</span>;</span>
+<span class="cstat-no" title="statement not covered" >      return data.map(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; sanitizeData(item));</span></span>
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (data &amp;&amp; typeof data === 'object') {</span>
@@ -1030,7 +1030,7 @@ export const <span class="cstat-no" title="statement not covered" >useDataValida
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

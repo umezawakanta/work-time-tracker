@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/22</span>
+                <span class='fraction'>0/26</span>
             </div>
         
             
@@ -216,8 +216,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -255,15 +255,15 @@
 <span class="cstat-no" title="statement not covered" >import { useADHDNotifications } from '@/hooks/useADHDNotifications';</span>
 <span class="cstat-no" title="statement not covered" >import { Brain, Shield, Clock, Eye, X, Zap } from 'lucide-react';</span>
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >ADHDFloatingButton: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const [isExpanded, setIsExpanded] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const { triggerEmergencyRealityCheck } = <span class="cstat-no" title="statement not covered" >useADHDNotifications();</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >ADHDFloatingButton:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const [isExpanded<span class="cstat-no" title="statement not covered" >, s</span>etIsExpanded<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const { triggerEmergencyRealityCheck<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useADHDNotifications();</span></span>
 &nbsp;
   const quickActions = <span class="cstat-no" title="statement not covered" >[</span>
     {
       icon: &lt;Shield className="h-4 w-4" /&gt;,
       label: '緊急現実チェック',
-      action: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >      action:</span> () =&gt; {
 <span class="cstat-no" title="statement not covered" >        triggerEmergencyRealityCheck();</span>
 <span class="cstat-no" title="statement not covered" >        setIsExpanded(false);</span>
       },
@@ -272,7 +272,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFloatingB
     {
       icon: &lt;Eye className="h-4 w-4" /&gt;,
       label: '5-4-3-2-1法',
-      action: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >      action:</span> () =&gt; {
 <span class="cstat-no" title="statement not covered" >        alert(</span>
           '5つ見えるもの、4つ触れるもの、3つ聞こえるもの、2つ匂うもの、1つ味わうものを見つけてください'
         );
@@ -283,8 +283,8 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFloatingB
     {
       icon: &lt;Clock className="h-4 w-4" /&gt;,
       label: '2分タイマー',
-      action: <span class="fstat-no" title="function not covered" >() =</span>&gt; {
-<span class="cstat-no" title="statement not covered" >        setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >alert('2分完了！'),</span> 2 * 60 * 1000);</span>
+<span class="fstat-no" title="function not covered" >      action:</span> () =&gt; {
+<span class="cstat-no" title="statement not covered" >        setTimeout(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; a</span>lert('2分完了！'), 2</span> * 60 * 1000);</span>
 <span class="cstat-no" title="statement not covered" >        alert('2分集中タイマー開始');</span>
 <span class="cstat-no" title="statement not covered" >        setIsExpanded(false);</span>
       },
@@ -303,14 +303,14 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFloatingB
                 &lt;Button
                   size="sm"
                   variant="ghost"
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsExpanded(false)}</span>
+<span class="fstat-no" title="function not covered" >                  onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsExpanded(false)}</span>
                   className="h-6 w-6 p-0"
                 &gt;
                   &lt;X className="h-4 w-4" /&gt;
                 &lt;/Button&gt;
               &lt;/div&gt;
-              {quickActions.map(<span class="fstat-no" title="function not covered" >(a</span>ction, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;Button</span>
+              {quickActions.map(<span class="fstat-no" title="function not covered" >(a</span>ction, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;Button
                   key={index}
                   onClick={action.action}
                   className={`${action.color} text-white w-full justify-start text-xs h-8`}
@@ -326,7 +326,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFloatingB
       )}
 &nbsp;
       &lt;Button
-        onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsExpanded(!isExpanded)}</span>
+<span class="fstat-no" title="function not covered" >        onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsExpanded(!isExpanded)}</span>
         className={`
           w-14 h-14 rounded-full shadow-lg border-2 border-white
           ${
@@ -349,7 +349,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFloatingB
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

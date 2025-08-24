@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/60</span>
+                <span class='fraction'>0/63</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/55</span>
+                <span class='fraction'>0/56</span>
             </div>
         
             
@@ -197,7 +197,7 @@
 <a name='L132'></a><a href='#L132'>132</a>
 <a name='L133'></a><a href='#L133'>133</a>
 <a name='L134'></a><a href='#L134'>134</a>
-<a name='L135'></a><a href='#L135'>135</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L135'></a><a href='#L135'>135</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -331,7 +331,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >/**</span></span>
  * ハッシュユーティリティ
  * AI機能で使用されるハッシュ関数群
  */
@@ -362,7 +362,7 @@
  * @returns ハッシュ値
  */
 <span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >o</span>bjectHash(</span>obj: unknown): string {
-  const sortAndSerialize = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>alue: unknown): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >sortAndSerialize </span>= <span class="cstat-no" title="statement not covered" >(value: unknown): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (value === null) <span class="cstat-no" title="statement not covered" >return 'null';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (value === undefined) <span class="cstat-no" title="statement not covered" >return 'undefined';</span></span>
 &nbsp;
@@ -377,7 +377,7 @@
 &nbsp;
       const keys = <span class="cstat-no" title="statement not covered" >Object.keys(value).sort();</span>
       const pairs = <span class="cstat-no" title="statement not covered" >keys.map(</span>
-<span class="fstat-no" title="function not covered" >        (k</span>ey) =&gt; <span class="cstat-no" title="statement not covered" >`${key}:${sortAndSerialize((value as Record&lt;string, unknown&gt;)[key])}`</span>
+<span class="fstat-no" title="function not covered" >        (k</span>ey<span class="cstat-no" title="statement not covered" >) =&gt; `${key}:${sortAndSerialize((value as Record&lt;string, unknown&gt;)[key])}`</span>
       );
 <span class="cstat-no" title="statement not covered" >      return `{${pairs.join(',')}}`;</span>
     }
@@ -431,7 +431,7 @@
  * @param key 暗号化キー
  * @returns 暗号化されたテキスト
  */
-<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >s</span>impleEncrypt(</span>text: string, key = <span class="branch-0 cbranch-no" title="branch not covered" >'default-key')</span>: string {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >s</span>impleEncrypt(</span>text: string, key<span class="cstat-no" title="statement not covered" > = 'default-key')</span>: string {
   const keyHash = <span class="cstat-no" title="statement not covered" >stringHash(key).substring(0, 16);</span>
   let result = <span class="cstat-no" title="statement not covered" >'';</span>
 &nbsp;
@@ -451,7 +451,7 @@
  * @param key 暗号化キー
  * @returns 復号化されたテキスト
  */
-<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >s</span>impleDecrypt(</span>encrypted: string, key = <span class="branch-0 cbranch-no" title="branch not covered" >'default-key')</span>: string {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >s</span>impleDecrypt(</span>encrypted: string, key<span class="cstat-no" title="statement not covered" > = 'default-key')</span>: string {
   const keyHash = <span class="cstat-no" title="statement not covered" >stringHash(key).substring(0, 16);</span>
   const decoded = <span class="cstat-no" title="statement not covered" >base64Decode(encrypted);</span>
   let result = <span class="cstat-no" title="statement not covered" >'';</span>
@@ -472,7 +472,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

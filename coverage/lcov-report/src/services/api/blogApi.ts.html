@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.22% </span>
+                <span class="strong">4.16% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/71</span>
+                <span class='fraction'>3/72</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/81</span>
+                <span class='fraction'>0/223</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.41% </span>
+                <span class="strong">4.34% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/68</span>
+                <span class='fraction'>3/69</span>
             </div>
         
             
@@ -388,7 +388,7 @@
 <a name='L323'></a><a href='#L323'>323</a>
 <a name='L324'></a><a href='#L324'>324</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -419,8 +419,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -482,29 +481,20 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -515,10 +505,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -801,12 +801,12 @@ const mockBlogPosts: BlogPost[] = [
   },
 ];
 &nbsp;
-function <span class="fstat-no" title="function not covered" >coerceArray&lt;</span>T&gt;(value: unknown, splitPattern: RegExp = <span class="branch-0 cbranch-no" title="branch not covered" >/[\s,]+/)</span>: T[] {
+function <span class="fstat-no" title="function not covered" >coerceArray&lt;</span>T&gt;(value: unknown, <span class="cstat-no" title="statement not covered" >splitPattern: RegExp = /[\s,]+/)</span>: T[] {
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (Array.isArray(value)) <span class="cstat-no" title="statement not covered" >return value as T[];</span></span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof value === 'string') {</span>
     const parts = <span class="cstat-no" title="statement not covered" >value</span>
       .split(splitPattern)
-      .map(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.trim())</span>
+      .map(<span class="fstat-no" title="function not covered" >(s<span class="cstat-no" title="statement not covered" ></span>) =&gt; s.trim())</span>
       .filter(Boolean) as unknown as T[];
 <span class="cstat-no" title="statement not covered" >    return parts;</span>
   }
@@ -828,7 +828,7 @@ function <span class="fstat-no" title="function not covered" >normalizePost(</sp
     tags: coerceArray&lt;string&gt;(raw?.tags),
     likes: coerceArray&lt;string&gt;(raw?.likes),
     comments: Array.isArray(raw?.comments)
-      ? (raw.comments as Comment[]).map(<span class="fstat-no" title="function not covered" >(c</span>: any) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+      ? (raw.comments as Comment[]).map(<span class="fstat-no" title="function not covered" >(c</span>: any<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
           _id: String(c?._id ?? c?.id ?? ''),
           content: String(c?.content ?? ''),
           author: String(c?.author ?? ''),
@@ -842,7 +842,7 @@ function <span class="fstat-no" title="function not covered" >normalizePost(</sp
 }
 &nbsp;
 export const blogApi = {
-  getAll: <span class="fstat-no" title="function not covered" >(): Promise&lt;AxiosResponse&lt;BlogPost[]&gt;&gt; =</span>&gt; {
+<span class="fstat-no" title="function not covered" >  getAll:</span> (): Promise&lt;AxiosResponse&lt;BlogPost[]&gt;&gt; =&gt; {
     // モックモードの場合はモックデータを返す
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {</span>
 <span class="cstat-no" title="statement not covered" >      console.log('🎭 Mock mode: Returning mock blog posts');</span>
@@ -856,7 +856,7 @@ export const blogApi = {
     }
 &nbsp;
     // 安全な環境変数取得
-    const getEnvVar = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(k</span>ey: string): string | undefined =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >getEnvVar </span>= <span class="cstat-no" title="statement not covered" >(key: string): string | undefined =&gt; {</span>
       // Jest環境ではprocess.envを優先
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof process !== 'undefined' &amp;&amp; process.env &amp;&amp; process.env[key]) {</span>
 <span class="cstat-no" title="statement not covered" >        return process.env[key];</span>
@@ -926,33 +926,33 @@ export const blogApi = {
       });
   },
 &nbsp;
-  create: <span class="fstat-no" title="function not covered" >(</span>
+<span class="fstat-no" title="function not covered" >  create:</span> (
     post: Omit&lt;BlogPost, '_id' | 'createdAt' | 'updatedAt' | 'likes' | 'comments'&gt;
   ): Promise&lt;AxiosResponse&lt;BlogApiResponse&gt;&gt; =&gt; {
     // Use a stricter timeout for create to prevent UI freeze on network hiccups
 <span class="cstat-no" title="statement not covered" >    return api.post&lt;BlogApiResponse&gt;('/blog', post, { timeout: 15000 });</span>
   },
 &nbsp;
-  update: <span class="fstat-no" title="function not covered" >(_</span>id: string, updates: Partial&lt;BlogPost&gt;): Promise&lt;AxiosResponse&lt;BlogApiResponse&gt;&gt; =&gt; {
+<span class="fstat-no" title="function not covered" >  update:</span> (_id: string, updates: Partial&lt;BlogPost&gt;): Promise&lt;AxiosResponse&lt;BlogApiResponse&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >    return api.put&lt;BlogApiResponse&gt;(`/blog/${_id}`, updates);</span>
   },
 &nbsp;
-  delete: <span class="fstat-no" title="function not covered" >(_</span>id: string): Promise&lt;AxiosResponse&lt;void&gt;&gt; =&gt; {
+<span class="fstat-no" title="function not covered" >  delete:</span> (_id: string): Promise&lt;AxiosResponse&lt;void&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >    return api.delete(`/blog/${_id}`);</span>
   },
 &nbsp;
-  addComment: <span class="fstat-no" title="function not covered" >(</span>
+<span class="fstat-no" title="function not covered" >  addComment:</span> (
     postId: string,
     comment: Omit&lt;Comment, '_id' | 'createdAt'&gt;
   ): Promise&lt;AxiosResponse&lt;CommentApiResponse&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >    return api.post&lt;CommentApiResponse&gt;(`/blog/${postId}/comments`, comment);</span>
   },
 &nbsp;
-  getById: <span class="fstat-no" title="function not covered" >(i</span>d: string): Promise&lt;AxiosResponse&lt;BlogPost&gt;&gt; =&gt; {
+<span class="fstat-no" title="function not covered" >  getById:</span> (id: string): Promise&lt;AxiosResponse&lt;BlogPost&gt;&gt; =&gt; {
     // モックモードの場合はモックデータを返す
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {</span>
 <span class="cstat-no" title="statement not covered" >      console.log('🎭 Mock mode: Returning mock blog post for ID:', id);</span>
-      const mockPost = <span class="cstat-no" title="statement not covered" >mockBlogPosts.find(<span class="fstat-no" title="function not covered" >(p</span>ost) =&gt; <span class="cstat-no" title="statement not covered" >post._id === id)</span> || mockBlogPosts[0];</span>
+      const mockPost = <span class="cstat-no" title="statement not covered" >mockBlogPosts.find(<span class="fstat-no" title="function not covered" >(p</span>ost<span class="cstat-no" title="statement not covered" >) =&gt; post._id === id) </span>|| mockBlogPosts[0];</span>
 <span class="cstat-no" title="statement not covered" >      return Promise.resolve({</span>
         data: mockPost,
         status: 200,
@@ -963,7 +963,7 @@ export const blogApi = {
     }
 &nbsp;
     // 安全な環境変数取得
-    const getEnvVar = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(k</span>ey: string): string | undefined =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >getEnvVar </span>= <span class="cstat-no" title="statement not covered" >(key: string): string | undefined =&gt; {</span>
       // Jest環境ではprocess.envを優先
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof process !== 'undefined' &amp;&amp; process.env &amp;&amp; process.env[key]) {</span>
 <span class="cstat-no" title="statement not covered" >        return process.env[key];</span>
@@ -989,7 +989,7 @@ export const blogApi = {
       .get&lt;BlogPost | { success?: boolean; post?: any }&gt;(`/blog/${id}`)
       .then(<span class="fstat-no" title="function not covered" >(r</span>esponse) =&gt; {
         const payload = <span class="cstat-no" title="statement not covered" >response.data as any;</span>
-        const raw = (<span class="cstat-no" title="statement not covered" >payload &amp;&amp; (payload.post ?? payload))</span> as any;
+        const raw = (<span class="cstat-no" title="statement not covered" >payload &amp;&amp; (payload.post ?? payload)) as any;</span>
         const normalized = <span class="cstat-no" title="statement not covered" >normalizePost(raw);</span>
 <span class="cstat-no" title="statement not covered" >        return { ...response, data: normalized } as AxiosResponse&lt;BlogPost&gt;;</span>
       })
@@ -1006,7 +1006,7 @@ export const blogApi = {
 <span class="cstat-no" title="statement not covered" >          console.log(</span>
             '💡 Tip: サーバーが停止している場合は `npm run dev` でサーバーを起動してください'
           );
-          const mockPost = <span class="cstat-no" title="statement not covered" >mockBlogPosts.find(<span class="fstat-no" title="function not covered" >(p</span>ost) =&gt; <span class="cstat-no" title="statement not covered" >post._id === id)</span> || mockBlogPosts[0];</span>
+          const mockPost = <span class="cstat-no" title="statement not covered" >mockBlogPosts.find(<span class="fstat-no" title="function not covered" >(p</span>ost<span class="cstat-no" title="statement not covered" >) =&gt; post._id === id) </span>|| mockBlogPosts[0];</span>
 <span class="cstat-no" title="statement not covered" >          return Promise.resolve({</span>
             data: mockPost,
             status: 200,
@@ -1020,15 +1020,15 @@ export const blogApi = {
       });
   },
 &nbsp;
-  toggleLike: <span class="fstat-no" title="function not covered" >(p</span>ostId: string, userId: string): Promise&lt;AxiosResponse&lt;LikeApiResponse&gt;&gt; =&gt; {
+<span class="fstat-no" title="function not covered" >  toggleLike:</span> (postId: string, userId: string): Promise&lt;AxiosResponse&lt;LikeApiResponse&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >    return api.post&lt;LikeApiResponse&gt;(`/blog/${postId}/like`, { userId });</span>
   },
 &nbsp;
-  saveDraft: <span class="fstat-no" title="function not covered" >(d</span>raft: Partial&lt;BlogPost&gt;): Promise&lt;AxiosResponse&lt;DraftApiResponse&gt;&gt; =&gt; {
+<span class="fstat-no" title="function not covered" >  saveDraft:</span> (draft: Partial&lt;BlogPost&gt;): Promise&lt;AxiosResponse&lt;DraftApiResponse&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >    return api.post&lt;DraftApiResponse&gt;('/blog/draft', draft);</span>
   },
 &nbsp;
-  publishPost: <span class="fstat-no" title="function not covered" >(p</span>ostId: string): Promise&lt;AxiosResponse&lt;BlogApiResponse&gt;&gt; =&gt; {
+<span class="fstat-no" title="function not covered" >  publishPost:</span> (postId: string): Promise&lt;AxiosResponse&lt;BlogApiResponse&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >    return api.put&lt;BlogApiResponse&gt;(`/blog/${postId}/publish`);</span>
   },
 };
@@ -1039,7 +1039,7 @@ export const blogApi = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/152</span>
+                <span class='fraction'>0/180</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/92</span>
+                <span class='fraction'>0/98</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/131</span>
+                <span class='fraction'>0/132</span>
             </div>
         
             
@@ -836,7 +836,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1253,7 +1253,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1314,8 +1313,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1380,8 +1379,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1428,8 +1427,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1453,6 +1452,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1526,8 +1526,8 @@ interface FocusRecommendation {
   estimatedBenefit: number; // 0-100
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >ADHDFocusTracker: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const [focusState, setFocusState] = <span class="cstat-no" title="statement not covered" >useState&lt;FocusState&gt;({</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >ADHDFocusTracker:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const [focusState<span class="cstat-no" title="statement not covered" >, s</span>etFocusState<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;FocusState&gt;({</span>
     isActive: false,
     startTime: null,
     currentMetrics: {
@@ -1541,21 +1541,21 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
     interruptionCount: 0,
     lastCheckTime: new Date(),
     focusHistory: [],
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const [recommendations, setRecommendations] = <span class="cstat-no" title="statement not covered" >useState&lt;FocusRecommendation[]&gt;([]);</span>
-  const [taskRecommendations, setTaskRecommendations] = <span class="cstat-no" title="statement not covered" >useState&lt;ADHDTaskRecommendation[]&gt;([]);</span>
-  const [showDetailedMetrics, setShowDetailedMetrics] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [isAutoTracking, setIsAutoTracking] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
-  const [alertsEnabled, setAlertsEnabled] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
+  const [recommendations<span class="cstat-no" title="statement not covered" >, s</span>etRecommendations<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;FocusRecommendation[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [taskRecommendations<span class="cstat-no" title="statement not covered" >, s</span>etTaskRecommendations<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;ADHDTaskRecommendation[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showDetailedMetrics<span class="cstat-no" title="statement not covered" >, s</span>etShowDetailedMetrics<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isAutoTracking<span class="cstat-no" title="statement not covered" >, s</span>etIsAutoTracking<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [alertsEnabled<span class="cstat-no" title="statement not covered" >, s</span>etAlertsEnabled<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   const checkIntervalRef = <span class="cstat-no" title="statement not covered" >useRef&lt;NodeJS.Timeout | null&gt;(null);</span>
   const alertTimeoutRef = <span class="cstat-no" title="statement not covered" >useRef&lt;NodeJS.Timeout | null&gt;(null);</span>
 &nbsp;
   // 自動トラッキング
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    if (isAutoTracking) {</span>
-<span class="cstat-no" title="statement not covered" >      checkIntervalRef.current = setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      checkIntervalRef.current = setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >        checkFocusState();</span>
       }, 30000); // 30秒ごと
     } else {
@@ -1565,7 +1565,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
       }
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (checkIntervalRef.current) {</span>
 <span class="cstat-no" title="statement not covered" >        clearInterval(checkIntervalRef.current);</span>
       }
@@ -1573,9 +1573,9 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
   }, [isAutoTracking]);
 &nbsp;
   // 集中セッション開始
-  const startTracking = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const startTracking = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const session = <span class="cstat-no" title="statement not covered" >adhdService.startSession('集中度トラッキング');</span>
-<span class="cstat-no" title="statement not covered" >    setFocusState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >    setFocusState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       isActive: true,
       startTime: new Date(),
@@ -1589,9 +1589,9 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
   }, [focusState.currentMetrics]);
 &nbsp;
   // 集中セッション終了
-  const stopTracking = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const stopTracking = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (focusState.sessionId) {</span>
-      const session = <span class="cstat-no" title="statement not covered" >adhdService.getSessions().find(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.id === focusState.sessionId)</span>;</span>
+      const session = <span class="cstat-no" title="statement not covered" >adhdService.getSessions().find(<span class="fstat-no" title="function not covered" >(s<span class="cstat-no" title="statement not covered" ></span>) =&gt; s.id === focusState.sessionId);</span></span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (session) {</span>
 <span class="cstat-no" title="statement not covered" >        adhdService.endSession({</span>
           ...session,
@@ -1603,7 +1603,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
       }
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    setFocusState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >    setFocusState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       isActive: false,
       startTime: null,
@@ -1612,13 +1612,13 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
   }, [focusState.sessionId, focusState.interruptionCount, focusState.currentMetrics]);
 &nbsp;
   // 集中状態チェック
-  const checkFocusState = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const checkFocusState = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!focusState.isActive) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
     // 簡易的な集中度計算（実際の実装では、マウス操作、キーボード入力、アプリケーション切り替えなどを監視）
     const newMetrics = <span class="cstat-no" title="statement not covered" >calculateFocusMetrics();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    setFocusState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >    setFocusState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       currentMetrics: newMetrics,
       lastCheckTime: new Date(),
@@ -1638,7 +1638,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
   }, [focusState.isActive, alertsEnabled]);
 &nbsp;
   // 集中度メトリクス計算（簡易版）
-  const calculateFocusMetrics = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): FocusMetrics =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateFocusMetrics </span>= <span class="cstat-no" title="statement not covered" >(): FocusMetrics =&gt; {</span>
     // 実際の実装では、デバイスセンサー、ユーザー行動、時間経過などを考慮
     const timeElapsed = <span class="cstat-no" title="statement not covered" >focusState.startTime</span>
       ? (new Date().getTime() - focusState.startTime.getTime()) / (1000 * 60) // 分
@@ -1648,7 +1648,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
     const timeDecay = <span class="cstat-no" title="statement not covered" >Math.max(0, 100 - timeElapsed * 2);</span>
 &nbsp;
     // ランダムな変動（実際は実際のデータ）
-    const variation = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >Math.random() * 20 - 10;</span></span> // -10 to +10
+    const <span class="fstat-no" title="function not covered" >variation<span class="cstat-no" title="statement not covered" > </span>= <span class="cstat-no" title="statement not covered" >() =&gt; Math.random() * 20 - 10; </span></span>// -10 to +10
 &nbsp;
     const baseAttention = <span class="cstat-no" title="statement not covered" >Math.max(0, Math.min(100, 80 + variation()));</span>
     const baseConcentration = <span class="cstat-no" title="statement not covered" >Math.max(0, Math.min(100, timeDecay + variation()));</span>
@@ -1747,7 +1747,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
   );
 &nbsp;
   // タスクレコメンデーション更新
-  const updateTaskRecommendations = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const updateTaskRecommendations = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const tasks = <span class="cstat-no" title="statement not covered" >adhdTodoIntegration.getTasks();</span>
     const currentMood = <span class="cstat-no" title="statement not covered" >getMoodFromScore(focusState.currentMetrics.mood);</span>
     const currentEnergy = <span class="cstat-no" title="statement not covered" >getEnergyFromScore(focusState.currentMetrics.energy);</span>
@@ -1770,7 +1770,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (overallScore &lt; 40 &amp;&amp; alertTimeoutRef.current === null) {</span>
         // 集中度が著しく低下した場合のアラート
-<span class="cstat-no" title="statement not covered" >        alertTimeoutRef.current = setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        alertTimeoutRef.current = setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (alertsEnabled) {</span>
 <span class="cstat-no" title="statement not covered" >            alert('🧠 集中度が低下しています。休憩を取るか、環境を変えることをお勧めします。');</span>
           }
@@ -1782,8 +1782,8 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
   );
 &nbsp;
   // メトリクス手動更新
-  const updateMetric = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(m</span>etric: keyof FocusMetrics, value: number) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setFocusState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+  const <span class="fstat-no" title="function not covered" >updateMetric </span>= <span class="cstat-no" title="statement not covered" >(metric: keyof FocusMetrics, value: number) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setFocusState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       currentMetrics: {
         ...prev.currentMetrics,
@@ -1792,13 +1792,13 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
     }));
 &nbsp;
     // レコメンデーション再生成
-    const newMetrics = <span class="cstat-no" title="statement not covered" >{ ...focusState.currentMetrics, [metric]: value };</span>
+    const newMetrics<span class="cstat-no" title="statement not covered" > = { ...focusState.currentMetrics, [metric]: value };</span>
 <span class="cstat-no" title="statement not covered" >    generateRecommendations(newMetrics);</span>
   };
 &nbsp;
   // 中断記録
-  const recordInterruption = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setFocusState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+  const <span class="fstat-no" title="function not covered" >recordInterruption </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setFocusState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       interruptionCount: prev.interruptionCount + 1,
     }));
@@ -1812,7 +1812,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
   };
 &nbsp;
   // ヘルパー関数
-  const calculateOverallFocusScore = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(m</span>etrics: FocusMetrics): number =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateOverallFocusScore </span>= <span class="cstat-no" title="statement not covered" >(metrics: FocusMetrics): number =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return Math.round(</span>
       metrics.attention * 0.3 +
         metrics.concentration * 0.4 +
@@ -1821,7 +1821,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
     );
   };
 &nbsp;
-  const getMoodFromScore = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+  const <span class="fstat-no" title="function not covered" >getMoodFromScore </span>= <span class="cstat-no" title="statement not covered" >(</span>
     score: number
   ): 'very-low' | 'low' | 'normal' | 'good' | 'excellent' =&gt; {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (score &lt; 20) <span class="cstat-no" title="statement not covered" >return 'very-low';</span></span>
@@ -1831,7 +1831,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
 <span class="cstat-no" title="statement not covered" >    return 'excellent';</span>
   };
 &nbsp;
-  const getEnergyFromScore = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+  const <span class="fstat-no" title="function not covered" >getEnergyFromScore </span>= <span class="cstat-no" title="statement not covered" >(</span>
     score: number
   ): 'very-low' | 'low' | 'normal' | 'high' | 'very-high' =&gt; {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (score &lt; 20) <span class="cstat-no" title="statement not covered" >return 'very-low';</span></span>
@@ -1841,14 +1841,14 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
 <span class="cstat-no" title="statement not covered" >    return 'very-high';</span>
   };
 &nbsp;
-  const getMetricColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>alue: number, invert = <span class="branch-0 cbranch-no" title="branch not covered" >false)</span>: string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getMetricColor </span>= <span class="cstat-no" title="statement not covered" >(value: number, invert<span class="cstat-no" title="statement not covered" > = false)</span>: string =&gt; {</span>
     const threshold = <span class="cstat-no" title="statement not covered" >invert ? 100 - value : value;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (threshold &gt;= 70) <span class="cstat-no" title="statement not covered" >return 'text-green-600';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (threshold &gt;= 50) <span class="cstat-no" title="statement not covered" >return 'text-yellow-600';</span></span>
 <span class="cstat-no" title="statement not covered" >    return 'text-red-600';</span>
   };
 &nbsp;
-  const getMetricBgColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>alue: number, invert = <span class="branch-0 cbranch-no" title="branch not covered" >false)</span>: string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getMetricBgColor </span>= <span class="cstat-no" title="statement not covered" >(value: number, invert<span class="cstat-no" title="statement not covered" > = false)</span>: string =&gt; {</span>
     const threshold = <span class="cstat-no" title="statement not covered" >invert ? 100 - value : value;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (threshold &gt;= 70) <span class="cstat-no" title="statement not covered" >return 'bg-green-100 border-green-200';</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (threshold &gt;= 50) <span class="cstat-no" title="statement not covered" >return 'bg-yellow-100 border-yellow-200';</span></span>
@@ -1877,14 +1877,14 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
               &lt;Button
                 variant={isAutoTracking ? 'default' : 'outline'}
                 size="sm"
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setIsAutoTracking(!isAutoTracking)}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setIsAutoTracking(!isAutoTracking)}</span>
               &gt;
                 {isAutoTracking ? 'オート' : 'マニュアル'}
               &lt;/Button&gt;
               &lt;Button
                 variant={alertsEnabled ? 'default' : 'outline'}
                 size="sm"
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setAlertsEnabled(!alertsEnabled)}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setAlertsEnabled(!alertsEnabled)}</span>
               &gt;
                 アラート {alertsEnabled ? 'ON' : 'OFF'}
               &lt;/Button&gt;
@@ -1958,8 +1958,8 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
         &lt;/CardHeader&gt;
         &lt;CardContent&gt;
           &lt;div className="grid grid-cols-2 md:grid-cols-5 gap-4"&gt;
-            {Object.entries(focusState.currentMetrics).map(<span class="fstat-no" title="function not covered" >([</span>key, value]) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;div key={key} c</span>lassName="text-center"&gt;
+            {Object.entries(focusState.currentMetrics).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([k</span></span>ey<span class="cstat-no" title="statement not covered" >, v</span>alue<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; (</span></span>
+              &lt;div key={key} className="text-center"&gt;
                 &lt;div
                   className={`text-2xl font-bold ${getMetricColor(value, key === 'distraction')}`}
                 &gt;
@@ -1987,8 +1987,8 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
           {showDetailedMetrics &amp;&amp; (
             &lt;div className="mt-6 space-y-4"&gt;
               &lt;h4 className="font-semibold"&gt;手動調整&lt;/h4&gt;
-              {Object.entries(focusState.currentMetrics).map(<span class="fstat-no" title="function not covered" >([</span>key, value]) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div key={key} c</span>lassName="flex items-center gap-4"&gt;
+              {Object.entries(focusState.currentMetrics).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([k</span></span>ey<span class="cstat-no" title="statement not covered" >, v</span>alue<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; (</span></span>
+                &lt;div key={key} className="flex items-center gap-4"&gt;
                   &lt;div className="w-20 text-sm"&gt;
                     {key === 'attention'
                       ? '注意力'
@@ -2002,8 +2002,8 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
                   &lt;/div&gt;
                   &lt;Slider
                     value={[value]}
-                    onValueChange={<span class="fstat-no" title="function not covered" >([</span>newValue]) =&gt;
-<span class="cstat-no" title="statement not covered" >                      updateMetric(key as keyof FocusMetrics, newValue)</span>
+<span class="fstat-no" title="function not covered" >                    onValueChange<span class="cstat-no" title="statement not covered" >=</span>{(</span>[newValue<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt;</span></span>
+                      updateMetric(key as keyof FocusMetrics, newValue)
                     }
                     max={100}
                     step={5}
@@ -2019,7 +2019,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
             &lt;Button
               variant="ghost"
               size="sm"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowDetailedMetrics(!showDetailedMetrics)}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowDetailedMetrics(!showDetailedMetrics)}</span>
             &gt;
               {showDetailedMetrics ? '詳細を隠す' : '詳細表示・手動調整'}
             &lt;/Button&gt;
@@ -2038,8 +2038,8 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
           &lt;/CardHeader&gt;
           &lt;CardContent&gt;
             &lt;div className="space-y-4"&gt;
-              {recommendations.slice(0, 3).map(<span class="fstat-no" title="function not covered" >(r</span>ec, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div</span>
+              {recommendations.slice(0, 3).map(<span class="fstat-no" title="function not covered" >(r</span>ec, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div
                   key={index}
                   className={`p-4 rounded-lg border ${
                     rec.urgency === 'high'
@@ -2077,13 +2077,13 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
                     &lt;/div&gt;
                   &lt;/div&gt;
                   &lt;div className="flex flex-wrap gap-2"&gt;
-                    {rec.actions.map(<span class="fstat-no" title="function not covered" >(a</span>ction, actionIndex) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;Button</span>
+                    {rec.actions.map(<span class="fstat-no" title="function not covered" >(a</span>ction, actionIndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                      &lt;Button
                         key={actionIndex}
                         variant="outline"
                         size="sm"
                         className="text-xs h-7"
-                        onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >                        onClick=</span>{() =&gt; {
                           // アクション実行のトラッキング
 <span class="cstat-no" title="statement not covered" >                          adhdService.saveThought({</span>
                             content: `改善アクション実行: ${action}`,
@@ -2114,8 +2114,8 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
           &lt;/CardHeader&gt;
           &lt;CardContent&gt;
             &lt;div className="grid grid-cols-1 md:grid-cols-2 gap-4"&gt;
-              {taskRecommendations.slice(0, 4).map(<span class="fstat-no" title="function not covered" >(t</span>askRec, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div key={index} c</span>lassName="p-4 border rounded-lg bg-gray-50"&gt;
+              {taskRecommendations.slice(0, 4).map(<span class="fstat-no" title="function not covered" >(t</span>askRec, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div key={index} className="p-4 border rounded-lg bg-gray-50"&gt;
                   &lt;div className="flex items-start justify-between mb-2"&gt;
                     &lt;h4 className="font-semibold text-sm"&gt;{taskRec.task.title}&lt;/h4&gt;
                     &lt;Badge variant="outline" className="text-xs bg-green-100 text-green-800"&gt;
@@ -2132,7 +2132,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
                     variant="outline"
                     size="sm"
                     className="mt-2 text-xs h-6"
-                    onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >                    onClick=</span>{() =&gt; {
 <span class="cstat-no" title="statement not covered" >                      adhdTodoIntegration.startTaskFocusSession(taskRec.task);</span>
                     }}
                   &gt;
@@ -2156,8 +2156,8 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
           &lt;/CardHeader&gt;
           &lt;CardContent&gt;
             &lt;div className="space-y-2"&gt;
-              {focusState.focusHistory.slice(-5).map(<span class="fstat-no" title="function not covered" >(e</span>ntry, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div</span>
+              {focusState.focusHistory.slice(-5).map(<span class="fstat-no" title="function not covered" >(e</span>ntry, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div
                   key={index}
                   className="flex items-center justify-between p-2 bg-gray-50 rounded"
                 &gt;
@@ -2185,7 +2185,7 @@ export const <span class="cstat-no" title="statement not covered" >ADHDFocusTrac
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/51</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/35</span>
             </div>
         
             
@@ -242,7 +242,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -297,7 +297,7 @@ type TimelineComponent = React.ForwardRefExoticComponent&lt;
 &nbsp;
 // Align forwardRef target and props both to HTMLDivElement to satisfy DOM types
 const Timeline = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;HTMLDivElement, React.HTMLAttributes&lt;HTMLDivElement&gt;&gt;(</span>
-<span class="fstat-no" title="function not covered" >  ({</span> className, ...props }, ref) =&gt; <span class="cstat-no" title="statement not covered" >&lt;div ref={ref} className={cn('', className)} {...props} /&gt;</span>
+<span class="fstat-no" title="function not covered" >  ({ c</span>lassName<span class="cstat-no" title="statement not covered" >, ...props<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > }, r</span>ef) =&gt; &lt;div ref={ref} className={cn('', className)} {...props} /&gt;</span></span>
 ) as TimelineComponent;
 <span class="cstat-no" title="statement not covered" >Timeline.displayName = 'Timeline';</span>
 &nbsp;
@@ -306,7 +306,7 @@ interface TimelineItemProps extends React.HTMLAttributes&lt;HTMLDivElement&gt; {
 }
 &nbsp;
 const TimelineItem = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;HTMLDivElement, React.HTMLAttributes&lt;HTMLDivElement&gt;&gt;(</span>
-<span class="fstat-no" title="function not covered" >  ({</span> className, ...props }, ref) =&gt; <span class="cstat-no" title="statement not covered" >&lt;div ref={ref} className={cn('', className)} {...props} /&gt;</span>
+<span class="fstat-no" title="function not covered" >  ({ c</span>lassName<span class="cstat-no" title="statement not covered" >, ...props<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > }, r</span>ef) =&gt; &lt;div ref={ref} className={cn('', className)} {...props} /&gt;</span></span>
 );
 <span class="cstat-no" title="statement not covered" >TimelineItem.displayName = 'TimelineItem';</span>
 &nbsp;
@@ -315,7 +315,7 @@ interface TimelineSeparatorProps extends React.HTMLAttributes&lt;HTMLDivElement&
 }
 &nbsp;
 const TimelineSeparator = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;HTMLDivElement, React.HTMLAttributes&lt;HTMLDivElement&gt;&gt;(</span>
-<span class="fstat-no" title="function not covered" >  ({</span> className, ...props }, ref) =&gt; <span class="cstat-no" title="statement not covered" >&lt;div ref={ref} className={cn('', className)} {...props} /&gt;</span>
+<span class="fstat-no" title="function not covered" >  ({ c</span>lassName<span class="cstat-no" title="statement not covered" >, ...props<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > }, r</span>ef) =&gt; &lt;div ref={ref} className={cn('', className)} {...props} /&gt;</span></span>
 );
 <span class="cstat-no" title="statement not covered" >TimelineSeparator.displayName = 'TimelineSeparator';</span>
 &nbsp;
@@ -326,12 +326,12 @@ interface TimelineDotProps extends React.HTMLAttributes&lt;HTMLDivElement&gt; {
 }
 &nbsp;
 const TimelineDot = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;HTMLDivElement, React.HTMLAttributes&lt;HTMLDivElement&gt;&gt;(</span>
-<span class="fstat-no" title="function not covered" >  ({</span> className, ...props }, ref) =&gt; <span class="cstat-no" title="statement not covered" >&lt;div ref={ref} className={cn('', className)} {...props} /&gt;</span>
+<span class="fstat-no" title="function not covered" >  ({ c</span>lassName<span class="cstat-no" title="statement not covered" >, ...props<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > }, r</span>ef) =&gt; &lt;div ref={ref} className={cn('', className)} {...props} /&gt;</span></span>
 );
 <span class="cstat-no" title="statement not covered" >TimelineDot.displayName = 'TimelineDot';</span>
 &nbsp;
 const TimelineConnector = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;HTMLDivElement, React.HTMLAttributes&lt;HTMLDivElement&gt;&gt;(</span>
-<span class="fstat-no" title="function not covered" >  ({</span> className, ...props }, ref) =&gt; <span class="cstat-no" title="statement not covered" >&lt;div ref={ref} className={cn('', className)} {...props} /&gt;</span>
+<span class="fstat-no" title="function not covered" >  ({ c</span>lassName<span class="cstat-no" title="statement not covered" >, ...props<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > }, r</span>ef) =&gt; &lt;div ref={ref} className={cn('', className)} {...props} /&gt;</span></span>
 );
 <span class="cstat-no" title="statement not covered" >TimelineConnector.displayName = 'TimelineConnector';</span>
 &nbsp;
@@ -340,7 +340,7 @@ interface TimelineContentProps extends React.HTMLAttributes&lt;HTMLDivElement&gt
 }
 &nbsp;
 const TimelineContent = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;HTMLDivElement, React.HTMLAttributes&lt;HTMLDivElement&gt;&gt;(</span>
-<span class="fstat-no" title="function not covered" >  ({</span> className, ...props }, ref) =&gt; <span class="cstat-no" title="statement not covered" >&lt;div ref={ref} className={cn('', className)} {...props} /&gt;</span>
+<span class="fstat-no" title="function not covered" >  ({ c</span>lassName<span class="cstat-no" title="statement not covered" >, ...props<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > }, r</span>ef) =&gt; &lt;div ref={ref} className={cn('', className)} {...props} /&gt;</span></span>
 );
 <span class="cstat-no" title="statement not covered" >TimelineContent.displayName = 'TimelineContent';</span>
 &nbsp;
@@ -349,7 +349,7 @@ interface TimelineOppositeContentProps extends React.HTMLAttributes&lt;HTMLDivEl
 }
 &nbsp;
 const TimelineOppositeContent = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;HTMLDivElement, TimelineOppositeContentProps&gt;(</span>
-<span class="fstat-no" title="function not covered" >  ({</span> className, children, ...props }, ref) =&gt; {
+<span class="fstat-no" title="function not covered" >  ({ c</span>lassName<span class="cstat-no" title="statement not covered" >, children<span class="cstat-no" title="statement not covered" >, ...props<span class="cstat-no" title="statement not covered" > }, r</span>ef) =&gt; {</span></span>
 <span class="cstat-no" title="statement not covered" >    return (</span>
       &lt;div
         ref={ref}
@@ -366,10 +366,10 @@ const TimelineOppositeContent = <span class="cstat-no" title="statement not cove
 // Context for Timeline position
 const TimelineContext = <span class="cstat-no" title="statement not covered" >React.createContext&lt;TimelineProps['position']&gt;('left');</span>
 &nbsp;
-const TimelineProvider: React.FC&lt;{
+const <span class="fstat-no" title="function not covered" >TimelineProvider:</span> React.FC&lt;{
   position: TimelineProps['position'];
   children: React.ReactNode;
-}&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> position, children }) =&gt; {</span>
+}&gt; = <span class="cstat-no" title="statement not covered" >({ position<span class="cstat-no" title="statement not covered" >, children<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span>
 <span class="cstat-no" title="statement not covered" >  return &lt;TimelineContext.Provider value={position}&gt;{children}&lt;/TimelineContext.Provider&gt;;</span>
 };
 &nbsp;
@@ -391,7 +391,7 @@ export {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

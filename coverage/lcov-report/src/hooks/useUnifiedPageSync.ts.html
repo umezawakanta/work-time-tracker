@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/124</span>
+                <span class='fraction'>0/127</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/114</span>
+                <span class='fraction'>0/115</span>
             </div>
         
             
@@ -488,7 +488,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -844,15 +844,15 @@ const PAGE_CATEGORY_MAPPING: Record&lt;string, string[]&gt; = <span class="cstat
   achievements: ['achievement', 'progress'],
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >useUnifiedPageSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>c</span>urrentPage?: string) =&gt; {</span>
-  const [syncState, setSyncState] = <span class="cstat-no" title="statement not covered" >useState&lt;UnifiedSyncState&gt;({</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useUnifiedPageSync </span>= <span class="cstat-no" title="statement not covered" >(</span>currentPage?: string) =&gt; {</span>
+  const [syncState<span class="cstat-no" title="statement not covered" >, s</span>etSyncState<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;UnifiedSyncState&gt;({</span>
     isActive: false,
     lastSync: '',
     pageActivities: [],
     syncedPages: new Set(),
     totalBadgeProgress: 0,
     recentCompletions: [],
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
   /**
    * ページアクティビティを記録
@@ -872,7 +872,7 @@ export const <span class="cstat-no" title="statement not covered" >useUnifiedPag
       // バッジ進捗を実際に更新
 <span class="cstat-no" title="statement not covered" >      updateBadgeProgress(badgeImpacts);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      setSyncState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >      setSyncState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
         ...prev,
         pageActivities: [...prev.pageActivities.slice(-49), activity], // 最新50件を保持
         syncedPages: new Set([...prev.syncedPages, pageName]),
@@ -979,7 +979,7 @@ export const <span class="cstat-no" title="statement not covered" >useUnifiedPag
       const newCompletions: DevelopmentBadge[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      impacts.forEach(<span class="fstat-no" title="function not covered" >(i</span>mpact) =&gt; {</span>
-        const badge = <span class="cstat-no" title="statement not covered" >EXPANDED_BADGES_DATABASE.find(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.id === impact.badgeId)</span>;</span>
+        const badge = <span class="cstat-no" title="statement not covered" >EXPANDED_BADGES_DATABASE.find(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.id === impact.badgeId);</span></span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (badge &amp;&amp; !badge.isCompleted) {</span>
           const newProgress = <span class="cstat-no" title="statement not covered" >Math.min(100, badge.progress + impact.progressDelta);</span>
 <span class="cstat-no" title="statement not covered" >          badge.progress = newProgress;</span>
@@ -996,7 +996,7 @@ export const <span class="cstat-no" title="statement not covered" >useUnifiedPag
       });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (newCompletions.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >        setSyncState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >        setSyncState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
           ...prev,
           recentCompletions: [...prev.recentCompletions, ...newCompletions].slice(-10),
         }));
@@ -1010,7 +1010,7 @@ export const <span class="cstat-no" title="statement not covered" >useUnifiedPag
    */
   const getPageRelevantBadges = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(p</span>ageName: string): DevelopmentBadge[] =&gt; {</span>
     const relevantCategories = <span class="cstat-no" title="statement not covered" >PAGE_CATEGORY_MAPPING[pageName] || [];</span>
-<span class="cstat-no" title="statement not covered" >    return EXPANDED_BADGES_DATABASE.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >relevantCategories.includes(badge.category))</span>;</span>
+<span class="cstat-no" title="statement not covered" >    return EXPANDED_BADGES_DATABASE.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; relevantCategories.includes(badge.category));</span></span>
   }, []);
 &nbsp;
   /**
@@ -1020,10 +1020,10 @@ export const <span class="cstat-no" title="statement not covered" >useUnifiedPag
 <span class="fstat-no" title="function not covered" >    (p</span>ageName: string) =&gt; {
       const relevantBadges = <span class="cstat-no" title="statement not covered" >getPageRelevantBadges(pageName);</span>
       const nearCompletionBadges = <span class="cstat-no" title="statement not covered" >relevantBadges</span>
-        .filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >!badge.isCompleted &amp;&amp; badge.progress &gt;= 70)</span>
-        .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >b.progress - a.progress)</span>;
+        .filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; !badge.isCompleted &amp;&amp; badge.progress &gt;= 70)</span>
+        .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; b.progress - a.progress);</span>
 &nbsp;
-      const actions = <span class="cstat-no" title="statement not covered" >nearCompletionBadges.slice(0, 3).map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+      const actions = <span class="cstat-no" title="statement not covered" >nearCompletionBadges.slice(0, 3).map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
         badgeId: badge.id,
         badgeName: badge.name,
         currentProgress: badge.progress,
@@ -1040,7 +1040,7 @@ export const <span class="cstat-no" title="statement not covered" >useUnifiedPag
   /**
    * バッジに対する推奨アクションを生成
    */
-  const generateActionForBadge = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(b</span>adge: DevelopmentBadge, pageName: string): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >generateActionForBadge </span>= <span class="cstat-no" title="statement not covered" >(badge: DevelopmentBadge, pageName: string): string =&gt; {</span>
     const actionMap: Record&lt;string, Record&lt;string, string&gt;&gt; = <span class="cstat-no" title="statement not covered" >{</span>
       business: {
         todos: 'さらにタスクを完了して生産性を向上させましょう',
@@ -1076,7 +1076,7 @@ export const <span class="cstat-no" title="statement not covered" >useUnifiedPag
   /**
    * 統合ダッシュボード用の統計を取得
    */
-  const getUnifiedStats = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const getUnifiedStats = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const stats = <span class="cstat-no" title="statement not covered" >getBadgeStatsSummary();</span>
     const recentActivities = <span class="cstat-no" title="statement not covered" >syncState.pageActivities.slice(-10);</span>
     const activePagesCount = <span class="cstat-no" title="statement not covered" >syncState.syncedPages.size;</span>
@@ -1101,8 +1101,8 @@ export const <span class="cstat-no" title="statement not covered" >useUnifiedPag
   /**
    * 同期を開始
    */
-  const startSync = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setSyncState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+  const startSync = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+<span class="cstat-no" title="statement not covered" >    setSyncState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       isActive: true,
       lastSync: new Date().toISOString(),
@@ -1117,27 +1117,27 @@ export const <span class="cstat-no" title="statement not covered" >useUnifiedPag
   /**
    * 同期を停止
    */
-  const stopSync = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setSyncState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+  const stopSync = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+<span class="cstat-no" title="statement not covered" >    setSyncState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       isActive: false,
     }));
   }, []);
 &nbsp;
   // 自動同期開始
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    startSync();</span>
 &nbsp;
     // 定期的な統計更新
-    const interval = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      setSyncState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+    const interval = <span class="cstat-no" title="statement not covered" >setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+<span class="cstat-no" title="statement not covered" >      setSyncState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
         ...prev,
         totalBadgeProgress: getBadgeStatsSummary().completionRate,
         lastSync: new Date().toISOString(),
       }));
     }, 5000);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      clearInterval(interval);</span>
 <span class="cstat-no" title="statement not covered" >      stopSync();</span>
     };
@@ -1162,7 +1162,7 @@ export const <span class="cstat-no" title="statement not covered" >useUnifiedPag
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

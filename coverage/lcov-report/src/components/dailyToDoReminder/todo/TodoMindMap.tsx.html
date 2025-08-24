@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/51</span>
+                <span class='fraction'>0/74</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/16</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
@@ -329,20 +329,20 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -512,17 +512,17 @@ const nodeTypes = <span class="cstat-no" title="statement not covered" >{</span>
   custom: CustomMindMapNode,
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >TodoMindMap: React.FC&lt;TodoMindMapProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> todos, onClose }) =&gt; {</span>
-  const [viewMode, setViewMode] = <span class="cstat-no" title="statement not covered" >useState&lt;ViewMode&gt;('category');</span>
-  const [selectedNode, setSelectedNode] = <span class="cstat-no" title="statement not covered" >useState&lt;Node | null&gt;(null);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >TodoMindMap:</span> React.FC&lt;TodoMindMapProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{ todos<span class="cstat-no" title="statement not covered" >, onClose<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span>
+  const [viewMode<span class="cstat-no" title="statement not covered" >, s</span>etViewMode<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;ViewMode&gt;('category')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [selectedNode<span class="cstat-no" title="statement not covered" >, s</span>etSelectedNode<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Node | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // ノードとエッジの生成
-  const { nodes: initialNodes, edges: initialEdges } = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const { nodes: initialNodes<span class="cstat-no" title="statement not covered" >, edges: initialEdges<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span></span></span>
 <span class="cstat-no" title="statement not covered" >    return viewMode === 'category' ? convertTodosToMindMap(todos) : convertTodosByStatus(todos);</span>
   }, [todos, viewMode]);
 &nbsp;
-  const [nodes, setNodes, onNodesChange] = <span class="cstat-no" title="statement not covered" >useNodesState(initialNodes);</span>
-  const [edges, setEdges, onEdgesChange] = <span class="cstat-no" title="statement not covered" >useEdgesState(initialEdges as Edge[]);</span>
+  const [nodes<span class="cstat-no" title="statement not covered" >, s</span>etNodes<span class="cstat-no" title="statement not covered" >, o</span>nNodesChange<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seNodesState(initialNodes)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [edges<span class="cstat-no" title="statement not covered" >, s</span>etEdges<span class="cstat-no" title="statement not covered" >, o</span>nEdgesChange<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seEdgesState(initialEdges as Edge[])<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // ノードクリックハンドラー
   const onNodeClick = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(e</span>vent: React.MouseEvent, node: Node) =&gt; {</span>
@@ -533,7 +533,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoMindMap: 
   const handleViewModeChange = <span class="cstat-no" title="statement not covered" >useCallback(</span>
 <span class="fstat-no" title="function not covered" >    (n</span>ewMode: ViewMode) =&gt; {
 <span class="cstat-no" title="statement not covered" >      setViewMode(newMode);</span>
-      const { nodes: newNodes, edges: newEdges } =
+      const { nodes: newNodes<span class="cstat-no" title="statement not covered" >, edges: newEdges<span class="cstat-no" title="statement not covered" > } =</span></span>
 <span class="cstat-no" title="statement not covered" >        newMode === 'category' ? convertTodosToMindMap(todos) : convertTodosByStatus(todos);</span>
 <span class="cstat-no" title="statement not covered" >      setNodes(newNodes);</span>
 <span class="cstat-no" title="statement not covered" >      setEdges(newEdges as Edge[]);</span>
@@ -542,20 +542,20 @@ export const <span class="cstat-no" title="statement not covered" >TodoMindMap: 
   );
 &nbsp;
   // スクリーンショット機能
-  const handleDownload = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-    const flowElement = <span class="cstat-no" title="statement not covered" >document.querySelector('.react-flow') as HTMLElement;</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!flowElement) <span class="cstat-no" title="statement not covered" >return;</span></span>
+  const handleDownload = <span class="cstat-no" title="statement not covered" >useCallback(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span></span>
+    const <span class="cstat-no" title="statement not covered" >flowElement = document.querySelector('.react-flow') as HTMLElement<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>;</span></span>
+    if (!flowElement<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >) return;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const canvas = <span class="cstat-no" title="statement not covered" >await html2canvas(flowElement);</span>
-      const url = <span class="cstat-no" title="statement not covered" >canvas.toDataURL('image/png');</span>
-      const link = <span class="cstat-no" title="statement not covered" >document.createElement('a');</span>
+    try {
+      const <span class="cstat-no" title="statement not covered" >canvas = await h</span>tml2canvas(flowElement);
+      const <span class="cstat-no" title="statement not covered" >url = canvas.toDataURL('image/png');</span>
+      const <span class="cstat-no" title="statement not covered" >link = document.createElement('a');</span>
 <span class="cstat-no" title="statement not covered" >      link.href = url;</span>
 <span class="cstat-no" title="statement not covered" >      link.download = `todo-mindmap-${new Date().toISOString().split('T')[0]}.png`;</span>
 <span class="cstat-no" title="statement not covered" >      link.click();</span>
-<span class="cstat-no" title="statement not covered" >      toast.success('マインドマップを保存しました');</span>
+<span class="cstat-no" title="statement not covered" >      toast.success('マインドマップを保存しました');<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (error) {
-<span class="cstat-no" title="statement not covered" >      toast.error('保存に失敗しました');</span>
+<span class="cstat-no" title="statement not covered" >      toast.error('保存に失敗しました');<span class="cstat-no" title="statement not covered" ></span></span>
     }
   }, []);
 &nbsp;
@@ -632,7 +632,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoMindMap: 
             &lt;Controls className="bg-white shadow-lg rounded-lg" /&gt;
             &lt;MiniMap
               className="bg-white shadow-lg rounded-lg"
-              nodeColor={<span class="fstat-no" title="function not covered" >(n</span>ode) =&gt; {
+<span class="fstat-no" title="function not covered" >              nodeColor=</span>{(node) =&gt; {
 <span class="cstat-no" title="statement not covered" >                <span class="missing-if-branch" title="if path not taken" >I</span>if (node.data.type === 'root') <span class="cstat-no" title="statement not covered" >return '#6366f1';</span></span>
 <span class="cstat-no" title="statement not covered" >                <span class="missing-if-branch" title="if path not taken" >I</span>if (node.data.type === 'category') <span class="cstat-no" title="statement not covered" >return '#8b5cf6';</span></span>
 <span class="cstat-no" title="statement not covered" >                <span class="missing-if-branch" title="if path not taken" >I</span>if (node.data.type === 'priority') <span class="cstat-no" title="statement not covered" >return '#ec4899';</span></span>
@@ -665,7 +665,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoMindMap: 
                   )}
                 &lt;/div&gt;
               &lt;/div&gt;
-              &lt;Button variant="ghost" size="sm" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setSelectedNode(null)}</span>&gt;
+              &lt;Button variant="ghost" size="sm" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setSelectedNode(null)}&gt;</span>
                 閉じる
               &lt;/Button&gt;
             &lt;/div&gt;
@@ -682,7 +682,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoMindMap: 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -25,21 +25,21 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/86</span>
+                <span class='fraction'>0/112</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/53</span>
+                <span class='fraction'>0/82</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/20</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
@@ -449,18 +449,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -478,8 +478,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -652,39 +652,39 @@ import { Candidate } from '@/types';
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
   const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span> // useRouterの代わりにuseNavigateを使用
   const location = <span class="cstat-no" title="statement not covered" >useLocation();</span> // クエリパラメータ取得用
-  const { user, isSubscribed, isLoading: authLoading } = <span class="cstat-no" title="statement not covered" >useAuthStatus();</span>
+  const { user<span class="cstat-no" title="statement not covered" >, isSubscribed<span class="cstat-no" title="statement not covered" >, isLoading: authLoading<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useAuthStatus();</span></span></span></span>
 &nbsp;
-  const candidates = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.candidate.candidates)</span>;</span>
-  const status = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.candidate.status)</span>;</span>
-  const error = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.candidate.error)</span>;</span>
-  const lastUpdated = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.candidate.lastUpdated)</span>;</span>
+  const candidates = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.candidate.candidates);</span></span>
+  const status = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.candidate.status);</span></span>
+  const error = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.candidate.error);</span></span>
+  const lastUpdated = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.candidate.lastUpdated);</span></span>
 &nbsp;
-  const [selectedPrefecture, setSelectedPrefecture] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;('');</span>
-  const [selectedDistrict, setSelectedDistrict] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('');</span>
-  const [editingCandidate, setEditingCandidate] = <span class="cstat-no" title="statement not covered" >useState&lt;Candidate | null&gt;(null);</span>
-  const [viewingCandidate, setViewingCandidate] = <span class="cstat-no" title="statement not covered" >useState&lt;Candidate | null&gt;(null);</span>
-  const [activeTab, setActiveTab] = <span class="cstat-no" title="statement not covered" >useState('charts');</span>
-  const [isRefreshing, setIsRefreshing] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [selectedPrefecture<span class="cstat-no" title="statement not covered" >, s</span>etSelectedPrefecture<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string | null&gt;('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [selectedDistrict<span class="cstat-no" title="statement not covered" >, s</span>etSelectedDistrict<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [editingCandidate<span class="cstat-no" title="statement not covered" >, s</span>etEditingCandidate<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Candidate | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [viewingCandidate<span class="cstat-no" title="statement not covered" >, s</span>etViewingCandidate<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Candidate | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [activeTab<span class="cstat-no" title="statement not covered" >, s</span>etActiveTab<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('charts')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isRefreshing<span class="cstat-no" title="statement not covered" >, s</span>etIsRefreshing<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 候補者データの初回ロード
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    dispatch(fetchCandidates());</span>
   }, [dispatch]);
 &nbsp;
   // リアルタイム更新の購読設定
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // サブスクリプションユーザーのみリアルタイム更新を有効化
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (isSubscribed) {</span>
 <span class="cstat-no" title="statement not covered" >      dispatch(subscribeToUpdates());</span>
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      dispatch(unsubscribeFromUpdates());</span>
     };
   }, [dispatch, isSubscribed]);
 &nbsp;
   // 都道府県の初期選択
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (candidates.length &gt; 0 &amp;&amp; !selectedPrefecture) {</span>
 <span class="cstat-no" title="statement not covered" >      setSelectedPrefecture(candidates[0].prefecture);</span>
 &nbsp;
@@ -693,7 +693,7 @@ import { Candidate } from '@/types';
       const prefecture = <span class="cstat-no" title="statement not covered" >searchParams.get('prefecture');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (prefecture) {</span>
-        const validPrefecture = <span class="cstat-no" title="statement not covered" >candidates.some(<span class="fstat-no" title="function not covered" >(c</span>) =&gt; <span class="cstat-no" title="statement not covered" >c.prefecture === prefecture)</span>;</span>
+        const validPrefecture = <span class="cstat-no" title="statement not covered" >candidates.some(<span class="fstat-no" title="function not covered" >(c<span class="cstat-no" title="statement not covered" ></span>) =&gt; c.prefecture === prefecture);</span></span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (validPrefecture) {</span>
 <span class="cstat-no" title="statement not covered" >          setSelectedPrefecture(prefecture);</span>
         }
@@ -701,7 +701,7 @@ import { Candidate } from '@/types';
     }
   }, [candidates, selectedPrefecture, location.search]);
 &nbsp;
-  const handleEditCandidate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>andidate: Candidate) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleEditCandidate </span>= <span class="cstat-no" title="statement not covered" >(candidate: Candidate) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!isSubscribed &amp;&amp; !user?.isAdmin) {</span>
 <span class="cstat-no" title="statement not covered" >      navigate('/subscription'); </span>// router.pushの代わりにnavigate
 <span class="cstat-no" title="statement not covered" >      return;</span>
@@ -710,38 +710,38 @@ import { Candidate } from '@/types';
 <span class="cstat-no" title="statement not covered" >    setViewingCandidate(null);</span>
   };
 &nbsp;
-  const handleViewCandidate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>andidate: Candidate) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleViewCandidate </span>= <span class="cstat-no" title="statement not covered" >(candidate: Candidate) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setViewingCandidate(candidate);</span>
 <span class="cstat-no" title="statement not covered" >    setEditingCandidate(null);</span>
   };
 &nbsp;
-  const handleCancelEdit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleCancelEdit </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setEditingCandidate(null);</span>
   };
 &nbsp;
-  const handleEditSuccess = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleEditSuccess </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setEditingCandidate(null);</span>
 <span class="cstat-no" title="statement not covered" >    refreshData();</span>
   };
 &nbsp;
-  const handleCloseDetailView = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleCloseDetailView </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setViewingCandidate(null);</span>
   };
 &nbsp;
-  const refreshData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setIsRefreshing(true);</span>
-<span class="cstat-no" title="statement not covered" >    await dispatch(fetchCandidates());</span>
-<span class="cstat-no" title="statement not covered" >    setIsRefreshing(false);</span>
-  };
+  const <span class="fstat-no" title="function not covered" >refreshData<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span></span>sync () =&gt; {</span></span></span>
+<span class="cstat-no" title="statement not covered" >    setIsRefreshing(true);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+    await dispatch(fetchCandidates());
+<span class="cstat-no" title="statement not covered" >    setIsRefreshing(false);<span class="cstat-no" title="statement not covered" ></span></span>
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const handleExportData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleExportData </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!isSubscribed) {</span>
 <span class="cstat-no" title="statement not covered" >      navigate('/subscription'); </span>// router.pushの代わりにnavigate
 <span class="cstat-no" title="statement not covered" >      return;</span>
     }
 &nbsp;
     const filteredCandidates = <span class="cstat-no" title="statement not covered" >selectedPrefecture</span>
-      ? candidates.filter(<span class="fstat-no" title="function not covered" >(c</span>) =&gt; <span class="cstat-no" title="statement not covered" >c.prefecture === selectedPrefecture)</span>
+      ? candidates.filter(<span class="fstat-no" title="function not covered" >(c<span class="cstat-no" title="statement not covered" ></span>) =&gt; c.prefecture === selectedPrefecture)</span>
       : candidates;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    exportCandidatesAsCSV(filteredCandidates);</span>
@@ -759,8 +759,8 @@ import { Candidate } from '@/types';
             &lt;Skeleton className="h-8" /&gt;
           &lt;/div&gt;
           &lt;div className="space-y-4 pt-4"&gt;
-            {[1, 2, 3, 4, 5].map(<span class="fstat-no" title="function not covered" >(i</span>) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;Skeleton key={i} c</span>lassName="h-24 w-full" /&gt;
+            {[1, 2, 3, 4, 5].map(<span class="fstat-no" title="function not covered" >(i<span class="cstat-no" title="statement not covered" ></span>) =&gt; (</span>
+              &lt;Skeleton key={i} className="h-24 w-full" /&gt;
             ))}
           &lt;/div&gt;
         &lt;/div&gt;
@@ -868,7 +868,7 @@ import { Candidate } from '@/types';
             &lt;CandidateDetailView
               candidate={viewingCandidate}
               onClose={handleCloseDetailView}
-              onEdit={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleEditCandidate(viewingCandidate)}</span>
+<span class="fstat-no" title="function not covered" >              onEdit<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleEditCandidate(viewingCandidate)}</span>
               isPremium={isSubscribed || !!user?.isAdmin}
             /&gt;
           ) : (
@@ -913,7 +913,7 @@ import { Candidate } from '@/types';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

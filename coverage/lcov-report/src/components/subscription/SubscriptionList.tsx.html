@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>0/29</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>0/26</span>
             </div>
         
             
@@ -285,20 +285,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -306,12 +298,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -322,6 +314,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -331,6 +330,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -398,7 +398,7 @@ interface PaymentMethodTagProps {
 }
 &nbsp;
 // インラインでPaymentMethodTagコンポーネントを定義
-const PaymentMethodTag: React.FC&lt;PaymentMethodTagProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> method }) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >PaymentMethodTag:</span> React.FC&lt;PaymentMethodTagProps&gt; = <span class="cstat-no" title="statement not covered" >({ method<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span>
   const methods: Record&lt;string, { color: string; label: string }&gt; = <span class="cstat-no" title="statement not covered" >{</span>
     credit: {
       color: 'bg-blue-100 text-blue-800 border-blue-200',
@@ -422,7 +422,7 @@ const PaymentMethodTag: React.FC&lt;PaymentMethodTagProps&gt; = <span class="cst
     },
   };
 &nbsp;
-  const { color, label } = <span class="cstat-no" title="statement not covered" >methods[method] || methods.credit;</span>
+  const { color<span class="cstat-no" title="statement not covered" >, label<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >methods[method] || methods.credit;</span></span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;Badge
@@ -441,13 +441,13 @@ interface SubscriptionListProps {
   onDelete?: (id: string) =&gt; void; // 削除ハンドラを追加
 }
 &nbsp;
-const SubscriptionList: React.FC&lt;SubscriptionListProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span></span>
-  subscriptions,
-  onEdit,
-  onDelete, // onDelete パラメータを追加
+const <span class="fstat-no" title="function not covered" >SubscriptionList:</span> React.FC&lt;SubscriptionListProps&gt; = <span class="cstat-no" title="statement not covered" >({</span>
+  subscriptions<span class="cstat-no" title="statement not covered" >,</span>
+  onEdit<span class="cstat-no" title="statement not covered" >,</span>
+  onDelete<span class="cstat-no" title="statement not covered" >, // onDelete パラメータを追加</span>
 }) =&gt; {
   // 削除ボタンクリック時の処理
-  const handleDeleteClick = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>d: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleDeleteClick </span>= <span class="cstat-no" title="statement not covered" >(id: string) =&gt; {</span>
     // 親コンポーネントの削除ハンドラを呼び出す
 <span class="cstat-no" title="statement not covered" >    if (onDelete) {</span>
 <span class="cstat-no" title="statement not covered" >      onDelete(id);</span>
@@ -457,7 +457,7 @@ const SubscriptionList: React.FC&lt;SubscriptionListProps&gt; = <span class="cst
   };
 &nbsp;
   // billingDateが存在しない場合の表示
-  const getBillingDateDisplay = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>ubscription: SubscriptionService): React.ReactNode =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getBillingDateDisplay </span>= <span class="cstat-no" title="statement not covered" >(subscription: SubscriptionService): React.ReactNode =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (subscription.billingDate) {</span>
       // billingDateが存在する場合は、適切にフォーマットして表示
 <span class="cstat-no" title="statement not covered" >      return String(subscription.billingDate);</span>
@@ -486,8 +486,8 @@ const SubscriptionList: React.FC&lt;SubscriptionListProps&gt; = <span class="cst
         &lt;/TableHeader&gt;
         &lt;TableBody&gt;
           {subscriptions.length &gt; 0 ? (
-            subscriptions.map(<span class="fstat-no" title="function not covered" >(s</span>ub) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;TableRow key={sub._id}&gt;</span>
+            subscriptions.map(<span class="fstat-no" title="function not covered" >(s</span>ub<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;TableRow key={sub._id}&gt;
                 &lt;TableCell&gt;{sub.name}&lt;/TableCell&gt;
                 &lt;TableCell&gt;{getBillingDateDisplay(sub)}&lt;/TableCell&gt;
                 &lt;TableCell&gt;
@@ -505,13 +505,13 @@ const SubscriptionList: React.FC&lt;SubscriptionListProps&gt; = <span class="cst
                 &lt;TableCell&gt;{sub.amount.toLocaleString()}円&lt;/TableCell&gt;
                 &lt;TableCell&gt;
                   &lt;div className="flex gap-1"&gt;
-                    &lt;Button variant="ghost" size="sm" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >onEdit(sub)}</span> title="編集"&gt;
+                    &lt;Button variant="ghost" size="sm" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; onEdit(sub)} t</span>itle="編集"&gt;
                       &lt;Pencil size={16} /&gt;
                     &lt;/Button&gt;
                     &lt;Button
                       variant="ghost"
                       size="sm"
-                      onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handleDeleteClick(sub._id)}</span>
+<span class="fstat-no" title="function not covered" >                      onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; handleDeleteClick(sub._id)}</span>
                       title="削除"
                     &gt;
                       &lt;Trash size={16} /&gt;
@@ -541,7 +541,7 @@ const SubscriptionList: React.FC&lt;SubscriptionListProps&gt; = <span class="cst
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

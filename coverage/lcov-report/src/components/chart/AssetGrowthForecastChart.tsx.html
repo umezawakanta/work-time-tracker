@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/30</span>
+                <span class='fraction'>0/36</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
@@ -266,9 +266,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -445,10 +445,10 @@ interface AssetGrowthForecastChartProps {
   years: number;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AssetGrowthForecastChart: React.FC&lt;AssetGrowthForecastChartProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  currentAssets,
-  growthRate,
-  years,
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AssetGrowthForecastChart:</span> React.FC&lt;AssetGrowthForecastChartProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  currentAssets<span class="cstat-no" title="statement not covered" >,</span>
+  growthRate<span class="cstat-no" title="statement not covered" >,</span>
+  years<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
   // データポイントの型定義
   type DataPoint = {
@@ -459,7 +459,7 @@ export const <span class="cstat-no" title="statement not covered" >AssetGrowthFo
   };
 &nbsp;
   // Calculate forecast data for multiple growth rates
-  const generateForecastData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): DataPoint[] =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >generateForecastData </span>= <span class="cstat-no" title="statement not covered" >(): DataPoint[] =&gt; {</span>
     const data: DataPoint[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
     // Calculate conservative growth (lower rate)
@@ -498,7 +498,7 @@ export const <span class="cstat-no" title="statement not covered" >AssetGrowthFo
     label?: string;
   }
 &nbsp;
-  const CustomTooltip = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> active, payload, label }: TooltipProps) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >CustomTooltip </span>= <span class="cstat-no" title="statement not covered" >({ active<span class="cstat-no" title="statement not covered" >, payload<span class="cstat-no" title="statement not covered" >, label<span class="cstat-no" title="statement not covered" > }: TooltipProps) =&gt; {</span></span></span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (active &amp;&amp; payload &amp;&amp; payload.length) {</span>
 <span class="cstat-no" title="statement not covered" >      return (</span>
         &lt;Card className="p-0 border-gray-200 shadow-md"&gt;
@@ -544,7 +544,7 @@ export const <span class="cstat-no" title="statement not covered" >AssetGrowthFo
           axisLine={{ stroke: '#e5e7eb' }}
         /&gt;
         &lt;YAxis
-          tickFormatter={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >`¥${(value / 1000000).toFixed(0)}M`}</span>
+<span class="fstat-no" title="function not covered" >          tickFormatter=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; `¥${(value / 1000000).toFixed(0)}M`}</span>
           tick={{ fontSize: 12 }}
           tickLine={{ stroke: '#e5e7eb' }}
           axisLine={{ stroke: '#e5e7eb' }}
@@ -554,7 +554,7 @@ export const <span class="cstat-no" title="statement not covered" >AssetGrowthFo
         &lt;Legend
           verticalAlign="top"
           height={36}
-          formatter={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; {
+<span class="fstat-no" title="function not covered" >          formatter=</span>{(value) =&gt; {
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (value === 'conservative') <span class="cstat-no" title="statement not covered" >return '保守的予測';</span></span>
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (value === 'expected') <span class="cstat-no" title="statement not covered" >return '予測資産';</span></span>
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (value === 'optimistic') <span class="cstat-no" title="statement not covered" >return '楽観的予測';</span></span>
@@ -610,7 +610,7 @@ export const <span class="cstat-no" title="statement not covered" >AssetGrowthFo
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

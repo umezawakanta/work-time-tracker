@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/42</span>
+                <span class='fraction'>0/44</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/32</span>
+                <span class='fraction'>0/70</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/32</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -163,7 +163,7 @@
 <a name='L98'></a><a href='#L98'>98</a>
 <a name='L99'></a><a href='#L99'>99</a>
 <a name='L100'></a><a href='#L100'>100</a>
-<a name='L101'></a><a href='#L101'>101</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L101'></a><a href='#L101'>101</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -263,7 +263,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/utils/todoSafety.ts
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>// src/utils/todoSafety.ts</span></span>
 &nbsp;
 import { TodoItem } from '@/types';
 &nbsp;
@@ -282,7 +282,7 @@ import { TodoItem } from '@/types';
 /**
  * TODOの操作を安全に行うためのユーティリティ関数
  */
-export const <span class="cstat-no" title="statement not covered" >safeTodoOperation = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>t</span>odo: any): TodoItem | null =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >safeTodoOperation </span>= <span class="cstat-no" title="statement not covered" >(</span>todo: any): TodoItem | null =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!isValidTodoItem(todo)) {</span>
 <span class="cstat-no" title="statement not covered" >    console.warn('Invalid todo item:', todo);</span>
 <span class="cstat-no" title="statement not covered" >    return null;</span>
@@ -304,7 +304,7 @@ export const <span class="cstat-no" title="statement not covered" >safeTodoOpera
 /**
  * TODO配列を安全にフィルタリングする関数
  */
-export const <span class="cstat-no" title="statement not covered" >filterValidTodos = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>t</span>odos: any[]): TodoItem[] =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >filterValidTodos </span>= <span class="cstat-no" title="statement not covered" >(</span>todos: any[]): TodoItem[] =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!Array.isArray(todos)) {</span>
 <span class="cstat-no" title="statement not covered" >    console.warn('filterValidTodos: Input is not an array:', todos);</span>
 <span class="cstat-no" title="statement not covered" >    return [];</span>
@@ -312,14 +312,14 @@ export const <span class="cstat-no" title="statement not covered" >filterValidTo
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return todos</span>
     .filter(isValidTodoItem)
-    .map(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >safeTodoOperation(todo))</span>
-    .filter(<span class="fstat-no" title="function not covered" >(t</span>odo): todo is TodoItem =&gt; <span class="cstat-no" title="statement not covered" >todo !== null)</span>;
+    .map(<span class="fstat-no" title="function not covered" >(t</span>odo<span class="cstat-no" title="statement not covered" >) =&gt; safeTodoOperation(todo))</span>
+    .filter(<span class="fstat-no" title="function not covered" >(t</span>odo<span class="cstat-no" title="statement not covered" >): todo is TodoItem =&gt; todo !== null);</span>
 };
 &nbsp;
 /**
  * TODO IDを安全に取得する関数
  */
-export const <span class="cstat-no" title="statement not covered" >getSafeTodoId = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>t</span>odo: any): string | null =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getSafeTodoId </span>= <span class="cstat-no" title="statement not covered" >(</span>todo: any): string | null =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!todo || typeof todo !== 'object') {</span>
 <span class="cstat-no" title="statement not covered" >    return null;</span>
   }
@@ -331,36 +331,36 @@ export const <span class="cstat-no" title="statement not covered" >getSafeTodoId
 /**
  * TODO配列から特定のIDのタスクを安全に検索する関数
  */
-export const <span class="cstat-no" title="statement not covered" >findTodoById = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>t</span>odos: any[], targetId: string): TodoItem | null =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >findTodoById </span>= <span class="cstat-no" title="statement not covered" >(</span>todos: any[], targetId: string): TodoItem | null =&gt; {</span>
   const validTodos = <span class="cstat-no" title="statement not covered" >filterValidTodos(todos);</span>
-<span class="cstat-no" title="statement not covered" >  return validTodos.find(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >getSafeTodoId(todo) === targetId)</span> || null;</span>
+<span class="cstat-no" title="statement not covered" >  return validTodos.find(<span class="fstat-no" title="function not covered" >(t</span>odo<span class="cstat-no" title="statement not covered" >) =&gt; getSafeTodoId(todo) === targetId) </span>|| null;</span>
 };
 &nbsp;
 /**
  * TODO配列から完了していないタスクを安全に取得する関数
  */
-export const <span class="cstat-no" title="statement not covered" >getIncompleteTodos = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>t</span>odos: any[]): TodoItem[] =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return filterValidTodos(todos).filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >!todo.completed)</span>;</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getIncompleteTodos </span>= <span class="cstat-no" title="statement not covered" >(</span>todos: any[]): TodoItem[] =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  return filterValidTodos(todos).filter(<span class="fstat-no" title="function not covered" >(t</span>odo<span class="cstat-no" title="statement not covered" >) =&gt; !todo.completed);</span></span>
 };
 &nbsp;
 /**
  * TODO配列から完了したタスクを安全に取得する関数
  */
-export const <span class="cstat-no" title="statement not covered" >getCompletedTodos = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>t</span>odos: any[]): TodoItem[] =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return filterValidTodos(todos).filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo.completed)</span>;</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getCompletedTodos </span>= <span class="cstat-no" title="statement not covered" >(</span>todos: any[]): TodoItem[] =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  return filterValidTodos(todos).filter(<span class="fstat-no" title="function not covered" >(t</span>odo<span class="cstat-no" title="statement not covered" >) =&gt; todo.completed);</span></span>
 };
 &nbsp;
 /**
  * デバッグ用：TODO配列の状態を診断する関数
  */
-export const <span class="cstat-no" title="statement not covered" >diagnoseTodoArray = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>t</span>odos: any[], context: string = <span class="branch-0 cbranch-no" title="branch not covered" >'')</span> =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >diagnoseTodoArray </span>= <span class="cstat-no" title="statement not covered" >(</span>todos: any[], <span class="cstat-no" title="statement not covered" >context: string = '')</span> =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  console.log(`🔍 Todo Array Diagnosis${context ? ` [${context}]` : ''}:`, {</span>
     isArray: Array.isArray(todos),
     length: todos?.length || 0,
     validItems: todos?.filter?.(isValidTodoItem).length || 0,
-    invalidItems: todos?.filter?.(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >!isValidTodoItem(todo))</span>.length || 0,
+    invalidItems: todos?.filter?.(<span class="fstat-no" title="function not covered" >(t</span>odo<span class="cstat-no" title="statement not covered" >) =&gt; !isValidTodoItem(todo)).</span>length || 0,
     sampleValid: todos?.find?.(isValidTodoItem),
-    sampleInvalid: todos?.find?.(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >!isValidTodoItem(todo))</span>,
+    sampleInvalid: todos?.find?.(<span class="fstat-no" title="function not covered" >(t</span>odo<span class="cstat-no" title="statement not covered" >) =&gt; !isValidTodoItem(todo)),</span>
   });
 };
 &nbsp;</pre></td></tr></table></pre>
@@ -370,7 +370,7 @@ export const <span class="cstat-no" title="statement not covered" >diagnoseTodoA
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

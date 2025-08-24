@@ -310,16 +310,16 @@ import { TodoItem } from '@/types';
 } from '@/store/achievementSlice';
 <span class="cstat-no" title="statement not covered" >import { toast } from 'react-hot-toast';</span>
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >useAchievements = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useAchievements </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch();</span>
-  const achievements = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.achievements.achievements)</span>;</span>
-  const notifications = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.achievements.notifications)</span>;</span>
-  const userStats = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.achievements.userStats)</span>;</span>
-  const showNotifications = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.achievements.showNotifications)</span>;</span>
-  const tasks = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.items)</span>;</span>
+  const achievements = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.achievements.achievements);</span></span>
+  const notifications = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.achievements.notifications);</span></span>
+  const userStats = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.achievements.userStats);</span></span>
+  const showNotifications = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.achievements.showNotifications);</span></span>
+  const tasks = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.todo.items);</span></span>
 &nbsp;
   // 初期化時に実績データを読み込み
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    achievementService.loadUserAchievements();</span>
     const allAchievements = <span class="cstat-no" title="statement not covered" >achievementService.getAllAchievements();</span>
     const stats = <span class="cstat-no" title="statement not covered" >achievementService.getUserStats();</span>
@@ -358,21 +358,21 @@ export const <span class="cstat-no" title="statement not covered" >useAchievemen
   );
 &nbsp;
   // タスクの変更を監視
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (tasks.length &gt; 0) {</span>
       // デバウンスを実装して、短時間での連続チェックを防ぐ
-      const timeoutId = <span class="cstat-no" title="statement not covered" >setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+      const timeoutId = <span class="cstat-no" title="statement not covered" >setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >        checkAchievements();</span>
       }, 1000); // 1秒のデバウンス
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      return <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >clearTimeout(timeoutId);</span></span>
+<span class="cstat-no" title="statement not covered" >      return <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; c</span>learTimeout(timeoutId);</span></span>
     }
   }, [tasks.length, checkAchievements]); // tasks全体ではなく、lengthのみ監視
 &nbsp;
   // 実績の進捗を計算
   const getAchievementProgress = <span class="cstat-no" title="statement not covered" >useCallback(</span>
 <span class="fstat-no" title="function not covered" >    (a</span>chievementId: string) =&gt; {
-      const achievement = <span class="cstat-no" title="statement not covered" >achievements.find(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.id === achievementId)</span>;</span>
+      const achievement = <span class="cstat-no" title="statement not covered" >achievements.find(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; a.id === achievementId);</span></span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!achievement) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      return achievementService.calculateProgress(achievement, tasks);</span>
@@ -381,17 +381,17 @@ export const <span class="cstat-no" title="statement not covered" >useAchievemen
   );
 &nbsp;
   // 未読通知の数を取得
-  const getUnreadNotificationCount = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    return notifications.filter(<span class="fstat-no" title="function not covered" >(n</span>) =&gt; <span class="cstat-no" title="statement not covered" >!n.read)</span>.length;</span>
+  const getUnreadNotificationCount = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+<span class="cstat-no" title="statement not covered" >    return notifications.filter(<span class="fstat-no" title="function not covered" >(n<span class="cstat-no" title="statement not covered" ></span>) =&gt; !n.read).</span>length;</span>
   }, [notifications]);
 &nbsp;
   // レベル表示用のユーティリティ
-  const getLevelInfo = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const getLevelInfo = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const currentExp = <span class="cstat-no" title="statement not covered" >userStats.totalExperience;</span>
     const currentLevel = <span class="cstat-no" title="statement not covered" >userStats.currentLevel;</span>
     const expForCurrentLevel = <span class="cstat-no" title="statement not covered" >(currentLevel - 1) * 1000;</span>
     const expForNextLevel = <span class="cstat-no" title="statement not covered" >currentLevel * 1000;</span>
-    const progressToNextLevel = <span class="cstat-no" title="statement not covered" >((currentExp - expForCurrentLevel) / 1000) * 100;</span>
+    const progressToNextLevel = (<span class="cstat-no" title="statement not covered" >(currentExp - expForCurrentLevel) / 1000) * 100;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
       currentLevel,
@@ -410,8 +410,8 @@ export const <span class="cstat-no" title="statement not covered" >useAchievemen
     getAchievementProgress,
     getUnreadNotificationCount,
     getLevelInfo,
-    unlockedAchievements: achievements.filter(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.unlocked)</span>,
-    lockedAchievements: achievements.filter(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >!a.unlocked)</span>,
+    unlockedAchievements: achievements.filter(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; a.unlocked),</span>
+    lockedAchievements: achievements.filter(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; !a.unlocked),</span>
   };
 };
 &nbsp;</pre></td></tr></table></pre>
@@ -421,7 +421,7 @@ export const <span class="cstat-no" title="statement not covered" >useAchievemen
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

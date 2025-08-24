@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/32</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
@@ -190,11 +190,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -294,17 +294,17 @@ interface BalanceUpdateModalProps {
 }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >B</span>alanceUpdateModal(</span>{
-  isOpen,
-  onClose,
-  onSubmit,
-  currentBalance,
-  accountName,
+  isOpen<span class="cstat-no" title="statement not covered" >,</span>
+  onClose<span class="cstat-no" title="statement not covered" >,</span>
+  onSubmit<span class="cstat-no" title="statement not covered" >,</span>
+  currentBalance<span class="cstat-no" title="statement not covered" >,</span>
+  accountName<span class="cstat-no" title="statement not covered" >,</span>
 }: BalanceUpdateModalProps) {
-  const [newBalance, setNewBalance] = <span class="cstat-no" title="statement not covered" >useState(currentBalance.toString());</span>
-  const [isUnknownFunds, setIsUnknownFunds] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [date, setDate] = <span class="cstat-no" title="statement not covered" >useState(new Date().toISOString().split('T')[0]);</span>
+  const [newBalance<span class="cstat-no" title="statement not covered" >, s</span>etNewBalance<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(currentBalance.toString())<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isUnknownFunds<span class="cstat-no" title="statement not covered" >, s</span>etIsUnknownFunds<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [date<span class="cstat-no" title="statement not covered" >, s</span>etDate<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(new Date().toISOString().split('T')[0])<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const handleSubmit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: React.FormEvent) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleSubmit </span>= <span class="cstat-no" title="statement not covered" >(e: React.FormEvent) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    e.preventDefault();</span>
 <span class="cstat-no" title="statement not covered" >    onSubmit(parseFloat(newBalance), isUnknownFunds, date);</span>
 <span class="cstat-no" title="statement not covered" >    onClose();</span>
@@ -338,7 +338,7 @@ interface BalanceUpdateModalProps {
             &lt;Input
               id="newBalance"
               value={newBalance}
-              onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setNewBalance(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >              onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setNewBalance(e.target.value)}</span>
               className="col-span-3"
               type="number"
               required
@@ -348,7 +348,7 @@ interface BalanceUpdateModalProps {
             &lt;Checkbox
               id="unknownFunds"
               checked={isUnknownFunds}
-              onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >setIsUnknownFunds(checked as boolean)}</span>
+<span class="fstat-no" title="function not covered" >              onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; setIsUnknownFunds(checked as boolean)}</span>
             /&gt;
             &lt;Label htmlFor="unknownFunds"&gt;不明金として記帳&lt;/Label&gt;
           &lt;/div&gt;
@@ -360,7 +360,7 @@ interface BalanceUpdateModalProps {
               id="date"
               type="date"
               value={date}
-              onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setDate(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >              onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setDate(e.target.value)}</span>
               className="col-span-3"
               required
             /&gt;
@@ -382,7 +382,7 @@ interface BalanceUpdateModalProps {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

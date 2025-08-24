@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/57</span>
+                <span class='fraction'>0/60</span>
             </div>
         
             
@@ -626,7 +626,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -867,6 +866,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -951,7 +951,7 @@ interface TimelineViewSettings {
 }
 &nbsp;
 // タイムライン表示コンポーネント
-export const <span class="cstat-no" title="statement not covered" >renderTimelineView = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >renderTimelineView </span>= <span class="cstat-no" title="statement not covered" >(</span></span>
   badges: TimelineBadge[],
   events: TimelineEvent[],
   filter: TimelineFilter,
@@ -980,7 +980,7 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
     {} as Record&lt;string, TimelineBadge[]&gt;
   );
 &nbsp;
-  const getStatusColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tatus: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getStatusColor </span>= <span class="cstat-no" title="statement not covered" >(status: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (status) {</span>
       case 'completed':
 <span class="cstat-no" title="statement not covered" >        return 'bg-green-500';</span>
@@ -995,7 +995,7 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
     }
   };
 &nbsp;
-  const getPriorityColor = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>riority: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getPriorityColor </span>= <span class="cstat-no" title="statement not covered" >(priority: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (priority) {</span>
       case 'critical':
 <span class="cstat-no" title="statement not covered" >        return 'border-red-500';</span>
@@ -1010,7 +1010,7 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
     }
   };
 &nbsp;
-  const getDifficultyIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ifficulty: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getDifficultyIcon </span>= <span class="cstat-no" title="statement not covered" >(difficulty: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (difficulty) {</span>
       case 'legendary':
 <span class="cstat-no" title="statement not covered" >        return '🏆';</span>
@@ -1036,8 +1036,8 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
       &lt;/CardHeader&gt;
       &lt;CardContent&gt;
         &lt;div className="space-y-6"&gt;
-          {Object.entries(groupedBadges).map(<span class="fstat-no" title="function not covered" >([</span>groupName, groupBadges]) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;div key={groupName}&gt;</span>
+          {Object.entries(groupedBadges).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([g</span></span>roupName<span class="cstat-no" title="statement not covered" >, g</span>roupBadges<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; (</span></span>
+            &lt;div key={groupName}&gt;
               {viewSettings.groupBy !== 'none' &amp;&amp; (
                 &lt;h3 className="text-lg font-semibold mb-4 capitalize"&gt;
                   {groupName === 'default'
@@ -1063,8 +1063,8 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
               )}
 &nbsp;
               &lt;div className="space-y-4"&gt;
-                {groupBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div</span>
+                {groupBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;div
                     key={badge.id}
                     className={`border rounded-lg p-4 ${getPriorityColor(badge.priority)}`}
                   &gt;
@@ -1175,8 +1175,8 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
                                     🔗 依存バッジ
                                   &lt;/div&gt;
                                   &lt;div className="flex flex-wrap gap-1"&gt;
-                                    {badge.dependencies.map(<span class="fstat-no" title="function not covered" >(d</span>epId) =&gt; (
-<span class="cstat-no" title="statement not covered" >                                      &lt;Badge key={depId} v</span>ariant="outline" className="text-xs"&gt;
+                                    {badge.dependencies.map(<span class="fstat-no" title="function not covered" >(d</span>epId<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                                      &lt;Badge key={depId} variant="outline" className="text-xs"&gt;
                                         {depId}
                                       &lt;/Badge&gt;
                                     ))}
@@ -1189,8 +1189,8 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
                                     ⬆️ 後続バッジ
                                   &lt;/div&gt;
                                   &lt;div className="flex flex-wrap gap-1"&gt;
-                                    {badge.dependents.map(<span class="fstat-no" title="function not covered" >(d</span>epId) =&gt; (
-<span class="cstat-no" title="statement not covered" >                                      &lt;Badge key={depId} v</span>ariant="outline" className="text-xs"&gt;
+                                    {badge.dependents.map(<span class="fstat-no" title="function not covered" >(d</span>epId<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                                      &lt;Badge key={depId} variant="outline" className="text-xs"&gt;
                                         {depId}
                                       &lt;/Badge&gt;
                                     ))}
@@ -1205,8 +1205,8 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
                           &lt;div className="mb-3"&gt;
                             &lt;div className="text-sm font-medium mb-2"&gt;🎯 マイルストーン&lt;/div&gt;
                             &lt;div className="space-y-1"&gt;
-                              {badge.milestones.map(<span class="fstat-no" title="function not covered" >(m</span>ilestone) =&gt; (
-<span class="cstat-no" title="statement not covered" >                                &lt;div key={milestone.id} c</span>lassName="flex items-center gap-2 text-sm"&gt;
+                              {badge.milestones.map(<span class="fstat-no" title="function not covered" >(m</span>ilestone<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                                &lt;div key={milestone.id} className="flex items-center gap-2 text-sm"&gt;
                                   &lt;div
                                     className={`w-3 h-3 rounded-full ${milestone.isCompleted ? 'bg-green-500' : 'bg-gray-300'}`}
                                   &gt;&lt;/div&gt;
@@ -1241,8 +1241,8 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
                           &lt;div className="mb-3"&gt;
                             &lt;div className="text-sm font-medium mb-2"&gt;⚠️ リスク&lt;/div&gt;
                             &lt;div className="space-y-2"&gt;
-                              {badge.risks.map(<span class="fstat-no" title="function not covered" >(r</span>isk, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                                &lt;div</span>
+                              {badge.risks.map(<span class="fstat-no" title="function not covered" >(r</span>isk, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                                &lt;div
                                   key={index}
                                   className={`p-2 rounded text-sm ${
                                     risk.level === 'critical'
@@ -1275,8 +1275,8 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
 &nbsp;
                         {/* タグ */}
                         &lt;div className="flex flex-wrap gap-1"&gt;
-                          {badge.tags.map(<span class="fstat-no" title="function not covered" >(t</span>ag) =&gt; (
-<span class="cstat-no" title="statement not covered" >                            &lt;Badge key={tag} v</span>ariant="secondary" className="text-xs"&gt;
+                          {badge.tags.map(<span class="fstat-no" title="function not covered" >(t</span>ag<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                            &lt;Badge key={tag} variant="secondary" className="text-xs"&gt;
                               #{tag}
                             &lt;/Badge&gt;
                           ))}
@@ -1300,7 +1300,7 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

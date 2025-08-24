@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>0/20</span>
             </div>
         
             
@@ -136,31 +136,31 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -182,20 +182,20 @@
 import { WBSNode } from '@/types/wbs';
 <span class="cstat-no" title="statement not covered" >import wbsAIService from '@/services/ai/WBSAIService';</span>
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AIWBSGenerator: React.FC&lt;{</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AIWBSGenerator:</span> React.FC&lt;{</span>
   projectName: string;
   projectGoals: string;
   onGenerate: (wbs: WBSNode[]) =&gt; void;
-}&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> projectName, projectGoals, onGenerate }) =&gt; {</span>
-  const [isGenerating, setIsGenerating] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+}&gt; = <span class="cstat-no" title="statement not covered" >({ projectName<span class="cstat-no" title="statement not covered" >, projectGoals<span class="cstat-no" title="statement not covered" >, onGenerate<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span></span>
+  const [isGenerating<span class="cstat-no" title="statement not covered" >, s</span>etIsGenerating<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const generateWBS = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setIsGenerating(true);</span>
+  const <span class="fstat-no" title="function not covered" >generateWBS<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span></span>sync () =&gt; {</span></span></span>
+<span class="cstat-no" title="statement not covered" >    setIsGenerating(true);<span class="cstat-no" title="statement not covered" ></span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const prompt = <span class="cstat-no" title="statement not covered" >`</span>
+    try {
+      const <span class="cstat-no" title="statement not covered" >prompt = `</span>
         プロジェクト名: ${projectName}
-        目標: ${projectGoals}
+        目標: ${projectGoals<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >}</span></span>
         
         このプロジェクトのWBS（作業分解構造）を生成してください。
         以下の形式で出力してください：
@@ -206,17 +206,17 @@ export const <span class="cstat-no" title="statement not covered" >AIWBSGenerato
         各項目には工数見積もり（時間）も含めてください。
       `;
 &nbsp;
-      const wbsStructure = <span class="cstat-no" title="statement not covered" >await wbsAIService.generateWBS(prompt);</span>
+      const <span class="cstat-no" title="statement not covered" >wbsStructure = await w</span>bsAIService.generateWBS(prompt);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      onGenerate(wbsStructure);</span>
-<span class="cstat-no" title="statement not covered" >      toast.success('WBSを生成しました');</span>
+<span class="cstat-no" title="statement not covered" >      toast.success('WBSを生成しました');<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('WBS generation error:', error);</span>
-<span class="cstat-no" title="statement not covered" >      toast.error('WBS生成に失敗しました');</span>
+<span class="cstat-no" title="statement not covered" >      toast.error('WBS生成に失敗しました');<span class="cstat-no" title="statement not covered" ></span></span>
     } finally {
-<span class="cstat-no" title="statement not covered" >      setIsGenerating(false);</span>
+<span class="cstat-no" title="statement not covered" >      setIsGenerating(false);<span class="cstat-no" title="statement not covered" ></span></span>
     }
-  };
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;Card&gt;
@@ -238,7 +238,7 @@ export const <span class="cstat-no" title="statement not covered" >AIWBSGenerato
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

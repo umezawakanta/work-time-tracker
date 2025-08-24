@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/41</span>
+                <span class='fraction'>0/60</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/20</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/39</span>
+                <span class='fraction'>0/55</span>
             </div>
         
             
@@ -362,22 +362,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -610,27 +610,27 @@ interface TodoViewControlsProps {
  */
 export const <span class="cstat-no" title="statement not covered" >TodoViewControls: React.FC&lt;TodoViewControlsProps&gt; = React.memo(</span>
 <span class="fstat-no" title="function not covered" >  ({</span>
-    showFilters,
-    setShowFilters,
-    showAddForm,
-    setShowAddForm,
-    filterStatus,
-    setFilterStatus,
-    categoryFilter,
-    setCategoryFilter,
-    autoAdjustEnabled,
-    setAutoAdjustEnabled,
-    onAdjustPriorities,
-    viewMode = <span class="branch-0 cbranch-no" title="branch not covered" >'list',</span>
-    setViewMode,
-    sortOption = <span class="branch-0 cbranch-no" title="branch not covered" >'priority',</span>
-    setSortOption,
-    isPremium = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span>
+    showFilters<span class="cstat-no" title="statement not covered" >,</span>
+    setShowFilters<span class="cstat-no" title="statement not covered" >,</span>
+    showAddForm<span class="cstat-no" title="statement not covered" >,</span>
+    setShowAddForm<span class="cstat-no" title="statement not covered" >,</span>
+    filterStatus<span class="cstat-no" title="statement not covered" >,</span>
+    setFilterStatus<span class="cstat-no" title="statement not covered" >,</span>
+    categoryFilter<span class="cstat-no" title="statement not covered" >,</span>
+    setCategoryFilter<span class="cstat-no" title="statement not covered" >,</span>
+    autoAdjustEnabled<span class="cstat-no" title="statement not covered" >,</span>
+    setAutoAdjustEnabled<span class="cstat-no" title="statement not covered" >,</span>
+    onAdjustPriorities<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+    viewMode<span class="cstat-no" title="statement not covered" > = 'list',</span>
+    setViewMode<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+    sortOption<span class="cstat-no" title="statement not covered" > = 'priority',</span>
+    setSortOption<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+    isPremium<span class="cstat-no" title="statement not covered" > = false,</span>
   }) =&gt; {
     const analytics = <span class="cstat-no" title="statement not covered" >useAnalytics();</span>
 &nbsp;
     // アクティブフィルター数の計算
-    const activeFilterCount = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const activeFilterCount = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
       let count = <span class="cstat-no" title="statement not covered" >0;</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (filterStatus !== 'all') <span class="cstat-no" title="statement not covered" >count++;</span></span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (categoryFilter !== 'all') <span class="cstat-no" title="statement not covered" >count++;</span></span>
@@ -666,13 +666,13 @@ export const <span class="cstat-no" title="statement not covered" >TodoViewContr
       [setAutoAdjustEnabled, analytics]
     );
 &nbsp;
-    const handleAdjustPriorities = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const handleAdjustPriorities = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      onAdjustPriorities();</span>
 <span class="cstat-no" title="statement not covered" >      analytics.track('todo_priorities_adjusted');</span>
     }, [onAdjustPriorities, analytics]);
 &nbsp;
     // すべてのフィルターをクリア
-    const handleClearAllFilters = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const handleClearAllFilters = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      setFilterStatus('all');</span>
 <span class="cstat-no" title="statement not covered" >      setCategoryFilter('all');</span>
 <span class="cstat-no" title="statement not covered" >      analytics.track('todo_filters_cleared');</span>
@@ -687,7 +687,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoViewContr
             &lt;Button
               variant={showFilters ? 'default' : 'outline'}
               size="sm"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowFilters(!showFilters)}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowFilters(!showFilters)}</span>
               className={cn('flex items-center gap-2 transition-all', showFilters &amp;&amp; 'shadow-sm')}
             &gt;
               &lt;Filter className="h-4 w-4" aria-hidden="true" /&gt;
@@ -778,7 +778,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoViewContr
             {/* タスク追加ボタン */}
             &lt;Button
               size="sm"
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowAddForm(!showAddForm)}</span>
+<span class="fstat-no" title="function not covered" >              onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowAddForm(!showAddForm)}</span>
               className={cn(
                 'flex items-center gap-2 transition-all',
                 showAddForm &amp;&amp; 'ring-2 ring-primary/50'
@@ -814,7 +814,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoViewContr
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/108</span>
+                <span class='fraction'>0/132</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/98</span>
+                <span class='fraction'>0/190</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/31</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/104</span>
+                <span class='fraction'>0/102</span>
             </div>
         
             
@@ -803,8 +803,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -930,7 +930,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -946,11 +946,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1023,7 +1023,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1132,7 +1132,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1345,8 +1344,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1478,19 +1478,19 @@ interface BetaUserRecruitmentFormProps {
   onCancel?: () =&gt; void;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >BetaUserRecruitmentForm: React.FC&lt;BetaUserRecruitmentFormProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  onComplete,
-  onCancel,
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >BetaUserRecruitmentForm:</span> React.FC&lt;BetaUserRecruitmentFormProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  onComplete<span class="cstat-no" title="statement not covered" >,</span>
+  onCancel<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
   // フォーム状態管理
-  const [currentStep, setCurrentStep] = <span class="cstat-no" title="statement not covered" >useState&lt;FormStep&gt;('welcome');</span>
-  const [formData, setFormData] = <span class="cstat-no" title="statement not covered" >useState&lt;Partial&lt;BetaUserProfile&gt;&gt;({});</span>
-  const [errors, setErrors] = <span class="cstat-no" title="statement not covered" >useState&lt;Record&lt;string, string&gt;&gt;({});</span>
-  const [isSubmitting, setIsSubmitting] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [saveProgress, setSaveProgress] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
+  const [currentStep<span class="cstat-no" title="statement not covered" >, s</span>etCurrentStep<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;FormStep&gt;('welcome')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [formData<span class="cstat-no" title="statement not covered" >, s</span>etFormData<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Partial&lt;BetaUserProfile&gt;&gt;({})<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [errors<span class="cstat-no" title="statement not covered" >, s</span>etErrors<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Record&lt;string, string&gt;&gt;({})<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isSubmitting<span class="cstat-no" title="statement not covered" >, s</span>etIsSubmitting<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [saveProgress<span class="cstat-no" title="statement not covered" >, s</span>etSaveProgress<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // ADHD/ASD配慮: 自動保存とセッション復元
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (saveProgress) {</span>
       const savedData = <span class="cstat-no" title="statement not covered" >localStorage.getItem('betaUserRecruitmentForm');</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (savedData) {</span>
@@ -1506,7 +1506,7 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
   }, []);
 &nbsp;
   // 自動保存
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (saveProgress &amp;&amp; Object.keys(formData).length &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >      localStorage.setItem(</span>
         'betaUserRecruitmentForm',
@@ -1532,10 +1532,10 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
     'complete',
   ];
   const currentStepIndex = <span class="cstat-no" title="statement not covered" >steps.indexOf(currentStep);</span>
-  const progressPercentage = <span class="cstat-no" title="statement not covered" >(currentStepIndex / (steps.length - 1)) * 100;</span>
+  const progressPercentage = (<span class="cstat-no" title="statement not covered" >currentStepIndex / (steps.length - 1)) * 100;</span>
 &nbsp;
   // バリデーション
-  const validateStep = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tep: FormStep): boolean =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >validateStep </span>= <span class="cstat-no" title="statement not covered" >(step: FormStep): boolean =&gt; {</span>
     const newErrors: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{};</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    switch (step) {</span>
@@ -1568,7 +1568,7 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
   };
 &nbsp;
   // フォーム更新
-  const updateFormData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>ection: string, data: any) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >updateFormData </span>= <span class="cstat-no" title="statement not covered" >(section: string, data: any) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setFormData(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; {</span>
       const existingSection = <span class="cstat-no" title="statement not covered" >prev[section as keyof BetaUserProfile];</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
@@ -1585,7 +1585,7 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
   };
 &nbsp;
   // ナビゲーション
-  const goToNextStep = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >goToNextStep </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (validateStep(currentStep)) {</span>
       const nextIndex = <span class="cstat-no" title="statement not covered" >currentStepIndex + 1;</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (nextIndex &lt; steps.length) {</span>
@@ -1594,7 +1594,7 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
     }
   };
 &nbsp;
-  const goToPreviousStep = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >goToPreviousStep </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const prevIndex = <span class="cstat-no" title="statement not covered" >currentStepIndex - 1;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (prevIndex &gt;= 0) {</span>
 <span class="cstat-no" title="statement not covered" >      setCurrentStep(steps[prevIndex]);</span>
@@ -1602,12 +1602,12 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
   };
 &nbsp;
   // フォーム送信
-  const handleSubmit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!validateStep('review')) <span class="cstat-no" title="statement not covered" >return;</span></span>
+  const <span class="fstat-no" title="function not covered" >handleSubmit<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>a</span></span>sync () =&gt; {</span></span></span></span>
+    if (!validateStep('review')<span class="cstat-no" title="statement not covered" >) return;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    setIsSubmitting(true);</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const applicationId = <span class="cstat-no" title="statement not covered" >await betaUserRecruitmentService.submitApplication(</span>
+<span class="cstat-no" title="statement not covered" >    setIsSubmitting(true);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+    try {
+      const <span class="cstat-no" title="statement not covered" >applicationId = await b</span>etaUserRecruitmentService.submitApplication(
         formData as Omit&lt;BetaUserProfile, 'id' | 'recruitmentStatus'&gt;
       );
 &nbsp;
@@ -1615,18 +1615,18 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
 <span class="cstat-no" title="statement not covered" >      localStorage.removeItem('betaUserRecruitmentForm');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      setCurrentStep('complete');</span>
-<span class="cstat-no" title="statement not covered" >      onComplete?.(applicationId);</span>
+<span class="cstat-no" title="statement not covered" >      onComplete?.(applicationId);<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Application submission failed:', error);</span>
-<span class="cstat-no" title="statement not covered" >      setErrors({ submit: 'アプリケーションの送信に失敗しました。もう一度お試しください。' });</span>
+<span class="cstat-no" title="statement not covered" >      setErrors({ submit: 'アプリケーションの送信に失敗しました。もう一度お試しください。' });<span class="cstat-no" title="statement not covered" ></span></span>
     } finally {
-<span class="cstat-no" title="statement not covered" >      setIsSubmitting(false);</span>
+<span class="cstat-no" title="statement not covered" >      setIsSubmitting(false);<span class="cstat-no" title="statement not covered" ></span></span>
     }
-  };
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
   // ウェルカムステップ
-  const renderWelcomeStep = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; (</span>
-<span class="cstat-no" title="statement not covered" >    &lt;div className="text-center space-y-6"&gt;</span>
+  const <span class="fstat-no" title="function not covered" >renderWelcomeStep<span class="cstat-no" title="statement not covered" > </span>= <span class="cstat-no" title="statement not covered" >() =&gt; (</span></span>
+    &lt;div className="text-center space-y-6"&gt;
       &lt;div className="flex justify-center"&gt;
         &lt;div className="bg-gradient-to-r from-purple-500 to-pink-500 p-6 rounded-full"&gt;
           &lt;Users className="h-12 w-12 text-white" /&gt;
@@ -1682,7 +1682,7 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
           &lt;Checkbox
             id="save-progress"
             checked={saveProgress}
-            onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt; <span class="cstat-no" title="statement not covered" >setSaveProgress(checked === true)}</span>
+<span class="fstat-no" title="function not covered" >            onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt; setSaveProgress(checked === true)}</span>
           /&gt;
           &lt;Label htmlFor="save-progress" className="text-sm"&gt;
             進捗を自動保存する（ADHD配慮機能）
@@ -1698,8 +1698,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
   );
 &nbsp;
   // 個人情報ステップ
-  const renderPersonalStep = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; (</span>
-<span class="cstat-no" title="statement not covered" >    &lt;div className="space-y-6"&gt;</span>
+  const <span class="fstat-no" title="function not covered" >renderPersonalStep<span class="cstat-no" title="statement not covered" > </span>= <span class="cstat-no" title="statement not covered" >() =&gt; (</span></span>
+    &lt;div className="space-y-6"&gt;
       &lt;div className="text-center space-y-2"&gt;
         &lt;Brain className="h-8 w-8 mx-auto text-purple-600" /&gt;
         &lt;h2 className="text-2xl font-bold"&gt;基本情報&lt;/h2&gt;
@@ -1712,7 +1712,7 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
           &lt;Input
             id="name"
             value={formData.personalInfo?.name || ''}
-            onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >updateFormData('personalInfo', { name: e.target.value })}</span>
+<span class="fstat-no" title="function not covered" >            onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; updateFormData('personalInfo', { name: e.target.value })}</span>
             placeholder="山田太郎"
             className={errors.name ? 'border-red-500' : ''}
           /&gt;
@@ -1725,7 +1725,7 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
             id="email"
             type="email"
             value={formData.personalInfo?.email || ''}
-            onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >updateFormData('personalInfo', { email: e.target.value })}</span>
+<span class="fstat-no" title="function not covered" >            onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; updateFormData('personalInfo', { email: e.target.value })}</span>
             placeholder="example@email.com"
             className={errors.email ? 'border-red-500' : ''}
           /&gt;
@@ -1740,7 +1740,7 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
             min="18"
             max="100"
             value={formData.personalInfo?.age || ''}
-            onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >updateFormData('personalInfo', { age: parseInt(e.target.value) })}</span>
+<span class="fstat-no" title="function not covered" >            onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; updateFormData('personalInfo', { age: parseInt(e.target.value) })}</span>
             className={errors.age ? 'border-red-500' : ''}
           /&gt;
           {errors.age &amp;&amp; &lt;p className="text-sm text-red-600"&gt;{errors.age}&lt;/p&gt;}
@@ -1748,7 +1748,7 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
 &nbsp;
         &lt;div className="space-y-2"&gt;
           &lt;Label htmlFor="country"&gt;お住まいの国&lt;/Label&gt;
-          &lt;Select onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >updateFormData('personalInfo', { country: value })}</span>&gt;
+          &lt;Select <span class="fstat-no" title="function not covered" >onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; updateFormData('personalInfo', { country: value })}&gt;</span>
             &lt;SelectTrigger&gt;
               &lt;SelectValue placeholder="国を選択" /&gt;
             &lt;/SelectTrigger&gt;
@@ -1765,7 +1765,7 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
 &nbsp;
         &lt;div className="space-y-2"&gt;
           &lt;Label htmlFor="timezone"&gt;タイムゾーン&lt;/Label&gt;
-          &lt;Select onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >updateFormData('personalInfo', { timezone: value })}</span>&gt;
+          &lt;Select <span class="fstat-no" title="function not covered" >onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; updateFormData('personalInfo', { timezone: value })}&gt;</span>
             &lt;SelectTrigger&gt;
               &lt;SelectValue placeholder="タイムゾーンを選択" /&gt;
             &lt;/SelectTrigger&gt;
@@ -1782,7 +1782,7 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
         &lt;div className="space-y-2"&gt;
           &lt;Label htmlFor="contact-preference"&gt;連絡方法の希望&lt;/Label&gt;
           &lt;Select
-            onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >updateFormData('personalInfo', { contactPreference: value })}</span>
+<span class="fstat-no" title="function not covered" >            onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; updateFormData('personalInfo', { contactPreference: value })}</span>
           &gt;
             &lt;SelectTrigger&gt;
               &lt;SelectValue placeholder="連絡方法を選択" /&gt;
@@ -1807,8 +1807,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
   );
 &nbsp;
   // 神経多様性ステップ
-  const renderNeurodiversityStep = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; (</span>
-<span class="cstat-no" title="statement not covered" >    &lt;div className="space-y-6"&gt;</span>
+  const <span class="fstat-no" title="function not covered" >renderNeurodiversityStep<span class="cstat-no" title="statement not covered" > </span>= <span class="cstat-no" title="statement not covered" >() =&gt; (</span></span>
+    &lt;div className="space-y-6"&gt;
       &lt;div className="text-center space-y-2"&gt;
         &lt;Brain className="h-8 w-8 mx-auto text-indigo-600" /&gt;
         &lt;h2 className="text-2xl font-bold"&gt;神経多様性について&lt;/h2&gt;
@@ -1825,8 +1825,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
             &lt;Checkbox
               id="has-adhd"
               checked={formData.neurodiversityProfile?.hasADHD || false}
-              onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt;
-<span class="cstat-no" title="statement not covered" >                updateFormData('neurodiversityProfile', { hasADHD: checked })</span>
+<span class="fstat-no" title="function not covered" >              onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                updateFormData('neurodiversityProfile', { hasADHD: checked })
               }
             /&gt;
             &lt;Label htmlFor="has-adhd"&gt;ADHDの特性があります&lt;/Label&gt;
@@ -1839,8 +1839,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
                   &lt;Checkbox
                     id="adhd-diagnosed"
                     checked={formData.neurodiversityProfile?.adhdDiagnosed || false}
-                    onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt;
-<span class="cstat-no" title="statement not covered" >                      updateFormData('neurodiversityProfile', { adhdDiagnosed: checked })</span>
+<span class="fstat-no" title="function not covered" >                    onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                      updateFormData('neurodiversityProfile', { adhdDiagnosed: checked })
                     }
                   /&gt;
                   &lt;Label htmlFor="adhd-diagnosed"&gt;正式に診断済み&lt;/Label&gt;
@@ -1850,8 +1850,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
                   &lt;Checkbox
                     id="adhd-self-identified"
                     checked={formData.neurodiversityProfile?.adhdSelfIdentified || false}
-                    onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt;
-<span class="cstat-no" title="statement not covered" >                      updateFormData('neurodiversityProfile', { adhdSelfIdentified: checked })</span>
+<span class="fstat-no" title="function not covered" >                    onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                      updateFormData('neurodiversityProfile', { adhdSelfIdentified: checked })
                     }
                   /&gt;
                   &lt;Label htmlFor="adhd-self-identified"&gt;自己認識&lt;/Label&gt;
@@ -1862,8 +1862,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
                 &lt;Label&gt;ADHDのタイプ&lt;/Label&gt;
                 &lt;RadioGroup
                   value={formData.neurodiversityProfile?.adhdType || ''}
-                  onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt;
-<span class="cstat-no" title="statement not covered" >                    updateFormData('neurodiversityProfile', { adhdType: value })</span>
+<span class="fstat-no" title="function not covered" >                  onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                    updateFormData('neurodiversityProfile', { adhdType: value })
                   }
                 &gt;
                   &lt;div className="flex items-center space-x-2"&gt;
@@ -1889,8 +1889,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
                 &lt;Checkbox
                   id="adhd-medication"
                   checked={formData.neurodiversityProfile?.adhdMedication || false}
-                  onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt;
-<span class="cstat-no" title="statement not covered" >                    updateFormData('neurodiversityProfile', { adhdMedication: checked })</span>
+<span class="fstat-no" title="function not covered" >                  onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                    updateFormData('neurodiversityProfile', { adhdMedication: checked })
                   }
                 /&gt;
                 &lt;Label htmlFor="adhd-medication"&gt;現在、ADHD治療薬を服用中&lt;/Label&gt;
@@ -1910,8 +1910,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
             &lt;Checkbox
               id="has-asd"
               checked={formData.neurodiversityProfile?.hasASD || false}
-              onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt;
-<span class="cstat-no" title="statement not covered" >                updateFormData('neurodiversityProfile', { hasASD: checked })</span>
+<span class="fstat-no" title="function not covered" >              onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                updateFormData('neurodiversityProfile', { hasASD: checked })
               }
             /&gt;
             &lt;Label htmlFor="has-asd"&gt;ASDの特性があります&lt;/Label&gt;
@@ -1924,8 +1924,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
                   &lt;Checkbox
                     id="asd-diagnosed"
                     checked={formData.neurodiversityProfile?.asdDiagnosed || false}
-                    onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt;
-<span class="cstat-no" title="statement not covered" >                      updateFormData('neurodiversityProfile', { asdDiagnosed: checked })</span>
+<span class="fstat-no" title="function not covered" >                    onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                      updateFormData('neurodiversityProfile', { asdDiagnosed: checked })
                     }
                   /&gt;
                   &lt;Label htmlFor="asd-diagnosed"&gt;正式に診断済み&lt;/Label&gt;
@@ -1935,8 +1935,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
                   &lt;Checkbox
                     id="asd-self-identified"
                     checked={formData.neurodiversityProfile?.asdSelfIdentified || false}
-                    onCheckedChange={<span class="fstat-no" title="function not covered" >(c</span>hecked) =&gt;
-<span class="cstat-no" title="statement not covered" >                      updateFormData('neurodiversityProfile', { asdSelfIdentified: checked })</span>
+<span class="fstat-no" title="function not covered" >                    onCheckedChange=</span>{(checked<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                      updateFormData('neurodiversityProfile', { asdSelfIdentified: checked })
                     }
                   /&gt;
                   &lt;Label htmlFor="asd-self-identified"&gt;自己認識&lt;/Label&gt;
@@ -1947,8 +1947,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
                 &lt;Label&gt;支援の必要度&lt;/Label&gt;
                 &lt;RadioGroup
                   value={formData.neurodiversityProfile?.asdSupportLevel?.toString() || ''}
-                  onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt;
-<span class="cstat-no" title="statement not covered" >                    updateFormData('neurodiversityProfile', { asdSupportLevel: parseInt(value) })</span>
+<span class="fstat-no" title="function not covered" >                  onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                    updateFormData('neurodiversityProfile', { asdSupportLevel: parseInt(value) })
                   }
                 &gt;
                   &lt;div className="flex items-center space-x-2"&gt;
@@ -1976,8 +1976,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
           &lt;CardTitle className="text-lg"&gt;日常生活への影響&lt;/CardTitle&gt;
         &lt;/CardHeader&gt;
         &lt;CardContent className="space-y-4"&gt;
-          {['dailyLiving', 'work', 'social', 'academic'].map(<span class="fstat-no" title="function not covered" >(a</span>rea) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;div key={area} c</span>lassName="space-y-2"&gt;
+          {['dailyLiving', 'work', 'social', 'academic'].map(<span class="fstat-no" title="function not covered" >(a</span>rea<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;div key={area} className="space-y-2"&gt;
               &lt;Label&gt;
                 {area === 'dailyLiving' &amp;&amp; '日常生活'}
                 {area === 'work' &amp;&amp; '仕事'}
@@ -1986,8 +1986,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
                 への影響
               &lt;/Label&gt;
               &lt;Select
-                onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt;
-<span class="cstat-no" title="statement not covered" >                  updateFormData('neurodiversityProfile', {</span>
+<span class="fstat-no" title="function not covered" >                onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+                  updateFormData('neurodiversityProfile', {
                     functionalImpact: {
                       ...formData.neurodiversityProfile?.functionalImpact,
                       [area]: value,
@@ -2021,8 +2021,8 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
   );
 &nbsp;
   // フッターナビゲーション
-  const renderNavigation = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; (</span>
-<span class="cstat-no" title="statement not covered" >    &lt;div className="flex items-center justify-between pt-6 border-t"&gt;</span>
+  const <span class="fstat-no" title="function not covered" >renderNavigation<span class="cstat-no" title="statement not covered" > </span>= <span class="cstat-no" title="statement not covered" >() =&gt; (</span></span>
+    &lt;div className="flex items-center justify-between pt-6 border-t"&gt;
       &lt;Button variant="outline" onClick={goToPreviousStep} disabled={currentStepIndex === 0}&gt;
         &lt;ChevronLeft className="h-4 w-4 mr-2" /&gt;
         前へ
@@ -2098,7 +2098,7 @@ export const <span class="cstat-no" title="statement not covered" >BetaUserRecru
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

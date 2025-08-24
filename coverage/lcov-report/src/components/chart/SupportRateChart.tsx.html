@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/45</span>
+                <span class='fraction'>0/62</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>0/17</span>
             </div>
         
             
@@ -244,17 +244,17 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -379,45 +379,45 @@ interface SupportRateChartProps {
   candidateId: string;
 }
 &nbsp;
-const SupportRateChart: React.FC&lt;SupportRateChartProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> candidateId }) =&gt; {</span>
-  const [supportData, setSupportData] = <span class="cstat-no" title="statement not covered" >useState&lt;SupportRatePoint[]&gt;([]);</span>
-  const [loading, setLoading] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(true);</span>
-  const [error, setError] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;(null);</span>
+const <span class="fstat-no" title="function not covered" >SupportRateChart:</span> React.FC&lt;SupportRateChartProps&gt; = <span class="cstat-no" title="statement not covered" >({ candidateId<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span>
+  const [supportData<span class="cstat-no" title="statement not covered" >, s</span>etSupportData<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;SupportRatePoint[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [loading<span class="cstat-no" title="statement not covered" >, s</span>etLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(true)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [error<span class="cstat-no" title="statement not covered" >, s</span>etError<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const fetchSupportData = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+  const fetchSupportData = <span class="cstat-no" title="statement not covered" >useCallback(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span></span>
 <span class="cstat-no" title="statement not covered" >    setLoading(true);</span>
-<span class="cstat-no" title="statement not covered" >    setError(null);</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const response = <span class="cstat-no" title="statement not covered" >await candidateApi.getCandidateSupportRate(candidateId);</span>
+<span class="cstat-no" title="statement not covered" >    setError(null);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+    try {
+      const <span class="cstat-no" title="statement not covered" >response = await c</span>andidateApi.getCandidateSupportRate(candidateId);
 <span class="cstat-no" title="statement not covered" >      if (response.data &amp;&amp; Array.isArray(response.data)) {</span>
         // 日付でソート
-        const sortedData = <span class="cstat-no" title="statement not covered" >[...response.data].sort(</span>
-<span class="fstat-no" title="function not covered" >          (a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(a.date).getTime() - new Date(b.date).getTime()</span>
+        const <span class="cstat-no" title="statement not covered" >sortedData = [...response.data].sort(</span>
+<span class="fstat-no" title="function not covered" >          (a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(a.date).getTime() - new Date(b.date).getTime()</span>
         );
 <span class="cstat-no" title="statement not covered" >        setSupportData(sortedData);</span>
       } else {
 <span class="cstat-no" title="statement not covered" >        setError('データの形式が正しくありません');</span>
-      }
+      }<span class="cstat-no" title="statement not covered" ></span>
     } catch (err) {
 <span class="cstat-no" title="statement not covered" >      console.error('支持率データの取得に失敗しました:', err);</span>
-<span class="cstat-no" title="statement not covered" >      setError('支持率データの取得に失敗しました');</span>
+<span class="cstat-no" title="statement not covered" >      setError('支持率データの取得に失敗しました');<span class="cstat-no" title="statement not covered" ></span></span>
     } finally {
-<span class="cstat-no" title="statement not covered" >      setLoading(false);</span>
+<span class="cstat-no" title="statement not covered" >      setLoading(false);<span class="cstat-no" title="statement not covered" ></span></span>
     }
   }, [candidateId]);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (candidateId) {</span>
 <span class="cstat-no" title="statement not covered" >      fetchSupportData();</span>
     }
   }, [candidateId, fetchSupportData]);
 &nbsp;
-  const formatDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ateString: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatDate </span>= <span class="cstat-no" title="statement not covered" >(dateString: string) =&gt; {</span>
     const date = <span class="cstat-no" title="statement not covered" >new Date(dateString);</span>
 <span class="cstat-no" title="statement not covered" >    return `${date.getMonth() + 1}/${date.getDate()}`;</span>
   };
 &nbsp;
-  const CustomTooltip = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> active, payload }: TooltipProps&lt;ValueType, NameType&gt;) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >CustomTooltip </span>= <span class="cstat-no" title="statement not covered" >({ active<span class="cstat-no" title="statement not covered" >, payload<span class="cstat-no" title="statement not covered" > }: TooltipProps&lt;ValueType, NameType&gt;) =&gt; {</span></span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (active &amp;&amp; payload &amp;&amp; payload.length) {</span>
       const dataPoint = <span class="cstat-no" title="statement not covered" >payload[0].payload;</span>
 <span class="cstat-no" title="statement not covered" >      return (</span>
@@ -473,7 +473,7 @@ const SupportRateChart: React.FC&lt;SupportRateChartProps&gt; = <span class="cst
           domain={[0, 100]}
           stroke="#888888"
           fontSize={12}
-          tickFormatter={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >`${value}%`}</span>
+<span class="fstat-no" title="function not covered" >          tickFormatter=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; `${value}%`}</span>
         /&gt;
         &lt;Tooltip content={&lt;CustomTooltip /&gt;} /&gt;
         &lt;Legend /&gt;
@@ -499,7 +499,7 @@ const SupportRateChart: React.FC&lt;SupportRateChartProps&gt; = <span class="cst
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

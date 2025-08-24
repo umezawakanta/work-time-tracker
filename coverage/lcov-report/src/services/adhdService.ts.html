@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/207</span>
+                <span class='fraction'>0/218</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/61</span>
+                <span class='fraction'>0/70</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/48</span>
+                <span class='fraction'>0/51</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/188</span>
+                <span class='fraction'>0/193</span>
             </div>
         
             
@@ -641,10 +641,10 @@
 <a name='L576'></a><a href='#L576'>576</a>
 <a name='L577'></a><a href='#L577'>577</a>
 <a name='L578'></a><a href='#L578'>578</a>
-<a name='L579'></a><a href='#L579'>579</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L579'></a><a href='#L579'>579</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -653,21 +653,19 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -741,9 +739,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -833,7 +833,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1219,8 +1219,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="fstat-no" title="function not covered" >class E</span>ventEmitter {
-  private <span class="cstat-no" title="statement not covered" >events: { [key: string]: ((...args: any[]) =&gt; void)[] } = {};</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >class E</span></span>ventEmitter<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+  private events: { [key: string]: ((...args: any[]) =&gt; void)[] } = {};
 &nbsp;
 <span class="fstat-no" title="function not covered" >  on(</span>event: string, listener: (...args: any[]) =&gt; void): void {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!this.events[event]) <span class="cstat-no" title="statement not covered" >this.events[event] = [];</span></span>
@@ -1233,7 +1233,7 @@
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (index &gt; -1) <span class="cstat-no" title="statement not covered" >this.events[event].splice(index, 1);</span></span>
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" >  emit(</span>event: string, ...args: any[]): void {
+<span class="fstat-no" title="function not covered" >  emit(</span>event: string, ...<span class="cstat-no" title="statement not covered" >args: any[]<span class="cstat-no" title="statement not covered" >): void {</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!this.events[event]) <span class="cstat-no" title="statement not covered" >return;</span></span>
 <span class="cstat-no" title="statement not covered" >    this.events[event].forEach(<span class="fstat-no" title="function not covered" >(l</span>istener) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      try {</span>
@@ -1243,7 +1243,7 @@
       }
     });
   }
-}
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 export interface ThoughtEntry {
   id: string;
@@ -1308,9 +1308,9 @@ export interface ADHDInsight {
   createdAt: Date;
 }
 &nbsp;
-class ADHDService extends EventEmitter {
+class ADHDService <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >extends E</span>ventEmitter {</span>
   private static instance: ADHDService;
-  private readonly <span class="cstat-no" title="statement not covered" >STORAGE_KEYS = {</span>
+  private readonly STORAGE_KEYS = {
     SESSIONS: 'adhd-focus-sessions',
     THOUGHTS: 'adhd-thoughts',
     PROGRESS: 'adhd-progress',
@@ -1318,12 +1318,12 @@ class ADHDService extends EventEmitter {
     INSIGHTS: 'adhd-insights',
   };
 &nbsp;
-<span class="fstat-no" title="function not covered" >  private constructor() {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  private constructor() {</span></span>
 <span class="cstat-no" title="statement not covered" >    super();</span>
-<span class="cstat-no" title="statement not covered" >    this.initializeData();</span>
-  }
+<span class="cstat-no" title="statement not covered" >    this.initializeData();<span class="cstat-no" title="statement not covered" ></span></span>
+  }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >static </span>getInstance(): ADHDService {
+  public static <span class="fstat-no" title="function not covered" >getInstance(</span>): ADHDService {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!ADHDService.instance) {</span>
 <span class="cstat-no" title="statement not covered" >      ADHDService.instance = new ADHDService();</span>
     }
@@ -1372,7 +1372,7 @@ class ADHDService extends EventEmitter {
 &nbsp;
   public <span class="fstat-no" title="function not covered" >saveThought(</span>thought: Omit&lt;ThoughtEntry, 'id' | 'timestamp'&gt;): ThoughtEntry {
     const thoughts = <span class="cstat-no" title="statement not covered" >this.getThoughts();</span>
-    const newThought: ThoughtEntry = <span class="cstat-no" title="statement not covered" >{</span>
+    const newThought<span class="cstat-no" title="statement not covered" >: ThoughtEntry = {</span>
       ...thought,
       id: Date.now().toString(),
       timestamp: new Date(),
@@ -1411,7 +1411,7 @@ class ADHDService extends EventEmitter {
     }
   }
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >analyzeThoughtPattern(</span>timeframe: 'daily' | 'weekly' | 'monthly' = <span class="branch-0 cbranch-no" title="branch not covered" >'weekly')</span>: any {
+  public <span class="fstat-no" title="function not covered" >analyzeThoughtPattern(<span class="cstat-no" title="statement not covered" ></span>timeframe: 'daily' | 'weekly' | 'monthly' = 'weekly')</span>: any {
     const thoughts = <span class="cstat-no" title="statement not covered" >this.getThoughts();</span>
     const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
     let cutoffDate: Date;
@@ -1428,7 +1428,7 @@ class ADHDService extends EventEmitter {
 <span class="cstat-no" title="statement not covered" >        break;</span>
     }
 &nbsp;
-    const recentThoughts = <span class="cstat-no" title="statement not covered" >thoughts.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.timestamp &gt;= cutoffDate)</span>;</span>
+    const recentThoughts = <span class="cstat-no" title="statement not covered" >thoughts.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.timestamp &gt;= cutoffDate);</span></span>
 &nbsp;
     const typeDistribution = <span class="cstat-no" title="statement not covered" >recentThoughts.reduce(</span>
 <span class="fstat-no" title="function not covered" >      (a</span>cc, thought) =&gt; {
@@ -1440,7 +1440,7 @@ class ADHDService extends EventEmitter {
 &nbsp;
     const averageScore =
 <span class="cstat-no" title="statement not covered" >      recentThoughts.length &gt; 0</span>
-        ? recentThoughts.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, t) =&gt; <span class="cstat-no" title="statement not covered" >sum + t.score,</span> 0) / recentThoughts.length
+        ? recentThoughts.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, t<span class="cstat-no" title="statement not covered" >) =&gt; sum + t.score, 0</span>) / recentThoughts.length
         : 0;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
@@ -1455,11 +1455,11 @@ class ADHDService extends EventEmitter {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (thoughts.length &lt; 5) <span class="cstat-no" title="statement not covered" >return 'stable';</span></span>
 &nbsp;
     const half = <span class="cstat-no" title="statement not covered" >Math.floor(thoughts.length / 2);</span>
-    const recentScores = <span class="cstat-no" title="statement not covered" >thoughts.slice(0, half).map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.score)</span>;</span>
-    const olderScores = <span class="cstat-no" title="statement not covered" >thoughts.slice(half).map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.score)</span>;</span>
+    const recentScores = <span class="cstat-no" title="statement not covered" >thoughts.slice(0, half).map(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.score);</span></span>
+    const olderScores = <span class="cstat-no" title="statement not covered" >thoughts.slice(half).map(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.score);</span></span>
 &nbsp;
-    const recentAvg = <span class="cstat-no" title="statement not covered" >recentScores.reduce(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >a + b,</span> 0) / recentScores.length;</span>
-    const olderAvg = <span class="cstat-no" title="statement not covered" >olderScores.reduce(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >a + b,</span> 0) / olderScores.length;</span>
+    const recentAvg = <span class="cstat-no" title="statement not covered" >recentScores.reduce(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; a + b, 0</span>) / recentScores.length;</span>
+    const olderAvg = <span class="cstat-no" title="statement not covered" >olderScores.reduce(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; a + b, 0</span>) / olderScores.length;</span>
 &nbsp;
     const difference = <span class="cstat-no" title="statement not covered" >recentAvg - olderAvg;</span>
 &nbsp;
@@ -1490,7 +1490,7 @@ class ADHDService extends EventEmitter {
   }
 &nbsp;
   public <span class="fstat-no" title="function not covered" >endSession(</span>session: FocusSession): FocusSession {
-    const completedSession = <span class="cstat-no" title="statement not covered" >{</span>
+    const completedSession<span class="cstat-no" title="statement not covered" > = {</span>
       ...session,
       endTime: new Date(),
     };
@@ -1552,7 +1552,7 @@ class ADHDService extends EventEmitter {
   private <span class="fstat-no" title="function not covered" >updateProgress(</span>): void {
     const sessions = <span class="cstat-no" title="statement not covered" >this.getSessions();</span>
     const thoughts = <span class="cstat-no" title="statement not covered" >this.getThoughts();</span>
-    const completedSessions = <span class="cstat-no" title="statement not covered" >sessions.filter(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.endTime)</span>;</span>
+    const completedSessions = <span class="cstat-no" title="statement not covered" >sessions.filter(<span class="fstat-no" title="function not covered" >(s<span class="cstat-no" title="statement not covered" ></span>) =&gt; s.endTime);</span></span>
 &nbsp;
     const totalSessionTime = <span class="cstat-no" title="statement not covered" >completedSessions.reduce(<span class="fstat-no" title="function not covered" >(t</span>otal, session) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (session.endTime) {</span>
@@ -1567,7 +1567,7 @@ class ADHDService extends EventEmitter {
         : 0;
 &nbsp;
     const averageRealityScore =
-<span class="cstat-no" title="statement not covered" >      thoughts.length &gt; 0 ? thoughts.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, t) =&gt; <span class="cstat-no" title="statement not covered" >sum + t.score,</span> 0) / thoughts.length : 0;</span>
+<span class="cstat-no" title="statement not covered" >      thoughts.length &gt; 0 ? thoughts.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, t<span class="cstat-no" title="statement not covered" >) =&gt; sum + t.score, 0</span>) / thoughts.length : 0;</span>
 &nbsp;
     const streakDays = <span class="cstat-no" title="statement not covered" >this.calculateStreak(sessions);</span>
 &nbsp;
@@ -1586,7 +1586,7 @@ class ADHDService extends EventEmitter {
   }
 &nbsp;
   private <span class="fstat-no" title="function not covered" >calculateStreak(</span>sessions: FocusSession[]): number {
-    const completedSessions = <span class="cstat-no" title="statement not covered" >sessions.filter(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.endTime)</span>;</span>
+    const completedSessions = <span class="cstat-no" title="statement not covered" >sessions.filter(<span class="fstat-no" title="function not covered" >(s<span class="cstat-no" title="statement not covered" ></span>) =&gt; s.endTime);</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (completedSessions.length === 0) <span class="cstat-no" title="statement not covered" >return 0;</span></span>
 &nbsp;
     const dates = <span class="cstat-no" title="statement not covered" >completedSessions.map(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; {</span>
@@ -1595,7 +1595,7 @@ class ADHDService extends EventEmitter {
     });
 &nbsp;
     const uniqueDates = <span class="cstat-no" title="statement not covered" >[...new Set(dates)].sort(</span>
-<span class="fstat-no" title="function not covered" >      (a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(b).getTime() - new Date(a).getTime()</span>
+<span class="fstat-no" title="function not covered" >      (a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(b).getTime() - new Date(a).getTime()</span>
     );
 &nbsp;
     let streak = <span class="cstat-no" title="statement not covered" >0;</span>
@@ -1617,12 +1617,12 @@ class ADHDService extends EventEmitter {
 &nbsp;
   private <span class="fstat-no" title="function not covered" >calculateMonthlyTrends(</span>sessions: FocusSession[], thoughts: ThoughtEntry[]): any {
     const trends: any = <span class="cstat-no" title="statement not covered" >{};</span>
-    const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
+    const now = <span class="cstat-no" title="statement not covered" >new Date();<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    for (let i = <span class="cstat-no" title="statement not covered" >0;</span> i &lt; 6; i++) {</span>
+<span class="cstat-no" title="statement not covered" >    for (let i = <span class="cstat-no" title="statement not covered" >0;</span> i &lt; 6; i++<span class="cstat-no" title="statement not covered" >) {</span></span>
       // 過去6ヶ月
       const monthDate = <span class="cstat-no" title="statement not covered" >new Date(now.getFullYear(), now.getMonth() - i, 1);</span>
-      const monthKey = <span class="cstat-no" title="statement not covered" >`${monthDate.getFullYear()}-${monthDate.getMonth() + 1}`;</span>
+      const monthKey<span class="cstat-no" title="statement not covered" > = `${monthDate.getFullYear()}-${monthDate.getMonth() + 1}`;</span>
 &nbsp;
       const monthSessions = <span class="cstat-no" title="statement not covered" >sessions.filter(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; {</span>
         const sessionDate = <span class="cstat-no" title="statement not covered" >new Date(s.startTime);</span>
@@ -1651,7 +1651,7 @@ class ADHDService extends EventEmitter {
 &nbsp;
       const avgRealityScore =
 <span class="cstat-no" title="statement not covered" >        monthThoughts.length &gt; 0</span>
-          ? monthThoughts.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, t) =&gt; <span class="cstat-no" title="statement not covered" >sum + t.score,</span> 0) / monthThoughts.length
+          ? monthThoughts.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, t<span class="cstat-no" title="statement not covered" >) =&gt; sum + t.score, 0</span>) / monthThoughts.length
           : 0;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      trends[monthKey] = {</span>
@@ -1686,7 +1686,7 @@ class ADHDService extends EventEmitter {
   public <span class="fstat-no" title="function not covered" >updateSettings(</span>partialSettings: Partial&lt;ADHDSettings&gt;): void {
     const currentSettings = <span class="cstat-no" title="statement not covered" >this.getSettings();</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (currentSettings) {</span>
-      const updatedSettings = <span class="cstat-no" title="statement not covered" >{ ...currentSettings, ...partialSettings };</span>
+      const updatedSettings<span class="cstat-no" title="statement not covered" > = { ...currentSettings, ...partialSettings };</span>
 <span class="cstat-no" title="statement not covered" >      this.saveSettings(updatedSettings);</span>
     }
   }
@@ -1733,7 +1733,7 @@ class ADHDService extends EventEmitter {
     const recentSessions = <span class="cstat-no" title="statement not covered" >sessions.slice(0, 10);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (recentSessions.length &gt;= 5) {</span>
       const avgInterruptions =
-<span class="cstat-no" title="statement not covered" >        recentSessions.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, s) =&gt; <span class="cstat-no" title="statement not covered" >sum + s.interruptionCount,</span> 0) / recentSessions.length;</span>
+<span class="cstat-no" title="statement not covered" >        recentSessions.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, s<span class="cstat-no" title="statement not covered" >) =&gt; sum + s.interruptionCount, 0</span>) / recentSessions.length;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (avgInterruptions &gt; 3) {</span>
 <span class="cstat-no" title="statement not covered" >        insights.push({</span>
@@ -1804,7 +1804,7 @@ export const <span class="cstat-no" title="statement not covered" >adhdService =
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

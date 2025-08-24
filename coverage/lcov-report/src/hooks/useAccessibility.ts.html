@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/41</span>
+                <span class='fraction'>0/50</span>
             </div>
         
             
@@ -213,17 +213,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { useEffect, useState } from 'react';</span>
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >useAccessibility = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const [isHighContrast, setIsHighContrast] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [isReducedMotion, setIsReducedMotion] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [fontSize, setFontSize] = <span class="cstat-no" title="statement not covered" >useState(16);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useAccessibility </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const [isHighContrast<span class="cstat-no" title="statement not covered" >, s</span>etIsHighContrast<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isReducedMotion<span class="cstat-no" title="statement not covered" >, s</span>etIsReducedMotion<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [fontSize<span class="cstat-no" title="statement not covered" >, s</span>etFontSize<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(16)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // ハイコントラストモードの検出
     const highContrastQuery = <span class="cstat-no" title="statement not covered" >window.matchMedia('(prefers-contrast: high)');</span>
 <span class="cstat-no" title="statement not covered" >    setIsHighContrast(highContrastQuery.matches);</span>
 &nbsp;
-    const handleHighContrastChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: MediaQueryListEvent) =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleHighContrastChange </span>= <span class="cstat-no" title="statement not covered" >(e: MediaQueryListEvent) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setIsHighContrast(e.matches);</span>
     };
 &nbsp;
@@ -233,36 +233,36 @@ export const <span class="cstat-no" title="statement not covered" >useAccessibil
     const reducedMotionQuery = <span class="cstat-no" title="statement not covered" >window.matchMedia('(prefers-reduced-motion: reduce)');</span>
 <span class="cstat-no" title="statement not covered" >    setIsReducedMotion(reducedMotionQuery.matches);</span>
 &nbsp;
-    const handleReducedMotionChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: MediaQueryListEvent) =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleReducedMotionChange </span>= <span class="cstat-no" title="statement not covered" >(e: MediaQueryListEvent) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setIsReducedMotion(e.matches);</span>
     };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    reducedMotionQuery.addEventListener('change', handleReducedMotionChange);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      highContrastQuery.removeEventListener('change', handleHighContrastChange);</span>
 <span class="cstat-no" title="statement not covered" >      reducedMotionQuery.removeEventListener('change', handleReducedMotionChange);</span>
     };
   }, []);
 &nbsp;
-  const increaseFontSize = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >increaseFontSize </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const newSize = <span class="cstat-no" title="statement not covered" >Math.min(fontSize + 2, 24);</span>
 <span class="cstat-no" title="statement not covered" >    setFontSize(newSize);</span>
 <span class="cstat-no" title="statement not covered" >    document.documentElement.style.fontSize = `${newSize}px`;</span>
   };
 &nbsp;
-  const decreaseFontSize = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >decreaseFontSize </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const newSize = <span class="cstat-no" title="statement not covered" >Math.max(fontSize - 2, 12);</span>
 <span class="cstat-no" title="statement not covered" >    setFontSize(newSize);</span>
 <span class="cstat-no" title="statement not covered" >    document.documentElement.style.fontSize = `${newSize}px`;</span>
   };
 &nbsp;
-  const resetFontSize = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >resetFontSize </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setFontSize(16);</span>
 <span class="cstat-no" title="statement not covered" >    document.documentElement.style.fontSize = '16px';</span>
   };
 &nbsp;
-  const announceToScreenReader = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(m</span>essage: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >announceToScreenReader </span>= <span class="cstat-no" title="statement not covered" >(message: string) =&gt; {</span>
     const announcement = <span class="cstat-no" title="statement not covered" >document.createElement('div');</span>
 <span class="cstat-no" title="statement not covered" >    announcement.setAttribute('aria-live', 'polite');</span>
 <span class="cstat-no" title="statement not covered" >    announcement.setAttribute('aria-atomic', 'true');</span>
@@ -270,7 +270,7 @@ export const <span class="cstat-no" title="statement not covered" >useAccessibil
 <span class="cstat-no" title="statement not covered" >    announcement.textContent = message;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    document.body.appendChild(announcement);</span>
-<span class="cstat-no" title="statement not covered" >    setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      document.body.removeChild(announcement);</span>
     }, 1000);
   };
@@ -292,7 +292,7 @@ export const <span class="cstat-no" title="statement not covered" >useAccessibil
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

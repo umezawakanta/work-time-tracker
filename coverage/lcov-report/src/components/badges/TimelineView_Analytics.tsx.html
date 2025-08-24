@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/47</span>
+                <span class='fraction'>0/53</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/35</span>
             </div>
         
             
@@ -434,7 +434,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -519,7 +519,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -581,6 +580,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -672,18 +672,18 @@ interface TimelineEvent {
 }
 &nbsp;
 // タイムライン統計・分析コンポーネント
-export const <span class="cstat-no" title="statement not covered" >renderTimelineAnalytics = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>b</span>adges: TimelineBadge[], events: TimelineEvent[]) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >renderTimelineAnalytics </span>= <span class="cstat-no" title="statement not covered" >(</span>badges: TimelineBadge[], events: TimelineEvent[]) =&gt; {</span>
   // 統計計算
   const totalBadges = <span class="cstat-no" title="statement not covered" >badges.length;</span>
-  const completedBadges = <span class="cstat-no" title="statement not covered" >badges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.status === 'completed')</span>.length;</span>
-  const inProgressBadges = <span class="cstat-no" title="statement not covered" >badges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.status === 'in_progress')</span>.length;</span>
-  const delayedBadges = <span class="cstat-no" title="statement not covered" >badges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.status === 'delayed')</span>.length;</span>
+  const completedBadges = <span class="cstat-no" title="statement not covered" >badges.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.status === 'completed').</span>length;</span>
+  const inProgressBadges = <span class="cstat-no" title="statement not covered" >badges.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.status === 'in_progress').</span>length;</span>
+  const delayedBadges = <span class="cstat-no" title="statement not covered" >badges.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.status === 'delayed').</span>length;</span>
 &nbsp;
-  const averageProgress = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b) =&gt; <span class="cstat-no" title="statement not covered" >sum + b.progress,</span> 0) / totalBadges;</span>
-  const averageConfidence = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b) =&gt; <span class="cstat-no" title="statement not covered" >sum + b.confidence,</span> 0) / totalBadges;</span>
+  const averageProgress = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b<span class="cstat-no" title="statement not covered" >) =&gt; sum + b.progress, 0</span>) / totalBadges;</span>
+  const averageConfidence = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b<span class="cstat-no" title="statement not covered" >) =&gt; sum + b.confidence, 0</span>) / totalBadges;</span>
 &nbsp;
-  const totalEstimatedHours = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b) =&gt; <span class="cstat-no" title="statement not covered" >sum + b.estimatedHours,</span> 0);</span>
-  const totalActualHours = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b) =&gt; <span class="cstat-no" title="statement not covered" >sum + (b.actualHours || 0),</span> 0);</span>
+  const totalEstimatedHours = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b<span class="cstat-no" title="statement not covered" >) =&gt; sum + b.estimatedHours, 0</span>);</span>
+  const totalActualHours = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, b<span class="cstat-no" title="statement not covered" >) =&gt; sum + (b.actualHours || 0), 0</span>);</span>
 &nbsp;
   // カテゴリ別統計
   const categoryStats = <span class="cstat-no" title="statement not covered" >badges.reduce(</span>
@@ -723,10 +723,10 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
   );
 &nbsp;
   // リスク分析
-  const totalRisks = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + badge.risks.length,</span> 0);</span>
+  const totalRisks = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt; sum + badge.risks.length, 0</span>);</span>
   const criticalRisks = <span class="cstat-no" title="statement not covered" >badges.reduce(</span>
-<span class="fstat-no" title="function not covered" >    (s</span>um, badge) =&gt;
-<span class="cstat-no" title="statement not covered" >      sum + badge.risks.filter(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.level === 'critical' || r.level === 'high')</span>.length,</span>
+<span class="fstat-no" title="function not covered" >    (s</span>um, badge<span class="cstat-no" title="statement not covered" >) =&gt;</span>
+      sum + badge.risks.filter(<span class="fstat-no" title="function not covered" >(r<span class="cstat-no" title="statement not covered" ></span>) =&gt; r.level === 'critical' || r.level === 'high').</span>length,
     0
   );
 &nbsp;
@@ -810,8 +810,8 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
         &lt;/CardHeader&gt;
         &lt;CardContent&gt;
           &lt;div className="space-y-4"&gt;
-            {Object.entries(categoryStats).map(<span class="fstat-no" title="function not covered" >([</span>category, stats]) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;div key={category} c</span>lassName="border rounded-lg p-4"&gt;
+            {Object.entries(categoryStats).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([c</span></span>ategory<span class="cstat-no" title="statement not covered" >, s</span>tats<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; (</span></span>
+              &lt;div key={category} className="border rounded-lg p-4"&gt;
                 &lt;div className="flex items-center justify-between mb-3"&gt;
                   &lt;h4 className="font-medium"&gt;{category}&lt;/h4&gt;
                   &lt;div className="text-sm text-muted-foreground"&gt;
@@ -870,8 +870,8 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
         &lt;/CardHeader&gt;
         &lt;CardContent&gt;
           &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"&gt;
-            {Object.entries(difficultyStats).map(<span class="fstat-no" title="function not covered" >([</span>difficulty, stats]) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;div key={difficulty} c</span>lassName="text-center p-4 border rounded-lg"&gt;
+            {Object.entries(difficultyStats).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([d</span></span>ifficulty<span class="cstat-no" title="statement not covered" >, s</span>tats<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; (</span></span>
+              &lt;div key={difficulty} className="text-center p-4 border rounded-lg"&gt;
                 &lt;div className="text-2xl mb-2"&gt;
                   {difficulty === 'legendary'
                     ? '🏆'
@@ -943,7 +943,7 @@ export const <span class="cstat-no" title="statement not covered" >renderTimelin
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

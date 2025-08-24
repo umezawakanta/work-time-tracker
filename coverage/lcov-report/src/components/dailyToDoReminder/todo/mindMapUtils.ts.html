@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/112</span>
+                <span class='fraction'>0/123</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/35</span>
+                <span class='fraction'>0/42</span>
             </div>
         
             
@@ -833,12 +833,12 @@ export type MindMapEdge = Edge &amp; {
 };
 &nbsp;
 // Dagreを使用した自動レイアウト関数（改善版）
-const getLayoutedElements = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(n</span>odes: Node[], edges: Edge[], direction = <span class="branch-0 cbranch-no" title="branch not covered" >'TB')</span> =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >getLayoutedElements </span>= <span class="cstat-no" title="statement not covered" >(nodes: Node[], edges: Edge[], direction<span class="cstat-no" title="statement not covered" > = 'TB')</span> =&gt; {</span>
   const dagreGraph = <span class="cstat-no" title="statement not covered" >new dagre.graphlib.Graph();</span>
-<span class="cstat-no" title="statement not covered" >  dagreGraph.setDefaultEdgeLabel(<span class="fstat-no" title="function not covered" >() =</span>&gt; (<span class="cstat-no" title="statement not covered" >{})</span>);</span>
+<span class="cstat-no" title="statement not covered" >  dagreGraph.setDefaultEdgeLabel(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; ({</span>}))</span>;</span>
 &nbsp;
   // ノードサイズを大きくし、タイプに応じて調整
-  const getNodeDimensions = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(n</span>ode: Node) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getNodeDimensions </span>= <span class="cstat-no" title="statement not covered" >(node: Node) =&gt; {</span>
     const baseWidth = <span class="cstat-no" title="statement not covered" >200;</span>
     const baseHeight = <span class="cstat-no" title="statement not covered" >60;</span>
 &nbsp;
@@ -898,7 +898,7 @@ const getLayoutedElements = <span class="cstat-no" title="statement not covered"
 };
 &nbsp;
 // 改善されたマインドマップ変換関数
-export const <span class="cstat-no" title="statement not covered" >convertTodosToMindMap = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>t</span>odos: readonly Todo[]) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >convertTodosToMindMap </span>= <span class="cstat-no" title="statement not covered" >(</span>todos: readonly Todo[]) =&gt; {</span>
   const nodes: MindMapNode[] = <span class="cstat-no" title="statement not covered" >[];</span>
   const edges: MindMapEdge[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
@@ -919,8 +919,8 @@ export const <span class="cstat-no" title="statement not covered" >convertTodosT
   // カテゴリー別グループ
   const categories = <span class="cstat-no" title="statement not covered" >groupByCategory(todos);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  Object.entries(categories).forEach(<span class="fstat-no" title="function not covered" >([</span>category, categoryTodos], index) =&gt; {</span>
-    const categoryId = <span class="cstat-no" title="statement not covered" >`category-${index}`;</span>
+<span class="cstat-no" title="statement not covered" >  Object.entries(categories).forEach(<span class="fstat-no" title="function not covered" >([c</span>ategory<span class="cstat-no" title="statement not covered" >, c</span>ategoryTodos<span class="cstat-no" title="statement not covered" >], i</span>ndex) =&gt;<span class="cstat-no" title="statement not covered" > {</span></span>
+    const categoryId<span class="cstat-no" title="statement not covered" > = `category-${index}`;</span>
 &nbsp;
     // カテゴリーノード
 <span class="cstat-no" title="statement not covered" >    nodes.push({</span>
@@ -948,8 +948,8 @@ export const <span class="cstat-no" title="statement not covered" >convertTodosT
     // 優先度別サブグループ
     const priorityGroups = <span class="cstat-no" title="statement not covered" >groupByPriority(categoryTodos);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    Object.entries(priorityGroups).forEach(<span class="fstat-no" title="function not covered" >([</span>priority, priorityTodos], pIndex) =&gt; {</span>
-      const priorityId = <span class="cstat-no" title="statement not covered" >`${categoryId}-priority-${pIndex}`;</span>
+<span class="cstat-no" title="statement not covered" >    Object.entries(priorityGroups).forEach(<span class="fstat-no" title="function not covered" >([p</span>riority<span class="cstat-no" title="statement not covered" >, p</span>riorityTodos<span class="cstat-no" title="statement not covered" >], p</span>Index) =&gt;<span class="cstat-no" title="statement not covered" > {</span></span>
+      const priorityId<span class="cstat-no" title="statement not covered" > = `${categoryId}-priority-${pIndex}`;</span>
 &nbsp;
       // 優先度ノード
 <span class="cstat-no" title="statement not covered" >      nodes.push({</span>
@@ -975,7 +975,7 @@ export const <span class="cstat-no" title="statement not covered" >convertTodosT
 &nbsp;
       // 各タスクノード
 <span class="cstat-no" title="statement not covered" >      priorityTodos.forEach(<span class="fstat-no" title="function not covered" >(t</span>odo, _tIndex) =&gt; {</span>
-        const taskId = <span class="cstat-no" title="statement not covered" >`task-${todo.id}`;</span>
+        const taskId<span class="cstat-no" title="statement not covered" > = `task-${todo.id}`;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        nodes.push({</span>
           id: taskId,
@@ -1008,7 +1008,7 @@ export const <span class="cstat-no" title="statement not covered" >convertTodosT
 };
 &nbsp;
 // カテゴリーアイコンを取得
-const getCategoryIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>ategory: string) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >getCategoryIcon </span>= <span class="cstat-no" title="statement not covered" >(category: string) =&gt; {</span>
   const iconMap: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{</span>
     仕事: '💼',
     プライベート: '🏠',
@@ -1021,7 +1021,7 @@ const getCategoryIcon = <span class="cstat-no" title="statement not covered" ><s
 };
 &nbsp;
 // ステータス別グループ化バージョン（修正版）
-export const <span class="cstat-no" title="statement not covered" >convertTodosByStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>t</span>odos: readonly Todo[]) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >convertTodosByStatus </span>= <span class="cstat-no" title="statement not covered" >(</span>todos: readonly Todo[]) =&gt; {</span>
   const nodes: MindMapNode[] = <span class="cstat-no" title="statement not covered" >[];</span>
   const edges: MindMapEdge[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
@@ -1041,9 +1041,9 @@ export const <span class="cstat-no" title="statement not covered" >convertTodosB
 &nbsp;
   // ステータス別グループ
   const statusGroups = <span class="cstat-no" title="statement not covered" >{</span>
-    prioritized: todos.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >!t.completed &amp;&amp; t.isPrioritized)</span>,
-    active: todos.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >!t.completed &amp;&amp; !t.isPrioritized)</span>,
-    completed: todos.filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.completed)</span>,
+    prioritized: todos.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; !t.completed &amp;&amp; t.isPrioritized),</span>
+    active: todos.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; !t.completed &amp;&amp; !t.isPrioritized),</span>
+    completed: todos.filter(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; t.completed),</span>
   };
 &nbsp;
   const statusConfig = <span class="cstat-no" title="statement not covered" >[</span>
@@ -1052,9 +1052,9 @@ export const <span class="cstat-no" title="statement not covered" >convertTodosB
     { key: 'completed', label: '完了', color: '#10b981', icon: '✅' },
   ];
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  statusConfig.forEach(<span class="fstat-no" title="function not covered" >({</span> key, label, color, icon }, statusIndex) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  statusConfig.forEach(<span class="fstat-no" title="function not covered" >({ k</span>ey<span class="cstat-no" title="statement not covered" >, label<span class="cstat-no" title="statement not covered" >, color<span class="cstat-no" title="statement not covered" >, icon<span class="cstat-no" title="statement not covered" > }, statusIndex) =&gt; {</span></span></span></span></span>
     const statusTodos = <span class="cstat-no" title="statement not covered" >statusGroups[key as keyof typeof statusGroups];</span>
-    const statusId = <span class="cstat-no" title="statement not covered" >`status-${key}`;</span>
+    const statusId<span class="cstat-no" title="statement not covered" > = `status-${key}`;</span>
 &nbsp;
     // ステータスノード
 <span class="cstat-no" title="statement not covered" >    nodes.push({</span>
@@ -1081,7 +1081,7 @@ export const <span class="cstat-no" title="statement not covered" >convertTodosB
 &nbsp;
     // 各タスク
 <span class="cstat-no" title="statement not covered" >    statusTodos.forEach(<span class="fstat-no" title="function not covered" >(t</span>odo, index) =&gt; {</span>
-      const taskId = <span class="cstat-no" title="statement not covered" >`task-${todo.id}`;</span>
+      const taskId<span class="cstat-no" title="statement not covered" > = `task-${todo.id}`;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      nodes.push({</span>
         id: taskId,
@@ -1112,7 +1112,7 @@ export const <span class="cstat-no" title="statement not covered" >convertTodosB
 };
 &nbsp;
 // ヘルパー関数
-const groupByCategory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>odos: readonly Todo[]) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >groupByCategory </span>= <span class="cstat-no" title="statement not covered" >(todos: readonly Todo[]) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return todos.reduce(</span>
 <span class="fstat-no" title="function not covered" >    (a</span>cc, todo) =&gt; {
       const category = <span class="cstat-no" title="statement not covered" >todo.category || '未分類';</span>
@@ -1124,7 +1124,7 @@ const groupByCategory = <span class="cstat-no" title="statement not covered" ><s
   );
 };
 &nbsp;
-const groupByPriority = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>odos: readonly Todo[]) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >groupByPriority </span>= <span class="cstat-no" title="statement not covered" >(todos: readonly Todo[]) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return todos.reduce(</span>
 <span class="fstat-no" title="function not covered" >    (a</span>cc, todo) =&gt; {
       const priority = <span class="cstat-no" title="statement not covered" >todo.priority;</span>
@@ -1136,21 +1136,21 @@ const groupByPriority = <span class="cstat-no" title="statement not covered" ><s
   );
 };
 &nbsp;
-const getPriorityLabel = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>riority: number) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >getPriorityLabel </span>= <span class="cstat-no" title="statement not covered" >(priority: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (priority &gt;= 4) <span class="cstat-no" title="statement not covered" >return '最重要';</span></span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (priority &gt;= 3) <span class="cstat-no" title="statement not covered" >return '重要';</span></span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (priority &gt;= 2) <span class="cstat-no" title="statement not covered" >return '中';</span></span>
 <span class="cstat-no" title="statement not covered" >  return '低';</span>
 };
 &nbsp;
-const getPriorityStyle = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>riority: number) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >getPriorityStyle </span>= <span class="cstat-no" title="statement not covered" >(priority: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (priority &gt;= 4) <span class="cstat-no" title="statement not covered" >return { backgroundColor: '#ef4444', color: 'white' };</span></span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (priority &gt;= 3) <span class="cstat-no" title="statement not covered" >return { backgroundColor: '#f59e0b', color: 'white' };</span></span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (priority &gt;= 2) <span class="cstat-no" title="statement not covered" >return { backgroundColor: '#3b82f6', color: 'white' };</span></span>
 <span class="cstat-no" title="statement not covered" >  return { backgroundColor: '#6b7280', color: 'white' };</span>
 };
 &nbsp;
-const getTaskStyle = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>odo: Todo) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >getTaskStyle </span>= <span class="cstat-no" title="statement not covered" >(todo: Todo) =&gt; {</span>
   const baseStyle = <span class="cstat-no" title="statement not covered" >{</span>
     fontSize: '13px',
     padding: '10px 14px',
@@ -1185,7 +1185,7 @@ const getTaskStyle = <span class="cstat-no" title="statement not covered" ><span
   };
 };
 &nbsp;
-const truncateText = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ext: string, maxLength: number) =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >truncateText </span>= <span class="cstat-no" title="statement not covered" >(text: string, maxLength: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return text.length &gt; maxLength ? text.substring(0, maxLength) + '...' : text;</span>
 };
 &nbsp;</pre></td></tr></table></pre>
@@ -1195,7 +1195,7 @@ const truncateText = <span class="cstat-no" title="statement not covered" ><span
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
@@ -114,14 +114,14 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -149,18 +149,18 @@
 <span class="cstat-no" title="statement not covered" >import { toast } from 'react-hot-toast';</span>
 import { PoliticalParty } from '@/types/survey';
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >PartyRegistrationForm = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const { register, handleSubmit, reset } = <span class="cstat-no" title="statement not covered" >useForm&lt;Omit&lt;PoliticalParty, '_id'&gt;&gt;();</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >PartyRegistrationForm </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const { register<span class="cstat-no" title="statement not covered" >, handleSubmit<span class="cstat-no" title="statement not covered" >, reset<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useForm&lt;Omit&lt;PoliticalParty, '_id'&gt;&gt;();</span></span></span></span>
 &nbsp;
-  const onSubmit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(data: Omit&lt;PoliticalParty, '_id'&gt;) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      await partyApi.create(data);</span>
+  const <span class="fstat-no" title="function not covered" >onSubmit<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="fstat-no" title="function not covered" >a</span></span>sync (d</span>ata: Omit&lt;PoliticalParty, '_id'&gt;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >) =&gt; {</span></span></span></span></span>
+    try {
+      await partyApi.create(data);
 <span class="cstat-no" title="statement not covered" >      toast.success('政党を登録しました');</span>
-<span class="cstat-no" title="statement not covered" >      reset();</span>
+<span class="cstat-no" title="statement not covered" >      reset();<span class="cstat-no" title="statement not covered" ></span></span>
     } catch {
-<span class="cstat-no" title="statement not covered" >      toast.error('登録に失敗しました');</span>
+<span class="cstat-no" title="statement not covered" >      toast.error('登録に失敗しました');<span class="cstat-no" title="statement not covered" ></span></span>
     }
-  };
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;form onSubmit={handleSubmit(onSubmit)} className="space-y-4"&gt;
@@ -187,7 +187,7 @@ export const <span class="cstat-no" title="statement not covered" >PartyRegistra
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

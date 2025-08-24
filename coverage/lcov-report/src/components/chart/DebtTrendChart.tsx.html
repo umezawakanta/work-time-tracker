@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/37</span>
+                <span class='fraction'>0/42</span>
             </div>
         
             
@@ -392,12 +392,12 @@ interface GroupedDataItem {
 }
 &nbsp;
 // データをグループ化して、同じ日付のエントリを合計する
-const groupByDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>ntries: DebtEntry[]): GroupedDataItem[] =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >groupByDate </span>= <span class="cstat-no" title="statement not covered" >(entries: DebtEntry[]): GroupedDataItem[] =&gt; {</span>
   const groupedData: Record&lt;string, GroupedDataItem&gt; = <span class="cstat-no" title="statement not covered" >{};</span>
 &nbsp;
   // データを日付でソート
   const sortedEntries = <span class="cstat-no" title="statement not covered" >[...entries].sort(</span>
-<span class="fstat-no" title="function not covered" >    (a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >new Date(a.date).getTime() - new Date(b.date).getTime()</span>
+<span class="fstat-no" title="function not covered" >    (a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; new Date(a.date).getTime() - new Date(b.date).getTime()</span>
   );
 &nbsp;
   // 日付ごとに合計値を計算
@@ -419,7 +419,7 @@ const groupByDate = <span class="cstat-no" title="statement not covered" ><span 
 };
 &nbsp;
 // 特定の日付範囲でデータをフィルタリングする
-const filterDataByTimeRange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ata: GroupedDataItem[], timeRange: string): GroupedDataItem[] =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >filterDataByTimeRange </span>= <span class="cstat-no" title="statement not covered" >(data: GroupedDataItem[], timeRange: string): GroupedDataItem[] =&gt; {</span>
   const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (timeRange === 'all') {</span>
@@ -433,7 +433,7 @@ const filterDataByTimeRange = <span class="cstat-no" title="statement not covere
         ? subMonths(now, 3)
         : subYears(now, 1);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return data.filter(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >isAfter(parseISO(item.date), cutoffDate))</span>;</span>
+<span class="cstat-no" title="statement not covered" >  return data.filter(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; isAfter(parseISO(item.date), cutoffDate));</span></span>
 };
 &nbsp;
 // ツールチップのprops型を定義
@@ -447,9 +447,9 @@ interface CustomTooltipProps {
   label?: string;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >DebtTrendChart: React.FC&lt;DebtTrendChartProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> data, timeRange }) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >DebtTrendChart:</span> React.FC&lt;DebtTrendChartProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{ data<span class="cstat-no" title="statement not covered" >, timeRange<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span>
   // データを日付でグループ化し、選択された時間範囲でフィルタリング
-  const chartData = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const chartData = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const groupedData = <span class="cstat-no" title="statement not covered" >groupByDate(data);</span>
 <span class="cstat-no" title="statement not covered" >    return filterDataByTimeRange(groupedData, timeRange);</span>
   }, [data, timeRange]);
@@ -464,17 +464,17 @@ export const <span class="cstat-no" title="statement not covered" >DebtTrendChar
   }
 &nbsp;
   // 日本円をフォーマットする関数
-  const formatYen = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>alue: number) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatYen </span>= <span class="cstat-no" title="statement not covered" >(value: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return `¥${value.toLocaleString()}`;</span>
   };
 &nbsp;
   // 日付フォーマットをカスタマイズ
-  const formatXAxis = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ateStr: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatXAxis </span>= <span class="cstat-no" title="statement not covered" >(dateStr: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return format(parseISO(dateStr), 'MM/dd');</span>
   };
 &nbsp;
   // ツールチップのカスタマイズ
-  const CustomTooltip: React.FC&lt;CustomTooltipProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> active, payload, label }) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >CustomTooltip:</span> React.FC&lt;CustomTooltipProps&gt; = <span class="cstat-no" title="statement not covered" >({ active<span class="cstat-no" title="statement not covered" >, payload<span class="cstat-no" title="statement not covered" >, label<span class="cstat-no" title="statement not covered" > }) =&gt; {</span></span></span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (active &amp;&amp; payload &amp;&amp; payload.length) {</span>
 <span class="cstat-no" title="statement not covered" >      return (</span>
         &lt;Card className="p-2 bg-background border shadow-md"&gt;
@@ -523,7 +523,7 @@ export const <span class="cstat-no" title="statement not covered" >DebtTrendChar
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

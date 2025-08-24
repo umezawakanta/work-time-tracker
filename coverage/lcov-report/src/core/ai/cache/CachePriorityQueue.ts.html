@@ -25,21 +25,21 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/30</span>
+                <span class='fraction'>0/31</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/20</span>
+                <span class='fraction'>0/36</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
@@ -174,9 +174,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -274,18 +274,18 @@
 /**
  * キャッシュ優先度キュークラス
  */
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >export class C</span></span>achePriorityQueue {
-  private <span class="cstat-no" title="statement not covered" >entries: Array&lt;{ key: string; entry: CacheEntry }&gt; = [];</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >export class C</span></span>achePriorityQueue<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+  private entries: Array&lt;{ key: string; entry: CacheEntry }&gt; = [];
 &nbsp;
-  /**
+<span class="cstat-no" title="statement not covered" >  /**</span>
    * エントリを追加
    */
   public <span class="fstat-no" title="function not covered" >add(</span>key: string, entry: CacheEntry): void {
     // 優先度が設定されていない場合はデフォルト値を使用
-    const priority = <span class="cstat-no" title="statement not covered" >entry.priority ?? CachePriority.NORMAL;</span>
+    const priority<span class="cstat-no" title="statement not covered" > = entry.priority ?? CachePriority.NORMAL;</span>
 &nbsp;
     // エントリに優先度を設定
-    const entryCopy = <span class="cstat-no" title="statement not covered" >{ ...entry, priority };</span>
+    const entryCopy<span class="cstat-no" title="statement not covered" > = { ...entry, priority };</span>
 &nbsp;
     // キューに追加
 <span class="cstat-no" title="statement not covered" >    this.entries.push({ key, entry: entryCopy });</span>
@@ -304,8 +304,8 @@
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (priorityDiff !== 0) <span class="cstat-no" title="statement not covered" >return priorityDiff;</span></span>
 &nbsp;
       // 2. 最終アクセス時間で比較（新しい順）
-      const lastAccessedA = <span class="cstat-no" title="statement not covered" >a.entry.lastAccessed ?? a.entry.timestamp;</span>
-      const lastAccessedB = <span class="cstat-no" title="statement not covered" >b.entry.lastAccessed ?? b.entry.timestamp;</span>
+      const lastAccessedA<span class="cstat-no" title="statement not covered" > = a.entry.lastAccessed ?? a.entry.timestamp;</span>
+      const lastAccessedB<span class="cstat-no" title="statement not covered" > = b.entry.lastAccessed ?? b.entry.timestamp;</span>
       const accessDiff = <span class="cstat-no" title="statement not covered" >lastAccessedB - lastAccessedA;</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (accessDiff !== 0) <span class="cstat-no" title="statement not covered" >return accessDiff;</span></span>
 &nbsp;
@@ -330,7 +330,7 @@
    * エントリを更新
    */
   public <span class="fstat-no" title="function not covered" >update(</span>key: string, updater: (entry: CacheEntry) =&gt; CacheEntry): boolean {
-    const index = <span class="cstat-no" title="statement not covered" >this.entries.findIndex(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >item.key === key)</span>;</span>
+    const index = <span class="cstat-no" title="statement not covered" >this.entries.findIndex(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; item.key === key);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (index === -1) {</span>
 <span class="cstat-no" title="statement not covered" >      return false;</span>
@@ -373,7 +373,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

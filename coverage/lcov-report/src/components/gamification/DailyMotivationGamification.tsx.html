@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/109</span>
+                <span class='fraction'>0/125</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/100</span>
+                <span class='fraction'>0/101</span>
             </div>
         
             
@@ -601,10 +601,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -632,6 +631,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -687,7 +687,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -902,8 +902,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1064,21 +1064,21 @@ interface PlayerStats {
   totalTasksCompleted: number;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >DailyMotivationGamification: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >DailyMotivationGamification:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
-  const todos = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.items)</span> || [];</span>
-  const { t } = <span class="cstat-no" title="statement not covered" >useInternationalization();</span>
+  const todos = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState<span class="cstat-no" title="statement not covered" >) =&gt; state.todo.items) </span>|| [];</span>
+  const { t<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useInternationalization();</span></span>
 &nbsp;
-  const [playerStats, setPlayerStats] = <span class="cstat-no" title="statement not covered" >useState&lt;PlayerStats&gt;({</span>
+  const [playerStats<span class="cstat-no" title="statement not covered" >, s</span>etPlayerStats<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;PlayerStats&gt;({</span>
     level: 1,
     currentXP: 0,
     totalXP: 0,
     xpToNextLevel: 100,
     streakDays: 0,
     totalTasksCompleted: 0,
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const [tasks, setTasks] = <span class="cstat-no" title="statement not covered" >useState&lt;SimpleTask[]&gt;([</span>
+  const [tasks<span class="cstat-no" title="statement not covered" >, s</span>etTasks<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;SimpleTask[]&gt;([</span>
     {
       id: '1',
       title: '朝の運動',
@@ -1106,14 +1106,14 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
       isCompleted: false,
       isHabit: true,
     },
-  ]);
+  ])<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const [newTaskTitle, setNewTaskTitle] = <span class="cstat-no" title="statement not covered" >useState('');</span>
-  const [selectedTab, setSelectedTab] = <span class="cstat-no" title="statement not covered" >useState&lt;'tasks' | 'stats'&gt;('tasks');</span>
-  const [isInitialized, setIsInitialized] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [newTaskTitle<span class="cstat-no" title="statement not covered" >, s</span>etNewTaskTitle<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [selectedTab<span class="cstat-no" title="statement not covered" >, s</span>etSelectedTab<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;'tasks' | 'stats'&gt;('tasks')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isInitialized<span class="cstat-no" title="statement not covered" >, s</span>etIsInitialized<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // データ保存を最適化
-  const saveToLocalStorage = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const saveToLocalStorage = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!isInitialized) <span class="cstat-no" title="statement not covered" >return; </span></span>// 初期化完了後のみ保存
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    try {</span>
@@ -1124,7 +1124,7 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
     }
   }, [playerStats, tasks, isInitialized]);
 &nbsp;
-  const loadFromLocalStorage = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const loadFromLocalStorage = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const savedStats = <span class="cstat-no" title="statement not covered" >localStorage.getItem('gamification_player_stats');</span>
       const savedTasks = <span class="cstat-no" title="statement not covered" >localStorage.getItem('gamification_tasks');</span>
@@ -1145,26 +1145,26 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
   }, []);
 &nbsp;
   // 初期化時にローカルストレージから復元
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    loadFromLocalStorage();</span>
   }, [loadFromLocalStorage]);
 &nbsp;
   // データ保存をデバウンス（初期化後のみ）
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!isInitialized) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
-    const timeout = <span class="cstat-no" title="statement not covered" >setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const timeout = <span class="cstat-no" title="statement not covered" >setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      saveToLocalStorage();</span>
     }, 500);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >clearTimeout(timeout);</span></span>
+<span class="cstat-no" title="statement not covered" >    return <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; c</span>learTimeout(timeout);</span></span>
   }, [saveToLocalStorage, isInitialized]);
 &nbsp;
-  const completeTask = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>askId: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setTasks(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >      prev.map(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >completeTask </span>= <span class="cstat-no" title="statement not covered" >(taskId: string) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setTasks(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+      prev.map(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (task.id === taskId &amp;&amp; !task.isCompleted) {</span>
-          const completedTask = <span class="cstat-no" title="statement not covered" >{</span>
+          const completedTask<span class="cstat-no" title="statement not covered" > = {</span>
             ...task,
             isCompleted: true,
             completedAt: new Date().toISOString(),
@@ -1175,7 +1175,7 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
 &nbsp;
           // ToDoとしても完了にする（統合機能）
 <span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (task.title) {</span>
-            const todoItem = <span class="cstat-no" title="statement not covered" >todos.find(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo.task === task.title)</span>;</span>
+            const todoItem = <span class="cstat-no" title="statement not covered" >todos.find(<span class="fstat-no" title="function not covered" >(t</span>odo<span class="cstat-no" title="statement not covered" >) =&gt; todo.task === task.title);</span></span>
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (todoItem) {</span>
 <span class="cstat-no" title="statement not covered" >              dispatch(</span>
                 updateTodoItem({
@@ -1215,7 +1215,7 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
       }
 &nbsp;
       // 通知をsetTimeoutで遅延実行（レンダリング後に実行）
-<span class="cstat-no" title="statement not covered" >      setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (levelUpsCount &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >          toast.success(`🎉 レベルアップ! レベル${newLevel}に到達しました！`);</span>
         }
@@ -1233,7 +1233,7 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
     });
   }, []);
 &nbsp;
-  const addNewTask = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >addNewTask </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!newTaskTitle.trim()) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
     const newTask: SimpleTask = <span class="cstat-no" title="statement not covered" >{</span>
@@ -1246,7 +1246,7 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
       isHabit: false,
     };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    setTasks(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >[...prev, newTask])</span>;</span>
+<span class="cstat-no" title="statement not covered" >    setTasks(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; [...prev, newTask])</span>;</span>
 &nbsp;
     // ToDoとしても追加（統合機能）
 <span class="cstat-no" title="statement not covered" >    dispatch(</span>
@@ -1262,7 +1262,7 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
 <span class="cstat-no" title="statement not covered" >    toast.success(`新しいタスクを追加しました: ${newTaskTitle}`);</span>
   };
 &nbsp;
-  const getCategoryIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>ategory: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getCategoryIcon </span>= <span class="cstat-no" title="statement not covered" >(category: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (category) {</span>
       case 'work':
 <span class="cstat-no" title="statement not covered" >        return &lt;Gamepad2 className="h-4 w-4" /&gt;;</span>
@@ -1279,7 +1279,7 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
     }
   };
 &nbsp;
-  const completedTasks = <span class="cstat-no" title="statement not covered" >tasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; <span class="cstat-no" title="statement not covered" >task.isCompleted)</span>;</span>
+  const completedTasks = <span class="cstat-no" title="statement not covered" >tasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt; task.isCompleted);</span></span>
   const completionRate =
 <span class="cstat-no" title="statement not covered" >    tasks.length &gt; 0 ? Math.round((completedTasks.length / tasks.length) * 100) : 0;</span>
 &nbsp;
@@ -1345,7 +1345,7 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
       &lt;/div&gt;
 &nbsp;
       {/* タブコンテンツ */}
-      &lt;Tabs value={selectedTab} onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue: any) =&gt; <span class="cstat-no" title="statement not covered" >setSelectedTab(value)}</span>&gt;
+      &lt;Tabs value={selectedTab} <span class="fstat-no" title="function not covered" >onValueChange=</span>{(value: any<span class="cstat-no" title="statement not covered" >) =&gt; setSelectedTab(value)}&gt;</span>
         &lt;TabsList className="grid w-full grid-cols-2"&gt;
           &lt;TabsTrigger value="tasks" className="flex items-center gap-2"&gt;
             &lt;CheckCircle2 className="h-4 w-4" /&gt;
@@ -1365,8 +1365,8 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
                 &lt;Input
                   placeholder={t('home.add_new_task')}
                   value={newTaskTitle}
-                  onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setNewTaskTitle(e.target.value)}</span>
-                  onKeyPress={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.key === 'Enter' &amp;&amp; addNewTask()}</span>
+<span class="fstat-no" title="function not covered" >                  onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setNewTaskTitle(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >                  onKeyPress=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; e.key === 'Enter' &amp;&amp; addNewTask()}</span>
                 /&gt;
                 &lt;Button onClick={addNewTask}&gt;
                   &lt;Plus className="h-4 w-4" /&gt;
@@ -1377,8 +1377,8 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
 &nbsp;
           {/* タスクリスト */}
           &lt;div className="space-y-3"&gt;
-            {tasks.map(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;Card</span>
+            {tasks.map(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+              &lt;Card
                 key={task.id}
                 className={`transition-all ${task.isCompleted ? 'opacity-60 bg-green-50' : ''}`}
               &gt;
@@ -1386,7 +1386,7 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
                   &lt;div className="flex items-center gap-3"&gt;
                     &lt;Checkbox
                       checked={task.isCompleted}
-                      onCheckedChange={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >!task.isCompleted &amp;&amp; completeTask(task.id)}</span>
+<span class="fstat-no" title="function not covered" >                      onCheckedChange<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; !task.isCompleted &amp;&amp; completeTask(task.id)}</span>
                     /&gt;
 &nbsp;
                     &lt;div className="flex items-center gap-2 flex-1"&gt;
@@ -1495,7 +1495,7 @@ export const <span class="cstat-no" title="statement not covered" >DailyMotivati
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

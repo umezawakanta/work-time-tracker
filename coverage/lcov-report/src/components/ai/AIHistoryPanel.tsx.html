@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/31</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/17</span>
             </div>
         
             
@@ -160,16 +160,16 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -179,8 +179,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -230,22 +230,22 @@ interface Props {
   provider?: AIProviderName;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AIHistoryPanel: React.FC&lt;Props&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> limit = <span class="branch-0 cbranch-no" title="branch not covered" >50,</span> provider }) =&gt; {</span>
-  const [items, setItems] = <span class="cstat-no" title="statement not covered" >useState&lt;AIInteractionEntry[]&gt;([]);</span>
-  const [loading, setLoading] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AIHistoryPanel:</span> React.FC&lt;Props&gt; = <span class="cstat-no" title="statement not covered" >(</span>{ limit<span class="cstat-no" title="statement not covered" > = 50, p</span>rovider<span class="cstat-no" title="statement not covered" > }) =&gt;<span class="cstat-no" title="statement not covered" > {</span></span></span>
+  const [items<span class="cstat-no" title="statement not covered" >, s</span>etItems<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;AIInteractionEntry[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [loading<span class="cstat-no" title="statement not covered" >, s</span>etLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     let mounted = <span class="cstat-no" title="statement not covered" >true;</span>
-<span class="cstat-no" title="statement not covered" >    (<span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      setLoading(true);</span>
-<span class="cstat-no" title="statement not covered" >      try {</span>
-        const list = <span class="cstat-no" title="statement not covered" >await AIHistoryService.listInteractions({ limit, provider });</span>
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (mounted) <span class="cstat-no" title="statement not covered" >setItems(list);</span></span>
+<span class="cstat-no" title="statement not covered" >    (<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span></span>
+<span class="cstat-no" title="statement not covered" >      setLoading(true);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+      try {
+        const <span class="cstat-no" title="statement not covered" >list = await A</span>IHistoryService.listInteractions({ limit, provider });
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (mounted) <span class="cstat-no" title="statement not covered" >setItems(list);<span class="cstat-no" title="statement not covered" ></span></span></span>
       } finally {
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (mounted) <span class="cstat-no" title="statement not covered" >setLoading(false);</span></span>
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (mounted) <span class="cstat-no" title="statement not covered" >setLoading(false);<span class="cstat-no" title="statement not covered" ></span></span></span>
       }
     })();
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      mounted = false;</span>
     };
   }, [limit, provider]);
@@ -257,8 +257,8 @@ export const <span class="cstat-no" title="statement not covered" >AIHistoryPane
         {loading &amp;&amp; &lt;span className="text-xs text-neutral-500"&gt;Loading...&lt;/span&gt;}
       &lt;/div&gt;
       &lt;div className="space-y-3 max-h-80 overflow-auto"&gt;
-        {items.map(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; (
-<span class="cstat-no" title="statement not covered" >          &lt;div key={item.id} c</span>lassName="text-xs p-3 border rounded"&gt;
+        {items.map(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+          &lt;div key={item.id} className="text-xs p-3 border rounded"&gt;
             &lt;div className="flex items-center justify-between"&gt;
               &lt;div className="font-medium"&gt;
                 {item.provider} {item.model ? `· ${item.model}` : ''}
@@ -304,7 +304,7 @@ export const <span class="cstat-no" title="statement not covered" >AIHistoryPane
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

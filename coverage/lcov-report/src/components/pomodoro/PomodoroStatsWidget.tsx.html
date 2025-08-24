@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/39</span>
+                <span class='fraction'>0/53</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/35</span>
+                <span class='fraction'>0/36</span>
             </div>
         
             
@@ -248,20 +248,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -269,10 +255,24 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -408,46 +408,46 @@ interface PomodoroStats {
   mostProductiveHour: number;
 }
 &nbsp;
-const PomodoroStatsWidgetComponent: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-  const [stats, setStats] = <span class="cstat-no" title="statement not covered" >useState&lt;PomodoroStats&gt;({</span>
+const <span class="fstat-no" title="function not covered" >PomodoroStatsWidgetComponent:</span> React.FC = <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
+  const [stats<span class="cstat-no" title="statement not covered" >, s</span>etStats<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;PomodoroStats&gt;({</span>
     totalSessions: 0,
     totalWorkTime: 0,
     averageSessionLength: 0,
     mostProductiveHour: 9,
-  });
-  const [isLoading, setIsLoading] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
+  })<span class="cstat-no" title="statement not covered" >;</span>
+  const [isLoading<span class="cstat-no" title="statement not covered" >, s</span>etIsLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true)<span class="cstat-no" title="statement not covered" >;</span></span>
   const hasLoadedRef = <span class="cstat-no" title="statement not covered" >useRef(false);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // 重複読み込みを防ぐ
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (hasLoadedRef.current) {</span>
 <span class="cstat-no" title="statement not covered" >      return;</span>
     }
 &nbsp;
-    const loadStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      try {</span>
-<span class="cstat-no" title="statement not covered" >        setIsLoading(true);</span>
+    const <span class="fstat-no" title="function not covered" >loadStats<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span></span>sync () =&gt; {</span></span></span></span>
+      try {
+<span class="cstat-no" title="statement not covered" >        setIsLoading(true);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
 &nbsp;
-        const pomodoroStats = <span class="cstat-no" title="statement not covered" >await pomodoroWorkTimeIntegration.getTodayPomodoroStats();</span>
+        const <span class="cstat-no" title="statement not covered" >pomodoroStats = await p</span>omodoroWorkTimeIntegration.getTodayPomodoroStats();
 <span class="cstat-no" title="statement not covered" >        setStats(pomodoroStats);</span>
-<span class="cstat-no" title="statement not covered" >        hasLoadedRef.current = true;</span>
+<span class="cstat-no" title="statement not covered" >        hasLoadedRef.current = true;<span class="cstat-no" title="statement not covered" ></span></span>
       } catch (error: any) {
 <span class="cstat-no" title="statement not covered" >        console.error('ポモドーロ統計の取得に失敗:', error);</span>
         // モックデータ使用によりエラーは稀なので、読み込み済みとしてマーク
-<span class="cstat-no" title="statement not covered" >        hasLoadedRef.current = true;</span>
+<span class="cstat-no" title="statement not covered" >        hasLoadedRef.current = true;<span class="cstat-no" title="statement not covered" ></span></span>
       } finally {
-<span class="cstat-no" title="statement not covered" >        setIsLoading(false);</span>
+<span class="cstat-no" title="statement not covered" >        setIsLoading(false);<span class="cstat-no" title="statement not covered" ></span></span>
       }
-    };
+    }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    loadStats();</span>
   }, []); // 依存配列を空にして初回のみ実行
 &nbsp;
-  const formatHour = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(h</span>our: number): string =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >formatHour </span>= <span class="cstat-no" title="statement not covered" >(hour: number): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return `${hour.toString().padStart(2, '0')}:00`;</span>
   };
 &nbsp;
-  const getProductivityLevel = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>essions: number): { level: string; color: string } =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getProductivityLevel </span>= <span class="cstat-no" title="statement not covered" >(sessions: number): { level: string; color: string } =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (sessions &gt;= 8) <span class="cstat-no" title="statement not covered" >return { level: '非常に高い', color: 'bg-green-100 text-green-800' };</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (sessions &gt;= 6) <span class="cstat-no" title="statement not covered" >return { level: '高い', color: 'bg-blue-100 text-blue-800' };</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (sessions &gt;= 4) <span class="cstat-no" title="statement not covered" >return { level: '普通', color: 'bg-yellow-100 text-yellow-800' };</span></span>
@@ -568,7 +568,7 @@ export const <span class="cstat-no" title="statement not covered" >PomodoroStats
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

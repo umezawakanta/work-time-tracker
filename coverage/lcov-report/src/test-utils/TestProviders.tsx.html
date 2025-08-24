@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90% </span>
+                <span class="strong">82.92% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>18/20</span>
+                <span class='fraction'>34/41</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.5% </span>
+                <span class="strong">46.66% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/8</span>
+                <span class='fraction'>7/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">28.57% </span>
+                <span class="strong">35.71% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/7</span>
+                <span class='fraction'>5/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.23% </span>
+                <span class="strong">90.9% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>15/17</span>
+                <span class='fraction'>20/22</span>
             </div>
         
             
@@ -178,10 +178,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -219,8 +219,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">38x</span>
+<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -230,7 +230,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">38x</span>
+<span class="cline-any cline-yes">34x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">34x</span>
+<span class="cline-any cline-yes">34x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -240,16 +249,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">38x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * 🧪 テスト用プロバイダー
@@ -290,14 +290,14 @@ export const TestProviders: React.FC&lt;TestProvidersProps&gt; = ({
 /**
  * AuthProviderのみのテスト用ラッパー（軽量版）
  */
-export const AuthTestProvider: React.FC&lt;{ children: React.ReactNode }&gt; = <span class="fstat-no" title="function not covered" >({</span> children }) =&gt; {
+export const <span class="fstat-no" title="function not covered" >AuthTestProvider:</span> React.FC&lt;{ children: React.ReactNode }&gt; = ({ children<span class="cstat-no" title="statement not covered" > }) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return &lt;AuthProvider&gt;{children}&lt;/AuthProvider&gt;;</span>
 };
 &nbsp;
 /**
  * Redux + Auth の組み合わせテスト用ラッパー
  */
-export const ReduxAuthTestProvider: React.FC&lt;{ children: React.ReactNode }&gt; = <span class="fstat-no" title="function not covered" >({</span> children }) =&gt; {
+export const <span class="fstat-no" title="function not covered" >ReduxAuthTestProvider:</span> React.FC&lt;{ children: React.ReactNode }&gt; = ({ children<span class="cstat-no" title="statement not covered" > }) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;Provider store={store}&gt;
       &lt;AuthProvider&gt;{children}&lt;/AuthProvider&gt;
@@ -330,10 +330,10 @@ export const MockAuthProvider: React.FC&lt;{
     loading: false,
     user: isAuthenticated ? mockUser : <span class="branch-1 cbranch-no" title="branch not covered" >null,</span>
     setUser: jest.fn(),
-    fetchUser: <span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;void&gt; =&gt; {},
-    updateProfile: <span class="fstat-no" title="function not covered" >async </span>(_data: { name: string; email: string }): Promise&lt;void&gt; =&gt; {},
+<span class="fstat-no" title="function not covered" >    fetchUser:</span> <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >async (): Promise&lt;void&gt; =&gt; {},</span></span></span>
+<span class="fstat-no" title="function not covered" >    updateProfile:</span> <span class="fstat-no" title="function not covered" >async (_</span>data: { name: string; email: string }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;void&gt; =&gt; {},</span></span></span>
     sessionExpired: false,
-    refreshAuth: <span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;void&gt; =&gt; {},
+<span class="fstat-no" title="function not covered" >    refreshAuth:</span> <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >async (): Promise&lt;void&gt; =&gt; {},</span></span></span>
     sessionInfo: {
       isAuthenticated,
       expiresAt: new Date(Date.now() + 3600000), // 1時間後
@@ -352,7 +352,7 @@ export const MockAuthProvider: React.FC&lt;{
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

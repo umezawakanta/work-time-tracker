@@ -25,21 +25,21 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/73</span>
+                <span class='fraction'>0/78</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
@@ -482,11 +482,11 @@ interface UseTodoHistoryReturn {
  * Custom hook for managing todo history data
  * TodoCalendarコンポーネントと互換性のあるデータ形式を返す
  */
-export const <span class="cstat-no" title="statement not covered" >useTodoHistory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>t</span>odos: readonly Todo[]): UseTodoHistoryReturn =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useTodoHistory </span>= <span class="cstat-no" title="statement not covered" >(</span>todos: readonly Todo[]): UseTodoHistoryReturn =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  return useMemo(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    console.log('[useTodoHistory] 🔄 履歴データ計算開始:', {</span>
       todosCount: todos.length,
-      todos: todos.slice(0, 3).map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+      todos: todos.slice(0, 3).map(<span class="fstat-no" title="function not covered" >(t<span class="cstat-no" title="statement not covered" ></span>) =&gt; ({</span>
         id: t.id,
         text: t.text,
         completed: t.completed,
@@ -505,10 +505,10 @@ export const <span class="cstat-no" title="statement not covered" >useTodoHistor
     let dayOffset = <span class="cstat-no" title="statement not covered" >0;</span>
 &nbsp;
     // Check if user completed any todos on given date
-    const hasCompletedTodoOnDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ate: Date): boolean =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >hasCompletedTodoOnDate </span>= <span class="cstat-no" title="statement not covered" >(date: Date): boolean =&gt; {</span>
       const dateStr = <span class="cstat-no" title="statement not covered" >date.toISOString().split('T')[0];</span>
 <span class="cstat-no" title="statement not covered" >      return todos.some(</span>
-<span class="fstat-no" title="function not covered" >        (t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo.completed &amp;&amp; todo.completedAt &amp;&amp; todo.completedAt.startsWith(dateStr)</span>
+<span class="fstat-no" title="function not covered" >        (t</span>odo<span class="cstat-no" title="statement not covered" >) =&gt; todo.completed &amp;&amp; todo.completedAt &amp;&amp; todo.completedAt.startsWith(dateStr)</span>
       );
     };
 &nbsp;
@@ -594,9 +594,9 @@ export const <span class="cstat-no" title="statement not covered" >useTodoHistor
     });
 &nbsp;
     // 優先度を判定する関数
-    const determinePriority = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>riorities: number[]): 'low' | 'medium' | 'high' =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >determinePriority </span>= <span class="cstat-no" title="statement not covered" >(priorities: number[]): 'low' | 'medium' | 'high' =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (priorities.length === 0) <span class="cstat-no" title="statement not covered" >return 'medium';</span></span>
-      const avgPriority = <span class="cstat-no" title="statement not covered" >priorities.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, p) =&gt; <span class="cstat-no" title="statement not covered" >sum + p,</span> 0) / priorities.length;</span>
+      const avgPriority = <span class="cstat-no" title="statement not covered" >priorities.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, p<span class="cstat-no" title="statement not covered" >) =&gt; sum + p, 0</span>) / priorities.length;</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (avgPriority &gt;= 4) <span class="cstat-no" title="statement not covered" >return 'high';</span></span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (avgPriority &gt;= 2.5) <span class="cstat-no" title="statement not covered" >return 'medium';</span></span>
 <span class="cstat-no" title="statement not covered" >      return 'low';</span>
@@ -605,7 +605,7 @@ export const <span class="cstat-no" title="statement not covered" >useTodoHistor
     // TodoHistoryItem形式に変換
     const todoHistory: TodoHistoryItem[] = <span class="cstat-no" title="statement not covered" >Array.from(todosByDate.entries())</span>
       .map(
-<span class="fstat-no" title="function not covered" >        ([</span>date, data]): TodoHistoryItem =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >        ([d</span></span>ate<span class="cstat-no" title="statement not covered" >, d</span>ata<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]): TodoHistoryItem =&gt; ({</span></span>
           date,
           count: data.total,
           completed: data.completed,
@@ -617,16 +617,16 @@ export const <span class="cstat-no" title="statement not covered" >useTodoHistor
               : `${data.total}個のタスク作成`,
         })
       )
-      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >a.date.localeCompare(b.date))</span>;
+      .sort(<span class="fstat-no" title="function not covered" >(a</span>, b<span class="cstat-no" title="statement not covered" >) =&gt; a.date.localeCompare(b.date));</span>
 &nbsp;
     // 過去30日間のデータも生成（空の日も含める）
-    const dailyHistory: TodoHistoryItem[] = <span class="cstat-no" title="statement not covered" >[];</span>
-<span class="cstat-no" title="statement not covered" >    for (let i = <span class="cstat-no" title="statement not covered" >29;</span> i &gt;= 0; i--) {</span>
+    const dailyHistory: TodoHistoryItem[] = <span class="cstat-no" title="statement not covered" >[];<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >    for (let i = <span class="cstat-no" title="statement not covered" >29;</span> i &gt;= 0; i--<span class="cstat-no" title="statement not covered" >) {</span></span>
       const date = <span class="cstat-no" title="statement not covered" >new Date();</span>
 <span class="cstat-no" title="statement not covered" >      date.setDate(date.getDate() - i);</span>
       const dateStr = <span class="cstat-no" title="statement not covered" >date.toISOString().split('T')[0];</span>
 &nbsp;
-      const existingData = <span class="cstat-no" title="statement not covered" >todoHistory.find(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >item.date === dateStr)</span>;</span>
+      const existingData = <span class="cstat-no" title="statement not covered" >todoHistory.find(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; item.date === dateStr);</span></span>
 <span class="cstat-no" title="statement not covered" >      if (existingData) {</span>
 <span class="cstat-no" title="statement not covered" >        dailyHistory.push(existingData);</span>
       } else {
@@ -664,7 +664,7 @@ export const <span class="cstat-no" title="statement not covered" >useTodoHistor
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

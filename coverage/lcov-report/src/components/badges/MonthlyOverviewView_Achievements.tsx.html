@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/10</span>
             </div>
         
             
@@ -235,7 +235,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -253,6 +252,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -388,8 +388,8 @@ interface MonthlyAchievement {
 }
 &nbsp;
 // 達成バッジ表示コンポーネント
-const renderMonthlyAchievements = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(a</span>chievements: MonthlyAchievement[]) =&gt; (</span>
-<span class="cstat-no" title="statement not covered" >  &lt;Card&gt;</span>
+const <span class="fstat-no" title="function not covered" >renderMonthlyAchievements </span>= <span class="cstat-no" title="statement not covered" >(achievements: MonthlyAchievement[]<span class="cstat-no" title="statement not covered" >) =&gt; (</span></span>
+  &lt;Card&gt;
     &lt;CardHeader&gt;
       &lt;CardTitle className="flex items-center gap-2"&gt;
         &lt;Trophy className="w-5 h-5" /&gt;
@@ -405,8 +405,8 @@ const renderMonthlyAchievements = <span class="cstat-no" title="statement not co
         &lt;/div&gt;
       ) : (
         &lt;div className="space-y-4"&gt;
-          {achievements.map(<span class="fstat-no" title="function not covered" >(a</span>chievement, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;div</span>
+          {achievements.map(<span class="fstat-no" title="function not covered" >(a</span>chievement, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+            &lt;div
               key={achievement.badgeId}
               className="border rounded-lg p-4 hover:bg-muted/50 transition-colors"
             &gt;
@@ -498,14 +498,14 @@ const renderMonthlyAchievements = <span class="cstat-no" title="statement not co
             &lt;/div&gt;
             &lt;div className="text-center"&gt;
               &lt;div className="text-xl font-bold text-green-600"&gt;
-                {achievements.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, a) =&gt; <span class="cstat-no" title="statement not covered" >sum + a.hoursSpent,</span> 0)}h
+                {achievements.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, a<span class="cstat-no" title="statement not covered" >) =&gt; sum + a.hoursSpent, 0</span>)}h
               &lt;/div&gt;
               &lt;div className="text-xs text-muted-foreground"&gt;総学習時間&lt;/div&gt;
             &lt;/div&gt;
             &lt;div className="text-center"&gt;
               &lt;div className="text-xl font-bold text-purple-600"&gt;
                 {Math.round(
-                  achievements.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, a) =&gt; <span class="cstat-no" title="statement not covered" >sum + a.hoursSpent,</span> 0) / achievements.length
+                  achievements.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, a<span class="cstat-no" title="statement not covered" >) =&gt; sum + a.hoursSpent, 0</span>) / achievements.length
                 )}
                 h
               &lt;/div&gt;
@@ -513,7 +513,7 @@ const renderMonthlyAchievements = <span class="cstat-no" title="statement not co
             &lt;/div&gt;
             &lt;div className="text-center"&gt;
               &lt;div className="text-xl font-bold text-blue-600"&gt;
-                {achievements.filter(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.impact === 'high')</span>.length}
+                {achievements.filter(<span class="fstat-no" title="function not covered" >(a<span class="cstat-no" title="statement not covered" ></span>) =&gt; a.impact === 'high').</span>length}
               &lt;/div&gt;
               &lt;div className="text-xs text-muted-foreground"&gt;高インパクト&lt;/div&gt;
             &lt;/div&gt;
@@ -524,7 +524,7 @@ const renderMonthlyAchievements = <span class="cstat-no" title="statement not co
   &lt;/Card&gt;
 );
 &nbsp;
-export { <span class="cstat-no" title="statement not covered" >renderMonthlyAchievements </span>};
+export { <span class="cstat-no" title="statement not covered" >renderMonthlyAchievements };</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -532,7 +532,7 @@ export { <span class="cstat-no" title="statement not covered" >renderMonthlyAchi
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

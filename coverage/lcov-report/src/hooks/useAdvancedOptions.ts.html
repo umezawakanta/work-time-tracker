@@ -25,21 +25,21 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/102</span>
+                <span class='fraction'>0/144</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/31</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -301,14 +301,14 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -403,8 +403,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -440,10 +440,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -453,7 +453,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -466,7 +466,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -516,32 +516,32 @@ import { TodoStats } from '@/types/TodoStats';
  */
 <span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >u</span>seAdvancedOptions(</span>) {
   // 状態管理
-  const [autoAdjustEnabled, setAutoAdjustEnabled] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(true);</span>
-  const [importFile, setImportFile] = <span class="cstat-no" title="statement not covered" >useState&lt;File | null&gt;(null);</span>
-  const [recentActions, setRecentActions] = <span class="cstat-no" title="statement not covered" >useState&lt;Array&lt;{ action: string; timestamp: number }&gt;&gt;(</span>
+  const [autoAdjustEnabled<span class="cstat-no" title="statement not covered" >, s</span>etAutoAdjustEnabled<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(true)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [importFile<span class="cstat-no" title="statement not covered" >, s</span>etImportFile<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;File | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [recentActions<span class="cstat-no" title="statement not covered" >, s</span>etRecentActions<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Array&lt;{ action: string; timestamp: number }&gt;&gt;(</span>
     []
-  );
-  const [statistics, setStatistics] = <span class="cstat-no" title="statement not covered" >useState&lt;TodoStats | null&gt;(null);</span>
-  const [isLoading, setIsLoading] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
-  const [error, setError] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;(null);</span>
+  )<span class="cstat-no" title="statement not covered" >;</span>
+  const [statistics<span class="cstat-no" title="statement not covered" >, s</span>etStatistics<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;TodoStats | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isLoading<span class="cstat-no" title="statement not covered" >, s</span>etIsLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;boolean&gt;(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [error<span class="cstat-no" title="statement not covered" >, s</span>etError<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 統計データの読み込み
-  const loadStatistics = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      setIsLoading(true);</span>
-      const data = <span class="cstat-no" title="statement not covered" >await fetchTodoStats();</span>
+  const loadStatistics = <span class="cstat-no" title="statement not covered" >useCallback(<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span></span></span>
+    try {
+<span class="cstat-no" title="statement not covered" >      setIsLoading(true);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+      const <span class="cstat-no" title="statement not covered" >data = await f</span>etchTodoStats();
 <span class="cstat-no" title="statement not covered" >      setStatistics(data);</span>
-<span class="cstat-no" title="statement not covered" >      setError(null);</span>
+<span class="cstat-no" title="statement not covered" >      setError(null);<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (err) {
 <span class="cstat-no" title="statement not covered" >      setError('統計データの読み込みに失敗しました');</span>
-<span class="cstat-no" title="statement not covered" >      console.error('統計データの読み込みエラー:', err);</span>
+<span class="cstat-no" title="statement not covered" >      console.error('統計データの読み込みエラー:', err);<span class="cstat-no" title="statement not covered" ></span></span>
     } finally {
-<span class="cstat-no" title="statement not covered" >      setIsLoading(false);</span>
+<span class="cstat-no" title="statement not covered" >      setIsLoading(false);<span class="cstat-no" title="statement not covered" ></span></span>
     }
   }, []);
 &nbsp;
   // 最近のアクションをローカルストレージから読み込み
-  const loadRecentActions = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const loadRecentActions = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const storedActions = <span class="cstat-no" title="statement not covered" >localStorage.getItem('recentTodoActions');</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (storedActions) {</span>
@@ -553,7 +553,7 @@ import { TodoStats } from '@/types/TodoStats';
   }, []);
 &nbsp;
   // 設定をローカルストレージから読み込み
-  const loadSettings = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const loadSettings = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const autoAdjust = <span class="cstat-no" title="statement not covered" >localStorage.getItem('todoAutoAdjust');</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (autoAdjust !== null) {</span>
@@ -565,7 +565,7 @@ import { TodoStats } from '@/types/TodoStats';
   }, []);
 &nbsp;
   // 最初のデータ読み込み
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    loadStatistics();</span>
 <span class="cstat-no" title="statement not covered" >    loadRecentActions();</span>
 <span class="cstat-no" title="statement not covered" >    loadSettings();</span>
@@ -610,10 +610,10 @@ import { TodoStats } from '@/types/TodoStats';
   );
 &nbsp;
   // 優先度調整実行
-  const handleAdjustPriorities = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const handleAdjustPriorities = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // ここでAPIを呼び出して優先度調整を実行
     // モック実装
-<span class="cstat-no" title="statement not covered" >    setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setTimeout(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      addToRecentActions('優先度を手動調整しました');</span>
     }, 500);
 &nbsp;
@@ -622,18 +622,18 @@ import { TodoStats } from '@/types/TodoStats';
 &nbsp;
   // タスクエクスポート
   const handleExport = <span class="cstat-no" title="statement not covered" >useCallback(</span>
-<span class="fstat-no" title="function not covered" >    async </span>(format: ExportFormat = <span class="branch-0 cbranch-no" title="branch not covered" >'csv')</span> =&gt; {
-<span class="cstat-no" title="statement not covered" >      try {</span>
-<span class="cstat-no" title="statement not covered" >        setIsLoading(true);</span>
-        const blob = <span class="cstat-no" title="statement not covered" >await exportTasks(format);</span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >    async (<span class="cstat-no" title="statement not covered" >f</span></span>ormat: ExportFormat = 'csv'<span class="cstat-no" title="statement not covered" >) =&gt; {</span></span></span>
+      try {
+<span class="cstat-no" title="statement not covered" >        setIsLoading(true);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+        const <span class="cstat-no" title="statement not covered" >blob = await e</span>xportTasks(format);
 &nbsp;
         // ダウンロードファイル名を生成
-        const date = <span class="cstat-no" title="statement not covered" >new Date().toISOString().split('T')[0];</span>
-        const fileName = <span class="cstat-no" title="statement not covered" >`tasks-${date}.${format}`;</span>
+        const <span class="cstat-no" title="statement not covered" >date = new Date().toISOString().split('T')[0];</span>
+        const <span class="cstat-no" title="statement not covered" >fileName = `tasks-${date}.${format}`;</span>
 &nbsp;
         // ブラウザでダウンロードを開始
-        const url = <span class="cstat-no" title="statement not covered" >window.URL.createObjectURL(blob);</span>
-        const a = <span class="cstat-no" title="statement not covered" >document.createElement('a');</span>
+        const <span class="cstat-no" title="statement not covered" >url = window.URL.createObjectURL(blob);</span>
+        const <span class="cstat-no" title="statement not covered" >a = document.createElement('a');</span>
 <span class="cstat-no" title="statement not covered" >        a.href = url;</span>
 <span class="cstat-no" title="statement not covered" >        a.download = fileName;</span>
 <span class="cstat-no" title="statement not covered" >        document.body.appendChild(a);</span>
@@ -644,48 +644,48 @@ import { TodoStats } from '@/types/TodoStats';
 <span class="cstat-no" title="statement not covered" >        document.body.removeChild(a);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        addToRecentActions(`タスクを${format.toUpperCase()}形式でエクスポート`);</span>
-<span class="cstat-no" title="statement not covered" >        setError(null);</span>
-<span class="cstat-no" title="statement not covered" >        return true;</span>
+<span class="cstat-no" title="statement not covered" >        setError(null);<span class="cstat-no" title="statement not covered" ></span></span>
+        return true<span class="cstat-no" title="statement not covered" >;</span>
       } catch (err) {
 <span class="cstat-no" title="statement not covered" >        setError('エクスポートに失敗しました');</span>
-<span class="cstat-no" title="statement not covered" >        console.error('エクスポートエラー:', err);</span>
-<span class="cstat-no" title="statement not covered" >        return false;</span>
+<span class="cstat-no" title="statement not covered" >        console.error('エクスポートエラー:', err);<span class="cstat-no" title="statement not covered" ></span></span>
+        return false<span class="cstat-no" title="statement not covered" >;</span>
       } finally {
-<span class="cstat-no" title="statement not covered" >        setIsLoading(false);</span>
+<span class="cstat-no" title="statement not covered" >        setIsLoading(false);<span class="cstat-no" title="statement not covered" ></span></span>
       }
     },
     [addToRecentActions]
   );
 &nbsp;
   // タスクインポート
-  const handleImport = <span class="cstat-no" title="statement not covered" >useCallback(</span>
-<span class="fstat-no" title="function not covered" >    async </span>(file: File, format: string) =&gt; {
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!file) <span class="cstat-no" title="statement not covered" >return false;</span></span>
+  const handleImport = <span class="cstat-no" title="statement not covered" >useCallback<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
+<span class="fstat-no" title="function not covered" >    async (f</span>ile: File, format: string<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>) =&gt; {</span></span></span>
+      if (!file<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >) return f</span>alse<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      try {</span>
-<span class="cstat-no" title="statement not covered" >        setIsLoading(true);</span>
-        const success = <span class="cstat-no" title="statement not covered" >await importTasks(file, format);</span>
+      try {
+<span class="cstat-no" title="statement not covered" >        setIsLoading(true);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+        const <span class="cstat-no" title="statement not covered" >success<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span> = await i</span>mportTasks(file, format);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        if (success) {</span>
+        if (success<span class="cstat-no" title="statement not covered" >) {</span>
           // importTasksAndSendはbooleanを返すので、エラー対象のresult.countとresult.successは使用しない
 <span class="cstat-no" title="statement not covered" >          addToRecentActions(`タスクをインポートしました (${file.name})`);</span>
           // 統計を再読み込み
 <span class="cstat-no" title="statement not covered" >          loadStatistics();</span>
-<span class="cstat-no" title="statement not covered" >          setError(null);</span>
-<span class="cstat-no" title="statement not covered" >          return true;</span>
+<span class="cstat-no" title="statement not covered" >          setError(null);<span class="cstat-no" title="statement not covered" ></span></span>
+          return true;
         } else {
-<span class="cstat-no" title="statement not covered" >          setError('インポートに失敗しました');</span>
-<span class="cstat-no" title="statement not covered" >          return false;</span>
+<span class="cstat-no" title="statement not covered" >          setError('インポートに失敗しました');<span class="cstat-no" title="statement not covered" ></span></span>
+          return false<span class="cstat-no" title="statement not covered" >;</span>
         }
       } catch (err) {
 <span class="cstat-no" title="statement not covered" >        setError('インポートに失敗しました');</span>
-<span class="cstat-no" title="statement not covered" >        console.error('インポートエラー:', err);</span>
-<span class="cstat-no" title="statement not covered" >        return false;</span>
+<span class="cstat-no" title="statement not covered" >        console.error('インポートエラー:', err);<span class="cstat-no" title="statement not covered" ></span></span>
+        return false<span class="cstat-no" title="statement not covered" >;</span>
       } finally {
 <span class="cstat-no" title="statement not covered" >        setIsLoading(false);</span>
-<span class="cstat-no" title="statement not covered" >        setImportFile(null); </span>// インポート後はファイル選択をクリア
+<span class="cstat-no" title="statement not covered" >        setImportFile(null); <span class="cstat-no" title="statement not covered" ></span>// インポート後はファイル選択をクリア</span>
       }
-    },
+    }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >,</span></span>
     [addToRecentActions, loadStatistics]
   );
 &nbsp;
@@ -727,7 +727,7 @@ import { TodoStats } from '@/types/TodoStats';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

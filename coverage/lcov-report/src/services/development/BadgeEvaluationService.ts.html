@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/72</span>
+                <span class='fraction'>0/90</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/43</span>
+                <span class='fraction'>0/47</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/68</span>
+                <span class='fraction'>0/73</span>
             </div>
         
             
@@ -310,13 +310,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -329,10 +327,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -477,17 +477,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -530,11 +530,11 @@ interface EvaluationContext {
   uiComponents: any;
 }
 &nbsp;
-class BadgeEvaluationService {
-<span class="fstat-no" title="function not covered" >  async </span>evaluateAllBadges(): Promise&lt;DevelopmentBadge[]&gt; {
-    const progress = <span class="cstat-no" title="statement not covered" >await githubProgressService.analyzeRepositoryProgress();</span>
+class BadgeEvaluationService<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >e</span></span>valuateAllBadges<span class="cstat-no" title="statement not covered" >(</span>): Promise&lt;DevelopmentBadge[]&gt; {</span></span></span>
+    const <span class="cstat-no" title="statement not covered" >progress = await g</span>ithubProgressService.analyzeRepositoryProgress();
 &nbsp;
-    const context: EvaluationContext = <span class="cstat-no" title="statement not covered" >{</span>
+    const <span class="cstat-no" title="statement not covered" >context: EvaluationContext = {</span>
       progress: {
         commitCount: progress.commitCount,
         testCoverage: progress.testCoverage,
@@ -545,13 +545,13 @@ class BadgeEvaluationService {
       },
       fileStructure: [],
       uiComponents: {},
-    };
+    }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return DEVELOPMENT_BADGES.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >this.evaluateBadge(badge, context))</span>;</span>
+    return DEVELOPMENT_BADGES.map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; this.evaluateBadge(badge, context));</span>
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >evaluateBadge(</span>badge: DevelopmentBadge, context: EvaluationContext): DevelopmentBadge {
-    const updatedBadge = <span class="cstat-no" title="statement not covered" >{ ...badge };</span>
+  private <span class="fstat-no" title="function not covered" >evaluateBadge(</span>badge: DevelopmentBadge, context: EvaluationContext<span class="cstat-no" title="statement not covered" >): DevelopmentBadge {</span>
+    const updatedBadge<span class="cstat-no" title="statement not covered" > = { ...badge };</span>
     let completedRequirements = <span class="cstat-no" title="statement not covered" >0;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    updatedBadge.requirements.forEach(<span class="fstat-no" title="function not covered" >(r</span>equirement) =&gt; {</span>
@@ -606,27 +606,27 @@ class BadgeEvaluationService {
     featureTarget: string,
     progress: EvaluationContext['progress']
   ): boolean {
-    const { coreFeatures, pageCount, featuresCompleted } = <span class="cstat-no" title="statement not covered" >progress;</span>
+    const { coreFeatures, pageCount, featuresCompleted } = <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >progress;</span></span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    switch (featureTarget) {</span>
       case 'todo_crud':
 <span class="cstat-no" title="statement not covered" >        return coreFeatures.todo &amp;&amp; featuresCompleted.includes('todo');</span>
 &nbsp;
       case 'responsive_design':
-<span class="cstat-no" title="statement not covered" >        return pageCount &gt;= 25; </span>// 25ページ以上でレスポンシブ対応済みと判定
+<span class="cstat-no" title="statement not covered" >        return pageCount &gt;= 25; /</span>/ 25ページ以上でレスポンシブ対応済みと判定
 &nbsp;
       case 'all_core_features':
         // 全コア機能が実装済みかチェック
-<span class="cstat-no" title="statement not covered" >        return Object.values(coreFeatures).every(<span class="fstat-no" title="function not covered" >(f</span>eature) =&gt; <span class="cstat-no" title="statement not covered" >feature)</span> &amp;&amp; pageCount &gt;= 30;</span>
+<span class="cstat-no" title="statement not covered" >        return Object.values(coreFeatures).every(<span class="fstat-no" title="function not covered" >(f</span>eature<span class="cstat-no" title="statement not covered" >) =&gt; feature) </span>&amp;&amp; pageCount &gt;= 30;</span>
 &nbsp;
       case 'workflow_engine':
 <span class="cstat-no" title="statement not covered" >        return coreFeatures.systematization &amp;&amp; featuresCompleted.includes('systematization');</span>
 &nbsp;
       case 'folder_structure':
-<span class="cstat-no" title="statement not covered" >        return pageCount &gt;= 10; </span>// 構造化されたプロジェクト
+<span class="cstat-no" title="statement not covered" >        return pageCount &gt;= 10; /</span>/ 構造化されたプロジェクト
 &nbsp;
       case 'type_definitions':
-<span class="cstat-no" title="statement not covered" >        return pageCount &gt;= 15; </span>// TypeScript型定義充実
+<span class="cstat-no" title="statement not covered" >        return pageCount &gt;= 15; /</span>/ TypeScript型定義充実
 &nbsp;
       case 'accessibility':
 <span class="cstat-no" title="statement not covered" >        return pageCount &gt;= 20 &amp;&amp; progress.performanceScore &gt;= 80;</span>
@@ -669,8 +669,8 @@ class BadgeEvaluationService {
 <span class="cstat-no" title="statement not covered" >    switch (badge.id) {</span>
       case 'feature-completionist': {
         const missingFeatures = <span class="cstat-no" title="statement not covered" >Object.entries(progress.coreFeatures)</span>
-          .filter(<span class="fstat-no" title="function not covered" >([</span>, completed]) =&gt; <span class="cstat-no" title="statement not covered" >!completed)</span>
-          .map(<span class="fstat-no" title="function not covered" >([</span>feature]) =&gt; <span class="cstat-no" title="statement not covered" >feature)</span>;
+          .filter(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([, c</span></span>ompleted<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; !</span>completed)</span>
+          .map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([f</span></span>eature<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; f</span>eature);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (missingFeatures.length === 0 &amp;&amp; progress.pageCount &gt;= 30) {</span>
 <span class="cstat-no" title="statement not covered" >          return '品質向上とパフォーマンス最適化';</span>
@@ -700,14 +700,14 @@ class BadgeEvaluationService {
 &nbsp;
     // 実際のアプリケーションでは、
     // toast通知やバッジ獲得アニメーションを表示
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
+  private <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >async <span class="fstat-no" title="function not covered" >a</span>nalyzeFileStructure<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>): Promise&lt;string[]&gt; {</span></span></span></span></span>
+    return [];
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >async </span>analyzeFileStructure(): Promise&lt;string[]&gt; {
-<span class="cstat-no" title="statement not covered" >    return [];</span>
-  }
-&nbsp;
-  private <span class="fstat-no" title="function not covered" >async </span>analyzeUIComponents(): Promise&lt;any&gt; {
-<span class="cstat-no" title="statement not covered" >    return {};</span>
+  private <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >async <span class="fstat-no" title="function not covered" >a</span>nalyzeUIComponents<span class="cstat-no" title="statement not covered" >(</span>): Promise&lt;any&gt; {</span></span></span>
+    return {};
   }
 &nbsp;
   // 今日の推奨タスクを生成
@@ -730,7 +730,7 @@ export const <span class="cstat-no" title="statement not covered" >badgeEvaluati
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

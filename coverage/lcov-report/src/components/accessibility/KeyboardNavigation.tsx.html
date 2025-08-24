@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/107</span>
+                <span class='fraction'>0/127</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/53</span>
+                <span class='fraction'>0/62</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/103</span>
+                <span class='fraction'>0/106</span>
             </div>
         
             
@@ -378,9 +378,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -672,18 +672,18 @@ interface FocusableElement {
  * ♿ アクセシビリティチャンピオン: キーボードナビゲーション機能
  * すべての機能をキーボードのみで操作可能にする
  */
-export const <span class="cstat-no" title="statement not covered" >KeyboardNavigation: React.FC&lt;KeyboardNavigationProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  children,
-  className,
-  skipToMainId = <span class="branch-0 cbranch-no" title="branch not covered" >'main-content',</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >KeyboardNavigation:</span> React.FC&lt;KeyboardNavigationProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  children<span class="cstat-no" title="statement not covered" >,</span>
+  className<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+  skipToMainId<span class="cstat-no" title="statement not covered" > = 'main-content',</span>
 }) =&gt; {
-  const [focusableElements, setFocusableElements] = <span class="cstat-no" title="statement not covered" >useState&lt;FocusableElement[]&gt;([]);</span>
-  const [currentFocusIndex, setCurrentFocusIndex] = <span class="cstat-no" title="statement not covered" >useState(-1);</span>
-  const [isKeyboardMode, setIsKeyboardMode] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [announcements, setAnnouncements] = <span class="cstat-no" title="statement not covered" >useState&lt;string[]&gt;([]);</span>
+  const [focusableElements<span class="cstat-no" title="statement not covered" >, s</span>etFocusableElements<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;FocusableElement[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [currentFocusIndex<span class="cstat-no" title="statement not covered" >, s</span>etCurrentFocusIndex<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(-1)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isKeyboardMode<span class="cstat-no" title="statement not covered" >, s</span>etIsKeyboardMode<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [announcements<span class="cstat-no" title="statement not covered" >, s</span>etAnnouncements<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // 🔍 フォーカス可能な要素を取得
-  const updateFocusableElements = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const updateFocusableElements = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const focusableSelectors = <span class="cstat-no" title="statement not covered" >[</span>
       'a[href]',
       'button',
@@ -708,7 +708,7 @@ export const <span class="cstat-no" title="statement not covered" >KeyboardNavig
           !el.hidden &amp;&amp; !isDisabled &amp;&amp; el.offsetParent !== null &amp;&amp; !el.getAttribute('aria-hidden')
         );
       })
-      .map(<span class="fstat-no" title="function not covered" >(e</span>l, index) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+      .map(<span class="fstat-no" title="function not covered" >(e</span>l, index<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
         element: el,
         tabIndex: el.tabIndex || 0,
         description:
@@ -723,7 +723,7 @@ export const <span class="cstat-no" title="statement not covered" >KeyboardNavig
 &nbsp;
   // 📢 スクリーンリーダー向けアナウンス
   const announce = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(m</span>essage: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setAnnouncements(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >[...prev.slice(-4), message])</span>;</span>
+<span class="cstat-no" title="statement not covered" >    setAnnouncements(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; [...prev.slice(-4), message])</span>;</span>
 &nbsp;
     // ARIA live regionに通知
     const liveRegion = <span class="cstat-no" title="statement not covered" >document.getElementById('keyboard-nav-announcements');</span>
@@ -735,7 +735,7 @@ export const <span class="cstat-no" title="statement not covered" >KeyboardNavig
   // ⌨️ キーボードイベントハンドラー
   const handleKeyDown = <span class="cstat-no" title="statement not covered" >useCallback(</span>
 <span class="fstat-no" title="function not covered" >    (e</span>vent: KeyboardEvent) =&gt; {
-      const { key, altKey, ctrlKey, shiftKey, metaKey } = <span class="cstat-no" title="statement not covered" >event;</span>
+      const { key, altKey, ctrlKey, shiftKey, metaKey } = <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >event;</span></span></span></span></span>
 &nbsp;
       // キーボードモード検出
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (key === 'Tab') {</span>
@@ -792,7 +792,7 @@ export const <span class="cstat-no" title="statement not covered" >KeyboardNavig
         // F6: セクション間移動
 <span class="cstat-no" title="statement not covered" >        event.preventDefault();</span>
         const sections = <span class="cstat-no" title="statement not covered" >Array.from(document.querySelectorAll('main, nav, aside, [role="region"]'));</span>
-        const currentSection = <span class="cstat-no" title="statement not covered" >document.activeElement?.closest('main, nav, aside, [role="region"]');</span>
+        const currentSection<span class="cstat-no" title="statement not covered" > = document.activeElement?.closest('main, nav, aside, [role="region"]');</span>
         const currentIndex = <span class="cstat-no" title="statement not covered" >sections.indexOf(currentSection as Element);</span>
         const nextIndex = <span class="cstat-no" title="statement not covered" >(currentIndex + 1) % sections.length;</span>
 &nbsp;
@@ -825,7 +825,7 @@ export const <span class="cstat-no" title="statement not covered" >KeyboardNavig
   );
 &nbsp;
   // 🖱️ マウス使用検出
-  const handleMouseDown = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const handleMouseDown = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    setIsKeyboardMode(false);</span>
   }, []);
 &nbsp;
@@ -835,14 +835,14 @@ export const <span class="cstat-no" title="statement not covered" >KeyboardNavig
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!isKeyboardMode) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
       const target = <span class="cstat-no" title="statement not covered" >event.target as HTMLElement;</span>
-      const index = <span class="cstat-no" title="statement not covered" >focusableElements.findIndex(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >item.element === target)</span>;</span>
+      const index = <span class="cstat-no" title="statement not covered" >focusableElements.findIndex(<span class="fstat-no" title="function not covered" >(i</span>tem<span class="cstat-no" title="statement not covered" >) =&gt; item.element === target);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (index !== -1) {</span>
 <span class="cstat-no" title="statement not covered" >        setCurrentFocusIndex(index);</span>
 &nbsp;
         // フォーカス状況をアナウンス
         const element = <span class="cstat-no" title="statement not covered" >focusableElements[index];</span>
-        const position = <span class="cstat-no" title="statement not covered" >`${index + 1} / ${focusableElements.length}`;</span>
+        const position<span class="cstat-no" title="statement not covered" > = `${index + 1} / ${focusableElements.length}`;</span>
 <span class="cstat-no" title="statement not covered" >        announce(`${element.description} (${position})`);</span>
 &nbsp;
         // フォーカスリングを表示
@@ -860,7 +860,7 @@ export const <span class="cstat-no" title="statement not covered" >KeyboardNavig
   }, []);
 &nbsp;
   // 🔄 初期化とクリーンアップ
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    updateFocusableElements();</span>
 &nbsp;
     // MutationObserver でDOM変更を監視
@@ -877,7 +877,7 @@ export const <span class="cstat-no" title="statement not covered" >KeyboardNavig
 <span class="cstat-no" title="statement not covered" >    document.addEventListener('focusin', handleFocusIn);</span>
 <span class="cstat-no" title="statement not covered" >    document.addEventListener('focusout', handleFocusOut);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      observer.disconnect();</span>
 <span class="cstat-no" title="statement not covered" >      document.removeEventListener('keydown', handleKeyDown);</span>
 <span class="cstat-no" title="statement not covered" >      document.removeEventListener('mousedown', handleMouseDown);</span>
@@ -894,7 +894,7 @@ export const <span class="cstat-no" title="statement not covered" >KeyboardNavig
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 
                    bg-blue-600 text-white px-4 py-2 rounded-md z-50 
                    focus:outline-none focus:ring-2 focus:ring-blue-500"
-        onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >announce('メインコンテンツにスキップ')}</span>
+<span class="fstat-no" title="function not covered" >        onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; announce('メインコンテンツにスキップ')}</span>
       &gt;
         メインコンテンツにスキップ
       &lt;/a&gt;
@@ -955,7 +955,7 @@ export const <span class="cstat-no" title="statement not covered" >KeyboardNavig
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

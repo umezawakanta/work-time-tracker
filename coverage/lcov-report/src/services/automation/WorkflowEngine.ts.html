@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
@@ -244,18 +244,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -265,6 +262,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export interface UserPattern {
@@ -346,27 +346,27 @@ export interface WorkflowCondition {
   };
 }
 &nbsp;
-class SystematizationEngine {
-  // 自動タスク生成
-<span class="fstat-no" title="function not covered" >  async </span>createAutomaticTasks(userPattern: UserPattern): Promise&lt;TodoItem[]&gt; {
+class SystematizationEngine<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  // 自動タスク生成</span></span>
+<span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >c</span>reateAutomaticTasks<span class="cstat-no" title="statement not covered" >(</span>u</span>serPattern: UserPattern<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;TodoItem[]&gt; {</span></span></span>
     // ユーザーの行動パターンを分析して最適なタスクを自動生成
-<span class="cstat-no" title="statement not covered" >    return [];</span>
+    return [];
   }
 &nbsp;
-  // 習慣の仕組み化
-<span class="fstat-no" title="function not covered" >  async </span>systematizeHabit(habit: HabitData): Promise&lt;HabitSystemTemplate&gt; {
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  // 習慣の仕組み化</span></span>
+<span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >s</span>ystematizeHabit<span class="cstat-no" title="statement not covered" >(</span>h</span>abit: HabitData<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;HabitSystemTemplate&gt; {</span></span></span>
     // 成功した習慣を他の人も使えるテンプレートに変換
-<span class="cstat-no" title="statement not covered" >    return {</span>
+    return {
       id: habit.id,
       name: habit.name,
       steps: [],
     };
   }
 &nbsp;
-  // データドリブンな改善提案
-<span class="fstat-no" title="function not covered" >  async </span>generateSystemImprovements(userData: UserData): Promise&lt;SystemImprovement[]&gt; {
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  // データドリブンな改善提案</span></span>
+<span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >g</span>enerateSystemImprovements<span class="cstat-no" title="statement not covered" >(</span>u</span>serData: UserData<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >): Promise&lt;SystemImprovement[]&gt; {</span></span></span>
     // 個人のデータから継続可能な改善システムを提案
-<span class="cstat-no" title="statement not covered" >    return [];</span>
+    return [];
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -376,7 +376,7 @@ class SystematizationEngine {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

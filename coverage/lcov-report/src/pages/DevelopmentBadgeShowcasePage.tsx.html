@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/113</span>
+                <span class='fraction'>0/139</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/87</span>
+                <span class='fraction'>0/89</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/26</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/109</span>
+                <span class='fraction'>0/112</span>
             </div>
         
             
@@ -767,7 +767,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -839,8 +839,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -959,7 +959,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -991,6 +990,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1043,8 +1043,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1167,7 +1167,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1231,6 +1230,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1258,8 +1258,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1366,23 +1366,23 @@ const categoryLabels = <span class="cstat-no" title="statement not covered" >{</
   growth: '成長',
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >DevelopmentBadgeShowcasePage: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const { user } = <span class="cstat-no" title="statement not covered" >useAuth();</span>
-  const [selectedCategory, setSelectedCategory] = <span class="cstat-no" title="statement not covered" >useState&lt;'all' | string&gt;('all');</span>
-  const [showOnboarding, setShowOnboarding] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [achievements, setAchievements] = <span class="cstat-no" title="statement not covered" >useState&lt;DevelopmentBadge[]&gt;([]);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >DevelopmentBadgeShowcasePage:</span> React.FC = <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const { user<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useAuth();</span></span>
+  const [selectedCategory<span class="cstat-no" title="statement not covered" >, s</span>etSelectedCategory<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;'all' | string&gt;('all')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showOnboarding<span class="cstat-no" title="statement not covered" >, s</span>etShowOnboarding<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [achievements<span class="cstat-no" title="statement not covered" >, s</span>etAchievements<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;DevelopmentBadge[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // ゲームループシステム統合状態
-  const [gameLoopStats, setGameLoopStats] = <span class="cstat-no" title="statement not covered" >useState&lt;GameLoopStats | null&gt;(null);</span>
-  const [showGameLoopIntegration, setShowGameLoopIntegration] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [badgeAccelerationData, setBadgeAccelerationData] = <span class="cstat-no" title="statement not covered" >useState&lt;{</span>
+  const [gameLoopStats<span class="cstat-no" title="statement not covered" >, s</span>etGameLoopStats<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;GameLoopStats | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [showGameLoopIntegration<span class="cstat-no" title="statement not covered" >, s</span>etShowGameLoopIntegration<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [badgeAccelerationData<span class="cstat-no" title="statement not covered" >, s</span>etBadgeAccelerationData<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;{</span>
     acceleratedBadges: number;
     timeReduction: number;
     progressBoost: number;
     motivationIndex: number;
-  } | null&gt;(null);
+  } | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     // 統一バッジ管理サービスからバッジデータを取得
     const unifiedBadges = <span class="cstat-no" title="statement not covered" >unifiedBadgeManagementService.getBadgeData();</span>
 &nbsp;
@@ -1405,7 +1405,7 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
 <span class="cstat-no" title="statement not covered" >    initializeGameLoopIntegration();</span>
 &nbsp;
     // 統一サービスのイベントリスナー設定
-    const handleBadgeUpdate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleBadgeUpdate </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
       const updatedBadges = <span class="cstat-no" title="statement not covered" >unifiedBadgeManagementService.getBadgeData();</span>
       const sortedUpdatedBadges = <span class="cstat-no" title="statement not covered" >[...updatedBadges].sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (a.isUnlocked &amp;&amp; !b.isUnlocked) {</span>
@@ -1423,7 +1423,7 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
 <span class="cstat-no" title="statement not covered" >      calculateBadgeAcceleration(updatedBadges); </span>// ゲームループ効果再計算
     };
 &nbsp;
-    const handleBadgeUnlocked = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ata: any) =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleBadgeUnlocked </span>= <span class="cstat-no" title="statement not covered" >(data: any) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      console.log('🏆 実績ページ: 新しいバッジがアンロックされました！', data.badge.name);</span>
 <span class="cstat-no" title="statement not covered" >      handleBadgeUpdate(); </span>// データを再取得
     };
@@ -1434,7 +1434,7 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
 <span class="cstat-no" title="statement not covered" >    unifiedBadgeManagementService.on('sync-data-updated', handleBadgeUpdate);</span>
 &nbsp;
     // クリーンアップ
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      unifiedBadgeManagementService.off('badge-progress-updated', handleBadgeUpdate);</span>
 <span class="cstat-no" title="statement not covered" >      unifiedBadgeManagementService.off('badge-unlocked', handleBadgeUnlocked);</span>
 <span class="cstat-no" title="statement not covered" >      unifiedBadgeManagementService.off('sync-data-updated', handleBadgeUpdate);</span>
@@ -1442,9 +1442,9 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
   }, []);
 &nbsp;
   // ゲームループ統合初期化
-  const initializeGameLoopIntegration = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >initializeGameLoopIntegration<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > </span>= <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span></span>sync () =&gt; {</span></span></span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const stats = <span class="cstat-no" title="statement not covered" >gameLoopTaskService.getGameLoopStats();</span>
+      const <span class="cstat-no" title="statement not covered" >stats = gameLoopTaskService.getGameLoopStats();</span>
 <span class="cstat-no" title="statement not covered" >      setGameLoopStats(stats);</span>
 <span class="cstat-no" title="statement not covered" >      setShowGameLoopIntegration(true);</span>
 <span class="cstat-no" title="statement not covered" >      calculateBadgeAcceleration(achievements);</span>
@@ -1452,11 +1452,11 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
 <span class="cstat-no" title="statement not covered" >      console.log('🎮 Badge Showcase × Game Loop統合完了:', stats);</span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Game Loop統合エラー:', error);</span>
-    }
-  };
+    }<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
   // バッジ獲得加速効果計算
-  const calculateBadgeAcceleration = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(b</span>adges: DevelopmentBadge[]) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >calculateBadgeAcceleration </span>= <span class="cstat-no" title="statement not covered" >(badges: DevelopmentBadge[]) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!gameLoopStats) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
     // ゲームループによるバッジ獲得加速効果を計算
@@ -1465,7 +1465,7 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
     const totalCompleted = <span class="cstat-no" title="statement not covered" >gameLoopStats.totalTasksCompleted || 0;</span>
 &nbsp;
     // 加速されるバッジ数（進行中のバッジの一部）
-    const inProgressBadges = <span class="cstat-no" title="statement not covered" >badges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.progress &gt; 0 &amp;&amp; badge.progress &lt; 100)</span>;</span>
+    const inProgressBadges = <span class="cstat-no" title="statement not covered" >badges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.progress &gt; 0 &amp;&amp; badge.progress &lt; 100);</span></span>
     const acceleratedBadges = <span class="cstat-no" title="statement not covered" >Math.min(Math.floor(completedToday * 0.3), inProgressBadges.length);</span>
 &nbsp;
     // 時間短縮効果（マイクロタスクによる継続性向上）
@@ -1488,9 +1488,9 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
   const filteredBadges =
 <span class="cstat-no" title="statement not covered" >    selectedCategory === 'all'</span>
       ? achievements
-      : achievements.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.category === selectedCategory)</span>;
+      : achievements.filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; badge.category === selectedCategory);</span>
 &nbsp;
-  const unlockedBadges = <span class="cstat-no" title="statement not covered" >achievements.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.isUnlocked)</span>;</span>
+  const unlockedBadges = <span class="cstat-no" title="statement not covered" >achievements.filter(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt; b.isUnlocked);</span></span>
   const totalProgress = <span class="cstat-no" title="statement not covered" >Math.round((unlockedBadges.length / achievements.length) * 100);</span>
 &nbsp;
   // Get recent achievements (last 30 days)
@@ -1512,7 +1512,7 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
     'data-analytics-expert',
   ];
 &nbsp;
-  const renderFeatureHighlight = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(b</span>adgeId: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >renderFeatureHighlight </span>= <span class="cstat-no" title="statement not covered" >(badgeId: string) =&gt; {</span>
     const highlights = <span class="cstat-no" title="statement not covered" >{</span>
       'sustainable-code-champion': {
         title: '♻️ 持続可能な開発',
@@ -1584,8 +1584,8 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
             &lt;div&gt;
               &lt;h4 className="font-semibold mb-2 text-sm text-gray-700"&gt;実装機能&lt;/h4&gt;
               &lt;ul className="space-y-1"&gt;
-                {highlight.features.map(<span class="fstat-no" title="function not covered" >(f</span>eature, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;li key={index} c</span>lassName="text-sm flex items-center"&gt;
+                {highlight.features.map(<span class="fstat-no" title="function not covered" >(f</span>eature, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;li key={index} className="text-sm flex items-center"&gt;
                     &lt;CheckCircle className="w-3 h-3 mr-2 text-green-600 flex-shrink-0" /&gt;
                     {feature}
                   &lt;/li&gt;
@@ -1604,7 +1604,7 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
     );
   };
 &nbsp;
-  const renderBadgeCard = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(b</span>adge: DevelopmentBadge) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >renderBadgeCard </span>= <span class="cstat-no" title="statement not covered" >(badge: DevelopmentBadge) =&gt; {</span>
     const isLatest = <span class="cstat-no" title="statement not covered" >latestAchievements.includes(badge.id);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return (</span>
@@ -1656,10 +1656,10 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
             {/* Requirements */}
             &lt;div className="space-y-2"&gt;
               &lt;h4 className="text-sm font-medium"&gt;要件:&lt;/h4&gt;
-              {badge.requirements.map(<span class="fstat-no" title="function not covered" >(r</span>eq, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div key={index} c</span>lassName="flex items-center gap-2 text-xs"&gt;
+              {badge.requirements.map(<span class="fstat-no" title="function not covered" >(r</span>eq, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div key={index} className="flex items-center gap-2 text-xs"&gt;
                   &lt;div
-                    className={`w-2 h-2 rounded-full ${(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+                    className={`w-2 h-2 rounded-full ${(<span class="fstat-no" title="function not covered" >() =&gt; </span>{
 <span class="cstat-no" title="statement not covered" >                      <span class="missing-if-branch" title="if path not taken" >I</span>if (req.type === 'commit_count' || req.type === 'performance_score') {</span>
 <span class="cstat-no" title="statement not covered" >                        return Number(req.current) &gt;= Number(req.target)</span>
                           ? 'bg-green-500'
@@ -1721,7 +1721,7 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
             &lt;/p&gt;
           &lt;/div&gt;
           &lt;Button
-            onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowOnboarding(true)}</span>
+<span class="fstat-no" title="function not covered" >            onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowOnboarding(true)}</span>
             className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
           &gt;
             &lt;Users className="w-4 h-4 mr-2" /&gt;
@@ -1780,8 +1780,8 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
             &lt;CardContent&gt;
               &lt;div className="text-3xl font-bold text-orange-600"&gt;
                 {Math.max(
-                  ...unlockedBadges.map(<span class="fstat-no" title="function not covered" >(b</span>) =&gt;
-<span class="cstat-no" title="statement not covered" >                    b.difficulty === 'legendary'</span>
+                  ...unlockedBadges.map(<span class="fstat-no" title="function not covered" >(b<span class="cstat-no" title="statement not covered" ></span>) =&gt;</span>
+                    b.difficulty === 'legendary'
                       ? 5
                       : b.difficulty === 'platinum'
                         ? 4
@@ -1810,8 +1810,8 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
             &lt;/CardHeader&gt;
             &lt;CardContent&gt;
               &lt;div className="grid gap-4"&gt;
-                {recentAchievements.slice(0, 3).map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div key={badge.id} c</span>lassName="flex items-center p-4 bg-white rounded-lg border"&gt;
+                {recentAchievements.slice(0, 3).map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;div key={badge.id} className="flex items-center p-4 bg-white rounded-lg border"&gt;
                     &lt;div className="text-3xl mr-4"&gt;{badge.icon}&lt;/div&gt;
                     &lt;div className="flex-1"&gt;
                       &lt;h4 className="font-semibold text-lg"&gt;{badge.name}&lt;/h4&gt;
@@ -1842,8 +1842,8 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
             &lt;Trophy className="w-4 h-4 mr-1" /&gt;
             全て
           &lt;/TabsTrigger&gt;
-          {Object.entries(categoryLabels).map(<span class="fstat-no" title="function not covered" >([</span>key, label]) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;TabsTrigger key={key} v</span>alue={key} className="flex items-center text-xs"&gt;
+          {Object.entries(categoryLabels).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([k</span></span>ey<span class="cstat-no" title="statement not covered" >, l</span>abel<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; (</span></span>
+            &lt;TabsTrigger key={key} value={key} className="flex items-center text-xs"&gt;
               {categoryIcons[key as keyof typeof categoryIcons]}
               &lt;span className="ml-1 hidden lg:inline"&gt;{label}&lt;/span&gt;
             &lt;/TabsTrigger&gt;
@@ -1852,7 +1852,7 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
 &nbsp;
         &lt;TabsContent value={selectedCategory}&gt;
           &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
-            {filteredBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >renderBadgeCard(badge))</span>}
+            {filteredBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; renderBadgeCard(badge))}</span>
           &lt;/div&gt;
         &lt;/TabsContent&gt;
       &lt;/Tabs&gt;
@@ -1869,10 +1869,10 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
         &lt;CardContent&gt;
           &lt;div className="space-y-4"&gt;
             {achievements
-              .filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >!badge.isUnlocked &amp;&amp; badge.progress &gt; 0)</span>
+              .filter(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; !badge.isUnlocked &amp;&amp; badge.progress &gt; 0)</span>
               .slice(0, 5)
-              .map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;div key={badge.id} c</span>lassName="flex items-center p-4 border rounded-lg"&gt;
+              .map(<span class="fstat-no" title="function not covered" >(b</span>adge<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                &lt;div key={badge.id} className="flex items-center p-4 border rounded-lg"&gt;
                   &lt;div className="text-2xl mr-4"&gt;{badge.icon}&lt;/div&gt;
                   &lt;div className="flex-1"&gt;
                     &lt;div className="flex items-center justify-between mb-2"&gt;
@@ -1898,7 +1898,7 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
       &lt;/Card&gt;
 &nbsp;
       {/* Onboarding modal */}
-      &lt;UserOnboardingModal isOpen={showOnboarding} onClose={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowOnboarding(false)}</span> /&gt;
+      &lt;UserOnboardingModal isOpen={showOnboarding} <span class="fstat-no" title="function not covered" >onClose<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setShowOnboarding(false)} /&gt;</span>
     &lt;/div&gt;
   );
 };
@@ -1909,7 +1909,7 @@ export const <span class="cstat-no" title="statement not covered" >DevelopmentBa
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

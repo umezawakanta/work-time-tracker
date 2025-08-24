@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/82</span>
+                <span class='fraction'>0/84</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/25</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/82</span>
+                <span class='fraction'>0/83</span>
             </div>
         
             
@@ -944,7 +944,7 @@
 <a name='L879'></a><a href='#L879'>879</a>
 <a name='L880'></a><a href='#L880'>880</a>
 <a name='L881'></a><a href='#L881'>881</a>
-<a name='L882'></a><a href='#L882'>882</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L882'></a><a href='#L882'>882</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1046,16 +1046,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1701,7 +1701,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1825,7 +1825,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>/**</span></span>
  * コンテナ化管理サービス
  * Docker、Kubernetes、CI/CD統合によるコンテナ化戦略を提供
  */
@@ -1926,17 +1926,17 @@ interface KubernetesManifest {
   spec: any;
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export class C</span>ontainerizationService {
-  private <span class="cstat-no" title="statement not covered" >containers: Map&lt;string, ContainerConfig&gt; = new Map();</span>
-  private <span class="cstat-no" title="statement not covered" >deployments: Map&lt;string, DeploymentStatus&gt; = new Map();</span>
-  private <span class="cstat-no" title="statement not covered" >registries: Map&lt;string, RegistryConfig&gt; = new Map();</span>
+<span class="cstat-no" title="statement not covered" >export class C</span>ontainerizationService<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+  private containers: Map&lt;string, ContainerConfig&gt; = new Map();
+  private deployments: Map&lt;string, DeploymentStatus&gt; = new Map();
+  private registries: Map&lt;string, RegistryConfig&gt; = new Map();
 &nbsp;
-<span class="fstat-no" title="function not covered" >  constructor() {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  constructor() {</span></span>
 <span class="cstat-no" title="statement not covered" >    this.initializeDefaultConfigurations();</span>
 <span class="cstat-no" title="statement not covered" >    this.startMonitoring();</span>
   }
 &nbsp;
-  /**
+<span class="cstat-no" title="statement not covered" >  /**</span>
    * デフォルト設定の初期化
    */
   private <span class="fstat-no" title="function not covered" >initializeDefaultConfigurations(</span>): void {
@@ -2132,7 +2132,7 @@ interface KubernetesManifest {
 <span class="cstat-no" title="statement not covered" >      services[id] = {</span>
         image: `${config.image}:${config.tag}`,
         container_name: config.name,
-        ports: config.ports.map(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >`${p.hostPort}:${p.containerPort}`)</span>,
+        ports: config.ports.map(<span class="fstat-no" title="function not covered" >(p<span class="cstat-no" title="statement not covered" ></span>) =&gt; `${p.hostPort}:${p.containerPort}`)</span>,
         environment: config.environment.reduce(
 <span class="fstat-no" title="function not covered" >          (e</span>nv, item) =&gt; {
 <span class="cstat-no" title="statement not covered" >            env[item.name] = item.value;</span>
@@ -2141,7 +2141,7 @@ interface KubernetesManifest {
           {} as Record&lt;string, string&gt;
         ),
         volumes: config.volumes.map(
-<span class="fstat-no" title="function not covered" >          (v</span>) =&gt; <span class="cstat-no" title="statement not covered" >`${v.hostPath}:${v.containerPath}${v.readOnly ? ':ro' : ''}`</span>
+<span class="fstat-no" title="function not covered" >          (v<span class="cstat-no" title="statement not covered" ></span>) =&gt; `${v.hostPath}:${v.containerPath}${v.readOnly ? ':ro' : ''}`</span>
         ),
         networks: [config.networkMode],
         restart: config.restartPolicy.policy,
@@ -2219,15 +2219,15 @@ interface KubernetesManifest {
                 {
                   name: config.name,
                   image: `${config.image}:${config.tag}`,
-                  ports: config.ports.map(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+                  ports: config.ports.map(<span class="fstat-no" title="function not covered" >(p<span class="cstat-no" title="statement not covered" ></span>) =&gt; ({</span>
                     containerPort: p.containerPort,
                     protocol: p.protocol.toUpperCase(),
                   })),
-                  env: config.environment.map(<span class="fstat-no" title="function not covered" >(e</span>nv) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+                  env: config.environment.map(<span class="fstat-no" title="function not covered" >(e</span>nv<span class="cstat-no" title="statement not covered" >) =&gt; ({</span>
                     name: env.name,
                     value: env.value,
                   })),
-                  volumeMounts: config.volumes.map(<span class="fstat-no" title="function not covered" >(v</span>) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+                  volumeMounts: config.volumes.map(<span class="fstat-no" title="function not covered" >(v<span class="cstat-no" title="statement not covered" ></span>) =&gt; ({</span>
                     name: v.hostPath.replace('./', '').replace('/', '-'),
                     mountPath: v.containerPath,
                     readOnly: v.readOnly,
@@ -2261,7 +2261,7 @@ interface KubernetesManifest {
                   },
                 },
               ],
-              volumes: config.volumes.map(<span class="fstat-no" title="function not covered" >(v</span>) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+              volumes: config.volumes.map(<span class="fstat-no" title="function not covered" >(v<span class="cstat-no" title="statement not covered" ></span>) =&gt; ({</span>
                 name: v.hostPath.replace('./', '').replace('/', '-'),
                 hostPath: {
                   path: v.hostPath,
@@ -2288,7 +2288,7 @@ interface KubernetesManifest {
             selector: {
               app: config.name,
             },
-            ports: config.ports.map(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+            ports: config.ports.map(<span class="fstat-no" title="function not covered" >(p<span class="cstat-no" title="statement not covered" ></span>) =&gt; ({</span>
               port: p.hostPort,
               targetPort: p.containerPort,
               protocol: p.protocol.toUpperCase(),
@@ -2582,8 +2582,8 @@ jobs:
   /**
    * 監視の開始
    */
-  private <span class="fstat-no" title="function not covered" >startMonitoring(</span>): void {
-<span class="cstat-no" title="statement not covered" >    setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  private <span class="fstat-no" title="function not covered" >startMonitoring<span class="cstat-no" title="statement not covered" >(</span>): void {</span>
+<span class="cstat-no" title="statement not covered" >    setInterval(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      this.updateDeploymentStatus();</span>
     }, 30000); // 30秒ごとに更新
   }
@@ -2671,7 +2671,7 @@ jobs:
   } {
     const totalServices = <span class="cstat-no" title="statement not covered" >this.deployments.size;</span>
     const runningServices = <span class="cstat-no" title="statement not covered" >Array.from(this.deployments.values()).filter(</span>
-<span class="fstat-no" title="function not covered" >      (d</span>) =&gt; <span class="cstat-no" title="statement not covered" >d.status === 'running'</span>
+<span class="fstat-no" title="function not covered" >      (d<span class="cstat-no" title="statement not covered" ></span>) =&gt; d.status === 'running'</span>
     ).length;
 &nbsp;
     const healthRatio = <span class="cstat-no" title="statement not covered" >runningServices / totalServices;</span>
@@ -2713,7 +2713,7 @@ export const <span class="cstat-no" title="statement not covered" >containerizat
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

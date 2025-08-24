@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>0/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
@@ -1328,7 +1328,7 @@
 <a name='L1263'></a><a href='#L1263'>1263</a>
 <a name='L1264'></a><a href='#L1264'>1264</a>
 <a name='L1265'></a><a href='#L1265'>1265</a>
-<a name='L1266'></a><a href='#L1266'>1266</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1266'></a><a href='#L1266'>1266</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2593,7 +2593,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>/**</span></span>
  * 🗄️ 統一データベーススキーマ
  * Work Time Tracker の全データを統合管理する包括的なスキーマ定義
  */
@@ -3794,7 +3794,7 @@ export interface SchemaMigration {
 // Type Guards and Utilities
 // =============================================================================
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >isValidEntity = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>o</span>bj: any): obj is BaseEntity =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >isValidEntity </span>= <span class="cstat-no" title="statement not covered" >(</span>obj: any): obj is BaseEntity =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return (</span>
     obj &amp;&amp;
     typeof obj.id === 'string' &amp;&amp;
@@ -3805,15 +3805,15 @@ export const <span class="cstat-no" title="statement not covered" >isValidEntity
   );
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >createEntityId = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>p</span>refix: string = <span class="branch-0 cbranch-no" title="branch not covered" >'entity')</span>: string =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >createEntityId </span>= <span class="cstat-no" title="statement not covered" >(<span class="cstat-no" title="statement not covered" ></span>prefix: string = 'entity')</span>: string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;</span>
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >createTimestamp = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>): string =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >createTimestamp </span>= <span class="cstat-no" title="statement not covered" >(</span>): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return new Date().toISOString();</span>
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >updateEntityVersion = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >&lt;</span>T extends BaseEntity&gt;(e</span>ntity: T): T =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >updateEntityVersion </span>= <span class="cstat-no" title="statement not covered" >&lt;</span>T extends BaseEntity&gt;(entity: T): T =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return {</span>
     ...entity,
     version: entity.version + 1,
@@ -3865,7 +3865,7 @@ export const <span class="cstat-no" title="statement not covered" >DEFAULT_SCHEM
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

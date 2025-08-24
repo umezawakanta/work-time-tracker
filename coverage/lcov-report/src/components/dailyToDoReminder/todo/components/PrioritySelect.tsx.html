@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
@@ -166,7 +166,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -193,8 +193,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -239,7 +239,7 @@ interface PrioritySelectProps {
 }
 &nbsp;
 export const <span class="cstat-no" title="statement not covered" >PrioritySelect = React.memo&lt;PrioritySelectProps&gt;(</span>
-<span class="fstat-no" title="function not covered" >  ({</span> value, onChange, onSuggestPriority, isSuggestingPriority = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span> isPremium = <span class="branch-0 cbranch-no" title="branch not covered" >false </span>}) =&gt; {
+<span class="fstat-no" title="function not covered" >  ({ v</span>alue<span class="cstat-no" title="statement not covered" >, onChange<span class="cstat-no" title="statement not covered" >, onSuggestPriority<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >, isSuggestingPriority<span class="cstat-no" title="statement not covered" > </span>= false<span class="cstat-no" title="statement not covered" >, i</span>sPremium<span class="cstat-no" title="statement not covered" > </span>= false }) =&gt; </span>{</span></span></span>
 <span class="cstat-no" title="statement not covered" >    return (</span>
       &lt;div className="space-y-2"&gt;
         &lt;div className="flex items-center justify-between"&gt;
@@ -260,14 +260,14 @@ export const <span class="cstat-no" title="statement not covered" >PrioritySelec
         &lt;/div&gt;
         &lt;Select
           value={value.toString()}
-          onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >onChange(parseInt(value) as PriorityLevel)}</span>
+<span class="fstat-no" title="function not covered" >          onValueChange=</span>{(value<span class="cstat-no" title="statement not covered" >) =&gt; onChange(parseInt(value) as PriorityLevel)}</span>
         &gt;
           &lt;SelectTrigger&gt;
             &lt;SelectValue /&gt;
           &lt;/SelectTrigger&gt;
           &lt;SelectContent&gt;
-            {Object.entries(PRIORITY_LABELS).map(<span class="fstat-no" title="function not covered" >([</span>priority, { label, color }]) =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;SelectItem key={priority} v</span>alue={priority}&gt;
+            {Object.entries(PRIORITY_LABELS).map(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([p</span></span>riority<span class="cstat-no" title="statement not covered" >, { l</span>abel<span class="cstat-no" title="statement not covered" >, color<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" > }]) =&gt; (</span></span></span>
+              &lt;SelectItem key={priority} value={priority}&gt;
                 &lt;div className="flex items-center gap-2"&gt;
                   &lt;Flag className={`h-3 w-3 ${color}`} /&gt;
                   {label}
@@ -289,7 +289,7 @@ export const <span class="cstat-no" title="statement not covered" >PrioritySelec
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

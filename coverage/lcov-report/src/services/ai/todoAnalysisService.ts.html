@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/69</span>
+                <span class='fraction'>0/80</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>0/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/22</span>
+                <span class='fraction'>0/26</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/62</span>
+                <span class='fraction'>0/65</span>
             </div>
         
             
@@ -344,26 +344,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -375,6 +360,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -603,16 +603,16 @@ export interface TodoAnalysisResult {
   };
 }
 &nbsp;
-<span class="fstat-no" title="function not covered" >class T</span>odoAnalysisService {
-  private readonly <span class="cstat-no" title="statement not covered" >API_ENDPOINT = '/api/ai/analyze-todos';</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >class T</span></span>odoAnalysisService<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+  private readonly API_ENDPOINT = '/api/ai/analyze-todos';
 &nbsp;
-  /**
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  /**</span></span></span>
    * ToDoリストをAI分析して改善提案を生成
    */
-<span class="fstat-no" title="function not covered" >  async </span>analyzeTodos(
-    todos: Array&lt;{ id: string; task: string; description?: string }&gt;
+<span class="fstat-no" title="function not covered" >  async <span class="fstat-no" title="function not covered" >a</span>nalyzeTodos<span class="cstat-no" title="statement not covered" >(</span></span>
+    todos: Array&lt;{ id: string; task: string; description?: string }&gt;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
   ): Promise&lt;TodoAnalysisResult&gt; {
-<span class="cstat-no" title="statement not covered" >    try {</span>
+    try {
       // 実際のAI APIを呼び出す場合
       // const response = await fetch(this.API_ENDPOINT, {
       //   method: 'POST',
@@ -622,10 +622,10 @@ export interface TodoAnalysisResult {
       // return await response.json();
 &nbsp;
       // 現在はダミーの分析ロジックを使用
-<span class="cstat-no" title="statement not covered" >      return this.performDummyAnalysis(todos);</span>
+      return this.performDummyAnalysis(todos)<span class="cstat-no" title="statement not covered" >;</span>
     } catch (error) {
-<span class="cstat-no" title="statement not covered" >      console.error('AI分析エラー:', error);</span>
-<span class="cstat-no" title="statement not covered" >      throw new Error('AI分析に失敗しました');</span>
+<span class="cstat-no" title="statement not covered" >      console.error('AI分析エラー:', error);<span class="cstat-no" title="statement not covered" ></span></span>
+      throw new Error('AI分析に失敗しました')<span class="cstat-no" title="statement not covered" >;</span>
     }
   }
 &nbsp;
@@ -633,7 +633,7 @@ export interface TodoAnalysisResult {
    * ダミーの分析ロジック（実際のAI APIの代替）
    */
   private <span class="fstat-no" title="function not covered" >performDummyAnalysis(</span>
-    todos: Array&lt;{ id: string; task: string; description?: string }&gt;
+    todos: Array&lt;{ id: string; task: string; description?: string }&gt;<span class="cstat-no" title="statement not covered" ></span>
   ): TodoAnalysisResult {
     const analyzedTasks: TaskAnalysis[] = <span class="cstat-no" title="statement not covered" >todos.map(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; {</span>
       const analysis = <span class="cstat-no" title="statement not covered" >this.analyzeTask(todo.task);</span>
@@ -670,14 +670,14 @@ export interface TodoAnalysisResult {
       '整理する',
       '準備する',
     ];
-    const hasVagueKeywords = <span class="cstat-no" title="statement not covered" >vagueKeywords.some(<span class="fstat-no" title="function not covered" >(k</span>eyword) =&gt; <span class="cstat-no" title="statement not covered" >task.includes(keyword))</span>;</span>
+    const hasVagueKeywords = <span class="cstat-no" title="statement not covered" >vagueKeywords.some(<span class="fstat-no" title="function not covered" >(k</span>eyword<span class="cstat-no" title="statement not covered" >) =&gt; task.includes(keyword));</span></span>
 &nbsp;
     // タスクの長さと複雑さ
     const isComplex = <span class="cstat-no" title="statement not covered" >task.length &gt; 50 || task.includes('と') || task.includes('、');</span>
 &nbsp;
     // 動詞の有無
     const actionVerbs = <span class="cstat-no" title="statement not covered" >['作成', '実装', 'テスト', '修正', '確認', '送信', '連絡', '購入', '予約'];</span>
-    const hasActionVerb = <span class="cstat-no" title="statement not covered" >actionVerbs.some(<span class="fstat-no" title="function not covered" >(v</span>erb) =&gt; <span class="cstat-no" title="statement not covered" >task.includes(verb))</span>;</span>
+    const hasActionVerb = <span class="cstat-no" title="statement not covered" >actionVerbs.some(<span class="fstat-no" title="function not covered" >(v</span>erb<span class="cstat-no" title="statement not covered" >) =&gt; task.includes(verb));</span></span>
 &nbsp;
     // 明確性の判定
     let clarity: 'clear' | 'vague' | 'abstract' = <span class="cstat-no" title="statement not covered" >'clear';</span>
@@ -766,7 +766,7 @@ export interface TodoAnalysisResult {
     };
 &nbsp;
     let improvedTask = <span class="cstat-no" title="statement not covered" >task;</span>
-<span class="cstat-no" title="statement not covered" >    Object.entries(replacements).forEach(<span class="fstat-no" title="function not covered" >([</span>vague, concrete]) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    Object.entries(replacements).forEach(<span class="fstat-no" title="function not covered" >([v</span>ague<span class="cstat-no" title="statement not covered" >, c</span>oncrete<span class="cstat-no" title="statement not covered" >]) =&gt;<span class="cstat-no" title="statement not covered" > </span>{</span></span>
 <span class="cstat-no" title="statement not covered" >      improvedTask = improvedTask.replace(vague, concrete);</span>
     });
 &nbsp;
@@ -780,11 +780,11 @@ export interface TodoAnalysisResult {
     // 接続詞で分割
     const parts = <span class="cstat-no" title="statement not covered" >task</span>
       .split(/[と、]/)
-      .map(<span class="fstat-no" title="function not covered" >(p</span>art) =&gt; <span class="cstat-no" title="statement not covered" >part.trim())</span>
-      .filter(<span class="fstat-no" title="function not covered" >(p</span>art) =&gt; <span class="cstat-no" title="statement not covered" >part.length &gt; 0)</span>;
+      .map(<span class="fstat-no" title="function not covered" >(p</span>art<span class="cstat-no" title="statement not covered" >) =&gt; part.trim())</span>
+      .filter(<span class="fstat-no" title="function not covered" >(p</span>art<span class="cstat-no" title="statement not covered" >) =&gt; part.length &gt; 0);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (parts.length &gt; 1) {</span>
-<span class="cstat-no" title="statement not covered" >      return parts.map(<span class="fstat-no" title="function not covered" >(p</span>art, index) =&gt; <span class="cstat-no" title="statement not covered" >`${index + 1}. ${part}`)</span>;</span>
+<span class="cstat-no" title="statement not covered" >      return parts.map(<span class="fstat-no" title="function not covered" >(p</span>art, index<span class="cstat-no" title="statement not covered" >) =&gt; `${index + 1}. ${part}`)</span>;</span>
     }
 &nbsp;
     // 長いタスクを段階的に分割
@@ -814,20 +814,20 @@ export interface TodoAnalysisResult {
    * 分析結果のサマリー生成
    */
   private <span class="fstat-no" title="function not covered" >generateSummary(</span>analyzedTasks: TaskAnalysis[]): TodoAnalysisResult['summary'] {
-    const tasksToDelete = <span class="cstat-no" title="statement not covered" >analyzedTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >      task.recommendations.some(<span class="fstat-no" title="function not covered" >(r</span>ec) =&gt; <span class="cstat-no" title="statement not covered" >rec.type === 'delete')</span></span>
+    const tasksToDelete = <span class="cstat-no" title="statement not covered" >analyzedTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+      task.recommendations.some(<span class="fstat-no" title="function not covered" >(r</span>ec<span class="cstat-no" title="statement not covered" >) =&gt; rec.type === 'delete')</span>
     ).length;
 &nbsp;
-    const tasksToSplit = <span class="cstat-no" title="statement not covered" >analyzedTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >      task.recommendations.some(<span class="fstat-no" title="function not covered" >(r</span>ec) =&gt; <span class="cstat-no" title="statement not covered" >rec.type === 'split')</span></span>
+    const tasksToSplit = <span class="cstat-no" title="statement not covered" >analyzedTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+      task.recommendations.some(<span class="fstat-no" title="function not covered" >(r</span>ec<span class="cstat-no" title="statement not covered" >) =&gt; rec.type === 'split')</span>
     ).length;
 &nbsp;
-    const tasksToClarify = <span class="cstat-no" title="statement not covered" >analyzedTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >      task.recommendations.some(<span class="fstat-no" title="function not covered" >(r</span>ec) =&gt; <span class="cstat-no" title="statement not covered" >rec.type === 'clarify' || rec.type === 'rewrite')</span></span>
+    const tasksToClarify = <span class="cstat-no" title="statement not covered" >analyzedTasks.filter(<span class="fstat-no" title="function not covered" >(t</span>ask<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+      task.recommendations.some(<span class="fstat-no" title="function not covered" >(r</span>ec<span class="cstat-no" title="statement not covered" >) =&gt; rec.type === 'clarify' || rec.type === 'rewrite')</span>
     ).length;
 &nbsp;
     const avgActionability =
-<span class="cstat-no" title="statement not covered" >      analyzedTasks.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, task) =&gt; <span class="cstat-no" title="statement not covered" >sum + task.actionability,</span> 0) / analyzedTasks.length;</span>
+<span class="cstat-no" title="statement not covered" >      analyzedTasks.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, task<span class="cstat-no" title="statement not covered" >) =&gt; sum + task.actionability, 0</span>) / analyzedTasks.length;</span>
     const improvementScore = <span class="cstat-no" title="statement not covered" >Math.round(avgActionability);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
@@ -847,7 +847,7 @@ export const <span class="cstat-no" title="statement not covered" >todoAnalysisS
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

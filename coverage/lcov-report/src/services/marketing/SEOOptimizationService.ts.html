@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/167</span>
+                <span class='fraction'>0/176</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/72</span>
+                <span class='fraction'>0/95</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/157</span>
+                <span class='fraction'>0/160</span>
             </div>
         
             
@@ -691,23 +691,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -715,12 +700,22 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -743,6 +738,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -796,7 +796,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1282,17 +1282,17 @@ export interface SEOIssue {
  * 🔍 SEO最適化サービス
  * メタタグ最適化、サイトマップ生成、構造化データマークアップを提供
  */
-class SEOOptimizationService {
+class SEOOptimizationService<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
   private static <span class="cstat-no" title="statement not covered" >instance: SEOOptimizationService | null = n</span>ull;
-  private <span class="cstat-no" title="statement not covered" >seoMetrics: Map&lt;string, SEOMetrics&gt; = new Map();</span>
-  private <span class="cstat-no" title="statement not covered" >sitemap: SitemapEntry[] = [];</span>
-  private <span class="cstat-no" title="statement not covered" >structuredDataSchemas: Map&lt;string, any&gt; = new Map();</span>
+  private seoMetrics: Map&lt;string, SEOMetrics&gt; = new Map();
+  private sitemap: SitemapEntry[] = [];
+  private structuredDataSchemas: Map&lt;string, any&gt; = new Map();
 &nbsp;
-<span class="fstat-no" title="function not covered" >  private constructor() {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  private constructor() {</span></span>
 <span class="cstat-no" title="statement not covered" >    this.initializeService();</span>
-  }
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >static </span>getInstance(): SEOOptimizationService {
+  public static <span class="fstat-no" title="function not covered" >getInstance(</span>): SEOOptimizationService {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!SEOOptimizationService.instance) {</span>
 <span class="cstat-no" title="statement not covered" >      SEOOptimizationService.instance = new SEOOptimizationService();</span>
     }
@@ -1327,12 +1327,12 @@ class SEOOptimizationService {
     const {
       title,
       description,
-      keywords = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span>
+      keywords<span class="cstat-no" title="statement not covered" > = [],</span>
       image,
-      type = <span class="branch-0 cbranch-no" title="branch not covered" >'website',</span>
+      type<span class="cstat-no" title="statement not covered" > = 'website',</span>
       canonicalUrl,
       noindex,
-    } = <span class="cstat-no" title="statement not covered" >options;</span>
+    } = <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >options;</span></span></span></span></span></span></span>
 &nbsp;
     // メタタグの設定
 <span class="cstat-no" title="statement not covered" >    this.setMetaTag('title', title);</span>
@@ -1387,7 +1387,7 @@ class SEOOptimizationService {
   /**
    * 🏷️ メタタグ設定
    */
-  private <span class="fstat-no" title="function not covered" >setMetaTag(</span>name: string, content: string, attribute: 'name' | 'property' = <span class="branch-0 cbranch-no" title="branch not covered" >'name')</span>: void {
+  private <span class="fstat-no" title="function not covered" >setMetaTag(</span>name: string, content: string, <span class="cstat-no" title="statement not covered" >attribute: 'name' | 'property' = 'name')</span>: void {
     let metaTag = <span class="cstat-no" title="statement not covered" >document.querySelector(`meta[${attribute}="${name}"]`) as HTMLMetaElement;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!metaTag) {</span>
@@ -1554,7 +1554,7 @@ class SEOOptimizationService {
 &nbsp;
     // 既存の構造化データを削除
     const existingScripts = <span class="cstat-no" title="statement not covered" >document.querySelectorAll('script[type="application/ld+json"]');</span>
-<span class="cstat-no" title="statement not covered" >    existingScripts.forEach(<span class="fstat-no" title="function not covered" >(s</span>cript) =&gt; <span class="cstat-no" title="statement not covered" >script.remove())</span>;</span>
+<span class="cstat-no" title="statement not covered" >    existingScripts.forEach(<span class="fstat-no" title="function not covered" >(s</span>cript<span class="cstat-no" title="statement not covered" >) =&gt; script.remove());</span></span>
 &nbsp;
     // 新しい構造化データを注入
 <span class="cstat-no" title="statement not covered" >    structuredData.forEach(<span class="fstat-no" title="function not covered" >(d</span>ata) =&gt; {</span>
@@ -1815,7 +1815,7 @@ class SEOOptimizationService {
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  updatePageInSitemap(</span>url: string, options?: Partial&lt;SitemapEntry&gt;): void {
-    const existingIndex = <span class="cstat-no" title="statement not covered" >this.sitemap.findIndex(<span class="fstat-no" title="function not covered" >(e</span>ntry) =&gt; <span class="cstat-no" title="statement not covered" >entry.url === url)</span>;</span>
+    const existingIndex = <span class="cstat-no" title="statement not covered" >this.sitemap.findIndex(<span class="fstat-no" title="function not covered" >(e</span>ntry<span class="cstat-no" title="statement not covered" >) =&gt; entry.url === url);</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    if (existingIndex &gt;= 0) {</span>
 <span class="cstat-no" title="statement not covered" >      this.sitemap[existingIndex] = {</span>
@@ -1843,7 +1843,7 @@ export const <span class="cstat-no" title="statement not covered" >seoOptimizati
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

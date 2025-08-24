@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/107</span>
+                <span class='fraction'>0/122</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/75</span>
+                <span class='fraction'>0/87</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>0/25</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/100</span>
+                <span class='fraction'>0/103</span>
             </div>
         
             
@@ -781,8 +781,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1080,7 +1080,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1091,6 +1090,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1168,7 +1168,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1226,6 +1225,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1442,12 +1442,12 @@ interface LevelInfo {
   description: string;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >BathingHabitVisualization: React.FC&lt;BathingHabitVisualizationProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  stats,
-  records,
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >BathingHabitVisualization:</span> React.FC&lt;BathingHabitVisualizationProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  stats<span class="cstat-no" title="statement not covered" >,</span>
+  records<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
-  const [currentDate, setCurrentDate] = <span class="cstat-no" title="statement not covered" >useState(new Date());</span>
-  const [viewMode, setViewMode] = <span class="cstat-no" title="statement not covered" >useState&lt;'calendar' | 'heatmap' | 'progress'&gt;('calendar');</span>
+  const [currentDate<span class="cstat-no" title="statement not covered" >, s</span>etCurrentDate<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(new Date())<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [viewMode<span class="cstat-no" title="statement not covered" >, s</span>etViewMode<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;'calendar' | 'heatmap' | 'progress'&gt;('calendar')<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
   // レベルシステム
   const levels: LevelInfo[] = <span class="cstat-no" title="statement not covered" >[</span>
@@ -1509,7 +1509,7 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
     },
   ];
 &nbsp;
-  const getCurrentLevel = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): LevelInfo =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getCurrentLevel </span>= <span class="cstat-no" title="statement not covered" >(): LevelInfo =&gt; {</span>
     const currentStreak = <span class="cstat-no" title="statement not covered" >stats.currentStreak;</span>
 <span class="cstat-no" title="statement not covered" >    for (let i = <span class="cstat-no" title="statement not covered" >levels.length - 1;</span> i &gt;= 0; i--) {</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (currentStreak &gt;= levels[i].requirement) {</span>
@@ -1519,13 +1519,13 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
 <span class="cstat-no" title="statement not covered" >    return levels[0];</span>
   };
 &nbsp;
-  const getNextLevel = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): LevelInfo | null =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getNextLevel </span>= <span class="cstat-no" title="statement not covered" >(): LevelInfo | null =&gt; {</span>
     const currentLevel = <span class="cstat-no" title="statement not covered" >getCurrentLevel();</span>
-    const currentIndex = <span class="cstat-no" title="statement not covered" >levels.findIndex(<span class="fstat-no" title="function not covered" >(l</span>) =&gt; <span class="cstat-no" title="statement not covered" >l.level === currentLevel.level)</span>;</span>
+    const currentIndex = <span class="cstat-no" title="statement not covered" >levels.findIndex(<span class="fstat-no" title="function not covered" >(l<span class="cstat-no" title="statement not covered" ></span>) =&gt; l.level === currentLevel.level);</span></span>
 <span class="cstat-no" title="statement not covered" >    return currentIndex &lt; levels.length - 1 ? levels[currentIndex + 1] : null;</span>
   };
 &nbsp;
-  const getLevelProgress = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): number =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getLevelProgress </span>= <span class="cstat-no" title="statement not covered" >(): number =&gt; {</span>
     const currentLevel = <span class="cstat-no" title="statement not covered" >getCurrentLevel();</span>
     const nextLevel = <span class="cstat-no" title="statement not covered" >getNextLevel();</span>
 &nbsp;
@@ -1535,12 +1535,12 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
     const levelStart = <span class="cstat-no" title="statement not covered" >currentLevel.requirement;</span>
     const levelEnd = <span class="cstat-no" title="statement not covered" >nextLevel.requirement;</span>
 &nbsp;
-    const progress = <span class="cstat-no" title="statement not covered" >((currentStreak - levelStart) / (levelEnd - levelStart)) * 100;</span>
+    const progress = (<span class="cstat-no" title="statement not covered" >(currentStreak - levelStart) / (levelEnd - levelStart)) * 100;</span>
 <span class="cstat-no" title="statement not covered" >    return Math.min(Math.max(progress, 0), 100);</span>
   };
 &nbsp;
   // カレンダーデータ生成
-  const generateCalendarData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): CalendarDay[] =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >generateCalendarData </span>= <span class="cstat-no" title="statement not covered" >(): CalendarDay[] =&gt; {</span>
     const year = <span class="cstat-no" title="statement not covered" >currentDate.getFullYear();</span>
     const month = <span class="cstat-no" title="statement not covered" >currentDate.getMonth();</span>
     const firstDay = <span class="cstat-no" title="statement not covered" >new Date(year, month, 1);</span>
@@ -1550,16 +1550,16 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
 &nbsp;
     const days: CalendarDay[] = <span class="cstat-no" title="statement not covered" >[];</span>
     const today = <span class="cstat-no" title="statement not covered" >new Date();</span>
-<span class="cstat-no" title="statement not covered" >    today.setHours(0, 0, 0, 0);</span>
+<span class="cstat-no" title="statement not covered" >    today.setHours(0, 0, 0, 0);<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    for (let i = <span class="cstat-no" title="statement not covered" >0;</span> i &lt; 42; i++) {</span>
+<span class="cstat-no" title="statement not covered" >    for (let i = <span class="cstat-no" title="statement not covered" >0;</span> i &lt; 42; i++<span class="cstat-no" title="statement not covered" >) {</span></span>
       // 6週間分
       const date = <span class="cstat-no" title="statement not covered" >new Date(startDate);</span>
 <span class="cstat-no" title="statement not covered" >      date.setDate(startDate.getDate() + i);</span>
 &nbsp;
       const dateString = <span class="cstat-no" title="statement not covered" >date.toDateString();</span>
       const record = <span class="cstat-no" title="statement not covered" >records.find(</span>
-<span class="fstat-no" title="function not covered" >        (r</span>) =&gt; <span class="cstat-no" title="statement not covered" >new Date(r.date).toDateString() === dateString &amp;&amp; r.completed</span>
+<span class="fstat-no" title="function not covered" >        (r<span class="cstat-no" title="statement not covered" ></span>) =&gt; new Date(r.date).toDateString() === dateString &amp;&amp; r.completed</span>
       );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      days.push({</span>
@@ -1576,7 +1576,7 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
   };
 &nbsp;
   // ヒートマップデータ生成（過去12週間）
-  const generateHeatmapData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >generateHeatmapData </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
     const weeks = <span class="cstat-no" title="statement not covered" >[];</span>
     const today = <span class="cstat-no" title="statement not covered" >new Date();</span>
 &nbsp;
@@ -1585,13 +1585,13 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
 <span class="cstat-no" title="statement not covered" >      weekStart.setDate(today.getDate() - w * 7);</span>
 <span class="cstat-no" title="statement not covered" >      weekStart.setDate(weekStart.getDate() - weekStart.getDay()); </span>// 日曜日から開始
 &nbsp;
-      const weekDays = <span class="cstat-no" title="statement not covered" >[];</span>
-<span class="cstat-no" title="statement not covered" >      for (let d = <span class="cstat-no" title="statement not covered" >0;</span> d &lt; 7; d++) {</span>
+      const weekDays = <span class="cstat-no" title="statement not covered" >[];<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >      for (let d = <span class="cstat-no" title="statement not covered" >0;</span> d &lt; 7; d++<span class="cstat-no" title="statement not covered" >) {</span></span>
         const date = <span class="cstat-no" title="statement not covered" >new Date(weekStart);</span>
 <span class="cstat-no" title="statement not covered" >        date.setDate(weekStart.getDate() + d);</span>
 &nbsp;
         const record = <span class="cstat-no" title="statement not covered" >records.find(</span>
-<span class="fstat-no" title="function not covered" >          (r</span>) =&gt; <span class="cstat-no" title="statement not covered" >new Date(r.date).toDateString() === date.toDateString() &amp;&amp; r.completed</span>
+<span class="fstat-no" title="function not covered" >          (r<span class="cstat-no" title="statement not covered" ></span>) =&gt; new Date(r.date).toDateString() === date.toDateString() &amp;&amp; r.completed</span>
         );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        weekDays.push({</span>
@@ -1606,7 +1606,7 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
 <span class="cstat-no" title="statement not covered" >    return weeks;</span>
   };
 &nbsp;
-  const getTypeIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ype?: string) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >getTypeIcon </span>= <span class="cstat-no" title="statement not covered" >(type?: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (type) {</span>
       case 'full_bath':
 <span class="cstat-no" title="statement not covered" >        return '🛁';</span>
@@ -1683,7 +1683,7 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
               &lt;Button
                 variant={viewMode === 'calendar' ? 'default' : 'outline'}
                 size="sm"
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setViewMode('calendar')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setViewMode('calendar')}</span>
               &gt;
                 &lt;Calendar className="w-4 h-4 mr-1" /&gt;
                 カレンダー
@@ -1691,7 +1691,7 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
               &lt;Button
                 variant={viewMode === 'heatmap' ? 'default' : 'outline'}
                 size="sm"
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setViewMode('heatmap')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setViewMode('heatmap')}</span>
               &gt;
                 &lt;BarChart3 className="w-4 h-4 mr-1" /&gt;
                 ヒートマップ
@@ -1699,7 +1699,7 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
               &lt;Button
                 variant={viewMode === 'progress' ? 'default' : 'outline'}
                 size="sm"
-                onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setViewMode('progress')}</span>
+<span class="fstat-no" title="function not covered" >                onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setViewMode('progress')}</span>
               &gt;
                 &lt;TrendingUp className="w-4 h-4 mr-1" /&gt;
                 進捗
@@ -1716,7 +1716,7 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
                 &lt;Button
                   variant="outline"
                   size="sm"
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >                  onClick=</span>{() =&gt; {
                     const newDate = <span class="cstat-no" title="statement not covered" >new Date(currentDate);</span>
 <span class="cstat-no" title="statement not covered" >                    newDate.setMonth(newDate.getMonth() - 1);</span>
 <span class="cstat-no" title="statement not covered" >                    setCurrentDate(newDate);</span>
@@ -1730,7 +1730,7 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
                 &lt;Button
                   variant="outline"
                   size="sm"
-                  onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="fstat-no" title="function not covered" >                  onClick=</span>{() =&gt; {
                     const newDate = <span class="cstat-no" title="statement not covered" >new Date(currentDate);</span>
 <span class="cstat-no" title="statement not covered" >                    newDate.setMonth(newDate.getMonth() + 1);</span>
 <span class="cstat-no" title="statement not covered" >                    setCurrentDate(newDate);</span>
@@ -1742,8 +1742,8 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
 &nbsp;
               {/* 曜日ヘッダー */}
               &lt;div className="grid grid-cols-7 gap-1 text-center text-sm font-medium text-gray-500"&gt;
-                {['日', '月', '火', '水', '木', '金', '土'].map(<span class="fstat-no" title="function not covered" >(d</span>ay) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div key={day} c</span>lassName="p-2"&gt;
+                {['日', '月', '火', '水', '木', '金', '土'].map(<span class="fstat-no" title="function not covered" >(d</span>ay<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;div key={day} className="p-2"&gt;
                     {day}
                   &lt;/div&gt;
                 ))}
@@ -1751,8 +1751,8 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
 &nbsp;
               {/* カレンダーグリッド */}
               &lt;div className="grid grid-cols-7 gap-1"&gt;
-                {calendarData.map(<span class="fstat-no" title="function not covered" >(d</span>ay, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                  &lt;div</span>
+                {calendarData.map(<span class="fstat-no" title="function not covered" >(d</span>ay, index<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                  &lt;div
                     key={index}
                     className={cn(
                       'relative aspect-square p-1 text-center text-sm rounded-lg transition-all duration-200 hover:scale-105 cursor-default',
@@ -1830,8 +1830,8 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
               &lt;div className="flex"&gt;
                 {/* 曜日ラベル */}
                 &lt;div className="w-8 space-y-1"&gt;
-                  {['日', '月', '火', '水', '木', '金', '土'].map(<span class="fstat-no" title="function not covered" >(d</span>ay, i) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;div</span>
+                  {['日', '月', '火', '水', '木', '金', '土'].map(<span class="fstat-no" title="function not covered" >(d</span>ay, i<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                    &lt;div
                       key={day}
                       className={cn(
                         'h-4 text-xs text-gray-500 flex items-center',
@@ -1845,10 +1845,10 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
 &nbsp;
                 {/* ヒートマップグリッド */}
                 &lt;div className="flex-1 grid grid-cols-12 gap-1"&gt;
-                  {heatmapData.map(<span class="fstat-no" title="function not covered" >(w</span>eek, weekIndex) =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;div key={weekIndex} c</span>lassName="space-y-1"&gt;
-                      {week.map(<span class="fstat-no" title="function not covered" >(d</span>ay, dayIndex) =&gt; (
-<span class="cstat-no" title="statement not covered" >                        &lt;div</span>
+                  {heatmapData.map(<span class="fstat-no" title="function not covered" >(w</span>eek, weekIndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                    &lt;div key={weekIndex} className="space-y-1"&gt;
+                      {week.map(<span class="fstat-no" title="function not covered" >(d</span>ay, dayIndex<span class="cstat-no" title="statement not covered" >) =&gt; (</span>
+                        &lt;div
                           key={`${weekIndex}-${dayIndex}`}
                           className={cn(
                             'w-4 h-4 rounded-sm transition-all duration-200 hover:scale-125 cursor-default',
@@ -1887,7 +1887,7 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
               &lt;div&gt;
                 &lt;h3 className="text-lg font-semibold mb-3"&gt;週間進捗パターン&lt;/h3&gt;
                 &lt;div className="grid grid-cols-7 gap-2"&gt;
-                  {Object.entries(stats.weeklyPattern).map(<span class="fstat-no" title="function not covered" >([</span>day, count]) =&gt; {
+                  {Object.entries(stats.weeklyPattern).map(<span class="fstat-no" title="function not covered" >([d</span>ay<span class="cstat-no" title="statement not covered" >, c</span>ount<span class="cstat-no" title="statement not covered" >]) =&gt;<span class="cstat-no" title="statement not covered" > </span>{</span>
                     const maxCount = <span class="cstat-no" title="statement not covered" >Math.max(...Object.values(stats.weeklyPattern));</span>
                     const percentage = <span class="cstat-no" title="statement not covered" >maxCount &gt; 0 ? (count / maxCount) * 100 : 0;</span>
 &nbsp;
@@ -2056,7 +2056,7 @@ export const <span class="cstat-no" title="statement not covered" >BathingHabitV
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

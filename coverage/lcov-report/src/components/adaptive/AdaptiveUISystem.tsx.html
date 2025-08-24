@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/127</span>
+                <span class='fraction'>0/161</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/96</span>
+                <span class='fraction'>0/105</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/122</span>
+                <span class='fraction'>0/127</span>
             </div>
         
             
@@ -925,9 +925,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -943,12 +943,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1447,7 +1447,7 @@ interface AdaptiveUIContextType {
 const AdaptiveUIContext = <span class="cstat-no" title="statement not covered" >createContext&lt;AdaptiveUIContextType | null&gt;(null);</span>
 &nbsp;
 // カスタムフック
-export const <span class="cstat-no" title="statement not covered" >useAdaptiveUI = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useAdaptiveUI </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
   const context = <span class="cstat-no" title="statement not covered" >useContext(AdaptiveUIContext);</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!context) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('useAdaptiveUI must be used within AdaptiveUIProvider');</span>
@@ -1456,7 +1456,7 @@ export const <span class="cstat-no" title="statement not covered" >useAdaptiveUI
 };
 &nbsp;
 // デフォルトテーマ定義
-const createTheme = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+const <span class="fstat-no" title="function not covered" >createTheme </span>= <span class="cstat-no" title="statement not covered" >(</span>
   level: CognitiveLoadLevel,
   adaptations: AdaptationState['adaptations']
 ): AdaptiveTheme =&gt; {
@@ -1579,12 +1579,12 @@ interface AdaptiveUIProviderProps {
   autoStart?: boolean;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AdaptiveUIProvider: React.FC&lt;AdaptiveUIProviderProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  children,
-  userId = <span class="branch-0 cbranch-no" title="branch not covered" >'demo-user',</span>
-  autoStart = <span class="branch-0 cbranch-no" title="branch not covered" >true,</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AdaptiveUIProvider:</span> React.FC&lt;AdaptiveUIProviderProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  children<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >,</span></span>
+  userId<span class="cstat-no" title="statement not covered" > = 'demo-user'<span class="cstat-no" title="statement not covered" >,</span></span>
+  autoStart<span class="cstat-no" title="statement not covered" > = true,</span>
 }) =&gt; {
-  const [adaptationState, setAdaptationState] = <span class="cstat-no" title="statement not covered" >useState&lt;AdaptationState&gt;({</span>
+  const [adaptationState<span class="cstat-no" title="statement not covered" >, s</span>etAdaptationState<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;AdaptationState&gt;({</span>
     isActive: false,
     currentLevel: 'low',
     adaptations: {
@@ -1598,33 +1598,33 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
       visualCues: false,
     },
     customStyles: {},
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-  const [metrics, setMetrics] = <span class="cstat-no" title="statement not covered" >useState&lt;CognitiveLoadMetrics | null&gt;(null);</span>
-  const [currentTheme, setCurrentTheme] = <span class="cstat-no" title="statement not covered" >useState&lt;AdaptiveTheme&gt;(</span>
+  const [metrics<span class="cstat-no" title="statement not covered" >, s</span>etMetrics<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;CognitiveLoadMetrics | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [currentTheme<span class="cstat-no" title="statement not covered" >, s</span>etCurrentTheme<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;AdaptiveTheme&gt;(</span>
     createTheme('low', adaptationState.adaptations)
-  );
+  )<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
   // 認知負荷監視の初期化
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (autoStart) {</span>
 <span class="cstat-no" title="statement not covered" >      realtimeCognitiveLoadMonitor.startMonitoring(userId);</span>
     }
 &nbsp;
     // イベントリスナーの設定
-    const handleCognitiveLoadCalculated = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(n</span>ewMetrics: CognitiveLoadMetrics) =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleCognitiveLoadCalculated </span>= <span class="cstat-no" title="statement not covered" >(newMetrics: CognitiveLoadMetrics) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setMetrics(newMetrics);</span>
 <span class="cstat-no" title="statement not covered" >      updateAdaptations(newMetrics);</span>
     };
 &nbsp;
-    const handleUIAdaptationRequired = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ata: any) =&gt; {</span>
+    const <span class="fstat-no" title="function not covered" >handleUIAdaptationRequired </span>= <span class="cstat-no" title="statement not covered" >(data: any) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      applyUIAdaptations(data.level, data.adaptations);</span>
     };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    realtimeCognitiveLoadMonitor.on('cognitiveLoadCalculated', handleCognitiveLoadCalculated);</span>
 <span class="cstat-no" title="statement not covered" >    realtimeCognitiveLoadMonitor.on('uiAdaptationRequired', handleUIAdaptationRequired);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >      realtimeCognitiveLoadMonitor.off('cognitiveLoadCalculated', handleCognitiveLoadCalculated);</span>
 <span class="cstat-no" title="statement not covered" >      realtimeCognitiveLoadMonitor.off('uiAdaptationRequired', handleUIAdaptationRequired);</span>
 &nbsp;
@@ -1635,7 +1635,7 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
   }, [userId, autoStart]);
 &nbsp;
   // テーマの更新
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const newTheme = <span class="cstat-no" title="statement not covered" >createTheme(adaptationState.currentLevel, adaptationState.adaptations);</span>
 <span class="cstat-no" title="statement not covered" >    setCurrentTheme(newTheme);</span>
 <span class="cstat-no" title="statement not covered" >    applyGlobalStyles(newTheme, adaptationState);</span>
@@ -1662,7 +1662,7 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
       visualCues: newMetrics.processing.accuracy &lt; 0.6 || newMetrics.adhdFactors.inattention &gt; 0.6,
     };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    setAdaptationState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >    setAdaptationState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       isActive: true,
       currentLevel: newMetrics.level,
@@ -1674,7 +1674,7 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
    * UI適応の適用
    */
   const applyUIAdaptations = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >(l</span>evel: CognitiveLoadLevel, adaptationConfig: any) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setAdaptationState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >    setAdaptationState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
       ...prev,
       currentLevel: level,
       isActive: true,
@@ -1732,7 +1732,7 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
   /**
    * 特殊適応メソッド
    */
-  const hideNonEssentialElements = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const hideNonEssentialElements = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const nonEssential = <span class="cstat-no" title="statement not covered" >document.querySelectorAll(</span>
       '.non-essential, .decorative, .sidebar-secondary'
     );
@@ -1741,28 +1741,28 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
     });
   }, []);
 &nbsp;
-  const enableFocusMode = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const enableFocusMode = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const main = <span class="cstat-no" title="statement not covered" >document.querySelector('main');</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (main) {</span>
 <span class="cstat-no" title="statement not covered" >      main.classList.add('focus-mode');</span>
     }
   }, []);
 &nbsp;
-  const reduceVisualComplexity = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const reduceVisualComplexity = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const gradients = <span class="cstat-no" title="statement not covered" >document.querySelectorAll('.gradient-bg, .pattern-bg');</span>
 <span class="cstat-no" title="statement not covered" >    gradients.forEach(<span class="fstat-no" title="function not covered" >(e</span>l) =&gt; {</span>
       (<span class="cstat-no" title="statement not covered" >el as HTMLElement).style.background = 'var(--adaptive-surface)';</span>
     });
   }, []);
 &nbsp;
-  const simplifyInterface = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const simplifyInterface = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const complex = <span class="cstat-no" title="statement not covered" >document.querySelectorAll('.complex-card, .detailed-stats');</span>
 <span class="cstat-no" title="statement not covered" >    complex.forEach(<span class="fstat-no" title="function not covered" >(e</span>l) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      el.classList.add('simplified');</span>
     });
   }, []);
 &nbsp;
-  const increaseTargetSizes = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const increaseTargetSizes = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
     const interactive = <span class="cstat-no" title="statement not covered" >document.querySelectorAll('button, input, select, a');</span>
 <span class="cstat-no" title="statement not covered" >    interactive.forEach(<span class="fstat-no" title="function not covered" >(e</span>l) =&gt; {</span>
       (<span class="cstat-no" title="statement not covered" >el as HTMLElement).style.minHeight = '44px';</span>
@@ -1775,7 +1775,7 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
    */
   const setCustomAdaptation = <span class="cstat-no" title="statement not covered" >useCallback(</span>
 <span class="fstat-no" title="function not covered" >    (a</span>daptations: Partial&lt;AdaptationState['adaptations']&gt;) =&gt; {
-<span class="cstat-no" title="statement not covered" >      setAdaptationState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >      setAdaptationState(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; ({</span></span>
         ...prev,
         adaptations: { ...prev.adaptations, ...adaptations },
       }));
@@ -1786,7 +1786,7 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
   /**
    * 適応リセット
    */
-  const resetAdaptations = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const resetAdaptations = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    setAdaptationState({</span>
       isActive: false,
       currentLevel: 'low',
@@ -1842,7 +1842,7 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveUIPro
 /**
  * 適応的CSSの生成
  */
-const generateAdaptiveCSS = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>heme: AdaptiveTheme, state: AdaptationState): string =&gt; {</span>
+const <span class="fstat-no" title="function not covered" >generateAdaptiveCSS </span>= <span class="cstat-no" title="statement not covered" >(theme: AdaptiveTheme, state: AdaptationState): string =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return `</span>
     /* 適応的基本スタイル */
     .adaptive-card {
@@ -1971,12 +1971,12 @@ const generateAdaptiveCSS = <span class="cstat-no" title="statement not covered"
 };
 &nbsp;
 // コンポーネントユーティリティ
-export const <span class="cstat-no" title="statement not covered" >AdaptiveCard: React.FC&lt;{</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AdaptiveCard:</span> React.FC&lt;{</span>
   children: React.ReactNode;
   className?: string;
   importance?: 'low' | 'medium' | 'high';
-}&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> children, className = <span class="branch-0 cbranch-no" title="branch not covered" >'',</span> importance = <span class="branch-0 cbranch-no" title="branch not covered" >'medium' </span>}) =&gt; {</span>
-  const { adaptationState } = <span class="cstat-no" title="statement not covered" >useAdaptiveUI();</span>
+}&gt; = <span class="cstat-no" title="statement not covered" >({ children<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >, className<span class="cstat-no" title="statement not covered" > </span>= ''<span class="cstat-no" title="statement not covered" >, i</span>mportance<span class="cstat-no" title="statement not covered" > </span>= 'medium' }) =&gt; </span>{</span></span>
+  const { adaptationState<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useAdaptiveUI();</span></span>
 &nbsp;
   const cardClasses = <span class="cstat-no" title="statement not covered" >[</span>
     'adaptive-card',
@@ -1989,14 +1989,14 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveCard:
 <span class="cstat-no" title="statement not covered" >  return &lt;div className={cardClasses}&gt;{children}&lt;/div&gt;;</span>
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AdaptiveButton: React.FC&lt;{</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AdaptiveButton:</span> React.FC&lt;{</span>
   children: React.ReactNode;
   onClick?: () =&gt; void;
   variant?: 'primary' | 'secondary';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-}&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> children, onClick, variant = <span class="branch-0 cbranch-no" title="branch not covered" >'primary',</span> size = <span class="branch-0 cbranch-no" title="branch not covered" >'md',</span> className = <span class="branch-0 cbranch-no" title="branch not covered" >'' </span>}) =&gt; {</span>
-  const { adaptationState } = <span class="cstat-no" title="statement not covered" >useAdaptiveUI();</span>
+}&gt; = <span class="cstat-no" title="statement not covered" >({ children<span class="cstat-no" title="statement not covered" >, onClick<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >, variant<span class="cstat-no" title="statement not covered" > </span>= 'primary'<span class="cstat-no" title="statement not covered" >, s</span>ize<span class="cstat-no" title="statement not covered" > </span>= 'md'<span class="cstat-no" title="statement not covered" >, c</span>lassName<span class="cstat-no" title="statement not covered" > </span>= '' }) =&gt; </span>{</span></span></span>
+  const { adaptationState<span class="cstat-no" title="statement not covered" > } = <span class="cstat-no" title="statement not covered" >useAdaptiveUI();</span></span>
 &nbsp;
   const buttonClasses = <span class="cstat-no" title="statement not covered" >[</span>
     'adaptive-button',
@@ -2015,11 +2015,11 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveButto
   );
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AdaptiveText: React.FC&lt;{</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AdaptiveText:</span> React.FC&lt;{</span>
   children: React.ReactNode;
   level?: 'body' | 'heading' | 'caption';
   className?: string;
-}&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> children, level = <span class="branch-0 cbranch-no" title="branch not covered" >'body',</span> className = <span class="branch-0 cbranch-no" title="branch not covered" >'' </span>}) =&gt; {</span>
+}&gt; = <span class="cstat-no" title="statement not covered" >({ children<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >, level<span class="cstat-no" title="statement not covered" > </span>= 'body'<span class="cstat-no" title="statement not covered" >, c</span>lassName<span class="cstat-no" title="statement not covered" > </span>= '' }) =&gt; </span>{</span></span>
   const textClasses = <span class="cstat-no" title="statement not covered" >['adaptive-text', `adaptive-text-${level}`, className]</span>
     .filter(Boolean)
     .join(' ');
@@ -2035,7 +2035,7 @@ export const <span class="cstat-no" title="statement not covered" >AdaptiveText:
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

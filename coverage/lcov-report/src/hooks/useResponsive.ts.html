@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -141,7 +141,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -193,14 +193,14 @@ const breakpoints: BreakpointConfig = <span class="cstat-no" title="statement no
   '2xl': 1536,
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >useResponsive = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
-  const [windowSize, setWindowSize] = <span class="cstat-no" title="statement not covered" >useState({</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useResponsive </span>= <span class="cstat-no" title="statement not covered" >(</span>) =&gt; {</span>
+  const [windowSize<span class="cstat-no" title="statement not covered" >, s</span>etWindowSize<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState({</span>
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
     height: typeof window !== 'undefined' ? window.innerHeight : 0,
-  });
+  })<span class="cstat-no" title="statement not covered" >;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const handleResize = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
+    const <span class="fstat-no" title="function not covered" >handleResize </span>= <span class="cstat-no" title="statement not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setWindowSize({</span>
         width: window.innerWidth,
         height: window.innerHeight,
@@ -208,7 +208,7 @@ export const <span class="cstat-no" title="statement not covered" >useResponsive
     };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    window.addEventListener('resize', handleResize);</span>
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >window.removeEventListener('resize', handleResize);</span></span>
+<span class="cstat-no" title="statement not covered" >    return <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; w</span>indow.removeEventListener('resize', handleResize);</span></span>
   }, []);
 &nbsp;
   const isMobile = <span class="cstat-no" title="statement not covered" >windowSize.width &lt; breakpoints.md;</span>
@@ -218,7 +218,7 @@ export const <span class="cstat-no" title="statement not covered" >useResponsive
   const breakpoint =
 <span class="cstat-no" title="statement not covered" >    Object.entries(breakpoints)</span>
       .reverse()
-      .find(<span class="fstat-no" title="function not covered" >([</span>, size]) =&gt; <span class="cstat-no" title="statement not covered" >windowSize.width &gt;= size)</span>?.[0] || 'sm';
+      .find(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >([, s</span></span>ize<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >]) =&gt; w</span>indowSize.width &gt;= size)?</span>.[0] || 'sm';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
     width: windowSize.width,
@@ -227,8 +227,8 @@ export const <span class="cstat-no" title="statement not covered" >useResponsive
     isTablet,
     isDesktop,
     breakpoint: breakpoint as keyof BreakpointConfig,
-    isSmaller: <span class="fstat-no" title="function not covered" >(s</span>ize: keyof BreakpointConfig) =&gt; <span class="cstat-no" title="statement not covered" >windowSize.width &lt; breakpoints[size],</span>
-    isLarger: <span class="fstat-no" title="function not covered" >(s</span>ize: keyof BreakpointConfig) =&gt; <span class="cstat-no" title="statement not covered" >windowSize.width &gt;= breakpoints[size],</span>
+<span class="fstat-no" title="function not covered" >    isSmaller:</span> (size: keyof BreakpointConfig<span class="cstat-no" title="statement not covered" >) =&gt; windowSize.width &lt; breakpoints[size],</span>
+<span class="fstat-no" title="function not covered" >    isLarger:</span> (size: keyof BreakpointConfig<span class="cstat-no" title="statement not covered" >) =&gt; windowSize.width &gt;= breakpoints[size],</span>
   };
 };
 &nbsp;</pre></td></tr></table></pre>
@@ -238,7 +238,7 @@ export const <span class="cstat-no" title="statement not covered" >useResponsive
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

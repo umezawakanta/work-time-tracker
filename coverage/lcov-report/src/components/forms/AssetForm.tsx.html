@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/31</span>
+                <span class='fraction'>0/40</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/30</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -173,9 +173,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -265,16 +265,16 @@ interface AssetFormProps {
   updateLastBalanceDate: () =&gt; void;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >AssetForm: React.FC&lt;AssetFormProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
-  editingAsset,
-  setEditingAsset,
-  updateLastBalanceDate,
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >AssetForm:</span> React.FC&lt;AssetFormProps&gt; = <span class="cstat-no" title="statement not covered" >(</span>{</span>
+  editingAsset<span class="cstat-no" title="statement not covered" >,</span>
+  setEditingAsset<span class="cstat-no" title="statement not covered" >,</span>
+  updateLastBalanceDate<span class="cstat-no" title="statement not covered" >,</span>
 }) =&gt; {
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
-  const [currentAssetValue, setCurrentAssetValue] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('');</span>
-  const [currentAssetAccount, setCurrentAssetAccount] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;('');</span>
+  const [currentAssetValue<span class="cstat-no" title="statement not covered" >, s</span>etCurrentAssetValue<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('')<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [currentAssetAccount<span class="cstat-no" title="statement not covered" >, s</span>etCurrentAssetAccount<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string&gt;('')<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const handleAssetSubmit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: React.FormEvent) =&gt; {</span>
+  const <span class="fstat-no" title="function not covered" >handleAssetSubmit </span>= <span class="cstat-no" title="statement not covered" >(e: React.FormEvent) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    e.preventDefault();</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!currentAssetAccount) {</span>
 <span class="cstat-no" title="statement not covered" >      toast({</span>
@@ -317,7 +317,7 @@ export const <span class="cstat-no" title="statement not covered" >AssetForm: Re
               id="assetValue"
               type="number"
               value={currentAssetValue}
-              onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setCurrentAssetValue(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >              onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setCurrentAssetValue(e.target.value)}</span>
               required
             /&gt;
           &lt;/div&gt;
@@ -327,13 +327,13 @@ export const <span class="cstat-no" title="statement not covered" >AssetForm: Re
               id="assetAccount"
               type="text"
               value={currentAssetAccount}
-              onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setCurrentAssetAccount(e.target.value)}</span>
+<span class="fstat-no" title="function not covered" >              onChange=</span>{(e<span class="cstat-no" title="statement not covered" >) =&gt; setCurrentAssetAccount(e.target.value)}</span>
               required
             /&gt;
           &lt;/div&gt;
           &lt;Button type="submit"&gt;{editingAsset ? '更新' : '登録'}&lt;/Button&gt;
           {editingAsset &amp;&amp; (
-            &lt;Button type="button" variant="outline" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setEditingAsset(null)}</span>&gt;
+            &lt;Button type="button" variant="outline" <span class="fstat-no" title="function not covered" >onClick<span class="cstat-no" title="statement not covered" >=</span>{() =&gt; setEditingAsset(null)}&gt;</span>
               キャンセル
             &lt;/Button&gt;
           )}
@@ -349,7 +349,7 @@ export const <span class="cstat-no" title="statement not covered" >AssetForm: Re
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

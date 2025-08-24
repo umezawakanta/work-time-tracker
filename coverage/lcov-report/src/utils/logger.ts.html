@@ -132,33 +132,33 @@
 <a name='L67'></a><a href='#L67'>67</a>
 <a name='L68'></a><a href='#L68'>68</a>
 <a name='L69'></a><a href='#L69'>69</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -166,7 +166,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -216,7 +216,7 @@ const getLogLevel = (): LogLevel =&gt; {
 const currentLogLevel = getLogLevel();
 &nbsp;
 // ログフィルター（不要なログを除外）
-const shouldLog = <span class="fstat-no" title="function not covered" >(c</span>ategory: string, message: string): boolean =&gt; {
+const <span class="fstat-no" title="function not covered" >shouldLog </span>= (category: string, message: string): boolean =&gt; {
   // WebSocketの頻繁なログを抑制
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (</span>
     category === 'WebSocket' &amp;&amp;
@@ -235,25 +235,25 @@ const shouldLog = <span class="fstat-no" title="function not covered" >(c</span>
 &nbsp;
 // ログ出力関数
 export const logger = {
-  error: <span class="fstat-no" title="function not covered" >(c</span>ategory: string, message: string, data?: any) =&gt; {
+<span class="fstat-no" title="function not covered" >  error:</span> (category: string, message: string, data?: any) =&gt; {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (currentLogLevel &gt;= LogLevel.ERROR &amp;&amp; shouldLog(category, message)) {</span>
 <span class="cstat-no" title="statement not covered" >      console.error(`❌ [${category}] ${message}`, data || '');</span>
     }
   },
 &nbsp;
-  warn: <span class="fstat-no" title="function not covered" >(c</span>ategory: string, message: string, data?: any) =&gt; {
+<span class="fstat-no" title="function not covered" >  warn:</span> (category: string, message: string, data?: any) =&gt; {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (currentLogLevel &gt;= LogLevel.WARN &amp;&amp; shouldLog(category, message)) {</span>
 <span class="cstat-no" title="statement not covered" >      console.warn(`⚠️ [${category}] ${message}`, data || '');</span>
     }
   },
 &nbsp;
-  info: <span class="fstat-no" title="function not covered" >(c</span>ategory: string, message: string, data?: any) =&gt; {
+<span class="fstat-no" title="function not covered" >  info:</span> (category: string, message: string, data?: any) =&gt; {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (currentLogLevel &gt;= LogLevel.INFO &amp;&amp; shouldLog(category, message)) {</span>
 <span class="cstat-no" title="statement not covered" >      console.log(`ℹ️ [${category}] ${message}`, data || '');</span>
     }
   },
 &nbsp;
-  debug: <span class="fstat-no" title="function not covered" >(c</span>ategory: string, message: string, data?: any) =&gt; {
+<span class="fstat-no" title="function not covered" >  debug:</span> (category: string, message: string, data?: any) =&gt; {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (currentLogLevel &gt;= LogLevel.DEBUG &amp;&amp; shouldLog(category, message)) {</span>
 <span class="cstat-no" title="statement not covered" >      console.log(`🔍 [${category}] ${message}`, data || '');</span>
     }
@@ -261,10 +261,10 @@ export const logger = {
 &nbsp;
   // ブログ投稿専用ログ（重要なもののみ）
   blogPost: {
-    start: <span class="fstat-no" title="function not covered" >(d</span>ata: any) =&gt; <span class="cstat-no" title="statement not covered" >logger.info('BlogPost', '📝 投稿開始', data),</span>
-    success: <span class="fstat-no" title="function not covered" >(p</span>ostId: string) =&gt; <span class="cstat-no" title="statement not covered" >logger.info('BlogPost', `✅ 投稿成功: ${postId}`),</span>
-    error: <span class="fstat-no" title="function not covered" >(e</span>rror: any) =&gt; <span class="cstat-no" title="statement not covered" >logger.error('BlogPost', '❌ 投稿失敗', error),</span>
-    redirect: <span class="fstat-no" title="function not covered" >(p</span>ath: string) =&gt; <span class="cstat-no" title="statement not covered" >logger.info('BlogPost', `🔄 リダイレクト: ${path}`),</span>
+<span class="fstat-no" title="function not covered" >    start:</span> (data: any<span class="cstat-no" title="statement not covered" >) =&gt; logger.info('BlogPost', '📝 投稿開始', data),</span>
+<span class="fstat-no" title="function not covered" >    success:</span> (postId: string<span class="cstat-no" title="statement not covered" >) =&gt; logger.info('BlogPost', `✅ 投稿成功: ${postId}`),</span>
+<span class="fstat-no" title="function not covered" >    error:</span> (error: any<span class="cstat-no" title="statement not covered" >) =&gt; logger.error('BlogPost', '❌ 投稿失敗', error),</span>
+<span class="fstat-no" title="function not covered" >    redirect:</span> (path: string<span class="cstat-no" title="statement not covered" >) =&gt; logger.info('BlogPost', `🔄 リダイレクト: ${path}`),</span>
   },
 };
 &nbsp;</pre></td></tr></table></pre>
@@ -274,7 +274,7 @@ export const logger = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

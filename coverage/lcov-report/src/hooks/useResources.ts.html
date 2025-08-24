@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/44</span>
+                <span class='fraction'>0/72</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/39</span>
+                <span class='fraction'>0/36</span>
             </div>
         
             
@@ -193,23 +193,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -219,17 +208,15 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -237,9 +224,22 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -280,64 +280,64 @@ interface UseResourcesReturn {
   removeResource: (resourceId: string) =&gt; Promise&lt;boolean&gt;;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >useResources = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>c</span>ategory: string, projectId?: string): UseResourcesReturn =&gt; {</span>
-  const [resources, setResources] = <span class="cstat-no" title="statement not covered" >useState&lt;Resource[]&gt;([]);</span>
-  const [isLoading, setIsLoading] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  const [error, setError] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;(null);</span>
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >useResources </span>= <span class="cstat-no" title="statement not covered" >(</span>category: string, projectId?: string): UseResourcesReturn =&gt; {</span>
+  const [resources<span class="cstat-no" title="statement not covered" >, s</span>etResources<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Resource[]&gt;([])<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [isLoading<span class="cstat-no" title="statement not covered" >, s</span>etIsLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(false)<span class="cstat-no" title="statement not covered" >;</span></span>
+  const [error<span class="cstat-no" title="statement not covered" >, s</span>etError<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;string | null&gt;(null)<span class="cstat-no" title="statement not covered" >;</span></span>
 &nbsp;
-  const refreshResources = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+  const refreshResources = <span class="cstat-no" title="statement not covered" >useCallback(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span></span>
 <span class="cstat-no" title="statement not covered" >    setIsLoading(true);</span>
-<span class="cstat-no" title="statement not covered" >    setError(null);</span>
+<span class="cstat-no" title="statement not covered" >    setError(null);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const resourcesData = <span class="cstat-no" title="statement not covered" >await resourceService.getResources(category, projectId);</span>
-<span class="cstat-no" title="statement not covered" >      setResources(resourcesData);</span>
+    try {
+      const <span class="cstat-no" title="statement not covered" >resourcesData = await r</span>esourceService.getResources(category, projectId);
+<span class="cstat-no" title="statement not covered" >      setResources(resourcesData);<span class="cstat-no" title="statement not covered" ></span></span>
     } catch (err) {
-<span class="cstat-no" title="statement not covered" >      setError(err instanceof Error ? err.message : 'リソースの取得に失敗しました');</span>
+<span class="cstat-no" title="statement not covered" >      setError(err instanceof Error ? err.message : 'リソースの取得に失敗しました');<span class="cstat-no" title="statement not covered" ></span></span>
     } finally {
-<span class="cstat-no" title="statement not covered" >      setIsLoading(false);</span>
+<span class="cstat-no" title="statement not covered" >      setIsLoading(false);<span class="cstat-no" title="statement not covered" ></span></span>
     }
   }, [category, projectId]);
 &nbsp;
-  const addResource = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>(resourceData: Omit&lt;Resource, 'id'&gt;): Promise&lt;boolean&gt; =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const newResource = <span class="cstat-no" title="statement not covered" >await resourceService.createResource(resourceData);</span>
-<span class="cstat-no" title="statement not covered" >      setResources(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >[...prev, newResource])</span>;</span>
-<span class="cstat-no" title="statement not covered" >      return true;</span>
+  const addResource = <span class="cstat-no" title="statement not covered" >useCallback<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(<span class="fstat-no" title="function not covered" >a</span>sync (r</span>esourceData: Omit&lt;Resource, 'id'&gt;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >): Promise&lt;boolean&gt; =&gt; {</span></span></span></span></span></span>
+    try {
+      const <span class="cstat-no" title="statement not covered" >newResource = await r</span>esourceService.createResource(resourceData);
+<span class="cstat-no" title="statement not covered" >      setResources(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; [...prev, newResource])</span>;<span class="cstat-no" title="statement not covered" ></span></span>
+      return true<span class="cstat-no" title="statement not covered" >;</span>
     } catch (error) {
-<span class="cstat-no" title="statement not covered" >      console.error('Add resource error:', error);</span>
-<span class="cstat-no" title="statement not covered" >      return false;</span>
+<span class="cstat-no" title="statement not covered" >      console.error('Add resource error:', error);<span class="cstat-no" title="statement not covered" ></span></span>
+      return false;
     }
-  }, []);
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >, [</span></span>]);
 &nbsp;
-  const updateResource = <span class="cstat-no" title="statement not covered" >useCallback(</span>
-<span class="fstat-no" title="function not covered" >    async </span>(resourceId: string, updates: Partial&lt;Resource&gt;): Promise&lt;boolean&gt; =&gt; {
-<span class="cstat-no" title="statement not covered" >      try {</span>
-        const updatedResource = <span class="cstat-no" title="statement not covered" >await resourceService.updateResource(resourceId, updates);</span>
-<span class="cstat-no" title="statement not covered" >        setResources(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >          prev.map(<span class="fstat-no" title="function not covered" >(r</span>esource) =&gt; (<span class="cstat-no" title="statement not covered" >resource.id === resourceId ? updatedResource : resource)</span>)</span>
-        );
-<span class="cstat-no" title="statement not covered" >        return true;</span>
+  const updateResource = <span class="cstat-no" title="statement not covered" >useCallback<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
+<span class="fstat-no" title="function not covered" >    async (r</span>esourceId: string, updates: Partial&lt;Resource&gt;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >): Promise&lt;boolean&gt; =&gt; {</span></span></span></span>
+      try {
+        const <span class="cstat-no" title="statement not covered" >updatedResource = await r</span>esourceService.updateResource(resourceId, updates);
+<span class="cstat-no" title="statement not covered" >        setResources(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt;</span></span>
+          prev.map(<span class="fstat-no" title="function not covered" >(r</span>esource<span class="cstat-no" title="statement not covered" >) =&gt; (resource.id === resourceId ? updatedResource : resource))</span>
+        );<span class="cstat-no" title="statement not covered" ></span>
+        return true<span class="cstat-no" title="statement not covered" >;</span>
       } catch (error) {
-<span class="cstat-no" title="statement not covered" >        console.error('Update resource error:', error);</span>
-<span class="cstat-no" title="statement not covered" >        return false;</span>
+<span class="cstat-no" title="statement not covered" >        console.error('Update resource error:', error);<span class="cstat-no" title="statement not covered" ></span></span>
+        return false;
       }
-    },
+    }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >,</span></span>
     []
   );
 &nbsp;
-  const removeResource = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>(resourceId: string): Promise&lt;boolean&gt; =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      await resourceService.deleteResource(resourceId);</span>
-<span class="cstat-no" title="statement not covered" >      setResources(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >prev.filter(<span class="fstat-no" title="function not covered" >(r</span>esource) =&gt; <span class="cstat-no" title="statement not covered" >resource.id !== resourceId)</span>)</span>;</span>
-<span class="cstat-no" title="statement not covered" >      return true;</span>
+  const removeResource = <span class="cstat-no" title="statement not covered" >useCallback<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(<span class="fstat-no" title="function not covered" >a</span>sync (r</span>esourceId: string<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >): Promise&lt;boolean&gt; =&gt; {</span></span></span></span></span></span>
+    try {
+      await resourceService.deleteResource(resourceId);
+<span class="cstat-no" title="statement not covered" >      setResources(<span class="fstat-no" title="function not covered" >(p</span>rev<span class="cstat-no" title="statement not covered" >) =&gt; prev.filter(<span class="fstat-no" title="function not covered" >(r</span>esource<span class="cstat-no" title="statement not covered" >) =&gt; resource.id !== resourceId))</span>;<span class="cstat-no" title="statement not covered" ></span></span></span>
+      return true<span class="cstat-no" title="statement not covered" >;</span>
     } catch (error) {
-<span class="cstat-no" title="statement not covered" >      console.error('Remove resource error:', error);</span>
-<span class="cstat-no" title="statement not covered" >      return false;</span>
+<span class="cstat-no" title="statement not covered" >      console.error('Remove resource error:', error);<span class="cstat-no" title="statement not covered" ></span></span>
+      return false;
     }
-  }, []);
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >, [</span></span>]);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =&gt; </span>{</span>
 <span class="cstat-no" title="statement not covered" >    refreshResources();</span>
   }, [refreshResources]);
 &nbsp;
@@ -358,7 +358,7 @@ export const <span class="cstat-no" title="statement not covered" >useResources 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-24T14:59:55.757Z
+                at 2025-08-24T16:27:30.482Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
