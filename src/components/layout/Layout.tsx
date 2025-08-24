@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AccessibilityProvider } from '@/components/accessibility/AccessibilityProvider';
+import InstallBanner from '@/components/pwa/InstallBanner';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
@@ -1191,6 +1192,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
               </div>
             </footer>
           </div>
+          <InstallBanner />
         </main>
       </div>
     </AccessibilityProvider>
