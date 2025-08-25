@@ -18,6 +18,17 @@ overrides:
   prismjs@<1.30.0: '>=1.30.0'
   on-headers@<1.1.0: '>=1.1.0'
   tmp@<0.2.4: '>=0.2.4'
+  lightningcss: 1.30.1
+  lightningcss-darwin-arm64: 1.30.1
+  lightningcss-darwin-x64: 1.30.1
+  lightningcss-freebsd-x64: 1.30.1
+  lightningcss-linux-arm-gnueabihf: 1.30.1
+  lightningcss-linux-arm64-gnu: 1.30.1
+  lightningcss-linux-arm64-musl: 1.30.1
+  lightningcss-linux-x64-gnu: 1.30.1
+  lightningcss-linux-x64-musl: 1.30.1
+  lightningcss-win32-arm64-msvc: 1.30.1
+  lightningcss-win32-x64-msvc: 1.30.1
 
 importers:
 
@@ -8735,7 +8746,7 @@ packages:
       '@types/node': ^18.0.0 || ^20.0.0 || >=22.0.0
       jiti: '>=1.21.0'
       less: '*'
-      lightningcss: ^1.21.0
+      lightningcss: 1.30.1
       sass: '*'
       sass-embedded: '*'
       stylus: '*'

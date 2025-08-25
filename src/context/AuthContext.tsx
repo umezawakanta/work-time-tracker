@@ -4,6 +4,7 @@ import { tokenManager } from '../services/auth/TokenManager';
 import { User } from '@/types';
 import { logger } from '@/utils/logger';
 import { toast } from 'react-hot-toast';
+import { getEnv as getEnvVar } from '@/utils/env';
 
 // Extend Window interface for custom properties
 declare global {
@@ -37,23 +38,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 interface AuthProviderProps {
   children: React.ReactNode;
 }
-
-// 環境変数の取得をより互換性のある方法で行う
-const getEnvVar = (key: string): string | undefined => {
-  // Jest環境ではprocess.envを優先
-  if (typeof process !== 'undefined' && process.env && process.env[key]) {
-    return process.env[key];
-  }
-  // Vite環境でのimport.meta.env（安全にアクセス）
-  try {
-    if (typeof window !== 'undefined' && (window as any).import?.meta?.env) {
-      return (window as any).import.meta.env[key];
-    }
-  } catch (e) {
-    // import.metaが利用できない場合は無視
-  }
-  return undefined;
-};
 
 // 環境検出を動的にする（テスト環境で適切に動作するように）
 const isDev = () => {

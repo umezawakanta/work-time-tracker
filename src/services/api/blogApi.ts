@@ -1,6 +1,7 @@
 import { AxiosResponse, AxiosRequestConfig } from 'axios';
 import { BlogPost, Comment } from '@/store/blogSlice';
 import { api, USE_MOCK_DATA } from './apiConfig';
+import { getEnv } from '@/utils/env';
 
 // Extend Window interface for custom properties
 declare global {
@@ -144,26 +145,7 @@ export const blogApi = {
       } as AxiosResponse<BlogPost[]>);
     }
 
-    // 安全な環境変数取得
-    const getEnvVar = (key: string): string | undefined => {
-      // Jest環境ではprocess.envを優先
-      if (typeof process !== 'undefined' && process.env && process.env[key]) {
-        return process.env[key];
-      }
-
-      // Vite環境でのimport.meta.env（安全にアクセス）
-      try {
-        if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
-          return (globalThis as any).import.meta.env[key];
-        }
-      } catch (e) {
-        // import.metaが利用できない場合は無視
-      }
-
-      return undefined;
-    };
-
-    if (getEnvVar('DEV') === 'true' || process.env.NODE_ENV === 'development') {
+    if (getEnv('DEV') === 'true' || process.env.NODE_ENV === 'development') {
       console.log('🔄 API Call: GET /blog');
     }
     return api
@@ -251,26 +233,7 @@ export const blogApi = {
       } as AxiosResponse<BlogPost>);
     }
 
-    // 安全な環境変数取得
-    const getEnvVar = (key: string): string | undefined => {
-      // Jest環境ではprocess.envを優先
-      if (typeof process !== 'undefined' && process.env && process.env[key]) {
-        return process.env[key];
-      }
-
-      // Vite環境でのimport.meta.env（安全にアクセス）
-      try {
-        if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
-          return (globalThis as any).import.meta.env[key];
-        }
-      } catch (e) {
-        // import.metaが利用できない場合は無視
-      }
-
-      return undefined;
-    };
-
-    if (getEnvVar('DEV') === 'true' || process.env.NODE_ENV === 'development') {
+    if (getEnv('DEV') === 'true' || process.env.NODE_ENV === 'development') {
       console.log('🔄 API Call: GET /blog/' + id);
     }
 

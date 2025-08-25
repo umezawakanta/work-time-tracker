@@ -140,6 +140,8 @@ export interface SubTask {
   tags: string[];
 }
 
+import { getEnv } from '@/utils/env';
+
 class TaskAIService {
   private apiKey: string | null = null;
   private baseUrl = 'https://api.anthropic.com/v1'; // または適切なAI API URL
@@ -149,14 +151,14 @@ class TaskAIService {
 
   constructor() {
     this.apiKey =
-      import.meta.env.VITE_ANTHROPIC_API_KEY ||
-      import.meta.env.VITE_CLAUDE_API_KEY ||
-      import.meta.env.VITE_OPENAI_API_KEY;
+      getEnv('VITE_ANTHROPIC_API_KEY') ||
+      getEnv('VITE_CLAUDE_API_KEY') ||
+      getEnv('VITE_OPENAI_API_KEY');
 
     // Rate limiting: 10 requests per minute
     this.rateLimiter = new RateLimiter({
-      maxRequests: parseInt(import.meta.env.VITE_AI_RATE_LIMIT || '10'),
-      windowMs: parseInt(import.meta.env.VITE_AI_RATE_WINDOW_MS || '60000'), // 1 minute
+      maxRequests: parseInt(getEnv('VITE_AI_RATE_LIMIT') || '10'),
+      windowMs: parseInt(getEnv('VITE_AI_RATE_WINDOW_MS') || '60000'), // 1 minute
     });
   }
 
@@ -248,7 +250,7 @@ class TaskAIService {
             'anthropic-version': '2023-06-01',
           },
           body: JSON.stringify({
-            model: import.meta.env.VITE_ANTHROPIC_MODEL || 'claude-3-sonnet-20240229',
+            model: getEnv('VITE_ANTHROPIC_MODEL') || 'claude-3-sonnet-20240229',
             max_tokens: 1000,
             messages: [{ role: 'user', content: prompt }],
           }),

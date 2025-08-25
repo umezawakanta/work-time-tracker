@@ -58,7 +58,14 @@ class WBSService {
   private baseUrl = 'https://api.anthropic.com/v1';
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_CLAUDE_API_KEY || import.meta.env.VITE_OPENAI_API_KEY;
+    try {
+      // Lazy import to avoid cyclic deps at module load
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { getEnv } = require('@/utils/env');
+      this.apiKey = getEnv('VITE_CLAUDE_API_KEY') || getEnv('VITE_OPENAI_API_KEY');
+    } catch {
+      this.apiKey = null;
+    }
   }
 
   // メインのWBS生成機能

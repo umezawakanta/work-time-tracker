@@ -5,32 +5,9 @@
  * 環境変数からの読み込みと、デフォルト値の設定
  */
 
-// 環境変数を安全に取得するユーティリティ関数
-const getEnvVar = (key: string): string | undefined => {
-  // Jest環境ではprocess.envを優先
-  if (typeof process !== 'undefined' && process.env && process.env[key]) {
-    return process.env[key];
-  }
+import { getEnv as getEnvVar, isDev } from '@/utils/env';
 
-  // Vite環境でのimport.meta.env（安全にアクセス）
-  try {
-    if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
-      return (globalThis as any).import.meta.env[key];
-    }
-  } catch (e) {
-    // import.metaが利用できない場合は無視
-  }
-
-  return undefined;
-};
-
-const isDev = () => {
-  return (
-    getEnvVar('NODE_ENV') === 'development' ||
-    getEnvVar('DEV') === 'true' ||
-    getEnvVar('MODE') === 'development'
-  );
-};
+// use isDev from env util
 
 // デバッグ用の設定確認
 if (isDev()) {

@@ -39,6 +39,7 @@ import {
 import { toast } from 'react-hot-toast';
 
 import anthropicService from '@/services/ai/anthropicService';
+import { getEnv } from '@/utils/env';
 
 interface AIConfig {
   apiKey: string;
@@ -102,14 +103,14 @@ const AISettings: React.FC = () => {
     } else {
       // Load from environment variables
       setConfig({
-        apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY || '',
-        model: import.meta.env.VITE_ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022',
-        maxTokens: parseInt(import.meta.env.VITE_ANTHROPIC_MAX_TOKENS || '8192'),
+        apiKey: getEnv('VITE_ANTHROPIC_API_KEY') || '',
+        model: getEnv('VITE_ANTHROPIC_MODEL') || 'claude-3-5-sonnet-20241022',
+        maxTokens: parseInt(getEnv('VITE_ANTHROPIC_MAX_TOKENS') || '8192'),
         temperature: 0.7,
-        enableAI: import.meta.env.VITE_ENABLE_AI === 'true',
-        debugMode: import.meta.env.VITE_AI_DEBUG_MODE === 'true',
-        rateLimit: parseInt(import.meta.env.VITE_AI_RATE_LIMIT || '10'),
-        rateLimitWindow: parseInt(import.meta.env.VITE_AI_RATE_WINDOW_MS || '60000'),
+        enableAI: getEnv('VITE_ENABLE_AI') === 'true',
+        debugMode: getEnv('VITE_AI_DEBUG_MODE') === 'true',
+        rateLimit: parseInt(getEnv('VITE_AI_RATE_LIMIT') || '10'),
+        rateLimitWindow: parseInt(getEnv('VITE_AI_RATE_WINDOW_MS') || '60000'),
       });
     }
   };

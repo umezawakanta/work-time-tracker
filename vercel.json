@@ -3,7 +3,7 @@
   "buildCommand": "NODE_OPTIONS=--max_old_space_size=1536 VITE_ENABLE_REACT_GUARD=false VITE_DISABLE_CSS_MINIFY=true VITE_ENABLE_PWA=false pnpm run vercel-build",
   "outputDirectory": "dist",
   "framework": null,
-  "installCommand": "pnpm install --no-frozen-lockfile --prefer-offline",
+  "installCommand": "pnpm install --no-frozen-lockfile --prefer-offline --no-optional",
   "devCommand": "pnpm run dev",
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {

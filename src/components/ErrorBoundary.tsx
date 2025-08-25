@@ -1,5 +1,6 @@
 import React, { ErrorInfo, ReactNode, Component } from 'react';
 import { Button } from '@/components/ui/button';
+import { trackEvent } from '@/lib/analytics';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -34,17 +35,11 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     // エラーを開発バッジシステムに報告 & analyticsタグ送信
     this.reportErrorToBadgeSystem(error, errorInfo);
     try {
-      // Lazy import to avoid bundle weight when unused
-      import('@/lib/analytics').then(({ useAnalytics }) => {
-        try {
-          const { trackEvent } = useAnalytics();
-          trackEvent('error_boundary', {
-            message: error.message,
-            stack: (error.stack || '').slice(0, 500),
-            componentStack: errorInfo.componentStack.slice(0, 500),
-            variant: this.props.variant || 'default',
-          });
-        } catch {}
+      trackEvent('error_boundary', {
+        message: error.message,
+        stack: (error.stack || '').slice(0, 500),
+        componentStack: errorInfo.componentStack.slice(0, 500),
+        variant: this.props.variant || 'default',
       });
     } catch {}
   }
