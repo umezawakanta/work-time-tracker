@@ -29,7 +29,6 @@ docs/
 !README.md
 
 # Serverless/API code (ensure API functions are deployed)
-/src/server/
 /src/core/
 /src/api/
 
