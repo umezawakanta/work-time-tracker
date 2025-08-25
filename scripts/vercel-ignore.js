@@ -4,7 +4,18 @@ const { execSync } = require('node:child_process');
 try {
     const base = process.env.VERCEL_GIT_PREVIOUS_SHA || 'HEAD~1';
     const head = process.env.VERCEL_GIT_COMMIT_SHA || 'HEAD';
-    const diff = execSync(`git diff --name-only ${base} ${head}`, { encoding: 'utf8' })
+    // Validate SHAs exist in shallow clones; fallback to HEAD if invalid
+    const safeRef = (ref) => {
+        try {
+            execSync(`git cat-file -e ${ref}^{commit}`, { stdio: 'ignore' });
+            return ref;
+        } catch {
+            return 'HEAD';
+        }
+    };
+    const b = safeRef(base);
+    const h = safeRef(head);
+    const diff = execSync(`git diff --name-only ${b} ${h}`, { encoding: 'utf8' })
         .split('\n')
         .filter(Boolean);
 
