@@ -14,6 +14,8 @@ const Switch = React.forwardRef<
       'peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-gray-300 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600 data-[state=unchecked]:bg-gray-200 data-[state=unchecked]:border-gray-300 hover:data-[state=unchecked]:bg-gray-300',
       className
     )}
+    role={props.role || 'switch'}
+    aria-label={props['aria-label'] || '切り替え'}
     {...props}
     ref={ref}
   >

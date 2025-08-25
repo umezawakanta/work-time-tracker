@@ -153,6 +153,23 @@ body {
     0 0 0 4px hsl(var(--color-primary));
 }
 
+/* Standardize focus-visible across interactive elements */
+:where(a, button, input, select, textarea, [role='button'], [role='switch'], [data-radix-collection-item])::selection {
+  background: hsl(var(--color-primary) / 0.15);
+}
+
+:where(a, button, input, select, textarea, [role='button'], [role='switch']) {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+:where(a, button, input, select, textarea, [role='button'], [role='switch']):focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px hsl(var(--color-background)),
+    0 0 0 4px hsl(var(--color-primary));
+}
+
 .glass-effect {
   backdrop-filter: blur(16px) saturate(180%);
   background: rgba(255, 255, 255, 0.75);

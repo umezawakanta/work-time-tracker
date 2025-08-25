@@ -364,10 +364,12 @@ const Home: React.FC = () => {
       <div className="bg-gradient-to-b from-white to-blue-50 border-b">
         <div className="container mx-auto px-4 max-w-7xl py-14 md:py-20 text-center">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-4">
+            {/* i18n: home.hero.title */}
             人生のコントロールを取り戻そう
           </h1>
           <p className="text-sm font-semibold text-emerald-600 mb-2">無料で始める</p>
           <p className="text-base md:text-xl text-gray-700 max-w-3xl mx-auto mb-8">
+            {/* i18n: home.hero.subtitle */}
             生成AIと連携したパーソナル秘書サービスで、計画・仕事・学習・自己診断までを一元管理。
             IQ/MBTIなどの診断結果に基づいて、あなた専用に最適化された体験を提供します。
           </p>
@@ -377,6 +379,7 @@ const Home: React.FC = () => {
               onClick={() => navigate('/ai-assistant')}
               aria-label="AI秘書を使う"
             >
+              {/* i18n: home.hero.cta_primary */}
               AI秘書を使う
             </Button>
             <Button
@@ -385,13 +388,14 @@ const Home: React.FC = () => {
               onClick={() => navigate('/assessments')}
               aria-label="自己診断を始める"
             >
+              {/* i18n: home.hero.cta_secondary */}
               自己診断を始める
               <Badge variant="secondary" className="ml-2 align-middle">
                 5–10分
               </Badge>
             </Button>
           </div>
-          <p className="mt-2 text-xs text-gray-500">無料・匿名OK・いつでも退会可能</p>
+          <p className="mt-2 text-xs text-gray-500">{/* i18n: home.hero.badge */}無料・匿名OK・いつでも退会可能</p>
         </div>
       </div>
 
