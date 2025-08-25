@@ -14,9 +14,19 @@ import {
   Settings,
   Zap,
 } from 'lucide-react';
-import { LiveAnalyticsDashboard } from '@/components/analytics/LiveAnalyticsDashboard';
-import { TodoAnalytics } from '@/components/analytics/TodoAnalytics';
-import { TodoAnalyticsDashboard } from '@/components/analytics/TodoAnalyticsDashboard';
+const LiveAnalyticsDashboard = React.lazy(() =>
+  import('@/components/analytics/LiveAnalyticsDashboard').then((m) => ({
+    default: m.LiveAnalyticsDashboard,
+  }))
+);
+const TodoAnalytics = React.lazy(() =>
+  import('@/components/analytics/TodoAnalytics').then((m) => ({ default: m.TodoAnalytics }))
+);
+const TodoAnalyticsDashboard = React.lazy(() =>
+  import('@/components/analytics/TodoAnalyticsDashboard').then((m) => ({
+    default: m.TodoAnalyticsDashboard,
+  }))
+);
 import { useRealtimeAnalytics } from '@/hooks/useRealtimeAnalytics';
 import { cn } from '@/lib/utils';
 
@@ -172,7 +182,9 @@ const AnalyticsPage: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <LiveAnalyticsDashboard userId="current-user" refreshInterval={5000} />
+                <React.Suspense fallback={<div className="text-sm text-muted-foreground">読み込み中…</div>}>
+                  <LiveAnalyticsDashboard userId="current-user" refreshInterval={5000} />
+                </React.Suspense>
               </CardContent>
             </Card>
 
@@ -233,7 +245,9 @@ const AnalyticsPage: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <TodoAnalytics />
+                <React.Suspense fallback={<div className="text-sm text-muted-foreground">読み込み中…</div>}>
+                  <TodoAnalytics />
+                </React.Suspense>
               </CardContent>
             </Card>
           </TabsContent>
@@ -249,7 +263,9 @@ const AnalyticsPage: React.FC = () => {
                 <CardDescription>総合的な生産性指標とトレンド分析</CardDescription>
               </CardHeader>
               <CardContent>
-                <TodoAnalyticsDashboard />
+                <React.Suspense fallback={<div className="text-sm text-muted-foreground">読み込み中…</div>}>
+                  <TodoAnalyticsDashboard />
+                </React.Suspense>
               </CardContent>
             </Card>
           </TabsContent>
