@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AccessibilityProvider } from '@/components/accessibility/AccessibilityProvider';
 import InstallBanner from '@/components/pwa/InstallBanner';
+import CookieConsent from '@/components/layout/CookieConsent';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
@@ -859,6 +860,8 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           }
           ${isCollapsed ? 'justify-center px-2' : ''}
         `}
+        aria-label={item.label}
+        aria-current={isActive ? 'page' : undefined}
         onClick={() => {
           try {
             trackEvent('nav_click', { path: item.path, label: item.label });
@@ -1235,6 +1238,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           </div>
           <InstallBanner />
         </main>
+        <CookieConsent />
       </div>
     </AccessibilityProvider>
   );
