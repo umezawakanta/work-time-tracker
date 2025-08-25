@@ -20,6 +20,7 @@ import { AxiosError } from 'axios';
 import { Eye, EyeOff, CheckCircle, XCircle, AlertCircle, User, Mail, Lock } from 'lucide-react';
 import { tokenManager } from '@/services/auth/TokenManager';
 import { useAnalytics } from '@/lib/analytics';
+import { useTranslation } from 'react-i18next';
 
 interface ValidationErrors {
   name?: string;
@@ -37,6 +38,7 @@ interface PasswordStrength {
 }
 
 export default function Register() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -263,8 +265,8 @@ export default function Register() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-900">アカウント登録</CardTitle>
-          <CardDescription className="text-gray-600">Work Time Trackerへようこそ</CardDescription>
+          <CardTitle className="text-2xl font-bold text-gray-900">{t('auth.register.title', 'アカウント登録')}</CardTitle>
+          <CardDescription className="text-gray-600">{t('auth.register.subtitle', 'Work Time Trackerへようこそ')}</CardDescription>
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
@@ -283,7 +285,7 @@ export default function Register() {
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium text-gray-700">
                 <User className="inline-block w-4 h-4 mr-1" />
-                名前
+                {t('auth.register.name', '名前')}
               </Label>
               <div className="relative">
                 <Input
@@ -318,7 +320,7 @@ export default function Register() {
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                 <Mail className="inline-block w-4 h-4 mr-1" />
-                メールアドレス
+                {t('auth.register.email', 'メールアドレス')}
               </Label>
               <div className="relative">
                 <Input
@@ -354,7 +356,7 @@ export default function Register() {
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium text-gray-700">
                 <Lock className="inline-block w-4 h-4 mr-1" />
-                パスワード
+                {t('auth.register.password', 'パスワード')}
               </Label>
               <div className="relative">
                 <Input
@@ -404,7 +406,7 @@ export default function Register() {
             <div className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
                 <Lock className="inline-block w-4 h-4 mr-1" />
-                パスワード（確認）
+                {t('auth.register.confirm', 'パスワード（確認）')}
               </Label>
               <div className="relative">
                 <Input
@@ -460,13 +462,13 @@ export default function Register() {
                 <div className="text-sm">
                   <Label htmlFor="terms" className="text-gray-700 cursor-pointer">
                     <Link to="/terms" className="text-blue-600 hover:underline">
-                      利用規約
+                      {t('footer.terms', '利用規約')}
                     </Link>
                     および
                     <Link to="/privacy" className="text-blue-600 hover:underline">
-                      プライバシーポリシー
+                      {t('footer.privacy', 'プライバシーポリシー')}
                     </Link>
-                    に同意します
+                    {t('auth.register.termsSuffix', 'に同意します')}
                   </Label>
                 </div>
               </div>
@@ -498,17 +500,17 @@ export default function Register() {
               {isSubmitting ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                  登録中...
+                  {t('auth.register.creating', '登録中...')}
                 </>
               ) : (
-                'アカウントを作成'
+                t('auth.register.submit', 'アカウントを作成')
               )}
             </Button>
 
             <div className="text-center text-sm text-gray-600">
-              すでにアカウントをお持ちの方は
+              {t('auth.register.already', 'すでにアカウントをお持ちの方は')}
               <Link to="/login" className="text-blue-600 hover:underline ml-1">
-                こちらからログイン
+                {t('auth.register.loginHere', 'こちらからログイン')}
               </Link>
             </div>
           </CardFooter>
