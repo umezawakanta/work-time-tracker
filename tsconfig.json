@@ -49,12 +49,12 @@
         "./src/contexts/*"
       ]
     },
-    "forceConsistentCasingInFileNames": true,
-    "types": []
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx"
+    "src/**/*.tsx",
+    "vite-env.d.ts"
   ],
   "exclude": [
     "node_modules",
