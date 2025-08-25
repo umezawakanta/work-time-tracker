@@ -11,8 +11,14 @@ const BodySchema = z.object({
 
 async function handler(req: AuthenticatedRequest, res: VercelResponse): Promise<void> {
   await cors(req, res);
-  if (req.method === 'OPTIONS') { res.status(200).end(); return; }
-  if (req.method !== 'POST') { res.status(405).json({ success: false, message: 'Method not allowed' }); return; }
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  if (req.method !== 'POST') {
+    res.status(405).json({ success: false, message: 'Method not allowed' });
+    return;
+  }
   try {
     const key = `learn:${req.user?.userId}`;
     if (!allowRequest(key, 5, 60_000)) {
@@ -22,7 +28,9 @@ async function handler(req: AuthenticatedRequest, res: VercelResponse): Promise<
     }
     const parsed = BodySchema.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ success: false, message: 'Invalid body', issues: parsed.error.flatten() });
+      res
+        .status(400)
+        .json({ success: false, message: 'Invalid body', issues: parsed.error.flatten() });
       return;
     }
     console.log('LEARNING_PROGRESS_SAVE', { userId: req.user?.userId, ...parsed.data });
