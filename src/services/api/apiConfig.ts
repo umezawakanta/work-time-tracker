@@ -15,8 +15,8 @@ declare global {
 export const USE_MOCK_DATA =
   getBooleanEnv('VITE_USE_MOCK_DATA') ||
   (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true') ||
-  // Mock data only enabled with explicit flag - allow real API in development
-  false;
+  // On Vercel (no Functions), default to mock to avoid 404s
+  (typeof window !== 'undefined' && /vercel\.app$/.test(window.location.hostname));
 
 // デバッグ情報をログ出力
 console.log('🔧 Determining API Configuration...');

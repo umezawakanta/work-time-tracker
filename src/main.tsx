@@ -11,6 +11,7 @@ import './styles/adaptive-ui.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import { setupGlobalErrorHandling } from './lib/errorHandler';
 import PerformanceOptimizer from './lib/performanceOptimizer';
+import './i18n';
 // import { registerSW } from 'virtual:pwa-register';
 
 // 🐛 エラーエリミネーター: グローバルエラーハンドリングの初期化
