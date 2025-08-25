@@ -48,7 +48,7 @@ try {
 if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
   navigator.serviceWorker
     .getRegistrations()
-    .then((registrations: ServiceWorkerRegistration[]) => {
+    .then((registrations) => {
       for (const registration of registrations) {
         registration.unregister().then(function () {
           console.log('🗑️ ServiceWorker unregistered:', registration.scope);
