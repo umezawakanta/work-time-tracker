@@ -309,7 +309,7 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
                 ...data,
               });
             }
-            if (window.amplitude) {
+      if (window.amplitude) {
               (window.amplitude as any)
                 .getInstance()
                 .logEvent('activation_first_success', { source: eventName, at: nowIso, ...data });
@@ -331,8 +331,8 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
     }
   } catch {}
 
-  // 開発環境ではコンソールに出力するだけ
-  if (process.env.NODE_ENV !== 'production') {
+    // 開発環境ではコンソールに出力するだけ
+    if (process.env.NODE_ENV !== 'production') {
     // Update dev counters for key flows
     try {
       switch (eventName) {
@@ -369,32 +369,32 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
         });
       }
     } catch {}
-    return;
-  }
+      return;
+    }
 
-  try {
-    // Google Analytics
-    if (window.gtag) {
+    try {
+      // Google Analytics
+      if (window.gtag) {
       window.gtag('event', normalizedEvent, data);
-    }
+      }
 
-    // Mixpanel
-    if (window.mixpanel) {
+      // Mixpanel
+      if (window.mixpanel) {
       (window.mixpanel as any).track(normalizedEvent, data);
-    }
+      }
 
-    // Amplitude
-    if (window.amplitude) {
+      // Amplitude
+      if (window.amplitude) {
       (window.amplitude as any).getInstance().logEvent(normalizedEvent, data);
-    }
+      }
 
-    // カスタムデータレイヤー
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: eventName,
-        ...data,
-      });
-    }
+      // カスタムデータレイヤー
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: eventName,
+          ...data,
+        });
+      }
 
     // バックエンドにも保存
     if (typeof fetch === 'function') {
@@ -406,9 +406,9 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
         timestamp: new Date().toISOString(),
       });
     }
-  } catch (error) {
-    console.error('[Analytics] Error tracking event:', error);
-  }
+    } catch (error) {
+      console.error('[Analytics] Error tracking event:', error);
+    }
 }
 
 /**
@@ -454,22 +454,22 @@ export function trackPageView(pagePath: string, pageTitle?: string): void {
     const gaId = getGaMeasurementId();
     if (window.gtag && gaId) {
       window.gtag('config', gaId, {
-        page_path: pagePath,
-        page_title: pageTitle,
-      });
-    }
-    if (window.mixpanel) {
-      (window.mixpanel as any).track('Page View', {
-        page_path: pagePath,
-        page_title: pageTitle,
-      });
-    }
-    if (window.amplitude) {
-      (window.amplitude as any).getInstance().logEvent('Page View', {
-        page_path: pagePath,
-        page_title: pageTitle,
-      });
-    }
+          page_path: pagePath,
+          page_title: pageTitle,
+        });
+      }
+      if (window.mixpanel) {
+        (window.mixpanel as any).track('Page View', {
+          page_path: pagePath,
+          page_title: pageTitle,
+        });
+      }
+      if (window.amplitude) {
+        (window.amplitude as any).getInstance().logEvent('Page View', {
+          page_path: pagePath,
+          page_title: pageTitle,
+        });
+      }
 
     if (typeof fetch === 'function') {
       postWithQueue('/api/analytics/pageview', {
@@ -481,46 +481,46 @@ export function trackPageView(pagePath: string, pageTitle?: string): void {
         utm,
       });
     }
-  } catch (error) {
-    console.error('[Analytics] Error tracking page view:', error);
-  }
+    } catch (error) {
+      console.error('[Analytics] Error tracking page view:', error);
+    }
 }
 
-/**
+  /**
  * ユーザー特性設定（フック不要）
- */
+   */
 export function identifyUser(userId: string, traits: Record<string, any> = {}): void {
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`[Analytics] Identify User: ${userId}`, traits);
-    return;
-  }
-
-  try {
-    // Google Analytics
-    if (window.gtag) {
-      window.gtag('set', 'user_properties', traits);
-      window.gtag('set', 'user_id', userId);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[Analytics] Identify User: ${userId}`, traits);
+      return;
     }
 
-    // Mixpanel
-    if (window.mixpanel) {
-      (window.mixpanel as any).identify(userId);
-      (window.mixpanel as any).people.set(traits);
-    }
+    try {
+      // Google Analytics
+      if (window.gtag) {
+        window.gtag('set', 'user_properties', traits);
+        window.gtag('set', 'user_id', userId);
+      }
 
-    // Amplitude
-    if (window.amplitude) {
-      const identify = new (window.amplitude as any).Identify();
-      Object.entries(traits).forEach(([key, value]) => {
-        identify.set(key, value);
-      });
+      // Mixpanel
+      if (window.mixpanel) {
+        (window.mixpanel as any).identify(userId);
+        (window.mixpanel as any).people.set(traits);
+      }
 
-      (window.amplitude as any).getInstance().setUserId(userId);
-      (window.amplitude as any).getInstance().identify(identify);
+      // Amplitude
+      if (window.amplitude) {
+        const identify = new (window.amplitude as any).Identify();
+        Object.entries(traits).forEach(([key, value]) => {
+          identify.set(key, value);
+        });
+
+        (window.amplitude as any).getInstance().setUserId(userId);
+        (window.amplitude as any).getInstance().identify(identify);
+      }
+    } catch (error) {
+      console.error('[Analytics] Error identifying user:', error);
     }
-  } catch (error) {
-    console.error('[Analytics] Error identifying user:', error);
-  }
 }
 
 /**

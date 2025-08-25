@@ -3,16 +3,10 @@
   "buildCommand": "NODE_OPTIONS=--max_old_space_size=1536 VITE_ENABLE_REACT_GUARD=false VITE_DISABLE_CSS_MINIFY=true VITE_ENABLE_PWA=false pnpm run vercel-build",
   "outputDirectory": "dist",
   "framework": null,
-  "installCommand": "pnpm install --no-frozen-lockfile --force",
+  "installCommand": "pnpm install --no-frozen-lockfile --prefer-offline",
   "devCommand": "pnpm run dev",
   "ignoreCommand": "node scripts/vercel-ignore.js",
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "@vercel/node@5.3.0",
-      "includeFiles": "{src/server/config/**,src/server/models/**,src/middleware/**,lib/**}",
-      "excludeFiles": "{src/components/**,src/pages/**,coverage/**,**/__tests__/**,cypress/**,docs/**}"
-    }
-  },
+  "functions": {},
   "headers": [
     {
       "source": "/index.html",
