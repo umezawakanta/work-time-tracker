@@ -22,7 +22,18 @@ interface DevelopmentProgress {
 class GitHubProgressService {
   private readonly REPO_OWNER = 'your-username';
   private readonly REPO_NAME = 'work-time-tracker';
-  private readonly GITHUB_TOKEN = process.env.VITE_GITHUB_TOKEN;
+  private readonly GITHUB_TOKEN = (() => {
+    try {
+      // Prefer Vite env via helper when available
+      const { ENV } = require('@/utils/env');
+      return ENV.GITHUB_TOKEN();
+    } catch {
+      // Fallback for non-bundled/test environments
+      return (
+        typeof process !== 'undefined' ? (process as any).env?.VITE_GITHUB_TOKEN : undefined
+      ) as string | undefined;
+    }
+  })();
 
   async analyzeRepositoryProgress(): Promise<DevelopmentProgress> {
     try {

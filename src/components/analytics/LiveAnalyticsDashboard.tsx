@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { getEnv } from '@/utils/env';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -84,7 +85,7 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
       typeof window !== 'undefined' &&
       window.location.hostname !== 'localhost' &&
       window.location.hostname !== '127.0.0.1' &&
-      !process.env.VITE_WEBSOCKET_URL
+      !getEnv('VITE_WEBSOCKET_URL')
     ) {
       console.warn('Skipping WebSocket in production: VITE_WEBSOCKET_URL not set');
       setIsConnected(false);
@@ -93,8 +94,9 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
     try {
       // 動的ポート検出
       const getWebSocketUrl = () => {
-        if (process.env.VITE_WEBSOCKET_URL) {
-          return process.env.VITE_WEBSOCKET_URL;
+        const configuredUrl = getEnv('VITE_WEBSOCKET_URL');
+        if (configuredUrl) {
+          return configuredUrl;
         }
 
         // 開発環境では現在のホストとポートを使用

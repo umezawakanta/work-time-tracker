@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { toast } from 'react-hot-toast';
+import { getEnv } from '@/utils/env';
 
 export interface Notification {
   id: string;
@@ -28,7 +29,8 @@ class NotificationService {
   // アクセストークンをAPI経由で取得
   private async fetchAccessToken(userId: string): Promise<string> {
     // ここは実際のAPIエンドポイントに合わせて修正
-    const response = await fetch(`${process.env.VITE_API_URL}/auth/token?userId=${userId}`);
+    const baseUrl = getEnv('VITE_API_URL') || '';
+    const response = await fetch(`${baseUrl}/auth/token?userId=${userId}`);
     if (!response.ok) throw new Error('Failed to fetch access token');
     const data = await response.json();
     return data.accessToken;
@@ -43,12 +45,7 @@ class NotificationService {
     this.accessToken = await this.fetchAccessToken(userId);
 
     // Decide WebSocket base URL
-    const envUrl =
-      (typeof window !== 'undefined'
-        ? (window as any).importMetaEnv?.VITE_WEBSOCKET_URL
-        : undefined) ||
-      (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_WEBSOCKET_URL) ||
-      (typeof process !== 'undefined' ? (process as any).env?.VITE_WEBSOCKET_URL : undefined);
+    const envUrl = getEnv('VITE_WEBSOCKET_URL');
 
     const isLocalhost =
       typeof window !== 'undefined' &&
@@ -182,7 +179,8 @@ class NotificationService {
   async markAsRead(notificationId: string) {
     try {
       if (!this.accessToken) throw new Error('No access token');
-      await fetch(`${process.env.VITE_API_URL}/notifications/${notificationId}/read`, {
+      const baseUrl = getEnv('VITE_API_URL') || '';
+      await fetch(`${baseUrl}/notifications/${notificationId}/read`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
@@ -197,7 +195,8 @@ class NotificationService {
   async markAllAsRead() {
     try {
       if (!this.accessToken) throw new Error('No access token');
-      await fetch(`${process.env.VITE_API_URL}/notifications/read-all`, {
+      const baseUrl = getEnv('VITE_API_URL') || '';
+      await fetch(`${baseUrl}/notifications/read-all`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${this.accessToken}`,

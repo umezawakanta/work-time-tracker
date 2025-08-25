@@ -150,6 +150,15 @@ const checkOllamaConnection = async (): Promise<boolean> => {
     return false;
   }
 };
+// Ollama base URL
+const OLLAMA_API_URL = (() => {
+  try {
+    const envUrl = getEnv('VITE_OLLAMA_CHAT_API');
+    if (envUrl) return envUrl;
+  } catch {}
+  if (ENV.isDev()) return 'http://localhost:11434/api/chat';
+  return '';
+})();
 
 // API_KEYを遅延評価に変更
 let _geminiApiKey: string | null = null;

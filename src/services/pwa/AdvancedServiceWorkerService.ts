@@ -172,7 +172,15 @@ class AdvancedServiceWorkerService {
       },
       pushConfig: {
         enabled: true,
-        vapidKey: process.env.VITE_VAPID_PUBLIC_KEY || '',
+        vapidKey:
+          (typeof window !== 'undefined'
+            ? (window as any).importMetaEnv?.VITE_VAPID_PUBLIC_KEY
+            : undefined) ||
+          (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_VAPID_PUBLIC_KEY) ||
+          (typeof process !== 'undefined'
+            ? (process as any).env?.VITE_VAPID_PUBLIC_KEY
+            : undefined) ||
+          '',
         defaultIcon: '/icons/icon-192x192.png',
         defaultBadge: '/icons/badge-72x72.png',
       },

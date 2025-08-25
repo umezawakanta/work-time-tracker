@@ -43,6 +43,8 @@ export interface AITaskResponse {
   metadata?: any;
 }
 
+import { ENV } from '@/utils/env';
+
 class MultiAIIntegrationService {
   private static instance: MultiAIIntegrationService | null = null;
   private config: MultiAIConfig | null = null;
@@ -196,7 +198,7 @@ class MultiAIIntegrationService {
    */
   private async executeOpenAI(request: AITaskRequest): Promise<AITaskResponse> {
     try {
-      const apiKey = process.env.VITE_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+      const apiKey = ENV.OPENAI_API_KEY() || process.env.OPENAI_API_KEY;
 
       if (!apiKey) {
         throw new Error('OpenAI API key not configured');
@@ -260,7 +262,7 @@ class MultiAIIntegrationService {
    */
   private async executeClaude(request: AITaskRequest): Promise<AITaskResponse> {
     try {
-      const apiKey = process.env.VITE_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+      const apiKey = ENV.ANTHROPIC_API_KEY() || process.env.ANTHROPIC_API_KEY;
 
       if (!apiKey) {
         throw new Error('Anthropic API key not configured');
@@ -322,7 +324,7 @@ class MultiAIIntegrationService {
    */
   private async executeGemini(request: AITaskRequest): Promise<AITaskResponse> {
     try {
-      const apiKey = process.env.VITE_GOOGLE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY;
+      const apiKey = ENV.GEMINI_API_KEY() || process.env.GOOGLE_AI_API_KEY;
 
       if (!apiKey) {
         throw new Error('Google AI API key not configured');
