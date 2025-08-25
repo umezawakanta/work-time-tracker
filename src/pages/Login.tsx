@@ -19,6 +19,7 @@ import { toast } from 'react-hot-toast';
 import { AxiosError } from 'axios';
 import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle, Mail, Lock, Shield } from 'lucide-react';
 import { useAnalytics } from '@/lib/analytics';
+import { useTranslation } from 'react-i18next';
 
 // Extend Window interface for custom properties
 declare global {
@@ -30,6 +31,7 @@ declare global {
 }
 
 export default function Login() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -449,14 +451,14 @@ export default function Login() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
               <Shield className="h-6 w-6 text-blue-600" />
-              ログイン
+              {t('auth.login.title', 'ログイン')}
             </CardTitle>
-            <CardDescription className="text-gray-600">Work Time Trackerにアクセス</CardDescription>
+            <CardDescription className="text-gray-600">{t('auth.login.subtitle', 'Work Time Trackerにアクセス')}</CardDescription>
             {from !== '/' && (
               <Alert className="mt-4 border-blue-200 bg-blue-50">
                 <AlertCircle className="h-4 w-4 text-blue-600" />
                 <AlertDescription className="text-blue-700">
-                  このページにアクセスするにはログインが必要です
+                  {t('auth.login.requireLogin', 'このページにアクセスするにはログインが必要です')}
                 </AlertDescription>
               </Alert>
             )}
@@ -464,7 +466,7 @@ export default function Login() {
               <Alert className="mt-4 border-orange-200 bg-orange-50">
                 <AlertCircle className="h-4 w-4 text-orange-600" />
                 <AlertDescription className="text-orange-700">
-                  セッションが期限切れになりました
+                  {t('auth.login.sessionExpired', 'セッションが期限切れになりました')}
                 </AlertDescription>
               </Alert>
             )}
@@ -483,7 +485,7 @@ export default function Login() {
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                   <Mail className="inline-block w-4 h-4 mr-1" />
-                  メールアドレス
+                  {t('auth.login.email', 'メールアドレス')}
                 </Label>
                 <div className="relative">
                   <Input
@@ -514,7 +516,7 @@ export default function Login() {
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-medium text-gray-700">
                   <Lock className="inline-block w-4 h-4 mr-1" />
-                  パスワード
+                  {t('auth.login.password', 'パスワード')}
                 </Label>
                 <div className="relative">
                   <Input
@@ -554,13 +556,13 @@ export default function Login() {
                     disabled={isSubmitting}
                   />
                   <Label htmlFor="rememberMe" className="text-sm text-gray-700 cursor-pointer">
-                    ログイン状態を保持する
+                    {t('auth.login.remember', 'ログイン状態を保持する')}
                   </Label>
                 </div>
 
                 {/* パスワードを忘れた場合のリンク */}
                 <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
-                  パスワードをお忘れですか？
+                  {t('auth.login.forgot', 'パスワードをお忘れですか？')}
                 </Link>
               </div>
             </CardContent>
@@ -570,12 +572,12 @@ export default function Login() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    ログイン中...
+                    {t('auth.login.loggingIn', 'ログイン中...')}
                   </>
                 ) : (
                   <>
                     <Shield className="h-4 w-4 mr-2" />
-                    ログイン
+                    {t('auth.login.submit', 'ログイン')}
                   </>
                 )}
               </Button>
@@ -614,17 +616,15 @@ export default function Login() {
               )}
 
               <div className="text-center text-sm text-gray-600">
-                アカウントをお持ちでない方は
+                {t('auth.login.noAccount', 'アカウントをお持ちでない方は')}
                 <Link to="/register" className="text-blue-600 hover:underline ml-1">
-                  こちらから登録
+                  {t('auth.login.register', 'こちらから登録')}
                 </Link>
               </div>
 
               {/* セキュリティ情報 */}
               <div className="text-center">
-                <p className="text-xs text-gray-500">
-                  このサイトは SSL暗号化通信により保護されています
-                </p>
+                <p className="text-xs text-gray-500">{t('auth.login.secureNotice', 'このサイトは SSL暗号化通信により保護されています')}</p>
               </div>
             </CardFooter>
           </form>

@@ -84,5 +84,27 @@
         "openSettings": "Open Settings",
         "privacyInline": "We send only this input text. Your API key is stored on your device and not sent to the server.",
         "privacyLinkText": "Privacy Policy"
+    },
+    "auth": {
+        "login": {
+            "title": "Log in",
+            "subtitle": "Access Work Time Tracker",
+            "email": "Email",
+            "password": "Password",
+            "remember": "Keep me signed in",
+            "forgot": "Forgot password?",
+            "submit": "Log in",
+            "loggingIn": "Logging in...",
+            "noAccount": "Don't have an account?",
+            "register": "Register here",
+            "sessionExpired": "Your session has expired",
+            "requireLogin": "Login is required to access this page",
+            "serverUnavailable": "Cannot reach the server. Check your network.",
+            "invalidCredentials": "Invalid email or password",
+            "rateLimited": "Too many attempts. Please try again later.",
+            "locked": "Your account is locked. Please contact support.",
+            "unknownError": "An unknown error occurred",
+            "secureNotice": "This site is protected with SSL encryption"
+        }
     }
 }
