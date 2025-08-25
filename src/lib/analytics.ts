@@ -68,6 +68,7 @@ function getGaMeasurementId(): string | undefined {
 // Idempotent GA loader – always defines window.gtag stub to avoid ReferenceErrors
 const loadGoogleAnalytics = (): void => {
   if (typeof window === 'undefined') return;
+  if ((window as any).__analytics_ga_loaded) return;
   if (!window.dataLayer) {
     try {
       (window as any).dataLayer = [];
@@ -97,6 +98,7 @@ const loadGoogleAnalytics = (): void => {
       try {
         window.gtag && window.gtag('js', new Date() as unknown as string);
         window.gtag && window.gtag('config', gaId);
+        (window as any).__analytics_ga_loaded = true;
       } catch {}
     };
     document.head?.appendChild(s);
@@ -105,7 +107,7 @@ const loadGoogleAnalytics = (): void => {
 
 const loadMixpanel = (): void => {
   if (typeof window === 'undefined') return;
-  if ((window as any).mixpanel) return;
+  if ((window as any).__analytics_mixpanel_loaded) return;
   let token: string | undefined;
   try {
     token = (import.meta as any)?.env?.VITE_MIXPANEL_TOKEN;
@@ -128,6 +130,7 @@ const loadMixpanel = (): void => {
     s.onload = () => {
       try {
         (window as any).mixpanel?.init?.(token, { debug: false });
+        (window as any).__analytics_mixpanel_loaded = true;
       } catch {}
     };
     document.head?.appendChild(s);
@@ -136,7 +139,7 @@ const loadMixpanel = (): void => {
 
 const loadAmplitude = (): void => {
   if (typeof window === 'undefined') return;
-  if ((window as any).amplitude) return;
+  if ((window as any).__analytics_amplitude_loaded) return;
   let apiKey: string | undefined;
   try {
     apiKey = (import.meta as any)?.env?.VITE_AMPLITUDE_API_KEY;
@@ -159,6 +162,7 @@ const loadAmplitude = (): void => {
     s.onload = () => {
       try {
         (window as any).amplitude?.getInstance?.().init?.(apiKey);
+        (window as any).__analytics_amplitude_loaded = true;
       } catch {}
     };
     document.head?.appendChild(s);
