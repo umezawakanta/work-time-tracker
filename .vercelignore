@@ -28,8 +28,7 @@ docs/
 *.md
 !README.md
 
-# Serverless/API code (skip building functions on Vercel for SPA-only deploy)
-/api/
+# Serverless/API code (ensure API functions are deployed)
 /src/server/
 /src/core/
 /src/api/

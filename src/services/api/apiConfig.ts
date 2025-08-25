@@ -12,10 +12,17 @@ declare global {
   }
 }
 
+// Respect explicit env setting first; only fall back to heuristics if undefined
+const explicitUseMockRaw = getEnv('VITE_USE_MOCK_DATA');
+const explicitUseMock =
+  typeof explicitUseMockRaw !== 'undefined'
+    ? explicitUseMockRaw === 'true' || explicitUseMockRaw === '1'
+    : undefined;
+
 export const USE_MOCK_DATA =
-  getBooleanEnv('VITE_USE_MOCK_DATA') ||
-  (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true') ||
-  // On Vercel (no Functions), default to mock to avoid 404s
+  (explicitUseMock as boolean | undefined) ??
+  (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true') ??
+  // Historical fallback: on vercel.app, prefer mock when no explicit setting exists
   (typeof window !== 'undefined' && /vercel\.app$/.test(window.location.hostname));
 
 // デバッグ情報をログ出力

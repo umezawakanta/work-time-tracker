@@ -50,11 +50,7 @@
       ]
     },
     "forceConsistentCasingInFileNames": true,
-    "types": [
-      "jest",
-      "@testing-library/jest-dom",
-      "node"
-    ]
+    "types": []
   },
   "include": [
     "src/**/*.ts",
