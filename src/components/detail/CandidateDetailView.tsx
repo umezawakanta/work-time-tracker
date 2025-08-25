@@ -203,41 +203,45 @@ const CandidateDetailView: React.FC<CandidateDetailViewProps> = ({
                       <h4 className="font-medium mb-2">ウェブサイト・SNS</h4>
                       <div className="flex flex-wrap gap-2">
                         {candidate.website && (
-                          <Link href={candidate.website} passHref>
-                            <Button variant="outline" size="sm" className="text-xs" asChild>
-                              <a target="_blank" rel="noopener noreferrer">
-                                <Globe className="h-3 w-3 mr-1" />
-                                ウェブサイト
-                              </a>
+                          <a href={candidate.website} target="_blank" rel="noopener noreferrer">
+                            <Button variant="outline" size="sm" className="text-xs">
+                              <Globe className="h-3 w-3 mr-1" />
+                              ウェブサイト
                             </Button>
-                          </Link>
+                          </a>
                         )}
                         {candidate.socialMedia?.twitter && (
-                          <Link href={candidate.socialMedia.twitter} passHref>
-                            <Button variant="outline" size="sm" className="text-xs" asChild>
-                              <a target="_blank" rel="noopener noreferrer">
-                                Twitter
-                              </a>
+                          <a
+                            href={candidate.socialMedia.twitter}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Button variant="outline" size="sm" className="text-xs">
+                              Twitter
                             </Button>
-                          </Link>
+                          </a>
                         )}
                         {candidate.socialMedia?.facebook && (
-                          <Link href={candidate.socialMedia.facebook} passHref>
-                            <Button variant="outline" size="sm" className="text-xs" asChild>
-                              <a target="_blank" rel="noopener noreferrer">
-                                Facebook
-                              </a>
+                          <a
+                            href={candidate.socialMedia.facebook}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Button variant="outline" size="sm" className="text-xs">
+                              Facebook
                             </Button>
-                          </Link>
+                          </a>
                         )}
                         {candidate.socialMedia?.instagram && (
-                          <Link href={candidate.socialMedia.instagram} passHref>
-                            <Button variant="outline" size="sm" className="text-xs" asChild>
-                              <a target="_blank" rel="noopener noreferrer">
-                                Instagram
-                              </a>
+                          <a
+                            href={candidate.socialMedia.instagram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Button variant="outline" size="sm" className="text-xs">
+                              Instagram
                             </Button>
-                          </Link>
+                          </a>
                         )}
                       </div>
                     </div>
@@ -249,7 +253,7 @@ const CandidateDetailView: React.FC<CandidateDetailViewProps> = ({
                     <p className="text-sm text-gray-500 mb-4">
                       詳細プロフィール情報を閲覧するには、プレミアム会員にアップグレードしてください。
                     </p>
-                    <Link href="/subscription">
+                    <Link to="/subscription">
                       <Button>プレミアム会員になる</Button>
                     </Link>
                   </div>
@@ -269,7 +273,7 @@ const CandidateDetailView: React.FC<CandidateDetailViewProps> = ({
                     <p className="text-sm text-gray-500 mb-4">
                       支持率データを閲覧するには、プレミアム会員にアップグレードしてください。
                     </p>
-                    <Link href="/subscription">
+                    <Link to="/subscription">
                       <Button>プレミアム会員になる</Button>
                     </Link>
                   </div>
@@ -289,7 +293,7 @@ const CandidateDetailView: React.FC<CandidateDetailViewProps> = ({
                     <p className="text-sm text-gray-500 mb-4">
                       活動履歴や詳細情報を閲覧するには、プレミアム会員にアップグレードしてください。
                     </p>
-                    <Link href="/subscription">
+                    <Link to="/subscription">
                       <Button>プレミアム会員になる</Button>
                     </Link>
                   </div>

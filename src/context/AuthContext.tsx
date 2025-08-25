@@ -320,7 +320,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         const isTokenValid = tokenManager.isAuthenticated();
         const sessionInfo = tokenManager.getSessionInfo();
-        const debugInfo = tokenManager.getDebugInfo();
+        const debugInfo = tokenManager.getDebugInfo() as {
+          accessToken?: unknown;
+          refreshToken?: unknown;
+          expiresAt?: unknown;
+          refreshExpiresAt?: unknown;
+        };
 
         console.log('🔑 認証初期化:', {
           isTokenValid,
@@ -334,10 +339,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
             rememberMe: localStorage.getItem('rememberMe'),
           },
           tokenManagerState: {
-            hasAccessToken: !!debugInfo.accessToken,
-            hasRefreshToken: !!debugInfo.refreshToken,
-            expiresAt: debugInfo.expiresAt,
-            refreshExpiresAt: debugInfo.refreshExpiresAt,
+            hasAccessToken: Boolean(debugInfo && (debugInfo as any).accessToken),
+            hasRefreshToken: Boolean(debugInfo && (debugInfo as any).refreshToken),
+            expiresAt: (debugInfo && (debugInfo as any).expiresAt) || null,
+            refreshExpiresAt: (debugInfo && (debugInfo as any).refreshExpiresAt) || null,
           },
         });
 
