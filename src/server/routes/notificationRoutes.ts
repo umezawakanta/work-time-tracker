@@ -314,7 +314,9 @@ router.post(
           notificationData.expiresAt = expiresAt;
         }
       }
-      if (req.body.metadata) notificationData.metadata = req.body.metadata; // objectの場合はそのまま
+      if (req.body.metadata && typeof req.body.metadata === 'object') {
+        notificationData.metadata = req.body.metadata as Record<string, unknown>;
+      }
 
       const notification = new Notification(notificationData);
       await notification.save();

@@ -663,10 +663,7 @@ const IntegratedDashboard: React.FC = () => {
 
         {/* AI生産性ダッシュボード */}
         <TabsContent value="ai-productivity" className="space-y-6">
-          <SmartProductivityDashboard
-            todos={gameLoopStats?.todos || []}
-            userId={user?.email || 'anonymous'}
-          />
+          <SmartProductivityDashboard todos={[]} userId={user?.email || 'anonymous'} />
         </TabsContent>
 
         <TabsContent value="tasks" className="space-y-6">

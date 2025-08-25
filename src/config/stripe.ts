@@ -48,7 +48,7 @@ if (typeof window === 'undefined') {
 
   if (isConfigValid && process.env.STRIPE_SECRET_KEY) {
     stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2025-06-30.basil',
+      apiVersion: '2025-07-30.basil',
       typescript: true,
       telemetry: false,
     });
