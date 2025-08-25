@@ -13,6 +13,127 @@ type EventData = Record<string, any>;
 // IDs and Queue Utilities
 // ------------------------------
 
+// Safely fetch GA Measurement ID from Vite env or process env
+function getGaMeasurementId(): string | undefined {
+  try {
+    const viteValue = (import.meta as any)?.env?.VITE_GA_MEASUREMENT_ID;
+    if (typeof viteValue === 'string' && viteValue.trim().length > 0) {
+      return viteValue.trim();
+    }
+  } catch {}
+  try {
+    const hasProcess = typeof process !== 'undefined';
+    const procValue =
+      hasProcess && (process as any)?.env?.NEXT_PUBLIC_GA_MEASUREMENT_ID
+        ? (process as any).env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+        : undefined;
+    if (typeof procValue === 'string' && procValue.trim().length > 0) {
+      return procValue.trim();
+    }
+  } catch {}
+  return undefined;
+}
+
+// Idempotent GA loader – always defines window.gtag stub to avoid ReferenceErrors
+const loadGoogleAnalytics = (): void => {
+  if (typeof window === 'undefined') return;
+  if (!window.dataLayer) {
+    try {
+      (window as any).dataLayer = [];
+    } catch {}
+  }
+  if (!window.gtag) {
+    try {
+      window.gtag = (_command: string, ..._args: unknown[]) => {
+        try {
+          ((window as any).dataLayer = (window as any).dataLayer || []).push(
+            arguments as unknown as IArguments
+          );
+        } catch {}
+      };
+    } catch {}
+  }
+  const gaId = getGaMeasurementId();
+  if (!gaId) return;
+  const existing = document.getElementById('ga-script');
+  if (existing) return;
+  try {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`;
+    s.id = 'ga-script';
+    s.onload = () => {
+      try {
+        window.gtag && window.gtag('js', new Date() as unknown as string);
+        window.gtag && window.gtag('config', gaId);
+      } catch {}
+    };
+    document.head?.appendChild(s);
+  } catch {}
+};
+
+const loadMixpanel = (): void => {
+  if (typeof window === 'undefined') return;
+  if ((window as any).mixpanel) return;
+  let token: string | undefined;
+  try {
+    token = (import.meta as any)?.env?.VITE_MIXPANEL_TOKEN;
+  } catch {}
+  if (!token) {
+    try {
+      const hasProcess = typeof process !== 'undefined';
+      token =
+        hasProcess && (process as any)?.env?.NEXT_PUBLIC_MIXPANEL_TOKEN
+          ? (process as any).env.NEXT_PUBLIC_MIXPANEL_TOKEN
+          : undefined;
+    } catch {}
+  }
+  if (!token) return;
+  try {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js';
+    s.id = 'mixpanel-script';
+    s.onload = () => {
+      try {
+        (window as any).mixpanel?.init?.(token, { debug: false });
+      } catch {}
+    };
+    document.head?.appendChild(s);
+  } catch {}
+};
+
+const loadAmplitude = (): void => {
+  if (typeof window === 'undefined') return;
+  if ((window as any).amplitude) return;
+  let apiKey: string | undefined;
+  try {
+    apiKey = (import.meta as any)?.env?.VITE_AMPLITUDE_API_KEY;
+  } catch {}
+  if (!apiKey) {
+    try {
+      const hasProcess = typeof process !== 'undefined';
+      apiKey =
+        hasProcess && (process as any)?.env?.NEXT_PUBLIC_AMPLITUDE_API_KEY
+          ? (process as any).env.NEXT_PUBLIC_AMPLITUDE_API_KEY
+          : undefined;
+    } catch {}
+  }
+  if (!apiKey) return;
+  try {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://cdn.amplitude.com/libs/amplitude-8.21.0-min.gz.js';
+    s.id = 'amplitude-script';
+    s.onload = () => {
+      try {
+        (window as any).amplitude?.getInstance?.().init?.(apiKey);
+      } catch {}
+    };
+    document.head?.appendChild(s);
+  } catch {}
+};
+
 function getClientId(): string | undefined {
   try {
     const key = 'analytics:client_id';
@@ -294,8 +415,9 @@ export function trackPageView(pagePath: string, pageTitle?: string): void {
     }
 
     // Prod: send to GA/Mixpanel/Amplitude as before and also record to backend (best-effort)
-    if (window.gtag) {
-      window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '', {
+    const gaId = getGaMeasurementId();
+    if (window.gtag && gaId) {
+      window.gtag('config', gaId, {
         page_path: pagePath,
         page_title: pageTitle,
       });
