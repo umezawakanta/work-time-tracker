@@ -6,7 +6,6 @@
   "installCommand": "pnpm install --no-frozen-lockfile --prefer-offline",
   "devCommand": "pnpm run dev",
   "ignoreCommand": "node scripts/vercel-ignore.js",
-  "functions": {},
   "headers": [
     {
       "source": "/index.html",
