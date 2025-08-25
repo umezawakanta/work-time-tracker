@@ -13,6 +13,37 @@ type EventData = Record<string, any>;
 // IDs and Queue Utilities
 // ------------------------------
 
+// Normalize and audit analytics event names
+const EVENT_ALIASES: Record<string, string> = {
+  // CTAs
+  pricing_cta_click: 'cta_pricing_click',
+  upgrade_cta_click: 'cta_upgrade_click',
+  invite_nav_click: 'cta_invite_click',
+  // Funnels
+  funnelvisit: 'funnel_visit',
+  funnelaction: 'funnel_action',
+  funnelsuccess: 'funnel_success',
+  // Auth
+  login_successful: 'login_success',
+  // Misc
+  pageview: 'page_view',
+};
+
+function normalizeEventName(input: string): string {
+  try {
+    const base = String(input || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_+|_+$/g, '');
+    return EVENT_ALIASES[base] || base;
+  } catch {
+    return input;
+  }
+}
+
 // Safely fetch GA Measurement ID from Vite env or process env
 function getGaMeasurementId(): string | undefined {
   try {
@@ -225,12 +256,13 @@ export async function flushAnalyticsQueue(): Promise<void> {
  * イベントを追跡する関数（フック不要・クラス/関数両対応）
  */
 export function trackEvent(eventName: string, data: EventData = {}): void {
+  const normalizedEvent = normalizeEventName(eventName);
   // 初回アクティベーション統一イベント（dev/prod共通）
   try {
     const qualifies =
-      eventName === 'assessment_saved' ||
-      eventName === 'learning_progress_saved' ||
-      (eventName === 'ai_assistant_reply' && Boolean((data as any).ok));
+      normalizedEvent === 'assessment_saved' ||
+      normalizedEvent === 'learning_progress_saved' ||
+      (normalizedEvent === 'ai_assistant_reply' && Boolean((data as any).ok));
 
     if (qualifies && typeof window !== 'undefined') {
       const key = 'activation:first_success_at';
@@ -320,14 +352,14 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
           break;
       }
     } catch {}
-    console.log(`[Analytics] Event: ${eventName}`, data);
+    console.log(`[Analytics] Event: ${normalizedEvent}`, data);
     // dev時もリモート送信が有効ならPOST
     try {
       if (import.meta?.env?.VITE_ENABLE_ANALYTICS === 'true') {
         const clientId = getClientId();
         const sessionId = getSessionId();
         postWithQueue('/api/analytics/track', {
-          event: eventName,
+          event: normalizedEvent,
           data: { ...data, clientId, sessionId },
           timestamp: new Date().toISOString(),
         });
@@ -339,17 +371,17 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
   try {
     // Google Analytics
     if (window.gtag) {
-      window.gtag('event', eventName, data);
+      window.gtag('event', normalizedEvent, data);
     }
 
     // Mixpanel
     if (window.mixpanel) {
-      (window.mixpanel as any).track(eventName, data);
+      (window.mixpanel as any).track(normalizedEvent, data);
     }
 
     // Amplitude
     if (window.amplitude) {
-      (window.amplitude as any).getInstance().logEvent(eventName, data);
+      (window.amplitude as any).getInstance().logEvent(normalizedEvent, data);
     }
 
     // カスタムデータレイヤー
@@ -365,7 +397,7 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
       const clientId = getClientId();
       const sessionId = getSessionId();
       postWithQueue('/api/analytics/track', {
-        event: eventName,
+        event: normalizedEvent,
         data: { ...data, clientId, sessionId },
         timestamp: new Date().toISOString(),
       });
