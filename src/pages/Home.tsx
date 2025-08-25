@@ -331,7 +331,7 @@ const Home: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Onboarding Modal */}
       <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
-        <DialogContent>
+        <DialogContent aria-modal="true" role="dialog">
           <DialogHeader>
             <DialogTitle>最初の一歩: 自己診断を実施</DialogTitle>
             <DialogDescription>

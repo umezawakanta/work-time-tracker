@@ -345,7 +345,7 @@ export default function SubscriptionUpgradePage() {
 
     return (
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md" aria-modal="true" role="dialog">
           <DialogHeader>
             <DialogTitle>お支払い情報</DialogTitle>
             <DialogDescription>

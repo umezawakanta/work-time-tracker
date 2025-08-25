@@ -543,7 +543,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({ userName, isPremiu
 
       {/* メール招待ダイアログ */}
       <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
-        <DialogContent>
+        <DialogContent aria-modal="true" role="dialog">
           <DialogHeader>
             <DialogTitle>メールで友達を招待</DialogTitle>
             <DialogDescription>
