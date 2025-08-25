@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { debtApi } from '../services/api';
+import { debtApi } from '@services/api';
 import { DebtEntry } from '@/types';
 
 interface DebtState {

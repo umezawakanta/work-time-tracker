@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { candidateApi } from '../services/api';
+import { candidateApi } from '@services/api';
 import { Candidate, CandidateState } from '@/types';
 
 const initialState: CandidateState = {
