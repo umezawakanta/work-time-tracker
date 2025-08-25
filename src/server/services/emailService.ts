@@ -10,17 +10,7 @@ interface EmailConfig {
 }
 
 // 通知設定の型定義
-export interface NotificationSettings {
-  enabled: boolean;
-  emailAddress: string;
-  notifyOnTaskAdd: boolean;
-  notifyOnDeadlineApproaching: boolean;
-  deadlineWarningHours: number; // 何時間前に通知するか
-  dailyDigest: boolean;
-  dailyDigestTime: string; // HH:MM形式
-  weeklyReport: boolean;
-  weeklyReportDay: number; // 0=日曜日, 6=土曜日
-}
+// Note: NotificationSettings interface is imported from '../../types/notification'
 
 // メールテンプレートの型定義
 interface EmailTemplate {

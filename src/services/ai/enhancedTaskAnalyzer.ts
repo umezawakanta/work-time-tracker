@@ -91,14 +91,12 @@ export class EnhancedTaskAnalyzer {
     try {
       // Dynamic import for AI service
       const aiModule = await import('./MultiAIIntegrationService');
-      const aiServiceClass = (aiModule as any).default || aiModule.MultiAIIntegrationService;
-      const aiService = aiServiceClass.getInstance();
+      const aiService = (aiModule as any).multiAIIntegrationService;
 
-      const response = await aiService.processRequest({
+      const response = await aiService.processTask({
         prompt,
         taskType: 'analysis',
         priority: 'normal',
-        expectedResponseTime: 5000,
       });
 
       return response.content;

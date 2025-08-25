@@ -652,7 +652,6 @@ try {
             if (!e.hadRecentInput) cumulativeLayoutShift += e.value || 0;
           }
         });
-        // @ts-expect-error types for 'layout-shift'
         clsObserver.observe({ type: 'layout-shift', buffered: true });
       } catch {}
 
@@ -666,7 +665,6 @@ try {
             largestContentfulPaint = Math.max(largestContentfulPaint, last.loadTime);
           }
         });
-        // @ts-expect-error types for 'largest-contentful-paint'
         lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
       } catch {}
 
@@ -677,7 +675,6 @@ try {
             firstInputDelay = Math.max(0, firstInput.processingStart - firstInput.startTime);
           }
         });
-        // @ts-expect-error types for 'first-input'
         fidObserver.observe({ type: 'first-input', buffered: true });
       } catch {}
     }

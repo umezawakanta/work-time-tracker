@@ -258,7 +258,7 @@ router.post('/tracking', async (req: Request, res: Response) => {
           success: true,
           data: {
             id: taskId,
-            ...(updates || {}),
+            ...(updates && typeof updates === 'object' ? updates : {}),
             lastUpdated: new Date().toISOString(),
           },
           message: 'タスクの進捗を更新しました',
@@ -270,7 +270,7 @@ router.post('/tracking', async (req: Request, res: Response) => {
           success: true,
           data: {
             id: projectId,
-            ...(updates || {}),
+            ...(updates && typeof updates === 'object' ? updates : {}),
             lastUpdated: new Date().toISOString(),
           },
           message: 'プロジェクトの進捗を更新しました',

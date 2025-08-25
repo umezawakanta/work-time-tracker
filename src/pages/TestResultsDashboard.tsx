@@ -33,11 +33,7 @@ import {
   Filter,
   Calendar,
 } from 'lucide-react';
-import ComprehensiveTestingService, {
-  TestExecution,
-  TestResult,
-  TestSuite,
-} from '@/services/testing/ComprehensiveTestingService';
+import ComprehensiveTestingService from '@/services/testing/ComprehensiveTestingService';
 import { toast } from 'react-hot-toast';
 
 interface TestCategory {
@@ -122,14 +118,64 @@ const TestResultsDashboard: React.FC = () => {
     return () => clearInterval(interval);
   }, [isRunning]);
 
-  const loadTestData = () => {
-    const summary = testingService.getTestSummary();
-    const history = testingService.getTestHistory();
-    const status = testingService.getExecutionStatus();
+  const adaptRunResultToExecution = (result: any) => {
+    try {
+      const allResults = (result?.testSuites || [])
+        .flatMap((suite: any) => suite.tests || [])
+        .map((t: any) => ({
+          testId: t.id || t.name,
+          status:
+            t.status === 'passing'
+              ? 'passed'
+              : t.status === 'failing'
+                ? 'failed'
+                : t.status || 'unknown',
+          duration: typeof t.duration === 'number' ? Math.round(t.duration * 1000) : 0,
+          message: t.description || '',
+          details: t.details || undefined,
+          error: t.error ? { message: String(t.error) } : undefined,
+        }));
 
-    setTestHistory(history);
-    setIsRunning(status.isRunning);
-    setCurrentExecution(status.currentExecution);
+      const passed = allResults.filter((r: any) => r.status === 'passed').length;
+      const failed = allResults.filter((r: any) => r.status === 'failed').length;
+      const total = allResults.length;
+      const durationSec = Number(result?.overallStats?.totalDuration || 0);
+
+      return {
+        id: `exec-${Date.now()}`,
+        startTime: new Date().toISOString(),
+        status: failed > 0 ? 'failed' : 'completed',
+        results: allResults,
+        summary: {
+          passed,
+          failed,
+          skipped: 0,
+          total,
+          duration: Math.round(durationSec * 1000),
+        },
+      };
+    } catch {
+      return {
+        id: `exec-${Date.now()}`,
+        startTime: new Date().toISOString(),
+        status: 'failed',
+        results: [],
+        summary: { passed: 0, failed: 0, skipped: 0, total: 0, duration: 0 },
+      };
+    }
+  };
+
+  const computeSummary = (execution: any | null) => {
+    if (!execution) return { totalTests: 0, overallStatus: 'unknown' } as any;
+    const { summary } = execution;
+    return {
+      totalTests: summary?.total || 0,
+      overallStatus: summary?.failed > 0 ? 'unhealthy' : 'healthy',
+    } as any;
+  };
+
+  const loadTestData = () => {
+    // No-op: data is maintained locally after each run
   };
 
   const runAllTests = async () => {
@@ -137,10 +183,11 @@ const TestResultsDashboard: React.FC = () => {
       setIsRunning(true);
       toast.loading('全テストを実行中...', { id: 'test-execution' });
 
-      const execution = await testingService.runAllTests();
+      const result = await testingService.runAllTests();
+      const execution = adaptRunResultToExecution(result);
 
       setCurrentExecution(execution);
-      loadTestData();
+      setTestHistory((prev) => [execution, ...prev]);
 
       if (execution.status === 'completed') {
         toast.success(
@@ -193,7 +240,7 @@ const TestResultsDashboard: React.FC = () => {
   };
 
   const latestExecution = testHistory[0];
-  const testSummary = testingService.getTestSummary();
+  const testSummary = computeSummary(latestExecution || currentExecution);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
