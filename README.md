@@ -50,7 +50,11 @@ VITE_GEMINI_API_KEY=your-gemini-key-optional
 VITE_OPENAI_API_KEY=your-openai-key-optional
 VITE_ANTHROPIC_API_KEY=your-anthropic-key
 VITE_ENABLE_ANALYTICS=false
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX # 任意（本番のみ推奨）
 ```
+
+- Vercel では Project Settings → Environment Variables に `VITE_*` を追加してください。
+- GAはID未設定でも動作します（フォールバック: ローカル送信/コンソールログ）。
 
 ## ディレクトリ
 
@@ -120,6 +124,14 @@ pnpm dev
 - `VITE_OPENAI_API_KEY`: OpenAI キー（任意）
 - `VITE_API_BASE_URL`: API ベースURL（例: `http://localhost:3001/api`）
 - `VITE_ENABLE_ANALYTICS`: `true` で分析有効（デフォルトは開発でコンソール出力）
+- `VITE_GA_MEASUREMENT_ID`: Google Analytics メジャメントID（本番推奨）
+
+### Admin メトリクス（プレビュー）
+
+- `/admin` ダッシュボードにて、以下のメトリクスを表示:
+  - リアルタイム接続/イベント（Live Analytics）
+  - IQ/MBTI 保存件数、過去30日の累計
+  - タスク完了率・習慣スコア等（一部ダミー/プレビュー値を含む）
 
 ## 導入ガイド（3ステップ）
 
@@ -216,4 +228,3 @@ pnpm dev
 ---
 
 開発の詳細・最新の変更は GitHub リポジトリを参照。
-```
