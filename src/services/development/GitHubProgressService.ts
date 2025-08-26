@@ -1,3 +1,5 @@
+import { ENV } from '@/utils/env';
+
 interface DevelopmentProgress {
   commitCount: number;
   features: string[];
@@ -25,7 +27,6 @@ class GitHubProgressService {
   private readonly GITHUB_TOKEN = (() => {
     try {
       // Prefer Vite env via helper when available
-      const { ENV } = require('@/utils/env');
       return ENV.GITHUB_TOKEN();
     } catch {
       // Fallback for non-bundled/test environments

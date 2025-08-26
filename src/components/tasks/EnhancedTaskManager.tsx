@@ -67,6 +67,7 @@ import TaskForm from './TaskForm';
 import AdvancedAIService from '@/services/ai/AdvancedAIService';
 import { toast } from 'react-hot-toast';
 import TaskImporter from './TaskImporter';
+import { useAuth } from '@/hooks/useAuth';
 
 interface LocalLocalTaskSuggestion {
   id: string;
@@ -142,16 +143,7 @@ export const EnhancedTaskManager: React.FC = () => {
   const [analysisResults, setAnalysisResults] = useState<any>(null);
 
   // Load tasks only after authentication
-  const { isAuthenticated } = ((): any => {
-    try {
-      // Lazy import to avoid circular deps
-       
-      const hook = require('@/hooks/useAuth');
-      return hook.useAuth();
-    } catch {
-      return { isAuthenticated: true };
-    }
-  })();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (!isAuthenticated) return;

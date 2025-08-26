@@ -44,6 +44,13 @@ module.exports = tseslint.config(
       '@typescript-eslint/no-unused-vars': 'off', // 一時的にoff（約100件削減）
       'no-async-promise-executor': 'warn',
       'prefer-rest-params': 'warn',
+      // Empty catchは許容（意図的に握りつぶすケースを想定）
+      'no-empty': ['error', { allowEmptyCatch: true }],
+      // 短絡評価/三項演算子の式は許容（gtagやes?.close()等）
+      '@typescript-eslint/no-unused-expressions': [
+        'warn',
+        { allowShortCircuit: true, allowTernary: true, allowTaggedTemplates: true },
+      ],
     },
   },
   // テストファイル専用の設定

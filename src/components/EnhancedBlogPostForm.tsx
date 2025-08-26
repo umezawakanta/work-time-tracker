@@ -266,7 +266,7 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
     }
     setIsAddingSelected(true);
     try {
-      // @ts-ignore
+      // @ts-expect-error unwrap/addMany typing mismatch in test environment
       await dispatch(addMany(selected));
       toast.success(`${selected.length}件のタスクを追加しました`);
       // クリア

@@ -87,7 +87,7 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
     const result = await ai.execute(prompt);
     if (result) {
       try {
-        const { userTrackingService } = require('@/services/analytics/UserTrackingService');
+        const { userTrackingService } = await import('@/services/analytics/UserTrackingService');
         userTrackingService.trackFunnel('ai_success', {
           durationMs: ai.durationMs,
         });
@@ -182,14 +182,16 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
           ) : (
             <Button
               onClick={() => {
-                try {
-                  const {
-                    userTrackingService,
-                  } = require('@/services/analytics/UserTrackingService');
-                  userTrackingService.trackFunnel('ai_suggest_click', {
-                    contextLength: context.length,
-                  });
-                } catch {}
+                (async () => {
+                  try {
+                    const { userTrackingService } = await import(
+                      '@/services/analytics/UserTrackingService'
+                    );
+                    userTrackingService.trackFunnel('ai_suggest_click', {
+                      contextLength: context.length,
+                    });
+                  } catch {}
+                })();
                 void handleExecute();
               }}
               disabled={ai.isLoading || !aiConfigured}

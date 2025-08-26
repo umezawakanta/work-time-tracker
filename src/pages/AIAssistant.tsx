@@ -28,7 +28,7 @@ const AIAssistant: React.FC = () => {
       try {
         const health = await getAIHealth();
         setHasServerKey(health.hasApiKey);
-         
+
         console.log('[AI] Server health', health);
       } catch {
         setHasServerKey(null);
@@ -109,7 +109,7 @@ const AIAssistant: React.FC = () => {
     }
     try {
       const firstLine = content.split('\n').find((l) => l.trim().length > 0) || content;
-      const task = firstLine.replace(/^[-*\d\.\)\s]+/, '').slice(0, 140);
+      const task = firstLine.replace(/^[-*\d.)\s]+/, '').slice(0, 140);
       const now = new Date().toISOString();
       await todoApi.create(task, 2, true, 'output', undefined, now);
       toast.success('1つのアクションをToDoに保存しました', { icon: '✅' });

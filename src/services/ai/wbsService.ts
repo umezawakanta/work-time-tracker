@@ -1,5 +1,6 @@
 import { TodoItem } from '@/types';
 import { AIServiceError, RateLimitError, QuotaExceededError, NetworkError } from './taskAIService';
+import { getEnv } from '@/utils/env';
 
 // WBS関連の型定義
 export interface WBSNode {
@@ -59,9 +60,6 @@ class WBSService {
 
   constructor() {
     try {
-      // Lazy import to avoid cyclic deps at module load
-       
-      const { getEnv } = require('@/utils/env');
       this.apiKey = getEnv('VITE_CLAUDE_API_KEY') || getEnv('VITE_OPENAI_API_KEY');
     } catch {
       this.apiKey = null;
