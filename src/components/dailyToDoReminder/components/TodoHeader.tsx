@@ -61,7 +61,9 @@ const ActionButtons = React.memo<{
 
 // Lazy load the AI suggestion modal
 const AISuggestionModal = lazy(() =>
-  import('./AISuggestionModal').then((module) => ({ default: module.AISuggestionModal }))
+  import('@/components/dailyToDoReminder/components/AISuggestionModal').then((module) => ({
+    default: module.AISuggestionModal,
+  }))
 );
 
 /**
