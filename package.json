@@ -1,15 +1,16 @@
 {
     "name": "work-time-tracker",
     "private": true,
-    "version": "0.0.0",
+    "version": "0.0.1",
     "packageManager": "pnpm@10.4.1",
     "engines": {
         "node": "22.x"
     },
     "scripts": {
         "start": "vite",
-        "build": "vite build",
-        "vercel-build": "vite build --config vite.config.ts --minify false --logLevel warn",
+        "build": "pnpm run build:version && vite build",
+        "vercel-build": "pnpm run build:version && vite build --config vite.config.ts --minify false --logLevel warn",
+        "build:version": "node scripts/generate-version.mjs",
         "vercel-build-ci": "cross-env NODE_OPTIONS=--max_old_space_size=1536 VITE_ENABLE_REACT_GUARD=false VITE_DISABLE_CSS_MINIFY=true VITE_ENABLE_PWA=false VITE_CJS_IGNORE_WARNING=true pnpm run vercel-build",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 200",
         "lint:fix": "eslint . --ext ts,tsx --fix",
