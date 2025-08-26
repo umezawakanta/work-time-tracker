@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { analyticsEventSchema } from '../_schemas/analytics.js';
 
 type AnalyticsEventBody = {
   event: string;
@@ -48,18 +49,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     res.setHeader('Access-Control-Allow-Origin', '*');
 
-    const body = (req.body || {}) as AnalyticsEventBody;
-    const event = body?.event;
+    // Validate via Zod (api scope schema)
+    const parsed = analyticsEventSchema.safeParse(req.body || {});
+    if (!parsed.success) {
+      return res
+        .status(400)
+        .json({ ok: false, error: 'Invalid body', issues: parsed.error.issues });
+    }
+
+    const body = (parsed.data || {}) as AnalyticsEventBody & Record<string, unknown>;
+    const event = body.event;
     const timestamp =
-      typeof body?.timestamp === 'string' ? body.timestamp : new Date().toISOString();
-    const data = sanitizeData(body?.data) || {};
+      typeof body.timestamp === 'string' ? body.timestamp : new Date().toISOString();
+    const data = sanitizeData(body.data) || {};
 
     if (!isValidEventName(event)) {
       return res.status(400).json({ ok: false, error: 'Invalid event name' });
     }
 
     // Stub persistence: write to console (isolation from src/* database)
-    console.log('[AnalyticsEvent]', { event, data, timestamp, ip: req.headers['x-real-ip'] });
+    console.log('[AnalyticsEvent]', {
+      event,
+      data,
+      timestamp,
+      clientId: (body as any).clientId,
+      sessionId: (body as any).sessionId,
+      path: (body as any).path,
+      ip: req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+    });
 
     // Respond success
     return res.status(200).json({ ok: true });
