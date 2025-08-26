@@ -61,6 +61,8 @@
     "dist",
     "coverage",
     "api/**/*",
+    "src/test/**",
+    "src/test-utils/**",
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
     "src/**/*.spec.ts",
