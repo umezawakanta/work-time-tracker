@@ -83,15 +83,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         days: sets.map((s) => s.size),
       }));
 
-    return res
-      .status(200)
-      .json({
-        ok: true,
-        start: start.toISOString(),
-        end: end.toISOString(),
-        windowDays,
-        cohorts: rows,
-      });
+    return res.status(200).json({
+      ok: true,
+      start: start.toISOString(),
+      end: end.toISOString(),
+      windowDays,
+      cohorts: rows,
+    });
   } catch (e) {
     console.error('[Retention30d] Error', e);
     return res.status(500).json({ ok: false, error: 'Internal error' });
