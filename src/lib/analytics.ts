@@ -211,6 +211,18 @@ async function postWithQueue(
   }
 }
 
+function schedulePost(endpoint: QueuedEvent['endpoint'], body: Record<string, unknown>): void {
+  try {
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(() => postWithQueue(endpoint, body), { timeout: 1000 });
+      return;
+    }
+  } catch {}
+  setTimeout(() => {
+    postWithQueue(endpoint, body);
+  }, 0);
+}
+
 export async function flushAnalyticsQueue(): Promise<void> {
   const queue = readQueue();
   if (queue.length === 0) return;
@@ -337,7 +349,7 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
       if (ENV.ENABLE_ANALYTICS()) {
         const clientId = getClientId();
         const sessionId = getSessionId();
-        postWithQueue('/api/analytics/track', {
+        schedulePost('/api/analytics/track', {
           event: normalizedEvent,
           data: { ...data, clientId, sessionId },
           timestamp: new Date().toISOString(),
@@ -375,7 +387,7 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
     if (typeof fetch === 'function') {
       const clientId = getClientId();
       const sessionId = getSessionId();
-      postWithQueue('/api/analytics/track', {
+      schedulePost('/api/analytics/track', {
         event: normalizedEvent,
         data: { ...data, clientId, sessionId },
         timestamp: new Date().toISOString(),
@@ -413,7 +425,7 @@ export function trackPageView(pagePath: string, pageTitle?: string): void {
     if (process.env.NODE_ENV !== 'production') {
       console.log(`[Analytics] Page View: ${pagePath} (${pageTitle})`);
       try {
-        postWithQueue('/api/analytics/pageview', {
+        schedulePost('/api/analytics/pageview', {
           path: pagePath,
           title: pageTitle,
           referrer: document.referrer,
@@ -447,7 +459,7 @@ export function trackPageView(pagePath: string, pageTitle?: string): void {
     }
 
     if (typeof fetch === 'function') {
-      postWithQueue('/api/analytics/pageview', {
+      schedulePost('/api/analytics/pageview', {
         path: pagePath,
         title: pageTitle,
         referrer: document.referrer,
