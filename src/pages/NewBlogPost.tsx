@@ -64,7 +64,6 @@ const NewBlogPost: React.FC = () => {
       };
       // Add an explicit timeout guard; abort create if it hangs > 20s
       const result = await Promise.race([
-        // @ts-expect-error unwrap is available on returned thunk
         (dispatch as any)(addBlogPost(blogPost)).unwrap(),
         new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Timeout while publishing')), 20000)

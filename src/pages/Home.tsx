@@ -57,6 +57,7 @@ import HowItWorks from '@/components/hero/HowItWorks';
 import WeeklyReportPreview from '@/components/home/WeeklyReportPreview';
 import UserStories from '@/components/home/UserStories';
 import FocusTimerQuick from '@/components/home/FocusTimerQuick';
+import SocialProof from '@/components/home/SocialProof';
 import InlineNPS from '@/components/feedback/InlineNPS';
 import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/referral';
 import { getVariant } from '@/lib/ab';
@@ -395,7 +396,9 @@ const Home: React.FC = () => {
               </Badge>
             </Button>
           </div>
-          <p className="mt-2 text-xs text-gray-500">{/* i18n: home.hero.badge */}無料・匿名OK・いつでも退会可能</p>
+          <p className="mt-2 text-xs text-gray-500">
+            {/* i18n: home.hero.badge */}無料・匿名OK・いつでも退会可能
+          </p>
         </div>
       </div>
 
@@ -572,6 +575,7 @@ const Home: React.FC = () => {
         </div>
       </div>
       <HowItWorks />
+      <SocialProof />
       <div className="container mx-auto px-4 max-w-7xl mb-8">
         <WeeklyReportPreview />
         <div className="mt-8">
