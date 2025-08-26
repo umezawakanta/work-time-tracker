@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from 'react';
+import { getEnv, ENV } from '@/utils/env';
 
 // Dev-only counters for quick success rate insights
 const __devCounters = {
@@ -46,22 +47,13 @@ function normalizeEventName(input: string): string {
 
 // Safely fetch GA Measurement ID from Vite env or process env
 function getGaMeasurementId(): string | undefined {
-  try {
-    const viteValue = (import.meta as any)?.env?.VITE_GA_MEASUREMENT_ID;
-    if (typeof viteValue === 'string' && viteValue.trim().length > 0) {
-      return viteValue.trim();
-    }
-  } catch {}
-  try {
-    const hasProcess = typeof process !== 'undefined';
-    const procValue =
-      hasProcess && (process as any)?.env?.NEXT_PUBLIC_GA_MEASUREMENT_ID
-        ? (process as any).env.NEXT_PUBLIC_GA_MEASUREMENT_ID
-        : undefined;
-    if (typeof procValue === 'string' && procValue.trim().length > 0) {
-      return procValue.trim();
-    }
-  } catch {}
+  const fromVite = getEnv('VITE_GA_MEASUREMENT_ID');
+  if (fromVite && fromVite.trim()) return fromVite.trim();
+  const fromNext =
+    typeof process !== 'undefined'
+      ? (process as any)?.env?.NEXT_PUBLIC_GA_MEASUREMENT_ID
+      : undefined;
+  if (typeof fromNext === 'string' && fromNext.trim().length > 0) return fromNext.trim();
   return undefined;
 }
 
@@ -107,19 +99,11 @@ const loadGoogleAnalytics = (): void => {
 const loadMixpanel = (): void => {
   if (typeof window === 'undefined') return;
   if ((window as any).__analytics_mixpanel_loaded) return;
-  let token: string | undefined;
-  try {
-    token = (import.meta as any)?.env?.VITE_MIXPANEL_TOKEN;
-  } catch {}
-  if (!token) {
-    try {
-      const hasProcess = typeof process !== 'undefined';
-      token =
-        hasProcess && (process as any)?.env?.NEXT_PUBLIC_MIXPANEL_TOKEN
-          ? (process as any).env.NEXT_PUBLIC_MIXPANEL_TOKEN
-          : undefined;
-    } catch {}
-  }
+  let token: string | undefined =
+    getEnv('VITE_MIXPANEL_TOKEN') ||
+    (typeof process !== 'undefined'
+      ? (process as any)?.env?.NEXT_PUBLIC_MIXPANEL_TOKEN
+      : undefined);
   if (!token) return;
   try {
     const s = document.createElement('script');
@@ -139,19 +123,11 @@ const loadMixpanel = (): void => {
 const loadAmplitude = (): void => {
   if (typeof window === 'undefined') return;
   if ((window as any).__analytics_amplitude_loaded) return;
-  let apiKey: string | undefined;
-  try {
-    apiKey = (import.meta as any)?.env?.VITE_AMPLITUDE_API_KEY;
-  } catch {}
-  if (!apiKey) {
-    try {
-      const hasProcess = typeof process !== 'undefined';
-      apiKey =
-        hasProcess && (process as any)?.env?.NEXT_PUBLIC_AMPLITUDE_API_KEY
-          ? (process as any).env.NEXT_PUBLIC_AMPLITUDE_API_KEY
-          : undefined;
-    } catch {}
-  }
+  let apiKey: string | undefined =
+    getEnv('VITE_AMPLITUDE_API_KEY') ||
+    (typeof process !== 'undefined'
+      ? (process as any)?.env?.NEXT_PUBLIC_AMPLITUDE_API_KEY
+      : undefined);
   if (!apiKey) return;
   try {
     const s = document.createElement('script');
@@ -280,7 +256,7 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
             at: nowIso,
           });
           try {
-            if (import.meta?.env?.VITE_ENABLE_ANALYTICS === 'true') {
+            if (ENV.ENABLE_ANALYTICS()) {
               fetch('/api/analytics/track', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -358,7 +334,7 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
     console.log(`[Analytics] Event: ${normalizedEvent}`, data);
     // dev時もリモート送信が有効ならPOST
     try {
-      if (import.meta?.env?.VITE_ENABLE_ANALYTICS === 'true') {
+      if (ENV.ENABLE_ANALYTICS()) {
         const clientId = getClientId();
         const sessionId = getSessionId();
         postWithQueue('/api/analytics/track', {
@@ -681,7 +657,7 @@ try {
 
     const sendVitals = () => {
       try {
-        const allowDev = (import.meta as any)?.env?.VITE_ENABLE_ANALYTICS === 'true';
+        const allowDev = ENV.ENABLE_ANALYTICS();
         if (process.env.NODE_ENV !== 'production' && !allowDev) return;
         const clientId = getClientId();
         const sessionId = getSessionId();

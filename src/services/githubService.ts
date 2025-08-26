@@ -262,7 +262,9 @@ export const getGitHubService = (): GitHubService => {
     githubServiceInstance = new GitHubService({
       owner: 'umezawakanta', // あなたのGitHubユーザー名
       repo: 'work-time-tracker', // リポジトリ名
-      accessToken: import.meta.env.VITE_GITHUB_TOKEN, // 環境変数からトークンを取得
+      accessToken: (typeof process !== 'undefined'
+        ? (process as any)?.env?.VITE_GITHUB_TOKEN
+        : undefined) as any,
     });
   }
   return githubServiceInstance;

@@ -4,7 +4,7 @@
  */
 
 import { lifeSupportChatService } from './LifeSupportChatService';
-import { multiAIIntegrationService } from './MultiAIIntegrationService';
+import { multiAIIntegrationService } from './MultiAIIntegrationService.js';
 import { dataGenerator } from '../../utils/idGenerator';
 import { calculateAICost, estimateProcessingTime } from '../../config/aiPricing';
 
