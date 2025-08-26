@@ -192,6 +192,7 @@ const AdvancedPerformanceMonitoringPage = lazy(
 );
 const ProductionOptimizationPage = lazy(() => import('@/pages/ProductionOptimizationPage'));
 const MobileOptimizationPage = lazy(() => import('@/pages/MobileOptimizationPage'));
+const ChangelogPage = lazy(() => import('@/pages/Changelog'));
 
 // 🎯 Personal Development & Life Management
 const AbstinenceManager = lazy(() => import('@/pages/AbstinenceManager'));
@@ -446,6 +447,16 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <PricingPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/changelog"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <ChangelogPage />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }

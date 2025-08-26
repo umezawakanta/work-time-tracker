@@ -62,6 +62,7 @@ import SocialProof from '@/components/home/SocialProof';
 import MagicLinkCta from '@/components/home/MagicLinkCta';
 import InstallBanner from '@/components/pwa/InstallBanner';
 import InlineNPS from '@/components/feedback/InlineNPS';
+import VersionInfo from '@/components/footer/VersionInfo';
 import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/referral';
 import { getVariant } from '@/lib/ab';
 import { useAnalytics } from '@/lib/analytics';
@@ -511,7 +512,7 @@ const Home: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button
-              className="px-6 py-6 text-base md:text-lg"
+              className="px-6 py-6 text-base md:text-lg w-full sm:w-auto"
               onClick={() => navigate('/ai-assistant')}
               aria-label="AI秘書を使う"
             >
@@ -520,7 +521,7 @@ const Home: React.FC = () => {
             </Button>
             <Button
               variant="outline"
-              className="px-6 py-6 text-base md:text-lg"
+              className="px-6 py-6 text-base md:text-lg w-full sm:w-auto"
               onClick={() => navigate('/assessments')}
               aria-label="自己診断を始める"
             >
@@ -781,7 +782,7 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-4 py-8 pb-[calc(2rem+env(safe-area-inset-bottom))] max-w-7xl">
         {/* Newsletter signup CTA */}
         <div className="mb-10 max-w-2xl mx-auto">
           <Card className="bg-white/90 border shadow-sm">
@@ -1120,6 +1121,13 @@ const Home: React.FC = () => {
             </Button>
           </div>
           <p className="mt-2 text-xs text-gray-500">無料・匿名OK・いつでも退会可能</p>
+        </div>
+      </div>
+
+      {/* Footer: Version Info */}
+      <div className="bg-white border-t">
+        <div className="container mx-auto px-4 max-w-7xl py-6">
+          <VersionInfo />
         </div>
       </div>
     </div>
