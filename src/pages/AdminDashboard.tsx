@@ -215,6 +215,10 @@ const AdminDashboard: React.FC = () => {
   const [topPagesQuery, setTopPagesQuery] = useState<string>('');
   const [activeUsers24h, setActiveUsers24h] = useState<number | null>(null);
   const [isDauLoading, setIsDauLoading] = useState<boolean>(false);
+  const [retention, setRetention] = useState<
+    Array<{ date: string; size: number; days: number[] }>
+  >([]);
+  const [isRetentionLoading, setIsRetentionLoading] = useState<boolean>(false);
 
   // メトリクス取得
   const fetchMetrics = async () => {
@@ -328,6 +332,21 @@ const AdminDashboard: React.FC = () => {
       setTopPages([]);
     } finally {
       setIsTopPagesLoading(false);
+    }
+  };
+
+  const fetchRetention30d = async () => {
+    try {
+      setIsRetentionLoading(true);
+      const { data } = await api.get('analytics/retention/30d');
+      const payload = (data && (data.data || data)) as any;
+      const rows = Array.isArray(payload?.cohorts) ? payload.cohorts : [];
+      setRetention(rows);
+    } catch (e) {
+      console.error('Failed to fetch 30d retention:', e);
+      setRetention([]);
+    } finally {
+      setIsRetentionLoading(false);
     }
   };
 
@@ -486,6 +505,7 @@ const AdminDashboard: React.FC = () => {
     fetchLearningSummary();
     fetchLiveMetrics();
     fetchActiveUsers(24);
+    fetchRetention30d();
 
     // 30秒ごとに自動更新
     const interval = setInterval(() => {
@@ -501,6 +521,7 @@ const AdminDashboard: React.FC = () => {
       fetchLearningSummary();
       fetchLiveMetrics();
       fetchActiveUsers(24);
+      fetchRetention30d();
     }, 30000);
     return () => clearInterval(interval);
   }, [pageviewWindow]);
@@ -1495,6 +1516,45 @@ const AdminDashboard: React.FC = () => {
 
         <TabsContent value="analytics" className="space-y-6">
           <AnalyticsDashboard isAdminUser={true} />
+          {/* 30日リテンション */}
+          <Card>
+            <CardHeader>
+              <CardTitle>30日リテンション（簡易）</CardTitle>
+              <CardDescription>D1%は翌日継続率。サイズはコホート人数。</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isRetentionLoading ? (
+                <div className="h-24 bg-gray-200 rounded animate-pulse" />
+              ) : retention.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="text-left">
+                        <th className="p-2">開始日</th>
+                        <th className="p-2">サイズ</th>
+                        <th className="p-2">D1%</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {retention.slice(-14).map((r, i) => {
+                        const d1 = r.days?.[1] || 0;
+                        const pct = r.size > 0 ? Math.round((d1 / r.size) * 100) : 0;
+                        return (
+                          <tr key={`${r.date}-${i}`} className="border-t">
+                            <td className="p-2 whitespace-nowrap">{r.date}</td>
+                            <td className="p-2">{r.size}</td>
+                            <td className="p-2">{pct}%</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">データがありません</p>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="users" className="space-y-6">
