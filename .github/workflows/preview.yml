@@ -28,7 +28,11 @@ jobs:
 
       - name: Configure pnpm store (writable)
         run: |
-          pnpm config set store-dir ~/.pnpm-store
+          mkdir -p "$RUNNER_TEMP/pnpm-store"
+          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
+          echo "NPM_CONFIG_STORE_DIR=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
+          echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
+          pnpm store path
 
       # no-op (pnpm is ready at this point)
 

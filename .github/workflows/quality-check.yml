@@ -42,7 +42,11 @@ jobs:
           cache: 'pnpm'
 
       - name: 📦 Configure pnpm store (writable)
-        run: pnpm config set store-dir ~/.pnpm-store
+        run: |
+          mkdir -p "$RUNNER_TEMP/pnpm-store"
+          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
+          echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
+          pnpm store path
 
       - name: 📦 Install Dependencies
         run: pnpm install --prefer-offline
@@ -158,7 +162,11 @@ jobs:
           cache: 'pnpm'
 
       - name: 📦 Configure pnpm store (writable)
-        run: pnpm config set store-dir ~/.pnpm-store
+        run: |
+          mkdir -p "$RUNNER_TEMP/pnpm-store"
+          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
+          echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
+          pnpm store path
 
       - name: 📦 Install Dependencies
         run: pnpm install --prefer-offline
@@ -266,7 +274,11 @@ jobs:
           cache: 'pnpm'
 
       - name: 📦 Configure pnpm store (writable)
-        run: pnpm config set store-dir ~/.pnpm-store
+        run: |
+          mkdir -p "$RUNNER_TEMP/pnpm-store"
+          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
+          echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
+          pnpm store path
 
       - name: 📦 Install Dependencies
         run: pnpm install --prefer-offline
