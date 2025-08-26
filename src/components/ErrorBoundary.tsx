@@ -129,7 +129,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
               ? 'APIキー・レート制限・ネットワーク状態をご確認ください。問題が続く場合は設定を見直してください。'
               : '申し訳ありませんが、予期せぬエラーが発生しました。'}
           </p>
-          <div className="flex gap-3 justify-center">
+          <div className="flex gap-3 justify-center flex-wrap">
             {aiError && (
               <Button
                 variant="outline"
@@ -147,6 +147,43 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             )}
             <Button onClick={() => window.location.reload()} aria-label="ページを再読み込み">
               再読み込み
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                try {
+                  const details = JSON.stringify(
+                    {
+                      message: this.state.error?.message,
+                      stack: this.state.error?.stack,
+                      time: new Date().toISOString(),
+                    },
+                    null,
+                    2
+                  );
+                  navigator.clipboard?.writeText(details);
+                } catch {}
+              }}
+              aria-label="エラー詳細をコピー"
+            >
+              エラー詳細をコピー
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                try {
+                  const body = encodeURIComponent(
+                    `問題の内容:\n\n再現手順:\n\n期待する動作:\n\n----\n` +
+                      `エラー詳細:\n${this.state.error?.message}\n\n${this.state.error?.stack}`
+                  );
+                  window.location.href = `mailto:dev@yourdomain.example?subject=${encodeURIComponent(
+                    'Work Time Tracker エラー報告'
+                  )}&body=${body}`;
+                } catch {}
+              }}
+              aria-label="開発者に報告"
+            >
+              開発者に報告
             </Button>
           </div>
         </div>

@@ -40,6 +40,19 @@ export const VersionInfo: React.FC = () => {
     }
   };
 
+  const shareToX = () => {
+    try {
+      const latest = entries[0];
+      const url = 'https://work-time-tracker-5d9q.vercel.app';
+      const title = latest
+        ? `Work Time Tracker v${latest.version} を公開しました`
+        : 'Work Time Tracker 更新情報';
+      const text = latest?.notes ? `${title}\n\n${latest.notes}\n\n${url}` : `${title}\n\n${url}`;
+      const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+      window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    } catch {}
+  };
+
   return (
     <div className="mt-10">
       <Card>
@@ -77,9 +90,12 @@ export const VersionInfo: React.FC = () => {
                 ))}
               </div>
             )}
-            <div className="mt-3">
+            <div className="mt-3 flex items-center gap-2">
               <Button variant="outline" size="sm" asChild>
                 <a href="/changelog">すべての更新履歴を見る</a>
+              </Button>
+              <Button variant="ghost" size="sm" onClick={shareToX} aria-label="Xでシェア">
+                Xでシェア
               </Button>
             </div>
           </div>

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AccessibilityProvider } from '@/components/accessibility/AccessibilityProvider';
+import StatusBanners from '@/components/layout/StatusBanners';
 import InstallBanner from '@/components/pwa/InstallBanner';
 import CookieConsent from '@/components/layout/CookieConsent';
 import { useTheme } from '@/context/ThemeContext';
@@ -773,6 +774,8 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
     learning: false,
   });
   const [streakCount, setStreakCount] = useState<number>(0);
+  const [wipRoutes, setWipRoutes] = useState<string[]>([]);
+  const [mockRoutes, setMockRoutes] = useState<string[]>([]);
 
   // 翻訳関数（簡易版）
   const t = (key: string) => key;
@@ -821,6 +824,19 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
     } catch {}
     // 学習ストリーク
     setStreakCount(getWeekCount());
+  }, []);
+
+  // flags.json 読み込み（WIP/Mock バナー）
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/flags.json');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data?.wipRoutes)) setWipRoutes(data.wipRoutes);
+        if (Array.isArray(data?.mockRoutes)) setMockRoutes(data.mockRoutes);
+      } catch {}
+    })();
   }, []);
 
   const persistTour = (next: Record<TourStepId, boolean>) => {
@@ -1152,6 +1168,10 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
 
           {/* ページコンテンツ */}
           <div className="flex-1 p-6">
+            <StatusBanners
+              isWip={wipRoutes.some((p) => location.pathname.startsWith(p))}
+              isMock={mockRoutes.some((p) => location.pathname.startsWith(p))}
+            />
             {/* Global 3-step Tour */}
             <ThreeStepTour
               open={tourOpen}

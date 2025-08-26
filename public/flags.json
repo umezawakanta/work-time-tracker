@@ -1,0 +1,15 @@
+{
+    "wipRoutes": [
+        "/analytics",
+        "/quality-dashboard",
+        "/testing-dashboard",
+        "/analytics-dashboard",
+        "/subscription",
+        "/subscription-upgrade",
+        "/billing-history"
+    ],
+    "mockRoutes": [
+        "/analytics",
+        "/quality-dashboard"
+    ]
+}
