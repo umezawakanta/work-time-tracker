@@ -58,6 +58,7 @@ import WeeklyReportPreview from '@/components/home/WeeklyReportPreview';
 import UserStories from '@/components/home/UserStories';
 import FocusTimerQuick from '@/components/home/FocusTimerQuick';
 import SocialProof from '@/components/home/SocialProof';
+import MagicLinkCta from '@/components/home/MagicLinkCta';
 import InlineNPS from '@/components/feedback/InlineNPS';
 import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/referral';
 import { getVariant } from '@/lib/ab';
@@ -575,6 +576,9 @@ const Home: React.FC = () => {
         </div>
       </div>
       <HowItWorks />
+      <div className="container mx-auto px-4 max-w-7xl py-6">
+        <MagicLinkCta />
+      </div>
       <SocialProof />
       <div className="container mx-auto px-4 max-w-7xl mb-8">
         <WeeklyReportPreview />

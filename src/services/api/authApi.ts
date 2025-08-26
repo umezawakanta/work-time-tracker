@@ -34,6 +34,12 @@ export interface AuthResponse {
   refreshExpiresIn?: number;
 }
 
+export const requestMagicLink = async (email: string): Promise<{ success: boolean; message: string }> => {
+  const payload = { email };
+  const res = await api.post('/auth/magic-link', payload);
+  return { success: Boolean(res.data?.success ?? true), message: res.data?.message || 'OK' };
+};
+
 export const register = async (userData: RegisterData): Promise<AuthResponse> => {
   try {
     const response = await api.post<AuthResponse>('/auth/register', userData);
