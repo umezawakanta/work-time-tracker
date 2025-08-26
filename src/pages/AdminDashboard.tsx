@@ -282,7 +282,10 @@ const AdminDashboard: React.FC = () => {
       const { data } = await api.get('analytics/pageviews/daily', { params: { days } });
       const payload = (data && (data.data || data)) as any;
       const list = Array.isArray(payload?.series) ? payload.series : [];
-      const series = list.map((p: any) => ({ day: p.date || p.day, views: Number(p.count ?? p.views ?? 0) }));
+      const series = list.map((p: any) => ({
+        day: p.date || p.day,
+        views: Number(p.count ?? p.views ?? 0),
+      }));
       setPageviewSeries(series);
     } catch (e) {
       console.error('Failed to fetch pageviews trend:', e);
@@ -830,18 +833,26 @@ const AdminDashboard: React.FC = () => {
                       size="sm"
                       variant="outline"
                       onClick={() =>
-                        (function exportPageviews(){
+                        (function exportPageviews() {
                           try {
-                            const headers = ['day','views'];
+                            const headers = ['day', 'views'];
                             const lines = [headers.join(',')].concat(
                               pageviewSeries.map((r) => `${r.day},${r.views}`)
                             );
-                            const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                            const blob = new Blob([lines.join('\n')], {
+                              type: 'text/csv;charset=utf-8;',
+                            });
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement('a');
-                            a.href = url; a.download = 'pageviews_trend.csv';
-                            document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-                          } catch (e) { console.error(e); }
+                            a.href = url;
+                            a.download = 'pageviews_trend.csv';
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                            URL.revokeObjectURL(url);
+                          } catch (e) {
+                            console.error(e);
+                          }
                         })()
                       }
                     >
@@ -904,18 +915,26 @@ const AdminDashboard: React.FC = () => {
                       size="sm"
                       variant="outline"
                       onClick={() =>
-                        (function exportUsers(){
+                        (function exportUsers() {
                           try {
-                            const headers = ['day','newUsers','activeUsers'];
+                            const headers = ['day', 'newUsers', 'activeUsers'];
                             const lines = [headers.join(',')].concat(
                               usersTrend.map((r) => `${r.day},${r.newUsers},${r.activeUsers}`)
                             );
-                            const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                            const blob = new Blob([lines.join('\n')], {
+                              type: 'text/csv;charset=utf-8;',
+                            });
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement('a');
-                            a.href = url; a.download = 'users_trend.csv';
-                            document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-                          } catch (e) { console.error(e); }
+                            a.href = url;
+                            a.download = 'users_trend.csv';
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                            URL.revokeObjectURL(url);
+                          } catch (e) {
+                            console.error(e);
+                          }
                         })()
                       }
                     >
@@ -1142,19 +1161,29 @@ const AdminDashboard: React.FC = () => {
                       size="sm"
                       variant="outline"
                       onClick={() =>
-                        (function exportTopPages(){
+                        (function exportTopPages() {
                           try {
-                            const headers = ['page','views'];
-                            const rows = (topPages || []).filter((p) => !topPagesQuery || (p.page || '').includes(topPagesQuery));
+                            const headers = ['page', 'views'];
+                            const rows = (topPages || []).filter(
+                              (p) => !topPagesQuery || (p.page || '').includes(topPagesQuery)
+                            );
                             const lines = [headers.join(',')].concat(
                               rows.map((r) => `${r.page},${r.views}`)
                             );
-                            const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                            const blob = new Blob([lines.join('\n')], {
+                              type: 'text/csv;charset=utf-8;',
+                            });
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement('a');
-                            a.href = url; a.download = 'top_pages.csv';
-                            document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-                          } catch (e) { console.error(e); }
+                            a.href = url;
+                            a.download = 'top_pages.csv';
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                            URL.revokeObjectURL(url);
+                          } catch (e) {
+                            console.error(e);
+                          }
                         })()
                       }
                     >
