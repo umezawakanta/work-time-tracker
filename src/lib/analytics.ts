@@ -701,9 +701,16 @@ try {
       } catch {}
     };
 
+    const scheduleSend = () => {
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(() => sendVitals(), { timeout: 1000 });
+      } else {
+        setTimeout(() => sendVitals(), 0);
+      }
+    };
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') sendVitals();
+      if (document.visibilityState === 'hidden') scheduleSend();
     });
-    window.addEventListener('pagehide', sendVitals);
+    window.addEventListener('pagehide', scheduleSend);
   }
 } catch {}

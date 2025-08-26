@@ -3,7 +3,10 @@ import { cors } from '../../lib/cors';
 
 // Anthropic API configuration
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || process.env.VITE_ANTHROPIC_API_KEY;
+const ANTHROPIC_API_KEY =
+  process.env.ANTHROPIC_API_KEY ||
+  process.env.VITE_ANTHROPIC_API_KEY ||
+  (process.env as any).NEXT_PUBLIC_ANTHROPIC_API_KEY;
 
 interface AnthropicRequest {
   messages: Array<{
