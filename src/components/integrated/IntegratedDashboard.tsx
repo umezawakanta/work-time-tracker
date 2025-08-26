@@ -40,7 +40,7 @@ import {
 import { EXPANDED_BADGES_DATABASE } from '@/services/development/ExpandedBadgesDatabase';
 import { BadgeCategory } from '@/types/development-badges';
 import comprehensiveBadgeService from '@/services/development/ComprehensiveBadgeService';
-import { buildOwnInviteUrl } from '@/services/share/referral';
+import { buildOwnInviteUrl, buildShareUrlForChannel } from '@/services/share/referral';
 import { toast } from 'react-hot-toast';
 import { trackCtaClick } from '@/lib/track';
 import { trackEvent } from '@/lib/analytics';
@@ -1038,6 +1038,39 @@ export const IntegratedDashboard: React.FC = () => {
             aria-label="友達を招待"
           >
             友達を招待
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              try {
+                const url = buildShareUrlForChannel('/assessments', 'x');
+                const text = encodeURIComponent('Work Time Tracker を使って生産性を可視化しよう！');
+                const shareUrl = `https://x.com/intent/tweet?url=${encodeURIComponent(url)}&text=${text}`;
+                trackEvent('share_click', { channel: 'x', location: 'integrated_header' });
+                window.open(shareUrl, '_blank', 'noopener');
+              } catch {}
+            }}
+            aria-label="Xでシェア"
+          >
+            Xでシェア
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              try {
+                const url = buildShareUrlForChannel('/assessments', 'line');
+                const shareUrl = `https://line.me/R/msg/text/?${encodeURIComponent(
+                  'Work Time Tracker を使って生産性を可視化しよう！\n' + url
+                )}`;
+                trackEvent('share_click', { channel: 'line', location: 'integrated_header' });
+                window.open(shareUrl, '_blank', 'noopener');
+              } catch {}
+            }}
+            aria-label="LINEでシェア"
+          >
+            LINEでシェア
           </Button>
           <div className="flex items-center gap-1">
             <div

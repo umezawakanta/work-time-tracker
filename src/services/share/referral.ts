@@ -20,11 +20,38 @@ export function getReferralCode(): string | null {
   }
 }
 
+export function setReferralCode(code: string | null): void {
+  try {
+    const key = 'referral:code';
+    if (!code || String(code).trim().length === 0) {
+      localStorage.removeItem(key);
+      return;
+    }
+    localStorage.setItem(key, String(code).trim());
+  } catch {}
+}
+
+export function clearReferralCode(): void {
+  try {
+    localStorage.removeItem('referral:code');
+  } catch {}
+}
+
 export function buildShareUrl(path: string): string {
   const code = getReferralCode();
   const url = new URL(path, window.location.origin);
   if (code) url.searchParams.set('ref', code);
   url.searchParams.set('utm_source', 'share');
+  return url.toString();
+}
+
+export function buildShareUrlForChannel(path: string, channel: string): string {
+  const code = getReferralCode();
+  const url = new URL(path, window.location.origin);
+  if (code) url.searchParams.set('ref', code);
+  url.searchParams.set('utm_source', 'share');
+  url.searchParams.set('utm_medium', channel);
+  url.searchParams.set('utm_campaign', 'invite_share');
   return url.toString();
 }
 

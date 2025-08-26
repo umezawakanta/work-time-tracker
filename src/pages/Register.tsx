@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,12 @@ import { Eye, EyeOff, CheckCircle, XCircle, AlertCircle, User, Mail, Lock } from
 import { tokenManager } from '@/services/auth/TokenManager';
 import { useAnalytics } from '@/lib/analytics';
 import { useTranslation } from 'react-i18next';
+import {
+  getReferralCode,
+  persistReferralFromUrl,
+  setReferralCode,
+  clearReferralCode,
+} from '@/services/share/referral';
 
 interface ValidationErrors {
   name?: string;
@@ -44,6 +50,7 @@ export default function Register() {
     email: '',
     password: '',
     confirmPassword: '',
+    referralCode: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -116,6 +123,12 @@ export default function Register() {
         break;
       }
 
+      case 'referralCode': {
+        if (!value) return undefined;
+        if (!/^[a-zA-Z0-9_-]{3,32}$/.test(value)) return '招待コードの形式が正しくありません';
+        break;
+      }
+
       default:
         break;
     }
@@ -125,6 +138,11 @@ export default function Register() {
   // フィールド値更新
   const updateField = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === 'referralCode') {
+      try {
+        setReferralCode(value);
+      } catch {}
+    }
 
     // リアルタイムバリデーション（フィールドがタッチされている場合のみ）
     if (touchedFields[name]) {
@@ -138,6 +156,20 @@ export default function Register() {
       }
     }
   };
+
+  // 初期ロード時にURL/LSから招待コードを取り込み
+  useEffect(() => {
+    const fromUrl = persistReferralFromUrl();
+    const existing = fromUrl || getReferralCode();
+    if (existing) {
+      setFormData((prev) => ({ ...prev, referralCode: existing }));
+    }
+    if (fromUrl) {
+      try {
+        trackEvent('referral_accept', { code: fromUrl, path: window.location.pathname });
+      } catch {}
+    }
+  }, []);
 
   // フィールドのブラー処理
   const handleFieldBlur = (name: string) => {
@@ -189,6 +221,7 @@ export default function Register() {
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
         acceptTerms: acceptTerms,
+        referralCode: formData.referralCode?.trim() || undefined,
       });
 
       toast.success('アカウントが正常に作成されました');
@@ -197,6 +230,12 @@ export default function Register() {
           email: formData.email,
           displayName: formData.name,
         });
+        if (formData.referralCode) {
+          trackEvent('referral_register', { code: formData.referralCode });
+          toast.success('招待コードが適用されました');
+          // 一度適用したらローカルのpending referralはクリア
+          clearReferralCode();
+        }
         trackEvent('register_success', { method: 'email' });
       } catch {}
 
@@ -265,8 +304,12 @@ export default function Register() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-900">{t('auth.register.title', 'アカウント登録')}</CardTitle>
-          <CardDescription className="text-gray-600">{t('auth.register.subtitle', 'Work Time Trackerへようこそ')}</CardDescription>
+          <CardTitle className="text-2xl font-bold text-gray-900">
+            {t('auth.register.title', 'アカウント登録')}
+          </CardTitle>
+          <CardDescription className="text-gray-600">
+            {t('auth.register.subtitle', 'Work Time Trackerへようこそ')}
+          </CardDescription>
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
@@ -348,6 +391,41 @@ export default function Register() {
                 <p className="text-sm text-red-600 flex items-center">
                   <AlertCircle className="w-4 h-4 mr-1" />
                   {validationErrors.email}
+                </p>
+              )}
+            </div>
+
+            {/* 招待コード（任意） */}
+            <div className="space-y-2">
+              <Label htmlFor="referralCode" className="text-sm font-medium text-gray-700">
+                招待コード（任意）
+              </Label>
+              <div className="relative">
+                <Input
+                  id="referralCode"
+                  type="text"
+                  value={formData.referralCode}
+                  onChange={(e) => updateField('referralCode', e.target.value)}
+                  onBlur={() => handleFieldBlur('referralCode')}
+                  className={`pl-4 ${validationErrors.referralCode ? 'border-red-500 focus:border-red-500' : ''}`}
+                  placeholder="例: u-abc123"
+                  disabled={isSubmitting}
+                  autoComplete="off"
+                />
+                {touchedFields.referralCode && (
+                  <div className="absolute right-3 top-3">
+                    {validationErrors.referralCode ? (
+                      <XCircle className="w-4 h-4 text-red-500" />
+                    ) : formData.referralCode ? (
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                    ) : null}
+                  </div>
+                )}
+              </div>
+              {validationErrors.referralCode && (
+                <p className="text-sm text-red-600 flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {validationErrors.referralCode}
                 </p>
               )}
             </div>
