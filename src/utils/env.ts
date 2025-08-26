@@ -126,6 +126,10 @@ export const ENV = {
   // GitHub
   GITHUB_TOKEN: () => getEnv('VITE_GITHUB_TOKEN'),
 
+  // Web Push
+  VAPID_PUBLIC_KEY: () => getEnv('VITE_VAPID_PUBLIC_KEY'),
+  VAPID_PRIVATE_KEY: () => getEnv('VITE_VAPID_PRIVATE_KEY'),
+
   // Flags
   USE_MOCK_DATA: () => getEnv('VITE_USE_MOCK_DATA') === 'true',
   ENABLE_ANALYTICS: () => getEnv('VITE_ENABLE_ANALYTICS') === 'true',

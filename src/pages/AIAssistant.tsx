@@ -154,10 +154,10 @@ const AIAssistant: React.FC = () => {
             <div className="flex items-center gap-2">
               <Input
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
                 placeholder="AIに相談したい内容を入力..."
                 aria-label="AIへの質問入力"
-                onKeyDown={(e) => {
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     // debounce: 無入力/送信中は無視

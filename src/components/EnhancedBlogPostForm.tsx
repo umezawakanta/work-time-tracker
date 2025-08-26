@@ -305,7 +305,7 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
               <Input
                 id="title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
                 required
                 placeholder="Enter your blog post title"
               />
@@ -316,7 +316,7 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
               <Input
                 id="category"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCategory(e.target.value)}
                 required
                 placeholder="Enter category"
               />
@@ -327,7 +327,7 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
               <Input
                 id="tags"
                 value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTagInput(e.target.value)}
                 onKeyPress={handleTagInputKeyPress}
                 placeholder="Press enter to add tags"
               />
@@ -356,7 +356,7 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
               <Textarea
                 id="content"
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value)}
                 required
                 rows={15}
                 placeholder="Write your blog post content here..."
@@ -387,7 +387,7 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
             <Textarea
               id="qa-raw"
               value={qaRaw}
-              onChange={(e) => setQaRaw(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setQaRaw(e.target.value)}
               rows={8}
               placeholder={
                 'Example:\nQ: 〇〇についてのベストプラクティスは？\nA: ...\n\nまたは\nUser: 質問...\nAssistant: 回答...'

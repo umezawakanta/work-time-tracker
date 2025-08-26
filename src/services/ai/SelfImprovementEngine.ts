@@ -737,7 +737,9 @@ class SelfImprovementEngine {
       };
 
       // GitHub API から実際のメトリクスを取得
-      const githubToken = process.env.GITHUB_TOKEN || import.meta.env?.VITE_GITHUB_TOKEN;
+      const githubToken =
+        process.env.GITHUB_TOKEN ||
+        (typeof process !== 'undefined' ? (process as any).env?.VITE_GITHUB_TOKEN : undefined);
       if (githubToken) {
         try {
           const response = await fetch(

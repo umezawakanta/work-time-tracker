@@ -223,17 +223,9 @@ class EnhancedPushNotificationService {
   private initializeVapidKeys(): void {
     // 実際の実装では環境変数から取得
     const publicKey =
-      (typeof window !== 'undefined'
-        ? (window as any).importMetaEnv?.VITE_VAPID_PUBLIC_KEY
-        : undefined) ||
-      (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_VAPID_PUBLIC_KEY) ||
       (typeof process !== 'undefined' ? (process as any).env?.VITE_VAPID_PUBLIC_KEY : undefined) ||
       'demo-public-key';
     const privateKey =
-      (typeof window !== 'undefined'
-        ? (window as any).importMetaEnv?.VITE_VAPID_PRIVATE_KEY
-        : undefined) ||
-      (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_VAPID_PRIVATE_KEY) ||
       (typeof process !== 'undefined' ? (process as any).env?.VITE_VAPID_PRIVATE_KEY : undefined) ||
       'demo-private-key';
 

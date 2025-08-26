@@ -36,7 +36,7 @@ const MagicLinkCta: React.FC = () => {
             <Input
               placeholder="メールアドレスを入力して、ログインリンクを受け取る"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
               type="email"
               aria-label="メールアドレス"
             />
@@ -61,5 +61,3 @@ const MagicLinkCta: React.FC = () => {
 };
 
 export default MagicLinkCta;
-
-

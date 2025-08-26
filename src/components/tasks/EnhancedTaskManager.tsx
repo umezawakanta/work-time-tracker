@@ -1100,7 +1100,7 @@ export const EnhancedTaskManager: React.FC = () => {
             <Input
               placeholder="タスクを検索..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
               className="pl-10"
             />
           </div>

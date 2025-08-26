@@ -129,7 +129,7 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
             <label className="text-sm font-medium text-slate-700">今日の状況（任意）</label>
             <Textarea
               value={context}
-              onChange={(e) => setContext(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setContext(e.target.value)}
               rows={4}
               placeholder="例: 午後にミーティング2件。レポートの締切が明日。集中力は午前が高い。"
             />
