@@ -63,13 +63,13 @@ const AdminUsersPage: React.FC = () => {
 
   useEffect(() => {
     void fetchPage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [page, debouncedQuery]);
 
   useEffect(() => {
     // 検索語が変わったら1ページ目へ
     setPage(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [debouncedQuery]);
 
   const formatStatus = (u: PublicUser): string => {

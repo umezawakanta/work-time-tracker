@@ -28,7 +28,7 @@ const AIAssistant: React.FC = () => {
       try {
         const health = await getAIHealth();
         setHasServerKey(health.hasApiKey);
-        // eslint-disable-next-line no-console
+         
         console.log('[AI] Server health', health);
       } catch {
         setHasServerKey(null);

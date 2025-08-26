@@ -53,7 +53,7 @@ const InstallBanner: React.FC = () => {
 
     window.addEventListener('beforeinstallprompt', handler as EventListener);
     return () => window.removeEventListener('beforeinstallprompt', handler as EventListener);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [isDismissed]);
 
   if (!visible || !deferred) return null;

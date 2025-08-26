@@ -18,7 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const days = windowParam === '30d' ? 30 : windowParam === '90d' ? 90 : 7;
 
     // Try DB aggregation first
-    let series: Array<{ day: string; views: number }> = [];
+    const series: Array<{ day: string; views: number }> = [];
     try {
       await connectDB();
       const since = new Date();

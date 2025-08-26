@@ -1294,7 +1294,7 @@ const RouteChangeTracker: React.FC<{ path: string; onTrack: (path: string) => vo
 }) => {
   useEffect(() => {
     onTrack(path);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [path]);
   return null;
 };

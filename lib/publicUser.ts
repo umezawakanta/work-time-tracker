@@ -69,7 +69,7 @@ export function assertNoSensitiveFields(payload: unknown): void {
       if (banned.has(keyLc)) {
         try {
           // Remove and log once per hit
-          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+           
           delete (record as any)[key];
           console.warn(`[SECURITY] Sensitive field removed from response: ${key}`);
           continue;

@@ -60,7 +60,7 @@ class WBSService {
   constructor() {
     try {
       // Lazy import to avoid cyclic deps at module load
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+       
       const { getEnv } = require('@/utils/env');
       this.apiKey = getEnv('VITE_CLAUDE_API_KEY') || getEnv('VITE_OPENAI_API_KEY');
     } catch {

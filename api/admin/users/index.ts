@@ -55,7 +55,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .filter(Boolean)
       .forEach((key) => {
         if (key.startsWith('-')) sortObj[key.substring(1)] = -1 as -1;
-        else sortObj[key] = 1 as 1;
+        else sortObj[key] = 1 as const;
       });
     if (Object.keys(sortObj).length === 0) sortObj.createdAt = -1;
 

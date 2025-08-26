@@ -145,7 +145,7 @@ export const EnhancedTaskManager: React.FC = () => {
   const { isAuthenticated } = ((): any => {
     try {
       // Lazy import to avoid circular deps
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+       
       const hook = require('@/hooks/useAuth');
       return hook.useAuth();
     } catch {

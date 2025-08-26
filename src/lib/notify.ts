@@ -4,7 +4,7 @@ export function notifyRateLimit(providerName?: string): void {
   const provider = providerName ? `（${providerName}）` : '';
   try {
     // Use sonner dynamically to avoid hard dependency in non-UI contexts
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+     
     import('sonner')
       .then(({ toast }) => {
         toast.warning(
@@ -16,7 +16,7 @@ export function notifyRateLimit(providerName?: string): void {
       })
       .catch(() => {
         // Fallback: console
-        // eslint-disable-next-line no-console
+         
         console.warn('AI rate-limited. Please retry in a moment.', providerName || '');
       });
   } catch {
