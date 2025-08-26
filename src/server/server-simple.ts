@@ -383,6 +383,21 @@ app.post('/api/auth/register', (req, res) => {
   }
 });
 
+// Magic link endpoint (dev mock)
+app.post('/api/auth/magic-link', (req, res) => {
+  console.log('✅ POST /api/auth/magic-link called');
+  const { email } = req.body || {};
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ success: false, message: 'Email is required' });
+  }
+  // In dev, just respond success and echo email
+  return res.json({
+    success: true,
+    message: 'マジックリンクを送信しました（デモ環境: 実送信なし）',
+    email: String(email).toLowerCase(),
+  });
+});
+
 app.post('/api/auth/logout', (req, res) => {
   console.log('✅ POST /api/auth/logout called');
   res.json({
@@ -397,11 +412,14 @@ app.get('/api/auth/me', (req, res) => {
 
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
+    const emailHeader = req.get('x-user-email') || '';
+    const email = emailHeader || 'demo@example.com';
+    const isAdmin = email.toLowerCase() === 'kanta13jp@gmail.com';
     const mockUser = {
       id: 'user_123',
-      email: 'demo@example.com',
-      name: 'Demo User',
-      role: 'user',
+      email,
+      name: (email.split('@')[0] || 'Demo').replace(/\W+/g, ' '),
+      role: isAdmin ? 'admin' : 'user',
       isActive: true,
       createdAt: new Date().toISOString(),
     };
@@ -429,13 +447,16 @@ app.get('/api/auth/whoami', (req, res) => {
   const hasToken = authHeader.startsWith('Bearer ') || true; // allow in dev
 
   if (hasToken) {
+    const emailHeader = req.get('x-user-email') || '';
+    const email = emailHeader || 'demo@example.com';
+    const isAdmin = email.toLowerCase() === 'kanta13jp@gmail.com';
     const mockUser = {
       userId: 'user_123',
-      email: 'demo@example.com',
-      role: 'admin',
-      roles: ['admin', 'user'],
+      email,
+      role: isAdmin ? 'admin' : 'user',
+      roles: isAdmin ? ['admin', 'user'] : ['user'],
       isVerified: true,
-      isAdmin: true,
+      isAdmin,
     };
 
     return res
@@ -453,12 +474,14 @@ app.get('/api/auth/check', (req: Request, res: Response) => {
   console.log('✅ GET /api/auth/check called');
 
   // 開発環境用の固定レスポンス
+  const emailHeader = req.get('x-user-email') || '';
+  const email = emailHeader || 'demo@example.com';
   res.json({
     isAuthenticated: true,
     user: {
       id: 'demo-user-id',
       displayName: 'Demo User',
-      email: 'demo@example.com',
+      email,
     },
   });
 });
@@ -468,13 +491,18 @@ app.get('/api/auth/user', (req: Request, res: Response) => {
   console.log('✅ GET /api/auth/user called');
 
   // 開発環境用の固定レスポンス
+  const emailHeader = req.get('x-user-email') || '';
+  const email = emailHeader || 'demo@example.com';
+  const isAdmin = email.toLowerCase() === 'kanta13jp@gmail.com';
   res.json({
     user: {
       id: 'demo-user-id',
       _id: 'demo-user-id',
       displayName: 'Demo User',
-      email: 'demo@example.com',
-      isAdmin: false,
+      email,
+      isAdmin,
+      role: isAdmin ? 'admin' : 'user',
+      roles: isAdmin ? ['admin', 'user'] : ['user'],
     },
   });
 });
