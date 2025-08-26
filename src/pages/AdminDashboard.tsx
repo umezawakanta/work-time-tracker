@@ -215,9 +215,9 @@ const AdminDashboard: React.FC = () => {
   const [topPagesQuery, setTopPagesQuery] = useState<string>('');
   const [activeUsers24h, setActiveUsers24h] = useState<number | null>(null);
   const [isDauLoading, setIsDauLoading] = useState<boolean>(false);
-  const [retention, setRetention] = useState<
-    Array<{ date: string; size: number; days: number[] }>
-  >([]);
+  const [retention, setRetention] = useState<Array<{ date: string; size: number; days: number[] }>>(
+    []
+  );
   const [isRetentionLoading, setIsRetentionLoading] = useState<boolean>(false);
 
   // メトリクス取得
