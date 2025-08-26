@@ -13,6 +13,7 @@ type ChangelogEntry = { version: string; notes: string };
 export const VersionInfo: React.FC = () => {
   const [ver, setVer] = useState<VersionInfo | null>(null);
   const [entries, setEntries] = useState<ChangelogEntry[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -21,13 +22,19 @@ export const VersionInfo: React.FC = () => {
           .then((r) => (r.ok ? r.json() : null))
           .catch(() => null);
         if (v) setVer(v);
-      } catch {}
+        else setError('バージョン情報の取得に失敗しました');
+      } catch {
+        setError('バージョン情報の取得に失敗しました');
+      }
       try {
         const c = await fetch(`/changelog.json?ts=${Date.now()}`)
           .then((r) => (r.ok ? r.json() : null))
           .catch(() => null);
         if (c && Array.isArray(c.entries)) setEntries(c.entries.slice(0, 3));
-      } catch {}
+        else if (!error) setError('更新履歴の取得に失敗しました');
+      } catch {
+        if (!error) setError('更新履歴の取得に失敗しました');
+      }
     })();
   }, []);
 
@@ -53,6 +60,21 @@ export const VersionInfo: React.FC = () => {
     } catch {}
   };
 
+  const shareToLINE = () => {
+    try {
+      const latest = entries[0];
+      const url = 'https://work-time-tracker-5d9q.vercel.app';
+      const title = latest
+        ? `Work Time Tracker v${latest.version} を公開しました`
+        : 'Work Time Tracker 更新情報';
+      const text = latest?.notes ? `${title}\n\n${latest.notes}` : title;
+      const shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(
+        url
+      )}&text=${encodeURIComponent(text)}`;
+      window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    } catch {}
+  };
+
   return (
     <div className="mt-10">
       <Card>
@@ -60,6 +82,9 @@ export const VersionInfo: React.FC = () => {
           <CardTitle className="text-base">バージョン情報</CardTitle>
         </CardHeader>
         <CardContent>
+          <div aria-live="polite" aria-atomic="true" className="sr-only">
+            {error ? error : 'OK'}
+          </div>
           <div className="text-sm text-gray-700">
             <div className="flex flex-wrap items-center gap-2">
               <span>現在のバージョン:</span>
@@ -96,6 +121,9 @@ export const VersionInfo: React.FC = () => {
               </Button>
               <Button variant="ghost" size="sm" onClick={shareToX} aria-label="Xでシェア">
                 Xでシェア
+              </Button>
+              <Button variant="ghost" size="sm" onClick={shareToLINE} aria-label="LINEでシェア">
+                LINEでシェア
               </Button>
             </div>
           </div>
