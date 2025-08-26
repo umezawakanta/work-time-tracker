@@ -123,7 +123,10 @@ export function useAIAction<TArgs = void, TResult = unknown>(
   const execute = useCallback(
     async (args: TArgs): Promise<TResult | null> => {
       lastArgsRef.current = args;
+      // set loading state immediately for synchronous assertion in tests
+      setError(null);
       setResult(null);
+      setStatus('loading');
       return runWithRetry(args);
     },
     [runWithRetry]

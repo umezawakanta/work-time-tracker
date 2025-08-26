@@ -34,7 +34,9 @@ export interface AuthResponse {
   refreshExpiresIn?: number;
 }
 
-export const requestMagicLink = async (email: string): Promise<{ success: boolean; message: string }> => {
+export const requestMagicLink = async (
+  email: string
+): Promise<{ success: boolean; message: string }> => {
   const payload = { email };
   const res = await api.post('/auth/magic-link', payload);
   return { success: Boolean(res.data?.success ?? true), message: res.data?.message || 'OK' };
@@ -292,8 +294,8 @@ export const updateUserProfile = async (userData: {
 
 export const fetchUserData = async (): Promise<User> => {
   try {
-    console.log('🔄 Fetching user data (whoami)...');
-    const response = await api.get<{ success: boolean; user: any }>('/auth/whoami');
+    console.log('🔄 Fetching user data (/auth/user)...');
+    const response = await api.get<{ user: any }>('/auth/user');
     const who = response.data.user || {};
     console.log('✅ WhoAmI retrieved:', who?.email);
 

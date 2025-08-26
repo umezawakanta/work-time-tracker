@@ -689,3 +689,5 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
     </div>
   );
 };
+
+export default EnhancedBlogPostForm;

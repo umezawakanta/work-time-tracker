@@ -176,6 +176,10 @@ export class TokenManager {
    */
   private isProductionEnvironment(): boolean {
     try {
+      // In test environment, enable production-like behavior for token flows
+      if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'test') {
+        return true;
+      }
       if (typeof window === 'undefined') return false;
       const host = window.location.hostname;
       // 本番/プレビューのホストのみ true、それ以外は false

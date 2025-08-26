@@ -117,3 +117,4 @@ allure-report/
 # Temporary dirs
 tmp/
 temp/
+coverage/clover.xml
