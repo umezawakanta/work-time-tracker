@@ -90,7 +90,7 @@ export class EnhancedTaskAnalyzer {
   private async callAI(prompt: string): Promise<string> {
     try {
       // Dynamic import for AI service
-      const aiModule = await import('./MultiAIIntegrationService');
+      const aiModule = await import('./MultiAIIntegrationService.js');
       const aiService = (aiModule as any).multiAIIntegrationService;
 
       const response = await aiService.processTask({
