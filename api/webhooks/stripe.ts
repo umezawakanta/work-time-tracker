@@ -110,7 +110,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice, operationId: stri
 
   try {
     // データベースでサブスクリプション状態を更新
-    const { SubscriptionService } = await import('../../src/services/database/SubscriptionService');
+    const { SubscriptionService } = await import('../_lib/subscription.js');
     const subscriptionService = SubscriptionService.getInstance();
 
     await subscriptionService.updateSubscriptionStatus(subscriptionId as string, 'active', {
@@ -145,7 +145,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice, operationId: string)
   console.log(`💸 [${operationId}] Payment failed for invoice: ${invoice.id}`);
 
   try {
-    const { SubscriptionService } = await import('../../src/services/database/SubscriptionService');
+    const { SubscriptionService } = await import('../_lib/subscription.js');
     const subscriptionService = SubscriptionService.getInstance();
 
     // サブスクリプション状態を「支払い遅延」に更新
@@ -182,7 +182,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription, oper
   console.log(`🎉 [${operationId}] New subscription created: ${subscription.id}`);
 
   try {
-    const { SubscriptionService } = await import('../../src/services/database/SubscriptionService');
+    const { SubscriptionService } = await import('../_lib/subscription.js');
     const subscriptionService = SubscriptionService.getInstance();
 
     // データベースにサブスクリプションを記録
@@ -215,7 +215,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription, oper
   console.log(`🔄 [${operationId}] Subscription updated: ${subscription.id}`);
 
   try {
-    const { SubscriptionService } = await import('../../src/services/database/SubscriptionService');
+    const { SubscriptionService } = await import('../_lib/subscription.js');
     const subscriptionService = SubscriptionService.getInstance();
 
     await subscriptionService.updateSubscriptionStatus(
@@ -249,7 +249,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription, oper
   console.log(`🗑️ [${operationId}] Subscription deleted: ${subscription.id}`);
 
   try {
-    const { SubscriptionService } = await import('../../src/services/database/SubscriptionService');
+    const { SubscriptionService } = await import('../_lib/subscription.js');
     const subscriptionService = SubscriptionService.getInstance();
 
     await subscriptionService.updateSubscriptionStatus(subscription.id, 'cancelled', {
@@ -284,7 +284,7 @@ async function handlePaymentIntentSucceeded(
   console.log(`💳 [${operationId}] PaymentIntent succeeded: ${paymentIntent.id}`);
 
   try {
-    const { PaymentService } = await import('../../src/services/database/PaymentService');
+    const { PaymentService } = await import('../_lib/payment.js');
     const paymentService = PaymentService.getInstance();
 
     await paymentService.recordPayment({
@@ -313,7 +313,7 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent, op
   console.log(`💥 [${operationId}] PaymentIntent failed: ${paymentIntent.id}`);
 
   try {
-    const { PaymentService } = await import('../../src/services/database/PaymentService');
+    const { PaymentService } = await import('../_lib/payment.js');
     const paymentService = PaymentService.getInstance();
 
     await paymentService.recordPayment({
@@ -358,7 +358,7 @@ async function sendPaymentFailureNotification(
 
     try {
       // 実際のメール送信サービスを使用
-      const { EmailService } = await import('../../src/services/notification/EmailService');
+      const { EmailService } = await import('../_lib/email.js');
       const emailService = EmailService.getInstance();
 
       await emailService.sendPaymentFailureNotification({
