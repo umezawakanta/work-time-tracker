@@ -213,6 +213,8 @@ const AdminDashboard: React.FC = () => {
   const [liveMetrics, setLiveMetrics] = useState<LiveMetrics | null>(null);
   const [isLiveLoading, setIsLiveLoading] = useState<boolean>(false);
   const [topPagesQuery, setTopPagesQuery] = useState<string>('');
+  const [activeUsers24h, setActiveUsers24h] = useState<number | null>(null);
+  const [isDauLoading, setIsDauLoading] = useState<boolean>(false);
 
   // メトリクス取得
   const fetchMetrics = async () => {
@@ -286,6 +288,21 @@ const AdminDashboard: React.FC = () => {
       setPageviewSeries([]);
     } finally {
       setIsPageviewsLoading(false);
+    }
+  };
+
+  const fetchActiveUsers = async (hours = 24) => {
+    try {
+      setIsDauLoading(true);
+      const { data } = await api.get('analytics/users/active', { params: { hours } });
+      const payload = (data && (data.data || data)) as any;
+      const n = Number(payload?.activeUsers ?? payload?.count ?? 0);
+      setActiveUsers24h(Number.isFinite(n) ? n : 0);
+    } catch (e) {
+      console.error('Failed to fetch active users (24h):', e);
+      setActiveUsers24h(null);
+    } finally {
+      setIsDauLoading(false);
     }
   };
 
@@ -458,6 +475,7 @@ const AdminDashboard: React.FC = () => {
     fetchAssessmentsSummary();
     fetchLearningSummary();
     fetchLiveMetrics();
+    fetchActiveUsers(24);
 
     // 30秒ごとに自動更新
     const interval = setInterval(() => {
@@ -472,6 +490,7 @@ const AdminDashboard: React.FC = () => {
       fetchAssessmentsSummary();
       fetchLearningSummary();
       fetchLiveMetrics();
+      fetchActiveUsers(24);
     }, 30000);
     return () => clearInterval(interval);
   }, [pageviewWindow]);
@@ -669,14 +688,16 @@ const AdminDashboard: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-600">DAU</p>
-                    <p className="text-2xl font-bold">{analytics.activeUsers}</p>
+                    <p className="text-2xl font-bold">
+                      {isDauLoading ? '—' : (activeUsers24h ?? analytics.activeUsers)}
+                    </p>
                     <p
-                      className={`text-xs ${analytics.activeUsers >= 8 ? 'text-green-600' : 'text-orange-600'}`}
+                      className={`text-xs ${(activeUsers24h ?? analytics.activeUsers) >= 32 ? 'text-green-600' : 'text-orange-600'}`}
                     >
-                      目標 8（
-                      {analytics.activeUsers >= 8
+                      目標 32（
+                      {(activeUsers24h ?? analytics.activeUsers) >= 32
                         ? '達成'
-                        : `残り ${Math.max(0, 8 - analytics.activeUsers)}`}
+                        : `残り ${Math.max(0, 32 - (activeUsers24h ?? analytics.activeUsers))}`}
                       ）
                     </p>
                   </div>
