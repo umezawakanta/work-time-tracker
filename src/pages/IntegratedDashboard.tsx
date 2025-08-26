@@ -38,6 +38,8 @@ import { ProjectHubProject, IntegratedTask, ProjectAlert } from '@/types/project
 import { useAuth } from '@/hooks/useAuth';
 import { useMongoTodos } from '@/hooks/useMongoTodos';
 import { SmartProductivityDashboard } from '@/components/ai/SmartProductivityDashboard';
+import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/referral';
+import { toast } from 'react-hot-toast';
 import { gameLoopTaskService, GameLoopStats } from '@/services/productivity/GameLoopTaskService';
 import {
   gameLoopAutomationIntegration,
@@ -52,6 +54,7 @@ const IntegratedDashboard: React.FC = () => {
     'overview' | 'tasks' | 'timeline' | 'analytics' | 'gameloop'
   >('overview');
   const [isLoading, setIsLoading] = useState(false);
+  const [ownRef, setOwnRef] = useState<string | null>(null);
 
   // MongoDB用ToDoデータを取得
   const { todos: actualTodos, loading: todosLoading, error: todosError } = useMongoTodos();
@@ -111,6 +114,9 @@ const IntegratedDashboard: React.FC = () => {
   const [isProjectsLoading, setIsProjectsLoading] = useState(true);
 
   useEffect(() => {
+    try {
+      setOwnRef(ensureOwnReferralCode() || null);
+    } catch {}
     const loadProjects = async () => {
       try {
         setIsProjectsLoading(true);
@@ -487,6 +493,45 @@ const IntegratedDashboard: React.FC = () => {
           </Select>
         </div>
       </div>
+
+      {/* 招待バナー */}
+      {ownRef && (
+        <Card className="mb-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-100">
+          <CardContent className="p-4 flex items-center gap-3">
+            <ListTodo className="w-5 h-5 text-emerald-600" />
+            <div className="text-sm text-gray-800">
+              チームの生産性を一緒に上げましょう。あなたの招待コード: {ownRef}
+            </div>
+            <div className="ml-auto flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={async () => {
+                  try {
+                    const url = buildOwnInviteUrl();
+                    if (navigator.share) {
+                      await navigator.share({ title: 'Work Time Tracker', url });
+                    } else {
+                      await navigator.clipboard.writeText(url);
+                      toast.success('招待リンクをコピーしました');
+                    }
+                  } catch {}
+                }}
+                aria-label="招待リンクを共有"
+              >
+                招待を送る
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => window.open('/invite', '_self')}
+                aria-label="招待ページを開く"
+              >
+                詳細を見る
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* アラート */}
       {alerts.length > 0 && (
