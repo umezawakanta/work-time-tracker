@@ -17,13 +17,13 @@ export const VersionInfo: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const v = await fetch('/version.json')
+        const v = await fetch(`/version.json?ts=${Date.now()}`)
           .then((r) => (r.ok ? r.json() : null))
           .catch(() => null);
         if (v) setVer(v);
       } catch {}
       try {
-        const c = await fetch('/changelog.json')
+        const c = await fetch(`/changelog.json?ts=${Date.now()}`)
           .then((r) => (r.ok ? r.json() : null))
           .catch(() => null);
         if (c && Array.isArray(c.entries)) setEntries(c.entries.slice(0, 3));
