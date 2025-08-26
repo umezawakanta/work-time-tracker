@@ -4,12 +4,14 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { requestMagicLink } from '@/services/api/authApi';
+import { useAnalytics } from '@/lib/analytics';
 
 const MagicLinkCta: React.FC = () => {
   const [email, setEmail] = useState('');
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { trackEvent } = useAnalytics();
 
   const isValid = /[^\s@]+@[^\s@]+\.[^\s@]+/.test(email);
 
@@ -19,10 +21,20 @@ const MagicLinkCta: React.FC = () => {
     setMessage(null);
     setError(null);
     try {
+      try {
+        const domain = email.includes('@') ? email.split('@')[1] : undefined;
+        trackEvent('magic_link_request', { domain });
+      } catch {}
       const res = await requestMagicLink(email.trim());
       setMessage(res.message || 'Magic link sent');
+      try {
+        trackEvent('magic_link_success', { domain: email.split('@')[1] });
+      } catch {}
     } catch (e: any) {
       setError(e?.message || '送信に失敗しました');
+      try {
+        trackEvent('magic_link_error', { message: String(e?.message || e) });
+      } catch {}
     } finally {
       setSending(false);
     }

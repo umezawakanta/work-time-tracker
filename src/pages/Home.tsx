@@ -101,9 +101,11 @@ const Home: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState<number>(1);
   const [showNextStep, setShowNextStep] = useState(false);
   const [ownRef, setOwnRef] = useState<string | null>(null);
   const [showDailyNudge, setShowDailyNudge] = useState(false);
+  const [showStreakNudge, setShowStreakNudge] = useState(false);
   const { trackEvent } = useAnalytics();
 
   // Initialize data
@@ -117,11 +119,13 @@ const Home: React.FC = () => {
   // Onboarding modal (first visit → link to /assessments)
   useEffect(() => {
     try {
-      const key = 'onboarding:assessments_shown';
-      const shown = localStorage.getItem(key) === 'true';
-      if (!shown) {
+      // 3ステップオンボーディング（初回のみ）
+      const completed = localStorage.getItem('onboarding:tour_completed') === 'true';
+      if (!completed) {
+        setOnboardingStep(1);
         setShowOnboarding(true);
-        localStorage.setItem(key, 'true');
+        // 旧キーがある場合は新ツアーに統合
+        localStorage.setItem('onboarding:assessments_shown', 'true');
       }
       // Next step card
       const nextStep = localStorage.getItem('next_step_card') === 'true';
@@ -139,6 +143,14 @@ const Home: React.FC = () => {
       }
     } catch {}
   }, []);
+
+  // オンボーディングステップのトラッキング
+  useEffect(() => {
+    if (!showOnboarding) return;
+    try {
+      trackEvent('onboarding_step_view', { step: onboardingStep });
+    } catch {}
+  }, [showOnboarding, onboardingStep]);
 
   const initializeDashboard = async () => {
     setIsLoading(true);
@@ -185,11 +197,23 @@ const Home: React.FC = () => {
         const dayStr = checkDate.toDateString();
 
         const dayCompleted = validTodos.some((todo) => {
-          if (!todo.completed) return false;
           try {
+            // Completed flag first
+            if (!todo.completed) return false;
+            const completedDateRaw =
+              (todo as any).completedDate ?? (todo as any).completedAt ?? (todo as any).updatedAt;
+            if (completedDateRaw) {
+              const d = new Date(completedDateRaw);
+              if (!isNaN(d.getTime()) && d.toDateString() === dayStr) return true;
+            }
+            const createdAtRaw = (todo as any).createdAt;
+            if (createdAtRaw) {
+              const d2 = new Date(createdAtRaw);
+              if (!isNaN(d2.getTime()) && d2.toDateString() === dayStr) return true;
+            }
             return false;
           } catch (error) {
-            console.warn('Invalid completedDate format in todo');
+            console.warn('Invalid date on todo when computing streak');
             return false;
           }
         });
@@ -232,6 +256,23 @@ const Home: React.FC = () => {
       });
     }
   };
+
+  // Streak milestone nudge (e.g., 7/10/30 days)
+  useEffect(() => {
+    if (!stats) return;
+    try {
+      const nextMilestones = [7, 10, 30];
+      const next = stats.streakDays + 1;
+      const today = new Date().toISOString().slice(0, 10);
+      const lastShownKey = 'streak:nudge:last_date';
+      const lastShown = localStorage.getItem(lastShownKey);
+      const shouldShow = nextMilestones.includes(next) && lastShown !== today;
+      setShowStreakNudge(shouldShow);
+      if (shouldShow) {
+        trackEvent('streak_milestone_nudge_view', { next });
+      }
+    } catch {}
+  }, [stats?.streakDays]);
 
   // Quick actions configuration
   const quickActions: QuickAction[] = [
@@ -335,29 +376,117 @@ const Home: React.FC = () => {
       <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
         <DialogContent aria-modal="true" role="dialog">
           <DialogHeader>
-            <DialogTitle>最初の一歩: 自己診断を実施</DialogTitle>
-            <DialogDescription>
-              5〜10分でIQ/MBTIを把握し、AI秘書をあなた用に最適化します。
-            </DialogDescription>
+            {onboardingStep === 1 && (
+              <>
+                <DialogTitle>ステップ1: AI秘書で今日の計画を作成</DialogTitle>
+                <DialogDescription>
+                  1分で今日の最優先タスクを決めましょう。AIが提案します。
+                </DialogDescription>
+              </>
+            )}
+            {onboardingStep === 2 && (
+              <>
+                <DialogTitle>ステップ2: 自己診断（IQ/MBTI）を実施</DialogTitle>
+                <DialogDescription>
+                  5〜10分で診断を行い、あなたに合わせて最適化された案内にします。
+                </DialogDescription>
+              </>
+            )}
+            {onboardingStep === 3 && (
+              <>
+                <DialogTitle>ステップ3: 友だちを招待して一緒に始めよう</DialogTitle>
+                <DialogDescription>
+                  招待リンクを共有して、継続の仲間を増やしましょう。
+                </DialogDescription>
+              </>
+            )}
           </DialogHeader>
           <DialogFooter>
-            <div className="flex w-full justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setShowOnboarding(false)}
-                aria-label="あとで"
-              >
+            <div className="flex w-full justify-between gap-2">
+              <Button variant="ghost" onClick={() => setShowOnboarding(false)} aria-label="あとで">
                 あとで
               </Button>
-              <Button
-                onClick={() => {
-                  setShowOnboarding(false);
-                  navigate('/assessments');
-                }}
-                aria-label="自己診断を始める"
-              >
-                自己診断を始める
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  disabled={onboardingStep === 1}
+                  onClick={() => setOnboardingStep((s) => Math.max(1, s - 1))}
+                >
+                  戻る
+                </Button>
+                {onboardingStep < 3 ? (
+                  <Button
+                    onClick={() => {
+                      try {
+                        trackEvent('onboarding_step_complete', { step: onboardingStep });
+                      } catch {}
+                      setOnboardingStep((s) => s + 1);
+                    }}
+                  >
+                    次へ
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={async () => {
+                      try {
+                        trackEvent('onboarding_step_complete', { step: onboardingStep });
+                      } catch {}
+                      try {
+                        localStorage.setItem('onboarding:tour_completed', 'true');
+                      } catch {}
+                      setShowOnboarding(false);
+                    }}
+                  >
+                    完了
+                  </Button>
+                )}
+                {onboardingStep === 1 && (
+                  <Button
+                    onClick={() => {
+                      try {
+                        trackEvent('onboarding_action', { step: 1, action: 'open_ai' });
+                      } catch {}
+                      setShowOnboarding(false);
+                      navigate('/ai-assistant');
+                    }}
+                  >
+                    AI秘書を開く
+                  </Button>
+                )}
+                {onboardingStep === 2 && (
+                  <Button
+                    onClick={() => {
+                      try {
+                        trackEvent('onboarding_action', { step: 2, action: 'open_assessments' });
+                      } catch {}
+                      setShowOnboarding(false);
+                      navigate('/assessments');
+                    }}
+                  >
+                    自己診断を始める
+                  </Button>
+                )}
+                {onboardingStep === 3 && (
+                  <Button
+                    onClick={async () => {
+                      try {
+                        trackEvent('onboarding_action', { step: 3, action: 'share_invite' });
+                      } catch {}
+                      try {
+                        const url = buildOwnInviteUrl();
+                        if (navigator.share)
+                          await navigator.share({ title: 'Work Time Tracker', url });
+                        else {
+                          await navigator.clipboard.writeText(url);
+                          toast.success('招待リンクをコピーしました');
+                        }
+                      } catch {}
+                    }}
+                  >
+                    招待リンクを共有
+                  </Button>
+                )}
+              </div>
             </div>
           </DialogFooter>
         </DialogContent>
@@ -396,7 +525,17 @@ const Home: React.FC = () => {
                 5–10分
               </Badge>
             </Button>
+            <div className="w-full sm:w-auto min-w-[280px]">
+              <MagicLinkCta />
+            </div>
           </div>
+          {stats?.streakDays > 0 && (
+            <div className="mt-3 flex justify-center">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-orange-700 border border-orange-200 text-sm">
+                <Flame className="w-4 h-4" /> 連続 {stats.streakDays} 日
+              </span>
+            </div>
+          )}
           <p className="mt-2 text-xs text-gray-500">
             {/* i18n: home.hero.badge */}無料・匿名OK・いつでも退会可能
           </p>
@@ -405,6 +544,53 @@ const Home: React.FC = () => {
 
       {/* 3 Benefits (with lazy images for LCP optimization below-the-fold) */}
       <div className="container mx-auto px-4 max-w-7xl py-10">
+        {showStreakNudge && (
+          <div className="mb-6">
+            <Card className="bg-gradient-to-r from-orange-50 to-amber-50 border-amber-100">
+              <CardContent className="p-4 flex items-center gap-3">
+                <Flame className="w-5 h-5 text-orange-600" />
+                <div className="text-sm text-gray-800">
+                  あと1日で連続{(stats?.streakDays || 0) + 1}日達成！ 今日も記録しよう。
+                </div>
+                <div className="ml-auto flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      try {
+                        localStorage.setItem(
+                          'streak:nudge:last_date',
+                          new Date().toISOString().slice(0, 10)
+                        );
+                      } catch {}
+                      trackEvent('streak_milestone_nudge_action', {
+                        next: (stats?.streakDays || 0) + 1,
+                      });
+                      navigate('/work-time');
+                    }}
+                  >
+                    今日も記録
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      try {
+                        localStorage.setItem(
+                          'streak:nudge:last_date',
+                          new Date().toISOString().slice(0, 10)
+                        );
+                      } catch {}
+                      trackEvent('streak_milestone_nudge_dismiss');
+                      setShowStreakNudge(false);
+                    }}
+                  >
+                    閉じる
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
         {ownRef && (
           <div className="mb-6">
             <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-100">
