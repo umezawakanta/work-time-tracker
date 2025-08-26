@@ -50,10 +50,6 @@ interface GanttTask {
 
 class WBSGeneratorService {
   private readonly API_ENDPOINT =
-    (typeof window !== 'undefined'
-      ? (window as any).importMetaEnv?.VITE_AI_API_ENDPOINT
-      : undefined) ||
-    (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_AI_API_ENDPOINT) ||
     (typeof process !== 'undefined' ? (process as any).env?.VITE_AI_API_ENDPOINT : undefined) ||
     'http://localhost:3001/api/ai';
 

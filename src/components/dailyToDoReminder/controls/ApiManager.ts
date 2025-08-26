@@ -40,7 +40,9 @@ export class ApiManager {
 
   private initializeDefaultService(): void {
     this.registerService('default', {
-      baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api',
+      baseURL:
+        (typeof process !== 'undefined' ? (process as any).env?.VITE_API_BASE_URL : undefined) ||
+        'http://localhost:3001/api',
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
