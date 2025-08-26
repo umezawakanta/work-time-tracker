@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { analyticsEventSchema } from '../_schemas/analytics.js';
+import { saveAnalyticsEvent } from '../_lib/analyticsStore.js';
 
 type AnalyticsEventBody = {
   event: string;
@@ -67,8 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ ok: false, error: 'Invalid event name' });
     }
 
-    // Stub persistence: write to console (isolation from src/* database)
-    console.log('[AnalyticsEvent]', {
+    const doc = {
       event,
       data,
       timestamp,
@@ -76,7 +76,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       sessionId: (body as any).sessionId,
       path: (body as any).path,
       ip: req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.socket.remoteAddress,
-    });
+      userAgent: req.headers['user-agent'],
+    };
+    await saveAnalyticsEvent(doc);
 
     // Respond success
     return res.status(200).json({ ok: true });
