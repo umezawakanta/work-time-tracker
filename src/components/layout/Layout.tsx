@@ -9,6 +9,7 @@ import { AccessibilityProvider } from '@/components/accessibility/AccessibilityP
 import StatusBanners from '@/components/layout/StatusBanners';
 import InstallBanner from '@/components/pwa/InstallBanner';
 import CookieConsent from '@/components/layout/CookieConsent';
+import MobileTabBar from '@/components/layout/MobileTabBar';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
@@ -1258,6 +1259,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           </div>
           <InstallBanner />
         </main>
+        <MobileTabBar />
         <CookieConsent />
       </div>
     </AccessibilityProvider>

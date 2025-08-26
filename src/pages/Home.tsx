@@ -784,7 +784,7 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 pb-[calc(2rem+env(safe-area-inset-bottom))] max-w-7xl">
+      <div className="container mx-auto px-4 py-6 pb-[calc(3.5rem+env(safe-area-inset-bottom))] sm:py-8 max-w-7xl">
         {/* Newsletter signup CTA */}
         <div className="mb-10 max-w-2xl mx-auto">
           <Card className="bg-white/90 border shadow-sm">
