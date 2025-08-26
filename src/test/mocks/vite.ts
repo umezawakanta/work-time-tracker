@@ -21,8 +21,8 @@ export const importMeta = {
 
 // Set up global import.meta mock
 if (typeof global !== 'undefined') {
-  // @ts-expect-error - Adding import.meta to global for Jest compatibility
-  global.import = {
+  // Casting to any to attach a testing-only shim
+  (global as any).import = {
     meta: importMeta,
   };
 }
