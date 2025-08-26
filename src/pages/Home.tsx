@@ -13,6 +13,7 @@ import { selectAllTodos } from '@/components/dailyToDoReminder/store/selectors/t
 import { useAuth } from '@/hooks/useAuth';
 import { usePersonalization } from '@/hooks/usePersonalization';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -59,6 +60,7 @@ import UserStories from '@/components/home/UserStories';
 import FocusTimerQuick from '@/components/home/FocusTimerQuick';
 import SocialProof from '@/components/home/SocialProof';
 import MagicLinkCta from '@/components/home/MagicLinkCta';
+import InstallBanner from '@/components/pwa/InstallBanner';
 import InlineNPS from '@/components/feedback/InlineNPS';
 import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/referral';
 import { getVariant } from '@/lib/ab';
@@ -106,6 +108,8 @@ const Home: React.FC = () => {
   const [ownRef, setOwnRef] = useState<string | null>(null);
   const [showDailyNudge, setShowDailyNudge] = useState(false);
   const [showStreakNudge, setShowStreakNudge] = useState(false);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterSending, setNewsletterSending] = useState(false);
   const { trackEvent } = useAnalytics();
 
   // Initialize data
@@ -372,6 +376,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <InstallBanner />
       {/* Onboarding Modal */}
       <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
         <DialogContent aria-modal="true" role="dialog">
@@ -777,6 +782,47 @@ const Home: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Newsletter signup CTA */}
+        <div className="mb-10 max-w-2xl mx-auto">
+          <Card className="bg-white/90 border shadow-sm">
+            <CardContent className="p-5">
+              <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">
+                ニュースレターに登録
+              </h3>
+              <p className="text-gray-600 text-sm text-center mb-3">
+                最新機能と生産性Tipsをお届けします（週1回程度）
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <Input
+                  placeholder="メールアドレス"
+                  value={newsletterEmail}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setNewsletterEmail(e.target.value)
+                  }
+                  type="email"
+                  aria-label="ニュースレターのメールアドレス"
+                />
+                <Button
+                  onClick={async () => {
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newsletterEmail)) return;
+                    setNewsletterSending(true);
+                    try {
+                      // Backend wiring can replace this no-op
+                      trackEvent('newsletter_subscribe', { domain: newsletterEmail.split('@')[1] });
+                      toast.success('登録ありがとうございます！');
+                      setNewsletterEmail('');
+                    } catch {}
+                    setNewsletterSending(false);
+                  }}
+                  disabled={newsletterSending || !newsletterEmail}
+                  aria-label="ニュースレターに登録"
+                >
+                  {newsletterSending ? '送信中...' : '登録する'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
         {/* Header Section (subsequent heading after Hero's h1) */}
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
