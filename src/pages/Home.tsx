@@ -512,6 +512,7 @@ const Home: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button
+              size="lg"
               className="px-6 py-6 text-base md:text-lg w-full sm:w-auto"
               onClick={() => navigate('/ai-assistant')}
               aria-label="AI秘書を使う"
@@ -521,6 +522,7 @@ const Home: React.FC = () => {
             </Button>
             <Button
               variant="outline"
+              size="lg"
               className="px-6 py-6 text-base md:text-lg w-full sm:w-auto"
               onClick={() => navigate('/assessments')}
               aria-label="自己診断を始める"

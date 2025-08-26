@@ -164,6 +164,14 @@ pnpm dev
 - `.github/workflows/preview.yml` → Vercel へプレビュー/本番デプロイ
 - GitHub Secrets に `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` を設定（Vercel ダッシュボードの Team/Project から取得）
 
+### リリースバージョニング / 更新履歴 / X自動投稿
+
+- バージョンは `package.json` の `version`（初期値 0.0.1）を基準に、自動生成スクリプトで `public/version.json` を生成します。
+- 更新履歴は日本語で `CHANGELOG.md` に記載し、ビルド時に `public/changelog.json` に反映します。
+- `release-please` により `main` へのマージでリリースPR/タグを自動管理できます（`.github/workflows/release-please.yml`）。
+- GitHub Release 公開時に `post-to-x-on-release` が起動し、最新の更新履歴を日本語で X にポストします（`.github/workflows/post-to-x.yml`）。
+- 必要な Secrets: `X_APP_KEY`, `X_APP_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET`。
+
 ## セキュリティ/プライバシー
 
 - 送信データは最小限。APIキーは端末に保存（送信しない）
@@ -228,3 +236,4 @@ pnpm dev
 ---
 
 開発の詳細・最新の変更は GitHub リポジトリを参照。
+```

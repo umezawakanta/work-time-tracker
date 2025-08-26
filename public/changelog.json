@@ -1,0 +1,8 @@
+{
+    "entries": [
+        {
+            "version": "0.0.1",
+            "notes": "初期リリース。\n\n- ホーム画面下部に「バージョン情報」と直近の更新履歴を表示\n- 全更新履歴ページ `/changelog` を追加\n- ビルド時に public/version.json と public/changelog.json を自動生成\n- モバイル最適化（優先）: ヒーローCTAを小画面で縦積み、下部セーフエリア余白を追加"
+        }
+    ]
+}
