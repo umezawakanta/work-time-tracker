@@ -58,6 +58,10 @@ const createEntityId = (prefix: string = 'todo'): string => {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 };
 
+function authMiddleware(_req: AuthenticatedRequest, _res: VercelResponse, next: () => void) {
+  next();
+}
+
 const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<void> => {
   // Apply CORS headers
   await cors(req, res);

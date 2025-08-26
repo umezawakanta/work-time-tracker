@@ -99,7 +99,7 @@ const SettingsPage = lazy(() => import('@/pages/SettingsPage'));
 // 📚 Personal & Lifestyle
 const BookShelfPage = lazy(() => import('@/pages/BookShelfPage'));
 const AssetCalendarPage = lazy(() =>
-  import('./pages/AssetCalendarPage').then((module) => ({ default: module.AssetCalendarPage }))
+  import('@/pages/AssetCalendarPage').then((module) => ({ default: module.AssetCalendarPage }))
 );
 
 // 🛠️ Project Management
@@ -136,11 +136,11 @@ const BillingHistoryPage = lazy(() => import('@/pages/subscription/BillingHistor
 // const AIAssistantPage = lazy(() => import('./pages/AIAssistantPage'));
 
 // 💰 Finance & Reports
-const AssetLiabilityReportPage = lazy(() => import('./pages/AssetLiabilityReportPage'));
+const AssetLiabilityReportPage = lazy(() => import('@/pages/AssetLiabilityReportPage'));
 
 // 🏆 Development & Gamification
 const DevelopmentBadgeShowcasePage = lazy(() =>
-  import('./pages/DevelopmentBadgeShowcasePage').then((module) => ({
+  import('@/pages/DevelopmentBadgeShowcasePage').then((module) => ({
     default: module.DevelopmentBadgeShowcasePage,
   }))
 );
@@ -158,7 +158,7 @@ const CognitiveFinancePage = lazy(() => import('@/pages/CognitiveFinancePage'));
 const BetaUserRecruitmentPage = lazy(() => import('@/pages/BetaUserRecruitmentPage'));
 const UserTestingPage = lazy(() => import('@/pages/UserTestingPage'));
 const AccessibilityAuditPage = lazy(() =>
-  import('./pages/AccessibilityAuditPage').then((module) => ({
+  import('@/pages/AccessibilityAuditPage').then((module) => ({
     default: module.AccessibilityAuditPage,
   }))
 );
@@ -188,7 +188,7 @@ const AnalyticsDashboard = lazy(() => import('@/pages/AnalyticsDashboard'));
 const SNSSharePage = lazy(() => import('@/pages/SNSSharePage'));
 const KpiNamingRulesPage = lazy(() => import('@/pages/KpiNamingRules'));
 const AdvancedPerformanceMonitoringPage = lazy(
-  () => import('./pages/AdvancedPerformanceMonitoringPage')
+  () => import('@/pages/AdvancedPerformanceMonitoringPage')
 );
 const ProductionOptimizationPage = lazy(() => import('@/pages/ProductionOptimizationPage'));
 const MobileOptimizationPage = lazy(() => import('@/pages/MobileOptimizationPage'));
@@ -216,8 +216,8 @@ const DiaryPage = lazy(() => import('@/pages/DiaryPage'));
 
 // 📋 Project & Task Management
 // const WBSPage = lazy(() => import('./pages/WBSPage'));
-const ImprovementPlanDetail = lazy(() => import('./pages/ImprovementPlanDetail'));
-const ImprovementImplementation = lazy(() => import('./pages/ImprovementImplementation'));
+const ImprovementPlanDetail = lazy(() => import('@/pages/ImprovementPlanDetail'));
+const ImprovementImplementation = lazy(() => import('@/pages/ImprovementImplementation'));
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);

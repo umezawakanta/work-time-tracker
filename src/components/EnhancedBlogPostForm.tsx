@@ -316,7 +316,9 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
               <Input
                 id="category"
                 value={category}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCategory(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setCategory((e.target as any).value)
+                }
                 required
                 placeholder="Enter category"
               />

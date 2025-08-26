@@ -1,3 +1,11 @@
+import React from 'react';
+
+const StatsView: React.FC = () => {
+  return <div />;
+};
+
+export default StatsView;
+
 // StatsView.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
