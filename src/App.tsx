@@ -37,14 +37,14 @@ import { PomodoroProvider } from './context/PomodoroContext';
 import { InternationalizationProvider } from './hooks/useInternationalization';
 import { useAuth } from './hooks/useAuth';
 // Admin dashboard (lazy)
-const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
-const AIAssistantPage = lazy(() => import('./pages/AIAssistant'));
-const AssessmentsHub = lazy(() => import('./pages/AssessmentsHub'));
-const LearningHub = lazy(() => import('./pages/LearningHub'));
-const IQTest = lazy(() => import('./pages/IQTest'));
-const MBTITest = lazy(() => import('./pages/MBTITest'));
-const InvitePage = lazy(() => import('./pages/Invite'));
-const InviteThanks = lazy(() => import('./pages/InviteThanks'));
+const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
+const AIAssistantPage = lazy(() => import('@/pages/AIAssistant'));
+const AssessmentsHub = lazy(() => import('@/pages/AssessmentsHub'));
+const LearningHub = lazy(() => import('@/pages/LearningHub'));
+const IQTest = lazy(() => import('@/pages/IQTest'));
+const MBTITest = lazy(() => import('@/pages/MBTITest'));
+const InvitePage = lazy(() => import('@/pages/Invite'));
+const InviteThanks = lazy(() => import('@/pages/InviteThanks'));
 
 // Guarded route: requires admin
 const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -75,13 +75,13 @@ import { ADHDLifeManagementHub } from './components/cognitive/ADHDLifeManagement
 // import CognitiveIntegratedDashboard from './components/cognitive/CognitiveIntegratedDashboard';
 
 // 🚀 Time Tracking & Work Management - High Priority
-const RealtimeClockPage = lazy(() => import('./pages/RealtimeClockPage'));
-const NotFound = lazy(() => import('./pages/NotFound'));
-const DailyWorkVisualizationPage = lazy(() => import('./pages/DailyWorkVisualizationPage'));
-const MonthlyTimesheetPage = lazy(() => import('./pages/MonthlyTimesheetPage'));
-const WorkPatternSettingsPage = lazy(() => import('./pages/WorkPatternSettingsPage'));
-const NotificationSettingsPage = lazy(() => import('./pages/NotificationSettingsPage'));
-const ApprovalWorkflowPage = lazy(() => import('./pages/ApprovalWorkflowPage'));
+const RealtimeClockPage = lazy(() => import('@/pages/RealtimeClockPage'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
+const DailyWorkVisualizationPage = lazy(() => import('@/pages/DailyWorkVisualizationPage'));
+const MonthlyTimesheetPage = lazy(() => import('@/pages/MonthlyTimesheetPage'));
+const WorkPatternSettingsPage = lazy(() => import('@/pages/WorkPatternSettingsPage'));
+const NotificationSettingsPage = lazy(() => import('@/pages/NotificationSettingsPage'));
+const ApprovalWorkflowPage = lazy(() => import('@/pages/ApprovalWorkflowPage'));
 
 // 📊 Chart-heavy pages
 // const TimeTrackingPage = lazy(() => import('./pages/TimeTrackingPage'));
@@ -89,48 +89,48 @@ const ApprovalWorkflowPage = lazy(() => import('./pages/ApprovalWorkflowPage'));
 // const TodoAnalysisPage = lazy(() => import('./pages/TodoAnalysisPage'));
 
 // 📅 Calendar & Task Management
-const CalendarPage = lazy(() => import('./pages/CalendarPage'));
-const UnifiedTaskPage = lazy(() => import('./pages/UnifiedTaskPage'));
+const CalendarPage = lazy(() => import('@/pages/CalendarPage'));
+const UnifiedTaskPage = lazy(() => import('@/pages/UnifiedTaskPage'));
 
 // ⚙️ Settings
-const NotificationSettings = lazy(() => import('./components/settings/NotificationSettings'));
-const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const NotificationSettings = lazy(() => import('@/components/settings/NotificationSettings'));
+const SettingsPage = lazy(() => import('@/pages/SettingsPage'));
 
 // 📚 Personal & Lifestyle
-const BookShelfPage = lazy(() => import('./pages/BookShelfPage'));
+const BookShelfPage = lazy(() => import('@/pages/BookShelfPage'));
 const AssetCalendarPage = lazy(() =>
   import('./pages/AssetCalendarPage').then((module) => ({ default: module.AssetCalendarPage }))
 );
 
 // 🛠️ Project Management
-const WBSCreatorPage = lazy(() => import('./pages/WBSCreatorPage'));
+const WBSCreatorPage = lazy(() => import('@/pages/WBSCreatorPage'));
 
 // 🏠 Home & Core Pages
-const HomePage = lazy(() => import('./pages/Home'));
-const WorkTimeEntry = lazy(() => import('./pages/WorkTimeEntry'));
-const WorkTimeEntryForm = lazy(() => import('./components/forms/WorkTimeEntryForm'));
-const WorkTimeReports = lazy(() => import('./pages/WorkTimeReports'));
+const HomePage = lazy(() => import('@/pages/Home'));
+const WorkTimeEntry = lazy(() => import('@/pages/WorkTimeEntry'));
+const WorkTimeEntryForm = lazy(() => import('@/components/forms/WorkTimeEntryForm'));
+const WorkTimeReports = lazy(() => import('@/pages/WorkTimeReports'));
 // const UserProfile = lazy(() => import('./pages/UserProfile'));
 
 // 🔐 Authentication Pages
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
-const FirebaseLogin = lazy(() => import('./pages/FirebaseLogin'));
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
-const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Login = lazy(() => import('@/pages/Login'));
+const Register = lazy(() => import('@/pages/Register'));
+const FirebaseLogin = lazy(() => import('@/pages/FirebaseLogin'));
+const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
 
 // 🗳️ Election & Political
-const ElectionCandidatesPage = lazy(() => import('./pages/ElectionCandidatesPage'));
-const CandidateRegistrationPage = lazy(() => import('./pages/CandidateRegistrationPage'));
-const DistrictPage = lazy(() => import('./pages/DistrictPage'));
-const TwitterPage = lazy(() => import('./pages/TwitterPage'));
-const PoliticalTrends = lazy(() => import('./pages/PoliticalTrends'));
+const ElectionCandidatesPage = lazy(() => import('@/pages/ElectionCandidatesPage'));
+const CandidateRegistrationPage = lazy(() => import('@/pages/CandidateRegistrationPage'));
+const DistrictPage = lazy(() => import('@/pages/DistrictPage'));
+const TwitterPage = lazy(() => import('@/pages/TwitterPage'));
+const PoliticalTrends = lazy(() => import('@/pages/PoliticalTrends'));
 
 // 💳 Subscription & Billing
-const SubscriptionPage = lazy(() => import('./pages/SubscriptionPage'));
-const SubscriptionManagementPage = lazy(() => import('./pages/SubscriptionManagementPage'));
-const SubscriptionUpgradePage = lazy(() => import('./pages/subscription/SubscriptionUpgradePage'));
-const BillingHistoryPage = lazy(() => import('./pages/subscription/BillingHistoryPage'));
+const SubscriptionPage = lazy(() => import('@/pages/SubscriptionPage'));
+const SubscriptionManagementPage = lazy(() => import('@/pages/SubscriptionManagementPage'));
+const SubscriptionUpgradePage = lazy(() => import('@/pages/subscription/SubscriptionUpgradePage'));
+const BillingHistoryPage = lazy(() => import('@/pages/subscription/BillingHistoryPage'));
 
 // 🤖 AI & Assistant (dedupe)
 // const AIAssistantPage = lazy(() => import('./pages/AIAssistantPage'));
@@ -144,19 +144,19 @@ const DevelopmentBadgeShowcasePage = lazy(() =>
     default: module.DevelopmentBadgeShowcasePage,
   }))
 );
-const AIGamificationPage = lazy(() => import('./pages/AIGamificationPage'));
-const PricingPage = lazy(() => import('./pages/Pricing'));
-const OnboardingPage = lazy(() => import('./pages/Onboarding'));
-const PrivacyPage = lazy(() => import('./pages/Privacy'));
-const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage'));
+const AIGamificationPage = lazy(() => import('@/pages/AIGamificationPage'));
+const PricingPage = lazy(() => import('@/pages/Pricing'));
+const OnboardingPage = lazy(() => import('@/pages/Onboarding'));
+const PrivacyPage = lazy(() => import('@/pages/Privacy'));
+const HowItWorksPage = lazy(() => import('@/pages/HowItWorksPage'));
 
 // 🧠 ADHD/ASD specialized pages
 // const PomodoroPage = lazy(() => import('./pages/PomodoroPage'));
-const ADHDCognitiveAssessmentPage = lazy(() => import('./pages/ADHDCognitiveAssessmentPage'));
-const ADHDIntegratedLifePage = lazy(() => import('./pages/ADHDIntegratedLifePage'));
-const CognitiveFinancePage = lazy(() => import('./pages/CognitiveFinancePage'));
-const BetaUserRecruitmentPage = lazy(() => import('./pages/BetaUserRecruitmentPage'));
-const UserTestingPage = lazy(() => import('./pages/UserTestingPage'));
+const ADHDCognitiveAssessmentPage = lazy(() => import('@/pages/ADHDCognitiveAssessmentPage'));
+const ADHDIntegratedLifePage = lazy(() => import('@/pages/ADHDIntegratedLifePage'));
+const CognitiveFinancePage = lazy(() => import('@/pages/CognitiveFinancePage'));
+const BetaUserRecruitmentPage = lazy(() => import('@/pages/BetaUserRecruitmentPage'));
+const UserTestingPage = lazy(() => import('@/pages/UserTestingPage'));
 const AccessibilityAuditPage = lazy(() =>
   import('./pages/AccessibilityAuditPage').then((module) => ({
     default: module.AccessibilityAuditPage,
@@ -169,41 +169,41 @@ const AccessibilityAuditPage = lazy(() =>
 // const GoalManagementPage = lazy(() => import('./pages/GoalManagementPage'));
 
 // 📝 Content & Communication
-const BlogPage = lazy(() => import('./pages/BlogPage'));
-const NewBlogPost = lazy(() => import('./pages/NewBlogPost'));
-const EditBlogPost = lazy(() => import('./pages/EditBlogPost'));
-const BlogPostDetail = lazy(() => import('./pages/BlogPostDetail'));
+const BlogPage = lazy(() => import('@/pages/BlogPage'));
+const NewBlogPost = lazy(() => import('@/pages/NewBlogPost'));
+const EditBlogPost = lazy(() => import('@/pages/EditBlogPost'));
+const BlogPostDetail = lazy(() => import('@/pages/BlogPostDetail'));
 // const EnhancedNewsPage = lazy(() => import('./pages/EnhancedNewsPage'));
 
 // 🔧 System & Analysis
-const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
-const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
+const AnalyticsPage = lazy(() => import('@/pages/AnalyticsPage'));
+const QualityDashboardPage = lazy(() => import('@/pages/QualityDashboardPage'));
 // QuadrantDashboard は統合タスクページに統合済み
-const SitemapPage = lazy(() => import('./pages/SitemapPage'));
-const SiteImprovementPlan = lazy(() => import('./pages/SiteImprovementPlan'));
-const CoverageReportPage = lazy(() => import('./pages/CoverageReportPage'));
-const ErrorDashboardPage = lazy(() => import('./pages/ErrorDashboardPage'));
-const TestingDashboard = lazy(() => import('./pages/TestingDashboard'));
-const AnalyticsDashboard = lazy(() => import('./pages/AnalyticsDashboard'));
-const SNSSharePage = lazy(() => import('./pages/SNSSharePage'));
-const KpiNamingRulesPage = lazy(() => import('./pages/KpiNamingRules'));
+const SitemapPage = lazy(() => import('@/pages/SitemapPage'));
+const SiteImprovementPlan = lazy(() => import('@/pages/SiteImprovementPlan'));
+const CoverageReportPage = lazy(() => import('@/pages/CoverageReportPage'));
+const ErrorDashboardPage = lazy(() => import('@/pages/ErrorDashboardPage'));
+const TestingDashboard = lazy(() => import('@/pages/TestingDashboard'));
+const AnalyticsDashboard = lazy(() => import('@/pages/AnalyticsDashboard'));
+const SNSSharePage = lazy(() => import('@/pages/SNSSharePage'));
+const KpiNamingRulesPage = lazy(() => import('@/pages/KpiNamingRules'));
 const AdvancedPerformanceMonitoringPage = lazy(
   () => import('./pages/AdvancedPerformanceMonitoringPage')
 );
-const ProductionOptimizationPage = lazy(() => import('./pages/ProductionOptimizationPage'));
-const MobileOptimizationPage = lazy(() => import('./pages/MobileOptimizationPage'));
+const ProductionOptimizationPage = lazy(() => import('@/pages/ProductionOptimizationPage'));
+const MobileOptimizationPage = lazy(() => import('@/pages/MobileOptimizationPage'));
 
 // 🎯 Personal Development & Life Management
-const AbstinenceManager = lazy(() => import('./pages/AbstinenceManager'));
-const SleepTrackerPage = lazy(() => import('./pages/SleepTrackerPage'));
-const ImpulseTrackerPage = lazy(() => import('./pages/ImpulseTrackerPage'));
-const QuitSmokingCoachPage = lazy(() => import('./pages/QuitSmokingCoachPage'));
+const AbstinenceManager = lazy(() => import('@/pages/AbstinenceManager'));
+const SleepTrackerPage = lazy(() => import('@/pages/SleepTrackerPage'));
+const ImpulseTrackerPage = lazy(() => import('@/pages/ImpulseTrackerPage'));
+const QuitSmokingCoachPage = lazy(() => import('@/pages/QuitSmokingCoachPage'));
 // const LifeEventTimelinePage = lazy(() => import('./pages/LifeEventTimelinePage'));
 // const PersonalAnalyticsPage = lazy(() => import('./pages/PersonalAnalyticsPage'));
 
 // 🎸 Hobbies & Learning
-const GuitarPracticePage = lazy(() => import('./pages/GuitarPracticePage'));
-const DiaryPage = lazy(() => import('./pages/DiaryPage'));
+const GuitarPracticePage = lazy(() => import('@/pages/GuitarPracticePage'));
+const DiaryPage = lazy(() => import('@/pages/DiaryPage'));
 
 // ⚙️ System Management
 // const AdminPage = lazy(() => import('./pages/AdminPage'));
@@ -1294,7 +1294,6 @@ const RouteChangeTracker: React.FC<{ path: string; onTrack: (path: string) => vo
 }) => {
   useEffect(() => {
     onTrack(path);
-     
   }, [path]);
   return null;
 };
