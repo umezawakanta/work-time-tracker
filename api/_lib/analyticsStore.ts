@@ -62,3 +62,32 @@ export async function saveAnalyticsEvent(doc: AnalyticsEventDoc): Promise<void> 
 export function getMemorySample(limit = 50): AnalyticsEventDoc[] {
   return memoryStore.slice(-limit);
 }
+
+export async function countActiveUsersSince(sinceIso: string): Promise<number> {
+  const since = new Date(sinceIso);
+  if (Number.isNaN(since.getTime())) return 0;
+  const m = await getMongo();
+  if (m) {
+    try {
+      const values = await m.col.distinct('sessionId', {
+        timestamp: { $gte: sinceIso },
+        sessionId: { $exists: true, $ne: null },
+      } as any);
+      return Array.isArray(values) ? values.length : 0;
+    } catch {
+      // fall through to memory
+    }
+  }
+  const uniq = new Set<string>();
+  for (const e of memoryStore) {
+    try {
+      if (!e || !e.timestamp) continue;
+      const t = new Date(e.timestamp);
+      if (t >= since) {
+        const key = (e.sessionId || e.clientId || String(e.ip || '')).toString();
+        if (key) uniq.add(key);
+      }
+    } catch {}
+  }
+  return uniq.size;
+}
