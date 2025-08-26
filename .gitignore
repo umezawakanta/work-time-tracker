@@ -39,3 +39,44 @@ dist-ssr
 .tmp.driveupload/
 ~$*
 .~*
+
+# Build outputs and caches
+.vite/
+.cache/
+.turbo/
+coverage/
+.nyc_output/
+*.tsbuildinfo
+.eslintcache
+
+# Cypress artifacts
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+# Test reports and temp files
+junit.xml
+test-results.xml
+jest-report.*
+reports/
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Editor histories
+.history/
+*.code-workspace
+
+# Firebase emulator
+.firebase/
+firebase-debug.log
+firestore-debug.log
+emulatorui-debug.log
+
+# Misc
+.node_repl_history
+*.tgz
+.npmrc
+.direnv/
+.envrc
