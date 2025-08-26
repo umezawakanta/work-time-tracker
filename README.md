@@ -191,6 +191,26 @@ pnpm dev
 注意:
 - X API の投稿（write）権限はプラン/審査状況に依存します。利用可否は Developer Portal の App 権限状態を確認してください。
 
+### コミット規約（Conventional Commits）
+
+自動バージョニングとCHANGELOG生成のため、以下のフォーマットでコミットしてください。
+
+```
+
+type(scope?): subject
+
+body (optional)
+
+BREAKING CHANGE: 説明 (optional)
+
+```
+
+- 主な type: `feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `chore`
+- 例:
+  - `feat: モバイル下部タブバーを追加`
+  - `fix(calendar): 月次集計の範囲を今月に限定`
+  - `perf(analytics): 送信をrequestIdleCallbackに変更`
+
 ## セキュリティ/プライバシー
 
 - 送信データは最小限。APIキーは端末に保存（送信しない）
