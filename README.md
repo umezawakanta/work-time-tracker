@@ -172,6 +172,25 @@ pnpm dev
 - GitHub Release 公開時に `post-to-x-on-release` が起動し、最新の更新履歴を日本語で X にポストします（`.github/workflows/post-to-x.yml`）。
 - 必要な Secrets: `X_APP_KEY`, `X_APP_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET`。
 
+#### X API シークレット取得手順（X_APP_KEY / X_APP_SECRET / X_ACCESS_TOKEN / X_ACCESS_SECRET）
+
+1. X Developer Portal にログインする（[developer portal](https://developer.twitter.com)）。
+2. Project と App を作成する（既存があればそれを使用）。
+3. App Settings を開く。
+   - Permissions を「Read and Write」に設定（ツイート投稿に必要）。
+   - 必要に応じて User authentication を有効化（OAuth 1.0a）。
+4. Keys and tokens（または API keys）を開き、以下を取得/生成する。
+   - API Key（= `X_APP_KEY`）
+   - API Key Secret（= `X_APP_SECRET`）
+   - Access Token（= `X_ACCESS_TOKEN`）
+   - Access Token Secret（= `X_ACCESS_SECRET`）
+   - 生成時に権限が「Read and Write」になっていることを確認。
+5. GitHub リポジトリの Settings → Secrets and variables → Actions に上記値を追加する。
+6. 動作確認：GitHub Release を公開すると自動でポスト。手動ポストはサイト下部の「Xでシェア」から可能。
+
+注意:
+- X API の投稿（write）権限はプラン/審査状況に依存します。利用可否は Developer Portal の App 権限状態を確認してください。
+
 ## セキュリティ/プライバシー
 
 - 送信データは最小限。APIキーは端末に保存（送信しない）
