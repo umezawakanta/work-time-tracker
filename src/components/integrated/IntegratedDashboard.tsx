@@ -40,6 +40,10 @@ import {
 import { EXPANDED_BADGES_DATABASE } from '@/services/development/ExpandedBadgesDatabase';
 import { BadgeCategory } from '@/types/development-badges';
 import comprehensiveBadgeService from '@/services/development/ComprehensiveBadgeService';
+import { buildOwnInviteUrl } from '@/services/share/referral';
+import { toast } from 'react-hot-toast';
+import { trackCtaClick } from '@/lib/track';
+import { trackEvent } from '@/lib/analytics';
 
 interface DashboardWidget {
   id: string;
@@ -1011,6 +1015,30 @@ export const IntegratedDashboard: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            onClick={async () => {
+              try {
+                trackCtaClick({
+                  id: 'invite_nav_click',
+                  label: 'Invite friends',
+                  location: 'integrated_header',
+                  page: 'integrated-dashboard',
+                });
+                trackEvent('invite_click', { location: 'integrated_header' });
+                const url = buildOwnInviteUrl();
+                if ((navigator as any).share) {
+                  await (navigator as any).share({ title: 'Work Time Tracker', url });
+                } else {
+                  await navigator.clipboard.writeText(url);
+                  toast.success('招待リンクをコピーしました');
+                }
+              } catch {}
+            }}
+            aria-label="友達を招待"
+          >
+            友達を招待
+          </Button>
           <div className="flex items-center gap-1">
             <div
               className={`w-2 h-2 rounded-full ${
