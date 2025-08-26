@@ -80,3 +80,40 @@ emulatorui-debug.log
 .npmrc
 .direnv/
 .envrc
+
+# Additional tool-specific caches
+.pnp.*
+.pnpm-store/
+.parcel-cache/
+.stylelintcache
+.sass-cache/
+
+# Storybook
+storybook-static/
+.storybook-out/
+
+# Next.js / Nuxt (in case used in subpackages)
+.next/
+.nuxt/
+.docusaurus/
+
+# Playwright / E2E
+.playwright/
+playwright-report/
+blob-report/
+test-results/
+.ms-playwright/
+allure-results/
+allure-report/
+
+# Yarn Berry (if ever used)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Temporary dirs
+tmp/
+temp/
