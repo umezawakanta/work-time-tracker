@@ -34,9 +34,12 @@ export function trackCtaClick(payload: CtaClickPayload): void {
     }
   } catch (e) {
     // Do not break UX on tracking failure
-    if (import.meta?.env?.DEV) {
-      console.debug('trackCtaClick failed:', (e as Error).message);
-    }
+    try {
+      const isDev = typeof process !== 'undefined' ? process.env.NODE_ENV !== 'production' : false;
+      if (isDev) {
+        console.debug('trackCtaClick failed:', (e as Error).message);
+      }
+    } catch {}
   }
 }
 
