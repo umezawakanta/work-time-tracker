@@ -277,11 +277,12 @@ const AdminDashboard: React.FC = () => {
   const fetchPageviewsTrend = async (windowArg: '7d' | '30d' | '90d' = '7d') => {
     try {
       setIsPageviewsLoading(true);
-      const { data } = await api.get('admin/metrics/pageviews/trend', {
-        params: { window: windowArg },
-      });
+      // Prefer simpler analytics daily endpoint; map to UI shape
+      const days = windowArg === '90d' ? 90 : windowArg === '30d' ? 30 : 7;
+      const { data } = await api.get('analytics/pageviews/daily', { params: { days } });
       const payload = (data && (data.data || data)) as any;
-      const series = Array.isArray(payload.series) ? payload.series : payload.series?.series || [];
+      const list = Array.isArray(payload?.series) ? payload.series : [];
+      const series = list.map((p: any) => ({ day: p.date || p.day, views: Number(p.count ?? p.views ?? 0) }));
       setPageviewSeries(series);
     } catch (e) {
       console.error('Failed to fetch pageviews trend:', e);
@@ -311,8 +312,14 @@ const AdminDashboard: React.FC = () => {
       setIsTopPagesLoading(true);
       const { data } = await api.get('admin/metrics/top-pages', { params: { window: windowArg } });
       const payload = (data && (data.data || data)) as any;
-      const rows = Array.isArray(payload) ? payload : payload?.rows || payload;
-      setTopPages(Array.isArray(rows) ? rows : []);
+      const rows = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.rows)
+          ? payload.rows
+          : Array.isArray(payload?.data)
+            ? payload.data
+            : [];
+      setTopPages(rows);
     } catch (e) {
       console.error('Failed to fetch top pages:', e);
       setTopPages([]);
