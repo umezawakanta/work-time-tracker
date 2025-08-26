@@ -31,5 +31,11 @@
       "source": "/((?!api).*)",
       "destination": "/index.html"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/analytics/aggregate-daily",
+      "schedule": "0 3 * * *"
+    }
   ]
 }
