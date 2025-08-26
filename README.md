@@ -51,6 +51,7 @@ VITE_OPENAI_API_KEY=your-openai-key-optional
 VITE_ANTHROPIC_API_KEY=your-anthropic-key
 VITE_ENABLE_ANALYTICS=false
 VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX # 任意（本番のみ推奨）
+VITE_SUPPORT_EMAIL=you@example.com # エラー報告の宛先
 ```
 
 - Vercel では Project Settings → Environment Variables に `VITE_*` を追加してください。

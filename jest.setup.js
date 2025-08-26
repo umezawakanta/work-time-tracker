@@ -76,6 +76,7 @@ Object.assign(process.env, {
   VITE_API_BASE_URL: 'http://localhost:3001/api',
   VITE_ENABLE_ANALYTICS: 'false',
   VITE_DEBUG: 'false',
+  VITE_SUPPORT_EMAIL: 'support@example.com',
   // Firebase environment variables for tests
   VITE_FIREBASE_API_KEY: 'test-api-key',
   VITE_FIREBASE_AUTH_DOMAIN: 'test.firebaseapp.com',

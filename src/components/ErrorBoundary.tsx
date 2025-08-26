@@ -1,6 +1,7 @@
 import React, { ErrorInfo, ReactNode, Component } from 'react';
 import { Button } from '@/components/ui/button';
 import { trackEvent } from '@/lib/analytics';
+import { getEnv } from '@/utils/env';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -172,11 +173,12 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
               variant="ghost"
               onClick={() => {
                 try {
+                  const supportEmail = getEnv('VITE_SUPPORT_EMAIL') || 'support@example.com';
                   const body = encodeURIComponent(
                     `問題の内容:\n\n再現手順:\n\n期待する動作:\n\n----\n` +
                       `エラー詳細:\n${this.state.error?.message}\n\n${this.state.error?.stack}`
                   );
-                  window.location.href = `mailto:dev@yourdomain.example?subject=${encodeURIComponent(
+                  window.location.href = `mailto:${supportEmail}?subject=${encodeURIComponent(
                     'Work Time Tracker エラー報告'
                   )}&body=${body}`;
                 } catch {}
