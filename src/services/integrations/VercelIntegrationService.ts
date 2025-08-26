@@ -400,7 +400,7 @@ class VercelIntegrationService {
     };
 
     if (this.config.teamId) {
-      // @ts-expect-error - Dynamic header assignment
+      // Dynamic header assignment
       headers['X-Vercel-Team-Id'] = this.config.teamId;
     }
 

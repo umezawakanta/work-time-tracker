@@ -34,7 +34,7 @@ import '@/styles/calendar.css';
 // 日本語設定
 moment.locale('ja');
 const localizer = momentLocalizer(moment);
-const DnDCalendar = withDragAndDrop(Calendar);
+const DnDCalendar = withDragAndDrop(Calendar as any) as unknown as React.ComponentType<any>;
 
 // カスタムイベント型
 interface CalendarEvent extends BigCalendarEvent {

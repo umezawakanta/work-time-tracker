@@ -5,11 +5,10 @@ import { Separator } from '@/components/ui/separator';
 import { Loader2 } from 'lucide-react';
 
 // ⚡ Dynamic Import for SyntaxHighlighter (Heavy component)
-const SyntaxHighlighter = lazy(() =>
-  import('react-syntax-highlighter').then((module) => ({
-    default: module.Light as React.ComponentType<any>,
-  }))
-);
+const SyntaxHighlighter = lazy(async () => {
+  const module = await import('react-syntax-highlighter');
+  return { default: (module as any).Light as React.ComponentType<any> };
+});
 
 interface MarkdownRendererProps {
   content: string;

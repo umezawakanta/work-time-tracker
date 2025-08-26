@@ -299,7 +299,7 @@ export class ProgressDatabaseService {
   async updateTask(taskId: string, updates: Partial<TaskProgress>): Promise<TaskProgress | null> {
     await this.ensureConnection();
 
-    const updatedTask = await TaskProgressModel.findOneAndUpdate(
+    const updatedTask = await (TaskProgressModel as any).findOneAndUpdate(
       { id: taskId },
       {
         ...updates,
@@ -320,7 +320,7 @@ export class ProgressDatabaseService {
   async getTask(taskId: string): Promise<TaskProgress | null> {
     await this.ensureConnection();
 
-    const task = await TaskProgressModel.findOne({ id: taskId });
+    const task = await (TaskProgressModel as any).findOne({ id: taskId });
     return task ? this.formatTask(task) : null;
   }
 
@@ -341,7 +341,7 @@ export class ProgressDatabaseService {
     if (filters?.category) query.category = filters.category;
     if (filters?.tags?.length) query.tags = { $in: filters.tags };
 
-    const tasks = await TaskProgressModel.find(query).sort({ lastUpdated: -1 }).lean();
+    const tasks = await (TaskProgressModel as any).find(query).sort({ lastUpdated: -1 }).lean();
 
     return tasks.map((task) => this.formatTask(task));
   }
@@ -383,7 +383,7 @@ export class ProgressDatabaseService {
   ): Promise<ProjectProgress | null> {
     await this.ensureConnection();
 
-    const updatedProject = await ProjectProgressModel.findOneAndUpdate(
+    const updatedProject = await (ProjectProgressModel as any).findOneAndUpdate(
       { id: projectId },
       {
         ...updates,
@@ -398,14 +398,14 @@ export class ProgressDatabaseService {
   async getProject(projectId: string): Promise<ProjectProgress | null> {
     await this.ensureConnection();
 
-    const project = await ProjectProgressModel.findOne({ id: projectId });
+    const project = await (ProjectProgressModel as any).findOne({ id: projectId });
     return project ? this.formatProject(project) : null;
   }
 
   async getProjects(): Promise<ProjectProgress[]> {
     await this.ensureConnection();
 
-    const projects = await ProjectProgressModel.find({}).sort({ lastUpdated: -1 }).lean();
+    const projects = await (ProjectProgressModel as any).find({}).sort({ lastUpdated: -1 }).lean();
 
     return projects.map((project) => this.formatProject(project));
   }
@@ -442,8 +442,8 @@ export class ProgressDatabaseService {
   }> {
     await this.ensureConnection();
 
-    const tasks = await TaskProgressModel.find({}).lean();
-    const projects = await ProjectProgressModel.find({}).lean();
+    const tasks = await (TaskProgressModel as any).find({}).lean();
+    const projects = await (ProjectProgressModel as any).find({}).lean();
 
     const totalTasks = tasks.length;
     const completedTasks = tasks.filter((t) => t.status === 'completed').length;
@@ -487,12 +487,12 @@ export class ProgressDatabaseService {
   private async updateProjectProgress(phaseId?: string): Promise<void> {
     if (!phaseId) return;
 
-    const projects = await ProjectProgressModel.find({
+    const projects = await (ProjectProgressModel as any).find({
       'phases.id': phaseId,
     });
 
     for (const project of projects) {
-      const projectTasks = await TaskProgressModel.find({
+      const projectTasks = await (TaskProgressModel as any).find({
         phase: phaseId,
       });
 
@@ -561,7 +561,7 @@ export class ProgressDatabaseService {
   async addCommitToTask(taskId: string, commit: TaskProgress['commits'][0]): Promise<void> {
     await this.ensureConnection();
 
-    await TaskProgressModel.updateOne(
+    await (TaskProgressModel as any).updateOne(
       { id: taskId },
       {
         $push: { commits: commit },
@@ -576,7 +576,7 @@ export class ProgressDatabaseService {
   ): Promise<void> {
     await this.ensureConnection();
 
-    await TaskProgressModel.updateOne(
+    await (TaskProgressModel as any).updateOne(
       { id: taskId },
       {
         $push: { pullRequests: pullRequest },
@@ -591,7 +591,7 @@ export class ProgressDatabaseService {
   ): Promise<void> {
     await this.ensureConnection();
 
-    await TaskProgressModel.updateOne(
+    await (TaskProgressModel as any).updateOne(
       { id: taskId },
       {
         $set: {

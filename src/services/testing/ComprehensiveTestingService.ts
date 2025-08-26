@@ -468,10 +468,10 @@ export class ComprehensiveTestingService {
       });
 
       const coverage = jestResult.coverageMap
-        ? Object.values(jestResult.coverageMap).reduce(
-            (avg: number, file: any) => avg + (file.statements?.pct || 0),
+        ? (Object.values(jestResult.coverageMap || {}) as any[]).reduce(
+            (avg: number, file: any) => avg + (file?.statements?.pct || 0),
             0
-          ) / Object.keys(jestResult.coverageMap).length
+          ) / Math.max(Object.keys(jestResult.coverageMap || {}).length, 1)
         : 85;
 
       return {

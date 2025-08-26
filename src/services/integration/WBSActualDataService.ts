@@ -260,7 +260,7 @@ class WBSActualDataService {
 
   private async getTodoData(userId: string): Promise<TodoItem[]> {
     try {
-      return await TodoService.getTodos(userId);
+      return (await TodoService.getTodos(userId)) as unknown as TodoItem[];
     } catch (error) {
       console.error('Failed to fetch todos:', error);
       return [];

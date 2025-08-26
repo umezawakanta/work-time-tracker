@@ -57,6 +57,7 @@ export class TodoService {
     const docRef = await addDoc(todoCollection, newTodo);
 
     const createdTodo: Todo = {
+      id: docRef.id,
       _id: docRef.id,
       task: todoData.task,
       type: todoData.type,
@@ -269,6 +270,7 @@ export class TodoService {
   private mapDocumentToTodo(doc: QueryDocumentSnapshot<DocumentData>): Todo {
     const data = doc.data();
     return {
+      id: doc.id,
       _id: doc.id,
       task: data.task,
       type: data.type as TaskType,

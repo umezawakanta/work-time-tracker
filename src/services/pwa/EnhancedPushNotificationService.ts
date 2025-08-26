@@ -462,7 +462,9 @@ class EnhancedPushNotificationService {
 
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.vapidKeys!.publicKey),
+        applicationServerKey: this.urlBase64ToUint8Array(
+          this.vapidKeys!.publicKey
+        ) as unknown as BufferSource,
       });
 
       this.pushSubscription = subscription;

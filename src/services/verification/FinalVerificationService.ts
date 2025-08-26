@@ -509,7 +509,9 @@ class FinalVerificationService {
   private async verifyLoginFunctionality(item: VerificationItem): Promise<VerificationItem> {
     try {
       // UnifiedAuthManagerの存在確認
-      const { UnifiedAuthManager } = await import('@/services/auth/UnifiedAuthManager');
+      const mod = await import('@/services/auth/UnifiedAuthManager');
+      const UnifiedAuthManager =
+        (mod as any).default || (mod as any).unifiedAuthManager || (mod as any).UnifiedAuthManager;
       const authManager = UnifiedAuthManager.getInstance();
 
       // 基本的な機能確認

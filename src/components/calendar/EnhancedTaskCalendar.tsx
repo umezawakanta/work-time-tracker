@@ -32,7 +32,8 @@ import {
 import { RootState, AppDispatch } from '@/store';
 import { fetchTodoItems, updateTodoItem, deleteTodoItem, addTodoItem } from '@/store/todoSlice';
 import { toast } from 'react-hot-toast';
-import { Calendar, momentLocalizer, View } from 'react-big-calendar';
+import { Calendar as RBCalendar, momentLocalizer, View } from 'react-big-calendar';
+const CalendarAny = RBCalendar as unknown as React.ComponentType<any>;
 import moment from 'moment';
 import 'moment/locale/ja';
 import TaskForm from '../tasks/TaskForm';
@@ -716,7 +717,7 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
       {/* Calendar Grid */}
       <Card>
         <CardContent className="p-6">
-          <Calendar
+          <CalendarAny
             localizer={localizer}
             events={events}
             startAccessor="start"
@@ -724,7 +725,7 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
             titleAccessor="title"
             view={view}
             date={currentDate}
-            onView={setView}
+            onView={(v) => setView(v as View)}
             onNavigate={setCurrentDate}
             onSelectSlot={handleSelectSlot}
             onSelectEvent={handleSelectEvent}

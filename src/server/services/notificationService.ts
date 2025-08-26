@@ -5,7 +5,7 @@ import {
   NotificationType,
 } from '../../types/notification';
 import emailService from './emailService';
-import cron from 'node-cron';
+import cron, { ScheduledTask } from 'node-cron';
 
 /**
  * 通知管理サービス
@@ -13,7 +13,7 @@ import cron from 'node-cron';
  */
 class NotificationService {
   private userSettings: Map<string, NotificationSettings> = new Map();
-  private scheduledJobs: Map<string, cron.ScheduledTask> = new Map();
+  private scheduledJobs: Map<string, ScheduledTask> = new Map();
 
   constructor() {
     this.initialize();
@@ -171,9 +171,12 @@ class NotificationService {
       today.setHours(0, 0, 0, 0);
 
       // 本日完了したタスクをカウント
-      const completedToday = tasks.filter((task) => {
-        if (!task.completed || !task.updatedAt) return false;
-        const updatedDate = new Date(task.updatedAt);
+      const completedToday = tasks.filter((task: any) => {
+        if (!task.completed) return false;
+        const updatedAt: string | undefined =
+          task.updatedAt || task.completedDate || task.createdAt;
+        if (!updatedAt) return false;
+        const updatedDate = new Date(updatedAt);
         updatedDate.setHours(0, 0, 0, 0);
         return updatedDate.getTime() === today.getTime();
       }).length;

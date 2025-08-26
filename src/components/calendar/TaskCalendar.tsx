@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Calendar, momentLocalizer, Event, View } from 'react-big-calendar';
+import { Calendar as RBCalendar, momentLocalizer, Event, View } from 'react-big-calendar';
+const CalendarAny = RBCalendar as unknown as React.ComponentType<any>;
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useSelector, useDispatch } from 'react-redux';
@@ -263,7 +264,7 @@ export const TaskCalendar: React.FC<TaskCalendarProps> = ({ onTaskSelect, onDate
       <Card>
         <CardContent className="p-0">
           <div style={{ height: '600px' }}>
-            <Calendar
+            <CalendarAny
               localizer={localizer}
               events={events}
               startAccessor="start"
@@ -276,7 +277,7 @@ export const TaskCalendar: React.FC<TaskCalendarProps> = ({ onTaskSelect, onDate
               popup
               views={['month', 'week', 'day']}
               view={currentView}
-              onView={setCurrentView}
+              onView={(v) => setCurrentView(v as View)}
               date={currentDate}
               onNavigate={setCurrentDate}
               components={{

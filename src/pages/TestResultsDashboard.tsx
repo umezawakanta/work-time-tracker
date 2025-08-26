@@ -195,7 +195,7 @@ const TestResultsDashboard: React.FC = () => {
           { id: 'test-execution' }
         );
       } else {
-        toast.error(`テスト実行失敗: ${execution.summary.errors}件エラー`, {
+        toast.error(`テスト実行失敗: ${execution.summary.failed}件エラー`, {
           id: 'test-execution',
         });
       }

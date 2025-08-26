@@ -325,7 +325,7 @@ class PWAEnhancementService extends EventEmitter {
         userVisibleOnly: true,
         applicationServerKey: this.urlBase64ToUint8Array(
           process.env.REACT_APP_VAPID_PUBLIC_KEY || ''
-        ),
+        ) as unknown as BufferSource,
       });
 
       // サーバーに購読情報送信

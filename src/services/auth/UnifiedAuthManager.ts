@@ -816,9 +816,9 @@ class UnifiedAuthManager extends EventEmitter {
       name: `Demo User (${provider})`,
       displayName: `Demo User (${provider})`,
       avatar: undefined,
-      role: provider === 'anonymous' ? 'guest' : 'user',
+      role: 'user',
       provider,
-      isVerified: provider !== 'anonymous',
+      isVerified: true,
       lastLoginAt: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       preferences: {

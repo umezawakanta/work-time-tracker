@@ -91,7 +91,7 @@ class EmailService {
         });
       } else {
         // プリセットサービス（Gmail, Outlook等）
-        return nodemailer.createTransporter({
+        return nodemailer.createTransport({
           service: settings.emailService || 'gmail',
           auth: {
             user: settings.emailUser,
@@ -294,7 +294,7 @@ class EmailService {
                   <span style="margin-left: 10px;">${typeLabel}</span>
                 </p>
                 <p style="color: #6b7280;">${deadlineText}</p>
-                ${task.description ? `<p style="color: #4b5563;">${task.description}</p>` : ''}
+                ${task.note ? `<p style="color: #4b5563;">${task.note}</p>` : ''}
               </div>
               
               <div class="stats">
@@ -327,7 +327,7 @@ class EmailService {
 優先度: ${priorityLabel}
 種類: ${typeLabel}
 ${deadlineText}
-${task.description ? `説明: ${task.description}` : ''}
+${task.note ? `説明: ${task.note}` : ''}
 
 現在の総タスク数: ${totalTasks}
 

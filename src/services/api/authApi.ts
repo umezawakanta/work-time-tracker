@@ -294,9 +294,10 @@ export const fetchUserData = async (): Promise<User> => {
     // whoami → User への正規化
     const userData: User = {
       id: String(who.userId || who.id || ''),
+      _id: String(who._id || who.userId || who.id || ''),
+      username: String(who.username || who.name || who.displayName || ''),
       email: String(who.email || ''),
       name: String(who.name || who.displayName || ''),
-      role: String(who.role || ''),
       isAdmin:
         (who as any).isAdmin === true ||
         String(who.role || '').toLowerCase() === 'admin' ||

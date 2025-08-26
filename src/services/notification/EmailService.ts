@@ -56,7 +56,7 @@ class EmailService {
 
       // SendGrid使用の場合
       if (emailConfig.service === 'sendgrid') {
-        this.transporter = nodemailer.createTransporter({
+        this.transporter = nodemailer.createTransport({
           service: 'SendGrid',
           auth: {
             user: 'apikey',
@@ -66,19 +66,21 @@ class EmailService {
       }
       // AWS SES使用の場合
       else if (emailConfig.service === 'ses') {
-        this.transporter = nodemailer.createTransporter({
-          SES: {
-            aws: {
-              accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-              region: process.env.AWS_REGION || 'us-east-1',
-            },
+        this.transporter = nodemailer.createTransport({
+          host:
+            emailConfig.host ||
+            'email-smtp.' + (process.env.AWS_REGION || 'us-east-1') + '.amazonaws.com',
+          port: emailConfig.port || 587,
+          secure: emailConfig.secure || false,
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
           },
         });
       }
       // 標準SMTP設定
       else {
-        this.transporter = nodemailer.createTransporter(emailConfig);
+        this.transporter = nodemailer.createTransport(emailConfig as any);
       }
 
       // 接続テスト

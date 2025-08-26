@@ -1219,6 +1219,7 @@ ${context.userGoals.join(', ')}
           // TodoItemからTodoへの型変換
           const todoItem = response.data.todo;
           const todo: Todo = {
+            id: todoItem._id,
             _id: todoItem._id,
             task: todoItem.task,
             type: (todoItem.type as 'input' | 'output') || 'input',

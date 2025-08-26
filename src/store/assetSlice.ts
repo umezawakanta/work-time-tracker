@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { assetApi } from '@services/api';
+import { assetApi } from '@/services/api';
 import { AssetEntry } from '@/types';
 
 interface AssetState {

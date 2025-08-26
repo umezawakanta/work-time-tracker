@@ -451,7 +451,9 @@ class AdvancedServiceWorkerService {
       // プッシュ購読
       const subscription = await this.registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.config.pushConfig.vapidKey),
+        applicationServerKey: this.urlBase64ToUint8Array(
+          this.config.pushConfig.vapidKey
+        ) as unknown as BufferSource,
       });
 
       this.pushSubscription = subscription;

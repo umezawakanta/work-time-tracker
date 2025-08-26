@@ -329,7 +329,7 @@ class PWAService extends EventEmitter {
 
       const subscription = await this.serviceWorker.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(vapidKey),
+        applicationServerKey: this.urlBase64ToUint8Array(vapidKey) as unknown as BufferSource,
       });
 
       // サーバーに購読情報を送信

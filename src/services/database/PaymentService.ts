@@ -25,9 +25,9 @@ export class PaymentService {
     try {
       await connectDB();
 
-      const { default: Payment } = await import('../../server/models/Subscription');
+      const { PaymentModel } = await import('../../server/models/Subscription');
 
-      const payment = new Payment({
+      const payment = new PaymentModel({
         stripePaymentIntentId: paymentData.stripePaymentIntentId,
         amount: paymentData.amount,
         currency: paymentData.currency,
@@ -56,9 +56,12 @@ export class PaymentService {
     try {
       await connectDB();
 
-      const { default: Payment } = await import('../../server/models/Subscription');
+      const { PaymentModel } = await import('../../server/models/Subscription');
 
-      const payments = await Payment.find({ userId }).sort({ createdAt: -1 }).limit(limit).exec();
+      const payments = await PaymentModel.find({ userId })
+        .sort({ createdAt: -1 })
+        .limit(limit)
+        .exec();
 
       return payments;
     } catch (error) {

@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from './index';
 import { todoApi } from '@/services/api/todoApi';
 import { TodoItem } from '@/types';
@@ -155,10 +155,11 @@ export const addTodoItem = createAsyncThunk(
 
       // エラーレスポンスかどうかチェック（message+errorパターン）
       if (
-        response.data.error ||
-        (response.data.message && response.data.message.includes('Error'))
+        (response.data as any).error ||
+        ((response.data as any).message && (response.data as any).message.includes('Error'))
       ) {
-        const errorMsg = response.data.error || response.data.message || '不明なエラー';
+        const errorMsg =
+          (response.data as any).error || (response.data as any).message || '不明なエラー';
         throw new Error(`API操作エラー: ${errorMsg}`);
       }
 
@@ -168,9 +169,9 @@ export const addTodoItem = createAsyncThunk(
         // 標準形式: {message: "...", todo: {...}}
         todoData = response.data.todo;
         console.log('📋 Standard response format detected (create)');
-      } else if (response.data._id && response.data.task) {
+      } else if ((response.data as any)._id && (response.data as any).task) {
         // 直接形式: {...todoオブジェクト...}
-        todoData = response.data;
+        todoData = response.data as any;
         console.log('📋 Direct todo object format detected (create)');
       } else {
         console.error('🔍 Unexpected response structure:', response.data);
@@ -262,10 +263,11 @@ export const updateTodoItem = createAsyncThunk(
 
       // エラーレスポンスかどうかチェック（message+errorパターン）
       if (
-        response.data.error ||
-        (response.data.message && response.data.message.includes('Error'))
+        (response.data as any).error ||
+        ((response.data as any).message && (response.data as any).message.includes('Error'))
       ) {
-        const errorMsg = response.data.error || response.data.message || '不明なエラー';
+        const errorMsg =
+          (response.data as any).error || (response.data as any).message || '不明なエラー';
         throw new Error(`API操作エラー: ${errorMsg}`);
       }
 
@@ -275,9 +277,9 @@ export const updateTodoItem = createAsyncThunk(
         // 標準形式: {message: "...", todo: {...}}
         todoData = response.data.todo;
         console.log('📋 Standard response format detected');
-      } else if (response.data._id && response.data.task) {
+      } else if ((response.data as any)._id && (response.data as any).task) {
         // 直接形式: {...todoオブジェクト...}
-        todoData = response.data;
+        todoData = response.data as any;
         console.log('📋 Direct todo object format detected');
       } else {
         console.error('🔍 Unexpected response structure:', response.data);
@@ -327,13 +329,13 @@ export const resetTodoList = createAsyncThunk('todo/resetTodoList', async () => 
 // 履歴データ取得のためのアクションを追加
 export const fetchTodoHistory = createAsyncThunk('todo/fetchTodoHistory', async () => {
   const response = await todoApi.getHistory();
-  return response.data;
+  return response;
 });
 
 // 日別の履歴データを取得するアクションを追加
 export const fetchDailyTodoHistory = createAsyncThunk('todo/fetchDailyTodoHistory', async () => {
   const response = await todoApi.getDailyHistory();
-  return response.data;
+  return response;
 });
 
 export const reorderTodoItems = createAsyncThunk(
@@ -639,7 +641,7 @@ const todoSlice = createSlice({
         // 履歴データはそのまま保持
         console.log('🗑️ Todo list reset completed');
       })
-      .addCase(fetchTodoHistory.fulfilled, (state, action) => {
+      .addCase(fetchTodoHistory.fulfilled, (state, action: PayloadAction<any>) => {
         // 履歴データを適切な形式に変換
         const historyData = action.payload.reduce(
           (acc: Record<string, number>, item: { date: string; completedCount: number }) => {
@@ -650,7 +652,7 @@ const todoSlice = createSlice({
         );
         state.todoHistory = historyData;
       })
-      .addCase(fetchDailyTodoHistory.fulfilled, (state, action) => {
+      .addCase(fetchDailyTodoHistory.fulfilled, (state, action: PayloadAction<any>) => {
         state.dailyHistory = action.payload;
       })
       .addCase(reorderTodoItems.fulfilled, (state, action) => {

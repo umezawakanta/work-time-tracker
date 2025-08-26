@@ -289,6 +289,7 @@ class IntegratedGamificationService {
         if (response.data && response.data.todo) {
           const todoItem = response.data.todo;
           const todo: Todo = {
+            id: todoItem._id,
             _id: todoItem._id,
             task: todoItem.task,
             type: 'input',

@@ -35,6 +35,7 @@ import {
 import { toast } from 'react-hot-toast';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+const Highlighter = SyntaxHighlighter as unknown as React.FC<any>;
 
 import anthropicService from '@/services/ai/anthropicService';
 import { selectTodos } from '@/store/todoSlice';
@@ -347,7 +348,7 @@ ${optimization.focusAreas.map((f: string) => `🎯 ${f}`).join('\n')}`;
                 )}
               </Button>
             </div>
-            <SyntaxHighlighter
+            <Highlighter
               language={message.metadata.language || 'javascript'}
               style={vscDarkPlus}
               customStyle={{
@@ -357,7 +358,7 @@ ${optimization.focusAreas.map((f: string) => `🎯 ${f}`).join('\n')}`;
               }}
             >
               {message.content}
-            </SyntaxHighlighter>
+            </Highlighter>
           </div>
           {message.metadata.dependencies && message.metadata.dependencies.length > 0 && (
             <div className="mt-3 p-3 bg-blue-50 rounded-lg">

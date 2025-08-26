@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { Calendar as RBCalendar, dateFnsLocalizer } from 'react-big-calendar';
+const CalendarAny = RBCalendar as unknown as React.ComponentType<any>;
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { useDispatch, useSelector } from 'react-redux';
@@ -358,7 +359,7 @@ const TaskCalendarIntegration: React.FC<TaskCalendarIntegrationProps> = ({ heigh
       {/* メインカレンダー */}
       <Card>
         <CardContent className="p-4">
-          <Calendar
+          <CalendarAny
             localizer={localizer}
             events={calendarEvents}
             startAccessor="start"

@@ -72,7 +72,7 @@ export class SubscriptionService {
     try {
       await connectDB();
 
-      const { UserModel } = await import('../../server/models/User');
+      const { User } = await import('../../server/models/User');
 
       // customerIdからuserIdを取得
       const { SubscriptionModel } = await import('../../server/models/Subscription');
@@ -83,7 +83,7 @@ export class SubscriptionService {
         return;
       }
 
-      await UserModel.findByIdAndUpdate(subscription.userId, {
+      await (User as any).findByIdAndUpdate(subscription.userId, {
         subscriptionStatus: planType,
         isPremium,
         updatedAt: new Date(),
