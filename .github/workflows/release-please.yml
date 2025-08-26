@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
+concurrency:
+  group: release-please-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -13,10 +18,10 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - name: Run release-please
+      - name: Run release-please (with PAT fallback)
         id: release
         uses: googleapis/release-please-action@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
           release-type: node
           changelog-host: https://github.com
