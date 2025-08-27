@@ -32,6 +32,8 @@
     
     <!-- 🔍 SEO Optimization -->
     <link rel="canonical" href="https://work-time-tracker-5d9q.vercel.app/" />
+    <link rel="alternate" href="https://work-time-tracker-5d9q.vercel.app/" hreflang="ja" />
+    <link rel="alternate" href="https://work-time-tracker-5d9q.vercel.app/" hreflang="x-default" />
     <meta property="og:site_name" content="Work Time Tracker" />
     <meta property="og:title" content="Work Time Tracker | 人生のコントロールを取り戻そう" />
     <meta property="og:description" content="生成AIパーソナル秘書 × IQ/MBTI自己診断で、あなた専用に最適化。仕事・学習・生活をこのサイトで一元管理。" />
@@ -131,10 +133,10 @@
     </div>
     
     <!-- 🚀 Main Script -->
-    <script type="module" src="./src/main.tsx"></script>
+    <script type="module" src="./src/main.tsx" defer></script>
     
     <!-- 🧹 Service Worker Killer (one-time) -->
-    <script>
+    <script defer>
       (function killStaleSW(){
         if (!('serviceWorker' in navigator)) return;
         if (localStorage.getItem('sw_killed') === '1') return;
