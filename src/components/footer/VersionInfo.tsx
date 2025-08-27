@@ -10,6 +10,29 @@ type VersionInfo = {
 
 type ChangelogEntry = { version: string; notes: string };
 
+export const __testables = {
+  fetchVersion: async () => {
+    try {
+      const v = await fetch(`/version.json?ts=${Date.now()}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
+      return v;
+    } catch {
+      return null;
+    }
+  },
+  fetchChangelog: async () => {
+    try {
+      const c = await fetch(`/changelog.json?ts=${Date.now()}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
+      return c;
+    } catch {
+      return null;
+    }
+  },
+};
+
 export const VersionInfo: React.FC = () => {
   const [ver, setVer] = useState<VersionInfo | null>(null);
   const [entries, setEntries] = useState<ChangelogEntry[]>([]);
