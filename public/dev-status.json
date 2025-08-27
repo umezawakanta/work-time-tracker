@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2025-08-27T07:08:09.676Z",
+  "generatedAt": "2025-08-27T07:09:57.445Z",
   "totals": {
     "filesScanned": 1265,
-    "findings": 2650,
+    "findings": 2649,
     "todo": 140,
     "mock": 662,
     "wip": 28,
-    "errorHints": 1813
+    "errorHints": 1812
   },
   "flags": {
     "wipRoutes": [
@@ -95,12 +95,6 @@
       "file": "src\\components\\ai\\CognitiveAICoachingDashboard.tsx",
       "line": 184,
       "snippet": "console.error('Cognitive data recording error:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\ai\\SmartProductivityDashboard.tsx",
-      "line": 103,
-      "snippet": "console.error('AI分析読み込みエラー:', error);",
       "kind": "error"
     },
     {
