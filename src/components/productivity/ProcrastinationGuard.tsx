@@ -50,22 +50,32 @@ export const ProcrastinationGuard: React.FC = () => {
 
   const snoozed = useMemo(() => Date.now() < getSnoozeUntil(), []);
 
-  const startMicroTimer = useCallback((ms: number) => {
-    setMicroTimerMs(ms);
-    if (timerRef.current) window.clearInterval(timerRef.current);
-    const startedAt = Date.now();
-    timerRef.current = window.setInterval(() => {
-      const left = Math.max(0, ms - (Date.now() - startedAt));
-      setMicroTimerMs(left);
-      if (left <= 0 && timerRef.current) {
-        window.clearInterval(timerRef.current);
-        timerRef.current = null;
-        try { trackEvent('pg_micro_timer_completed', {}); } catch {}
-      }
-    }, 250) as unknown as number;
-  }, [trackEvent]);
+  const startMicroTimer = useCallback(
+    (ms: number) => {
+      setMicroTimerMs(ms);
+      if (timerRef.current) window.clearInterval(timerRef.current);
+      const startedAt = Date.now();
+      timerRef.current = window.setInterval(() => {
+        const left = Math.max(0, ms - (Date.now() - startedAt));
+        setMicroTimerMs(left);
+        if (left <= 0 && timerRef.current) {
+          window.clearInterval(timerRef.current);
+          timerRef.current = null;
+          try {
+            trackEvent('pg_micro_timer_completed', {});
+          } catch {}
+        }
+      }, 250) as unknown as number;
+    },
+    [trackEvent]
+  );
 
-  useEffect(() => () => { if (timerRef.current) window.clearInterval(timerRef.current); }, []);
+  useEffect(
+    () => () => {
+      if (timerRef.current) window.clearInterval(timerRef.current);
+    },
+    []
+  );
 
   // Visibility-based prompt
   useEffect(() => {
@@ -80,7 +90,9 @@ export const ProcrastinationGuard: React.FC = () => {
         if (awayMs >= settings.promptOnReturnMs && now >= snoozeUntil) {
           setUrge(null);
           setOpen(true);
-          try { trackEvent('pg_prompt_return_from_background', { awayMs }); } catch {}
+          try {
+            trackEvent('pg_prompt_return_from_background', { awayMs });
+          } catch {}
         }
       }
     };
@@ -90,11 +102,15 @@ export const ProcrastinationGuard: React.FC = () => {
 
   const onChooseUrge = (k: UrgeKind) => {
     setUrge(k);
-    try { trackEvent('pg_urge_selected', { urge: k }); } catch {}
+    try {
+      trackEvent('pg_urge_selected', { urge: k });
+    } catch {}
   };
 
   const onCommitAlternative = (alt: string) => {
-    try { trackEvent('pg_alternative_committed', { urge, alt }); } catch {}
+    try {
+      trackEvent('pg_alternative_committed', { urge, alt });
+    } catch {}
     // Default micro anchor: 2 minutes
     startMicroTimer(2 * 60_000);
     setOpen(false);
@@ -103,7 +119,9 @@ export const ProcrastinationGuard: React.FC = () => {
   const onSnooze = (min: number) => {
     const until = Date.now() + min * 60_000;
     setSnoozeUntil(until);
-    try { trackEvent('pg_snoozed', { minutes: min }); } catch {}
+    try {
+      trackEvent('pg_snoozed', { minutes: min });
+    } catch {}
     setOpen(false);
   };
 
@@ -111,7 +129,9 @@ export const ProcrastinationGuard: React.FC = () => {
     const next = { ...settings, enabled: !settings.enabled };
     setSettings(next);
     saveSettings(next);
-    try { trackEvent('pg_enabled_toggled', { enabled: next.enabled }); } catch {}
+    try {
+      trackEvent('pg_enabled_toggled', { enabled: next.enabled });
+    } catch {}
   };
 
   const fmt = (ms: number) => {
@@ -128,7 +148,13 @@ export const ProcrastinationGuard: React.FC = () => {
         <button
           type="button"
           aria-label="衝動対策を開く"
-          onClick={() => { setUrge(null); setOpen(true); try { trackEvent('pg_fab_open', {}); } catch {} }}
+          onClick={() => {
+            setUrge(null);
+            setOpen(true);
+            try {
+              trackEvent('pg_fab_open', {});
+            } catch {}
+          }}
           className="fixed bottom-20 right-4 z-40 rounded-full bg-amber-600 text-white shadow-lg px-4 py-3 text-sm hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-400"
         >
           衝動対策
@@ -144,7 +170,12 @@ export const ProcrastinationGuard: React.FC = () => {
           2分アンカー: {fmt(microTimerMs)}
           <button
             className="ml-2 underline"
-            onClick={() => { setMicroTimerMs(0); try { trackEvent('pg_micro_timer_cancel', {}); } catch {} }}
+            onClick={() => {
+              setMicroTimerMs(0);
+              try {
+                trackEvent('pg_micro_timer_cancel', {});
+              } catch {}
+            }}
           >
             停止
           </button>
@@ -196,24 +227,36 @@ export const ProcrastinationGuard: React.FC = () => {
 
               <div className="mt-4 text-gray-800">代わりに今すぐできる最短の一歩は？</div>
               <div className="mt-2 grid grid-cols-2 gap-2">
-                <button className="border rounded px-2 py-2 hover:bg-gray-50"
-                  onClick={() => onCommitAlternative('2分だけ最優先タスク')}>2分だけ最優先タスク</button>
-                <button className="border rounded px-2 py-2 hover:bg-gray-50"
-                  onClick={() => onCommitAlternative('深呼吸30秒+水を一杯')}>深呼吸30秒+水を一杯</button>
-                <button className="border rounded px-2 py-2 hover:bg-gray-50"
-                  onClick={() => onCommitAlternative('5分だけ歩く')}>5分だけ歩く</button>
-                <button className="border rounded px-2 py-2 hover:bg-gray-50"
-                  onClick={() => onCommitAlternative('スマホは別室/裏返し')}>スマホは別室/裏返し</button>
+                <button
+                  className="border rounded px-2 py-2 hover:bg-gray-50"
+                  onClick={() => onCommitAlternative('2分だけ最優先タスク')}
+                >
+                  2分だけ最優先タスク
+                </button>
+                <button
+                  className="border rounded px-2 py-2 hover:bg-gray-50"
+                  onClick={() => onCommitAlternative('深呼吸30秒+水を一杯')}
+                >
+                  深呼吸30秒+水を一杯
+                </button>
+                <button
+                  className="border rounded px-2 py-2 hover:bg-gray-50"
+                  onClick={() => onCommitAlternative('5分だけ歩く')}
+                >
+                  5分だけ歩く
+                </button>
+                <button
+                  className="border rounded px-2 py-2 hover:bg-gray-50"
+                  onClick={() => onCommitAlternative('スマホは別室/裏返し')}
+                >
+                  スマホは別室/裏返し
+                </button>
               </div>
 
               <div className="mt-4 text-gray-800">設定</div>
               <div className="mt-2 flex items-center gap-3">
                 <label className="inline-flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={settings.enabled}
-                    onChange={onToggleEnabled}
-                  />
+                  <input type="checkbox" checked={settings.enabled} onChange={onToggleEnabled} />
                   有効化
                 </label>
                 <label className="inline-flex items-center gap-2">
@@ -226,7 +269,9 @@ export const ProcrastinationGuard: React.FC = () => {
                       const next = { ...settings, promptOnReturnMs: v };
                       setSettings(next);
                       saveSettings(next);
-                      try { trackEvent('pg_setting_prompt_return_ms', { value: v }); } catch {}
+                      try {
+                        trackEvent('pg_setting_prompt_return_ms', { value: v });
+                      } catch {}
                     }}
                   >
                     <option value={60000}>1分</option>
@@ -239,14 +284,34 @@ export const ProcrastinationGuard: React.FC = () => {
 
               <div className="mt-4 text-gray-800">一時停止</div>
               <div className="mt-2 flex items-center gap-2">
-                <button className="border rounded px-2 py-1 hover:bg-gray-50" onClick={() => onSnooze(15)}>15分停止</button>
-                <button className="border rounded px-2 py-1 hover:bg-gray-50" onClick={() => onSnooze(30)}>30分停止</button>
-                <button className="border rounded px-2 py-1 hover:bg-gray-50" onClick={() => onSnooze(60)}>1時間停止</button>
+                <button
+                  className="border rounded px-2 py-1 hover:bg-gray-50"
+                  onClick={() => onSnooze(15)}
+                >
+                  15分停止
+                </button>
+                <button
+                  className="border rounded px-2 py-1 hover:bg-gray-50"
+                  onClick={() => onSnooze(30)}
+                >
+                  30分停止
+                </button>
+                <button
+                  className="border rounded px-2 py-1 hover:bg-gray-50"
+                  onClick={() => onSnooze(60)}
+                >
+                  1時間停止
+                </button>
               </div>
             </div>
 
             <div className="border-t px-4 py-3 flex items-center justify-end gap-2">
-              <button className="px-3 py-2 text-sm border rounded hover:bg-gray-50" onClick={() => setOpen(false)}>閉じる</button>
+              <button
+                className="px-3 py-2 text-sm border rounded hover:bg-gray-50"
+                onClick={() => setOpen(false)}
+              >
+                閉じる
+              </button>
             </div>
           </div>
         </div>
@@ -256,5 +321,3 @@ export const ProcrastinationGuard: React.FC = () => {
 };
 
 export default ProcrastinationGuard;
-
-
