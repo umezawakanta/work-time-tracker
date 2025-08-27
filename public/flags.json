@@ -4,6 +4,7 @@
         "/quality-dashboard",
         "/testing-dashboard",
         "/analytics-dashboard",
+        "/dev-status",
         "/subscription",
         "/subscription-upgrade",
         "/billing-history"

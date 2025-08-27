@@ -223,7 +223,7 @@ body (optional)
 
 BREAKING CHANGE: 説明 (optional)
 
-```
+````
 
 - 主な type: `feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `chore`
 - 例:
@@ -303,7 +303,7 @@ BREAKING CHANGE: 説明 (optional)
 
 ```bash
 pnpm run build:dev-status
-```
+````
 
 - 画面での確認: 管理者ログイン後に `/dev-status` へアクセスすると一覧表示されます。
 - ルート単位の WIP/Mock 表示は `public/flags.json` の `wipRoutes`/`mockRoutes` を編集してください（画面上部にバナー表示されます）。

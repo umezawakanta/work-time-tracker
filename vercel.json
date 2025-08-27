@@ -1,4 +1,11 @@
 {
+  "version": 2,
+  "buildCommand": "pnpm run vercel-build-ci",
+  "outputDirectory": "dist",
+  "framework": null,
+  "installCommand": "pnpm install --no-frozen-lockfile --prefer-offline",
+  "devCommand": "pnpm run dev",
+  "ignoreCommand": "node scripts/vercel-ignore.js",
   "headers": [
     {
       "source": "/version.json",
@@ -17,18 +24,7 @@
           "value": "no-store, max-age=0, must-revalidate"
         }
       ]
-    }
-  ]
-}
-{
-  "version": 2,
-  "buildCommand": "pnpm run vercel-build-ci",
-  "outputDirectory": "dist",
-  "framework": null,
-  "installCommand": "pnpm install --no-frozen-lockfile --prefer-offline",
-  "devCommand": "pnpm run dev",
-  "ignoreCommand": "node scripts/vercel-ignore.js",
-  "headers": [
+    },
     {
       "source": "/index.html",
       "headers": [
@@ -44,6 +40,15 @@
         {
           "key": "Cache-Control",
           "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/dev-status.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0, must-revalidate"
         }
       ]
     }
