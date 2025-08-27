@@ -77,6 +77,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
   });
   const [coverage, setCoverage] = useState<CoverageSummary | null>(null);
   const [testSummary, setTestSummary] = useState<TestSummary | null>(null);
+  const [ciStatus, setCiStatus] = useState<{ github: any[]; vercel: any[] } | null>(null);
 
   type SeriesKey = 'findings' | 'todo' | 'mock' | 'wip' | 'error';
 
@@ -152,6 +153,15 @@ export default function DevelopmentStatus(): React.JSX.Element {
           if (tsRes.ok) {
             const ts = (await tsRes.json()) as TestSummary;
             setTestSummary(ts);
+          }
+        } catch {}
+
+        // Load CI status (serverless) - best effort
+        try {
+          const ciRes = await fetch(`/api/status/ci?limit=5${q}`);
+          if (ciRes.ok) {
+            const ci = (await ciRes.json()) as any;
+            if (ci?.data) setCiStatus(ci.data);
           }
         } catch {}
       } catch (e: any) {
@@ -564,6 +574,44 @@ export default function DevelopmentStatus(): React.JSX.Element {
                   <ul className="space-y-1">
                     <li>Unit coverage file: {testSummary?.unit?.hasCoverage ? 'あり' : 'なし'}</li>
                     <li>E2E results: {testSummary?.e2e?.available ? 'あり' : '未取得'}</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {ciStatus && (
+            <section>
+              <h2 className="text-lg font-medium">CI / デプロイ状況</h2>
+              <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="rounded border p-3">
+                  <h3 className="font-semibold mb-2">GitHub Actions（最新5件）</h3>
+                  <ul className="space-y-2">
+                    {ciStatus.github?.map((r: any) => (
+                      <li key={r.id} className="flex items-center justify-between gap-2">
+                        <span className="truncate">
+                          {r.name} · {r.status}{r.conclusion ? `/${r.conclusion}` : ''}
+                        </span>
+                        <a href={r.html_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs">
+                          open
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="rounded border p-3">
+                  <h3 className="font-semibold mb-2">Vercel Deploy（最新5件）</h3>
+                  <ul className="space-y-2">
+                    {ciStatus.vercel?.map((d: any) => (
+                      <li key={d.uid} className="flex items-center justify-between gap-2">
+                        <span className="truncate">
+                          {d.state} · {d.url}
+                        </span>
+                        <a href={d.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs">
+                          open
+                        </a>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
