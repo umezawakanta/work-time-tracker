@@ -1,7 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAnalytics } from '@/lib/analytics';
 
-type UrgeKind = 'smoke' | 'alcohol' | 'coffee' | 'water' | 'phone' | 'adult' | 'other';
+type UrgeKind =
+  | 'smoke'
+  | 'alcohol'
+  | 'coffee'
+  | 'water'
+  | 'phone'
+  | 'adult'
+  | 'hair'
+  | 'beard'
+  | 'earpick'
+  | 'nosepick'
+  | 'other';
 
 interface GuardSettings {
   enabled: boolean;
@@ -189,7 +200,7 @@ export const ProcrastinationGuard: React.FC = () => {
           aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
         >
-          <div className="w-full max-w-lg rounded-lg bg-white shadow-lg">
+          <div className="w-full max-w-lg rounded-lg bg-white text-gray-900 shadow-lg">
             <div className="border-b px-4 py-3 flex items-center justify-between">
               <h2 className="text-sm font-semibold">先延ばし予防ガード</h2>
               <button
@@ -212,12 +223,16 @@ export const ProcrastinationGuard: React.FC = () => {
                     ['water', '水だけ飲む'],
                     ['phone', 'スマホいじり'],
                     ['adult', 'アダルト'],
+                    ['hair', '髪をさわる'],
+                    ['beard', 'ひげをさわる'],
+                    ['earpick', '耳かき'],
+                    ['nosepick', '鼻ほじり'],
                     ['other', 'その他'],
                   ] as Array<[UrgeKind, string]>
                 ).map(([k, label]) => (
                   <button
                     key={k}
-                    className={`border rounded px-2 py-1 hover:bg-gray-50 ${urge === k ? 'ring-2 ring-amber-400' : ''}`}
+                    className={`border rounded px-2 py-1 bg-white text-gray-800 hover:bg-gray-50 ${urge === k ? 'ring-2 ring-amber-400' : ''}`}
                     onClick={() => onChooseUrge(k)}
                   >
                     {label}
@@ -228,25 +243,25 @@ export const ProcrastinationGuard: React.FC = () => {
               <div className="mt-4 text-gray-800">代わりに今すぐできる最短の一歩は？</div>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 <button
-                  className="border rounded px-2 py-2 hover:bg-gray-50"
+                  className="border rounded px-2 py-2 bg-white text-gray-800 hover:bg-gray-50"
                   onClick={() => onCommitAlternative('2分だけ最優先タスク')}
                 >
                   2分だけ最優先タスク
                 </button>
                 <button
-                  className="border rounded px-2 py-2 hover:bg-gray-50"
+                  className="border rounded px-2 py-2 bg-white text-gray-800 hover:bg-gray-50"
                   onClick={() => onCommitAlternative('深呼吸30秒+水を一杯')}
                 >
                   深呼吸30秒+水を一杯
                 </button>
                 <button
-                  className="border rounded px-2 py-2 hover:bg-gray-50"
+                  className="border rounded px-2 py-2 bg-white text-gray-800 hover:bg-gray-50"
                   onClick={() => onCommitAlternative('5分だけ歩く')}
                 >
                   5分だけ歩く
                 </button>
                 <button
-                  className="border rounded px-2 py-2 hover:bg-gray-50"
+                  className="border rounded px-2 py-2 bg-white text-gray-800 hover:bg-gray-50"
                   onClick={() => onCommitAlternative('スマホは別室/裏返し')}
                 >
                   スマホは別室/裏返し
@@ -285,19 +300,19 @@ export const ProcrastinationGuard: React.FC = () => {
               <div className="mt-4 text-gray-800">一時停止</div>
               <div className="mt-2 flex items-center gap-2">
                 <button
-                  className="border rounded px-2 py-1 hover:bg-gray-50"
+                  className="border rounded px-2 py-1 bg-white text-gray-800 hover:bg-gray-50"
                   onClick={() => onSnooze(15)}
                 >
                   15分停止
                 </button>
                 <button
-                  className="border rounded px-2 py-1 hover:bg-gray-50"
+                  className="border rounded px-2 py-1 bg-white text-gray-800 hover:bg-gray-50"
                   onClick={() => onSnooze(30)}
                 >
                   30分停止
                 </button>
                 <button
-                  className="border rounded px-2 py-1 hover:bg-gray-50"
+                  className="border rounded px-2 py-1 bg-white text-gray-800 hover:bg-gray-50"
                   onClick={() => onSnooze(60)}
                 >
                   1時間停止
@@ -307,7 +322,7 @@ export const ProcrastinationGuard: React.FC = () => {
 
             <div className="border-t px-4 py-3 flex items-center justify-end gap-2">
               <button
-                className="px-3 py-2 text-sm border rounded hover:bg-gray-50"
+                className="px-3 py-2 text-sm border rounded bg-white text-gray-800 hover:bg-gray-50"
                 onClick={() => setOpen(false)}
               >
                 閉じる
