@@ -30,6 +30,14 @@ export default function DevelopmentStatus(): React.JSX.Element {
   const [data, setData] = useState<DevStatus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState<string>('');
+  const [kinds, setKinds] = useState<Record<Finding['kind'], boolean>>({
+    todo: true,
+    mock: true,
+    wip: true,
+    error: true,
+    note: true,
+  });
 
   useEffect(() => {
     (async () => {
@@ -48,10 +56,78 @@ export default function DevelopmentStatus(): React.JSX.Element {
     })();
   }, []);
 
+  const filteredFindings: Finding[] = (() => {
+    if (!data) return [];
+    const q = query.trim().toLowerCase();
+    return data.findings.filter((f) => {
+      if (!kinds[f.kind]) return false;
+      if (!q) return true;
+      return (
+        f.file.toLowerCase().includes(q) ||
+        String(f.line).includes(q) ||
+        f.snippet.toLowerCase().includes(q) ||
+        f.kind.toLowerCase().includes(q)
+      );
+    });
+  })();
+
+  const exportCsv = () => {
+    try {
+      const rows = [
+        ['kind', 'file', 'line', 'snippet'],
+        ...filteredFindings.map((f) => [f.kind, f.file, String(f.line), f.snippet.replace(/\n/g, ' ')]),
+      ];
+      const csv = rows
+        .map((r) => r.map((c) => '"' + String(c).replace(/"/g, '""') + '"').join(','))
+        .join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dev-status.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {}
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
       <h1 className="text-xl font-semibold">開発ステータス</h1>
       <p className="text-sm text-gray-600 mt-1">未実装・モック・WIP・エラーヒントの自動検出</p>
+      {/* Controls */}
+      <div className="mt-4 flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="ファイル名・行・テキスト・種別で検索"
+            className="w-full max-w-xl border rounded px-3 py-2 text-sm"
+            aria-label="検索"
+          />
+          <button
+            onClick={exportCsv}
+            className="px-3 py-2 text-sm border rounded bg-white hover:bg-gray-50"
+            aria-label="CSVエクスポート"
+          >
+            CSVエクスポート
+          </button>
+        </div>
+        <div className="flex flex-wrap items-center gap-4 text-sm">
+          {(['todo', 'mock', 'wip', 'error', 'note'] as Finding['kind'][]).map((k) => (
+            <label key={k} className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={kinds[k]}
+                onChange={(e) => setKinds((prev) => ({ ...prev, [k]: e.target.checked }))}
+              />
+              <span className="uppercase">{k}</span>
+            </label>
+          ))}
+          {data && (
+            <span className="text-gray-600">表示: {filteredFindings.length} / {data.totals.findings}</span>
+          )}
+        </div>
+      </div>
       {loading && <div className="mt-6 h-24 rounded bg-gray-100 animate-pulse" />}
       {error && (
         <p className="mt-4 text-sm text-red-600" aria-live="polite">
@@ -100,32 +176,56 @@ export default function DevelopmentStatus(): React.JSX.Element {
             <h2 className="text-lg font-medium">検出結果</h2>
             <div className="mt-2 rounded border">
               <div className="max-h-[60vh] overflow-auto divide-y text-sm">
-                {data.findings.length === 0 && (
+                {filteredFindings.length === 0 && (
                   <div className="p-3 text-gray-500">検出はありませんでした。</div>
                 )}
-                {data.findings.map((f, idx) => (
+                {filteredFindings.map((f, idx) => (
                   <div key={`${f.file}:${f.line}:${idx}`} className="p-3">
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-mono text-xs text-gray-600">
                         {f.file}:{f.line}
                       </span>
-                      <span
+                      <div className="flex items-center gap-2">
+                        <button
+                          className="text-xs px-2 py-0.5 border rounded hover:bg-gray-50"
+                          onClick={() => {
+                            try {
+                              navigator.clipboard?.writeText(`${f.file}:${f.line}`);
+                            } catch {}
+                          }}
+                          aria-label="パスをコピー"
+                        >
+                          コピー
+                        </button>
+                        <a
+                          className="text-xs px-2 py-0.5 border rounded hover:bg-gray-50"
+                          href={`https://github.com/umezawakanta/work-time-tracker/blob/main/${f.file}#L${f.line}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="GitHubで開く"
+                        >
+                          GitHub
+                        </a>
+                        <span
                         className={`text-[10px] px-2 py-0.5 rounded-full ${
                           f.kind === 'todo'
                             ? 'bg-gray-100 text-gray-700'
                             : f.kind === 'mock'
-                            ? 'bg-sky-100 text-sky-700'
-                            : f.kind === 'wip'
-                            ? 'bg-amber-100 text-amber-700'
-                            : f.kind === 'error'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-slate-100 text-slate-700'
+                              ? 'bg-sky-100 text-sky-700'
+                              : f.kind === 'wip'
+                                ? 'bg-amber-100 text-amber-700'
+                                : f.kind === 'error'
+                                  ? 'bg-red-100 text-red-700'
+                                  : 'bg-slate-100 text-slate-700'
                         }`}
                       >
                         {f.kind.toUpperCase()}
                       </span>
+                      </div>
                     </div>
-                    <pre className="mt-1 text-gray-800 whitespace-pre-wrap break-words">{f.snippet}</pre>
+                    <pre className="mt-1 text-gray-800 whitespace-pre-wrap break-words">
+                      {f.snippet}
+                    </pre>
                   </div>
                 ))}
               </div>
@@ -136,5 +236,3 @@ export default function DevelopmentStatus(): React.JSX.Element {
     </div>
   );
 }
-
-

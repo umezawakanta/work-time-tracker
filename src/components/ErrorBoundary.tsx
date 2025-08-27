@@ -187,6 +187,18 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             >
               開発者に報告
             </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                try {
+                  // 管理者のみアクセス可のため、遷移だけ行う
+                  window.location.assign('/dev-status');
+                } catch {}
+              }}
+              aria-label="開発ステータスを開く"
+            >
+              開発ステータス
+            </Button>
           </div>
         </div>
       );

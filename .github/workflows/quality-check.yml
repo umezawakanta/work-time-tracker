@@ -58,6 +58,17 @@ jobs:
         run: |
           pnpm test -- --coverage --watchAll=false --passWithNoTests || true
 
+      - name: 🔎 Generate Dev Status (scan)
+        run: |
+          pnpm run build:dev-status || true
+
+      - name: 📤 Upload Dev Status
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-status
+          path: public/dev-status.json
+          retention-days: 7
+
       - name: 📊 Generate Coverage Summary
         id: coverage
         run: |
