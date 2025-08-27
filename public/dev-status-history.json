@@ -89,5 +89,18 @@
       "wip": 28,
       "error": 1807
     }
+  },
+  {
+    "sha": "e60ff226b5c2c463d97a452d6c88e0652af1191c",
+    "short": "e60ff226b5",
+    "message": "chore(flags): clear remaining WIP routes to focus on real findings; will re-enable per-route after completion",
+    "timestamp": "2025-08-27T08:24:54.000Z",
+    "totals": {
+      "findings": 2648,
+      "todo": 140,
+      "mock": 666,
+      "wip": 28,
+      "error": 1807
+    }
   }
 ]
