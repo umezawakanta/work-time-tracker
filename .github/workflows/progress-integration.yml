@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
 
 jobs:
   # 🔄 進捗情報の自動更新
@@ -140,9 +140,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 10.4.1
 
       - name: 🚀 Setup Node.js
         uses: actions/setup-node@v4
@@ -150,8 +150,18 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
+      - name: 📦 Configure pnpm store (writable)
+        run: |
+          mkdir -p "$RUNNER_TEMP/pnpm-store"
+          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
+          echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
+          pnpm store path
+
       - name: 📦 Install Dependencies
         run: pnpm install --prefer-offline
+        env:
+          PNPM_HOME: ${{ env.PNPM_HOME }}
+          PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
 
       - name: 🧪 Run Tests and Generate Coverage
         run: |
