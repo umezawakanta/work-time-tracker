@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
 
 interface UserSession {
   id: string;
@@ -175,7 +176,11 @@ const ComprehensiveAnalyticsDashboard: React.FC = () => {
       }
       setLastUpdate(new Date());
     } catch (error) {
-      console.error('❌ Analytics data fetch failed:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'ComprehensiveAnalyticsDashboard',
+        action: 'fetchAnalyticsData',
+        additionalData: { selectedTimeRange },
+      });
       // エラー時はモックデータで初期化
       const mock = getMockAnalyticsData();
       setAnalyticsData(mock);

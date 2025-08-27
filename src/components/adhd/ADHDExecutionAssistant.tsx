@@ -28,6 +28,7 @@ import {
   ExecutionTask,
   ExecutionGuidance,
 } from '@/services/adhd/ADHDExecutionSupportService';
+import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
 
 export const ADHDExecutionAssistant: React.FC = () => {
   const [currentTask, setCurrentTask] = useState<ExecutionTask | null>(null);
@@ -89,7 +90,10 @@ export const ADHDExecutionAssistant: React.FC = () => {
       setGuidance(newGuidance);
       setIsExecuting(true);
     } catch (error) {
-      console.error('Failed to start execution:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'ADHDExecutionAssistant',
+        action: 'startExecution',
+      });
     }
   };
 
@@ -113,7 +117,10 @@ export const ADHDExecutionAssistant: React.FC = () => {
         });
       }
     } catch (error) {
-      console.error('Failed to complete step:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'ADHDExecutionAssistant',
+        action: 'completeStep',
+      });
     }
   };
 
@@ -125,7 +132,10 @@ export const ADHDExecutionAssistant: React.FC = () => {
       setGuidance(newGuidance);
       setIsExecuting(false);
     } catch (error) {
-      console.error('Failed to record interruption:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'ADHDExecutionAssistant',
+        action: 'recordInterruption',
+      });
     }
   };
 
@@ -135,7 +145,10 @@ export const ADHDExecutionAssistant: React.FC = () => {
       setGuidance(newGuidance);
       setIsExecuting(true);
     } catch (error) {
-      console.error('Failed to resume execution:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'ADHDExecutionAssistant',
+        action: 'resumeExecution',
+      });
     }
   };
 
