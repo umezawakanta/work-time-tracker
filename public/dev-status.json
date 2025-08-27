@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2025-08-27T11:01:31.526Z",
+  "generatedAt": "2025-08-27T11:46:11.237Z",
   "totals": {
-    "filesScanned": 1266,
-    "findings": 1037,
-    "todo": 142,
-    "mock": 476,
+    "filesScanned": 1184,
+    "findings": 875,
+    "todo": 34,
+    "mock": 425,
     "wip": 3,
-    "errorHints": 409
+    "errorHints": 406
   },
   "flags": {
     "wipRoutes": [],
@@ -16,18 +16,6 @@
     ]
   },
   "findings": [
-    {
-      "file": "src/api/unified/UnifiedAPIManager.ts",
-      "line": 600,
-      "snippet": "retryRate: 0, // TODO: 実装",
-      "kind": "todo"
-    },
-    {
-      "file": "src/api/unified/UnifiedAPIManager.ts",
-      "line": 601,
-      "snippet": "timeouts: 0, // TODO: 実装",
-      "kind": "todo"
-    },
     {
       "file": "src/components/accessibility/AccessibilityProvider.tsx",
       "line": 35,
@@ -95,12 +83,6 @@
       "kind": "todo"
     },
     {
-      "file": "src/components/analytics/TodoAnalytics.tsx",
-      "line": 313,
-      "snippet": "TODO分析ダッシュボード",
-      "kind": "todo"
-    },
-    {
       "file": "src/components/analytics/TodoAnalyticsDashboard.tsx",
       "line": 102,
       "snippet": "// Redux storeからTODOデータを取得（実際のプロジェクトではここから取得）",
@@ -110,12 +92,6 @@
       "file": "src/components/analytics/TodoAnalyticsDashboard.tsx",
       "line": 105,
       "snippet": "// デモデータ生成（実際の実装では実際のTODOデータを使用）",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/analytics/TodoAnalyticsDashboard.tsx",
-      "line": 315,
-      "snippet": "TODO分析ダッシュボード",
       "kind": "todo"
     },
     {
@@ -237,12 +213,6 @@
       "line": 191,
       "snippet": "toast.error('WBSデータの読み込みに失敗しました。モックデータを使用します。');",
       "kind": "mock"
-    },
-    {
-      "file": "src/components/dailyToDoReminder/components/SiteDevTaskSuggester.tsx",
-      "line": 44,
-      "snippet": "'current-user' // TODO: 実際のユーザーIDを使用",
-      "kind": "todo"
     },
     {
       "file": "src/components/dailyToDoReminder/controls/ApiManager.ts",
@@ -449,12 +419,6 @@
       "kind": "error"
     },
     {
-      "file": "src/components/dashboard/UnifiedHomeDashboard.tsx",
-      "line": 89,
-      "snippet": "description: 'TODO・プロジェクト管理',",
-      "kind": "todo"
-    },
-    {
       "file": "src/components/DayView.tsx",
       "line": 31,
       "snippet": "if (!response.ok) throw new Error('イベントの取得に失敗しました');",
@@ -483,66 +447,6 @@
       "line": 118,
       "snippet": "if (!response.ok) throw new Error('サブスクリプション情報の取得に失敗しました');",
       "kind": "error"
-    },
-    {
-      "file": "src/components/design/UsabilityTestingDashboard.tsx",
-      "line": 121,
-      "snippet": "description: 'ダッシュボードからTODO機能にアクセス',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/development/DevelopmentBadgeDashboard.tsx",
-      "line": 258,
-      "snippet": "'todo_filters', // ✅ ✅ 完了: TODOフィルタ機能",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/development/DevelopmentBadgeDashboard.tsx",
-      "line": 259,
-      "snippet": "'todo_analytics', // ✅ ✅ 完了: TODO分析ダッシュボード実装完了！",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/development/DevelopmentMotivation.tsx",
-      "line": 30,
-      "snippet": "'✅ TODO機能: 統計・分析ダッシュボードの追加',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/development/DevelopmentMotivation.tsx",
-      "line": 62,
-      "snippet": "'TODO分析ダッシュボード作成',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/engagement/UserOnboardingModal.tsx",
-      "line": 335,
-      "snippet": "<h3 className=\"text-xl font-bold\">最初のTODOを作成しましょう</h3>",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/engagement/UserOnboardingModal.tsx",
-      "line": 337,
-      "snippet": "タスク管理の第一歩として、最初のTODOアイテムを作成してみましょう。",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/engagement/UserOnboardingModal.tsx",
-      "line": 341,
-      "snippet": "💡 「完了」をクリックするとTODOページに移動します",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/engagement/UserOnboardingModal.tsx",
-      "line": 361,
-      "snippet": "<li>✅ TODOでタスクを管理</li>",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/enhanced/EnhancedHome.tsx",
-      "line": 88,
-      "snippet": "title: 'TODO管理',",
-      "kind": "todo"
     },
     {
       "file": "src/components/features/wbs/TaskEditDialog.tsx",
@@ -593,46 +497,16 @@
       "kind": "mock"
     },
     {
-      "file": "src/components/Home.tsx",
-      "line": 207,
-      "snippet": "title: 'TODO管理',",
-      "kind": "todo"
-    },
-    {
       "file": "src/components/integrated/IntegratedDashboard.tsx",
       "line": 208,
       "snippet": "// PageSyncServiceが実装されていない場合のモックデータを使用",
       "kind": "mock"
     },
     {
-      "file": "src/components/integrated/IntegratedDashboard.tsx",
-      "line": 1314,
-      "snippet": "{ name: 'TODO管理', path: '/todos', icon: '✅' },",
-      "kind": "todo"
-    },
-    {
       "file": "src/components/internationalization/MultiLanguageSupport.tsx",
       "line": 99,
       "snippet": "throw new Error('useTranslation must be used within MultiLanguageProvider');",
       "kind": "error"
-    },
-    {
-      "file": "src/components/internationalization/MultiLanguageSupport.tsx",
-      "line": 370,
-      "snippet": "translated: 'TODOリスト',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/internationalization/MultiLanguageSupport.tsx",
-      "line": 845,
-      "snippet": "'todo.title': 'TODOリスト',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/layout/Layout.tsx",
-      "line": 461,
-      "snippet": "description: '未実装・モック・WIP自動検出',",
-      "kind": "todo"
     },
     {
       "file": "src/components/layout/Layout.tsx",
@@ -729,12 +603,6 @@
       "line": 229,
       "snippet": "throw new Error(result.message || 'GitHub sync failed');",
       "kind": "error"
-    },
-    {
-      "file": "src/components/quality/QualityDashboard.tsx",
-      "line": 559,
-      "snippet": "{ name: '✅ TODOマスター', description: 'TODO分析ダッシュボード完成', status: '完了' },",
-      "kind": "todo"
     },
     {
       "file": "src/components/realtime/RealtimeAdaptationProvider.tsx",
@@ -1140,12 +1008,6 @@
     },
     {
       "file": "src/hooks/useAutomatedTaskManagement.ts",
-      "line": 3,
-      "snippet": "* TODO: 型安全性の修正後に完全版を復元",
-      "kind": "todo"
-    },
-    {
-      "file": "src/hooks/useAutomatedTaskManagement.ts",
       "line": 81,
       "snippet": "throw new Error(`Task creation failed: ${response.status}`);",
       "kind": "error"
@@ -1173,12 +1035,6 @@
       "line": 164,
       "snippet": "console.log('🚀 Automation event triggered (mock):', event.type);",
       "kind": "mock"
-    },
-    {
-      "file": "src/hooks/useComprehensiveBadgeSync.ts",
-      "line": 202,
-      "snippet": "* ✅ TODO管理専用フック",
-      "kind": "todo"
     },
     {
       "file": "src/hooks/useFirebaseAuth.ts",
@@ -1233,12 +1089,6 @@
       "line": 100,
       "snippet": "throw new Error(errorMessage);",
       "kind": "error"
-    },
-    {
-      "file": "src/hooks/useRealtimeGamificationTracking.ts",
-      "line": 219,
-      "snippet": "badgesUnlocked: 0, // TODO: Calculate from recent achievements",
-      "kind": "todo"
     },
     {
       "file": "src/hooks/useRealtimeGamificationTracking.ts",
@@ -1323,12 +1173,6 @@
       "line": 608,
       "snippet": "throw new Error('Optimization is disabled');",
       "kind": "error"
-    },
-    {
-      "file": "src/hooks/useUnifiedDatabase.ts",
-      "line": 914,
-      "snippet": "* 📝 TODO用フック",
-      "kind": "todo"
     },
     {
       "file": "src/lib/analytics.ts",
@@ -1454,12 +1298,6 @@
       "file": "src/pages/DevelopmentStatus.tsx",
       "line": 275,
       "snippet": "<p className=\"text-sm text-gray-600 mt-1\">未実装・モック・WIP・エラーヒントの自動検出</p>",
-      "kind": "todo"
-    },
-    {
-      "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 275,
-      "snippet": "<p className=\"text-sm text-gray-600 mt-1\">未実装・モック・WIP・エラーヒントの自動検出</p>",
       "kind": "mock"
     },
     {
@@ -1503,12 +1341,6 @@
       "line": 475,
       "snippet": "strokeWidth={lowestKey === 'mock' ? 3 : 1.5}",
       "kind": "mock"
-    },
-    {
-      "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 526,
-      "snippet": "<span>TODO: {data.totals.todo}</span>",
-      "kind": "todo"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
@@ -1643,390 +1475,6 @@
       "kind": "mock"
     },
     {
-      "file": "src/server/config/database.ts",
-      "line": 40,
-      "snippet": "// 開発環境では続行（モック / ローカル機能を使用）",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/routes/candidateRoutes.ts",
-      "line": 27,
-      "snippet": "throw new Error('選挙区情報または比例代表ブロックのいずれかが必要です');",
-      "kind": "error"
-    },
-    {
-      "file": "src/server/routes/progressRoutes.ts",
-      "line": 5,
-      "snippet": "// Mock progress tracking API for development",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/routes/progressRoutes.ts",
-      "line": 16,
-      "snippet": "// Mock data for development",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/routes/progressRoutes.ts",
-      "line": 248,
-      "snippet": "// Mock progress update API",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/routes/surveyRoutes.ts",
-      "line": 88,
-      "snippet": "throw new Error('調査の更新に失敗しました');",
-      "kind": "error"
-    },
-    {
-      "file": "src/server/routes/surveyRoutes.ts",
-      "line": 216,
-      "snippet": "throw new Error('調査の更新に失敗しました');",
-      "kind": "error"
-    },
-    {
-      "file": "src/server/routes/userSubscriptionRoutes.ts",
-      "line": 374,
-      "snippet": "// ここではモックデータを返す",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-minimal.ts",
-      "line": 59,
-      "snippet": "// Mock todos endpoint",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-minimal.ts",
-      "line": 84,
-      "snippet": "// Mock POST todos endpoint",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-minimal.ts",
-      "line": 110,
-      "snippet": "// Mock projects endpoint",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-minimal.ts",
-      "line": 131,
-      "snippet": "// Mock blog endpoint",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-minimal.ts",
-      "line": 172,
-      "snippet": "// Mock auth endpoints",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 291,
-      "snippet": "// --- Minimal WBS mock endpoints for local development ---",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 294,
-      "snippet": "console.log('🧱 POST /api/wbs (mock) called');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 300,
-      "snippet": "console.log('🧱 GET /api/wbs/project/:projectId (mock) called');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 305,
-      "snippet": "console.log('🧱 PUT /api/wbs/:id (mock) called');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 310,
-      "snippet": "console.log('🧱 DELETE /api/wbs/:id (mock) called');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 323,
-      "snippet": "// Simple mock authentication - always success for development",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 334,
-      "snippet": "const mockToken = 'mock_jwt_token_' + Date.now();",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 368,
-      "snippet": "const mockToken = 'mock_jwt_token_' + Date.now();",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 386,
-      "snippet": "// Magic link endpoint (dev mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 741,
-      "snippet": "// 新しいTODOの作成（フロントエンド値をスキーマ対応値にマッピング）",
-      "kind": "todo"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 978,
-      "snippet": "message: `すべてのTODOをリセットしました (${deleteResult.deletedCount}件削除)`,",
-      "kind": "todo"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 997,
-      "snippet": "// Generate mock history data for the past 30 days",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1021,
-      "snippet": "message: 'TODO履歴を取得しました',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1038,
-      "snippet": "// Generate mock daily summary for the past 7 days",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1278,
-      "snippet": "// Mock successful response",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1300,
-      "snippet": "// Record pageview (dev mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1312,
-      "snippet": "console.warn('⚠️ Failed to record pageview (dev mock):', e);",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1317,
-      "snippet": "// Admin pageviews trend (dev mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1338,
-      "snippet": "// Admin top pages (dev mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1352,
-      "snippet": "// Admin users trend (dev mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1369,
-      "snippet": "// Admin revenue trend (dev mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1389,
-      "snippet": "// Admin paid users trend (dev mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1409,
-      "snippet": "// Admin revenue summary (dev mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1417,
-      "snippet": "const churnRate = 0; // mock",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1418,
-      "snippet": "const conversionRate = 0; // mock",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1445,
-      "snippet": "// Mock analytics data",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1504,
-      "snippet": "// Server-Sent Events for realtime analytics (dev mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1538,
-      "snippet": "// Live metrics (dev mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1542,
-      "snippet": "const mock = {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1554,
-      "snippet": "return res.json({ success: true, data: mock });",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1556,
-      "snippet": "console.error('❌ Error in /api/analytics/live-metrics (dev mock):', e);",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1572,
-      "snippet": "// Admin analytics summary (mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1621,
-      "snippet": "// Admin (Mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1624,
-      "snippet": "console.log('✅ GET /api/admin/metrics (mock) called');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1639,
-      "snippet": "console.log('✅ GET /api/admin/users (mock) called');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 1987,
-      "snippet": "// ==== Admin metrics summaries (dev mock) ====",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 2044,
-      "snippet": "// User endpoints (Mock)",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 2047,
-      "snippet": "console.log('✅ POST /api/user/assessments/iq (mock) called');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 2061,
-      "snippet": "console.log('✅ POST /api/user/assessments/mbti (mock) called');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 2077,
-      "snippet": "console.log('✅ POST /api/user/learning/progress (mock) called');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server-simple.ts",
-      "line": 2119,
-      "snippet": "'⚠️ Database connection failed. Running in degraded mode (mock auth, limited APIs).'",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/server.ts",
-      "line": 324,
-      "snippet": "// Essential routes for TODO app - 段階的に有効化",
-      "kind": "todo"
-    },
-    {
-      "file": "src/server/server.ts",
-      "line": 335,
-      "snippet": "// TODO: authRoutes と todoRoutes は一時的に無効化",
-      "kind": "todo"
-    },
-    {
-      "file": "src/server/services/notificationService.ts",
-      "line": 41,
-      "snippet": "// TODO: データベースから設定を読み込む",
-      "kind": "todo"
-    },
-    {
-      "file": "src/server/services/notificationService.ts",
-      "line": 42,
-      "snippet": "// 現在はモックデータを使用",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/services/notificationService.ts",
-      "line": 82,
-      "snippet": "// TODO: データベースに保存",
-      "kind": "todo"
-    },
-    {
-      "file": "src/server/services/notificationService.ts",
-      "line": 136,
-      "snippet": "// ユーザーのタスクを取得（TODO: 実際のデータベースから取得）",
-      "kind": "todo"
-    },
-    {
-      "file": "src/server/services/notificationService.ts",
-      "line": 273,
-      "snippet": "* ユーザーのタスクを取得（モック実装）",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/services/notificationService.ts",
-      "line": 276,
-      "snippet": "// TODO: 実際のデータベースから取得",
-      "kind": "todo"
-    },
-    {
-      "file": "src/server/services/notificationService.ts",
-      "line": 277,
-      "snippet": "// 現在はモックデータを返す",
-      "kind": "mock"
-    },
-    {
-      "file": "src/server/services/notificationService.ts",
-      "line": 285,
-      "snippet": "// TODO: データベースに保存",
-      "kind": "todo"
-    },
-    {
       "file": "src/services/abstinenceService.ts",
       "line": 13,
       "snippet": "throw new Error('Failed to fetch challenges');",
@@ -2111,12 +1559,6 @@
       "kind": "error"
     },
     {
-      "file": "src/services/adhdTodoIntegrationService.ts",
-      "line": 6,
-      "snippet": "originalTaskId?: string; // 元のTODOのID",
-      "kind": "todo"
-    },
-    {
       "file": "src/services/ai/AdvancedAIService.ts",
       "line": 137,
       "snippet": "throw new Error('No AI provider configured');",
@@ -2154,81 +1596,9 @@
     },
     {
       "file": "src/services/ai/AIAnalyticsService.ts",
-      "line": 200,
-      "snippet": "title: 'TODO機能の高いエンゲージメント',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/AIAnalyticsService.ts",
-      "line": 201,
-      "snippet": "description: 'TODOページは最も長い滞在時間と高い完了率を示しています',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/AIAnalyticsService.ts",
-      "line": 405,
-      "snippet": "name: 'TODO集中作業',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/AIAnalyticsService.ts",
-      "line": 407,
-      "snippet": "description: 'TODOページでの滞在時間が長い',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/AIAnalyticsService.ts",
-      "line": 438,
-      "snippet": "title: 'TODO機能の高いエンゲージメント',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/AIAnalyticsService.ts",
-      "line": 439,
-      "snippet": "description: 'TODOページは最も長い滞在時間と高い完了率を示しています',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/AIAnalyticsService.ts",
-      "line": 473,
-      "snippet": "title: 'TODOショートカット機能',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/AIAnalyticsService.ts",
-      "line": 474,
-      "snippet": "description: 'よく使用されるTODO操作のキーボードショートカットを追加',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/AIAnalyticsService.ts",
       "line": 491,
       "snippet": "// モックデータ（実際の実装では分析データベースから取得）",
       "kind": "mock"
-    },
-    {
-      "file": "src/services/ai/AIAnalyticsService.ts",
-      "line": 529,
-      "snippet": "title: 'TODOページの高いパフォーマンス',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/AIAnalyticsService.ts",
-      "line": 530,
-      "snippet": "description: 'TODOページは最も高いエンゲージメントとコンバージョン率を示しています',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/AIAnalyticsService.ts",
-      "line": 549,
-      "snippet": "title: 'TODOページ機能拡張',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/AIAnalyticsService.ts",
-      "line": 550,
-      "snippet": "description: '高パフォーマンスのTODOページに追加機能を実装してエンゲージメントを向上',",
-      "kind": "todo"
     },
     {
       "file": "src/services/ai/AIAnalyticsService.ts",
@@ -2477,12 +1847,6 @@
       "kind": "error"
     },
     {
-      "file": "src/services/ai/NaturalLanguageProcessingService.ts",
-      "line": 329,
-      "snippet": "/(?:TODO|やること|アクション)[:：]?\\s*(.+?)(?=[。\\n]|$)/g,",
-      "kind": "todo"
-    },
-    {
       "file": "src/services/ai/nextTaskSuggestionService.ts",
       "line": 52,
       "snippet": "// 開発環境ではモック実装",
@@ -2522,12 +1886,6 @@
       "file": "src/services/ai/SelfImprovementEngine.ts",
       "line": 984,
       "snippet": "// TODOコメントやFIXMEコメントからバグ推定",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/SelfImprovementEngine.ts",
-      "line": 993,
-      "snippet": "const bugs = (content.match(/\\/\\/\\s*(TODO|FIXME|BUG|HACK)/gi) || []).length;",
       "kind": "todo"
     },
     {
@@ -2715,18 +2073,6 @@
       "line": 508,
       "snippet": "throw new Error('すべてのプロバイダーが失敗しました');",
       "kind": "error"
-    },
-    {
-      "file": "src/services/ai/UserFeedbackAnalysisService.ts",
-      "line": 491,
-      "snippet": "todo_create: 'TODO作成',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/ai/UserFeedbackAnalysisService.ts",
-      "line": 492,
-      "snippet": "todo_complete: 'TODO完了',",
-      "kind": "todo"
     },
     {
       "file": "src/services/ai/wbsGeneratorService.ts",
@@ -3540,12 +2886,6 @@
     },
     {
       "file": "src/services/database/DatabaseBackupService.ts",
-      "line": 200,
-      "snippet": "name: 'TODO データ復旧',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/database/DatabaseBackupService.ts",
       "line": 394,
       "snippet": "throw new Error('指定されたバックアップが見つかりません');",
       "kind": "error"
@@ -3587,30 +2927,6 @@
       "kind": "mock"
     },
     {
-      "file": "src/services/development/BadgeEvaluationService.ts",
-      "line": 177,
-      "snippet": "if (!progress.coreFeatures.todo) return 'TODO CRUD機能の完成';",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/development/BadgeEvaluationService.ts",
-      "line": 212,
-      "snippet": "'✅ TODO機能の分析ダッシュボード追加',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/development/GitHubProgressService.ts",
-      "line": 72,
-      "snippet": "todo: true, // TODO管理 ✓",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/engagement/UserOnboardingService.ts",
-      "line": 82,
-      "snippet": "title: '初回TODO作成',",
-      "kind": "todo"
-    },
-    {
       "file": "src/services/engagement/UserOnboardingService.ts",
       "line": 246,
       "snippet": "throw new Error('Onboarding progress not found');",
@@ -3645,12 +2961,6 @@
       "line": 360,
       "snippet": "throw new Error('Onboarding progress not found');",
       "kind": "error"
-    },
-    {
-      "file": "src/services/engagement/UserOnboardingService.ts",
-      "line": 449,
-      "snippet": "tips.push('💡 初心者の方は、まず基本的なTODO機能から始めることをお勧めします。');",
-      "kind": "todo"
     },
     {
       "file": "src/services/ErrorRecoveryService.ts",
@@ -3717,30 +3027,6 @@
       "line": 740,
       "snippet": "if (!portfolio) throw new Error('ポートフォリオが見つかりません');",
       "kind": "error"
-    },
-    {
-      "file": "src/services/finance/ComprehensiveAssetManagementService.ts",
-      "line": 1154,
-      "snippet": "income: 0, // TODO: 前月データと比較",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/finance/ComprehensiveAssetManagementService.ts",
-      "line": 1190,
-      "snippet": "trend: 'stable', // TODO: 前月比較",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/finance/ComprehensiveAssetManagementService.ts",
-      "line": 1214,
-      "snippet": "correlationWithStress: 0.7, // TODO: 実際の相関計算",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/finance/ComprehensiveAssetManagementService.ts",
-      "line": 1223,
-      "snippet": "count: 2, // TODO: 実際の検出",
-      "kind": "todo"
     },
     {
       "file": "src/services/firebaseService.ts",
@@ -3989,18 +3275,6 @@
       "kind": "error"
     },
     {
-      "file": "src/services/integratedFinanceService.ts",
-      "line": 107,
-      "snippet": "const recurringIncome = 0; // TODO: 実装",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/integratedFinanceService.ts",
-      "line": 108,
-      "snippet": "const recurringExpenses = 0; // TODO: 実装",
-      "kind": "todo"
-    },
-    {
       "file": "src/services/integration/BadgePredictionPageIntegrationService.ts",
       "line": 416,
       "snippet": "throw new Error(`Badge prediction not found: ${badgeId}`);",
@@ -4011,12 +3285,6 @@
       "line": 620,
       "snippet": "throw new Error(`Page configuration not found: ${pageName}`);",
       "kind": "error"
-    },
-    {
-      "file": "src/services/integration/ComprehensivePageSyncSystem.ts",
-      "line": 208,
-      "snippet": "name: 'TODO管理',",
-      "kind": "todo"
     },
     {
       "file": "src/services/integration/GitHubAutomationService.ts",
@@ -4073,12 +3341,6 @@
       "kind": "error"
     },
     {
-      "file": "src/services/integration/PageSyncService.ts",
-      "line": 243,
-      "snippet": "todos: 'TODO管理',",
-      "kind": "todo"
-    },
-    {
       "file": "src/services/integration/UnifiedDashboardService.ts",
       "line": 307,
       "snippet": "// モックデータ（実際の実装では実データを使用）",
@@ -4089,12 +3351,6 @@
       "line": 619,
       "snippet": "// Mock data generators",
       "kind": "mock"
-    },
-    {
-      "file": "src/services/integration/UniversalPageSyncService.ts",
-      "line": 65,
-      "snippet": "{ id: 'todo-management', name: 'TODO管理', priority: 'high' },",
-      "kind": "todo"
     },
     {
       "file": "src/services/integrations/GitHubIntegrationService.ts",
@@ -4137,18 +3393,6 @@
       "line": 413,
       "snippet": "throw new Error(`Vercel API Error: ${response.status} ${response.statusText}`);",
       "kind": "error"
-    },
-    {
-      "file": "src/services/internationalization/LocalizationAutomationService.ts",
-      "line": 400,
-      "snippet": "TODO: 'Todo',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/internationalization/LocalizationAutomationService.ts",
-      "line": 414,
-      "snippet": "TODO: '待办事项',",
-      "kind": "todo"
     },
     {
       "file": "src/services/internationalization/MultiLanguageService.ts",
@@ -4251,12 +3495,6 @@
       "line": 430,
       "snippet": "throw new Error('現在の週次計画が見つかりません');",
       "kind": "error"
-    },
-    {
-      "file": "src/services/PomodoroWorkTimeIntegrationService.ts",
-      "line": 35,
-      "snippet": "private userId: string = 'demo@example.com'; // TODO: 実際の認証システムから取得",
-      "kind": "todo"
     },
     {
       "file": "src/services/PomodoroWorkTimeIntegrationService.ts",
@@ -4506,78 +3744,6 @@
     },
     {
       "file": "src/services/testing/E2ETestingService.ts",
-      "line": 237,
-      "snippet": "name: 'TODO作成テスト',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 238,
-      "snippet": "description: '新しいTODOアイテムを作成できることを確認',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 244,
-      "snippet": "description: 'TODOページに移動',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 250,
-      "snippet": "description: 'TODO追加ボタンをクリック',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 256,
-      "snippet": "value: 'テストTODO',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 257,
-      "snippet": "description: 'TODOタイトルを入力',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 263,
-      "snippet": "value: 'E2Eテストで作成されたTODO',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 264,
-      "snippet": "description: 'TODO説明を入力',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 270,
-      "snippet": "description: 'TODO保存ボタンをクリック',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 285,
-      "snippet": "expectedValue: 'テストTODO',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 286,
-      "snippet": "actualValue: 'テストTODO',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 312,
-      "snippet": "description: 'ログインからTODO管理、ログアウトまでの完全フロー',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
       "line": 462,
       "snippet": "throw new Error(`Test suite not found: ${suiteId}`);",
       "kind": "error"
@@ -4587,24 +3753,6 @@
       "line": 466,
       "snippet": "throw new Error('Another test suite is currently running');",
       "kind": "error"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 734,
-      "snippet": "const totalPages = 15; // ダッシュボード、TODO、分析、設定など",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 741,
-      "snippet": "const totalFeatures = 20; // 認証、TODO管理、分析、設定など",
-      "kind": "todo"
-    },
-    {
-      "file": "src/services/testing/E2ETestingService.ts",
-      "line": 748,
-      "snippet": "const totalJourneys = 10; // 新規登録、TODO作成、レポート確認など",
-      "kind": "todo"
     },
     {
       "file": "src/services/testing/IntegrationTestingService.ts",
@@ -4869,12 +4017,6 @@
       "line": 635,
       "snippet": "'mock.*data',",
       "kind": "mock"
-    },
-    {
-      "file": "src/services/verification/FinalVerificationService.ts",
-      "line": 636,
-      "snippet": "'TODO.*mock',",
-      "kind": "todo"
     },
     {
       "file": "src/services/verification/FinalVerificationService.ts",
@@ -5436,12 +4578,6 @@
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 191,
-      "snippet": "const userId = 'demo-user'; // TODO: 実際のユーザーIDを取得",
-      "kind": "todo"
-    },
-    {
-      "file": "src/store/todoSlice.ts",
       "line": 211,
       "snippet": "throw new Error(`API呼び出しエラー: ${errorMsg}`);",
       "kind": "error"
@@ -5711,24 +4847,6 @@
       "kind": "mock"
     },
     {
-      "file": "src/types/development-badges.ts",
-      "line": 781,
-      "snippet": "name: '✅ TODOマスター',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/types/development-badges.ts",
-      "line": 782,
-      "snippet": "description: 'TODO機能を完全実装',",
-      "kind": "todo"
-    },
-    {
-      "file": "src/types/development-badges.ts",
-      "line": 806,
-      "snippet": "isUnlocked: true, // 🎉 バッジ獲得！TODO分析ダッシュボード実装により達成！",
-      "kind": "todo"
-    },
-    {
       "file": "src/utils/env.ts",
       "line": 134,
       "snippet": "USE_MOCK_DATA: () => getEnv('VITE_USE_MOCK_DATA') === 'true',",
@@ -5825,60 +4943,6 @@
       "kind": "error"
     },
     {
-      "file": "src/utils/todoSafety.ts",
-      "line": 18,
-      "snippet": "* TODOの操作を安全に行うためのユーティリティ関数",
-      "kind": "todo"
-    },
-    {
-      "file": "src/utils/todoSafety.ts",
-      "line": 40,
-      "snippet": "* TODO配列を安全にフィルタリングする関数",
-      "kind": "todo"
-    },
-    {
-      "file": "src/utils/todoSafety.ts",
-      "line": 55,
-      "snippet": "* TODO IDを安全に取得する関数",
-      "kind": "todo"
-    },
-    {
-      "file": "src/utils/todoSafety.ts",
-      "line": 67,
-      "snippet": "* TODO配列から特定のIDのタスクを安全に検索する関数",
-      "kind": "todo"
-    },
-    {
-      "file": "src/utils/todoSafety.ts",
-      "line": 75,
-      "snippet": "* TODO配列から完了していないタスクを安全に取得する関数",
-      "kind": "todo"
-    },
-    {
-      "file": "src/utils/todoSafety.ts",
-      "line": 82,
-      "snippet": "* TODO配列から完了したタスクを安全に取得する関数",
-      "kind": "todo"
-    },
-    {
-      "file": "src/utils/todoSafety.ts",
-      "line": 89,
-      "snippet": "* デバッグ用：TODO配列の状態を診断する関数",
-      "kind": "todo"
-    },
-    {
-      "file": "api/admin/metrics/revenue/summary.ts",
-      "line": 46,
-      "snippet": "const churnRate = 0; // TODO: compute from cancellations over starting active users",
-      "kind": "todo"
-    },
-    {
-      "file": "api/admin/metrics/revenue/summary.ts",
-      "line": 47,
-      "snippet": "const conversionRate = 0; // TODO: compute from new subscriptions / trials or visits",
-      "kind": "todo"
-    },
-    {
       "file": "api/analysis/hardcoded-data.ts",
       "line": 11,
       "snippet": "| 'mock-data'",
@@ -5961,18 +5025,6 @@
       "line": 305,
       "snippet": "const mockKeywords = ['mock', 'fake', 'dummy', 'sample', 'test-data', '仮データ'];",
       "kind": "mock"
-    },
-    {
-      "file": "api/analysis/hardcoded-data.ts",
-      "line": 309,
-      "snippet": "line.includes('TODO:') ||",
-      "kind": "todo"
-    },
-    {
-      "file": "api/analysis/hardcoded-data.ts",
-      "line": 310,
-      "snippet": "line.includes('FIXME:') ||",
-      "kind": "todo"
     },
     {
       "file": "api/analysis/hardcoded-data.ts",
@@ -6204,33 +5256,9 @@
     },
     {
       "file": "api/todos/index.ts",
-      "line": 77,
-      "snippet": "const allowGuestTodos = process.env.ALLOW_GUEST_TODOS === 'true';",
-      "kind": "todo"
-    },
-    {
-      "file": "api/todos/index.ts",
       "line": 96,
       "snippet": "throw new Error('DB disabled for preview');",
       "kind": "error"
-    },
-    {
-      "file": "api/todos/index.ts",
-      "line": 175,
-      "snippet": "message: 'TODOを取得しました',",
-      "kind": "todo"
-    },
-    {
-      "file": "api/todos/index.ts",
-      "line": 281,
-      "snippet": "message: 'TODOを作成しました',",
-      "kind": "todo"
-    },
-    {
-      "file": "api/todos/index.ts",
-      "line": 297,
-      "snippet": "message: 'TODOの処理中にエラーが発生しました',",
-      "kind": "todo"
     },
     {
       "file": "api/_utils/auth.ts",
