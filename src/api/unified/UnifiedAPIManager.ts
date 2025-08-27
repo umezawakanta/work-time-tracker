@@ -310,7 +310,6 @@ class UnifiedAPIManager extends EventEmitter {
       console.log('✅ Unified API Manager initialized successfully');
       this.emit('initialized');
     } catch (error) {
-      console.error('❌ Failed to initialize Unified API Manager:', error);
       await unifiedErrorHandler.handleError(error, {
         component: 'UnifiedAPIManager',
         action: 'initialization',
@@ -337,14 +336,16 @@ class UnifiedAPIManager extends EventEmitter {
         });
 
         if (!securityResult.allowed) {
-          throw new Error(`Security check failed: ${securityResult.reason}`);
+          return this.createErrorResponse<T>(requestId, 'SECURITY_CHECK_FAILED',
+            `Security check failed: ${securityResult.reason}`);
         }
       }
 
       // エンドポイント設定の取得
       const endpointConfig = this.config.endpoints[request.endpoint];
       if (!endpointConfig) {
-        throw new Error(`Unknown endpoint: ${request.endpoint}`);
+        return this.createErrorResponse<T>(requestId, 'UNKNOWN_ENDPOINT',
+          `Unknown endpoint: ${request.endpoint}`);
       }
 
       // キャッシュチェック
@@ -702,7 +703,11 @@ class UnifiedAPIManager extends EventEmitter {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        return this.createErrorResponse<T>(
+          requestId,
+          `HTTP_${response.status}`,
+          `HTTP ${response.status}: ${response.statusText}`
+        );
       }
 
       // レスポンスの解析
@@ -786,6 +791,31 @@ class UnifiedAPIManager extends EventEmitter {
     });
 
     return apiError;
+  }
+
+  /**
+   * 🧯 統一エラーレスポンス生成（例外を投げずに返す）
+   */
+  private createErrorResponse<T>(
+    requestId: string,
+    code: string,
+    message: string
+  ): APIResponse<T> {
+    return {
+      success: false,
+      error: {
+        code,
+        message,
+        timestamp: new Date().toISOString(),
+        traceId: requestId,
+      },
+      metadata: {
+        requestId,
+        timestamp: new Date().toISOString(),
+        duration: 0,
+        cached: false,
+      },
+    };
   }
 
   /**
