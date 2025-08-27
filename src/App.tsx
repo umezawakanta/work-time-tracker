@@ -36,6 +36,7 @@ import { RealtimeAdaptationProvider } from './components/realtime/RealtimeAdapta
 import { PomodoroProvider } from './context/PomodoroContext';
 import { InternationalizationProvider } from './hooks/useInternationalization';
 import { useAuth } from './hooks/useAuth';
+import ProcrastinationGuard from '@/components/productivity/ProcrastinationGuard';
 // Admin dashboard (lazy)
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
 const AIAssistantPage = lazy(() => import('@/pages/AIAssistant'));
@@ -1293,6 +1294,7 @@ const AppWithProviders: React.FC = () => {
   return (
     <>
       <App />
+      <ProcrastinationGuard />
       <Toaster
         position="top-right"
         toastOptions={{
