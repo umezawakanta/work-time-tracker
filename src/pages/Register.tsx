@@ -33,6 +33,7 @@ interface ValidationErrors {
   email?: string;
   password?: string;
   confirmPassword?: string;
+  referralCode?: string;
   terms?: string;
   general?: string;
 }

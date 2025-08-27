@@ -97,7 +97,7 @@ export const ADHDExecutionAssistant: React.FC = () => {
     }
   };
 
-  const handleCompleteStep = (stepId: string) => {
+  const handleCompleteStep = async (stepId: string) => {
     try {
       const newGuidance = adhdExecutionSupport.completeStep(stepId);
       setGuidance(newGuidance);
@@ -124,7 +124,7 @@ export const ADHDExecutionAssistant: React.FC = () => {
     }
   };
 
-  const handleInterruption = (
+  const handleInterruption = async (
     reason: 'distraction' | 'overwhelm' | 'boredom' | 'external' | 'physical'
   ) => {
     try {
@@ -139,7 +139,7 @@ export const ADHDExecutionAssistant: React.FC = () => {
     }
   };
 
-  const handleResume = () => {
+  const handleResume = async () => {
     try {
       const newGuidance = adhdExecutionSupport.resumeExecution();
       setGuidance(newGuidance);
