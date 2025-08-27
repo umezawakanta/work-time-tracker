@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2025-08-27T12:10:18.102Z",
+  "generatedAt": "2025-08-27T17:22:31.415Z",
   "totals": {
     "filesScanned": 1185,
-    "findings": 875,
+    "findings": 882,
     "todo": 34,
-    "mock": 425,
+    "mock": 432,
     "wip": 3,
     "errorHints": 406
   },
@@ -1272,97 +1272,139 @@
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 130,
+      "line": 140,
+      "snippet": "mock: data.totals.mock,",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/DevelopmentStatus.tsx",
+      "line": 147,
+      "snippet": "mock: Number(startFromHistory.mock ?? currentTotals.mock),",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/DevelopmentStatus.tsx",
+      "line": 155,
+      "snippet": "mock: Number(prevFromHistory.mock ?? 0),",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/DevelopmentStatus.tsx",
+      "line": 164,
+      "snippet": "return (['findings', 'todo', 'mock', 'wip', 'error'] as SeriesKey[]).map((k) => {",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/DevelopmentStatus.tsx",
+      "line": 187,
       "snippet": "if (!res.ok) throw new Error('failed to load dev-status.json');",
       "kind": "error"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 197,
+      "line": 266,
       "snippet": "mock: Number(history[0]?.totals?.mock ?? 0),",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 210,
+      "line": 279,
       "snippet": "mock: Number(h.totals?.mock ?? 0),",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 219,
+      "line": 288,
+      "snippet": "mock: Number(history[idx - 1].totals?.mock ?? 0),",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/DevelopmentStatus.tsx",
+      "line": 298,
       "snippet": "mockPct: toPct(base.mock, current.mock),",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 275,
+      "line": 303,
+      "snippet": "mockCount: current.mock,",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/DevelopmentStatus.tsx",
+      "line": 308,
+      "snippet": "dMock: prev != null ? current.mock - prev.mock : undefined,",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/DevelopmentStatus.tsx",
+      "line": 364,
       "snippet": "<p className=\"text-sm text-gray-600 mt-1\">未実装・モック・WIP・エラーヒントの自動検出</p>",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 295,
+      "line": 384,
       "snippet": "{(['todo', 'mock', 'wip', 'error', 'note'] as Finding['kind'][]).map((k) => (",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 361,
+      "line": 482,
       "snippet": "{(['findings', 'todo', 'mock', 'wip', 'error'] as const).map((k) => (",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 419,
+      "line": 576,
       "snippet": "{seriesVisible.mock && (",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 420,
-      "snippet": "<div>mock: {Number(p.mockPct).toFixed(1)}%</div>",
+      "line": 578,
+      "snippet": "mock: {Number(p.mockPct).toFixed(1)}%",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 468,
+      "line": 681,
       "snippet": "{seriesVisible.mock && (",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 472,
+      "line": 685,
       "snippet": "name=\"mock\"",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 475,
+      "line": 688,
       "snippet": "strokeWidth={lowestKey === 'mock' ? 3 : 1.5}",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 527,
+      "line": 740,
       "snippet": "<span>MOCK: {data.totals.mock}</span>",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 546,
+      "line": 759,
       "snippet": "<h3 className=\"text-sm font-semibold text-sky-700\">モック/ダミー</h3>",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 549,
+      "line": 762,
       "snippet": "<li key={`mock-${r}`}>{r}</li>",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 671,
+      "line": 884,
       "snippet": ": f.kind === 'mock'",
       "kind": "mock"
     },

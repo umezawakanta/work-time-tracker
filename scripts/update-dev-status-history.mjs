@@ -23,6 +23,7 @@ function readJsonSafe(p, fallback) {
 }
 
 function main() {
+    const isSnapshot = process.argv.includes('--snapshot');
     // Ensure latest dev-status.json exists
     try {
         run('node scripts/dev-status-scan.mjs');
@@ -48,10 +49,10 @@ function main() {
     const e2e = readJsonSafe(e2ePath, null);
 
     const entry = {
-        sha: commitSha,
-        short: commitShort,
-        message: commitMessage,
-        timestamp: new Date(commitTimeSec * 1000).toISOString(),
+        sha: isSnapshot ? `${commitSha}-${Date.now()}` : commitSha,
+        short: isSnapshot ? `${commitShort}*` : commitShort,
+        message: isSnapshot ? `${commitMessage} (snapshot)` : commitMessage,
+        timestamp: isSnapshot ? new Date().toISOString() : new Date(commitTimeSec * 1000).toISOString(),
         totals: {
             findings: Number(current.totals.findings || (current.findings ? current.findings.length : 0) || 0),
             todo: Number(current.totals.todo || 0),
@@ -77,7 +78,9 @@ function main() {
 
     const history = readJsonSafe(historyPath, []);
     const exists = history.some((h) => h.sha === entry.sha);
-    const next = exists ? history.map((h) => (h.sha === entry.sha ? entry : h)) : [...history, entry];
+    const next = isSnapshot
+        ? [...history, entry]
+        : exists ? history.map((h) => (h.sha === entry.sha ? entry : h)) : [...history, entry];
     next.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     fs.mkdirSync(publicDir, { recursive: true });
     fs.writeFileSync(historyPath, JSON.stringify(next, null, 2) + '\n', 'utf8');
