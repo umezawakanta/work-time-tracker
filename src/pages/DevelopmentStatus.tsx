@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   ResponsiveContainer,
   LineChart,
@@ -78,6 +78,8 @@ export default function DevelopmentStatus(): React.JSX.Element {
   const [coverage, setCoverage] = useState<CoverageSummary | null>(null);
   const [testSummary, setTestSummary] = useState<TestSummary | null>(null);
   const [ciStatus, setCiStatus] = useState<{ github: any[]; vercel: any[] } | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState<boolean>(true);
+  const [lastLoadedAt, setLastLoadedAt] = useState<Date | null>(null);
 
   type SeriesKey = 'findings' | 'todo' | 'mock' | 'wip' | 'error';
 
@@ -177,58 +179,69 @@ export default function DevelopmentStatus(): React.JSX.Element {
     });
   })();
 
-  useEffect(() => {
-    (async () => {
+  const load = useCallback(async () => {
+    try {
+      setLoading(true);
+      const ts = Date.now();
+      const q = `?ts=${ts}`;
+      const res = await fetch(`/dev-status.json${q}`);
+      if (!res.ok) throw new Error('failed to load dev-status.json');
+      const json = (await res.json()) as DevStatus;
+      setData(json);
+      // load history
       try {
-        setLoading(true);
-        const ts = Date.now();
-        const q = `?ts=${ts}`;
-        const res = await fetch(`/dev-status.json${q}`);
-        if (!res.ok) throw new Error('failed to load dev-status.json');
-        const json = (await res.json()) as DevStatus;
-        setData(json);
-        // load history
-        try {
-          const hres = await fetch(`/dev-status-history.json${q}`);
-          if (hres.ok) {
-            const h = (await hres.json()) as any[];
-            setHistory(Array.isArray(h) ? h : []);
-          }
-        } catch {}
+        const hres = await fetch(`/dev-status-history.json${q}`);
+        if (hres.ok) {
+          const h = (await hres.json()) as any[];
+          setHistory(Array.isArray(h) ? h : []);
+        }
+      } catch {}
 
-        // Load coverage summary if exists
-        try {
-          const covRes = await fetch(`/coverage-summary.json${q}`);
-          if (covRes.ok) {
-            const cov = (await covRes.json()) as CoverageSummary;
-            setCoverage(cov);
-          }
-        } catch {}
+      // Load coverage summary if exists
+      try {
+        const covRes = await fetch(`/coverage-summary.json${q}`);
+        if (covRes.ok) {
+          const cov = (await covRes.json()) as CoverageSummary;
+          setCoverage(cov);
+        }
+      } catch {}
 
-        // Load test summary if exists
-        try {
-          const tsRes = await fetch(`/test-summary.json${q}`);
-          if (tsRes.ok) {
-            const ts = (await tsRes.json()) as TestSummary;
-            setTestSummary(ts);
-          }
-        } catch {}
+      // Load test summary if exists
+      try {
+        const tsRes = await fetch(`/test-summary.json${q}`);
+        if (tsRes.ok) {
+          const tsj = (await tsRes.json()) as TestSummary;
+          setTestSummary(tsj);
+        }
+      } catch {}
 
-        // Load CI status (serverless) - best effort
-        try {
-          const ciRes = await fetch(`/api/status/ci?limit=5&ts=${ts}`);
-          if (ciRes.ok) {
-            const ci = (await ciRes.json()) as any;
-            if (ci?.data) setCiStatus(ci.data);
-          }
-        } catch {}
-      } catch (e: any) {
-        setError(e?.message || 'failed');
-      } finally {
-        setLoading(false);
-      }
-    })();
+      // Load CI status (serverless) - best effort
+      try {
+        const ciRes = await fetch(`/api/status/ci?limit=5&ts=${ts}`);
+        if (ciRes.ok) {
+          const ci = (await ciRes.json()) as any;
+          if (ci?.data) setCiStatus(ci.data);
+        }
+      } catch {}
+      setLastLoadedAt(new Date());
+    } catch (e: any) {
+      setError(e?.message || 'failed');
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const id = window.setInterval(() => {
+      load();
+    }, 60_000);
+    return () => window.clearInterval(id);
+  }, [autoRefresh, load]);
 
   // Build chart data (commit-wise % completion from the first snapshot)
   const chartData: Array<{
@@ -478,6 +491,28 @@ export default function DevelopmentStatus(): React.JSX.Element {
           {history.length > 0 && chartData.length > 0 && (
             <section>
               <h2 className="text-lg font-medium">件数推移（コミット単位・%完了）</h2>
+              <div className="mt-1 flex items-center gap-3 text-xs text-gray-700">
+                <button
+                  onClick={() => load()}
+                  className="px-2 py-1 border rounded bg-white hover:bg-gray-50"
+                  aria-label="最新に更新"
+                >
+                  更新
+                </button>
+                <label className="inline-flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    checked={autoRefresh}
+                    onChange={(e) => setAutoRefresh(e.target.checked)}
+                  />
+                  自動更新
+                </label>
+                {lastLoadedAt && (
+                  <span className="text-gray-500">
+                    最終更新: {lastLoadedAt.toLocaleTimeString()}
+                  </span>
+                )}
+              </div>
               <div className="mt-2 flex flex-wrap items-center gap-4 text-sm">
                 {(['findings', 'todo', 'mock', 'wip', 'error'] as const).map((k) => (
                   <label key={`toggle-${k}`} className="inline-flex items-center gap-2">

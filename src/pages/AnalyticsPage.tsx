@@ -185,7 +185,6 @@ const AnalyticsPage: React.FC = () => {
                 <React.Suspense
                   fallback={<div className="text-sm text-muted-foreground">読み込み中…</div>}
                 >
-                  {/** @ts-expect-error: relax props typing for lazy boundary on Vercel */}
                   <LiveAnalyticsDashboard userId="current-user" refreshInterval={5000} />
                 </React.Suspense>
               </CardContent>
