@@ -171,7 +171,7 @@
         "i18next": "^25.0.0",
         "idb": "^8.0.3",
         "jsonwebtoken": "^9.0.2",
-        "jspdf": "^3.0.1",
+        "jspdf": "^3.0.2",
         "jspdf-autotable": "^5.0.2",
         "lodash": "^4.17.21",
         "lucide-react": "^0.488.0",
