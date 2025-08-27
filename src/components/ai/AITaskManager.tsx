@@ -35,6 +35,7 @@ import {
   clearCompletedTodos,
 } from '@/store/todoSlice';
 import anthropicService from '@/services/ai/anthropicService';
+import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
 
 interface TaskCommand {
   action: 'create' | 'update' | 'delete' | 'complete' | 'search' | 'analyze';
@@ -103,7 +104,10 @@ ${todos.map((t) => `- ID: ${t._id}, タイトル: ${t.task}, 優先度: ${t.prio
 
         return null;
       } catch (error) {
-        console.error('Failed to parse command:', error);
+        await unifiedErrorHandler.handleError(error, {
+          component: 'AITaskManager',
+          action: 'parseNaturalCommand',
+        });
         return null;
       }
     },
@@ -199,7 +203,11 @@ ${highPriorityTasks.length > 0 ? `\n⚠️ 高優先度タスク:\n${highPriorit
             return 'サポートされていないコマンドです。';
         }
       } catch (error) {
-        console.error('Command execution failed:', error);
+        await unifiedErrorHandler.handleError(error, {
+          component: 'AITaskManager',
+          action: 'executeCommand',
+          additionalData: { action: command.action },
+        });
         return 'コマンドの実行に失敗しました。';
       }
     },
@@ -237,7 +245,10 @@ ${highPriorityTasks.length > 0 ? `\n⚠️ 高優先度タスク:\n${highPriorit
       // 会話履歴に追加
       setConversation((prev) => [...prev, { role: 'assistant', content: response }]);
     } catch (error) {
-      console.error('Failed to process message:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'AITaskManager',
+        action: 'handleSendMessage',
+      });
       const errorMessage = 'エラーが発生しました。もう一度お試しください。';
       setConversation((prev) => [...prev, { role: 'assistant', content: errorMessage }]);
       toast.error(errorMessage);

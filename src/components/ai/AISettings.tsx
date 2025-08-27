@@ -40,6 +40,7 @@ import { toast } from 'react-hot-toast';
 
 import anthropicService from '@/services/ai/anthropicService';
 import { getEnv } from '@/utils/env';
+import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
 
 interface AIConfig {
   apiKey: string;
@@ -145,7 +146,10 @@ const AISettings: React.FC = () => {
       toast.success('設定を保存しました');
       setHasChanges(false);
     } catch (error) {
-      console.error('Failed to save configuration:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'AISettings',
+        action: 'saveConfiguration',
+      });
       toast.error('設定の保存に失敗しました');
     } finally {
       setIsSaving(false);
@@ -182,7 +186,10 @@ const AISettings: React.FC = () => {
         toast.error(`接続テスト失敗: ${result.message}`);
       }
     } catch (error) {
-      console.error('Connection test failed:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'AISettings',
+        action: 'testConnection',
+      });
       setTestResult({
         success: false,
         message: 'テスト中にエラーが発生しました',

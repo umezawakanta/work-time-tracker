@@ -33,6 +33,7 @@ import taskAIService, {
   QuotaExceededError,
   NetworkError,
 } from '@/services/ai/taskAIService';
+import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
 
 interface AIAnalysisResult {
   prioritySuggestions: AITaskSuggestion[];
@@ -106,7 +107,10 @@ const AITaskSuggestions: React.FC = () => {
 
       toast.success(`${todos.length}個のタスクの分析が完了しました`);
     } catch (error) {
-      console.error('AI analysis failed:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'AITaskSuggestions',
+        action: 'handleAnalyze',
+      });
 
       if (error instanceof RateLimitError) {
         setLastError(error);
@@ -151,7 +155,11 @@ const AITaskSuggestions: React.FC = () => {
             ),
           });
         }
-      } catch {
+      } catch (error) {
+        await unifiedErrorHandler.handleError(error, {
+          component: 'AITaskSuggestions',
+          action: 'handleApplySuggestion',
+        });
         toast.error('提案の適用に失敗しました');
       }
     },
@@ -184,7 +192,11 @@ const AITaskSuggestions: React.FC = () => {
         }
 
         toast.success(`${breakdown.subtasks.length}個のサブタスクを作成しました`);
-      } catch {
+      } catch (error) {
+        await unifiedErrorHandler.handleError(error, {
+          component: 'AITaskSuggestions',
+          action: 'handleApplyBreakdown',
+        });
         toast.error('タスクブレイクダウンの適用に失敗しました');
       }
     },
