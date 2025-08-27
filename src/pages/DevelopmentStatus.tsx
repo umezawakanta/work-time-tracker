@@ -89,6 +89,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
   // Build chart data (commit-wise % completion from the first snapshot)
   const chartData: Array<{
     name: string;
+    time: number;
     findingsPct: number;
     todoPct: number;
     mockPct: number;
@@ -121,6 +122,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
       };
       return {
         name: h.short,
+        time: h.timestamp ? new Date(h.timestamp).getTime() : 0,
         findingsPct: toPct(base.findings, current.findings),
         todoPct: toPct(base.todo, current.todo),
         mockPct: toPct(base.mock, current.mock),
@@ -276,7 +278,21 @@ export default function DevelopmentStatus(): React.JSX.Element {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
+                    <XAxis
+                      dataKey="time"
+                      type="number"
+                      scale="time"
+                      domain={["auto", "auto"]}
+                      tickFormatter={(v) =>
+                        new Date(v).toLocaleString('ja-JP', {
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      }
+                      minTickGap={24}
+                    />
                     <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
                     <Tooltip
                       content={({ active, label, payload }) => {
@@ -285,7 +301,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
                         const ts = p?.timestamp ? new Date(p.timestamp).toLocaleString() : '';
                         return (
                           <div className="bg-white border rounded p-2 text-xs">
-                            <div className="font-semibold mb-1">{label} {p?.sha && `(${p.sha})`}</div>
+                            <div className="font-semibold mb-1">{p?.name} {p?.sha && `(${p.sha})`}</div>
                             {p?.message && <div className="mb-1">{p.message}</div>}
                             {ts && <div className="text-gray-600 mb-1">{ts}</div>}
                             <div className="grid grid-cols-2 gap-x-3 gap-y-1">
@@ -298,9 +314,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
                               {seriesVisible.mock && (
                                 <div>mock: {Number(p.mockPct).toFixed(1)}%</div>
                               )}
-                              {seriesVisible.wip && (
-                                <div>wip: {Number(p.wipPct).toFixed(1)}%</div>
-                              )}
+                              {seriesVisible.wip && <div>wip: {Number(p.wipPct).toFixed(1)}%</div>}
                               {seriesVisible.error && (
                                 <div>error: {Number(p.errorPct).toFixed(1)}%</div>
                               )}
