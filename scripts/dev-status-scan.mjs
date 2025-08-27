@@ -30,7 +30,7 @@ async function listFilesRecursively(dir) {
       const p = path.join(current, e.name);
       if (e.isDirectory()) {
         // Skip node_modules, .git, dist, coverage
-        if (/node_modules|\.git|dist|coverage|\.next|build/.test(p)) continue;
+        if (/node_modules|\.git|dist|coverage|\.next|build|__mocks__|__tests__/i.test(p)) continue;
         await walk(p);
       } else if (/\.(tsx?|jsx?|mjs|ts)$/.test(e.name)) {
         results.push(p);
@@ -59,7 +59,8 @@ async function scanFile(file) {
     const line = lines[i];
     if (/TODO|FIXME|未実装|WIP|開発中/.test(line)) pushFinding(i, line, /WIP|開発中/.test(line) ? 'wip' : 'todo');
     if (/mock|dummy|モック|ダミー/.test(line)) pushFinding(i, line, 'mock');
-    if (/throw new Error\(|console\.error\(|ErrorBoundary|error-report/i.test(line)) pushFinding(i, line, 'error');
+    // Error hints: ignore ErrorBoundary import/usage lines to reduce noise
+    if (/throw new Error\(|console\.error\(|error-report/i.test(line)) pushFinding(i, line, 'error');
     if (/@deprecated|HACK|WORKAROUND/.test(line)) pushFinding(i, line, 'note');
   }
   return findings;

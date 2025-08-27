@@ -11,5 +11,18 @@
       "wip": 28,
       "error": 1913
     }
+  },
+  {
+    "sha": "d374c2d1d4326abff457fcc58ae41d7ed935a735",
+    "short": "d374c2d1d4",
+    "message": "feat(dev-status): add rich tooltip with commit message/time/link; ci: record and upload dev-status history",
+    "timestamp": "2025-08-27T06:37:50.000Z",
+    "totals": {
+      "findings": 2665,
+      "todo": 140,
+      "mock": 662,
+      "wip": 28,
+      "error": 1828
+    }
   }
 ]
