@@ -24,5 +24,18 @@
       "wip": 28,
       "error": 1828
     }
+  },
+  {
+    "sha": "0fac87269d7ce8e5ff709a47dd4ef1c69cae25ec",
+    "short": "0fac87269d",
+    "message": "fix(ai): use unifiedErrorHandler in AISettings, AITaskManager, AITaskSuggestions; standardize user notifications",
+    "timestamp": "2025-08-27T07:01:03.000Z",
+    "totals": {
+      "findings": 2651,
+      "todo": 140,
+      "mock": 662,
+      "wip": 28,
+      "error": 1814
+    }
   }
 ]

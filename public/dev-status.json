@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2025-08-27T06:40:10.074Z",
+  "generatedAt": "2025-08-27T07:01:15.275Z",
   "totals": {
     "filesScanned": 1265,
-    "findings": 2665,
+    "findings": 2651,
     "todo": 140,
     "mock": 662,
     "wip": 28,
-    "errorHints": 1828
+    "errorHints": 1814
   },
   "flags": {
     "wipRoutes": [
@@ -27,39 +27,15 @@
   "findings": [
     {
       "file": "src\\api\\unified\\UnifiedAPIManager.ts",
-      "line": 313,
-      "snippet": "console.error('❌ Failed to initialize Unified API Manager:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\api\\unified\\UnifiedAPIManager.ts",
-      "line": 340,
-      "snippet": "throw new Error(`Security check failed: ${securityResult.reason}`);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\api\\unified\\UnifiedAPIManager.ts",
-      "line": 347,
-      "snippet": "throw new Error(`Unknown endpoint: ${request.endpoint}`);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\api\\unified\\UnifiedAPIManager.ts",
-      "line": 593,
+      "line": 600,
       "snippet": "retryRate: 0, // TODO: 実装",
       "kind": "todo"
     },
     {
       "file": "src\\api\\unified\\UnifiedAPIManager.ts",
-      "line": 594,
+      "line": 601,
       "snippet": "timeouts: 0, // TODO: 実装",
       "kind": "todo"
-    },
-    {
-      "file": "src\\api\\unified\\UnifiedAPIManager.ts",
-      "line": 705,
-      "snippet": "throw new Error(`HTTP ${response.status}: ${response.statusText}`);",
-      "kind": "error"
     },
     {
       "file": "src\\App.tsx",
@@ -104,69 +80,9 @@
       "kind": "error"
     },
     {
-      "file": "src\\components\\ai\\AIChat.tsx",
-      "line": 125,
-      "snippet": "console.error('Chat error:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\ai\\AIChat.tsx",
-      "line": 168,
-      "snippet": "console.error('Task analysis error:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\ai\\AIChat.tsx",
-      "line": 220,
-      "snippet": "console.error('Code generation error:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\ai\\AIChat.tsx",
-      "line": 247,
-      "snippet": "console.error('Workflow optimization error:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\ai\\AISettings.tsx",
-      "line": 148,
-      "snippet": "console.error('Failed to save configuration:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\ai\\AISettings.tsx",
-      "line": 185,
-      "snippet": "console.error('Connection test failed:', error);",
-      "kind": "error"
-    },
-    {
       "file": "src\\components\\ai\\AITaskDashboard.tsx",
       "line": 53,
       "snippet": "console.error('Failed to load AI analysis:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\ai\\AITaskManager.tsx",
-      "line": 106,
-      "snippet": "console.error('Failed to parse command:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\ai\\AITaskManager.tsx",
-      "line": 202,
-      "snippet": "console.error('Command execution failed:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\ai\\AITaskManager.tsx",
-      "line": 240,
-      "snippet": "console.error('Failed to process message:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\ai\\AITaskSuggestions.tsx",
-      "line": 109,
-      "snippet": "console.error('AI analysis failed:', error);",
       "kind": "error"
     },
     {
