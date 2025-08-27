@@ -52,16 +52,47 @@ async function scanFile(file) {
     return findings;
   }
   const lines = content.split(/\r?\n/);
+  const relative = path.relative(repoRoot, file).replace(/\\/g, '/');
   const pushFinding = (idx, snippet, kind) => {
-    findings.push({ file: path.relative(repoRoot, file), line: idx + 1, snippet: snippet.trim().slice(0, 200), kind });
+    findings.push({ file: relative, line: idx + 1, snippet: snippet.trim().slice(0, 200), kind });
   };
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    if (/TODO|FIXME|未実装|WIP|開発中/.test(line)) pushFinding(i, line, /WIP|開発中/.test(line) ? 'wip' : 'todo');
-    if (/mock|dummy|モック|ダミー/.test(line)) pushFinding(i, line, 'mock');
-    // Error hints: ignore ErrorBoundary import/usage lines to reduce noise
-    if (/throw new Error\(|console\.error\(|error-report/i.test(line)) pushFinding(i, line, 'error');
-    if (/@deprecated|HACK|WORKAROUND/.test(line)) pushFinding(i, line, 'note');
+    const trimmed = line.trim();
+
+    // TODO-like markers (broad)
+    if (/(TODO|FIXME|未実装)/.test(line)) {
+      pushFinding(i, line, 'todo');
+    }
+
+    // WIP markers: count only when present in code comments, not in user-facing UI strings
+    // - Ignore StatusBanners.tsx (the banner text includes "開発中です")
+    // - Require the marker to be in a comment line (starts with // or contains /* ... */)
+    const isCommentLine = /^\/\//.test(trimmed) || /\/\*/.test(trimmed);
+    const isWipToken = /\bWIP\b/.test(line) || /開発中/.test(line);
+    const isBannerFile = /src\/components\/layout\/StatusBanners\.tsx$/.test(relative);
+    if (!isBannerFile && isCommentLine && isWipToken) {
+      pushFinding(i, line, 'wip');
+    }
+
+    // Mock/Dummy markers (keep broad)
+    if (/(^|[^a-zA-Z])(mock|dummy|モック|ダミー)([^a-zA-Z]|$)/i.test(line)) {
+      pushFinding(i, line, 'mock');
+    }
+
+    // Error hints: focus on explicit thrown errors, not generic console.error handlers
+    // - Exclude unifiedErrorHandler usage
+    // - Exclude ErrorBoundary and logging lines
+    const isThrownError = /throw new Error\(/i.test(line);
+    const mentionsUnifiedHandler = /unifiedErrorHandler\.handleError/i.test(line);
+    if (isThrownError && !mentionsUnifiedHandler) {
+      pushFinding(i, line, 'error');
+    }
+
+    // Notes and tech-debt tags
+    if (/@deprecated|HACK|WORKAROUND/.test(line)) {
+      pushFinding(i, line, 'note');
+    }
   }
   return findings;
 }

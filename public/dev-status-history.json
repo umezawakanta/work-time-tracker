@@ -102,5 +102,18 @@
       "wip": 28,
       "error": 1807
     }
+  },
+  {
+    "sha": "368d8581e7eacad01689be33954c109810a82dae",
+    "short": "368d8581e7",
+    "message": "chore(dev-status): refresh counts after clearing WIP flags (0 WIP routes)",
+    "timestamp": "2025-08-27T08:25:15.000Z",
+    "totals": {
+      "findings": 1035,
+      "todo": 142,
+      "mock": 476,
+      "wip": 3,
+      "error": 407
+    }
   }
 ]
