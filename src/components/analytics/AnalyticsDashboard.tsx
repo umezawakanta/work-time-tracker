@@ -48,6 +48,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { toast } from 'react-hot-toast';
+import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
 
 interface AnalyticsDashboardProps {
   isAdminUser?: boolean;
@@ -69,7 +70,11 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ isAdminU
       const data = await userTrackingService.getAnalytics(timeRange);
       setAnalytics(data);
     } catch (error) {
-      console.error('Analytics loading failed:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'AnalyticsDashboard',
+        action: 'loadAnalytics',
+        additionalData: { timeRange },
+      });
       toast.error('解析データの読み込みに失敗しました');
     } finally {
       setIsLoading(false);
