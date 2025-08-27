@@ -37,7 +37,7 @@ jobs:
       # no-op (pnpm is ready at this point)
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
         env:
           PNPM_HOME: ${{ env.PNPM_HOME }}
           PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
