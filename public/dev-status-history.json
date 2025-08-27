@@ -37,5 +37,18 @@
       "wip": 28,
       "error": 1814
     }
+  },
+  {
+    "sha": "422c9290a89a5e3c53e145d6eaaa304a472081e4",
+    "short": "422c9290a8",
+    "message": "fix(analytics): route load errors through unifiedErrorHandler with context",
+    "timestamp": "2025-08-27T07:07:57.000Z",
+    "totals": {
+      "findings": 2650,
+      "todo": 140,
+      "mock": 662,
+      "wip": 28,
+      "error": 1813
+    }
   }
 ]
