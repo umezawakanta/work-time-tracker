@@ -30,6 +30,7 @@ import {
   ProactiveTaskSuggestion,
 } from '@/services/ai/SmartProductivityService';
 import { Todo } from '@/types/todo';
+import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
 
 interface SmartProductivityDashboardProps {
   todos: Todo[];
@@ -100,7 +101,11 @@ export const SmartProductivityDashboard: React.FC<SmartProductivityDashboardProp
         setProactiveSuggestions(proactiveSuggestionsResult.value);
       }
     } catch (error) {
-      console.error('AI分析読み込みエラー:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'SmartProductivityDashboard',
+        action: 'loadAIAnalysis',
+        additionalData: { todos: todos.length, userId },
+      });
     } finally {
       setLoading(false);
     }
