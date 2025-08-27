@@ -173,6 +173,25 @@ pnpm dev
 - GitHub Release 公開時に `post-to-x-on-release` が起動し、最新の更新履歴を日本語で X にポストします（`.github/workflows/post-to-x.yml`）。
 - 必要な Secrets: `X_APP_KEY`, `X_APP_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET`。
 
+#### GitHub Actions 権限と PAT（release-please 用）
+
+release-please が自動でリリース PR を作成できるように、以下を設定してください。
+
+1) リポジトリ設定の権限
+
+- Repository → Settings → Actions → General
+  - Workflow permissions: 「Read and write permissions」
+  - Allow GitHub Actions to create and approve pull requests: チェック
+
+2) Personal Access Token（任意: レート制限回避のため推奨）
+
+- Fine-grained PAT を作成（Developer settings → Personal access tokens）
+  - Repository access: Only select repositories → 対象リポジトリ
+  - Permissions: Contents（Read and write）, Pull requests（Read and write）
+  - 生成したトークンをリポジトリの Secrets に `GH_RELEASE_TOKEN` として保存
+
+本リポジトリの `release-please` ワークフローは `GH_RELEASE_TOKEN` があればそれを、無ければ `GITHUB_TOKEN` を使用します。
+
 #### X API シークレット取得手順（X_APP_KEY / X_APP_SECRET / X_ACCESS_TOKEN / X_ACCESS_SECRET）
 
 1. X Developer Portal にログインする（[developer portal](https://developer.twitter.com)）。
