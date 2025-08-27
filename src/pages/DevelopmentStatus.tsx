@@ -126,10 +126,14 @@ export default function DevelopmentStatus(): React.JSX.Element {
     start: number;
     current: number;
     delta: number; // negative is good (reduced)
+    prev?: number;
+    deltaFromPrev?: number;
     pct: number; // completion % from start
   }> = (() => {
     if (!data) return [];
     const startFromHistory = history.length > 0 ? (history[0].totals as any) : {};
+    const prevFromHistory =
+      history.length > 1 ? (history[history.length - 1].totals as any) : undefined;
     const currentTotals = {
       findings: data.findings.length,
       todo: data.totals.todo,
@@ -144,6 +148,15 @@ export default function DevelopmentStatus(): React.JSX.Element {
       wip: Number(startFromHistory.wip ?? currentTotals.wip),
       error: Number(startFromHistory.error ?? currentTotals.error),
     } as Record<SeriesKey, number>;
+    const prevTotals: Partial<Record<SeriesKey, number>> | undefined = prevFromHistory
+      ? {
+          findings: Number(prevFromHistory.findings ?? 0),
+          todo: Number(prevFromHistory.todo ?? 0),
+          mock: Number(prevFromHistory.mock ?? 0),
+          wip: Number(prevFromHistory.wip ?? 0),
+          error: Number(prevFromHistory.error ?? 0),
+        }
+      : undefined;
     const toPct = (start: number, cur: number) => {
       const denom = start || 1;
       return Math.max(0, Math.min(100, ((start - Math.max(0, cur)) / denom) * 100));
@@ -151,11 +164,14 @@ export default function DevelopmentStatus(): React.JSX.Element {
     return (['findings', 'todo', 'mock', 'wip', 'error'] as SeriesKey[]).map((k) => {
       const start = startTotals[k];
       const current = currentTotals[k];
+      const prev = prevTotals ? prevTotals[k] : undefined;
       return {
         key: k,
         start,
         current,
         delta: current - start,
+        prev,
+        deltaFromPrev: prev != null ? current - prev : undefined,
         pct: toPct(start, current),
       };
     });
@@ -223,6 +239,18 @@ export default function DevelopmentStatus(): React.JSX.Element {
     mockPct: number;
     wipPct: number;
     errorPct: number;
+    // raw counts at this commit
+    findingsCount?: number;
+    todoCount?: number;
+    mockCount?: number;
+    wipCount?: number;
+    errorCount?: number;
+    // deltas vs previous commit (negative is improvement)
+    dFindings?: number;
+    dTodo?: number;
+    dMock?: number;
+    dWip?: number;
+    dError?: number;
     covLines?: number;
     covFuncs?: number;
     covBranches?: number;
@@ -244,7 +272,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
       const pct = ((start - Math.max(0, current)) / start) * 100;
       return Math.max(0, Math.min(100, pct));
     };
-    return history.map((h) => {
+    return history.map((h, idx) => {
       const current = {
         findings: Number(h.totals?.findings ?? 0),
         todo: Number(h.totals?.todo ?? 0),
@@ -252,6 +280,16 @@ export default function DevelopmentStatus(): React.JSX.Element {
         wip: Number(h.totals?.wip ?? 0),
         error: Number(h.totals?.error ?? 0),
       };
+      const prev =
+        idx > 0
+          ? {
+              findings: Number(history[idx - 1].totals?.findings ?? 0),
+              todo: Number(history[idx - 1].totals?.todo ?? 0),
+              mock: Number(history[idx - 1].totals?.mock ?? 0),
+              wip: Number(history[idx - 1].totals?.wip ?? 0),
+              error: Number(history[idx - 1].totals?.error ?? 0),
+            }
+          : undefined;
       return {
         name: h.short,
         time: h.timestamp ? new Date(h.timestamp).getTime() : 0,
@@ -260,6 +298,16 @@ export default function DevelopmentStatus(): React.JSX.Element {
         mockPct: toPct(base.mock, current.mock),
         wipPct: toPct(base.wip, current.wip),
         errorPct: toPct(base.error, current.error),
+        findingsCount: current.findings,
+        todoCount: current.todo,
+        mockCount: current.mock,
+        wipCount: current.wip,
+        errorCount: current.error,
+        dFindings: prev != null ? current.findings - prev.findings : undefined,
+        dTodo: prev != null ? current.todo - prev.todo : undefined,
+        dMock: prev != null ? current.mock - prev.mock : undefined,
+        dWip: prev != null ? current.wip - prev.wip : undefined,
+        dError: prev != null ? current.error - prev.error : undefined,
         covLines: Number((h as any).tests?.coverage?.lines ?? 0),
         covFuncs: Number((h as any).tests?.coverage?.functions ?? 0),
         covBranches: Number((h as any).tests?.coverage?.branches ?? 0),
@@ -363,7 +411,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
             <section>
               <h2 className="text-lg font-medium">進捗サマリー</h2>
               <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                {progressSummary.map(({ key, start, current, pct }) => (
+                {progressSummary.map(({ key, start, current, pct, prev, deltaFromPrev }) => (
                   <div
                     key={`summary-${key}`}
                     className={`rounded border p-3 ${lowestKey === key ? 'ring-2 ring-amber-400' : ''}`}
@@ -378,7 +426,13 @@ export default function DevelopmentStatus(): React.JSX.Element {
                       {current}
                       <span className="ml-1 text-xs text-gray-600">/ {start}</span>
                     </div>
-                    <div className="mt-1 text-xs text-gray-600">初期比: 減少率（%）</div>
+                    {prev != null && (
+                      <div
+                        className={`mt-1 text-xs ${deltaFromPrev! < 0 ? 'text-emerald-600' : 'text-gray-600'}`}
+                      >
+                        前回比: {prev - current}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -478,17 +532,109 @@ export default function DevelopmentStatus(): React.JSX.Element {
                             {ts && <div className="text-gray-600 mb-1">{ts}</div>}
                             <div className="grid grid-cols-2 gap-x-3 gap-y-1">
                               {seriesVisible.findings && (
-                                <div>findings: {Number(p.findingsPct).toFixed(1)}%</div>
+                                <div>
+                                  findings: {Number(p.findingsPct).toFixed(1)}%
+                                  {p.findingsCount != null && (
+                                    <>
+                                      {' '}
+                                      ({p.findingsCount})
+                                      {p.dFindings != null && (
+                                        <span
+                                          className={
+                                            p.dFindings < 0 ? 'text-emerald-600' : 'text-gray-600'
+                                          }
+                                        >
+                                          {' '}
+                                          Δ {p.dFindings}
+                                        </span>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
                               )}
                               {seriesVisible.todo && (
-                                <div>todo: {Number(p.todoPct).toFixed(1)}%</div>
+                                <div>
+                                  todo: {Number(p.todoPct).toFixed(1)}%
+                                  {p.todoCount != null && (
+                                    <>
+                                      {' '}
+                                      ({p.todoCount})
+                                      {p.dTodo != null && (
+                                        <span
+                                          className={
+                                            p.dTodo < 0 ? 'text-emerald-600' : 'text-gray-600'
+                                          }
+                                        >
+                                          {' '}
+                                          Δ {p.dTodo}
+                                        </span>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
                               )}
                               {seriesVisible.mock && (
-                                <div>mock: {Number(p.mockPct).toFixed(1)}%</div>
+                                <div>
+                                  mock: {Number(p.mockPct).toFixed(1)}%
+                                  {p.mockCount != null && (
+                                    <>
+                                      {' '}
+                                      ({p.mockCount})
+                                      {p.dMock != null && (
+                                        <span
+                                          className={
+                                            p.dMock < 0 ? 'text-emerald-600' : 'text-gray-600'
+                                          }
+                                        >
+                                          {' '}
+                                          Δ {p.dMock}
+                                        </span>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
                               )}
-                              {seriesVisible.wip && <div>wip: {Number(p.wipPct).toFixed(1)}%</div>}
+                              {seriesVisible.wip && (
+                                <div>
+                                  wip: {Number(p.wipPct).toFixed(1)}%
+                                  {p.wipCount != null && (
+                                    <>
+                                      {' '}
+                                      ({p.wipCount})
+                                      {p.dWip != null && (
+                                        <span
+                                          className={
+                                            p.dWip < 0 ? 'text-emerald-600' : 'text-gray-600'
+                                          }
+                                        >
+                                          {' '}
+                                          Δ {p.dWip}
+                                        </span>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+                              )}
                               {seriesVisible.error && (
-                                <div>error: {Number(p.errorPct).toFixed(1)}%</div>
+                                <div>
+                                  error: {Number(p.errorPct).toFixed(1)}%
+                                  {p.errorCount != null && (
+                                    <>
+                                      {' '}
+                                      ({p.errorCount})
+                                      {p.dError != null && (
+                                        <span
+                                          className={
+                                            p.dError < 0 ? 'text-emerald-600' : 'text-gray-600'
+                                          }
+                                        >
+                                          {' '}
+                                          Δ {p.dError}
+                                        </span>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
                               )}
                               {typeof p.covLines === 'number' && (
                                 <div>coverage(lines): {Number(p.covLines).toFixed(1)}%</div>
