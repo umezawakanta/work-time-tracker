@@ -38,6 +38,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
+        env:
+          PNPM_HOME: ${{ env.PNPM_HOME }}
+          PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
 
       - name: Run unit tests with coverage (non-blocking)
         run: pnpm test -- --coverage --watchAll=false --passWithNoTests || true
