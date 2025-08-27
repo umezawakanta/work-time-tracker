@@ -62,11 +62,17 @@ jobs:
         run: |
           pnpm run build:dev-status || true
 
+      - name: 📈 Update Dev Status History
+        run: |
+          pnpm run build:dev-status:history || true
+
       - name: 📤 Upload Dev Status
         uses: actions/upload-artifact@v4
         with:
           name: dev-status
-          path: public/dev-status.json
+          path: |
+            public/dev-status.json
+            public/dev-status-history.json
           retention-days: 7
 
       - name: 📊 Generate Coverage Summary

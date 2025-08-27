@@ -43,7 +43,9 @@ export default function DevelopmentStatus(): React.JSX.Element {
   const [history, setHistory] = useState<
     { sha: string; short: string; message: string; timestamp: string; totals: any }[]
   >([]);
-  const [seriesVisible, setSeriesVisible] = useState<Record<'findings' | 'todo' | 'mock' | 'wip' | 'error', boolean>>({
+  const [seriesVisible, setSeriesVisible] = useState<
+    Record<'findings' | 'todo' | 'mock' | 'wip' | 'error', boolean>
+  >({
     findings: true,
     todo: true,
     mock: true,
@@ -94,6 +96,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
     errorPct: number;
     message?: string;
     sha?: string;
+    timestamp?: string;
   }> = (() => {
     if (!data || history.length === 0) return [];
     const base = {
@@ -125,6 +128,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
         errorPct: toPct(base.error, current.error),
         message: h.message,
         sha: h.sha,
+        timestamp: h.timestamp,
       };
     });
   })();
@@ -260,7 +264,9 @@ export default function DevelopmentStatus(): React.JSX.Element {
                     <input
                       type="checkbox"
                       checked={seriesVisible[k]}
-                      onChange={(e) => setSeriesVisible((prev) => ({ ...prev, [k]: e.target.checked }))}
+                      onChange={(e) =>
+                        setSeriesVisible((prev) => ({ ...prev, [k]: e.target.checked }))
+                      }
                     />
                     <span className="uppercase">{k}</span>
                   </label>
@@ -273,27 +279,91 @@ export default function DevelopmentStatus(): React.JSX.Element {
                     <XAxis dataKey="name" />
                     <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
                     <Tooltip
-                      formatter={(value: any) => `${Number(value).toFixed(1)}%`}
-                      labelFormatter={(label: any, payload: any) => {
-                        const p = Array.isArray(payload) && payload[0] ? payload[0].payload : undefined;
-                        return p?.sha ? `${label} (${p.sha})` : String(label);
+                      content={({ active, label, payload }) => {
+                        if (!active || !Array.isArray(payload) || payload.length === 0) return null;
+                        const p = payload[0]?.payload as any;
+                        const ts = p?.timestamp ? new Date(p.timestamp).toLocaleString() : '';
+                        return (
+                          <div className="bg-white border rounded p-2 text-xs">
+                            <div className="font-semibold mb-1">{label} {p?.sha && `(${p.sha})`}</div>
+                            {p?.message && <div className="mb-1">{p.message}</div>}
+                            {ts && <div className="text-gray-600 mb-1">{ts}</div>}
+                            <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                              {seriesVisible.findings && (
+                                <div>findings: {Number(p.findingsPct).toFixed(1)}%</div>
+                              )}
+                              {seriesVisible.todo && (
+                                <div>todo: {Number(p.todoPct).toFixed(1)}%</div>
+                              )}
+                              {seriesVisible.mock && (
+                                <div>mock: {Number(p.mockPct).toFixed(1)}%</div>
+                              )}
+                              {seriesVisible.wip && (
+                                <div>wip: {Number(p.wipPct).toFixed(1)}%</div>
+                              )}
+                              {seriesVisible.error && (
+                                <div>error: {Number(p.errorPct).toFixed(1)}%</div>
+                              )}
+                            </div>
+                            {p?.sha && (
+                              <a
+                                className="inline-block mt-2 text-blue-600 underline"
+                                href={`https://github.com/umezawakanta/work-time-tracker/commit/${p.sha}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                コミットを開く
+                              </a>
+                            )}
+                          </div>
+                        );
                       }}
                     />
                     <Legend />
                     {seriesVisible.findings && (
-                      <Line type="monotone" dataKey="findingsPct" name="findings" stroke="#0ea5e9" dot={false} />
+                      <Line
+                        type="monotone"
+                        dataKey="findingsPct"
+                        name="findings"
+                        stroke="#0ea5e9"
+                        dot={false}
+                      />
                     )}
                     {seriesVisible.todo && (
-                      <Line type="monotone" dataKey="todoPct" name="todo" stroke="#10b981" dot={false} />
+                      <Line
+                        type="monotone"
+                        dataKey="todoPct"
+                        name="todo"
+                        stroke="#10b981"
+                        dot={false}
+                      />
                     )}
                     {seriesVisible.mock && (
-                      <Line type="monotone" dataKey="mockPct" name="mock" stroke="#6366f1" dot={false} />
+                      <Line
+                        type="monotone"
+                        dataKey="mockPct"
+                        name="mock"
+                        stroke="#6366f1"
+                        dot={false}
+                      />
                     )}
                     {seriesVisible.wip && (
-                      <Line type="monotone" dataKey="wipPct" name="wip" stroke="#f59e0b" dot={false} />
+                      <Line
+                        type="monotone"
+                        dataKey="wipPct"
+                        name="wip"
+                        stroke="#f59e0b"
+                        dot={false}
+                      />
                     )}
                     {seriesVisible.error && (
-                      <Line type="monotone" dataKey="errorPct" name="error" stroke="#ef4444" dot={false} />
+                      <Line
+                        type="monotone"
+                        dataKey="errorPct"
+                        name="error"
+                        stroke="#ef4444"
+                        dot={false}
+                      />
                     )}
                   </LineChart>
                 </ResponsiveContainer>
