@@ -219,6 +219,10 @@ const AdminDashboard: React.FC = () => {
     []
   );
   const [isRetentionLoading, setIsRetentionLoading] = useState<boolean>(false);
+  const [errorReports, setErrorReports] = useState<
+    Array<{ createdAt: string; message: string; url?: string; email?: string }>
+  >([]);
+  const [isErrorReportsLoading, setIsErrorReportsLoading] = useState<boolean>(false);
 
   // メトリクス取得
   const fetchMetrics = async () => {
@@ -382,6 +386,28 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const fetchErrorReports = async (limit = 10) => {
+    try {
+      setIsErrorReportsLoading(true);
+      const { data } = await api.get('admin/error-reports', { params: { limit } });
+      const payload = (data && (data.data || data)) as any;
+      const rows = Array.isArray(payload) ? payload : Array.isArray(payload?.data) ? payload.data : [];
+      setErrorReports(
+        rows.map((r: any) => ({
+          createdAt: String(r.createdAt || r.timestamp || ''),
+          message: String(r.message || ''),
+          url: r.url ? String(r.url) : undefined,
+          email: r.email ? String(r.email) : undefined,
+        }))
+      );
+    } catch (e) {
+      console.error('Failed to fetch error reports:', e);
+      setErrorReports([]);
+    } finally {
+      setIsErrorReportsLoading(false);
+    }
+  };
+
   const fetchPaidUsersTrend = async (months = 6) => {
     try {
       setIsPaidTrendLoading(true);
@@ -506,6 +532,7 @@ const AdminDashboard: React.FC = () => {
     fetchLiveMetrics();
     fetchActiveUsers(24);
     fetchRetention30d();
+    fetchErrorReports(10);
 
     // 30秒ごとに自動更新
     const interval = setInterval(() => {
@@ -522,6 +549,7 @@ const AdminDashboard: React.FC = () => {
       fetchLiveMetrics();
       fetchActiveUsers(24);
       fetchRetention30d();
+      fetchErrorReports(10);
     }, 30000);
     return () => clearInterval(interval);
   }, [pageviewWindow]);
@@ -595,21 +623,29 @@ const AdminDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">総ユーザー数</p>
-                  <p className="text-2xl font-bold">{metrics.users.total.toLocaleString()}</p>
+                  <p className="text-2xl font-bold">{(
+                    Number(analytics?.totalUsers || 0) || metrics.users.total
+                  ).toLocaleString()}</p>
                   <p className="text-xs text-green-600">+{metrics.users.newToday} 今日</p>
                 </div>
                 <Users className="w-8 h-8 text-blue-600" />
               </div>
               <Progress
                 value={
-                  metrics.users.total > 0 ? (metrics.users.active / metrics.users.total) * 100 : 0
+                  (Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
+                    ? (metrics.users.active /
+                        (Number(analytics?.totalUsers || 0) || metrics.users.total)) * 100
+                    : 0
                 }
                 className="mt-2"
               />
               <p className="text-xs text-gray-600 mt-1">
                 アクティブ率:{' '}
-                {metrics.users.total > 0
-                  ? Math.round((metrics.users.active / metrics.users.total) * 100)
+                {(Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
+                  ? Math.round(
+                      (metrics.users.active /
+                        (Number(analytics?.totalUsers || 0) || metrics.users.total)) * 100
+                    )
                   : 0}
                 %
               </p>
@@ -1243,34 +1279,39 @@ const AdminDashboard: React.FC = () => {
             </Card>
             <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle>最近のエラー（上位3件）</CardTitle>
-                <CardDescription>リンクから再現箇所へ</CardDescription>
+                <CardTitle>最近のエラー（上位10件）</CardTitle>
+                <CardDescription>リンクから再現箇所へ（ErrorBoundary レポート）</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  {(analytics.topErrors || []).map((e, i) => (
-                    <div key={i} className="flex items-center justify-between text-sm">
-                      <span className="truncate max-w-[70%]" title={e.message}>
-                        {e.message}
-                      </span>
-                      {e.url ? (
-                        <a
-                          className="text-blue-600 underline"
-                          href={e.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          開く
-                        </a>
-                      ) : (
-                        <span className="text-gray-500">{e.count}</span>
-                      )}
-                    </div>
-                  ))}
-                  {(!analytics.topErrors || analytics.topErrors.length === 0) && (
-                    <p className="text-sm text-gray-500">エラーはありません</p>
-                  )}
-                </div>
+                {isErrorReportsLoading ? (
+                  <div className="h-24 bg-gray-200 rounded animate-pulse" />
+                ) : errorReports.length > 0 ? (
+                  <div className="space-y-2">
+                    {errorReports.map((e, i) => (
+                      <div key={`${e.createdAt}-${i}`} className="flex items-center justify-between text-sm">
+                        <span className="truncate max-w-[60%]" title={e.message}>
+                          {e.message}
+                        </span>
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <span>{new Date(e.createdAt).toLocaleString()}</span>
+                          {e.email && <span>{e.email}</span>}
+                          {e.url ? (
+                            <a
+                              className="text-blue-600 underline"
+                              href={e.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              開く
+                            </a>
+                          ) : null}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">エラーはありません</p>
+                )}
               </CardContent>
             </Card>
             <Card className="lg:col-span-2">
