@@ -38,6 +38,7 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 const Highlighter = SyntaxHighlighter as unknown as React.FC<any>;
 
 import anthropicService from '@/services/ai/anthropicService';
+import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
 import { selectTodos } from '@/store/todoSlice';
 import AITaskManager from './AITaskManager';
 
@@ -122,7 +123,11 @@ const AIChat: React.FC = () => {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Chat error:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'AIChat',
+        action: 'sendMessage',
+        additionalData: { conversationId },
+      });
       toast.error('メッセージの送信に失敗しました');
     } finally {
       setIsLoading(false);
@@ -165,7 +170,11 @@ const AIChat: React.FC = () => {
       setMessages((prev) => [...prev, resultMessage]);
       toast.success('タスク分析が完了しました');
     } catch (error) {
-      console.error('Task analysis error:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'AIChat',
+        action: 'analyzeTasks',
+        additionalData: { todosCount: todos.length },
+      });
       toast.error('タスク分析に失敗しました');
     } finally {
       setIsLoading(false);
@@ -217,7 +226,11 @@ const AIChat: React.FC = () => {
       setMessages((prev) => [...prev, codeMessage]);
       toast.success('コード生成が完了しました');
     } catch (error) {
-      console.error('Code generation error:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'AIChat',
+        action: 'generateCode',
+        additionalData: { language: codeOptions.language, framework: codeOptions.framework },
+      });
       toast.error('コード生成に失敗しました');
     } finally {
       setIsLoading(false);
@@ -244,7 +257,11 @@ const AIChat: React.FC = () => {
       setMessages((prev) => [...prev, optimizationMessage]);
       toast.success('ワークフロー最適化の提案を生成しました');
     } catch (error) {
-      console.error('Workflow optimization error:', error);
+      await unifiedErrorHandler.handleError(error, {
+        component: 'AIChat',
+        action: 'getWorkflowOptimization',
+        additionalData: { todosCount: todos.length },
+      });
       toast.error('ワークフロー最適化の生成に失敗しました');
     } finally {
       setIsLoading(false);
