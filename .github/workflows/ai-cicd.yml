@@ -50,7 +50,7 @@ jobs:
         run: echo "key=node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ env.CACHE_VERSION }}" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
-        run: pnpm install --prefer-offline --store-dir "$RUNNER_TEMP/pnpm-store"
+        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
         env:
           PNPM_HOME: ${{ env.PNPM_HOME }}
           PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
@@ -91,7 +91,7 @@ jobs:
           pnpm store path
 
       - name: Install dependencies
-        run: pnpm install --prefer-offline --store-dir "$RUNNER_TEMP/pnpm-store"
+        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
         env:
           PNPM_HOME: ${{ env.PNPM_HOME }}
           PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
@@ -127,7 +127,7 @@ jobs:
           pnpm store path
 
       - name: Install dependencies
-        run: pnpm install --prefer-offline --store-dir "$RUNNER_TEMP/pnpm-store"
+        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
         env:
           PNPM_HOME: ${{ env.PNPM_HOME }}
           PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
@@ -181,7 +181,7 @@ jobs:
           pnpm store path
 
       - name: Install dependencies
-        run: pnpm install --prefer-offline --store-dir "$RUNNER_TEMP/pnpm-store"
+        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
         env:
           PNPM_HOME: ${{ env.PNPM_HOME }}
           PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
@@ -217,7 +217,7 @@ jobs:
           pnpm store path
 
       - name: Install dependencies
-        run: pnpm install --prefer-offline --store-dir "$RUNNER_TEMP/pnpm-store"
+        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
         env:
           PNPM_HOME: ${{ env.PNPM_HOME }}
           PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
