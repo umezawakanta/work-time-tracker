@@ -132,6 +132,11 @@ api.interceptors.request.use(
         const devRole = localStorage.getItem('dev_user_role') || 'user';
         (config.headers as any)['X-User-Id'] = devUserId;
         (config.headers as any)['X-User-Role'] = devRole;
+        // 任意の開発用メール（管理者判定に使用）。例: kanta13jp@gmail.com
+        const devEmail = localStorage.getItem('dev_user_email');
+        if (devEmail) {
+          (config.headers as any)['X-User-Email'] = devEmail;
+        }
       }
       return config;
     }
