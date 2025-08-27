@@ -171,6 +171,9 @@ export default function DevelopmentStatus(): React.JSX.Element {
     mockPct: number;
     wipPct: number;
     errorPct: number;
+    covLines?: number;
+    covFuncs?: number;
+    covBranches?: number;
     message?: string;
     sha?: string;
     timestamp?: string;
@@ -204,6 +207,9 @@ export default function DevelopmentStatus(): React.JSX.Element {
         mockPct: toPct(base.mock, current.mock),
         wipPct: toPct(base.wip, current.wip),
         errorPct: toPct(base.error, current.error),
+        covLines: Number((h as any).tests?.coverage?.lines ?? 0),
+        covFuncs: Number((h as any).tests?.coverage?.functions ?? 0),
+        covBranches: Number((h as any).tests?.coverage?.branches ?? 0),
         message: h.message,
         sha: h.sha,
         timestamp: h.timestamp,
@@ -372,6 +378,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
                       minTickGap={24}
                     />
                     <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+                    <YAxis yAxisId={1} orientation="right" domain={[0, 100]} tickFormatter={(v) => `${v}%`} hide />
                     <Tooltip
                       content={({ active, label, payload }) => {
                         if (!active || !Array.isArray(payload) || payload.length === 0) return null;
@@ -397,6 +404,9 @@ export default function DevelopmentStatus(): React.JSX.Element {
                               {seriesVisible.wip && <div>wip: {Number(p.wipPct).toFixed(1)}%</div>}
                               {seriesVisible.error && (
                                 <div>error: {Number(p.errorPct).toFixed(1)}%</div>
+                              )}
+                              {typeof p.covLines === 'number' && (
+                                <div>coverage(lines): {Number(p.covLines).toFixed(1)}%</div>
                               )}
                             </div>
                             {p?.sha && (
@@ -464,6 +474,8 @@ export default function DevelopmentStatus(): React.JSX.Element {
                         strokeWidth={lowestKey === 'error' ? 3 : 1.5}
                       />
                     )}
+                    {/* Coverage overlay (lines) */}
+                    <Line type="monotone" dataKey="covLines" name="coverage(lines%)" stroke="#22c55e" dot={false} yAxisId={1} hide />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -525,9 +537,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
                 <div className="rounded border p-3">
                   <h3 className="font-semibold mb-2">テスト実行状況</h3>
                   <ul className="space-y-1">
-                    <li>
-                      Unit coverage file: {testSummary?.unit?.hasCoverage ? 'あり' : 'なし'}
-                    </li>
+                    <li>Unit coverage file: {testSummary?.unit?.hasCoverage ? 'あり' : 'なし'}</li>
                     <li>E2E results: {testSummary?.e2e?.available ? 'あり' : '未取得'}</li>
                   </ul>
                 </div>
