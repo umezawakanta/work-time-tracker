@@ -193,6 +193,7 @@ const AdvancedPerformanceMonitoringPage = lazy(
 const ProductionOptimizationPage = lazy(() => import('@/pages/ProductionOptimizationPage'));
 const MobileOptimizationPage = lazy(() => import('@/pages/MobileOptimizationPage'));
 const ChangelogPage = lazy(() => import('@/pages/Changelog'));
+const DevelopmentStatusPage = lazy(() => import('@/pages/DevelopmentStatus'));
 
 // 🎯 Personal Development & Life Management
 const AbstinenceManager = lazy(() => import('@/pages/AbstinenceManager'));
@@ -1007,6 +1008,19 @@ const App: React.FC = () => {
                                       <CoverageReportPage />
                                     </LazyWrapper>
                                   </LayoutWrapper>
+                                }
+                              />
+
+                              <Route
+                                path="/dev-status"
+                                element={
+                                  <RequireAdmin>
+                                    <LayoutWrapper>
+                                      <LazyWrapper>
+                                        <DevelopmentStatusPage />
+                                      </LazyWrapper>
+                                    </LayoutWrapper>
+                                  </RequireAdmin>
                                 }
                               />
 

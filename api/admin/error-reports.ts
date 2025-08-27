@@ -21,5 +21,3 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     res.status(500).json({ success: false, message: 'Failed to fetch error reports' } as any);
   }
 }
-
-

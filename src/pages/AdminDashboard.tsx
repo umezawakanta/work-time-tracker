@@ -391,7 +391,11 @@ const AdminDashboard: React.FC = () => {
       setIsErrorReportsLoading(true);
       const { data } = await api.get('admin/error-reports', { params: { limit } });
       const payload = (data && (data.data || data)) as any;
-      const rows = Array.isArray(payload) ? payload : Array.isArray(payload?.data) ? payload.data : [];
+      const rows = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.data)
+          ? payload.data
+          : [];
       setErrorReports(
         rows.map((r: any) => ({
           createdAt: String(r.createdAt || r.timestamp || ''),
@@ -623,9 +627,9 @@ const AdminDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">総ユーザー数</p>
-                  <p className="text-2xl font-bold">{(
-                    Number(analytics?.totalUsers || 0) || metrics.users.total
-                  ).toLocaleString()}</p>
+                  <p className="text-2xl font-bold">
+                    {(Number(analytics?.totalUsers || 0) || metrics.users.total).toLocaleString()}
+                  </p>
                   <p className="text-xs text-green-600">+{metrics.users.newToday} 今日</p>
                 </div>
                 <Users className="w-8 h-8 text-blue-600" />
@@ -634,7 +638,8 @@ const AdminDashboard: React.FC = () => {
                 value={
                   (Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
                     ? (metrics.users.active /
-                        (Number(analytics?.totalUsers || 0) || metrics.users.total)) * 100
+                        (Number(analytics?.totalUsers || 0) || metrics.users.total)) *
+                      100
                     : 0
                 }
                 className="mt-2"
@@ -644,7 +649,8 @@ const AdminDashboard: React.FC = () => {
                 {(Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
                   ? Math.round(
                       (metrics.users.active /
-                        (Number(analytics?.totalUsers || 0) || metrics.users.total)) * 100
+                        (Number(analytics?.totalUsers || 0) || metrics.users.total)) *
+                        100
                     )
                   : 0}
                 %
@@ -1288,7 +1294,10 @@ const AdminDashboard: React.FC = () => {
                 ) : errorReports.length > 0 ? (
                   <div className="space-y-2">
                     {errorReports.map((e, i) => (
-                      <div key={`${e.createdAt}-${i}`} className="flex items-center justify-between text-sm">
+                      <div
+                        key={`${e.createdAt}-${i}`}
+                        className="flex items-center justify-between text-sm"
+                      >
                         <span className="truncate max-w-[60%]" title={e.message}>
                           {e.message}
                         </span>

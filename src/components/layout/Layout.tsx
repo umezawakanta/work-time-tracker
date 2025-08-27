@@ -454,6 +454,15 @@ const systemMenuItems: MenuItem[] = [
     gradient: 'from-green-500 via-emerald-500 to-teal-500',
     accentColor: 'green',
   },
+  {
+    icon: <AlertTriangle className="h-5 w-5" />,
+    label: '🧩 開発ステータス',
+    path: '/dev-status',
+    description: '未実装・モック・WIP自動検出',
+    badge: 'Dev',
+    gradient: 'from-amber-500 via-yellow-500 to-orange-500',
+    accentColor: 'amber',
+  },
 ];
 
 // 個人開発・ライフスタイルメニューアイテム

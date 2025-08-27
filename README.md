@@ -295,4 +295,15 @@ BREAKING CHANGE: 説明 (optional)
 ---
 
 開発の詳細・最新の変更は GitHub リポジトリを参照。
+
+### 開発ステータス（未実装・モック検出）
+
+- `scripts/dev-status-scan.mjs` が `src/**` と `api/**` を走査し、`TODO`/`WIP`/`未実装`/`mock`/`dummy` などを検出して `public/dev-status.json` を生成します。
+- 実行コマンド:
+
+```bash
+pnpm run build:dev-status
 ```
+
+- 画面での確認: 管理者ログイン後に `/dev-status` へアクセスすると一覧表示されます。
+- ルート単位の WIP/Mock 表示は `public/flags.json` の `wipRoutes`/`mockRoutes` を編集してください（画面上部にバナー表示されます）。

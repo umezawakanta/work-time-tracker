@@ -9,7 +9,9 @@ describe('VersionInfo cache-busting fetch', () => {
   });
 
   it('appends ts param when fetching version.json', async () => {
-    const mockFetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ version: '1.0.0' }) });
+    const mockFetch = jest
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => ({ version: '1.0.0' }) });
     (global as any).fetch = mockFetch;
 
     await __testables.fetchVersion();
@@ -19,7 +21,9 @@ describe('VersionInfo cache-busting fetch', () => {
   });
 
   it('appends ts param when fetching changelog.json', async () => {
-    const mockFetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ entries: [] }) });
+    const mockFetch = jest
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => ({ entries: [] }) });
     (global as any).fetch = mockFetch;
 
     await __testables.fetchChangelog();
@@ -28,5 +32,3 @@ describe('VersionInfo cache-busting fetch', () => {
     expect(url).toMatch(/\/changelog\.json\?ts=\d+/);
   });
 });
-
-
