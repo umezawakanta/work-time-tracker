@@ -29,8 +29,10 @@ async function listFilesRecursively(dir) {
     for (const e of entries) {
       const p = path.join(current, e.name);
       if (e.isDirectory()) {
-        // Skip node_modules, .git, dist, coverage
+        // Skip node_modules, .git, dist, coverage, local dev server sources
         if (/node_modules|\.git|dist|coverage|\.next|build|__mocks__|__tests__/i.test(p)) continue;
+        // Ignore development-only express server files (not deployed to prod)
+        if (/\bsrc[\/\\]server\b/i.test(p)) continue;
         await walk(p);
       } else if (/\.(tsx?|jsx?|mjs|ts)$/.test(e.name)) {
         results.push(p);
