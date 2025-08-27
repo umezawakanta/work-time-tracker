@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2025-08-27T07:09:57.445Z",
+  "generatedAt": "2025-08-27T07:17:58.337Z",
   "totals": {
     "filesScanned": 1265,
-    "findings": 2649,
+    "findings": 2644,
     "todo": 140,
     "mock": 662,
     "wip": 28,
-    "errorHints": 1812
+    "errorHints": 1807
   },
   "flags": {
     "wipRoutes": [
@@ -56,30 +56,6 @@
       "kind": "error"
     },
     {
-      "file": "src\\components\\adhd\\ADHDExecutionAssistant.tsx",
-      "line": 92,
-      "snippet": "console.error('Failed to start execution:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\adhd\\ADHDExecutionAssistant.tsx",
-      "line": 116,
-      "snippet": "console.error('Failed to complete step:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\adhd\\ADHDExecutionAssistant.tsx",
-      "line": 128,
-      "snippet": "console.error('Failed to record interruption:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\adhd\\ADHDExecutionAssistant.tsx",
-      "line": 138,
-      "snippet": "console.error('Failed to resume execution:', error);",
-      "kind": "error"
-    },
-    {
       "file": "src\\components\\ai\\AITaskDashboard.tsx",
       "line": 53,
       "snippet": "console.error('Failed to load AI analysis:', error);",
@@ -99,43 +75,37 @@
     },
     {
       "file": "src\\components\\analytics\\ComprehensiveAnalyticsDashboard.tsx",
-      "line": 171,
+      "line": 172,
       "snippet": "throw new Error(result.message || 'Failed to load analytics data');",
       "kind": "error"
     },
     {
       "file": "src\\components\\analytics\\ComprehensiveAnalyticsDashboard.tsx",
-      "line": 174,
+      "line": 175,
       "snippet": "throw new Error(`HTTP ${response.status}: ${response.statusText}`);",
       "kind": "error"
     },
     {
       "file": "src\\components\\analytics\\ComprehensiveAnalyticsDashboard.tsx",
-      "line": 178,
-      "snippet": "console.error('❌ Analytics data fetch failed:', error);",
-      "kind": "error"
-    },
-    {
-      "file": "src\\components\\analytics\\ComprehensiveAnalyticsDashboard.tsx",
-      "line": 179,
+      "line": 184,
       "snippet": "// エラー時はモックデータで初期化",
       "kind": "mock"
     },
     {
       "file": "src\\components\\analytics\\ComprehensiveAnalyticsDashboard.tsx",
-      "line": 180,
+      "line": 185,
       "snippet": "const mock = getMockAnalyticsData();",
       "kind": "mock"
     },
     {
       "file": "src\\components\\analytics\\ComprehensiveAnalyticsDashboard.tsx",
-      "line": 181,
+      "line": 186,
       "snippet": "setAnalyticsData(mock);",
       "kind": "mock"
     },
     {
       "file": "src\\components\\analytics\\ComprehensiveAnalyticsDashboard.tsx",
-      "line": 389,
+      "line": 394,
       "snippet": "console.error('エクスポートエラー:', error);",
       "kind": "error"
     },

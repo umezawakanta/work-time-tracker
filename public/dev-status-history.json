@@ -63,5 +63,18 @@
       "wip": 28,
       "error": 1812
     }
+  },
+  {
+    "sha": "536a67cd93349c1864034eaa6f0dc93d2af13507",
+    "short": "536a67cd93",
+    "message": "fix(adhd): unify error handling in ADHDExecutionAssistant; fix(analytics): route comprehensive dashboard fetch errors via unifiedErrorHandler",
+    "timestamp": "2025-08-27T07:17:47.000Z",
+    "totals": {
+      "findings": 2644,
+      "todo": 140,
+      "mock": 662,
+      "wip": 28,
+      "error": 1807
+    }
   }
 ]
