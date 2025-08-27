@@ -42,6 +42,14 @@ jobs:
       - name: Run unit tests with coverage (non-blocking)
         run: pnpm test -- --coverage --watchAll=false --passWithNoTests || true
 
+      - name: Install Cypress binary
+        run: pnpm exec cypress install || true
+
+      - name: Run E2E JSON summary (non-blocking)
+        run: |
+          pnpm run preview -- --port 4173 & npx wait-on http://localhost:4173
+          npx cypress run --reporter json --reporter-options "output=cypress/results/summary.json" || true
+
       - name: Generate Dev Status and publish coverage
         run: |
           pnpm run build:dev-status || true

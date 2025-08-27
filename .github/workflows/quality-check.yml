@@ -315,6 +315,11 @@ jobs:
           sleep 10
           curl --retry 5 --retry-delay 2 --retry-connrefused http://localhost:4173 || true
 
+      - name: 🧪 Run E2E and write JSON summary
+        continue-on-error: true
+        run: |
+          npx cypress run --reporter json --reporter-options "output=cypress/results/summary.json" || true
+
       - name: ⚡ Lighthouse Performance Test
         continue-on-error: true
         id: lighthouse
