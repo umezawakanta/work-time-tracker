@@ -308,7 +308,7 @@ importers:
         specifier: ^11.11.4
         version: 11.11.4(@types/react@18.3.24)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       recharts:
-        specifier: ^2.15.2
+        specifier: ^2.15.4
         version: 2.15.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       redux:
         specifier: ^5.0.1
@@ -558,7 +558,7 @@ importers:
         specifier: ^5.11.0
         version: 5.14.0(rollup@2.79.2)
       start-server-and-test:
-        specifier: ^2.0.13
+        specifier: ^2.0.8
         version: 2.0.13
       tailwindcss:
         specifier: 4.1.8
