@@ -61,16 +61,16 @@ async function scanFile(file) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const trimmed = line.trim();
+    const isCommentLine = /^\/\//.test(trimmed) || /\/\*/.test(trimmed);
 
-    // TODO-like markers (broad)
-    if (/(TODO|FIXME|未実装)/.test(line)) {
+    // TODO-like markers: only count when in comment lines to avoid UI strings/identifiers
+    if (isCommentLine && /(TODO|FIXME|未実装)/.test(line)) {
       pushFinding(i, line, 'todo');
     }
 
     // WIP markers: count only when present in code comments, not in user-facing UI strings
     // - Ignore StatusBanners.tsx (the banner text includes "開発中です")
     // - Require the marker to be in a comment line (starts with // or contains /* ... */)
-    const isCommentLine = /^\/\//.test(trimmed) || /\/\*/.test(trimmed);
     const isWipToken = /\bWIP\b/.test(line) || /開発中/.test(line);
     const isBannerFile = /src\/components\/layout\/StatusBanners\.tsx$/.test(relative);
     if (!isBannerFile && isCommentLine && isWipToken) {
