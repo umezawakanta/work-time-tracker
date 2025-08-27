@@ -1,4 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from 'recharts';
 
 type Finding = {
   file: string;
@@ -33,6 +43,13 @@ export default function DevelopmentStatus(): React.JSX.Element {
   const [history, setHistory] = useState<
     { sha: string; short: string; message: string; timestamp: string; totals: any }[]
   >([]);
+  const [seriesVisible, setSeriesVisible] = useState<Record<'findings' | 'todo' | 'mock' | 'wip' | 'error', boolean>>({
+    findings: true,
+    todo: true,
+    mock: true,
+    wip: true,
+    error: true,
+  });
   const [query, setQuery] = useState<string>('');
   const [kinds, setKinds] = useState<Record<Finding['kind'], boolean>>({
     todo: true,
@@ -67,6 +84,51 @@ export default function DevelopmentStatus(): React.JSX.Element {
     })();
   }, []);
 
+  // Build chart data (commit-wise % completion from the first snapshot)
+  const chartData: Array<{
+    name: string;
+    findingsPct: number;
+    todoPct: number;
+    mockPct: number;
+    wipPct: number;
+    errorPct: number;
+    message?: string;
+    sha?: string;
+  }> = (() => {
+    if (!data || history.length === 0) return [];
+    const base = {
+      findings: Number(history[0]?.totals?.findings ?? (data.findings?.length || 0)),
+      todo: Number(history[0]?.totals?.todo ?? 0),
+      mock: Number(history[0]?.totals?.mock ?? 0),
+      wip: Number(history[0]?.totals?.wip ?? 0),
+      error: Number(history[0]?.totals?.error ?? 0),
+    };
+    const toPct = (start: number, current: number) => {
+      if (!start || start <= 0) return 100;
+      const pct = ((start - Math.max(0, current)) / start) * 100;
+      return Math.max(0, Math.min(100, pct));
+    };
+    return history.map((h) => {
+      const current = {
+        findings: Number(h.totals?.findings ?? 0),
+        todo: Number(h.totals?.todo ?? 0),
+        mock: Number(h.totals?.mock ?? 0),
+        wip: Number(h.totals?.wip ?? 0),
+        error: Number(h.totals?.error ?? 0),
+      };
+      return {
+        name: h.short,
+        findingsPct: toPct(base.findings, current.findings),
+        todoPct: toPct(base.todo, current.todo),
+        mockPct: toPct(base.mock, current.mock),
+        wipPct: toPct(base.wip, current.wip),
+        errorPct: toPct(base.error, current.error),
+        message: h.message,
+        sha: h.sha,
+      };
+    });
+  })();
+
   const filteredFindings: Finding[] = (() => {
     if (!data) return [];
     const q = query.trim().toLowerCase();
@@ -86,7 +148,12 @@ export default function DevelopmentStatus(): React.JSX.Element {
     try {
       const rows = [
         ['kind', 'file', 'line', 'snippet'],
-        ...filteredFindings.map((f) => [f.kind, f.file, String(f.line), f.snippet.replace(/\n/g, ' ')]),
+        ...filteredFindings.map((f) => [
+          f.kind,
+          f.file,
+          String(f.line),
+          f.snippet.replace(/\n/g, ' '),
+        ]),
       ];
       const csv = rows
         .map((r) => r.map((c) => '"' + String(c).replace(/"/g, '""') + '"').join(','))
@@ -135,7 +202,9 @@ export default function DevelopmentStatus(): React.JSX.Element {
             </label>
           ))}
           {data && (
-            <span className="text-gray-600">表示: {filteredFindings.length} / {data.totals.findings}</span>
+            <span className="text-gray-600">
+              表示: {filteredFindings.length} / {data.totals.findings}
+            </span>
           )}
         </div>
       </div>
@@ -153,7 +222,8 @@ export default function DevelopmentStatus(): React.JSX.Element {
               <h2 className="text-lg font-medium">修正率（コミット単位推移）</h2>
               <div className="mt-2 grid grid-cols-1 gap-3">
                 {(['findings', 'todo', 'mock', 'wip', 'error'] as const).map((k) => {
-                  const current = data.totals[k === 'error' ? 'errorHints' : (k as any)] ||
+                  const current =
+                    data.totals[k === 'error' ? 'errorHints' : (k as any)] ||
                     (k === 'findings' ? data.findings.length : 0);
                   const start = history[0]?.totals?.[k] ?? current;
                   const denom = start || 1; // avoid div by zero
@@ -177,6 +247,56 @@ export default function DevelopmentStatus(): React.JSX.Element {
                     </div>
                   );
                 })}
+              </div>
+            </section>
+          )}
+
+          {history.length > 0 && chartData.length > 0 && (
+            <section>
+              <h2 className="text-lg font-medium">件数推移（コミット単位・%完了）</h2>
+              <div className="mt-2 flex flex-wrap items-center gap-4 text-sm">
+                {(['findings', 'todo', 'mock', 'wip', 'error'] as const).map((k) => (
+                  <label key={`toggle-${k}`} className="inline-flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={seriesVisible[k]}
+                      onChange={(e) => setSeriesVisible((prev) => ({ ...prev, [k]: e.target.checked }))}
+                    />
+                    <span className="uppercase">{k}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="mt-3 h-[320px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+                    <Tooltip
+                      formatter={(value: any) => `${Number(value).toFixed(1)}%`}
+                      labelFormatter={(label: any, payload: any) => {
+                        const p = Array.isArray(payload) && payload[0] ? payload[0].payload : undefined;
+                        return p?.sha ? `${label} (${p.sha})` : String(label);
+                      }}
+                    />
+                    <Legend />
+                    {seriesVisible.findings && (
+                      <Line type="monotone" dataKey="findingsPct" name="findings" stroke="#0ea5e9" dot={false} />
+                    )}
+                    {seriesVisible.todo && (
+                      <Line type="monotone" dataKey="todoPct" name="todo" stroke="#10b981" dot={false} />
+                    )}
+                    {seriesVisible.mock && (
+                      <Line type="monotone" dataKey="mockPct" name="mock" stroke="#6366f1" dot={false} />
+                    )}
+                    {seriesVisible.wip && (
+                      <Line type="monotone" dataKey="wipPct" name="wip" stroke="#f59e0b" dot={false} />
+                    )}
+                    {seriesVisible.error && (
+                      <Line type="monotone" dataKey="errorPct" name="error" stroke="#ef4444" dot={false} />
+                    )}
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </section>
           )}
@@ -251,20 +371,20 @@ export default function DevelopmentStatus(): React.JSX.Element {
                           GitHub
                         </a>
                         <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full ${
-                          f.kind === 'todo'
-                            ? 'bg-gray-100 text-gray-700'
-                            : f.kind === 'mock'
-                              ? 'bg-sky-100 text-sky-700'
-                              : f.kind === 'wip'
-                                ? 'bg-amber-100 text-amber-700'
-                                : f.kind === 'error'
-                                  ? 'bg-red-100 text-red-700'
-                                  : 'bg-slate-100 text-slate-700'
-                        }`}
-                      >
-                        {f.kind.toUpperCase()}
-                      </span>
+                          className={`text-[10px] px-2 py-0.5 rounded-full ${
+                            f.kind === 'todo'
+                              ? 'bg-gray-100 text-gray-700'
+                              : f.kind === 'mock'
+                                ? 'bg-sky-100 text-sky-700'
+                                : f.kind === 'wip'
+                                  ? 'bg-amber-100 text-amber-700'
+                                  : f.kind === 'error'
+                                    ? 'bg-red-100 text-red-700'
+                                    : 'bg-slate-100 text-slate-700'
+                          }`}
+                        >
+                          {f.kind.toUpperCase()}
+                        </span>
                       </div>
                     </div>
                     <pre className="mt-1 text-gray-800 whitespace-pre-wrap break-words">
