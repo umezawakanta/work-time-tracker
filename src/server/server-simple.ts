@@ -1471,6 +1471,36 @@ app.get('/api/analytics/summary', (req, res) => {
   res.json(mockAnalytics);
 });
 
+// CI status mirror for local dev (matches serverless shape)
+app.get('/api/status/ci', async (req, res) => {
+  try {
+    const limit = Math.max(1, Math.min(50, Number(req.query.limit) || 5));
+    // Minimal placeholder with links to repo/actions and vercel project to avoid external token usage locally
+    const github = Array.from({ length: limit }).map((_, i) => ({
+      id: Date.now() - i,
+      name: 'workflow',
+      status: 'completed',
+      conclusion: i % 3 === 0 ? 'failure' : 'success',
+      html_url: 'https://github.com/umezawakanta/work-time-tracker/actions',
+      created_at: new Date(Date.now() - i * 3600_000).toISOString(),
+    }));
+    const vercel = Array.from({ length: limit }).map((_, i) => ({
+      uid: `dpl_${Date.now() - i}`,
+      url: 'work-time-tracker-5d9q.vercel.app',
+      state: i % 4 === 0 ? 'ERROR' : 'READY',
+      createdAt: Date.now() - i * 3600_000,
+      commit: { sha: undefined, message: undefined },
+    }));
+    return res.json({
+      success: true,
+      data: { github, vercel },
+      generatedAt: new Date().toISOString(),
+    });
+  } catch (e) {
+    return res.json({ success: false, error: e instanceof Error ? e.message : 'failed' });
+  }
+});
+
 // Server-Sent Events for realtime analytics (dev mock)
 app.get('/api/analytics/events', (req, res) => {
   console.log('📡 GET /api/analytics/events (SSE) connected');

@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2025-08-27T08:49:10.122Z",
+  "generatedAt": "2025-08-27T11:01:31.526Z",
   "totals": {
-    "filesScanned": 1265,
-    "findings": 1035,
+    "filesScanned": 1266,
+    "findings": 1037,
     "todo": 142,
     "mock": 476,
     "wip": 3,
-    "errorHints": 407
+    "errorHints": 409
   },
   "flags": {
     "wipRoutes": [],
@@ -1386,151 +1386,151 @@
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 47,
+      "line": 62,
       "snippet": "Record<'findings' | 'todo' | 'mock' | 'wip' | 'error', boolean>",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 51,
+      "line": 66,
       "snippet": "mock: true,",
-      "kind": "mock"
-    },
-    {
-      "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 58,
-      "snippet": "mock: true,",
-      "kind": "mock"
-    },
-    {
-      "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 64,
-      "snippet": "type SeriesKey = 'findings' | 'todo' | 'mock' | 'wip' | 'error';",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
       "line": 73,
-      "snippet": "mock: data.totals.mock,",
+      "snippet": "mock: true,",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 80,
-      "snippet": "mock: Number(startFromHistory.mock ?? currentTotals.mock),",
+      "line": 82,
+      "snippet": "type SeriesKey = 'findings' | 'todo' | 'mock' | 'wip' | 'error';",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
       "line": 91,
+      "snippet": "mock: data.totals.mock,",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/DevelopmentStatus.tsx",
+      "line": 98,
+      "snippet": "mock: Number(startFromHistory.mock ?? currentTotals.mock),",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/DevelopmentStatus.tsx",
+      "line": 109,
       "snippet": "['findings', 'todo', 'mock', 'wip', 'error'] as SeriesKey[]",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 111,
+      "line": 130,
       "snippet": "if (!res.ok) throw new Error('failed to load dev-status.json');",
       "kind": "error"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 147,
+      "line": 197,
       "snippet": "mock: Number(history[0]?.totals?.mock ?? 0),",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 160,
+      "line": 210,
       "snippet": "mock: Number(h.totals?.mock ?? 0),",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 169,
+      "line": 219,
       "snippet": "mockPct: toPct(base.mock, current.mock),",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 221,
+      "line": 275,
       "snippet": "<p className=\"text-sm text-gray-600 mt-1\">未実装・モック・WIP・エラーヒントの自動検出</p>",
       "kind": "todo"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 221,
+      "line": 275,
       "snippet": "<p className=\"text-sm text-gray-600 mt-1\">未実装・モック・WIP・エラーヒントの自動検出</p>",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 241,
+      "line": 295,
       "snippet": "{(['todo', 'mock', 'wip', 'error', 'note'] as Finding['kind'][]).map((k) => (",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 307,
+      "line": 361,
       "snippet": "{(['findings', 'todo', 'mock', 'wip', 'error'] as const).map((k) => (",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 359,
+      "line": 419,
       "snippet": "{seriesVisible.mock && (",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 360,
+      "line": 420,
       "snippet": "<div>mock: {Number(p.mockPct).toFixed(1)}%</div>",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 402,
+      "line": 468,
       "snippet": "{seriesVisible.mock && (",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 406,
+      "line": 472,
       "snippet": "name=\"mock\"",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 409,
+      "line": 475,
       "snippet": "strokeWidth={lowestKey === 'mock' ? 3 : 1.5}",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 443,
+      "line": 526,
       "snippet": "<span>TODO: {data.totals.todo}</span>",
       "kind": "todo"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 444,
+      "line": 527,
       "snippet": "<span>MOCK: {data.totals.mock}</span>",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 463,
+      "line": 546,
       "snippet": "<h3 className=\"text-sm font-semibold text-sky-700\">モック/ダミー</h3>",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 466,
+      "line": 549,
       "snippet": "<li key={`mock-${r}`}>{r}</li>",
       "kind": "mock"
     },
     {
       "file": "src/pages/DevelopmentStatus.tsx",
-      "line": 511,
+      "line": 671,
       "snippet": ": f.kind === 'mock'",
       "kind": "mock"
     },
@@ -1878,91 +1878,91 @@
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 1474,
+      "line": 1504,
       "snippet": "// Server-Sent Events for realtime analytics (dev mock)",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 1508,
+      "line": 1538,
       "snippet": "// Live metrics (dev mock)",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 1512,
+      "line": 1542,
       "snippet": "const mock = {",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 1524,
+      "line": 1554,
       "snippet": "return res.json({ success: true, data: mock });",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 1526,
+      "line": 1556,
       "snippet": "console.error('❌ Error in /api/analytics/live-metrics (dev mock):', e);",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 1542,
+      "line": 1572,
       "snippet": "// Admin analytics summary (mock)",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 1591,
+      "line": 1621,
       "snippet": "// Admin (Mock)",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 1594,
+      "line": 1624,
       "snippet": "console.log('✅ GET /api/admin/metrics (mock) called');",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 1609,
+      "line": 1639,
       "snippet": "console.log('✅ GET /api/admin/users (mock) called');",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 1957,
+      "line": 1987,
       "snippet": "// ==== Admin metrics summaries (dev mock) ====",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 2014,
+      "line": 2044,
       "snippet": "// User endpoints (Mock)",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 2017,
+      "line": 2047,
       "snippet": "console.log('✅ POST /api/user/assessments/iq (mock) called');",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 2031,
+      "line": 2061,
       "snippet": "console.log('✅ POST /api/user/assessments/mbti (mock) called');",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 2047,
+      "line": 2077,
       "snippet": "console.log('✅ POST /api/user/learning/progress (mock) called');",
       "kind": "mock"
     },
     {
       "file": "src/server/server-simple.ts",
-      "line": 2089,
+      "line": 2119,
       "snippet": "'⚠️ Database connection failed. Running in degraded mode (mock auth, limited APIs).'",
       "kind": "mock"
     },
@@ -6147,6 +6147,18 @@
       "line": 238,
       "snippet": "// 実際の進捗追跡APIに送信（モック実装）",
       "kind": "mock"
+    },
+    {
+      "file": "api/status/ci.ts",
+      "line": 27,
+      "snippet": "if (!res.ok) throw new Error(`GitHub API ${res.status}`);",
+      "kind": "error"
+    },
+    {
+      "file": "api/status/ci.ts",
+      "line": 52,
+      "snippet": "if (!res.ok) throw new Error(`Vercel API ${res.status}`);",
+      "kind": "error"
     },
     {
       "file": "api/subscriptions/create.ts",

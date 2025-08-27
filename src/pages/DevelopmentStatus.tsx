@@ -124,7 +124,8 @@ export default function DevelopmentStatus(): React.JSX.Element {
     (async () => {
       try {
         setLoading(true);
-        const q = `?ts=${Date.now()}`;
+        const ts = Date.now();
+        const q = `?ts=${ts}`;
         const res = await fetch(`/dev-status.json${q}`);
         if (!res.ok) throw new Error('failed to load dev-status.json');
         const json = (await res.json()) as DevStatus;
@@ -158,7 +159,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
 
         // Load CI status (serverless) - best effort
         try {
-          const ciRes = await fetch(`/api/status/ci?limit=5${q}`);
+          const ciRes = await fetch(`/api/status/ci?limit=5&ts=${ts}`);
           if (ciRes.ok) {
             const ci = (await ciRes.json()) as any;
             if (ci?.data) setCiStatus(ci.data);
@@ -590,9 +591,15 @@ export default function DevelopmentStatus(): React.JSX.Element {
                     {ciStatus.github?.map((r: any) => (
                       <li key={r.id} className="flex items-center justify-between gap-2">
                         <span className="truncate">
-                          {r.name} · {r.status}{r.conclusion ? `/${r.conclusion}` : ''}
+                          {r.name} · {r.status}
+                          {r.conclusion ? `/${r.conclusion}` : ''}
                         </span>
-                        <a href={r.html_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs">
+                        <a
+                          href={r.html_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline text-xs"
+                        >
                           open
                         </a>
                       </li>
@@ -607,7 +614,12 @@ export default function DevelopmentStatus(): React.JSX.Element {
                         <span className="truncate">
                           {d.state} · {d.url}
                         </span>
-                        <a href={d.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs">
+                        <a
+                          href={d.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline text-xs"
+                        >
                           open
                         </a>
                       </li>
