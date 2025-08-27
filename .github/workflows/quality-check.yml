@@ -5,9 +5,13 @@
 name: 🛡️ Quality Check & Dashboard Update
 
 on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
   schedule:
-    - cron: '0 9 * * 1' # 週1回（月曜9時JST）に縮小
+    - cron: '0 9 * * 1' # 週1回（月曜9時JST）
 
 env:
   NODE_VERSION: '22'
@@ -73,6 +77,8 @@ jobs:
           path: |
             public/dev-status.json
             public/dev-status-history.json
+            public/coverage-summary.json
+            public/test-summary.json
           retention-days: 7
 
       - name: 📊 Generate Coverage Summary

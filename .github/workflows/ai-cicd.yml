@@ -1,9 +1,13 @@
 name: AI-Enhanced CI/CD Pipeline
 
 on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
   schedule:
-    - cron: '0 9 1 * *' # 月1回に縮小
+    - cron: '0 9 1 * *'
 
 env:
   NODE_VERSION: '20'
@@ -217,6 +221,11 @@ jobs:
         env:
           NODE_ENV: production
 
+      - name: Generate Dev Status and History (for /dev-status)
+        run: |
+          pnpm run build:dev-status || true
+          pnpm run build:dev-status:history || true
+
       - name: Analyze bundle size
         run: pnpm run analyze
         continue-on-error: true
@@ -226,6 +235,17 @@ jobs:
         with:
           name: build-artifacts
           path: dist/
+          retention-days: 7
+      
+      - name: Upload dev-status artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-status
+          path: |
+            public/dev-status.json
+            public/dev-status-history.json
+            public/coverage-summary.json
+            public/test-summary.json
           retention-days: 7
 
   # ===== AI Enhanced Code Review =====

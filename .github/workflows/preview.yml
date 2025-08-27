@@ -39,6 +39,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
+      - name: Run unit tests with coverage (non-blocking)
+        run: pnpm test -- --coverage --watchAll=false --passWithNoTests || true
+
+      - name: Generate Dev Status and publish coverage
+        run: |
+          pnpm run build:dev-status || true
+          pnpm run build:dev-status:history || true
+
       - name: Build
         run: pnpm run vercel-build
 

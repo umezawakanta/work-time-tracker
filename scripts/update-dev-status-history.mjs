@@ -44,6 +44,8 @@ function main() {
     // Optional coverage summary
     const coveragePath = path.join(publicDir, 'coverage-summary.json');
     const cov = readJsonSafe(coveragePath, null);
+    const e2ePath = path.join(publicDir, 'e2e-summary.json');
+    const e2e = readJsonSafe(e2ePath, null);
 
     const entry = {
         sha: commitSha,
@@ -57,13 +59,19 @@ function main() {
             wip: Number(current.totals.wip || 0),
             error: Number(current.totals.errorHints || 0),
         },
-        tests: cov && cov.total ? {
-            coverage: {
+        tests: (cov && cov.total) || e2e ? {
+            coverage: cov && cov.total ? {
                 lines: Number(cov.total?.lines?.pct ?? 0),
                 statements: Number(cov.total?.statements?.pct ?? 0),
                 functions: Number(cov.total?.functions?.pct ?? 0),
                 branches: Number(cov.total?.branches?.pct ?? 0),
-            }
+            } : undefined,
+            e2e: e2e ? {
+                passPct: Number(e2e.passPct ?? 0),
+                passes: Number(e2e.passes ?? 0),
+                failures: Number(e2e.failures ?? 0),
+                total: Number(e2e.total ?? 0),
+            } : undefined,
         } : undefined,
     };
 

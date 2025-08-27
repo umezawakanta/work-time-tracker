@@ -174,6 +174,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
     covLines?: number;
     covFuncs?: number;
     covBranches?: number;
+    e2ePassPct?: number;
     message?: string;
     sha?: string;
     timestamp?: string;
@@ -210,6 +211,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
         covLines: Number((h as any).tests?.coverage?.lines ?? 0),
         covFuncs: Number((h as any).tests?.coverage?.functions ?? 0),
         covBranches: Number((h as any).tests?.coverage?.branches ?? 0),
+        e2ePassPct: Number((h as any).tests?.e2e?.passPct ?? 0),
         message: h.message,
         sha: h.sha,
         timestamp: h.timestamp,
@@ -378,7 +380,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
                       minTickGap={24}
                     />
                     <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-                    <YAxis yAxisId={1} orientation="right" domain={[0, 100]} tickFormatter={(v) => `${v}%`} hide />
+                    <YAxis yAxisId={1} orientation="right" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
                     <Tooltip
                       content={({ active, label, payload }) => {
                         if (!active || !Array.isArray(payload) || payload.length === 0) return null;
@@ -407,6 +409,9 @@ export default function DevelopmentStatus(): React.JSX.Element {
                               )}
                               {typeof p.covLines === 'number' && (
                                 <div>coverage(lines): {Number(p.covLines).toFixed(1)}%</div>
+                              )}
+                              {typeof p.e2ePassPct === 'number' && (
+                                <div>e2e pass: {Number(p.e2ePassPct).toFixed(1)}%</div>
                               )}
                             </div>
                             {p?.sha && (
@@ -474,8 +479,9 @@ export default function DevelopmentStatus(): React.JSX.Element {
                         strokeWidth={lowestKey === 'error' ? 3 : 1.5}
                       />
                     )}
-                    {/* Coverage overlay (lines) */}
-                    <Line type="monotone" dataKey="covLines" name="coverage(lines%)" stroke="#22c55e" dot={false} yAxisId={1} hide />
+                    {/* Secondary overlays */}
+                    <Line type="monotone" dataKey="covLines" name="coverage(lines%)" stroke="#22c55e" dot={false} yAxisId={1} />
+                    <Line type="monotone" dataKey="e2ePassPct" name="e2e pass%" stroke="#06b6d4" dot={false} yAxisId={1} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>

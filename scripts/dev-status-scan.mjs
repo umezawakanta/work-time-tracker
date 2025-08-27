@@ -145,9 +145,33 @@ async function main() {
       await fs.writeFile(covDest, cov, 'utf8');
       console.log(`Published coverage to ${path.relative(repoRoot, covDest)}`);
     }
-  } catch {}
+  } catch { }
 
   try {
+    // Try to read Cypress summary JSON if exists
+    const e2eSummaryPath = path.join(repoRoot, 'cypress', 'results', 'summary.json');
+    const e2eRaw = await fs.readFile(e2eSummaryPath, 'utf8').catch(() => null);
+    /** @type {{stats?:{tests?:number,passes?:number,failures?:number,pending?:number,skipped?:number}}|null} */
+    let e2eParsed = null;
+    if (e2eRaw) {
+      try { e2eParsed = JSON.parse(e2eRaw); } catch {}
+    }
+    let e2e = { available: false };
+    if (e2eParsed && e2eParsed.stats) {
+      const s = e2eParsed.stats;
+      const total = Number(s.tests || 0);
+      const passes = Number(s.passes || 0);
+      const failures = Number(s.failures || 0);
+      const pending = Number(s.pending || 0);
+      const skipped = Number(s.skipped || 0);
+      const considered = Math.max(1, total || passes + failures + pending + skipped);
+      const passPct = Math.min(100, Math.max(0, (passes / considered) * 100));
+      e2e = { available: true, total, passes, failures, passPct: Math.round(passPct * 10) / 10 };
+      const pub = path.join(publicDir, 'e2e-summary.json');
+      await fs.writeFile(pub, JSON.stringify({ total, passes, failures, pending, skipped, passPct }, null, 2), 'utf8');
+      console.log(`Published e2e summary to ${path.relative(repoRoot, pub)}`);
+    }
+
     const testSummary = {
       generatedAt: new Date().toISOString(),
       unit: {
@@ -156,15 +180,12 @@ async function main() {
           .then(() => true)
           .catch(() => false),
       },
-      e2e: {
-        // Placeholder: mark as unavailable by default
-        available: false,
-      },
+      e2e,
     };
     const testSummaryPath = path.join(publicDir, 'test-summary.json');
     await fs.writeFile(testSummaryPath, JSON.stringify(testSummary, null, 2), 'utf8');
     console.log(`Published test summary to ${path.relative(repoRoot, testSummaryPath)}`);
-  } catch {}
+  } catch { }
 }
 
 main().catch((e) => {
