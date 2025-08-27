@@ -380,7 +380,12 @@ export default function DevelopmentStatus(): React.JSX.Element {
                       minTickGap={24}
                     />
                     <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-                    <YAxis yAxisId={1} orientation="right" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+                    <YAxis
+                      yAxisId={1}
+                      orientation="right"
+                      domain={[0, 100]}
+                      tickFormatter={(v) => `${v}%`}
+                    />
                     <Tooltip
                       content={({ active, label, payload }) => {
                         if (!active || !Array.isArray(payload) || payload.length === 0) return null;
@@ -480,8 +485,22 @@ export default function DevelopmentStatus(): React.JSX.Element {
                       />
                     )}
                     {/* Secondary overlays */}
-                    <Line type="monotone" dataKey="covLines" name="coverage(lines%)" stroke="#22c55e" dot={false} yAxisId={1} />
-                    <Line type="monotone" dataKey="e2ePassPct" name="e2e pass%" stroke="#06b6d4" dot={false} yAxisId={1} />
+                    <Line
+                      type="monotone"
+                      dataKey="covLines"
+                      name="coverage(lines%)"
+                      stroke="#22c55e"
+                      dot={false}
+                      yAxisId={1}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="e2ePassPct"
+                      name="e2e pass%"
+                      stroke="#06b6d4"
+                      dot={false}
+                      yAxisId={1}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </div>

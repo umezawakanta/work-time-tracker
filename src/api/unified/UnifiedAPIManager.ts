@@ -336,16 +336,22 @@ class UnifiedAPIManager extends EventEmitter {
         });
 
         if (!securityResult.allowed) {
-          return this.createErrorResponse<T>(requestId, 'SECURITY_CHECK_FAILED',
-            `Security check failed: ${securityResult.reason}`);
+          return this.createErrorResponse<T>(
+            requestId,
+            'SECURITY_CHECK_FAILED',
+            `Security check failed: ${securityResult.reason}`
+          );
         }
       }
 
       // エンドポイント設定の取得
       const endpointConfig = this.config.endpoints[request.endpoint];
       if (!endpointConfig) {
-        return this.createErrorResponse<T>(requestId, 'UNKNOWN_ENDPOINT',
-          `Unknown endpoint: ${request.endpoint}`);
+        return this.createErrorResponse<T>(
+          requestId,
+          'UNKNOWN_ENDPOINT',
+          `Unknown endpoint: ${request.endpoint}`
+        );
       }
 
       // キャッシュチェック
@@ -796,11 +802,7 @@ class UnifiedAPIManager extends EventEmitter {
   /**
    * 🧯 統一エラーレスポンス生成（例外を投げずに返す）
    */
-  private createErrorResponse<T>(
-    requestId: string,
-    code: string,
-    message: string
-  ): APIResponse<T> {
+  private createErrorResponse<T>(requestId: string, code: string, message: string): APIResponse<T> {
     return {
       success: false,
       error: {

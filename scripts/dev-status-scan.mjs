@@ -154,7 +154,7 @@ async function main() {
     /** @type {{stats?:{tests?:number,passes?:number,failures?:number,pending?:number,skipped?:number}}|null} */
     let e2eParsed = null;
     if (e2eRaw) {
-      try { e2eParsed = JSON.parse(e2eRaw); } catch {}
+      try { e2eParsed = JSON.parse(e2eRaw); } catch { }
     }
     let e2e = { available: false };
     if (e2eParsed && e2eParsed.stats) {
