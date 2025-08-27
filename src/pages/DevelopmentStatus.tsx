@@ -120,6 +120,47 @@ export default function DevelopmentStatus(): React.JSX.Element {
 
   const lowestKey: SeriesKey | null = priorityOrder.length > 0 ? priorityOrder[0].key : null;
 
+  // Progress summary stats (start vs current)
+  const progressSummary: Array<{
+    key: SeriesKey;
+    start: number;
+    current: number;
+    delta: number; // negative is good (reduced)
+    pct: number; // completion % from start
+  }> = (() => {
+    if (!data) return [];
+    const startFromHistory = history.length > 0 ? (history[0].totals as any) : {};
+    const currentTotals = {
+      findings: data.findings.length,
+      todo: data.totals.todo,
+      mock: data.totals.mock,
+      wip: data.totals.wip,
+      error: data.totals.errorHints,
+    } as Record<SeriesKey, number>;
+    const startTotals = {
+      findings: Number(startFromHistory.findings ?? currentTotals.findings),
+      todo: Number(startFromHistory.todo ?? currentTotals.todo),
+      mock: Number(startFromHistory.mock ?? currentTotals.mock),
+      wip: Number(startFromHistory.wip ?? currentTotals.wip),
+      error: Number(startFromHistory.error ?? currentTotals.error),
+    } as Record<SeriesKey, number>;
+    const toPct = (start: number, cur: number) => {
+      const denom = start || 1;
+      return Math.max(0, Math.min(100, ((start - Math.max(0, cur)) / denom) * 100));
+    };
+    return (['findings', 'todo', 'mock', 'wip', 'error'] as SeriesKey[]).map((k) => {
+      const start = startTotals[k];
+      const current = currentTotals[k];
+      return {
+        key: k,
+        start,
+        current,
+        delta: current - start,
+        pct: toPct(start, current),
+      };
+    });
+  })();
+
   useEffect(() => {
     (async () => {
       try {
@@ -317,6 +358,32 @@ export default function DevelopmentStatus(): React.JSX.Element {
       )}
       {data && (
         <div className="mt-6 space-y-6">
+          {/* 進捗サマリー（わかりやすい数値表示） */}
+          {progressSummary.length > 0 && (
+            <section>
+              <h2 className="text-lg font-medium">進捗サマリー</h2>
+              <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                {progressSummary.map(({ key, start, current, pct }) => (
+                  <div
+                    key={`summary-${key}`}
+                    className={`rounded border p-3 ${lowestKey === key ? 'ring-2 ring-amber-400' : ''}`}
+                  >
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-xs uppercase text-gray-600">{key}</span>
+                      <span className={`text-sm ${pct > 0 ? 'text-emerald-600' : 'text-gray-600'}`}>
+                        {pct.toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="mt-1 text-lg font-semibold text-gray-900">
+                      {current}
+                      <span className="ml-1 text-xs text-gray-600">/ {start}</span>
+                    </div>
+                    <div className="mt-1 text-xs text-gray-600">初期比: 減少率（%）</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
           {/* 修正率サマリー */}
           {history.length > 0 && (
             <section>
