@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2025-08-27T07:17:58.337Z",
+  "generatedAt": "2025-08-27T08:21:21.703Z",
   "totals": {
     "filesScanned": 1265,
-    "findings": 2644,
+    "findings": 2648,
     "todo": 140,
-    "mock": 662,
+    "mock": 666,
     "wip": 28,
     "errorHints": 1807
   },
@@ -14,7 +14,6 @@
       "/quality-dashboard",
       "/testing-dashboard",
       "/analytics-dashboard",
-      "/dev-status",
       "/subscription",
       "/subscription-upgrade",
       "/billing-history"
@@ -4731,139 +4730,163 @@
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 70,
+      "line": 64,
+      "snippet": "type SeriesKey = 'findings' | 'todo' | 'mock' | 'wip' | 'error';",
+      "kind": "mock"
+    },
+    {
+      "file": "src\\pages\\DevelopmentStatus.tsx",
+      "line": 73,
+      "snippet": "mock: data.totals.mock,",
+      "kind": "mock"
+    },
+    {
+      "file": "src\\pages\\DevelopmentStatus.tsx",
+      "line": 80,
+      "snippet": "mock: Number(startFromHistory.mock ?? currentTotals.mock),",
+      "kind": "mock"
+    },
+    {
+      "file": "src\\pages\\DevelopmentStatus.tsx",
+      "line": 91,
+      "snippet": "['findings', 'todo', 'mock', 'wip', 'error'] as SeriesKey[]",
+      "kind": "mock"
+    },
+    {
+      "file": "src\\pages\\DevelopmentStatus.tsx",
+      "line": 111,
       "snippet": "if (!res.ok) throw new Error('failed to load dev-status.json');",
       "kind": "error"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 94,
+      "line": 136,
       "snippet": "mockPct: number;",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 105,
+      "line": 147,
       "snippet": "mock: Number(history[0]?.totals?.mock ?? 0),",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 118,
+      "line": 160,
       "snippet": "mock: Number(h.totals?.mock ?? 0),",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 126,
+      "line": 169,
       "snippet": "mockPct: toPct(base.mock, current.mock),",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 178,
+      "line": 221,
       "snippet": "<p className=\"text-sm text-gray-600 mt-1\">未実装・モック・WIP・エラーヒントの自動検出</p>",
       "kind": "wip"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 178,
+      "line": 221,
       "snippet": "<p className=\"text-sm text-gray-600 mt-1\">未実装・モック・WIP・エラーヒントの自動検出</p>",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 198,
+      "line": 241,
       "snippet": "{(['todo', 'mock', 'wip', 'error', 'note'] as Finding['kind'][]).map((k) => (",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 228,
-      "snippet": "{(['findings', 'todo', 'mock', 'wip', 'error'] as const).map((k) => {",
-      "kind": "mock"
-    },
-    {
-      "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 262,
+      "line": 307,
       "snippet": "{(['findings', 'todo', 'mock', 'wip', 'error'] as const).map((k) => (",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 300,
+      "line": 359,
       "snippet": "{seriesVisible.mock && (",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 301,
+      "line": 360,
       "snippet": "<div>mock: {Number(p.mockPct).toFixed(1)}%</div>",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 341,
+      "line": 402,
       "snippet": "{seriesVisible.mock && (",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 344,
+      "line": 405,
       "snippet": "dataKey=\"mockPct\"",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 345,
+      "line": 406,
       "snippet": "name=\"mock\"",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 379,
+      "line": 409,
+      "snippet": "strokeWidth={lowestKey === 'mock' ? 3 : 1.5}",
+      "kind": "mock"
+    },
+    {
+      "file": "src\\pages\\DevelopmentStatus.tsx",
+      "line": 443,
       "snippet": "<span>TODO: {data.totals.todo}</span>",
       "kind": "todo"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 380,
+      "line": 444,
       "snippet": "<span>MOCK: {data.totals.mock}</span>",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 381,
+      "line": 445,
       "snippet": "<span>WIP: {data.totals.wip}</span>",
       "kind": "wip"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 391,
+      "line": 455,
       "snippet": "<h3 className=\"text-sm font-semibold text-amber-700\">WIP</h3>",
       "kind": "wip"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 399,
+      "line": 463,
       "snippet": "<h3 className=\"text-sm font-semibold text-sky-700\">モック/ダミー</h3>",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 401,
+      "line": 465,
       "snippet": "{(data.flags.mockRoutes || []).map((r) => (",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 402,
+      "line": 466,
       "snippet": "<li key={`mock-${r}`}>{r}</li>",
       "kind": "mock"
     },
     {
       "file": "src\\pages\\DevelopmentStatus.tsx",
-      "line": 447,
+      "line": 511,
       "snippet": ": f.kind === 'mock'",
       "kind": "mock"
     },
@@ -8559,7 +8582,7 @@
     },
     {
       "file": "src\\services\\api\\apiConfig.ts",
-      "line": 275,
+      "line": 280,
       "snippet": "// グローバルフラグを設定してフロントエンドでモック利用可能にする",
       "kind": "mock"
     },

@@ -76,5 +76,18 @@
       "wip": 28,
       "error": 1807
     }
+  },
+  {
+    "sha": "89ca9ce51817e4b4b887bebced6e410a8e9422e6",
+    "short": "89ca9ce518",
+    "message": "chore(flags): remove /dev-status from WIP routes",
+    "timestamp": "2025-08-27T08:21:10.000Z",
+    "totals": {
+      "findings": 2648,
+      "todo": 140,
+      "mock": 666,
+      "wip": 28,
+      "error": 1807
+    }
   }
 ]
