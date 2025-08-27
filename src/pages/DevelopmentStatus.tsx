@@ -30,6 +30,9 @@ export default function DevelopmentStatus(): React.JSX.Element {
   const [data, setData] = useState<DevStatus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<
+    { sha: string; short: string; message: string; timestamp: string; totals: any }[]
+  >([]);
   const [query, setQuery] = useState<string>('');
   const [kinds, setKinds] = useState<Record<Finding['kind'], boolean>>({
     todo: true,
@@ -48,6 +51,14 @@ export default function DevelopmentStatus(): React.JSX.Element {
         if (!res.ok) throw new Error('failed to load dev-status.json');
         const json = (await res.json()) as DevStatus;
         setData(json);
+        // load history
+        try {
+          const hres = await fetch(`/dev-status-history.json${q}`);
+          if (hres.ok) {
+            const h = (await hres.json()) as any[];
+            setHistory(Array.isArray(h) ? h : []);
+          }
+        } catch {}
       } catch (e: any) {
         setError(e?.message || 'failed');
       } finally {
@@ -136,6 +147,39 @@ export default function DevelopmentStatus(): React.JSX.Element {
       )}
       {data && (
         <div className="mt-6 space-y-6">
+          {/* 修正率サマリー */}
+          {history.length > 0 && (
+            <section>
+              <h2 className="text-lg font-medium">修正率（コミット単位推移）</h2>
+              <div className="mt-2 grid grid-cols-1 gap-3">
+                {(['findings', 'todo', 'mock', 'wip', 'error'] as const).map((k) => {
+                  const current = data.totals[k === 'error' ? 'errorHints' : (k as any)] ||
+                    (k === 'findings' ? data.findings.length : 0);
+                  const start = history[0]?.totals?.[k] ?? current;
+                  const denom = start || 1; // avoid div by zero
+                  const rate = Math.max(0, Math.min(100, ((start - current) / denom) * 100));
+                  return (
+                    <div key={`rate-${k}`} className="border rounded p-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-medium uppercase">{k}</span>
+                        <span className="text-gray-600">{rate.toFixed(1)}%</span>
+                      </div>
+                      <div className="mt-2 h-2 bg-gray-100 rounded">
+                        <div
+                          className="h-2 bg-emerald-500 rounded"
+                          style={{ width: `${rate}%` }}
+                          aria-label={`${k} 修正率 ${rate.toFixed(1)}%`}
+                        />
+                      </div>
+                      <div className="mt-2 text-xs text-gray-600">
+                        現在: {current} / 初期: {start}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
           <section>
             <div className="text-sm text-gray-700">
               <div>生成時刻: {new Date(data.generatedAt).toLocaleString()}</div>

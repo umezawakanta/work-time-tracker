@@ -12,6 +12,7 @@
         "vercel-build": "pnpm run build:version && vite build --config vite.config.ts --minify false --logLevel warn",
         "build:version": "node scripts/generate-version.mjs",
         "build:dev-status": "node scripts/dev-status-scan.mjs",
+        "build:dev-status:history": "node scripts/update-dev-status-history.mjs",
         "vercel-build-ci": "cross-env NODE_OPTIONS=--max_old_space_size=1536 VITE_ENABLE_REACT_GUARD=false VITE_DISABLE_CSS_MINIFY=true VITE_ENABLE_PWA=false VITE_CJS_IGNORE_WARNING=true pnpm run vercel-build",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 200",
         "lint:fix": "eslint . --ext ts,tsx --fix",
