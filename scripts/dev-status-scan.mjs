@@ -135,6 +135,36 @@ async function main() {
   await fs.writeFile(outPath, JSON.stringify(summary, null, 2), 'utf8');
   // eslint-disable-next-line no-console
   console.log(`Wrote dev status to ${path.relative(repoRoot, outPath)} (findings=${findings.length})`);
+
+  // --- Optional: publish local test artifacts for /dev-status ---
+  try {
+    const covSrc = path.join(repoRoot, 'coverage', 'coverage-summary.json');
+    const covDest = path.join(publicDir, 'coverage-summary.json');
+    const cov = await fs.readFile(covSrc, 'utf8').catch(() => null);
+    if (cov) {
+      await fs.writeFile(covDest, cov, 'utf8');
+      console.log(`Published coverage to ${path.relative(repoRoot, covDest)}`);
+    }
+  } catch {}
+
+  try {
+    const testSummary = {
+      generatedAt: new Date().toISOString(),
+      unit: {
+        hasCoverage: await fs
+          .stat(path.join(repoRoot, 'coverage', 'coverage-summary.json'))
+          .then(() => true)
+          .catch(() => false),
+      },
+      e2e: {
+        // Placeholder: mark as unavailable by default
+        available: false,
+      },
+    };
+    const testSummaryPath = path.join(publicDir, 'test-summary.json');
+    await fs.writeFile(testSummaryPath, JSON.stringify(testSummary, null, 2), 'utf8');
+    console.log(`Published test summary to ${path.relative(repoRoot, testSummaryPath)}`);
+  } catch {}
 }
 
 main().catch((e) => {

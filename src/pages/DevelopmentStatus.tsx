@@ -36,6 +36,21 @@ type DevStatus = {
   findings: Finding[];
 };
 
+type CoverageSummary = {
+  total?: {
+    lines?: { pct?: number };
+    statements?: { pct?: number };
+    functions?: { pct?: number };
+    branches?: { pct?: number };
+  };
+};
+
+type TestSummary = {
+  generatedAt: string;
+  unit?: { hasCoverage?: boolean };
+  e2e?: { available?: boolean };
+};
+
 export default function DevelopmentStatus(): React.JSX.Element {
   const [data, setData] = useState<DevStatus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -60,6 +75,8 @@ export default function DevelopmentStatus(): React.JSX.Element {
     error: true,
     note: true,
   });
+  const [coverage, setCoverage] = useState<CoverageSummary | null>(null);
+  const [testSummary, setTestSummary] = useState<TestSummary | null>(null);
 
   type SeriesKey = 'findings' | 'todo' | 'mock' | 'wip' | 'error';
 
@@ -89,7 +106,12 @@ export default function DevelopmentStatus(): React.JSX.Element {
 
     const entries: { key: SeriesKey; rate: number; current: number; start: number }[] = (
       ['findings', 'todo', 'mock', 'wip', 'error'] as SeriesKey[]
-    ).map((k) => ({ key: k, rate: rate(startTotals[k], currentTotals[k]), current: currentTotals[k], start: startTotals[k] }));
+    ).map((k) => ({
+      key: k,
+      rate: rate(startTotals[k], currentTotals[k]),
+      current: currentTotals[k],
+      start: startTotals[k],
+    }));
 
     entries.sort((a, b) => a.rate - b.rate);
     return entries;
@@ -112,6 +134,24 @@ export default function DevelopmentStatus(): React.JSX.Element {
           if (hres.ok) {
             const h = (await hres.json()) as any[];
             setHistory(Array.isArray(h) ? h : []);
+          }
+        } catch {}
+
+        // Load coverage summary if exists
+        try {
+          const covRes = await fetch(`/coverage-summary.json${q}`);
+          if (covRes.ok) {
+            const cov = (await covRes.json()) as CoverageSummary;
+            setCoverage(cov);
+          }
+        } catch {}
+
+        // Load test summary if exists
+        try {
+          const tsRes = await fetch(`/test-summary.json${q}`);
+          if (tsRes.ok) {
+            const ts = (await tsRes.json()) as TestSummary;
+            setTestSummary(ts);
           }
         } catch {}
       } catch (e: any) {
@@ -264,13 +304,17 @@ export default function DevelopmentStatus(): React.JSX.Element {
               <h2 className="text-lg font-medium">修正率（コミット単位推移）</h2>
               {priorityOrder.length > 0 && (
                 <div className="mt-1 text-sm text-gray-700" aria-live="polite">
-                  優先カテゴリ: <span className="font-semibold uppercase">{priorityOrder[0].key}</span>
+                  優先カテゴリ:{' '}
+                  <span className="font-semibold uppercase">{priorityOrder[0].key}</span>
                   <span className="ml-1">({priorityOrder[0].rate.toFixed(1)}%)</span>
                 </div>
               )}
               <div className="mt-2 grid grid-cols-1 gap-3">
                 {priorityOrder.map(({ key: k, rate, current, start }) => (
-                  <div key={`rate-${k}`} className={`border rounded p-3 ${lowestKey === k ? 'ring-2 ring-amber-400' : ''}`}>
+                  <div
+                    key={`rate-${k}`}
+                    className={`border rounded p-3 ${lowestKey === k ? 'ring-2 ring-amber-400' : ''}`}
+                  >
                     <div className="flex items-center justify-between text-sm">
                       <span className="font-medium uppercase">{k}</span>
                       <span className="text-gray-600">{rate.toFixed(1)}%</span>
@@ -282,7 +326,9 @@ export default function DevelopmentStatus(): React.JSX.Element {
                         aria-label={`${k} 修正率 ${rate.toFixed(1)}%`}
                       />
                     </div>
-                    <div className="mt-2 text-xs text-gray-600">現在: {current} / 初期: {start}</div>
+                    <div className="mt-2 text-xs text-gray-600">
+                      現在: {current} / 初期: {start}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -458,6 +504,36 @@ export default function DevelopmentStatus(): React.JSX.Element {
               </div>
             </div>
           </section>
+
+          {(coverage || testSummary) && (
+            <section>
+              <h2 className="text-lg font-medium">テスト/カバレッジ</h2>
+              <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="rounded border p-3">
+                  <h3 className="font-semibold mb-2">ユニットテスト カバレッジ</h3>
+                  {coverage?.total ? (
+                    <ul className="space-y-1">
+                      <li>Lines: {coverage.total?.lines?.pct ?? 0}%</li>
+                      <li>Statements: {coverage.total?.statements?.pct ?? 0}%</li>
+                      <li>Functions: {coverage.total?.functions?.pct ?? 0}%</li>
+                      <li>Branches: {coverage.total?.branches?.pct ?? 0}%</li>
+                    </ul>
+                  ) : (
+                    <p className="text-gray-600">カバレッジレポートが見つかりません</p>
+                  )}
+                </div>
+                <div className="rounded border p-3">
+                  <h3 className="font-semibold mb-2">テスト実行状況</h3>
+                  <ul className="space-y-1">
+                    <li>
+                      Unit coverage file: {testSummary?.unit?.hasCoverage ? 'あり' : 'なし'}
+                    </li>
+                    <li>E2E results: {testSummary?.e2e?.available ? 'あり' : '未取得'}</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+          )}
 
           <section>
             <h2 className="text-lg font-medium">検出結果</h2>
