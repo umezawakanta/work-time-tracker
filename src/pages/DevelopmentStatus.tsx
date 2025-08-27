@@ -61,6 +61,42 @@ export default function DevelopmentStatus(): React.JSX.Element {
     note: true,
   });
 
+  type SeriesKey = 'findings' | 'todo' | 'mock' | 'wip' | 'error';
+
+  // Calculate completion rates and priority ordering (lower % first)
+  const priorityOrder: { key: SeriesKey; rate: number; current: number; start: number }[] = (() => {
+    if (!data) return [];
+    const startFromHistory = history.length > 0 ? (history[0].totals as any) : {};
+    const currentTotals = {
+      findings: data.findings.length,
+      todo: data.totals.todo,
+      mock: data.totals.mock,
+      wip: data.totals.wip,
+      error: data.totals.errorHints,
+    };
+    const startTotals = {
+      findings: Number(startFromHistory.findings ?? currentTotals.findings),
+      todo: Number(startFromHistory.todo ?? currentTotals.todo),
+      mock: Number(startFromHistory.mock ?? currentTotals.mock),
+      wip: Number(startFromHistory.wip ?? currentTotals.wip),
+      error: Number(startFromHistory.error ?? currentTotals.error),
+    } as Record<SeriesKey, number>;
+
+    const rate = (start: number, cur: number) => {
+      const denom = start || 1;
+      return Math.max(0, Math.min(100, ((start - cur) / denom) * 100));
+    };
+
+    const entries: { key: SeriesKey; rate: number; current: number; start: number }[] = (
+      ['findings', 'todo', 'mock', 'wip', 'error'] as SeriesKey[]
+    ).map((k) => ({ key: k, rate: rate(startTotals[k], currentTotals[k]), current: currentTotals[k], start: startTotals[k] }));
+
+    entries.sort((a, b) => a.rate - b.rate);
+    return entries;
+  })();
+
+  const lowestKey: SeriesKey | null = priorityOrder.length > 0 ? priorityOrder[0].key : null;
+
   useEffect(() => {
     (async () => {
       try {
@@ -226,33 +262,29 @@ export default function DevelopmentStatus(): React.JSX.Element {
           {history.length > 0 && (
             <section>
               <h2 className="text-lg font-medium">修正率（コミット単位推移）</h2>
+              {priorityOrder.length > 0 && (
+                <div className="mt-1 text-sm text-gray-700" aria-live="polite">
+                  優先カテゴリ: <span className="font-semibold uppercase">{priorityOrder[0].key}</span>
+                  <span className="ml-1">({priorityOrder[0].rate.toFixed(1)}%)</span>
+                </div>
+              )}
               <div className="mt-2 grid grid-cols-1 gap-3">
-                {(['findings', 'todo', 'mock', 'wip', 'error'] as const).map((k) => {
-                  const current =
-                    data.totals[k === 'error' ? 'errorHints' : (k as any)] ||
-                    (k === 'findings' ? data.findings.length : 0);
-                  const start = history[0]?.totals?.[k] ?? current;
-                  const denom = start || 1; // avoid div by zero
-                  const rate = Math.max(0, Math.min(100, ((start - current) / denom) * 100));
-                  return (
-                    <div key={`rate-${k}`} className="border rounded p-3">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium uppercase">{k}</span>
-                        <span className="text-gray-600">{rate.toFixed(1)}%</span>
-                      </div>
-                      <div className="mt-2 h-2 bg-gray-100 rounded">
-                        <div
-                          className="h-2 bg-emerald-500 rounded"
-                          style={{ width: `${rate}%` }}
-                          aria-label={`${k} 修正率 ${rate.toFixed(1)}%`}
-                        />
-                      </div>
-                      <div className="mt-2 text-xs text-gray-600">
-                        現在: {current} / 初期: {start}
-                      </div>
+                {priorityOrder.map(({ key: k, rate, current, start }) => (
+                  <div key={`rate-${k}`} className={`border rounded p-3 ${lowestKey === k ? 'ring-2 ring-amber-400' : ''}`}>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium uppercase">{k}</span>
+                      <span className="text-gray-600">{rate.toFixed(1)}%</span>
                     </div>
-                  );
-                })}
+                    <div className="mt-2 h-2 bg-gray-100 rounded">
+                      <div
+                        className={`h-2 ${lowestKey === k ? 'bg-amber-500' : 'bg-emerald-500'} rounded`}
+                        style={{ width: `${rate}%` }}
+                        aria-label={`${k} 修正率 ${rate.toFixed(1)}%`}
+                      />
+                    </div>
+                    <div className="mt-2 text-xs text-gray-600">現在: {current} / 初期: {start}</div>
+                  </div>
+                ))}
               </div>
             </section>
           )}
@@ -282,7 +314,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
                       dataKey="time"
                       type="number"
                       scale="time"
-                      domain={["auto", "auto"]}
+                      domain={['auto', 'auto']}
                       tickFormatter={(v) =>
                         new Date(v).toLocaleString('ja-JP', {
                           month: '2-digit',
@@ -301,7 +333,9 @@ export default function DevelopmentStatus(): React.JSX.Element {
                         const ts = p?.timestamp ? new Date(p.timestamp).toLocaleString() : '';
                         return (
                           <div className="bg-white border rounded p-2 text-xs">
-                            <div className="font-semibold mb-1">{p?.name} {p?.sha && `(${p.sha})`}</div>
+                            <div className="font-semibold mb-1">
+                              {p?.name} {p?.sha && `(${p.sha})`}
+                            </div>
                             {p?.message && <div className="mb-1">{p.message}</div>}
                             {ts && <div className="text-gray-600 mb-1">{ts}</div>}
                             <div className="grid grid-cols-2 gap-x-3 gap-y-1">
@@ -341,6 +375,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
                         name="findings"
                         stroke="#0ea5e9"
                         dot={false}
+                        strokeWidth={lowestKey === 'findings' ? 3 : 1.5}
                       />
                     )}
                     {seriesVisible.todo && (
@@ -350,6 +385,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
                         name="todo"
                         stroke="#10b981"
                         dot={false}
+                        strokeWidth={lowestKey === 'todo' ? 3 : 1.5}
                       />
                     )}
                     {seriesVisible.mock && (
@@ -359,6 +395,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
                         name="mock"
                         stroke="#6366f1"
                         dot={false}
+                        strokeWidth={lowestKey === 'mock' ? 3 : 1.5}
                       />
                     )}
                     {seriesVisible.wip && (
@@ -368,6 +405,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
                         name="wip"
                         stroke="#f59e0b"
                         dot={false}
+                        strokeWidth={lowestKey === 'wip' ? 3 : 1.5}
                       />
                     )}
                     {seriesVisible.error && (
@@ -377,6 +415,7 @@ export default function DevelopmentStatus(): React.JSX.Element {
                         name="error"
                         stroke="#ef4444"
                         dot={false}
+                        strokeWidth={lowestKey === 'error' ? 3 : 1.5}
                       />
                     )}
                   </LineChart>
