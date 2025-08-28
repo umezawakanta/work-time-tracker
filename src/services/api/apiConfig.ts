@@ -12,18 +12,9 @@ declare global {
   }
 }
 
-// Respect explicit env setting first; only fall back to heuristics if undefined
+// Only allow mock mode when explicitly requested via env
 const explicitUseMockRaw = getEnv('VITE_USE_MOCK_DATA');
-const explicitUseMock =
-  typeof explicitUseMockRaw !== 'undefined'
-    ? explicitUseMockRaw === 'true' || explicitUseMockRaw === '1'
-    : undefined;
-
-export const USE_MOCK_DATA =
-  (explicitUseMock as boolean | undefined) ??
-  (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true') ??
-  // Historical fallback: on vercel.app, prefer mock when no explicit setting exists
-  (typeof window !== 'undefined' && /vercel\.app$/.test(window.location.hostname));
+export const USE_MOCK_DATA = explicitUseMockRaw === 'true' || explicitUseMockRaw === '1';
 
 // デバッグ情報をログ出力
 console.log('🔧 Determining API Configuration...');
