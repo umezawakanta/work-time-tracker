@@ -64,7 +64,7 @@ interface CognitiveLoadDashboardProps {
 }
 
 export const CognitiveLoadDashboard: React.FC<CognitiveLoadDashboardProps> = ({
-  userId = 'demo-user',
+  userId,
   autoStart = true,
   compactMode = false,
 }) => {
@@ -82,7 +82,7 @@ export const CognitiveLoadDashboard: React.FC<CognitiveLoadDashboardProps> = ({
 
   // 監視システムの初期化
   useEffect(() => {
-    if (autoStart) {
+    if (autoStart && userId) {
       startMonitoring();
     }
 
@@ -124,6 +124,7 @@ export const CognitiveLoadDashboard: React.FC<CognitiveLoadDashboardProps> = ({
   }, [autoStart, userId]);
 
   const startMonitoring = () => {
+    if (!userId) return;
     realtimeCognitiveLoadMonitor.startMonitoring(userId);
   };
 

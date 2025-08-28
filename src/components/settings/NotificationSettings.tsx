@@ -27,11 +27,11 @@ import {
   NotificationSettings as NotificationSettingsType,
   DEFAULT_NOTIFICATION_SETTINGS,
 } from '@/types/notification';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { useAuth } from '@/hooks/useAuth';
 
 const NotificationSettings: React.FC = () => {
-  const userId = useSelector((state: RootState) => (state as any).user?.id) || 'demo-user';
+  const { user, isAuthenticated } = useAuth();
+  const userId = user?.id || user?._id || user?.uid || user?.email || '';
   const [settings, setSettings] = useState<NotificationSettingsType>({
     ...DEFAULT_NOTIFICATION_SETTINGS,
     userId,
@@ -43,13 +43,15 @@ const NotificationSettings: React.FC = () => {
 
   // 設定を読み込み
   useEffect(() => {
+    if (!isAuthenticated || !userId) return;
     loadSettings();
     checkEmailServiceStatus();
-  }, [userId]);
+  }, [userId, isAuthenticated]);
 
   const loadSettings = async () => {
     setLoading(true);
     try {
+      if (!isAuthenticated || !userId) return;
       const response = await fetch(`http://localhost:3001/api/notifications/settings/${userId}`);
       if (response.ok) {
         const data = await response.json();

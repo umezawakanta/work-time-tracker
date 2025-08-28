@@ -141,7 +141,11 @@ export const ADHDTaskManager: React.FC = () => {
           setIsLoading(false);
         }, 10000);
 
-        const userId = user?.id || 'demo-user';
+        const userId = user?.id || user?._id || user?.uid || user?.email;
+        if (!userId) {
+          setIsLoading(false);
+          return;
+        }
         const service = createCognitiveDataService(userId, {
           storage: 'indexedDB', // IndexedDBを試してlocalStorageにフォールバック
           encryption: false,
@@ -490,7 +494,7 @@ export const ADHDTaskManager: React.FC = () => {
   }
 
   return (
-    <AdaptiveUIProvider userId={user?.id || 'demo-user'} autoStart={true}>
+    <AdaptiveUIProvider userId={user?.id || user?._id || user?.uid || user?.email} autoStart={true}>
       <div className="space-y-6">
         {/* リアルタイム認知負荷監視とヘッダー */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
@@ -576,7 +580,7 @@ export const ADHDTaskManager: React.FC = () => {
           {/* 認知負荷ダッシュボード（コンパクト） */}
           <div className="lg:col-span-1">
             <CognitiveLoadDashboard
-              userId={user?.id || 'demo-user'}
+              userId={user?.id || user?._id || user?.uid || user?.email}
               compactMode={true}
               autoStart={true}
             />

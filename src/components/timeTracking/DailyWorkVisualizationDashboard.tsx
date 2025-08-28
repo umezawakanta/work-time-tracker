@@ -1,3 +1,4 @@
+import { useAuth } from '@/hooks/useAuth';
 /**
  * 📊 日次勤務状況可視化ダッシュボード
  * 当日の勤務時間、休憩時間、残業時間をグラフ・チャートで視覚化
@@ -58,33 +59,35 @@ interface DailyWorkVisualizationDashboardProps {
 }
 
 export const DailyWorkVisualizationDashboard: React.FC<DailyWorkVisualizationDashboardProps> = ({
-  userId = 'demo-user',
+  userId,
   selectedDate = new Date(),
 }) => {
+  const { user } = useAuth();
+  const resolvedUserId = userId || user?.id || user?._id || user?.uid || user?.email || '';
   const [currentDate, setCurrentDate] = useState(selectedDate);
   const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month'>('today');
 
   // 日次統計データ
   const dailyStats = useMemo(() => {
-    return analyticsService.getDailyWorkStats(userId, currentDate);
-  }, [userId, currentDate]);
+    return analyticsService.getDailyWorkStats(resolvedUserId, currentDate);
+  }, [resolvedUserId, currentDate]);
 
   // 週次統計データ
   const weeklyStats = useMemo(() => {
     const weekStart = new Date(currentDate);
     weekStart.setDate(currentDate.getDate() - currentDate.getDay());
-    return analyticsService.getWeeklyWorkStats(userId, weekStart);
-  }, [userId, currentDate]);
+    return analyticsService.getWeeklyWorkStats(resolvedUserId, weekStart);
+  }, [resolvedUserId, currentDate]);
 
   // 勤務パターン分析
   const workPattern = useMemo(() => {
-    return analyticsService.analyzeWorkPattern(userId, 30);
-  }, [userId]);
+    return analyticsService.analyzeWorkPattern(resolvedUserId, 30);
+  }, [resolvedUserId]);
 
   // チャートデータ
   const chartData = useMemo(() => {
-    return analyticsService.generateWorkTimeChartData(userId, 7);
-  }, [userId]);
+    return analyticsService.generateWorkTimeChartData(resolvedUserId, 7);
+  }, [resolvedUserId]);
 
   // 時間を時:分形式でフォーマット
   const formatMinutes = (minutes: number): string => {

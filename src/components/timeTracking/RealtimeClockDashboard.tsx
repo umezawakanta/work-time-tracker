@@ -1,3 +1,4 @@
+import { useAuth } from '@/hooks/useAuth';
 /**
  * ⏰ リアルタイム打刻ダッシュボード
  * ワンクリック打刻・勤務状態表示・リアルタイム更新
@@ -70,6 +71,8 @@ interface TimeRecord {
 export const RealtimeClockDashboard: React.FC = () => {
   // State Management
   const [timeService] = useState(() => new TimeTrackingService());
+  const { isAuthenticated, user } = useAuth();
+  const resolvedUserId = user?.id || user?._id || user?.uid || user?.email || '';
   const [workStatus, setWorkStatus] = useState<WorkStatus>({
     status: 'not_started',
     workDuration: 0,
@@ -88,11 +91,12 @@ export const RealtimeClockDashboard: React.FC = () => {
 
   // データ更新
   const updateWorkStatus = useCallback(() => {
-    const status = timeService.getCurrentWorkStatus('demo-user');
-    const record = timeService.getTodaysRecord('demo-user');
+    if (!resolvedUserId) return;
+    const status = timeService.getCurrentWorkStatus(resolvedUserId);
+    const record = timeService.getTodaysRecord(resolvedUserId);
     setWorkStatus(status);
     setTodayRecord(record);
-  }, [timeService]);
+  }, [timeService, resolvedUserId]);
 
   // 現在時刻の更新
   useEffect(() => {
@@ -106,12 +110,14 @@ export const RealtimeClockDashboard: React.FC = () => {
 
   // 初期データ読み込み
   useEffect(() => {
-    updateWorkStatus();
+    if (resolvedUserId) updateWorkStatus();
 
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7);
-    const records = timeService.getTimeRecords('demo-user', startDate, endDate);
+    const records = resolvedUserId
+      ? timeService.getTimeRecords(resolvedUserId, startDate, endDate)
+      : [];
     setRecentRecords(records.slice(0, 5));
 
     // イベントリスナー
@@ -132,14 +138,15 @@ export const RealtimeClockDashboard: React.FC = () => {
       timeService.off('breakEnded', handleClockEvent);
       timeService.off('timeUpdated', handleClockEvent);
     };
-  }, [timeService, updateWorkStatus]);
+  }, [timeService, updateWorkStatus, resolvedUserId]);
 
   // 打刻アクション
   const handleClockIn = async () => {
     setIsLoading(true);
     try {
+      if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');
       await timeService.clockIn(
-        'demo-user',
+        resolvedUserId,
         {
           type: selectedLocation,
           address: selectedLocation === 'office' ? '本社オフィス' : undefined,
@@ -158,7 +165,8 @@ export const RealtimeClockDashboard: React.FC = () => {
   const handleClockOut = async () => {
     setIsLoading(true);
     try {
-      await timeService.clockOut('demo-user', notes);
+      if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');
+      await timeService.clockOut(resolvedUserId, notes);
       setNotes('');
     } catch (error) {
       console.error('Clock out error:', error);
@@ -171,7 +179,8 @@ export const RealtimeClockDashboard: React.FC = () => {
   const handleStartBreak = async () => {
     setIsLoading(true);
     try {
-      await timeService.startBreak('demo-user', notes);
+      if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');
+      await timeService.startBreak(resolvedUserId, notes);
       setNotes('');
     } catch (error) {
       console.error('Start break error:', error);
@@ -184,7 +193,8 @@ export const RealtimeClockDashboard: React.FC = () => {
   const handleEndBreak = async () => {
     setIsLoading(true);
     try {
-      await timeService.endBreak('demo-user');
+      if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');
+      await timeService.endBreak(resolvedUserId);
     } catch (error) {
       console.error('End break error:', error);
       alert(error instanceof Error ? error.message : '休憩終了に失敗しました');

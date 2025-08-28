@@ -186,20 +186,7 @@ export const addTodoItem = createAsyncThunk(
 
       console.log('✅ Todo created successfully:', todoData._id);
 
-      // メール通知を送信（非同期・エラーは無視）
-      try {
-        const userId = 'demo-user'; // TODO: 実際のユーザーIDを取得
-        fetch('http://localhost:3001/api/todos/notify-added', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId,
-            taskId: todoData._id,
-          }),
-        }).catch((err) => console.log('Notification failed:', err));
-      } catch (error) {
-        // 通知エラーは無視
-      }
+      // メール通知の送信はバックエンド実装に委ねる（フロント側でのモック呼び出しは行わない）
 
       return todoData;
     } catch (apiError: any) {

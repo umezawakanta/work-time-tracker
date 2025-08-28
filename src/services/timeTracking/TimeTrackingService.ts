@@ -182,7 +182,7 @@ export class TimeTrackingService extends EventEmitter {
   private initializeDefaultWorkPatterns(): void {
     const standardPattern: WorkPattern = {
       id: 'standard_pattern',
-      userId: 'demo-user',
+      userId: '',
       name: '標準勤務パターン（9:00-18:00）',
       isDefault: true,
       schedule: {
@@ -247,7 +247,7 @@ export class TimeTrackingService extends EventEmitter {
       updatedAt: new Date(),
     };
 
-    this.workPatterns.set('demo-user', standardPattern);
+    // Do not seed demo user pattern in production
   }
 
   /**
@@ -255,7 +255,7 @@ export class TimeTrackingService extends EventEmitter {
    */
   private initializeDefaultAlertSettings(): void {
     const defaultAlerts: AlertSettings = {
-      userId: 'demo-user',
+      userId: '',
       clockInReminder: {
         enabled: true,
         time: '09:00',
@@ -288,7 +288,7 @@ export class TimeTrackingService extends EventEmitter {
       },
     };
 
-    this.alertSettings.set('demo-user', defaultAlerts);
+    // Do not seed demo user alerts in production
   }
 
   /**

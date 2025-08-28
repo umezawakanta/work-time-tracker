@@ -126,7 +126,7 @@ class RealtimeCognitiveLoadMonitor extends EventEmitter {
   private currentMetrics: CognitiveLoadMetrics | null = null;
   private adaptationConfig!: UIAdaptationConfig;
   private monitoringInterval: NodeJS.Timeout | null = null;
-  private userId: string = 'demo-user';
+  private userId: string = '';
 
   // パフォーマンス追跡
   private performanceBaseline: {
@@ -283,6 +283,10 @@ class RealtimeCognitiveLoadMonitor extends EventEmitter {
     if (this.isMonitoring) return;
 
     if (userId) this.userId = userId;
+    if (!this.userId) {
+      console.warn('RealtimeCognitiveLoadMonitor: userId is required to start monitoring');
+      return;
+    }
     this.isMonitoring = true;
 
     // 3秒ごとに認知負荷を計算

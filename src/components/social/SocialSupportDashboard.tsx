@@ -1,3 +1,4 @@
+import { useAuth } from '@/hooks/useAuth';
 /**
  * 🤝 ソーシャルサポートダッシュボード
  * ADHD/ASDコミュニティとピアサポートの統合UI
@@ -116,6 +117,8 @@ interface KnowledgeResource {
 export const SocialSupportDashboard: React.FC = () => {
   // State Management
   const [socialService] = useState(() => new SocialSupportNetworkService());
+  const { user, isAuthenticated } = useAuth();
+  const resolvedUserId = user?.id || user?._id || user?.uid || user?.email || '';
   const [supportGroups, setSupportGroups] = useState<SupportGroup[]>([]);
   const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>([]);
   const [supportMatches, setSupportMatches] = useState<SupportMatch[]>([]);
@@ -132,7 +135,7 @@ export const SocialSupportDashboard: React.FC = () => {
     try {
       const groups = socialService.getSupportGroups();
       const posts = socialService.getCommunityPosts();
-      const matches = socialService.getSupportMatches('demo-user');
+      const matches = resolvedUserId ? socialService.getSupportMatches(resolvedUserId) : [];
       const resources = socialService.searchKnowledgeResources('');
       const stats = socialService.getCommunityStatistics();
 
@@ -144,7 +147,7 @@ export const SocialSupportDashboard: React.FC = () => {
     } catch (error) {
       console.error('Social data loading error:', error);
     }
-  }, [socialService]);
+  }, [socialService, resolvedUserId]);
 
   // 初期データ読み込み
   useEffect(() => {
@@ -216,7 +219,8 @@ export const SocialSupportDashboard: React.FC = () => {
 
   const joinGroup = async (groupId: string) => {
     try {
-      const success = await socialService.joinSupportGroup('demo-user', groupId);
+      if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');
+      const success = await socialService.joinSupportGroup(resolvedUserId, groupId);
       if (success) {
         loadSocialData();
       }
@@ -229,7 +233,8 @@ export const SocialSupportDashboard: React.FC = () => {
     if (!newPostContent.trim()) return;
 
     try {
-      await socialService.createCommunityPost('demo-user', {
+      if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');
+      await socialService.createCommunityPost(resolvedUserId, {
         groupId: selectedGroup || undefined,
         type: 'discussion',
         title: newPostContent.split('\n')[0] || 'タイトルなし',
@@ -252,7 +257,8 @@ export const SocialSupportDashboard: React.FC = () => {
 
   const requestSupport = async (type: string, urgency: string) => {
     try {
-      await socialService.requestSupportMatch('demo-user', {
+      if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');
+      await socialService.requestSupportMatch(resolvedUserId, {
         type: type as any,
         urgency: urgency as any,
         duration: 'short_term',

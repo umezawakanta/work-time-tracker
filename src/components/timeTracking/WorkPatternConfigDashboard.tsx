@@ -1,3 +1,4 @@
+import { useAuth } from '@/hooks/useAuth';
 /**
  * ⚙️ 勤務パターン設定ダッシュボード
  * 勤務時間・休憩・残業設定とADHD/ASD特性に応じた個人最適化
@@ -84,10 +85,14 @@ interface WorkPatternConfigDashboardProps {
 }
 
 export const WorkPatternConfigDashboard: React.FC<WorkPatternConfigDashboardProps> = ({
-  userId = 'demo-user',
+  userId,
 }) => {
-  const [patterns, setPatterns] = useState(patternService.getUserPatterns(userId));
-  const [activePattern, setActivePattern] = useState(patternService.getActivePattern(userId));
+  const { user } = useAuth();
+  const resolvedUserId = userId || user?.id || user?._id || user?.uid || user?.email || '';
+  const [patterns, setPatterns] = useState(patternService.getUserPatterns(resolvedUserId));
+  const [activePattern, setActivePattern] = useState(
+    patternService.getActivePattern(resolvedUserId)
+  );
   const [templates] = useState(patternService.getTemplates());
   const [editingPattern, setEditingPattern] = useState<any>(null);
   const [showTemplateDialog, setShowTemplateDialog] = useState(false);
@@ -110,8 +115,9 @@ export const WorkPatternConfigDashboard: React.FC<WorkPatternConfigDashboardProp
 
   // パターンデータの更新
   const refreshPatterns = () => {
-    setPatterns(patternService.getUserPatterns(userId));
-    setActivePattern(patternService.getActivePattern(userId));
+    if (!resolvedUserId) return;
+    setPatterns(patternService.getUserPatterns(resolvedUserId));
+    setActivePattern(patternService.getActivePattern(resolvedUserId));
   };
 
   // パターンの編集開始
@@ -132,7 +138,7 @@ export const WorkPatternConfigDashboard: React.FC<WorkPatternConfigDashboardProp
       return;
     }
 
-    const success = patternService.updatePattern(userId, editingPattern.id, formData);
+    const success = patternService.updatePattern(resolvedUserId, editingPattern.id, formData);
     if (success) {
       toast.success('勤務パターンを更新しました');
       setEditingPattern(null);
@@ -144,7 +150,7 @@ export const WorkPatternConfigDashboard: React.FC<WorkPatternConfigDashboardProp
 
   // テンプレートから作成
   const createFromTemplate = (templateId: string, name: string) => {
-    const patternId = patternService.createFromTemplate(userId, templateId, name);
+    const patternId = patternService.createFromTemplate(resolvedUserId, templateId, name);
     if (patternId) {
       toast.success('勤務パターンを作成しました');
       refreshPatterns();
@@ -156,7 +162,7 @@ export const WorkPatternConfigDashboard: React.FC<WorkPatternConfigDashboardProp
 
   // アクティブパターンの変更
   const changeActivePattern = (patternId: string) => {
-    const success = patternService.setActivePattern(userId, patternId);
+    const success = patternService.setActivePattern(resolvedUserId, patternId);
     if (success) {
       toast.success('アクティブパターンを変更しました');
       refreshPatterns();
@@ -165,7 +171,7 @@ export const WorkPatternConfigDashboard: React.FC<WorkPatternConfigDashboardProp
 
   // パターンの削除
   const deletePattern = (patternId: string) => {
-    const success = patternService.deletePattern(userId, patternId);
+    const success = patternService.deletePattern(resolvedUserId, patternId);
     if (success) {
       toast.success('勤務パターンを削除しました');
       refreshPatterns();
@@ -178,7 +184,7 @@ export const WorkPatternConfigDashboard: React.FC<WorkPatternConfigDashboardProp
   const addException = () => {
     if (!activePattern || !newException.date) return;
 
-    const exceptionId = patternService.addException(userId, activePattern.id, {
+    const exceptionId = patternService.addException(resolvedUserId, activePattern.id, {
       date: new Date(newException.date),
       type: newException.type as any,
       customStartTime: newException.customStartTime || undefined,

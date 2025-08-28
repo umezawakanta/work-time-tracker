@@ -93,6 +93,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import ApprovalWorkflowService from '@/services/approval/ApprovalWorkflowService';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 // インスタンス作成
 const approvalService = new ApprovalWorkflowService();
@@ -102,22 +103,34 @@ interface ApprovalDashboardProps {
   userRole?: string;
 }
 
-export const ApprovalDashboard: React.FC<ApprovalDashboardProps> = ({
-  userId = 'demo-user',
-  userRole = 'employee',
-}) => {
+export const ApprovalDashboard: React.FC<ApprovalDashboardProps> = ({ userId, userRole }) => {
+  const { isAuthenticated, user } = useAuth();
+  const resolvedUserId = userId ?? user?.id ?? user?._id ?? user?.uid ?? user?.email ?? null;
+  const resolvedUserRole = userRole ?? (user?.isAdmin ? 'admin' : 'employee');
   // State
   const [activeTab, setActiveTab] = useState<
     'overview' | 'my-requests' | 'pending-approvals' | 'history'
   >('overview');
-  const [myRequests, setMyRequests] = useState(approvalService.getUserRequests(userId));
+  const [myRequests, setMyRequests] = useState(
+    resolvedUserId ? approvalService.getUserRequests(resolvedUserId) : []
+  );
   const [pendingApprovals, setPendingApprovals] = useState(
-    approvalService.getPendingApprovals(userId)
+    resolvedUserId && ['supervisor', 'manager', 'hr', 'admin'].includes(resolvedUserRole)
+      ? approvalService.getPendingApprovals(resolvedUserId)
+      : []
   );
   const [approvalHistory, setApprovalHistory] = useState(
-    approvalService.getApprovalHistory(userId)
+    resolvedUserId ? approvalService.getApprovalHistory(resolvedUserId) : []
   );
-  const [statistics, setStatistics] = useState(approvalService.getApprovalStatistics(userId));
+  const [statistics, setStatistics] = useState({
+    total: 0,
+    thisMonth: 0,
+    approved: 0,
+    rejected: 0,
+    pending: 0,
+    averageApprovalTime: 0,
+    complianceRate: 0,
+  });
 
   // Dialogs
   const [showNewRequestDialog, setShowNewRequestDialog] = useState(false);
@@ -148,17 +161,35 @@ export const ApprovalDashboard: React.FC<ApprovalDashboardProps> = ({
   });
 
   // 権限チェック
-  const isApprover = ['supervisor', 'manager', 'hr', 'admin'].includes(userRole);
-  const isAdmin = ['admin', 'hr'].includes(userRole);
+  const isApprover = ['supervisor', 'manager', 'hr', 'admin'].includes(resolvedUserRole);
+  const isAdmin = ['admin', 'hr'].includes(resolvedUserRole);
 
   // データ更新
   const refreshData = () => {
-    setMyRequests(approvalService.getUserRequests(userId));
-    if (isApprover) {
-      setPendingApprovals(approvalService.getPendingApprovals(userId));
+    if (!resolvedUserId) {
+      setMyRequests([]);
+      setPendingApprovals([]);
+      setApprovalHistory([]);
+      setStatistics({
+        total: 0,
+        thisMonth: 0,
+        approved: 0,
+        rejected: 0,
+        pending: 0,
+        averageApprovalTime: 0,
+        complianceRate: 0,
+      });
+      return;
     }
-    setApprovalHistory(approvalService.getApprovalHistory(userId));
-    setStatistics(approvalService.getApprovalStatistics(userId));
+
+    setMyRequests(approvalService.getUserRequests(resolvedUserId));
+    if (isApprover) {
+      setPendingApprovals(approvalService.getPendingApprovals(resolvedUserId));
+    } else {
+      setPendingApprovals([]);
+    }
+    setApprovalHistory(approvalService.getApprovalHistory(resolvedUserId));
+    setStatistics(approvalService.getApprovalStatistics(resolvedUserId));
   };
 
   useEffect(() => {
@@ -175,7 +206,7 @@ export const ApprovalDashboard: React.FC<ApprovalDashboardProps> = ({
       approvalService.off('requestCreated', handleRequestCreated);
       approvalService.off('decisionProcessed', handleDecisionProcessed);
     };
-  }, [userId, userRole]);
+  }, [resolvedUserId, resolvedUserRole]);
 
   // フィルタリングされた申請
   const filteredRequests = useMemo(() => {
@@ -200,16 +231,20 @@ export const ApprovalDashboard: React.FC<ApprovalDashboardProps> = ({
 
   // 新規申請を作成
   const createNewRequest = () => {
+    if (!resolvedUserId || !isAuthenticated) {
+      toast.error('ログインが必要です');
+      return;
+    }
     if (!newRequestForm.title || !newRequestForm.description) {
       toast.error('タイトルと説明を入力してください');
       return;
     }
 
     const requestId = approvalService.createApprovalRequest({
-      userId,
+      userId: resolvedUserId,
       type: newRequestForm.type as any,
       targetData: newRequestForm.targetData,
-      submittedBy: userId,
+      submittedBy: resolvedUserId,
       title: newRequestForm.title,
       description: newRequestForm.description,
       urgency: newRequestForm.urgency as any,
@@ -278,8 +313,13 @@ export const ApprovalDashboard: React.FC<ApprovalDashboardProps> = ({
       return;
     }
 
-    const success = approvalService.processApprovalDecision(selectedRequest.id, userId, {
-      approverId: userId,
+    if (!resolvedUserId) {
+      toast.error('ログインが必要です');
+      return;
+    }
+
+    const success = approvalService.processApprovalDecision(selectedRequest.id, resolvedUserId, {
+      approverId: resolvedUserId,
       decision: approvalForm.decision as any,
       comments: approvalForm.comments,
       conditions: approvalForm.conditions,
@@ -758,7 +798,11 @@ export const ApprovalDashboard: React.FC<ApprovalDashboardProps> = ({
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                              const success = approvalService.withdrawRequest(request.id, userId);
+                              if (!resolvedUserId) return;
+                              const success = approvalService.withdrawRequest(
+                                request.id,
+                                resolvedUserId
+                              );
                               if (success) {
                                 toast.success('申請を撤回しました');
                                 refreshData();

@@ -186,8 +186,9 @@ class CognitiveLearningAnalytics extends EventEmitter {
    * サンプルデータの生成
    */
   private generateSampleData(): void {
+    // Remove seeded demo data in production; keep structure with no-op
     const now = new Date();
-    const sampleUserId = 'demo-user';
+    const sampleUserId = '';
 
     // 過去30日分のサンプル学習データを生成
     for (let i = 0; i < 100; i++) {
@@ -246,7 +247,7 @@ class CognitiveLearningAnalytics extends EventEmitter {
         },
       };
 
-      this.learningData.push(sampleData);
+      // Skip pushing demo data when no user is specified
     }
 
     console.log('🧠 Sample learning data generated:', this.learningData.length, 'data points');

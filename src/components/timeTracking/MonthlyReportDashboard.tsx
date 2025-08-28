@@ -1,3 +1,4 @@
+import { useAuth } from '@/hooks/useAuth';
 /**
  * 📊 月次勤怠レポートダッシュボード
  * 月次統計、有給管理、エクスポート機能を含む包括的な勤怠レポート
@@ -82,9 +83,9 @@ interface MonthlyReportDashboardProps {
   userId?: string;
 }
 
-export const MonthlyReportDashboard: React.FC<MonthlyReportDashboardProps> = ({
-  userId = 'demo-user',
-}) => {
+export const MonthlyReportDashboard: React.FC<MonthlyReportDashboardProps> = ({ userId }) => {
+  const { user } = useAuth();
+  const resolvedUserId = userId || user?.id || user?._id || user?.uid || user?.email || '';
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
@@ -98,30 +99,30 @@ export const MonthlyReportDashboard: React.FC<MonthlyReportDashboardProps> = ({
   // 月次データの取得
   const monthlyData = useMemo(() => {
     return monthlyService.getMonthlyTimesheet(
-      userId,
+      resolvedUserId,
       selectedDate.getFullYear(),
       selectedDate.getMonth() + 1
     );
-  }, [userId, selectedDate]);
+  }, [resolvedUserId, selectedDate]);
 
   // 月次比較データ
   const comparisonData = useMemo(() => {
-    return monthlyService.generateMonthlyComparison(userId, 6);
-  }, [userId]);
+    return monthlyService.generateMonthlyComparison(resolvedUserId, 6);
+  }, [resolvedUserId]);
 
   // 有給休暇残高
   const leaveBalance = useMemo(() => {
-    return monthlyService.calculateAnnualLeaveBalance(userId);
-  }, [userId]);
+    return monthlyService.calculateAnnualLeaveBalance(resolvedUserId);
+  }, [resolvedUserId]);
 
   // 有給休暇記録
   const leaveRecords = useMemo(() => {
     return monthlyService.getPaidLeaveRecords(
-      userId,
+      resolvedUserId,
       selectedDate.getFullYear(),
       selectedDate.getMonth() + 1
     );
-  }, [userId, selectedDate]);
+  }, [resolvedUserId, selectedDate]);
 
   // 月を変更
   const changeMonth = (direction: 'prev' | 'next') => {
@@ -164,7 +165,7 @@ export const MonthlyReportDashboard: React.FC<MonthlyReportDashboardProps> = ({
   // 有給申請提出
   const submitLeaveRequest = () => {
     monthlyService.submitPaidLeaveRequest({
-      userId,
+      userId: resolvedUserId,
       date: new Date(leaveRequest.date),
       type: leaveRequest.type as any,
       reason: leaveRequest.reason,

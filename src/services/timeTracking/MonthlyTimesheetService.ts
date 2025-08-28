@@ -78,7 +78,7 @@ export class MonthlyTimesheetService extends EventEmitter {
   constructor() {
     super();
     this.analyticsService = new WorkTimeAnalyticsService();
-    this.initializeDemoData();
+    // Remove demo data initialization in production
   }
 
   /**

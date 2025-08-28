@@ -158,7 +158,7 @@ export class NotificationService extends EventEmitter {
 
   constructor() {
     super();
-    this.initializeDemoData();
+    // Remove demo data initialization for production behavior
     this.startNotificationEngine();
   }
 

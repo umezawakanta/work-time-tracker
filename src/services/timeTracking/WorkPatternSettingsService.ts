@@ -126,7 +126,7 @@ export class WorkPatternSettingsService extends EventEmitter {
   constructor() {
     super();
     this.initializeTemplates();
-    this.initializeDemoData();
+    // Remove demo data initialization in production
   }
 
   /**
