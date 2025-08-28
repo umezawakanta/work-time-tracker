@@ -1336,13 +1336,24 @@ app.get('/api/admin/metrics/pageviews/trend', (req, res) => {
 });
 
 // Admin top pages (dev mock)
-app.get('/api/admin/metrics/top-pages', (req, res) => {
+app.get('/api/admin/metrics/top-pages', async (req, res) => {
   try {
-    const entries = Object.entries(__pagePathBuckets)
-      .map(([page, views]) => ({ page, views }))
-      .sort((a, b) => b.views - a.views)
-      .slice(0, 20);
-    return res.json({ success: true, data: entries });
+    const windowParam = String(req.query.window || '7d');
+    const now = new Date();
+    const from = new Date(now);
+    if (windowParam === '30d') from.setDate(now.getDate() - 30);
+    else if (windowParam === '90d') from.setDate(now.getDate() - 90);
+    else from.setDate(now.getDate() - 7);
+
+    const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
+    const rows = await AnalyticsEvent.aggregate([
+      { $match: { timestamp: { $gte: from, $lte: now }, event: 'page_view' } },
+      { $group: { _id: '$url', views: { $sum: 1 } } },
+      { $sort: { views: -1 } },
+      { $limit: 100 },
+      { $project: { page: '$_id', views: 1, _id: 0 } },
+    ]).catch(() => []);
+    return res.json({ success: true, data: rows });
   } catch (e) {
     console.error('❌ Error building top pages:', e);
     return res.json({ success: true, data: [] });
@@ -1438,37 +1449,72 @@ app.get('/api/admin/metrics/revenue/summary', (req, res) => {
   }
 });
 
-app.get('/api/analytics/summary', (req, res) => {
-  console.log('📊 GET /api/analytics/summary called');
-  console.log('📝 Query params:', req.query);
+app.get('/api/analytics/summary', async (req, res) => {
+  try {
+    console.log('📊 GET /api/analytics/summary called');
+    const range = String(req.query.range || '7d');
+    const now = new Date();
+    const from = new Date(now);
+    if (range === '24h') from.setDate(now.getDate() - 1);
+    else if (range === '7d') from.setDate(now.getDate() - 7);
+    else from.setDate(now.getDate() - 30);
 
-  // Mock analytics data
-  const mockAnalytics = {
-    totalUsers: 1247,
-    activeUsers: 89,
-    newUsers: 23,
-    returningUsers: 66,
-    averageSessionDuration: 847,
-    pageViewsTotal: 3421,
-    topPages: [
-      { page: '/dashboard', views: 892 },
-      { page: '/todo-manager', views: 743 },
-      { page: '/quadrant-dashboard', views: 651 },
-    ],
-    deviceBreakdown: {
-      desktop: 67,
-      mobile: 28,
-      tablet: 5,
-    },
-    trafficSources: {
-      direct: 45,
-      search: 32,
-      social: 15,
-      referral: 8,
-    },
-  };
+    const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
 
-  res.json(mockAnalytics);
+    // Distinct users
+    const totalUsers = await AnalyticsEvent.distinct('userId')
+      .then((a: unknown[]) => a.filter(Boolean).length)
+      .catch(() => 0);
+    const activeUsers = await AnalyticsEvent.distinct('userId', {
+      timestamp: { $gte: from, $lte: now },
+    })
+      .then((a: unknown[]) => a.filter(Boolean).length)
+      .catch(() => 0);
+
+    // New users and page views in window
+    const [newUsers, pageViewsTotal] = await Promise.all([
+      AnalyticsEvent.countDocuments({
+        timestamp: { $gte: from, $lte: now },
+        event: 'register',
+      }).catch(() => 0),
+      AnalyticsEvent.countDocuments({
+        timestamp: { $gte: from, $lte: now },
+        event: 'page_view',
+      }).catch(() => 0),
+    ]);
+
+    // Top pages
+    const topPages = await AnalyticsEvent.aggregate([
+      { $match: { timestamp: { $gte: from, $lte: now }, event: 'page_view' } },
+      { $group: { _id: '$url', views: { $sum: 1 } } },
+      { $sort: { views: -1 } },
+      { $limit: 5 },
+      { $project: { page: '$_id', views: 1, _id: 0 } },
+    ]).catch(() => []);
+
+    // Average session duration from page_view_end
+    const sessionAgg = await AnalyticsEvent.aggregate([
+      { $match: { timestamp: { $gte: from, $lte: now }, event: 'page_view_end' } },
+      { $group: { _id: null, avg: { $avg: { $ifNull: ['$data.timeSpent', 0] } } } },
+    ]).catch(() => [] as Array<{ avg: number }>);
+    const averageSessionDuration = Math.round((sessionAgg?.[0] as any)?.avg || 0);
+
+    return res.json({
+      success: true,
+      data: {
+        totalUsers,
+        activeUsers,
+        newUsers,
+        returningUsers: Math.max(activeUsers - newUsers, 0),
+        averageSessionDuration,
+        pageViewsTotal,
+        topPages,
+      },
+    });
+  } catch (e) {
+    console.error('❌ Error in /api/analytics/summary:', e);
+    return res.status(200).json({ success: true, data: {}, degraded: true });
+  }
 });
 
 // CI status mirror for local dev (matches serverless shape)
@@ -1682,21 +1728,24 @@ app.get('/api/analytics/retention/30d', async (req, res) => {
 });
 
 // Recent error reports (mocked list)
-app.get('/api/admin/error-reports', (req, res) => {
+app.get('/api/admin/error-reports', async (req, res) => {
   try {
     const limitParam = Number(req.query.limit || 10);
-    const limit = Math.max(1, Math.min(50, Number.isFinite(limitParam) ? limitParam : 10));
-    const list = Array.from({ length: limit }, (_, i) => ({
-      id: `err_${Date.now()}_${i}`,
-      createdAt: new Date(Date.now() - i * 3600_000).toISOString(),
-      message:
-        i % 3 === 0
-          ? 'NetworkError when attempting to fetch resource.'
-          : 'Unhandled exception in component',
-      url: i % 2 === 0 ? '/admin' : '/dev-status',
-      email: i % 4 === 0 ? 'user@example.com' : undefined,
-    }));
-    return res.json({ success: true, data: list });
+    const limit = Math.max(1, Math.min(200, Number.isFinite(limitParam) ? limitParam : 10));
+    try {
+      // Prefer shared serverless store if available
+      const { listErrorReports } = await import('../../api/_lib/errorStore');
+      const rows = await listErrorReports(limit);
+      return res.json({ success: true, data: rows });
+    } catch {}
+
+    const { default: mongoose } = await import('mongoose');
+    const rows = await mongoose.connection.db
+      .collection('error_reports')
+      .find({}, { sort: { createdAt: -1 } as any })
+      .limit(limit)
+      .toArray();
+    return res.json({ success: true, data: rows });
   } catch (e) {
     console.error('❌ Error in /api/admin/error-reports:', e);
     return res.json({ success: true, data: [], degraded: true });
