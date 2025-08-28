@@ -23,109 +23,94 @@ import {
 import { Button } from '../button';
 
 // Mock Radix UI to avoid complex dropdown testing
-jest.mock('@radix-ui/react-dropdown-menu', () => ({
-  Root: ({ children, onOpenChange, open }: any) => (
-    <div
-      data-testid="dropdown-root"
-      data-open={open}
-      onClick={() => onOpenChange && onOpenChange(!open)}
-    >
-      {children}
-    </div>
-  ),
-  ItemIndicator: ({ children }: any) => (
-    <span data-testid="dropdown-item-indicator">{children}</span>
-  ),
-  Trigger: ({ children, asChild, ...props }: any) =>
-    asChild ? (
-      cloneElement(children, { ...props, 'data-testid': 'dropdown-trigger' })
-    ) : (
-      <button {...props} data-testid="dropdown-trigger">
-        {children}
-      </button>
-    ),
-  Portal: ({ children }: any) => <div data-testid="dropdown-portal">{children}</div>,
-  Content: ({ children, className, sideOffset, ...props }: any) => (
-    <div
-      data-testid="dropdown-content"
-      className={className}
-      data-side-offset={sideOffset}
-      {...props}
-    >
-      {children}
-    </div>
-  ),
-  Item: ({ children, className, ...props }: any) => (
-    <div data-testid="dropdown-item" className={className} {...props}>
-      {children}
-    </div>
-  ),
-  CheckboxItem: ({ children, checked, onCheckedChange, className, ...props }: any) => (
-    <div
-      data-testid="dropdown-checkbox-item"
-      className={className}
-      data-checked={checked}
-      onClick={() => onCheckedChange && onCheckedChange(!checked)}
-      {...props}
-    >
-      {children}
-    </div>
-  ),
-  RadioGroup: ({ children, value, onValueChange, ...props }: any) => (
-    <div data-testid="dropdown-radio-group" data-value={value} {...props}>
-      {children && Array.isArray(children)
-        ? children.map((child, index) =>
-            cloneElement(child, {
-              key: index,
-              groupValue: value,
-              onGroupValueChange: onValueChange,
-            })
-          )
-        : children &&
-          cloneElement(children, { groupValue: value, onGroupValueChange: onValueChange })}
-    </div>
-  ),
-  RadioItem: ({ children, value, groupValue, onGroupValueChange, className, ...props }: any) => (
-    <div
-      data-testid="dropdown-radio-item"
-      className={className}
-      data-value={value}
-      data-checked={groupValue === value}
-      onClick={() => onGroupValueChange && onGroupValueChange(value)}
-      {...props}
-    >
-      {children}
-    </div>
-  ),
-  Label: ({ children, className, ...props }: any) => (
-    <div data-testid="dropdown-label" className={className} {...props}>
-      {children}
-    </div>
-  ),
-  Separator: ({ className, ...props }: any) => (
-    <div data-testid="dropdown-separator" className={className} {...props} />
-  ),
-  Group: ({ children, ...props }: any) => (
-    <div data-testid="dropdown-group" {...props}>
-      {children}
-    </div>
-  ),
-  Sub: ({ children, open, onOpenChange }: any) => (
-    <div data-testid="dropdown-sub" data-open={open}>
-      {children}
-    </div>
-  ),
-  SubTrigger: ({ children, className, inset, ...props }: any) => (
-    <div data-testid="dropdown-sub-trigger" className={className} data-inset={inset} {...props}>
-      {children}
-    </div>
-  ),
-  SubContent: ({ children, className, ...props }: any) => (
-    <div data-testid="dropdown-sub-content" className={className} {...props}>
-      {children}
-    </div>
-  ),
-}));
+jest.mock('@radix-ui/react-dropdown-menu', () => {
+  const React = require('react');
+  const create = React.createElement;
+  const { cloneElement } = React;
+  return {
+    Root: ({ children, onOpenChange, open }: any) =>
+      create(
+        'div',
+        {
+          'data-testid': 'dropdown-root',
+          'data-open': open,
+          onClick: () => onOpenChange && onOpenChange(!open),
+        },
+        children
+      ),
+    ItemIndicator: ({ children }: any) =>
+      create('span', { 'data-testid': 'dropdown-item-indicator' }, children),
+    Trigger: ({ children, asChild, ...props }: any) =>
+      asChild
+        ? cloneElement(children, { ...props, 'data-testid': 'dropdown-trigger' })
+        : create('button', { ...props, 'data-testid': 'dropdown-trigger' }, children),
+    Portal: ({ children }: any) => create('div', { 'data-testid': 'dropdown-portal' }, children),
+    Content: ({ children, className, sideOffset, ...props }: any) =>
+      create(
+        'div',
+        { 'data-testid': 'dropdown-content', className, 'data-side-offset': sideOffset, ...props },
+        children
+      ),
+    Item: ({ children, className, ...props }: any) =>
+      create('div', { 'data-testid': 'dropdown-item', className, ...props }, children),
+    CheckboxItem: ({ children, checked, onCheckedChange, className, ...props }: any) =>
+      create(
+        'div',
+        {
+          'data-testid': 'dropdown-checkbox-item',
+          className,
+          'data-checked': checked,
+          onClick: () => onCheckedChange && onCheckedChange(!checked),
+          ...props,
+        },
+        children
+      ),
+    RadioGroup: ({ children, value, onValueChange, ...props }: any) =>
+      create(
+        'div',
+        { 'data-testid': 'dropdown-radio-group', 'data-value': value, ...props },
+        children && Array.isArray(children)
+          ? children.map((child: any, index: number) =>
+              cloneElement(child, {
+                key: index,
+                groupValue: value,
+                onGroupValueChange: onValueChange,
+              })
+            )
+          : children &&
+              cloneElement(children, { groupValue: value, onGroupValueChange: onValueChange })
+      ),
+    RadioItem: ({ children, value, groupValue, onGroupValueChange, className, ...props }: any) =>
+      create(
+        'div',
+        {
+          'data-testid': 'dropdown-radio-item',
+          className,
+          'data-value': value,
+          'data-checked': groupValue === value,
+          onClick: () => onGroupValueChange && onGroupValueChange(value),
+          ...props,
+        },
+        children
+      ),
+    Label: ({ children, className, ...props }: any) =>
+      create('div', { 'data-testid': 'dropdown-label', className, ...props }, children),
+    Separator: ({ className, ...props }: any) =>
+      create('div', { 'data-testid': 'dropdown-separator', className, ...props }),
+    Group: ({ children, ...props }: any) =>
+      create('div', { 'data-testid': 'dropdown-group', ...props }, children),
+    Sub: ({ children, open, onOpenChange }: any) =>
+      create('div', { 'data-testid': 'dropdown-sub', 'data-open': open }, children),
+    SubTrigger: ({ children, className, inset, ...props }: any) =>
+      create(
+        'div',
+        { 'data-testid': 'dropdown-sub-trigger', className, 'data-inset': inset, ...props },
+        children
+      ),
+    SubContent: ({ children, className, ...props }: any) =>
+      create('div', { 'data-testid': 'dropdown-sub-content', className, ...props }, children),
+  };
+});
 
 // Test components
 const TestDropdownMenu: React.FC<{

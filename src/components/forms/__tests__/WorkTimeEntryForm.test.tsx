@@ -30,99 +30,80 @@ jest.mock('date-fns', () => ({
 }));
 
 // Mock Radix UI components that might cause re-render issues
-jest.mock('@radix-ui/react-roving-focus', () => ({
-  Root: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Item: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
+jest.mock('@radix-ui/react-roving-focus', () => {
+  const React = require('react');
+  return {
+    Root: ({ children }: { children: React.ReactNode }) =>
+      React.createElement('div', null, children),
+    Item: ({ children }: { children: React.ReactNode }) =>
+      React.createElement('div', null, children),
+  };
+});
 
 // Mock UI components to avoid import issues
-jest.mock('@/components/ui/calendar', () => ({
-  Calendar: ({ children, onSelect, ...props }: any) => (
-    <div data-testid="calendar" {...props}>
-      <button onClick={() => onSelect && onSelect(new Date())}>Select Date</button>
-      {children}
-    </div>
-  ),
-}));
+jest.mock('@/components/ui/calendar', () => {
+  const React = require('react');
+  return {
+    Calendar: ({ children, onSelect, ...props }: any) =>
+      React.createElement(
+        'div',
+        { 'data-testid': 'calendar', ...props },
+        React.createElement(
+          'button',
+          { onClick: () => onSelect && onSelect(new Date()) },
+          'Select Date'
+        ),
+        children
+      ),
+  };
+});
 
-jest.mock('@/components/ui/tabs', () => ({
-  Tabs: ({ children, ...props }: any) => (
-    <div data-testid="tabs" {...props}>
-      {children}
-    </div>
-  ),
-  TabsList: ({ children, ...props }: any) => (
-    <div data-testid="tabs-list" {...props}>
-      {children}
-    </div>
-  ),
-  TabsTrigger: ({ children, ...props }: any) => (
-    <button data-testid="tabs-trigger" {...props}>
-      {children}
-    </button>
-  ),
-  TabsContent: ({ children, ...props }: any) => (
-    <div data-testid="tabs-content" {...props}>
-      {children}
-    </div>
-  ),
-}));
+jest.mock('@/components/ui/tabs', () => {
+  const React = require('react');
+  return {
+    Tabs: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'tabs', ...props }, children),
+    TabsList: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'tabs-list', ...props }, children),
+    TabsTrigger: ({ children, ...props }: any) =>
+      React.createElement('button', { 'data-testid': 'tabs-trigger', ...props }, children),
+    TabsContent: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'tabs-content', ...props }, children),
+  };
+});
 
-jest.mock('@/components/ui/popover', () => ({
-  Popover: ({ children, ...props }: any) => (
-    <div data-testid="popover" {...props}>
-      {children}
-    </div>
-  ),
-  PopoverTrigger: ({ children, ...props }: any) => (
-    <div data-testid="popover-trigger" {...props}>
-      {children}
-    </div>
-  ),
-  PopoverContent: ({ children, ...props }: any) => (
-    <div data-testid="popover-content" {...props}>
-      {children}
-    </div>
-  ),
-}));
+jest.mock('@/components/ui/popover', () => {
+  const React = require('react');
+  return {
+    Popover: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'popover', ...props }, children),
+    PopoverTrigger: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'popover-trigger', ...props }, children),
+    PopoverContent: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'popover-content', ...props }, children),
+  };
+});
 
-jest.mock('@/components/ui/dialog', () => ({
-  Dialog: ({ children, ...props }: any) => (
-    <div data-testid="dialog" {...props}>
-      {children}
-    </div>
-  ),
-  DialogTrigger: ({ children, ...props }: any) => (
-    <div data-testid="dialog-trigger" {...props}>
-      {children}
-    </div>
-  ),
-  DialogContent: ({ children, ...props }: any) => (
-    <div data-testid="dialog-content" {...props}>
-      {children}
-    </div>
-  ),
-  DialogHeader: ({ children, ...props }: any) => (
-    <div data-testid="dialog-header" {...props}>
-      {children}
-    </div>
-  ),
-  DialogTitle: ({ children, ...props }: any) => (
-    <div data-testid="dialog-title" {...props}>
-      {children}
-    </div>
-  ),
-  DialogDescription: ({ children, ...props }: any) => (
-    <div data-testid="dialog-description" {...props}>
-      {children}
-    </div>
-  ),
-  DialogFooter: ({ children, ...props }: any) => (
-    <div data-testid="dialog-footer" {...props}>
-      {children}
-    </div>
-  ),
-}));
+jest.mock('@/components/ui/dialog', () => {
+  const React = require('react');
+  const create = React.createElement;
+  return {
+    Dialog: ({ children, ...props }: any) =>
+      create('div', { 'data-testid': 'dialog', ...props }, children),
+    DialogTrigger: ({ children, ...props }: any) =>
+      create('div', { 'data-testid': 'dialog-trigger', ...props }, children),
+    DialogContent: ({ children, ...props }: any) =>
+      create('div', { 'data-testid': 'dialog-content', ...props }, children),
+    DialogHeader: ({ children, ...props }: any) =>
+      create('div', { 'data-testid': 'dialog-header', ...props }, children),
+    DialogTitle: ({ children, ...props }: any) =>
+      create('div', { 'data-testid': 'dialog-title', ...props }, children),
+    DialogDescription: ({ children, ...props }: any) =>
+      create('div', { 'data-testid': 'dialog-description', ...props }, children),
+    DialogFooter: ({ children, ...props }: any) =>
+      create('div', { 'data-testid': 'dialog-footer', ...props }, children),
+  };
+});
 
 describe('WorkTimeEntryForm', () => {
   beforeEach(() => {

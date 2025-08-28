@@ -21,10 +21,13 @@ import SubscriptionPage from '@/pages/SubscriptionPage';
 import { formatPrice } from '@/config/stripe';
 
 // Mock react-router-dom
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => jest.fn(),
-  BrowserRouter: ({ children }: any) => <div>{children}</div>,
-}));
+jest.mock('react-router-dom', () => {
+  const React = require('react');
+  return {
+    useNavigate: () => jest.fn(),
+    BrowserRouter: ({ children }: any) => React.createElement('div', null, children),
+  };
+});
 
 // Mock auth hook
 jest.mock('@/hooks/useAuth', () => ({

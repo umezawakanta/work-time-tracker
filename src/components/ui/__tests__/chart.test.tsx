@@ -15,55 +15,64 @@ import {
 } from '../chart';
 
 // Mock recharts to avoid Canvas issues in testing
-jest.mock('recharts', () => ({
-  ...jest.requireActual('recharts'),
-  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="responsive-container">{children}</div>
-  ),
-  LineChart: ({ children, data, onMouseEnter, onMouseLeave }: any) => (
-    <div
-      data-testid="line-chart"
-      data-chart-data={JSON.stringify(data)}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      {children}
-    </div>
-  ),
-  BarChart: ({ children, data }: any) => (
-    <div data-testid="bar-chart" data-chart-data={JSON.stringify(data)}>
-      {children}
-    </div>
-  ),
-  PieChart: ({ children, data }: any) => (
-    <div data-testid="pie-chart" data-chart-data={JSON.stringify(data)}>
-      {children}
-    </div>
-  ),
-  Line: ({ dataKey, stroke }: any) => (
-    <div data-testid="chart-line" data-key={dataKey} data-stroke={stroke} />
-  ),
-  Bar: ({ dataKey, fill }: any) => (
-    <div data-testid="chart-bar" data-key={dataKey} data-fill={fill} />
-  ),
-  Pie: ({ dataKey, data }: any) => (
-    <div data-testid="chart-pie" data-key={dataKey} data-pie-data={JSON.stringify(data)} />
-  ),
-  Cell: ({ fill }: any) => <div data-testid="chart-cell" data-fill={fill} />,
-  XAxis: ({ dataKey }: any) => <div data-testid="x-axis" data-key={dataKey} />,
-  YAxis: ({ dataKey }: any) => <div data-testid="y-axis" data-key={dataKey} />,
-  Tooltip: ({ content, active, payload, label }: any) =>
-    active && content ? createElement(content, { active, payload, label }) : null,
-  Legend: ({ content, payload }: any) => {
-    if (content && isValidElement(content)) {
-      return cloneElement(content, { payload } as any);
-    }
-    if (content && typeof content === 'function') {
-      return createElement(content, { payload });
-    }
-    return null;
-  },
-}));
+jest.mock('recharts', () => {
+  const React = require('react');
+  const actual = jest.requireActual('recharts');
+  const create = React.createElement;
+  const { isValidElement, cloneElement } = React;
+  return {
+    ...actual,
+    ResponsiveContainer: ({ children }: { children: React.ReactNode }) =>
+      create('div', { 'data-testid': 'responsive-container' }, children),
+    LineChart: ({ children, data, onMouseEnter, onMouseLeave }: any) =>
+      create(
+        'div',
+        {
+          'data-testid': 'line-chart',
+          'data-chart-data': JSON.stringify(data),
+          onMouseEnter,
+          onMouseLeave,
+        },
+        children
+      ),
+    BarChart: ({ children, data }: any) =>
+      create(
+        'div',
+        { 'data-testid': 'bar-chart', 'data-chart-data': JSON.stringify(data) },
+        children
+      ),
+    PieChart: ({ children, data }: any) =>
+      create(
+        'div',
+        { 'data-testid': 'pie-chart', 'data-chart-data': JSON.stringify(data) },
+        children
+      ),
+    Line: ({ dataKey, stroke }: any) =>
+      create('div', { 'data-testid': 'chart-line', 'data-key': dataKey, 'data-stroke': stroke }),
+    Bar: ({ dataKey, fill }: any) =>
+      create('div', { 'data-testid': 'chart-bar', 'data-key': dataKey, 'data-fill': fill }),
+    Pie: ({ dataKey, data }: any) =>
+      create('div', {
+        'data-testid': 'chart-pie',
+        'data-key': dataKey,
+        'data-pie-data': JSON.stringify(data),
+      }),
+    Cell: ({ fill }: any) => create('div', { 'data-testid': 'chart-cell', 'data-fill': fill }),
+    XAxis: ({ dataKey }: any) => create('div', { 'data-testid': 'x-axis', 'data-key': dataKey }),
+    YAxis: ({ dataKey }: any) => create('div', { 'data-testid': 'y-axis', 'data-key': dataKey }),
+    Tooltip: ({ content, active, payload, label }: any) =>
+      active && content ? create(content, { active, payload, label }) : null,
+    Legend: ({ content, payload }: any) => {
+      if (content && isValidElement(content)) {
+        return cloneElement(content, { payload } as any);
+      }
+      if (content && typeof content === 'function') {
+        return create(content, { payload });
+      }
+      return null;
+    },
+  };
+});
 
 // Test data
 const testData = [

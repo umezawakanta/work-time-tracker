@@ -14,13 +14,12 @@ jest.mock('react', () => {
   const originalReact = jest.requireActual('react');
   return {
     ...originalReact,
-    Suspense: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    Suspense: ({ children }: { children: React.ReactNode }) =>
+      originalReact.createElement(originalReact.Fragment, null, children),
     lazy: jest.fn((factory: any) => {
-      // Return a component that synchronously renders the lazy component
       return (props: any) => {
         const LazyComponent = factory();
         if (LazyComponent && typeof LazyComponent.then === 'function') {
-          // For promises, return a placeholder or try to resolve synchronously
           return originalReact.createElement('div', {}, 'Loading...');
         }
         return originalReact.createElement(LazyComponent.default || LazyComponent, props);
@@ -30,74 +29,60 @@ jest.mock('react', () => {
 });
 
 // Mock the problematic imports
-jest.mock('../components/adhd/ADHDFloatingButton', () => ({
-  ADHDFloatingButton: () => <div data-testid="adhd-floating-button">ADHD Button</div>,
-}));
+jest.mock('../components/adhd/ADHDFloatingButton', () => {
+  const React = require('react');
+  return {
+    ADHDFloatingButton: () =>
+      React.createElement('div', { 'data-testid': 'adhd-floating-button' }, 'ADHD Button'),
+  };
+});
 
-jest.mock('../hooks/useADHDNotifications', () => ({
-  useADHDNotifications: () => ({
-    triggerEmergencyRealityCheck: jest.fn(),
-  }),
-}));
+jest.mock('../hooks/useADHDNotifications', () => {
+  return {
+    useADHDNotifications: () => ({
+      triggerEmergencyRealityCheck: jest.fn(),
+    }),
+  };
+});
 
 // Mock the NotFound component to avoid lazy loading issues in tests
 jest.mock('../pages/NotFound', () => {
+  const React = require('react');
   return function NotFound() {
-    return (
-      <div>
-        <h1>404 - ページが見つかりません</h1>
-        <a href="/">ホームに戻る</a>
-      </div>
+    return React.createElement(
+      'div',
+      null,
+      React.createElement('h1', null, '404 - ページが見つかりません'),
+      React.createElement('a', { href: '/' }, 'ホームに戻る')
     );
   };
 });
 
 // Mock all lazy-loaded components to avoid Suspense issues
 jest.mock('../pages/IntegratedDashboard', () => {
+  const React = require('react');
   return function IntegratedDashboard() {
-    return <div>Integrated Dashboard</div>;
+    return React.createElement('div', null, 'Integrated Dashboard');
   };
 });
 
 jest.mock('../pages/RealtimeClockPage', () => {
+  const React = require('react');
   return function RealtimeClockPage() {
-    return <div>Realtime Clock</div>;
+    return React.createElement('div', null, 'Realtime Clock');
   };
 });
 
 // Mock the Layout component to avoid loading issues
 jest.mock('../components/layout/Layout', () => {
+  const React = require('react');
   return function Layout({ children }: { children: React.ReactNode }) {
-    return <div data-testid="layout">{children}</div>;
+    return React.createElement('div', { 'data-testid': 'layout' }, children);
   };
 });
 
 // Override React.Suspense and React.lazy for testing
-jest.doMock('react', () => {
-  const originalReact = jest.requireActual('react');
-
-  return {
-    ...originalReact,
-    Suspense: ({ children }: { children: React.ReactNode; fallback?: React.ReactNode }) => children,
-    lazy: (factory: () => Promise<{ default: React.ComponentType<any> }>) => {
-      // Return a synchronous component for testing
-      const Component = (props: any) => {
-        // Check the factory function to determine which component to render
-        const factoryString = factory.toString();
-        if (factoryString.includes('NotFound')) {
-          return originalReact.createElement(
-            'div',
-            null,
-            originalReact.createElement('h1', null, '404 - ページが見つかりません'),
-            originalReact.createElement('a', { href: '/' }, 'ホームに戻る')
-          );
-        }
-        return originalReact.createElement('div', null, 'Mocked Lazy Component');
-      };
-      return Component;
-    },
-  };
-});
+// Remove duplicate doMock; rely on the single mock above to avoid out-of-scope JSX issues
 
 // Mock AuthContext to avoid loading states interfering with tests
 jest.mock('../context/AuthContext', () => {
@@ -132,9 +117,13 @@ jest.mock('../context/AuthContext', () => {
 });
 
 // Mock other problematic components
-jest.mock('../components/pomodoro/PomodoroManager', () => ({
-  PomodoroManager: () => <div data-testid="pomodoro-manager">Pomodoro</div>,
-}));
+jest.mock('../components/pomodoro/PomodoroManager', () => {
+  const React = require('react');
+  return {
+    PomodoroManager: () =>
+      React.createElement('div', { 'data-testid': 'pomodoro-manager' }, 'Pomodoro'),
+  };
+});
 
 // Mock the entire App component to avoid loading state issues
 jest.mock('../App', () => {
@@ -172,73 +161,91 @@ jest.mock('../App', () => {
   };
 });
 
-jest.mock('../context/PomodoroContext', () => ({
-  PomodoroProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
+jest.mock('../context/PomodoroContext', () => {
+  const React = require('react');
+  return {
+    PomodoroProvider: ({ children }: { children: React.ReactNode }) =>
+      React.createElement('div', null, children),
+  };
+});
 
-jest.mock('../context/ThemeContext', () => ({
-  ThemeProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  useTheme: () => ({ theme: 'light', toggleTheme: jest.fn() }),
-}));
+jest.mock('../context/ThemeContext', () => {
+  const React = require('react');
+  return {
+    ThemeProvider: ({ children }: { children: React.ReactNode }) =>
+      React.createElement('div', null, children),
+    useTheme: () => ({ theme: 'light', toggleTheme: jest.fn() }),
+  };
+});
 
-jest.mock('../context/LocaleContext', () => ({
-  LocaleProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
+jest.mock('../context/LocaleContext', () => {
+  const React = require('react');
+  return {
+    LocaleProvider: ({ children }: { children: React.ReactNode }) =>
+      React.createElement('div', null, children),
+  };
+});
 
-jest.mock('../context/TodoContext', () => ({
-  TodoProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
+jest.mock('../context/TodoContext', () => {
+  const React = require('react');
+  return {
+    TodoProvider: ({ children }: { children: React.ReactNode }) =>
+      React.createElement('div', null, children),
+  };
+});
 
-jest.mock('../hooks/useInternationalization', () => ({
-  InternationalizationProvider: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  useInternationalization: () => ({
-    locale: 'ja' as const,
-    setLocale: jest.fn(),
-    t: (key: string) => key,
-    formatDate: (date: Date) => date.toLocaleDateString(),
-    formatTime: (date: Date) => date.toLocaleTimeString(),
-    formatNumber: (number: number) => number.toString(),
-    formatCurrency: (amount: number) => `¥${amount}`,
-    getLocaleConfig: () => ({
-      code: 'ja' as const,
-      name: 'Japanese',
-      nativeName: '日本語',
-      flag: '🇯🇵',
-      direction: 'ltr' as const,
-      dateFormat: 'YYYY年MM月DD日',
-      timeFormat: 'HH:mm',
-      currency: 'JPY',
-      numberFormat: { decimal: '.', thousands: ',' },
+jest.mock('../hooks/useInternationalization', () => {
+  const React = require('react');
+  return {
+    InternationalizationProvider: ({ children }: { children: React.ReactNode }) =>
+      React.createElement('div', null, children),
+    useInternationalization: () => ({
+      locale: 'ja' as const,
+      setLocale: jest.fn(),
+      t: (key: string) => key,
+      formatDate: (date: Date) => date.toLocaleDateString(),
+      formatTime: (date: Date) => date.toLocaleTimeString(),
+      formatNumber: (number: number) => number.toString(),
+      formatCurrency: (amount: number) => `¥${amount}`,
+      getLocaleConfig: () => ({
+        code: 'ja' as const,
+        name: 'Japanese',
+        nativeName: '日本語',
+        flag: '🇯🇵',
+        direction: 'ltr' as const,
+        dateFormat: 'YYYY年MM月DD日',
+        timeFormat: 'HH:mm',
+        currency: 'JPY',
+        numberFormat: { decimal: '.', thousands: ',' },
+      }),
+      isRTL: false,
     }),
-    isRTL: false,
-  }),
-  SUPPORTED_LOCALES: {
-    ja: {
-      code: 'ja' as const,
-      name: 'Japanese',
-      nativeName: '日本語',
-      flag: '🇯🇵',
-      direction: 'ltr' as const,
-      dateFormat: 'YYYY年MM月DD日',
-      timeFormat: 'HH:mm',
-      currency: 'JPY',
-      numberFormat: { decimal: '.', thousands: ',' },
+    SUPPORTED_LOCALES: {
+      ja: {
+        code: 'ja' as const,
+        name: 'Japanese',
+        nativeName: '日本語',
+        flag: '🇯🇵',
+        direction: 'ltr' as const,
+        dateFormat: 'YYYY年MM月DD日',
+        timeFormat: 'HH:mm',
+        currency: 'JPY',
+        numberFormat: { decimal: '.', thousands: ',' },
+      },
+      en: {
+        code: 'en' as const,
+        name: 'English',
+        nativeName: 'English',
+        flag: '🇺🇸',
+        direction: 'ltr' as const,
+        dateFormat: 'MM/DD/YYYY',
+        timeFormat: 'hh:mm A',
+        currency: 'USD',
+        numberFormat: { decimal: '.', thousands: ',' },
+      },
     },
-    en: {
-      code: 'en' as const,
-      name: 'English',
-      nativeName: 'English',
-      flag: '🇺🇸',
-      direction: 'ltr' as const,
-      dateFormat: 'MM/DD/YYYY',
-      timeFormat: 'hh:mm A',
-      currency: 'USD',
-      numberFormat: { decimal: '.', thousands: ',' },
-    },
-  },
-}));
+  };
+});
 
 const createMockStore = () =>
   configureStore({

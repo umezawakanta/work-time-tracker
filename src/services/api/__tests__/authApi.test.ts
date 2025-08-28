@@ -53,7 +53,7 @@ describe('authApi', () => {
     username: 'testuser',
     email: 'test@example.com',
     isAdmin: false,
-    avatar: '',
+    // avatar is optional in real API; lastLoginAt may be present
   };
 
   const mockAuthResponse = {
@@ -387,7 +387,7 @@ describe('authApi', () => {
       const result = await authApi.getUserProfile();
 
       expect(mockedApi.get).toHaveBeenCalledWith('/auth/profile');
-      expect(result).toEqual(mockUser);
+      expect(result).toMatchObject(mockUser);
     });
 
     it('should handle get profile error', async () => {

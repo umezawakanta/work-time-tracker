@@ -46,7 +46,8 @@ describe('EnhancedBlogPostForm - task extraction', () => {
       />
     );
 
-    const extractBtn = screen.getByRole('button', { name: 'AIでタスク抽出' });
+    // Button accessible name changed in component: use the aria-label variant or partial match
+    const extractBtn = screen.getByRole('button', { name: /AIでタスクを抽出|AIでタスク抽出/i });
     expect(extractBtn).toBeInTheDocument();
 
     fireEvent.click(extractBtn);

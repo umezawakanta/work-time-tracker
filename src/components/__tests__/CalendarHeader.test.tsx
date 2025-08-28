@@ -4,11 +4,14 @@ import '@testing-library/jest-dom';
 import { CalendarHeader } from '../CalendarHeader';
 
 // Mock lucide-react icons
-jest.mock('lucide-react', () => ({
-  Calendar: () => <div data-testid="calendar-icon" />,
-  ChevronLeft: () => <div data-testid="chevron-left-icon" />,
-  ChevronRight: () => <div data-testid="chevron-right-icon" />,
-}));
+jest.mock('lucide-react', () => {
+  const React = require('react');
+  return {
+    Calendar: () => React.createElement('div', { 'data-testid': 'calendar-icon' }),
+    ChevronLeft: () => React.createElement('div', { 'data-testid': 'chevron-left-icon' }),
+    ChevronRight: () => React.createElement('div', { 'data-testid': 'chevron-right-icon' }),
+  };
+});
 
 describe('CalendarHeader', () => {
   const mockOnViewChange = jest.fn();

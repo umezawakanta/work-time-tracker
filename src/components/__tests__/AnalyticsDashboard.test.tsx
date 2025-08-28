@@ -82,25 +82,29 @@ jest.mock('@radix-ui/react-select', () => {
 });
 
 // rechartsをモック（チャートライブラリ）
-jest.mock('recharts', () => ({
-  ResponsiveContainer: ({ children }: any) => (
-    <div data-testid="responsive-container">{children}</div>
-  ),
-  BarChart: ({ children }: any) => <div data-testid="bar-chart">{children}</div>,
-  PieChart: ({ children }: any) => (
-    <div data-testid="chart-container">
-      <div data-testid="pie-chart">{children}</div>
-    </div>
-  ),
-  Bar: () => <div data-testid="bar" />,
-  Pie: () => <div data-testid="pie" />,
-  Cell: () => <div data-testid="cell" />,
-  XAxis: () => <div data-testid="x-axis" />,
-  YAxis: () => <div data-testid="y-axis" />,
-  CartesianGrid: () => <div data-testid="cartesian-grid" />,
-  Tooltip: () => <div data-testid="tooltip" />,
-  Legend: () => <div data-testid="legend" />,
-}));
+jest.mock('recharts', () => {
+  const React = require('react');
+  const create = React.createElement;
+  return {
+    ResponsiveContainer: ({ children }: any) =>
+      create('div', { 'data-testid': 'responsive-container' }, children),
+    BarChart: ({ children }: any) => create('div', { 'data-testid': 'bar-chart' }, children),
+    PieChart: ({ children }: any) =>
+      create(
+        'div',
+        { 'data-testid': 'chart-container' },
+        create('div', { 'data-testid': 'pie-chart' }, children)
+      ),
+    Bar: () => create('div', { 'data-testid': 'bar' }),
+    Pie: () => create('div', { 'data-testid': 'pie' }),
+    Cell: () => create('div', { 'data-testid': 'cell' }),
+    XAxis: () => create('div', { 'data-testid': 'x-axis' }),
+    YAxis: () => create('div', { 'data-testid': 'y-axis' }),
+    CartesianGrid: () => create('div', { 'data-testid': 'cartesian-grid' }),
+    Tooltip: () => create('div', { 'data-testid': 'tooltip' }),
+    Legend: () => create('div', { 'data-testid': 'legend' }),
+  };
+});
 
 const mockAnalytics: UserAnalytics = {
   totalUsers: 1247,
