@@ -463,60 +463,16 @@ async function syncWithGitHub(): Promise<{
     const tasks = await progressService.getTasks();
 
     if (!GITHUB_TOKEN) {
-      console.warn('⚠️ GitHub Token not configured, using mock data for development');
-
-      // 開発環境用のモックデータ（GitHub Token未設定時のみ）
-      const mockGitHubData = {
-        commits: [
-          {
-            sha: `commit_${Date.now()}`,
-            message: 'Enhanced progress tracking system',
-            author: 'system',
-            date: new Date().toISOString(),
-            filesChanged: 3,
-            linesAdded: 150,
-            linesDeleted: 25,
-          },
-        ],
-        pullRequests: [
-          {
-            number: Math.floor(Math.random() * 1000),
-            title: 'Real-time progress tracking implementation',
-            state: 'merged' as const,
-            author: 'system',
-            createdAt: new Date(Date.now() - 3600000).toISOString(),
-            mergedAt: new Date().toISOString(),
-            additions: 150,
-            deletions: 25,
-          },
-        ],
+      console.warn(
+        '⚠️ GitHub Token not configured. Skipping GitHub sync (no mock changes applied).'
+      );
+      return {
+        syncedTasks,
+        newCommits,
+        mergedPRs,
+        lastSync: new Date().toISOString(),
+        changes,
       };
-
-      // モックデータでの処理
-      for (const task of tasks) {
-        if (task.status === 'in-progress' && Math.random() > 0.7) {
-          await progressService.addCommitToTask(task.id, mockGitHubData.commits[0]);
-          const newProgress = Math.min(100, task.progress + 5);
-          await progressService.updateTask(task.id, {
-            progress: newProgress,
-            metadata: {
-              source: 'github',
-              reason: 'New commit detected (mock)',
-              confidence: 70,
-            },
-          });
-
-          changes.push({
-            type: 'commit',
-            taskId: task.id,
-            description: `Mock commit: ${mockGitHubData.commits[0].message}`,
-            impact: `+5% progress (${task.progress}% → ${newProgress}%)`,
-          });
-
-          syncedTasks++;
-          newCommits++;
-        }
-      }
     } else {
       console.log('🚀 Fetching real GitHub data...');
 
