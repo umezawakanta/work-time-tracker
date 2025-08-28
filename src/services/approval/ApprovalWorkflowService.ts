@@ -189,7 +189,7 @@ export class ApprovalWorkflowService extends EventEmitter {
   constructor() {
     super();
     this.organizationSettings = this.createDefaultSettings();
-    this.initializeDemoData();
+    // Removed demo data initialization for production
     this.startWorkflowEngine();
   }
 
@@ -235,188 +235,14 @@ export class ApprovalWorkflowService extends EventEmitter {
     };
   }
 
-  /**
-   * デモデータの初期化
-   */
-  private initializeDemoData(): void {
-    // ユーザーロール設定
-    this.userRoles.set('demo-user', ['employee']);
-    this.userRoles.set('supervisor-1', ['supervisor']);
-    this.userRoles.set('manager-1', ['manager']);
-    this.userRoles.set('hr-1', ['hr']);
-    this.userRoles.set('admin-1', ['admin']);
+  // Demo initialization removed
 
-    // デモ承認リクエスト
-    const demoRequests = this.generateDemoRequests();
-    demoRequests.forEach((request) => {
-      this.approvalRequests.set(request.id, request);
-    });
-
-    // デモ承認履歴
-    this.generateDemoHistory();
-  }
-
-  /**
-   * デモ承認リクエストを生成
-   */
-  private generateDemoRequests(): ApprovalRequestData[] {
-    const baseDate = new Date();
-
-    return [
-      {
-        id: 'approval-001',
-        userId: 'demo-user',
-        type: 'timesheet',
-        targetData: {
-          timesheet: {
-            month: '2024-11',
-            totalWorkingHours: 168,
-            overtimeHours: 12,
-            leaveHours: 8,
-            modifications: [
-              { date: '2024-11-15', reason: '打刻忘れ修正', oldTime: null, newTime: '09:00' },
-            ],
-          },
-        },
-        submittedAt: new Date(baseDate.getTime() - 2 * 24 * 60 * 60 * 1000),
-        submittedBy: 'demo-user',
-        title: '2024年11月 勤怠データ承認申請',
-        description: '通常の月次勤怠データです。打刻忘れによる1件の修正が含まれています。',
-        urgency: 'medium',
-        deadline: new Date(baseDate.getTime() + 3 * 24 * 60 * 60 * 1000),
-        attachments: [],
-        approvalFlow: [
-          {
-            id: 'step-1',
-            stepNumber: 1,
-            approverRole: 'supervisor',
-            approverIds: ['supervisor-1'],
-            requiredApprovals: 1,
-            currentApprovals: [],
-            status: 'pending',
-            deadline: new Date(baseDate.getTime() + 2 * 24 * 60 * 60 * 1000),
-          },
-          {
-            id: 'step-2',
-            stepNumber: 2,
-            approverRole: 'hr',
-            approverIds: ['hr-1'],
-            requiredApprovals: 1,
-            currentApprovals: [],
-            status: 'pending',
-          },
-        ],
-        currentStepIndex: 0,
-        status: 'in_review',
-        comments: [
-          {
-            id: 'comment-1',
-            authorId: 'demo-user',
-            authorName: 'Demo User',
-            content: '15日の打刻忘れは電車遅延が原因でした。遅延証明書は別途提出します。',
-            timestamp: new Date(baseDate.getTime() - 1 * 24 * 60 * 60 * 1000),
-            type: 'clarification',
-            isInternal: false,
-            mentionedUsers: ['supervisor-1'],
-          },
-        ],
-        notifications: [],
-        cognitiveSupport: {
-          structuredFormat: true,
-          reminderSettings: {
-            enabled: true,
-            frequency: 2,
-            escalationDays: 3,
-          },
-          clarificationSupport: true,
-          visualAids: true,
-        },
-      },
-
-      {
-        id: 'approval-002',
-        userId: 'demo-user',
-        type: 'leave_request',
-        targetData: {
-          leaveRequest: {
-            startDate: new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000),
-            endDate: new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000),
-            leaveType: 'paid',
-            reason: '私用のため',
-            emergencyContact: '090-1234-5678',
-          },
-        },
-        submittedAt: new Date(baseDate.getTime() - 1 * 24 * 60 * 60 * 1000),
-        submittedBy: 'demo-user',
-        title: '有給休暇申請（11/28）',
-        description: '私用による有給休暇の申請です。',
-        urgency: 'low',
-        deadline: new Date(baseDate.getTime() + 5 * 24 * 60 * 60 * 1000),
-        attachments: [],
-        approvalFlow: [
-          {
-            id: 'step-1',
-            stepNumber: 1,
-            approverRole: 'supervisor',
-            approverIds: ['supervisor-1'],
-            requiredApprovals: 1,
-            currentApprovals: [
-              {
-                id: 'decision-1',
-                approverId: 'supervisor-1',
-                decision: 'approve',
-                timestamp: new Date(baseDate.getTime() - 4 * 60 * 60 * 1000),
-                comments: '承認します。お疲れ様です。',
-                conditions: [],
-              },
-            ],
-            status: 'approved',
-          },
-        ],
-        currentStepIndex: 1,
-        status: 'approved',
-        comments: [],
-        notifications: [],
-        cognitiveSupport: {
-          structuredFormat: true,
-          reminderSettings: {
-            enabled: true,
-            frequency: 1,
-            escalationDays: 2,
-          },
-          clarificationSupport: true,
-          visualAids: true,
-        },
-      },
-    ];
-  }
+  // Demo request generators removed
 
   /**
    * デモ承認履歴を生成
    */
-  private generateDemoHistory(): void {
-    const demoHistory: ApprovalHistory[] = [];
-
-    for (let i = 0; i < 6; i++) {
-      const date = new Date();
-      date.setMonth(date.getMonth() - i);
-      const monthStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-
-      demoHistory.push({
-        userId: 'demo-user',
-        month: monthStr,
-        totalRequests: 3 + Math.floor(Math.random() * 3),
-        approved: 2 + Math.floor(Math.random() * 3),
-        rejected: Math.floor(Math.random() * 2),
-        pending: Math.floor(Math.random() * 2),
-        averageApprovalTime: 24 + Math.random() * 48,
-        complianceScore: 85 + Math.floor(Math.random() * 15),
-        commonRejectionReasons: ['書類不備', '申請期限超過'],
-      });
-    }
-
-    this.approvalHistory.set('demo-user', demoHistory);
-  }
+  // Demo history generator removed
 
   /**
    * ワークフローエンジンを開始
