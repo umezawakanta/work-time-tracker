@@ -1,17 +1,10 @@
 import { api } from './apiConfig';
-import { USE_MOCK_DATA } from './apiConfig';
 import { tokenManager } from '@/services/auth/TokenManager';
 import { User } from '@/types';
 import { AxiosError } from 'axios';
 import { getEnv } from '@/utils/env';
 
-// Extend Window interface for custom properties
-declare global {
-  interface Window {
-    __VITE_USE_MOCK_DATA__?: string;
-    __API_CONNECTION_FAILED__?: boolean;
-  }
-}
+// (モック関連のグローバルは削除)
 
 export interface RegisterData {
   displayName: string;
@@ -188,12 +181,6 @@ export const logout = async (): Promise<void> => {
 
 export const checkAuth = async (): Promise<boolean> => {
   try {
-    // モックモードの場合は常に認証成功
-    if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {
-      console.log('🎭 Mock mode: Auth check always returns true');
-      return true;
-    }
-
     // TokenManagerで認証状態を確認
     if (!tokenManager.isAuthenticated()) {
       console.log('🔒 No valid local token');
@@ -234,9 +221,7 @@ export const checkAuth = async (): Promise<boolean> => {
     });
 
     // 開発環境でのタイムアウトやネットワークエラーの場合は認証状態を維持
-    const isDev =
-      process.env.NODE_ENV === 'development' ||
-      (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true');
+    const isDev = process.env.NODE_ENV === 'development';
 
     if (
       err.name === 'AbortError' ||
