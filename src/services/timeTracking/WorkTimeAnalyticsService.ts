@@ -223,20 +223,12 @@ export class WorkTimeAnalyticsService extends EventEmitter {
   /**
    * 勤務パターン分析
    */
-  analyzeWorkPattern(userId: string, days: number = 30): WorkPatternAnalysis {
+  analyzeWorkPattern(userId: string, days: number = 30): WorkPatternAnalysis | null {
     const records = this.workRecords.get(userId) || [];
     const recentRecords = records.filter((r) => r.clockIn && r.clockOut).slice(0, days);
 
     if (recentRecords.length === 0) {
-      return {
-        mostProductiveHours: [9, 10, 11, 14, 15],
-        averageArrivalTime: this.standardStartTime,
-        averageDepartureTime: this.standardEndTime,
-        preferredBreakTimes: ['12:00'],
-        overtimeFrequency: 0,
-        workConsistency: 1,
-        recommendations: ['勤務データが不足しています'],
-      };
+      return null;
     }
 
     // 最も生産性の高い時間帯（勤務開始から4時間以内）

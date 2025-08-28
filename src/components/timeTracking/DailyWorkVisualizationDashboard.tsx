@@ -291,53 +291,55 @@ export const DailyWorkVisualizationDashboard: React.FC<DailyWorkVisualizationDas
             </Card>
 
             {/* 勤務パターン分析 */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-green-600" />
-                  勤務パターン分析
-                </CardTitle>
-                <CardDescription>過去30日間の傾向分析</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">平均到着時刻</p>
-                    <p className="text-lg font-semibold">{workPattern.averageArrivalTime}</p>
+            {workPattern && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-green-600" />
+                    勤務パターン分析
+                  </CardTitle>
+                  <CardDescription>過去30日間の傾向分析</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600">平均到着時刻</p>
+                      <p className="text-lg font-semibold">{workPattern.averageArrivalTime}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">平均退社時刻</p>
+                      <p className="text-lg font-semibold">{workPattern.averageDepartureTime}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">残業頻度</p>
+                      <p className="text-lg font-semibold">
+                        {Math.round(workPattern.overtimeFrequency * 100)}%
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">勤務一貫性</p>
+                      <p className="text-lg font-semibold">
+                        {Math.round(workPattern.workConsistency * 100)}%
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">平均退社時刻</p>
-                    <p className="text-lg font-semibold">{workPattern.averageDepartureTime}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">残業頻度</p>
-                    <p className="text-lg font-semibold">
-                      {Math.round(workPattern.overtimeFrequency * 100)}%
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">勤務一貫性</p>
-                    <p className="text-lg font-semibold">
-                      {Math.round(workPattern.workConsistency * 100)}%
-                    </p>
-                  </div>
-                </div>
 
-                <div>
-                  <p className="text-sm text-gray-600 mb-2">推奨事項</p>
-                  <div className="space-y-1">
-                    {workPattern.recommendations.map((rec, index) => (
-                      <div
-                        key={index}
-                        className="text-sm bg-blue-50 p-2 rounded border-l-4 border-blue-400"
-                      >
-                        {rec}
-                      </div>
-                    ))}
+                  <div>
+                    <p className="text-sm text-gray-600 mb-2">推奨事項</p>
+                    <div className="space-y-1">
+                      {workPattern.recommendations.map((rec, index) => (
+                        <div
+                          key={index}
+                          className="text-sm bg-blue-50 p-2 rounded border-l-4 border-blue-400"
+                        >
+                          {rec}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </TabsContent>
 
