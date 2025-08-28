@@ -74,6 +74,7 @@ import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { NotificationService } from '@/services/notifications/NotificationService';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 // インスタンス作成
 const notificationService = new NotificationService();
@@ -82,21 +83,27 @@ interface AlertConfigDashboardProps {
   userId?: string;
 }
 
-export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
-  userId = 'demo-user',
-}) => {
-  const [settings, setSettings] = useState(notificationService.getUserSettings(userId));
+export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({ userId }) => {
+  const { user, isAuthenticated } = useAuth();
+  const resolvedUserId =
+    userId || (user as any)?.id || (user as any)?._id || (user as any)?.uid || user?.email || '';
+
+  const [settings, setSettings] = useState(
+    resolvedUserId ? notificationService.getUserSettings(resolvedUserId) : null
+  );
   const [hasChanges, setHasChanges] = useState(false);
   const [testingNotification, setTestingNotification] = useState(false);
 
   // 通知履歴とパターン
   const notificationHistory = useMemo(() => {
-    return notificationService.getNotificationHistory(userId, 7);
-  }, [userId]);
+    if (!resolvedUserId) return [] as ReturnType<typeof notificationService.getNotificationHistory>;
+    return notificationService.getNotificationHistory(resolvedUserId, 7);
+  }, [resolvedUserId]);
 
   const notificationPattern = useMemo(() => {
-    return notificationService.analyzeNotificationPattern(userId);
-  }, [userId]);
+    if (!resolvedUserId) return null;
+    return notificationService.analyzeNotificationPattern(resolvedUserId);
+  }, [resolvedUserId]);
 
   // 設定更新
   const updateSettings = (path: string, value: any) => {
@@ -120,7 +127,8 @@ export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
   const saveSettings = () => {
     if (!settings) return;
 
-    const success = notificationService.updateUserSettings(userId, settings);
+    if (!resolvedUserId) return;
+    const success = notificationService.updateUserSettings(resolvedUserId, settings);
     if (success) {
       toast.success('通知設定を保存しました');
       setHasChanges(false);
@@ -131,7 +139,8 @@ export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
 
   // 設定をリセット
   const resetSettings = () => {
-    const originalSettings = notificationService.getUserSettings(userId);
+    if (!resolvedUserId) return;
+    const originalSettings = notificationService.getUserSettings(resolvedUserId);
     setSettings(originalSettings);
     setHasChanges(false);
   };
@@ -149,7 +158,7 @@ export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
       }
 
       notificationService.sendImmediateNotification({
-        userId,
+        userId: resolvedUserId,
         type: 'custom',
         priority: 'medium',
         title: 'テスト通知',
@@ -167,6 +176,17 @@ export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
     setTestingNotification(false);
   };
 
+  if (!isAuthenticated || !resolvedUserId) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600">通知設定を表示するにはログインが必要です</p>
+        </div>
+      </div>
+    );
+  }
+
   // 効果性チャートデータ
   const effectivenessData = notificationHistory
     .map((h) => ({
@@ -177,14 +197,15 @@ export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
     }))
     .reverse();
 
-  // 通知タイプ別データ
-  const notificationTypeData = [
-    { name: '出勤リマインダー', value: 25, color: '#3b82f6' },
-    { name: '退勤リマインダー', value: 30, color: '#10b981' },
-    { name: '休憩リマインダー', value: 20, color: '#f59e0b' },
-    { name: '残業警告', value: 15, color: '#ef4444' },
-    { name: 'その他', value: 10, color: '#8b5cf6' },
-  ];
+  const avgEffectiveness = notificationHistory.length
+    ? Math.round(
+        notificationHistory.reduce((sum, h) => sum + h.effectiveness, 0) /
+          notificationHistory.length
+      )
+    : 0;
+
+  // 通知タイプ別データ（実データがないため非表示）
+  const notificationTypeData: { name: string; value: number; color: string }[] = [];
 
   if (!settings) {
     return (
@@ -245,13 +266,7 @@ export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
-              {Math.round(
-                notificationHistory.reduce((sum, h) => sum + h.effectiveness, 0) /
-                  notificationHistory.length
-              )}
-              %
-            </div>
+            <div className="text-2xl font-bold text-blue-600">{avgEffectiveness}%</div>
             <p className="text-xs text-gray-600 mt-1">過去7日間</p>
           </CardContent>
         </Card>
@@ -265,7 +280,8 @@ export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              {notificationPattern?.responseRate || 0}%
+              {notificationPattern?.responseRate ?? '-'}
+              {typeof notificationPattern?.responseRate === 'number' ? '%' : ''}
             </div>
             <p className="text-xs text-gray-600 mt-1">全期間平均</p>
           </CardContent>
@@ -280,7 +296,8 @@ export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">
-              {notificationPattern?.preferredFrequency || 0}分
+              {notificationPattern?.preferredFrequency ?? '-'}
+              {typeof notificationPattern?.preferredFrequency === 'number' ? '分' : ''}
             </div>
             <p className="text-xs text-gray-600 mt-1">推奨間隔</p>
           </CardContent>
@@ -1002,35 +1019,37 @@ export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
 
           {/* 通知タイプ別分析 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <PieChartIcon className="h-5 w-5 text-green-600" />
-                  通知タイプ別分布
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
-                  <PieChart>
-                    <Pie
-                      data={notificationTypeData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {notificationTypeData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+            {notificationTypeData.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <PieChartIcon className="h-5 w-5 text-green-600" />
+                    通知タイプ別分布
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <PieChart>
+                      <Pie
+                        data={notificationTypeData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {notificationTypeData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
 
             <Card>
               <CardHeader>
@@ -1045,7 +1064,7 @@ export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
                     <span>最適エネルギーレベル</span>
                     <span>
                       {notificationPattern?.cognitivePreferences.preferredEnergyRange.join('-') ||
-                        '6-8'}
+                        '-'}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -1056,12 +1075,15 @@ export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>応答率</span>
-                    <span>{notificationPattern?.responseRate || 82}%</span>
+                    <span>
+                      {notificationPattern?.responseRate ?? '-'}
+                      {typeof notificationPattern?.responseRate === 'number' ? '%' : ''}
+                    </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
                       className="bg-green-600 h-2 rounded-full"
-                      style={{ width: `${notificationPattern?.responseRate || 82}%` }}
+                      style={{ width: `${notificationPattern?.responseRate ?? 0}%` }}
                     ></div>
                   </div>
                 </div>
@@ -1069,10 +1091,13 @@ export const AlertConfigDashboard: React.FC<AlertConfigDashboardProps> = ({
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>推奨頻度間隔</span>
-                    <span>{notificationPattern?.preferredFrequency || 90}分</span>
+                    <span>
+                      {notificationPattern?.preferredFrequency ?? '-'}
+                      {typeof notificationPattern?.preferredFrequency === 'number' ? '分' : ''}
+                    </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: '60%' }}></div>
+                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: '0%' }}></div>
                   </div>
                 </div>
               </CardContent>
