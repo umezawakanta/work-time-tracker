@@ -13,8 +13,6 @@ env:
   NODE_VERSION: '22'
   CACHE_VERSION: 'v1'
   PNPM_VERSION: '10.4.1'
-  PNPM_HOME: ${{ runner.temp }}/pnpm
-  PNPM_STORE_PATH: ${{ runner.temp }}/pnpm-store
 
 jobs:
   # ===== 品質チェックジョブ (並列実行) =====
