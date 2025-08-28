@@ -10,7 +10,7 @@ import {
   requestPasswordReset,
   resetPassword,
 } from '../controllers/authController.js';
-// import { authMiddleware } from '../middleware/authMiddleware.js'; // Disabled for development
+import { authMiddleware } from '../middleware/authMiddleware.js';
 import { User } from '../models/User.js';
 
 const router = express.Router();
@@ -18,12 +18,7 @@ const router = express.Router();
 router.post('/login', login);
 router.post('/register', register);
 router.get('/check', /* authMiddleware, */ checkAuth);
-router.get(
-  '/profile',
-  /* authMiddleware, */ (req: Request, res: Response): void => {
-    res.json({ user: req.user || { id: 'demo-user', message: 'Development mode' } });
-  }
-);
+router.get('/profile', authMiddleware, getUserData);
 router.put('/profile', /* authMiddleware, */ updateProfile);
 router.get('/user', /* authMiddleware, */ getUserData);
 
