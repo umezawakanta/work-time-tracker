@@ -2122,21 +2122,24 @@ app.get('/api/admin/analytics/summary', async (req, res) => {
 });
 
 // =============================
-// Admin (Mock)
+// Admin metrics (DB-backed summary for total users)
 // =============================
-app.get('/api/admin/metrics', (req, res) => {
-  console.log('✅ GET /api/admin/metrics (mock) called');
-  res.json({
-    success: true,
-    data: {
-      usersTotal: 1234,
-      usersActive: 987,
-      aiRequests24h: 456,
-      assessmentsTaken: 321,
-      mbtiCount: 210,
-      iqSaved: 111,
-    },
-  });
+app.get('/api/admin/metrics', async (req, res) => {
+  try {
+    const { User } = await import('./models/User.js');
+    const total = await User.countDocuments({}).catch(() => 0);
+    const active = await User.countDocuments({ status: 'active' }).catch(() => 0);
+    return res.json({
+      success: true,
+      data: {
+        usersTotal: total,
+        usersActive: active,
+      },
+    });
+  } catch (e) {
+    console.error('❌ Error in /api/admin/metrics:', e);
+    return res.json({ success: true, data: { usersTotal: 0, usersActive: 0 }, degraded: true });
+  }
 });
 
 app.get('/api/admin/users', (req, res) => {
