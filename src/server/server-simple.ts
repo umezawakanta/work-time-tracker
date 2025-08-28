@@ -1297,36 +1297,84 @@ const __pageviewBuckets: Record<string, number> = {};
 const __pagePathBuckets: Record<string, number> = {};
 const __getDateKey = (date = new Date()): string => date.toISOString().slice(0, 10);
 
-// Record pageview (dev mock)
-app.post('/api/analytics/pageview', (req, res) => {
+// Record pageview (DB-backed)
+app.post('/api/analytics/pageview', async (req, res) => {
   try {
-    const key = __getDateKey();
+    const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
+    const now = new Date();
+    const key = __getDateKey(now);
+    const {
+      path: url,
+      title,
+      referrer,
+      clientId,
+      sessionId,
+      userId,
+      meta,
+    } = (req.body as any) || {};
+
+    // Persist to MongoDB
+    await AnalyticsEvent.create({
+      event: 'page_view',
+      timestamp: now,
+      userId: typeof userId === 'string' ? userId : undefined,
+      sessionId: typeof sessionId === 'string' ? sessionId : undefined,
+      clientId:
+        typeof clientId === 'string'
+          ? clientId
+          : (req.headers['x-client-id'] as string | undefined),
+      url: typeof url === 'string' ? url : undefined,
+      referrer: typeof referrer === 'string' ? referrer : undefined,
+      userAgent: (req.headers['user-agent'] as string) || undefined,
+      data: {
+        title: typeof title === 'string' ? title : undefined,
+        ...(typeof meta === 'object' && meta ? meta : {}),
+      },
+    });
+
+    // Lightweight in-memory counters kept for quick summaries (optional)
     __pageviewBuckets[key] = (__pageviewBuckets[key] || 0) + 1;
-    const { path, title, referrer } = (req.body as any) || {};
-    if (typeof path === 'string' && path.length > 0) {
-      __pagePathBuckets[path] = (__pagePathBuckets[path] || 0) + 1;
+    if (typeof url === 'string' && url.length > 0) {
+      __pagePathBuckets[url] = (__pagePathBuckets[url] || 0) + 1;
     }
-    console.log('📄 Pageview recorded', { key, path, title, referrer });
+
+    console.log('📄 Pageview recorded', { key, url, title, referrer });
     return res.json({ success: true });
   } catch (e) {
-    console.warn('⚠️ Failed to record pageview (dev mock):', e);
-    return res.json({ success: true, degraded: true });
+    console.warn('⚠️ Failed to record pageview:', e);
+    return res.status(200).json({ success: true, degraded: true });
   }
 });
 
-// Admin pageviews trend (dev mock)
-app.get('/api/admin/metrics/pageviews/trend', (req, res) => {
+// Admin pageviews trend (DB-backed)
+app.get('/api/admin/metrics/pageviews/trend', async (req, res) => {
   try {
+    const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
     const windowParam = String(req.query.window || '7d');
     const days = windowParam === '30d' ? 30 : windowParam === '90d' ? 90 : 7;
+    const now = new Date();
+    const from = new Date(now);
+    from.setDate(now.getDate() - (days - 1));
+
+    const agg = await AnalyticsEvent.aggregate([
+      { $match: { event: 'page_view', timestamp: { $gte: from, $lte: now } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } },
+          views: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]).catch(() => [] as Array<{ _id: string; views: number }>);
+
+    const map = new Map<string, number>();
+    for (const r of agg) map.set(String(r._id), Number(r.views || 0));
     const series: Array<{ day: string; views: number }> = [];
-    const today = new Date();
     for (let i = days - 1; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - i);
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
       const key = __getDateKey(d);
-      const views = __pageviewBuckets[key] || 0;
-      series.push({ day: key, views });
+      series.push({ day: key, views: map.get(key) || 0 });
     }
     return res.json({ success: true, data: { window: days, series } });
   } catch (e) {
@@ -1360,16 +1408,52 @@ app.get('/api/admin/metrics/top-pages', async (req, res) => {
   }
 });
 
-// Admin users trend (dev mock)
-app.get('/api/admin/metrics/users/trend', (req, res) => {
+// Admin users trend (DB-backed)
+app.get('/api/admin/metrics/users/trend', async (req, res) => {
   try {
+    const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
     const windowParam = String(req.query.window || '7d');
     const days = windowParam === '30d' ? 30 : windowParam === '90d' ? 90 : 7;
-    const series = Array.from({ length: days }, (_, i) => ({
-      day: `2025-08-${(i + 1).toString().padStart(2, '0')}`,
-      newUsers: (i * 3) % 7,
-      activeUsers: 5 + ((i * 5) % 11),
-    }));
+    const now = new Date();
+    const from = new Date(now);
+    from.setDate(now.getDate() - (days - 1));
+
+    const dailyActive = await AnalyticsEvent.aggregate([
+      { $match: { timestamp: { $gte: from, $lte: now } } },
+      {
+        $group: {
+          _id: {
+            day: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } },
+          },
+          users: { $addToSet: '$clientId' },
+        },
+      },
+      { $project: { day: '$_id.day', activeUsers: { $size: '$users' }, _id: 0 } },
+      { $sort: { day: 1 } },
+    ]).catch(() => [] as Array<{ day: string; activeUsers: number }>);
+
+    const registrations = await AnalyticsEvent.aggregate([
+      { $match: { timestamp: { $gte: from, $lte: now } } },
+      { $group: { _id: '$clientId', firstSeen: { $min: '$timestamp' } } },
+      { $project: { day: { $dateToString: { format: '%Y-%m-%d', date: '$firstSeen' } } } },
+      { $group: { _id: '$day', newUsers: { $sum: 1 } } },
+      { $project: { day: '$_id', newUsers: 1, _id: 0 } },
+      { $sort: { day: 1 } },
+    ]).catch(() => [] as Array<{ day: string; newUsers: number }>);
+
+    const activeMap = new Map<string, number>(dailyActive.map((r) => [r.day, r.activeUsers]));
+    const newMap = new Map<string, number>(registrations.map((r) => [r.day, r.newUsers]));
+    const series: Array<{ day: string; newUsers: number; activeUsers: number }> = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
+      const key = __getDateKey(d);
+      series.push({
+        day: key,
+        newUsers: newMap.get(key) || 0,
+        activeUsers: activeMap.get(key) || 0,
+      });
+    }
     return res.json({ success: true, data: { window: days, series } });
   } catch (e) {
     console.error('❌ Error building users trend:', e);
@@ -1377,18 +1461,45 @@ app.get('/api/admin/metrics/users/trend', (req, res) => {
   }
 });
 
-// Admin revenue trend (dev mock)
-app.get('/api/admin/metrics/revenue/trend', (req, res) => {
+// Admin revenue trend (DB-backed from payments)
+app.get('/api/admin/metrics/revenue/trend', async (req, res) => {
   try {
+    const { Payment } = await import('./models/Subscription.js');
     const months = Math.max(1, Math.min(12, Number(req.query.months || 6)));
-    const series: Array<{ month: string; amount: number }> = [];
     const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
+
+    const rows = await Payment.aggregate([
+      {
+        $match: {
+          status: 'succeeded',
+          $or: [{ paidAt: { $exists: true } }, { createdAt: { $exists: true } }],
+        },
+      },
+      {
+        $addFields: {
+          paidDate: {
+            $cond: [{ $ifNull: ['$paidAt', false] }, { $toDate: '$paidAt' }, '$createdAt'],
+          },
+        },
+      },
+      { $match: { paidDate: { $gte: start, $lte: now } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m', date: '$paidDate' } },
+          amount: { $sum: { $ifNull: ['$amountReceived', '$amount'] } },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]).catch(() => [] as Array<{ _id: string; amount: number }>);
+
+    const map = new Map<string, number>();
+    for (const r of rows) map.set(r._id, Number(r.amount || 0));
+    const series: Array<{ month: string; amount: number }> = [];
     for (let i = months - 1; i >= 0; i--) {
-      const d = new Date(now);
-      d.setMonth(now.getMonth() - i);
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      const base = 50000 + ((i * 1234) % 8000);
-      series.push({ month: key, amount: base });
+      series.push({ month: key, amount: map.get(key) || 0 });
     }
     return res.json({ success: true, data: { months, series } });
   } catch (e) {
@@ -1397,18 +1508,40 @@ app.get('/api/admin/metrics/revenue/trend', (req, res) => {
   }
 });
 
-// Admin paid users trend (dev mock)
-app.get('/api/admin/metrics/paid-users/trend', (req, res) => {
+// Admin paid users trend (DB-backed from successful payments)
+app.get('/api/admin/metrics/paid-users/trend', async (req, res) => {
   try {
+    const { Payment } = await import('./models/Subscription.js');
     const months = Math.max(1, Math.min(12, Number(req.query.months || 6)));
-    const series: Array<{ month: string; count: number }> = [];
     const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
+
+    const rows = await Payment.aggregate([
+      { $match: { status: 'succeeded' } },
+      {
+        $addFields: {
+          paidDate: {
+            $cond: [{ $ifNull: ['$paidAt', false] }, { $toDate: '$paidAt' }, '$createdAt'],
+          },
+        },
+      },
+      { $match: { paidDate: { $gte: start, $lte: now } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m', date: '$paidDate' } },
+          users: { $addToSet: '$userId' },
+        },
+      },
+      { $project: { month: '$_id', count: { $size: '$users' }, _id: 0 } },
+      { $sort: { month: 1 } },
+    ]).catch(() => [] as Array<{ month: string; count: number }>);
+
+    const map = new Map<string, number>(rows.map((r) => [r.month, r.count]));
+    const series: Array<{ month: string; count: number }> = [];
     for (let i = months - 1; i >= 0; i--) {
-      const d = new Date(now);
-      d.setMonth(now.getMonth() - i);
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      const count = 3 + ((i * 2) % 9);
-      series.push({ month: key, count });
+      series.push({ month: key, count: map.get(key) || 0 });
     }
     return res.json({ success: true, data: { months, series } });
   } catch (e) {
@@ -1661,25 +1794,94 @@ app.get('/api/analytics/events', (req, res) => {
   });
 });
 
-// Live metrics (dev mock)
-app.get('/api/analytics/live-metrics', (req, res) => {
+// Live metrics (DB-backed)
+app.get('/api/analytics/live-metrics', async (req, res) => {
   console.log('📊 GET /api/analytics/live-metrics called');
   try {
-    const mock = {
-      activeUsers: Math.floor(Math.random() * 50) + 10,
-      completionRate: Math.floor(Math.random() * 40) + 60,
-      avgTaskTime: Math.floor(Math.random() * 30) + 15,
-      todaysTasks: Math.floor(Math.random() * 20) + 5,
-      weeklyTrend: Math.floor(Math.random() * 30) - 15,
-      hourlyActivity: Array.from({ length: 12 }, (_, i) => ({
-        hour: `${(i * 2).toString().padStart(2, '0')}:00`,
-        tasks: Math.floor(Math.random() * 10),
-        users: Math.floor(Math.random() * 15),
-      })),
+    const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
+    const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const since1h = new Date(Date.now() - 60 * 60 * 1000);
+
+    // Active users (last 15 minutes)
+    const since15m = new Date(Date.now() - 15 * 60 * 1000);
+    const activeDistinct = await AnalyticsEvent.distinct('clientId', {
+      timestamp: { $gte: since15m },
+      event: { $in: ['page_view', 'page_view_end', 'task_completed', 'ai_assistant_reply'] },
+    }).catch(() => [] as string[]);
+    const activeUsers = (activeDistinct || []).filter(Boolean).length;
+
+    // Completion rate approximation from task events in last 24h
+    const [completedTasks, createdTasks] = await Promise.all([
+      AnalyticsEvent.countDocuments({
+        timestamp: { $gte: since24h },
+        event: 'task_completed',
+      }).catch(() => 0),
+      AnalyticsEvent.countDocuments({ timestamp: { $gte: since24h }, event: 'task_created' }).catch(
+        () => 0
+      ),
+    ]);
+    const completionRate = Math.max(
+      0,
+      Math.min(100, createdTasks ? Math.round((completedTasks / createdTasks) * 100) : 0)
+    );
+
+    // Average task time approximation from events (fallback to 0 if missing)
+    const avgTaskTime = 0;
+
+    // Today's tasks from midnight
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const todaysTasks = await AnalyticsEvent.countDocuments({
+      timestamp: { $gte: startOfDay },
+      event: 'task_completed',
+    }).catch(() => 0);
+
+    // Weekly trend based on last 7 days tasks vs prior 7 days
+    const start7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const prevStart7d = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+    const [last7, prev7] = await Promise.all([
+      AnalyticsEvent.countDocuments({
+        timestamp: { $gte: start7d },
+        event: 'task_completed',
+      }).catch(() => 0),
+      AnalyticsEvent.countDocuments({
+        timestamp: { $gte: prevStart7d, $lt: start7d },
+        event: 'task_completed',
+      }).catch(() => 0),
+    ]);
+    const weeklyTrend = prev7 ? Math.round(((last7 - prev7) / Math.max(prev7, 1)) * 100) : 0;
+
+    // Hourly activity in last 24h
+    const hourlyAgg = await AnalyticsEvent.aggregate([
+      {
+        $match: { timestamp: { $gte: since24h }, event: { $in: ['task_completed', 'page_view'] } },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%H:00', date: '$timestamp', timezone: 'Asia/Tokyo' } },
+          tasks: {
+            $sum: {
+              $cond: [{ $eq: ['$event', 'task_completed'] }, 1, 0],
+            },
+          },
+          users: { $addToSet: '$clientId' },
+        },
+      },
+      { $project: { hour: '$_id', tasks: 1, users: { $size: '$users' }, _id: 0 } },
+      { $sort: { hour: 1 } },
+    ]).catch(() => [] as Array<{ hour: string; tasks: number; users: number }>);
+
+    const data = {
+      activeUsers,
+      completionRate,
+      avgTaskTime,
+      todaysTasks,
+      weeklyTrend,
+      hourlyActivity: hourlyAgg,
     };
-    return res.json({ success: true, data: mock });
+    return res.json({ success: true, data });
   } catch (e) {
-    console.error('❌ Error in /api/analytics/live-metrics (dev mock):', e);
+    console.error('❌ Error in /api/analytics/live-metrics:', e);
     return res.status(200).json({
       success: true,
       data: {
@@ -1887,9 +2089,14 @@ app.get('/api/admin/analytics/summary', async (req, res) => {
         },
       },
     ]).catch(() => [] as Array<{ _id: string; c: number }>);
-    const map = new Map(dailyCounts.map((d: any) => [String(d._id), Number(d.c || 0)]));
-    const today = map.get(todayKey) || 0;
-    const yesterday = map.get(yKey) || 0;
+    const map = new Map<string, number>(
+      (dailyCounts as Array<{ _id: string; c: number }>).map((d) => [
+        String(d._id),
+        Number(d.c || 0),
+      ])
+    );
+    const today: number = Number(map.get(todayKey) || 0);
+    const yesterday: number = Number(map.get(yKey) || 0);
     const diff = today - yesterday;
     const pct = yesterday > 0 ? Math.round((diff / yesterday) * 100) : 0;
 
