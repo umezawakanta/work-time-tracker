@@ -36,7 +36,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Configure pnpm store (writable)
         run: |
@@ -81,7 +80,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Configure pnpm store (writable)
         run: |
@@ -117,7 +115,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Configure pnpm store (writable)
         run: |
@@ -171,7 +168,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Configure pnpm store (writable)
         run: |
@@ -199,16 +195,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
+      - name: Setup pnpm (corepack)
+        run: |
+          corepack enable
+          corepack prepare pnpm@${{ env.PNPM_VERSION }} --activate
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Configure pnpm store (writable)
         run: |
@@ -272,7 +267,7 @@ jobs:
           pnpm store path
 
       - name: Install dependencies
-        run: pnpm install --prefer-offline
+        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
         env:
           PNPM_HOME: ${{ env.PNPM_HOME }}
           PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
@@ -358,7 +353,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Configure pnpm store (writable)
         run: |
@@ -368,7 +362,7 @@ jobs:
           pnpm store path
 
       - name: Install dependencies
-        run: pnpm install --prefer-offline
+        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
         env:
           PNPM_HOME: ${{ env.PNPM_HOME }}
           PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
