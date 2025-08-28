@@ -13,22 +13,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     return;
   }
 
-  // Try to connect DB (non-fatal in preview)
-  let dbConnected = true;
+  // Connect DB (fail fast if unavailable)
   try {
     await connectDB();
   } catch (e) {
-    dbConnected = false;
+    console.warn('Debt API: DB not available');
+    res.status(503).json({ success: false, error: 'Service unavailable (DB connection failed)' });
+    return;
   }
 
   if (req.method === 'GET') {
     try {
-      if (!dbConnected) {
-        // Preview/demo: return empty list (no mock here)
-        res.status(200).json([]);
-        return;
-      }
-
       const debts = await DebtEntry.find().sort({ date: -1 });
       res.status(200).json(debts);
     } catch (error) {
@@ -40,11 +35,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
 
   if (req.method === 'POST') {
     try {
-      if (!dbConnected) {
-        res.status(503).json({ success: false, error: 'Database not available' });
-        return;
-      }
-
       const { date, value, description, account } = req.body || {};
       if (!date || value == null || !description || !account) {
         res.status(400).json({ success: false, error: 'Missing required fields' });
