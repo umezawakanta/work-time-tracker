@@ -483,9 +483,12 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Call Deploy Hook
+        continue-on-error: true
         if: ${{ env.VERCEL_DEPLOY_HOOK_URL != '' }}
         env:
           VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
         run: |
           curl -sS -X POST -H "Content-Type: application/json" -d '{}' "$VERCEL_DEPLOY_HOOK_URL" \
-            --fail --retry 3 --retry-delay 2 && echo "✅ Triggered Vercel deploy hook"
+            --retry 3 --retry-delay 2 \
+            && echo "✅ Triggered Vercel deploy hook" \
+            || echo "⚠️ Vercel deploy hook failed (non-blocking)"
