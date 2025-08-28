@@ -174,20 +174,19 @@ export const blogApi = {
           baseURL: error.config?.baseURL,
         });
 
-        // ネットワークエラーなど重大な問題の場合のみフォールバック
+        // フォールバックは明示的なモックモード時のみ
         if (
-          error.code === 'ECONNREFUSED' ||
-          error.code === 'NETWORK_ERROR' ||
-          error.message.includes('timeout')
+          (USE_MOCK_DATA ||
+            (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true')) &&
+          (error.code === 'ECONNREFUSED' ||
+            error.code === 'NETWORK_ERROR' ||
+            error.message.includes('timeout'))
         ) {
-          console.log('🔧 Network error detected: Fallback to mock blog data');
-          console.log(
-            '💡 Tip: サーバーが停止している場合は `npm run dev` でサーバーを起動してください'
-          );
+          console.log('🔧 Network error detected in mock mode: Returning mock blog data');
           return Promise.resolve({
             data: mockBlogPosts,
             status: 200,
-            statusText: 'OK (Network Error Fallback)',
+            statusText: 'OK (Mock Mode Fallback)',
             headers: {},
             config: {} as AxiosRequestConfig,
           } as AxiosResponse<BlogPost[]>);
@@ -248,21 +247,20 @@ export const blogApi = {
       .catch((error) => {
         console.error('❌ Blog Post API Error:', error);
 
-        // ネットワークエラーなど重大な問題の場合のみフォールバック
+        // フォールバックは明示的なモックモード時のみ
         if (
-          error.code === 'ECONNREFUSED' ||
-          error.code === 'NETWORK_ERROR' ||
-          error.message.includes('timeout')
+          (USE_MOCK_DATA ||
+            (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true')) &&
+          (error.code === 'ECONNREFUSED' ||
+            error.code === 'NETWORK_ERROR' ||
+            error.message.includes('timeout'))
         ) {
-          console.log('🔧 Network error detected: Fallback to mock blog post');
-          console.log(
-            '💡 Tip: サーバーが停止している場合は `npm run dev` でサーバーを起動してください'
-          );
+          console.log('🔧 Network error detected in mock mode: Returning mock blog post');
           const mockPost = mockBlogPosts.find((post) => post._id === id) || mockBlogPosts[0];
           return Promise.resolve({
             data: mockPost,
             status: 200,
-            statusText: 'OK (Network Error Fallback)',
+            statusText: 'OK (Mock Mode Fallback)',
             headers: {},
             config: {} as AxiosRequestConfig,
           } as AxiosResponse<BlogPost>);

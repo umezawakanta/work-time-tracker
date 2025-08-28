@@ -461,21 +461,11 @@ describe('authApi', () => {
       expect(result.isAdmin).toBe(true);
     });
 
-    it.skip('should return fallback data on network error', async () => {
+    it('should throw on network error (no mock fallback)', async () => {
       const networkError = new Error('ECONNREFUSED');
       mockedApi.get.mockRejectedValue(networkError);
 
-      const result = await authApi.fetchUserData();
-
-      expect(result).toEqual({
-        id: 'demo-user',
-        _id: 'demo-user-id',
-        name: 'Demo User (Network Error)',
-        username: 'demouser',
-        email: 'demo@example.com',
-        isAdmin: true,
-        avatar: '',
-      });
+      await expect(authApi.fetchUserData()).rejects.toThrow('ECONNREFUSED');
     });
 
     it.skip('should throw error for non-network errors', async () => {
