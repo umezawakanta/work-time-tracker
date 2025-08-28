@@ -113,39 +113,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       } as LoginResponse);
     }
 
-    // データベース接続（失敗時のフォールバックは明示的な許可がある場合のみ）
-    const allowDemoFallback = process.env.ALLOW_DEMO_LOGIN_FALLBACK === 'true';
-    let dbConnected = true;
+    // データベース接続（失敗時はサービス不可として返却）
     try {
       await connectDB();
     } catch (e) {
-      dbConnected = false;
       console.warn('Login API: DB not available');
-      if (!allowDemoFallback) {
-        return res.status(503).json({
-          success: false,
-          message: '現在ログインサービスを利用できません。しばらくしてから再試行してください。',
-          error: 'Service unavailable (DB connection failed)',
-        } as LoginResponse);
-      }
-      console.warn('Login API: Demo fallback is enabled via ALLOW_DEMO_LOGIN_FALLBACK=true');
+      return res.status(503).json({
+        success: false,
+        message: '現在ログインサービスを利用できません。しばらくしてから再試行してください。',
+        error: 'Service unavailable (DB connection failed)',
+      } as LoginResponse);
     }
 
-    // ユーザーの検索 or フォールバック
-    const user = dbConnected
-      ? await User.findOne({ email: email.toLowerCase() })
-      : ({
-          id: 'demo-user',
-          email: email.toLowerCase(),
-          displayName: email.split('@')[0],
-          role: 'user',
-          isVerified: true,
-          avatar: undefined,
-          preferences: {},
-          status: 'active',
-          metadata: { hashedPassword: await bcrypt.hash(password, 10) },
-          save: async () => {},
-        } as any);
+    // ユーザーの検索
+    const user = await User.findOne({ email: email.toLowerCase() });
 
     if (!user) {
       return res.status(401).json({
@@ -231,17 +212,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // ユーザーのサブスクリプション情報を取得
-    const subscription = dbConnected
-      ? await SubscriptionModel.findOne({
-          userId: user.id,
-          status: { $in: ['active', 'trialing'] },
-        })
-      : ({ id: 'demo-sub', planType: 'free', status: 'active', limits: {} } as any);
+    const subscription = await SubscriptionModel.findOne({
+      userId: user.id,
+      status: { $in: ['active', 'trialing'] },
+    });
 
     // 最終ログイン時刻の更新（バリデーション回避の部分更新）
     try {
       const userIdForUpdate = (user as any)?._id || (user as any)?.id;
-      if (dbConnected && userIdForUpdate) {
+      if (userIdForUpdate) {
         await User.updateOne(
           { _id: userIdForUpdate },
           { $set: { lastLoginAt: new Date(), lastActivityAt: new Date() } },
