@@ -199,24 +199,24 @@ export class ApprovalWorkflowService extends EventEmitter {
   private createDefaultSettings(): ApprovalSettings {
     return {
       id: 'default-approval-settings',
-      organizationId: 'demo-org',
+      organizationId: '',
 
       autoApproval: {
-        enabled: true,
+        enabled: false,
         conditions: {
-          maxOvertimeHours: 10,
-          maxLeaveHours: 8,
-          trustedEmployees: ['demo-user'],
-          lowRiskPeriods: ['2024-01', '2024-02'],
+          maxOvertimeHours: 0,
+          maxLeaveHours: 0,
+          trustedEmployees: [],
+          lowRiskPeriods: [],
         },
       },
 
       escalationRules: {
-        timesheet: { days: 3, escalateTo: ['manager-1', 'hr-1'] },
-        leave_request: { days: 2, escalateTo: ['manager-1'] },
-        overtime: { days: 1, escalateTo: ['manager-1', 'admin-1'] },
-        correction: { days: 2, escalateTo: ['manager-1', 'hr-1'] },
-        schedule_change: { days: 3, escalateTo: ['manager-1'] },
+        timesheet: { days: 3, escalateTo: [] },
+        leave_request: { days: 2, escalateTo: [] },
+        overtime: { days: 1, escalateTo: [] },
+        correction: { days: 2, escalateTo: [] },
+        schedule_change: { days: 3, escalateTo: [] },
       },
 
       notificationSettings: {
