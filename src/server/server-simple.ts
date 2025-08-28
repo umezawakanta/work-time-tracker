@@ -323,28 +323,19 @@ app.delete('/api/sleep-records/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// --- Minimal WBS mock endpoints for local development ---
-// In production (Vercel), dedicated API routes should handle these.
-app.post('/api/wbs', (req, res) => {
-  console.log('🧱 POST /api/wbs (mock) called');
-  const id = 'wbs_' + Date.now().toString(36);
-  res.status(201).json({ _id: id, ...req.body });
-});
-
-app.get('/api/wbs/project/:projectId', (req, res) => {
-  console.log('🧱 GET /api/wbs/project/:projectId (mock) called');
-  res.json([]);
-});
-
-app.put('/api/wbs/:id', (req, res) => {
-  console.log('🧱 PUT /api/wbs/:id (mock) called');
-  res.json({ _id: req.params.id, ...req.body });
-});
-
-app.delete('/api/wbs/:id', (req, res) => {
-  console.log('🧱 DELETE /api/wbs/:id (mock) called');
-  res.json({ success: true });
-});
+// WBS endpoints not implemented yet - disable explicit mocks
+app.post('/api/wbs', (_req, res) =>
+  res.status(501).json({ success: false, message: 'Not implemented' })
+);
+app.get('/api/wbs/project/:projectId', (_req, res) =>
+  res.status(501).json({ success: false, message: 'Not implemented' })
+);
+app.put('/api/wbs/:id', (_req, res) =>
+  res.status(501).json({ success: false, message: 'Not implemented' })
+);
+app.delete('/api/wbs/:id', (_req, res) =>
+  res.status(501).json({ success: false, message: 'Not implemented' })
+);
 
 // Authentication endpoints (real controllers)
 app.post('/api/auth/login', (req: Request, res: Response) => {

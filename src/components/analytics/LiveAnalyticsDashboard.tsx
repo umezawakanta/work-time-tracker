@@ -231,35 +231,18 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
         }
       }
 
-      // フォールバック: モックデータ（API接続失敗時のみ）
-      console.warn('Live metrics API not available, using fallback data');
-      const mockMetrics: LiveMetrics = {
-        activeUsers: Math.floor(Math.random() * 50) + 10,
-        completionRate: Math.floor(Math.random() * 40) + 60,
-        avgTaskTime: Math.floor(Math.random() * 30) + 15,
-        todaysTasks: Math.floor(Math.random() * 20) + 5,
-        weeklyTrend: Math.floor(Math.random() * 30) - 15,
-        topCategories: [
-          { name: '開発', value: 35, color: '#3b82f6' },
-          { name: '会議', value: 25, color: '#10b981' },
-          { name: '学習', value: 20, color: '#f59e0b' },
-          { name: 'レビュー', value: 15, color: '#ef4444' },
-          { name: 'その他', value: 5, color: '#8b5cf6' },
-        ],
-        hourlyActivity: Array.from({ length: 24 }, (_, i) => ({
-          hour: `${i}:00`,
-          tasks: Math.floor(Math.random() * 10),
-          users: Math.floor(Math.random() * 15),
-        })),
-        realtimeActivity: Array.from({ length: 10 }, (_, i) => ({
-          timestamp: new Date(Date.now() - i * 60000),
-          action: ['タスク完了', 'タスク作成', 'コメント追加'][Math.floor(Math.random() * 3)],
-          user: `ユーザー${Math.floor(Math.random() * 10) + 1}`,
-          detail: 'プロジェクト管理システム',
-        })),
-      };
-
-      setMetrics(mockMetrics);
+      // 本番データのみ使用。失敗時は空データで表示（モック禁止）
+      console.warn('Live metrics API not available, showing empty metrics');
+      setMetrics({
+        activeUsers: 0,
+        completionRate: 0,
+        avgTaskTime: 0,
+        todaysTasks: 0,
+        weeklyTrend: 0,
+        topCategories: [],
+        hourlyActivity: [],
+        realtimeActivity: [],
+      });
       setLastUpdate(new Date());
     } catch (error) {
       console.error('Metrics fetch failed:', error);
