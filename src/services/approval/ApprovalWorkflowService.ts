@@ -235,15 +235,6 @@ export class ApprovalWorkflowService extends EventEmitter {
     };
   }
 
-  // Demo initialization removed
-
-  // Demo request generators removed
-
-  /**
-   * デモ承認履歴を生成
-   */
-  // Demo history generator removed
-
   /**
    * ワークフローエンジンを開始
    */
@@ -646,15 +637,8 @@ export class ApprovalWorkflowService extends EventEmitter {
   }
 
   private getUserName(userId: string): string {
-    // 実際の実装ではユーザー管理システムから取得
-    const userNames: Record<string, string> = {
-      'demo-user': 'Demo User',
-      'supervisor-1': 'Supervisor',
-      'manager-1': 'Manager',
-      'hr-1': 'HR',
-      'admin-1': 'Admin',
-    };
-    return userNames[userId] || 'Unknown User';
+    // 実装: 管理APIまたはDBから取得するまでのフォールバックは匿名名のみ
+    return `User:${userId}`;
   }
 
   private isInternalUser(userId: string): boolean {
