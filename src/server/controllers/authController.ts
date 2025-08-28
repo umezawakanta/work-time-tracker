@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { User, UserDocument } from '../models/User.js';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -80,6 +81,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     console.log('🔐 Comparing password...');
     // パスワードの比較
+    if (!user.password || typeof user.password !== 'string') {
+      console.error('❌ Login error: Stored password missing');
+      res.status(401).json({ message: 'Invalid credentials' });
+      return;
+    }
     const isMatch = await bcrypt.compare(passwordStr, user.password);
     console.log('🔑 Password match:', isMatch ? 'Yes' : 'No');
 
@@ -175,8 +181,20 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       email,
       passwordLength: typeof password === 'string' ? password.length : 'unknown',
     });
+    const salt = await bcrypt.genSalt(10);
+    const hashed = await bcrypt.hash(String(password), salt);
+    const uid = new mongoose.Types.ObjectId().toHexString();
     console.log('Attempting to create user in database...');
-    const createdUser = (await User.create({ displayName: name, email, password })) as unknown;
+    const createdUser = (await User.create({
+      uid,
+      email,
+      displayName: name,
+      provider: 'jwt',
+      password: hashed,
+      preferences: {},
+      settings: {},
+      stats: { joinDate: new Date().toISOString() },
+    })) as unknown;
     const userId = String((createdUser as { _id: unknown })._id ?? '');
     console.log('User created successfully with ID:', userId);
     console.log('Generating JWT tokens for user ID:', userId);

@@ -218,6 +218,7 @@ const UserSchema = new Schema(
       enum: ['jwt', 'firebase', 'google', 'github', 'demo'],
       required: true,
     },
+    password: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
     role: {
       type: String,
@@ -282,7 +283,7 @@ UserSchema.virtual('id').get(function () {
 UserSchema.set('toJSON', {
   virtuals: true,
   transform: function (doc, ret) {
-    const { _id, __v, ...cleanRet } = ret;
+    const { _id, __v, password, ...cleanRet } = ret;
     return cleanRet;
   },
 });
