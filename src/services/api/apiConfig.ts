@@ -118,15 +118,38 @@ api.interceptors.request.use(
     if (isDev()) {
       const hasAuth = Boolean((config.headers as any)?.Authorization);
       if (!hasAuth) {
-        // 任意の開発用ユーザーID（必要に応じて書き換え）
-        const devUserId = localStorage.getItem('dev_user_id') || 'dev-user';
-        const devRole = localStorage.getItem('dev_user_role') || 'user';
-        (config.headers as any)['X-User-Id'] = devUserId;
-        (config.headers as any)['X-User-Role'] = devRole;
-        // 任意の開発用メール（管理者判定に使用）。例: kanta13jp@gmail.com
-        const devEmail = localStorage.getItem('dev_user_email');
-        if (devEmail) {
-          (config.headers as any)['X-User-Email'] = devEmail;
+        // ローカルに保存されたトークンがあれば Authorization を付与
+        try {
+          const localToken =
+            (typeof window !== 'undefined' &&
+              (localStorage.getItem('accessToken') ||
+                sessionStorage.getItem('accessToken') ||
+                localStorage.getItem('access_token') ||
+                sessionStorage.getItem('access_token'))) ||
+            null;
+          if (localToken) {
+            (config.headers as any).Authorization = `Bearer ${localToken}`;
+            try {
+              const masked = `Bearer ${String(localToken).slice(0, 12)}...`;
+              if (typeof window !== 'undefined') window.__API_AUTH_HEADER__ = masked;
+              console.log('🔒 (dev) Authorization set (masked):', masked);
+            } catch {}
+          }
+        } catch {}
+
+        // まだ Authorization が無い場合のみ開発者用ヘッダを付与
+        const stillNoAuth = !(config.headers as any)?.Authorization;
+        if (stillNoAuth) {
+          // 任意の開発用ユーザーID（必要に応じて書き換え）
+          const devUserId = localStorage.getItem('dev_user_id') || 'dev-user';
+          const devRole = localStorage.getItem('dev_user_role') || 'user';
+          (config.headers as any)['X-User-Id'] = devUserId;
+          (config.headers as any)['X-User-Role'] = devRole;
+          // 任意の開発用メール（管理者判定に使用）。例: kanta13jp@gmail.com
+          const devEmail = localStorage.getItem('dev_user_email');
+          if (devEmail) {
+            (config.headers as any)['X-User-Email'] = devEmail;
+          }
         }
       }
       return config;
