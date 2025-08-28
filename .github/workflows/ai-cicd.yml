@@ -225,10 +225,15 @@ jobs:
           path: dist
 
       - name: Install Cypress binary
-        run: pnpm exec cypress install
+        run: pnpm run cypress:install
 
-      - name: Run E2E tests
-        run: pnpm run test:e2e
+      - name: Run E2E tests (headless, with readiness and strict port)
+        env:
+          CYPRESS_CACHE_FOLDER: ${{ runner.temp }}/cypress
+          CYPRESS_VERIFY_TIMEOUT: 120000
+          WAIT_ON_TIMEOUT: 180000
+        run: |
+          pnpm run test:e2e
 
       - name: Upload E2E test results
         uses: actions/upload-artifact@v4
