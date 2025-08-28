@@ -1571,18 +1571,33 @@ app.get('/api/analytics/live-metrics', (req, res) => {
 
 // ===== Additional analytics endpoints for AdminDashboard (dev mock) =====
 // Daily pageviews series
-app.get('/api/analytics/pageviews/daily', (req, res) => {
+app.get('/api/analytics/pageviews/daily', async (req, res) => {
   try {
+    const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
     const daysParam = Number(req.query.days || 7);
     const days = Math.max(1, Math.min(90, Number.isFinite(daysParam) ? daysParam : 7));
-    const today = new Date();
+    const now = new Date();
+    const from = new Date(now);
+    from.setDate(now.getDate() - (days - 1));
+
+    const agg = await AnalyticsEvent.aggregate([
+      { $match: { event: 'page_view', timestamp: { $gte: from, $lte: now } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } },
+          views: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+    const map = new Map<string, number>();
+    for (const r of agg) map.set(String(r._id), Number(r.views || 0));
     const series: Array<{ day: string; views: number }> = [];
     for (let i = days - 1; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - i);
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
       const key = __getDateKey(d);
-      const views = __pageviewBuckets[key] || 0;
-      series.push({ day: key, views });
+      series.push({ day: key, views: map.get(key) || 0 });
     }
     return res.json({ success: true, data: { days, series } });
   } catch (e) {
@@ -1592,22 +1607,17 @@ app.get('/api/analytics/pageviews/daily', (req, res) => {
 });
 
 // Active users in the last N hours (simplified mock)
-app.get('/api/analytics/users/active', (req, res) => {
+app.get('/api/analytics/users/active', async (req, res) => {
   try {
+    const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
     const hoursParam = Number(req.query.hours || 24);
     const hours = Math.max(1, Math.min(72, Number.isFinite(hoursParam) ? hoursParam : 24));
-    // Rough heuristic based on recent pageviews
-    const now = new Date();
-    let pv = 0;
-    for (let i = 0; i < Math.ceil(hours / 24); i++) {
-      const d = new Date(now);
-      d.setDate(now.getDate() - i);
-      pv += __pageviewBuckets[__getDateKey(d)] || 0;
-    }
-    const activeUsers = Math.max(
-      0,
-      Math.min(200, Math.round(pv / 3) || Math.floor(Math.random() * 40) + 10)
-    );
+    const since = new Date(Date.now() - hours * 60 * 60 * 1000);
+    const distinct = await AnalyticsEvent.distinct('clientId', {
+      timestamp: { $gte: since },
+      event: { $in: ['page_view', 'page_view_end', 'ai_assistant_reply', 'assessment_saved'] },
+    });
+    const activeUsers = (distinct || []).filter(Boolean).length;
     return res.json({ success: true, data: { hours, activeUsers } });
   } catch (e) {
     console.error('❌ Error in /api/analytics/users/active:', e);
@@ -1616,24 +1626,54 @@ app.get('/api/analytics/users/active', (req, res) => {
 });
 
 // 30d retention cohorts (simplified mock)
-app.get('/api/analytics/retention/30d', (req, res) => {
+app.get('/api/analytics/retention/30d', async (req, res) => {
   try {
-    const days = 30;
-    const today = new Date();
-    const cohorts: Array<{ date: string; size: number; days: number[] }> = [];
-    for (let i = 0; i < 14; i++) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - (i * 2 + 1));
-      const date = d.toISOString().slice(0, 10);
-      const size = 10 + (i % 7) * 3;
-      const arr: number[] = [];
-      for (let j = 0; j < days; j++) {
-        // simple decay
-        arr.push(Math.max(0, Math.round(size * Math.pow(0.92, j))));
+    const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
+    const now = new Date();
+    const from = new Date(now);
+    from.setDate(now.getDate() - 29);
+
+    const registrations = await AnalyticsEvent.aggregate([
+      { $match: { timestamp: { $gte: from, $lte: now } } },
+      { $group: { _id: '$clientId', firstSeen: { $min: '$timestamp' } } },
+      { $project: { day: { $dateToString: { format: '%Y-%m-%d', date: '$firstSeen' } } } },
+      { $group: { _id: '$day', size: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+    ]);
+    const d1 = await AnalyticsEvent.aggregate([
+      { $match: { timestamp: { $gte: from, $lte: now } } },
+      {
+        $group: {
+          _id: '$clientId',
+          days: { $addToSet: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } } },
+        },
+      },
+      { $project: { days: 1 } },
+    ]);
+    const dailyMap = new Map<string, number>();
+    for (const r of registrations) dailyMap.set(String(r._id), Number(r.size || 0));
+    const allDays: string[] = Array.from({ length: 30 }, (_, i) => {
+      const d = new Date(now);
+      d.setDate(now.getDate() - (29 - i));
+      return d.toISOString().slice(0, 10);
+    });
+    const retainedMap = new Map<string, number>(allDays.map((d) => [d, 0]));
+    for (const row of d1) {
+      const set = new Set<string>((row?.days as string[]) || []);
+      for (const day of allDays) {
+        const next = new Date(day + 'T00:00:00Z');
+        next.setDate(next.getDate() + 1);
+        const nextKey = next.toISOString().slice(0, 10);
+        if (set.has(day) && set.has(nextKey)) {
+          retainedMap.set(day, (retainedMap.get(day) || 0) + 1);
+        }
       }
-      cohorts.push({ date, size, days: arr });
     }
-    cohorts.reverse();
+    const cohorts = allDays.map((day) => ({
+      date: day,
+      size: dailyMap.get(day) || 0,
+      days: [0, retainedMap.get(day) || 0],
+    }));
     return res.json({ success: true, data: { cohorts } });
   } catch (e) {
     console.error('❌ Error in /api/analytics/retention/30d:', e);
