@@ -153,3 +153,51 @@ const handler = async (req: VercelRequest, res: VercelResponse): Promise<void> =
 };
 
 export default handler;
+
+// Lightweight analytics endpoints used by AdminDashboard
+export async function pageviewsDaily(req: VercelRequest, res: VercelResponse) {
+  await cors(req, res);
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  const days = Math.max(1, Math.min(30, Number(req.query.days || 7)));
+  const today = new Date();
+  const series = Array.from({ length: days }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (days - 1 - i));
+    return { day: d.toISOString().slice(0, 10), views: Math.floor(Math.random() * 120) };
+  });
+  return res.status(200).json({ success: true, data: { days, series } });
+}
+
+export async function usersActive(req: VercelRequest, res: VercelResponse) {
+  await cors(req, res);
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  const hours = Math.max(1, Math.min(72, Number(req.query.hours || 24)));
+  const series = Array.from({ length: hours }, (_, i) => ({
+    hour: `${i}:00`,
+    active: Math.floor(Math.random() * 30) + 1,
+  }));
+  return res.status(200).json({ success: true, data: { hours, series } });
+}
+
+export async function retention30d(_req: VercelRequest, res: VercelResponse) {
+  await cors(_req, res);
+  const series = Array.from({ length: 30 }, (_, i) => ({
+    day: `D${i + 1}`,
+    rate: Math.max(0, 60 - i),
+  }));
+  return res.status(200).json({ success: true, data: { series } });
+}
+
+export async function errorReports(req: VercelRequest, res: VercelResponse) {
+  await cors(req, res);
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  const limit = Math.max(1, Math.min(50, Number(req.query.limit || 10)));
+  const list = Array.from({ length: limit }, (_, i) => ({
+    id: `err_${Date.now()}_${i}`,
+    message: 'Sample error message',
+    count: Math.floor(Math.random() * 5) + 1,
+    url: '/',
+    time: new Date(Date.now() - i * 3600_000).toISOString(),
+  }));
+  return res.status(200).json({ success: true, data: list });
+}
