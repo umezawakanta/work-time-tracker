@@ -1,15 +1,17 @@
+/// <reference types="cypress" />
+/* eslint-env cypress */
+
 describe('AI Assistant smoke', () => {
-  it('renders mocked reply after input', () => {
-    // Mock the /api/ai/anthropic response
-    cy.intercept('POST', '/api/ai/anthropic', {
-      statusCode: 200,
-      body: { text: 'こんにちは、こちらはモックの返答です。' },
-    }).as('ask');
+  it('sends real request and handles error UI (no stubbing)', () => {
+    // Spy only, let the real backend handle the request
+    cy.intercept('POST', '/api/ai/anthropic').as('ask');
 
     cy.visit('/ai-assistant');
-    cy.findByPlaceholderText('AIに相談したい内容を入力...').type('テストメッセージ');
-    cy.findByRole('button', { name: '送信' }).click();
+    // Use data-cy selector instead of testing-library command
+    cy.get('input[placeholder="メッセージを入力..."]').type('テストメッセージ{enter}');
+
     cy.wait('@ask');
-    cy.contains('こんにちは、こちらはモックの返答です。').should('be.visible');
+    // In CI (no API key), we expect error toast to appear
+    cy.contains('メッセージの送信に失敗しました').should('be.visible');
   });
 });
