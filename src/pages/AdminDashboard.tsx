@@ -619,124 +619,11 @@ const AdminDashboard: React.FC = () => {
         </Alert>
       )}
 
-      {/* メトリクス概要 */}
-      {metrics && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">総ユーザー数</p>
-                  <p className="text-2xl font-bold">
-                    {(Number(analytics?.totalUsers || 0) || metrics.users.total).toLocaleString()}
-                  </p>
-                  <p className="text-xs text-green-600">+{metrics.users.newToday} 今日</p>
-                </div>
-                <Users className="w-8 h-8 text-blue-600" />
-              </div>
-              <Progress
-                value={
-                  (Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
-                    ? (metrics.users.active /
-                        (Number(analytics?.totalUsers || 0) || metrics.users.total)) *
-                      100
-                    : 0
-                }
-                className="mt-2"
-              />
-              <p className="text-xs text-gray-600 mt-1">
-                アクティブ率:{' '}
-                {(Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
-                  ? Math.round(
-                      (metrics.users.active /
-                        (Number(analytics?.totalUsers || 0) || metrics.users.total)) *
-                        100
-                    )
-                  : 0}
-                %
-              </p>
-            </CardContent>
-          </Card>
+      {/* 概要カードはタブ内に配置するため、ここでは描画しない */}
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">月次売上 (MRR)</p>
-                  <p className="text-2xl font-bold">¥{metrics.revenue.mrr.toLocaleString()}</p>
-                  <p className="text-xs text-green-600">
-                    +¥{Number(metrics.revenue.todayRevenue || 0).toLocaleString()} 今日
-                  </p>
-                </div>
-                <DollarSign className="w-8 h-8 text-green-600" />
-              </div>
-              <Progress value={metrics.revenue.conversionRate} className="mt-2" />
-              <p className="text-xs text-gray-600 mt-1">
-                コンバージョン率: {metrics.revenue.conversionRate}%
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">システム稼働率</p>
-                  <p className="text-2xl font-bold">{metrics.system.uptime}%</p>
-                  <p className="text-xs text-blue-600">{metrics.system.responseTime}ms 平均応答</p>
-                </div>
-                <Activity className="w-8 h-8 text-purple-600" />
-              </div>
-              <Progress value={metrics.system.uptime} className="mt-2" />
-              <p className="text-xs text-gray-600 mt-1">エラー率: {metrics.system.errorRate}%</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">サポート</p>
-                  <p className="text-2xl font-bold">{metrics.support.openTickets}</p>
-                  <p className="text-xs text-orange-600">未対応チケット</p>
-                </div>
-                <Mail className="w-8 h-8 text-orange-600" />
-              </div>
-              <div className="mt-2 flex items-center">
-                <span className="text-xs text-gray-600">
-                  平均応答: {metrics.support.avgResponseTime} | 満足度:{' '}
-                  {metrics.support.satisfaction}/5
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-          {/* ライブメトリクス */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">ライブアクティブ</p>
-                  <p className="text-2xl font-bold">
-                    {isLiveLoading ? '—' : (liveMetrics?.activeUsers ?? 0)}
-                  </p>
-                  <p className="text-xs text-gray-600">
-                    完了率: {isLiveLoading ? '—' : `${liveMetrics?.completionRate ?? 0}%`}
-                  </p>
-                </div>
-                <Activity className="w-8 h-8 text-rose-500" />
-              </div>
-              <div className="mt-2 text-xs text-gray-600">
-                今日のタスク: {isLiveLoading ? '—' : (liveMetrics?.todaysTasks ?? 0)} / 週次傾向:{' '}
-                {isLiveLoading ? '—' : (liveMetrics?.weeklyTrend ?? 0)}%
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* 利用状況サマリ（DAU/WAU/MAU & 7日新規） */}
-      {isAnalyticsLoading && !analytics ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* 利用状況サマリ（analyticsタブに集約） */}
+      {activeTab === 'analytics' && isAnalyticsLoading && !analytics ? (
+        <div className="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
               <CardContent className="pt-6">
@@ -753,608 +640,601 @@ const AdminDashboard: React.FC = () => {
             </Card>
           ))}
         </div>
-      ) : (
-        analytics && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">DAU</p>
-                    <p className="text-2xl font-bold">
-                      {isDauLoading ? '—' : (activeUsers24h ?? analytics.activeUsers)}
-                    </p>
-                    <p
-                      className={`text-xs ${(activeUsers24h ?? analytics.activeUsers) >= 32 ? 'text-green-600' : 'text-orange-600'}`}
-                    >
-                      目標 32（
-                      {(activeUsers24h ?? analytics.activeUsers) >= 32
-                        ? '達成'
-                        : `残り ${Math.max(0, 32 - (activeUsers24h ?? analytics.activeUsers))}`}
-                      ）
-                    </p>
-                  </div>
-                  <Users className="w-8 h-8 text-blue-600" />
+      ) : activeTab === 'analytics' && analytics ? (
+        <div className="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">DAU</p>
+                  <p className="text-2xl font-bold">
+                    {isDauLoading ? '—' : (activeUsers24h ?? analytics.activeUsers)}
+                  </p>
+                  <p
+                    className={`text-xs ${(activeUsers24h ?? analytics.activeUsers) >= 32 ? 'text-green-600' : 'text-orange-600'}`}
+                  >
+                    目標 32（
+                    {(activeUsers24h ?? analytics.activeUsers) >= 32
+                      ? '達成'
+                      : `残り ${Math.max(0, 32 - (activeUsers24h ?? analytics.activeUsers))}`}
+                    ）
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">WAU (推定)</p>
-                    <p className="text-2xl font-bold">
-                      {Math.max(analytics.activeUsers * 3, analytics.activeUsers).toLocaleString()}
-                    </p>
-                  </div>
-                  <TrendingUp className="w-8 h-8 text-green-600" />
+                <Users className="w-8 h-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">WAU (推定)</p>
+                  <p className="text-2xl font-bold">
+                    {Math.max(analytics.activeUsers * 3, analytics.activeUsers).toLocaleString()}
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">MAU (推定)</p>
-                    <p className="text-2xl font-bold">
-                      {Math.max(
-                        analytics.activeUsers * 8,
-                        analytics.totalUsers
-                          ? Math.min(analytics.totalUsers, analytics.activeUsers * 8)
-                          : analytics.activeUsers * 8
-                      ).toLocaleString()}
-                    </p>
-                  </div>
-                  <BarChart3 className="w-8 h-8 text-purple-600" />
+                <TrendingUp className="w-8 h-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">MAU (推定)</p>
+                  <p className="text-2xl font-bold">
+                    {Math.max(
+                      analytics.activeUsers * 8,
+                      analytics.totalUsers
+                        ? Math.min(analytics.totalUsers, analytics.activeUsers * 8)
+                        : analytics.activeUsers * 8
+                    ).toLocaleString()}
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">平均セッション (秒)</p>
-                    <p className="text-2xl font-bold">{analytics.averageSessionDuration}</p>
-                  </div>
-                  <Clock className="w-8 h-8 text-amber-600" />
+                <BarChart3 className="w-8 h-8 text-purple-600" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">平均セッション (秒)</p>
+                  <p className="text-2xl font-bold">{analytics.averageSessionDuration}</p>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">DAU 前日比</p>
-                    <p
-                      className={`text-2xl font-bold ${analytics.compare && analytics.compare.diff >= 0 ? 'text-green-600' : 'text-red-600'}`}
-                    >
-                      {analytics.compare
-                        ? `${analytics.compare.diff >= 0 ? '+' : ''}${analytics.compare.diff} (${analytics.compare.pct}%)`
-                        : '-'}
-                    </p>
-                  </div>
-                  <TrendingUp className="w-8 h-8 text-gray-600" />
+                <Clock className="w-8 h-8 text-amber-600" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">DAU 前日比</p>
+                  <p
+                    className={`text-2xl font-bold ${analytics.compare && analytics.compare.diff >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {analytics.compare
+                      ? `${analytics.compare.diff >= 0 ? '+' : ''}${analytics.compare.diff} (${analytics.compare.pct}%)`
+                      : '-'}
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>7日 新規ユーザー</CardTitle>
-                <CardDescription>直近の新規増加傾向（簡易）</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-7 gap-2 items-end h-24">
-                  {dailyNewSeries.map((v, i) => (
-                    <div key={i} className="flex flex-col items-center">
-                      <div
-                        className="w-6 bg-blue-500 rounded"
-                        style={{ height: `${Math.max(6, Math.min(100, v))}%` }}
-                        aria-label={`Day ${i + 1}: ${v}`}
-                      />
-                      <span className="mt-1 text-[10px] text-gray-500">D{i + 1}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>ページビュー推移</CardTitle>
-                    <CardDescription>
-                      サイト全体の閲覧傾向
-                      {pageviewSeries && pageviewSeries.length >= 2 && (
-                        <span className="ml-2 inline-block text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
-                          前日比{' '}
-                          {(() => {
-                            const a = pageviewSeries[pageviewSeries.length - 1]?.views || 0;
-                            const b = pageviewSeries[pageviewSeries.length - 2]?.views || 0;
-                            const diff = a - b;
-                            const pct = b > 0 ? Math.round((diff / b) * 100) : 0;
-                            return `${diff >= 0 ? '+' : ''}${diff} (${pct}%)`;
-                          })()}
-                        </span>
-                      )}
-                    </CardDescription>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    {(['7d', '30d', '90d'] as const).map((w) => (
-                      <Button
-                        key={w}
-                        size="sm"
-                        variant={pageviewWindow === w ? 'default' : 'outline'}
-                        onClick={() => {
-                          setPageviewWindow(w);
-                          fetchPageviewsTrend(w);
-                        }}
-                      >
-                        {w}
-                      </Button>
-                    ))}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        (function exportPageviews() {
-                          try {
-                            const headers = ['day', 'views'];
-                            const lines = [headers.join(',')].concat(
-                              pageviewSeries.map((r) => `${r.day},${r.views}`)
-                            );
-                            const blob = new Blob([lines.join('\n')], {
-                              type: 'text/csv;charset=utf-8;',
-                            });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = 'pageviews_trend.csv';
-                            document.body.appendChild(a);
-                            a.click();
-                            a.remove();
-                            URL.revokeObjectURL(url);
-                          } catch (e) {
-                            console.error(e);
-                          }
-                        })()
-                      }
-                    >
-                      CSV
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {isPageviewsLoading ? (
-                  <div className="h-32 bg-gray-200 rounded animate-pulse" />
-                ) : pageviewSeries.length > 0 ? (
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={pageviewSeries}
-                        margin={{ left: 8, right: 8, top: 8, bottom: 8 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="day" tick={{ fontSize: 10 }} />
-                        <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
-                        <Tooltip />
-                        <Line
-                          type="monotone"
-                          dataKey="views"
-                          stroke="#2563eb"
-                          strokeWidth={2}
-                          dot={{ r: 2 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">データがありません</p>
-                )}
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>ユーザー推移（新規/アクティブ）</CardTitle>
-                    <CardDescription>ユーザー増減のトレンド</CardDescription>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    {(['7d', '30d', '90d'] as const).map((w) => (
-                      <Button
-                        key={w}
-                        size="sm"
-                        variant={pageviewWindow === w ? 'default' : 'outline'}
-                        onClick={() => {
-                          setPageviewWindow(w);
-                          fetchUsersTrend(w);
-                        }}
-                      >
-                        {w}
-                      </Button>
-                    ))}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        (function exportUsers() {
-                          try {
-                            const headers = ['day', 'newUsers', 'activeUsers'];
-                            const lines = [headers.join(',')].concat(
-                              usersTrend.map((r) => `${r.day},${r.newUsers},${r.activeUsers}`)
-                            );
-                            const blob = new Blob([lines.join('\n')], {
-                              type: 'text/csv;charset=utf-8;',
-                            });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = 'users_trend.csv';
-                            document.body.appendChild(a);
-                            a.click();
-                            a.remove();
-                            URL.revokeObjectURL(url);
-                          } catch (e) {
-                            console.error(e);
-                          }
-                        })()
-                      }
-                    >
-                      CSV
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {isUsersTrendLoading ? (
-                  <div className="h-32 bg-gray-200 rounded animate-pulse" />
-                ) : usersTrend.length > 0 ? (
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={usersTrend}
-                        margin={{ left: 8, right: 8, top: 8, bottom: 8 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="day" tick={{ fontSize: 10 }} />
-                        <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
-                        <Tooltip />
-                        <Line
-                          type="monotone"
-                          dataKey="newUsers"
-                          name="新規"
-                          stroke="#16a34a"
-                          strokeWidth={2}
-                          dot={{ r: 2 }}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="activeUsers"
-                          name="アクティブ"
-                          stroke="#ea580c"
-                          strokeWidth={2}
-                          dot={{ r: 2 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">データがありません</p>
-                )}
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>機能別利用数（7日）</CardTitle>
-                <CardDescription>AI/診断/学習の成功イベント</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <p className="text-sm text-gray-600">AI返信成功</p>
-                    <p className="text-2xl font-bold">{analytics.featureUsage?.ai_ok ?? 0}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">診断保存</p>
-                    <p className="text-2xl font-bold">
-                      {analytics.featureUsage?.assessment_saved ?? 0}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">学習保存</p>
-                    <p className="text-2xl font-bold">
-                      {analytics.featureUsage?.learning_saved ?? 0}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>収益サマリ</CardTitle>
-                <CardDescription>MRR/ARR・有料ユーザー</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isRevenueSummaryLoading ? (
-                  <div className="h-24 bg-gray-200 rounded animate-pulse" />
-                ) : revenueSummary ? (
-                  <div className="grid grid-cols-2 gap-4 text-center">
-                    <div>
-                      <p className="text-sm text-gray-600">MRR</p>
-                      <p className="text-2xl font-bold">
-                        ¥{revenueSummary.mrr?.toLocaleString?.() ?? 0}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        前月: ¥{revenueSummary.prevMrr?.toLocaleString?.() ?? 0}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">ARR</p>
-                      <p className="text-2xl font-bold">
-                        ¥{revenueSummary.arr?.toLocaleString?.() ?? 0}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        有料: {revenueSummary.activePaid ?? 0}
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">データがありません</p>
-                )}
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>月次売上推移</CardTitle>
-                <CardDescription>直近6カ月</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isRevenueTrendLoading ? (
-                  <div className="h-32 bg-gray-200 rounded animate-pulse" />
-                ) : revenueTrend.length > 0 ? (
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={revenueTrend}
-                        margin={{ left: 8, right: 8, top: 8, bottom: 8 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" tick={{ fontSize: 10 }} />
-                        <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
-                        <Tooltip />
-                        <Line
-                          type="monotone"
-                          dataKey="amount"
-                          name="売上"
-                          stroke="#0ea5e9"
-                          strokeWidth={2}
-                          dot={{ r: 2 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">データがありません</p>
-                )}
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>有料ユーザー推移</CardTitle>
-                <CardDescription>直近6カ月</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isPaidTrendLoading ? (
-                  <div className="h-32 bg-gray-200 rounded animate-pulse" />
-                ) : paidUsersTrend.length > 0 ? (
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={paidUsersTrend}
-                        margin={{ left: 8, right: 8, top: 8, bottom: 8 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" tick={{ fontSize: 10 }} />
-                        <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
-                        <Tooltip />
-                        <Line
-                          type="monotone"
-                          dataKey="count"
-                          name="有料ユーザー"
-                          stroke="#22c55e"
-                          strokeWidth={2}
-                          dot={{ r: 2 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">データがありません</p>
-                )}
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>上位リファラー</CardTitle>
-                <CardDescription>直近のトラフィックソース</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {(analytics.topReferrers || []).map((r, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-sm">
-                      <span className="text-gray-700">{r.referrer}</span>
-                      <span className="font-medium">{r.count}</span>
-                    </div>
-                  ))}
-                  {(!analytics.topReferrers || analytics.topReferrers.length === 0) && (
-                    <p className="text-sm text-gray-500">データがありません</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>トップページ</CardTitle>
-                    <CardDescription>よく見られているページ</CardDescription>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    {(['7d', '30d', '90d'] as const).map((w) => (
-                      <Button
-                        key={w}
-                        size="sm"
-                        variant={pageviewWindow === w ? 'default' : 'outline'}
-                        onClick={() => {
-                          setPageviewWindow(w);
-                          fetchTopPages(w);
-                        }}
-                      >
-                        {w}
-                      </Button>
-                    ))}
-                    <Input
-                      placeholder="pathを含む..."
-                      className="h-8 w-40"
-                      value={topPagesQuery}
-                      onChange={(e) => setTopPagesQuery(e.target.value)}
+                <TrendingUp className="w-8 h-8 text-gray-600" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>7日 新規ユーザー</CardTitle>
+              <CardDescription>直近の新規増加傾向（簡易）</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-7 gap-2 items-end h-24">
+                {dailyNewSeries.map((v, i) => (
+                  <div key={i} className="flex flex-col items-center">
+                    <div
+                      className="w-6 bg-blue-500 rounded"
+                      style={{ height: `${Math.max(6, Math.min(100, v))}%` }}
+                      aria-label={`Day ${i + 1}: ${v}`}
                     />
+                    <span className="mt-1 text-[10px] text-gray-500">D{i + 1}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>ページビュー推移</CardTitle>
+                  <CardDescription>
+                    サイト全体の閲覧傾向
+                    {pageviewSeries && pageviewSeries.length >= 2 && (
+                      <span className="ml-2 inline-block text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
+                        前日比{' '}
+                        {(() => {
+                          const a = pageviewSeries[pageviewSeries.length - 1]?.views || 0;
+                          const b = pageviewSeries[pageviewSeries.length - 2]?.views || 0;
+                          const diff = a - b;
+                          const pct = b > 0 ? Math.round((diff / b) * 100) : 0;
+                          return `${diff >= 0 ? '+' : ''}${diff} (${pct}%)`;
+                        })()}
+                      </span>
+                    )}
+                  </CardDescription>
+                </div>
+                <div className="flex gap-2 items-center">
+                  {(['7d', '30d', '90d'] as const).map((w) => (
                     <Button
+                      key={w}
                       size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        (function exportTopPages() {
-                          try {
-                            const headers = ['page', 'views'];
-                            const rows = (topPages || []).filter(
-                              (p) => !topPagesQuery || (p.page || '').includes(topPagesQuery)
-                            );
-                            const lines = [headers.join(',')].concat(
-                              rows.map((r) => `${r.page},${r.views}`)
-                            );
-                            const blob = new Blob([lines.join('\n')], {
-                              type: 'text/csv;charset=utf-8;',
-                            });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = 'top_pages.csv';
-                            document.body.appendChild(a);
-                            a.click();
-                            a.remove();
-                            URL.revokeObjectURL(url);
-                          } catch (e) {
-                            console.error(e);
-                          }
-                        })()
-                      }
+                      variant={pageviewWindow === w ? 'default' : 'outline'}
+                      onClick={() => {
+                        setPageviewWindow(w);
+                        fetchPageviewsTrend(w);
+                      }}
                     >
-                      CSV
+                      {w}
                     </Button>
+                  ))}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      (function exportPageviews() {
+                        try {
+                          const headers = ['day', 'views'];
+                          const lines = [headers.join(',')].concat(
+                            pageviewSeries.map((r) => `${r.day},${r.views}`)
+                          );
+                          const blob = new Blob([lines.join('\n')], {
+                            type: 'text/csv;charset=utf-8;',
+                          });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = 'pageviews_trend.csv';
+                          document.body.appendChild(a);
+                          a.click();
+                          a.remove();
+                          URL.revokeObjectURL(url);
+                        } catch (e) {
+                          console.error(e);
+                        }
+                      })()
+                    }
+                  >
+                    CSV
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isPageviewsLoading ? (
+                <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              ) : pageviewSeries.length > 0 ? (
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={pageviewSeries}
+                      margin={{ left: 8, right: 8, top: 8, bottom: 8 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="day" tick={{ fontSize: 10 }} />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+                      <Tooltip />
+                      <Line
+                        type="monotone"
+                        dataKey="views"
+                        stroke="#2563eb"
+                        strokeWidth={2}
+                        dot={{ r: 2 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">データがありません</p>
+              )}
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>ユーザー推移（新規/アクティブ）</CardTitle>
+                  <CardDescription>ユーザー増減のトレンド</CardDescription>
+                </div>
+                <div className="flex gap-2 items-center">
+                  {(['7d', '30d', '90d'] as const).map((w) => (
+                    <Button
+                      key={w}
+                      size="sm"
+                      variant={pageviewWindow === w ? 'default' : 'outline'}
+                      onClick={() => {
+                        setPageviewWindow(w);
+                        fetchUsersTrend(w);
+                      }}
+                    >
+                      {w}
+                    </Button>
+                  ))}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      (function exportUsers() {
+                        try {
+                          const headers = ['day', 'newUsers', 'activeUsers'];
+                          const lines = [headers.join(',')].concat(
+                            usersTrend.map((r) => `${r.day},${r.newUsers},${r.activeUsers}`)
+                          );
+                          const blob = new Blob([lines.join('\n')], {
+                            type: 'text/csv;charset=utf-8;',
+                          });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = 'users_trend.csv';
+                          document.body.appendChild(a);
+                          a.click();
+                          a.remove();
+                          URL.revokeObjectURL(url);
+                        } catch (e) {
+                          console.error(e);
+                        }
+                      })()
+                    }
+                  >
+                    CSV
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isUsersTrendLoading ? (
+                <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              ) : usersTrend.length > 0 ? (
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={usersTrend} margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="day" tick={{ fontSize: 10 }} />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+                      <Tooltip />
+                      <Line
+                        type="monotone"
+                        dataKey="newUsers"
+                        name="新規"
+                        stroke="#16a34a"
+                        strokeWidth={2}
+                        dot={{ r: 2 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="activeUsers"
+                        name="アクティブ"
+                        stroke="#ea580c"
+                        strokeWidth={2}
+                        dot={{ r: 2 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">データがありません</p>
+              )}
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>機能別利用数（7日）</CardTitle>
+              <CardDescription>AI/診断/学習の成功イベント</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className="text-sm text-gray-600">AI返信成功</p>
+                  <p className="text-2xl font-bold">{analytics.featureUsage?.ai_ok ?? 0}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">診断保存</p>
+                  <p className="text-2xl font-bold">
+                    {analytics.featureUsage?.assessment_saved ?? 0}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">学習保存</p>
+                  <p className="text-2xl font-bold">
+                    {analytics.featureUsage?.learning_saved ?? 0}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>収益サマリ</CardTitle>
+              <CardDescription>MRR/ARR・有料ユーザー</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isRevenueSummaryLoading ? (
+                <div className="h-24 bg-gray-200 rounded animate-pulse" />
+              ) : revenueSummary ? (
+                <div className="grid grid-cols-2 gap-4 text-center">
+                  <div>
+                    <p className="text-sm text-gray-600">MRR</p>
+                    <p className="text-2xl font-bold">
+                      ¥{revenueSummary.mrr?.toLocaleString?.() ?? 0}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      前月: ¥{revenueSummary.prevMrr?.toLocaleString?.() ?? 0}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">ARR</p>
+                    <p className="text-2xl font-bold">
+                      ¥{revenueSummary.arr?.toLocaleString?.() ?? 0}
+                    </p>
+                    <p className="text-xs text-gray-500">有料: {revenueSummary.activePaid ?? 0}</p>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                {isTopPagesLoading ? (
-                  <div className="h-32 bg-gray-200 rounded animate-pulse" />
-                ) : topPages.length > 0 ? (
-                  <div className="space-y-2">
-                    {topPages.map((p, idx) => (
-                      <div
-                        key={p.page || idx}
-                        className="flex items-center justify-between text-sm"
-                      >
-                        <a
-                          href={p.page}
-                          className="text-blue-600 underline truncate max-w-[70%]"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title={p.page}
-                        >
-                          {p.page}
-                        </a>
-                        <span className="font-medium">{p.views}</span>
-                      </div>
-                    ))}
+              ) : (
+                <p className="text-sm text-gray-500">データがありません</p>
+              )}
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>月次売上推移</CardTitle>
+              <CardDescription>直近6カ月</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isRevenueTrendLoading ? (
+                <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              ) : revenueTrend.length > 0 ? (
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={revenueTrend}
+                      margin={{ left: 8, right: 8, top: 8, bottom: 8 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+                      <Tooltip />
+                      <Line
+                        type="monotone"
+                        dataKey="amount"
+                        name="売上"
+                        stroke="#0ea5e9"
+                        strokeWidth={2}
+                        dot={{ r: 2 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">データがありません</p>
+              )}
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>有料ユーザー推移</CardTitle>
+              <CardDescription>直近6カ月</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isPaidTrendLoading ? (
+                <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              ) : paidUsersTrend.length > 0 ? (
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={paidUsersTrend}
+                      margin={{ left: 8, right: 8, top: 8, bottom: 8 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+                      <Tooltip />
+                      <Line
+                        type="monotone"
+                        dataKey="count"
+                        name="有料ユーザー"
+                        stroke="#22c55e"
+                        strokeWidth={2}
+                        dot={{ r: 2 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">データがありません</p>
+              )}
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>上位リファラー</CardTitle>
+              <CardDescription>直近のトラフィックソース</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {(analytics.topReferrers || []).map((r, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-sm">
+                    <span className="text-gray-700">{r.referrer}</span>
+                    <span className="font-medium">{r.count}</span>
                   </div>
-                ) : (
+                ))}
+                {(!analytics.topReferrers || analytics.topReferrers.length === 0) && (
                   <p className="text-sm text-gray-500">データがありません</p>
                 )}
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>最近のエラー（上位10件）</CardTitle>
-                <CardDescription>リンクから再現箇所へ（ErrorBoundary レポート）</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isErrorReportsLoading ? (
-                  <div className="h-24 bg-gray-200 rounded animate-pulse" />
-                ) : errorReports.length > 0 ? (
-                  <div className="space-y-2">
-                    {errorReports.map((e, i) => (
-                      <div
-                        key={`${e.createdAt}-${i}`}
-                        className="flex items-center justify-between text-sm"
-                      >
-                        <span className="truncate max-w-[60%]" title={e.message}>
-                          {e.message}
-                        </span>
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <span>{new Date(e.createdAt).toLocaleString()}</span>
-                          {e.email && <span>{e.email}</span>}
-                          {e.url ? (
-                            <a
-                              className="text-blue-600 underline"
-                              href={e.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              開く
-                            </a>
-                          ) : null}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">エラーはありません</p>
-                )}
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>7日リテンション（簡易）</CardTitle>
-                    <CardDescription>翌日継続率の目安</CardDescription>
-                  </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>トップページ</CardTitle>
+                  <CardDescription>よく見られているページ</CardDescription>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-7 gap-2 text-center">
-                  {(analytics.retentionCohort || []).slice(-7).map((c, i) => (
-                    <div key={i} className="p-2 border rounded">
-                      <p className="text-[10px] text-gray-500">{c.day?.slice(5)}</p>
-                      <p className="text-sm font-semibold">
-                        {c.retainedNextDay}/{c.newUsers}
-                      </p>
+                <div className="flex gap-2 items-center">
+                  {(['7d', '30d', '90d'] as const).map((w) => (
+                    <Button
+                      key={w}
+                      size="sm"
+                      variant={pageviewWindow === w ? 'default' : 'outline'}
+                      onClick={() => {
+                        setPageviewWindow(w);
+                        fetchTopPages(w);
+                      }}
+                    >
+                      {w}
+                    </Button>
+                  ))}
+                  <Input
+                    placeholder="pathを含む..."
+                    className="h-8 w-40"
+                    value={topPagesQuery}
+                    onChange={(e) => setTopPagesQuery(e.target.value)}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      (function exportTopPages() {
+                        try {
+                          const headers = ['page', 'views'];
+                          const rows = (topPages || []).filter(
+                            (p) => !topPagesQuery || (p.page || '').includes(topPagesQuery)
+                          );
+                          const lines = [headers.join(',')].concat(
+                            rows.map((r) => `${r.page},${r.views}`)
+                          );
+                          const blob = new Blob([lines.join('\n')], {
+                            type: 'text/csv;charset=utf-8;',
+                          });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = 'top_pages.csv';
+                          document.body.appendChild(a);
+                          a.click();
+                          a.remove();
+                          URL.revokeObjectURL(url);
+                        } catch (e) {
+                          console.error(e);
+                        }
+                      })()
+                    }
+                  >
+                    CSV
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isTopPagesLoading ? (
+                <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              ) : topPages.length > 0 ? (
+                <div className="space-y-2">
+                  {topPages.map((p, idx) => (
+                    <div key={p.page || idx} className="flex items-center justify-between text-sm">
+                      <a
+                        href={p.page}
+                        className="text-blue-600 underline truncate max-w-[70%]"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={p.page}
+                      >
+                        {p.page}
+                      </a>
+                      <span className="font-medium">{p.views}</span>
                     </div>
                   ))}
-                  {(!analytics.retentionCohort || analytics.retentionCohort.length === 0) && (
-                    <p className="text-sm text-gray-500">データがありません</p>
-                  )}
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        )
-      )}
+              ) : (
+                <p className="text-sm text-gray-500">データがありません</p>
+              )}
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>最近のエラー（上位10件）</CardTitle>
+              <CardDescription>リンクから再現箇所へ（ErrorBoundary レポート）</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isErrorReportsLoading ? (
+                <div className="h-24 bg-gray-200 rounded animate-pulse" />
+              ) : errorReports.length > 0 ? (
+                <div className="space-y-2">
+                  {errorReports.map((e, i) => (
+                    <div
+                      key={`${e.createdAt}-${i}`}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="truncate max-w-[60%]" title={e.message}>
+                        {e.message}
+                      </span>
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <span>{new Date(e.createdAt).toLocaleString()}</span>
+                        {e.email && <span>{e.email}</span>}
+                        {e.url ? (
+                          <a
+                            className="text-blue-600 underline"
+                            href={e.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            開く
+                          </a>
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">エラーはありません</p>
+              )}
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>7日リテンション（簡易）</CardTitle>
+                  <CardDescription>翌日継続率の目安</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-7 gap-2 text-center">
+                {(analytics.retentionCohort || []).slice(-7).map((c, i) => (
+                  <div key={i} className="p-2 border rounded">
+                    <p className="text-[10px] text-gray-500">{c.day?.slice(5)}</p>
+                    <p className="text-sm font-semibold">
+                      {c.retainedNextDay}/{c.newUsers}
+                    </p>
+                  </div>
+                ))}
+                {(!analytics.retentionCohort || analytics.retentionCohort.length === 0) && (
+                  <p className="text-sm text-gray-500">データがありません</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : null}
 
       {/* タブコンテンツ */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList
+          id="admin-tabs"
+          className="grid w-full grid-cols-7 sticky top-0 z-30 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b"
+        >
           <TabsTrigger value="overview">概要</TabsTrigger>
           <TabsTrigger value="users">ユーザー</TabsTrigger>
           <TabsTrigger value="actions">優先アクション</TabsTrigger>
@@ -1365,6 +1245,128 @@ const AdminDashboard: React.FC = () => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
+          {/* 概要メトリクス */}
+          {metrics && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">総ユーザー数</p>
+                      <p className="text-2xl font-bold">
+                        {(
+                          Number(analytics?.totalUsers || 0) || metrics.users.total
+                        ).toLocaleString()}
+                      </p>
+                      <p className="text-xs text-green-600">+{metrics.users.newToday} 今日</p>
+                    </div>
+                    <Users className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <Progress
+                    value={
+                      (Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
+                        ? (metrics.users.active /
+                            (Number(analytics?.totalUsers || 0) || metrics.users.total)) *
+                          100
+                        : 0
+                    }
+                    className="mt-2"
+                  />
+                  <p className="text-xs text-gray-600 mt-1">
+                    アクティブ率:{' '}
+                    {(Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
+                      ? Math.round(
+                          (metrics.users.active /
+                            (Number(analytics?.totalUsers || 0) || metrics.users.total)) *
+                            100
+                        )
+                      : 0}
+                    %
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">月次売上 (MRR)</p>
+                      <p className="text-2xl font-bold">¥{metrics.revenue.mrr.toLocaleString()}</p>
+                      <p className="text-xs text-green-600">
+                        +¥{Number(metrics.revenue.todayRevenue || 0).toLocaleString()} 今日
+                      </p>
+                    </div>
+                    <DollarSign className="w-8 h-8 text-green-600" />
+                  </div>
+                  <Progress value={metrics.revenue.conversionRate} className="mt-2" />
+                  <p className="text-xs text-gray-600 mt-1">
+                    コンバージョン率: {metrics.revenue.conversionRate}%
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">システム稼働率</p>
+                      <p className="text-2xl font-bold">{metrics.system.uptime}%</p>
+                      <p className="text-xs text-blue-600">
+                        {metrics.system.responseTime}ms 平均応答
+                      </p>
+                    </div>
+                    <Activity className="w-8 h-8 text-purple-600" />
+                  </div>
+                  <Progress value={metrics.system.uptime} className="mt-2" />
+                  <p className="text-xs text-gray-600 mt-1">
+                    エラー率: {metrics.system.errorRate}%
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">サポート</p>
+                      <p className="text-2xl font-bold">{metrics.support.openTickets}</p>
+                      <p className="text-xs text-orange-600">未対応チケット</p>
+                    </div>
+                    <Mail className="w-8 h-8 text-orange-600" />
+                  </div>
+                  <div className="mt-2 flex items-center">
+                    <span className="text-xs text-gray-600">
+                      平均応答: {metrics.support.avgResponseTime} | 満足度:{' '}
+                      {metrics.support.satisfaction}/5
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* ライブメトリクス */}
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">ライブアクティブ</p>
+                      <p className="text-2xl font-bold">
+                        {isLiveLoading ? '—' : (liveMetrics?.activeUsers ?? 0)}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        完了率: {isLiveLoading ? '—' : `${liveMetrics?.completionRate ?? 0}%`}
+                      </p>
+                    </div>
+                    <Activity className="w-8 h-8 text-rose-500" />
+                  </div>
+                  <div className="mt-2 text-xs text-gray-600">
+                    今日のタスク: {isLiveLoading ? '—' : (liveMetrics?.todaysTasks ?? 0)} /
+                    週次傾向: {isLiveLoading ? '—' : (liveMetrics?.weeklyTrend ?? 0)}%
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 今日のタスク */}
             <Card>
