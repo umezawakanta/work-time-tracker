@@ -13,5 +13,3 @@ export const ASSISTANT_TEMPLATES: AssistantTemplate[] = [
     text: 'タスクを緊急度×重要度で分類し、順序を提案してください。',
   },
 ];
-
-

@@ -3,5 +3,3 @@ describe('smoke', () => {
     expect(true).toBe(true);
   });
 });
-
-

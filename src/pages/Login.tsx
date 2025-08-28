@@ -453,7 +453,9 @@ export default function Login() {
               <Shield className="h-6 w-6 text-blue-600" />
               {t('auth.login.title', 'ログイン')}
             </CardTitle>
-            <CardDescription className="text-gray-600">{t('auth.login.subtitle', 'Work Time Trackerにアクセス')}</CardDescription>
+            <CardDescription className="text-gray-600">
+              {t('auth.login.subtitle', 'Work Time Trackerにアクセス')}
+            </CardDescription>
             {from !== '/' && (
               <Alert className="mt-4 border-blue-200 bg-blue-50">
                 <AlertCircle className="h-4 w-4 text-blue-600" />
@@ -624,7 +626,9 @@ export default function Login() {
 
               {/* セキュリティ情報 */}
               <div className="text-center">
-                <p className="text-xs text-gray-500">{t('auth.login.secureNotice', 'このサイトは SSL暗号化通信により保護されています')}</p>
+                <p className="text-xs text-gray-500">
+                  {t('auth.login.secureNotice', 'このサイトは SSL暗号化通信により保護されています')}
+                </p>
               </div>
             </CardFooter>
           </form>

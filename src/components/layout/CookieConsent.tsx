@@ -32,7 +32,9 @@ export const CookieConsent: React.FC = () => {
         <button
           className="px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-700"
           onClick={() => {
-            try { localStorage.setItem('cookie:consent', 'accepted'); } catch {}
+            try {
+              localStorage.setItem('cookie:consent', 'accepted');
+            } catch {}
             setVisible(false);
           }}
         >
@@ -44,5 +46,3 @@ export const CookieConsent: React.FC = () => {
 };
 
 export default CookieConsent;
-
-

@@ -20,5 +20,3 @@ export function trackAISuccess(_meta?: Record<string, unknown>): void {}
 export function trackAIExtractTasksClick(_meta?: Record<string, unknown>): void {}
 export function trackAIExtractTasksSuccess(_meta?: Record<string, unknown>): void {}
 export function trackAIExtractTasksError(_meta?: Record<string, unknown>): void {}
-
-

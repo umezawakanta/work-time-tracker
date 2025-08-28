@@ -63,13 +63,11 @@ const AdminUsersPage: React.FC = () => {
 
   useEffect(() => {
     void fetchPage();
-     
   }, [page, debouncedQuery]);
 
   useEffect(() => {
     // 検索語が変わったら1ページ目へ
     setPage(1);
-     
   }, [debouncedQuery]);
 
   const formatStatus = (u: PublicUser): string => {

@@ -33,5 +33,3 @@ describe('DevelopmentStatus page', () => {
     });
   });
 });
-
-

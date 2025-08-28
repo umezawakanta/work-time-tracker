@@ -24,5 +24,3 @@ export function setBucket(bucket: Bucket): void {
 export function isBucket(bucket: Bucket): boolean {
   return getBucket() === bucket;
 }
-
-

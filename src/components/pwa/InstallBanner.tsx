@@ -53,7 +53,6 @@ const InstallBanner: React.FC = () => {
 
     window.addEventListener('beforeinstallprompt', handler as EventListener);
     return () => window.removeEventListener('beforeinstallprompt', handler as EventListener);
-     
   }, [isDismissed]);
 
   if (!visible || !deferred) return null;
