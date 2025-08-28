@@ -21,16 +21,15 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.4.1
+      - name: Setup pnpm (corepack)
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.4.1 --activate
 
       - name: Configure pnpm store (writable)
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
           pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
-          echo "NPM_CONFIG_STORE_DIR=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
           echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
           pnpm store path
 
