@@ -30,8 +30,7 @@ export const AnimationShowcase: React.FC = () => {
   const [rating, setRating] = useState(3);
 
   const handleLoadingDemo = () => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 3000);
+    setLoading((v) => !v);
   };
 
   return (
@@ -87,19 +86,19 @@ export const AnimationShowcase: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm">マイクロインタラクション実装</span>
-                  <Badge variant="default">✅ 完了</Badge>
+                  <Badge variant="default">サンプル</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">アニメーションライブラリ統合</span>
-                  <Badge variant="default">✅ 完了</Badge>
+                  <Badge variant="default">サンプル</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">パフォーマンス最適化</span>
-                  <Badge variant="default">✅ 完了</Badge>
+                  <Badge variant="default">サンプル</Badge>
                 </div>
               </div>
               <div className="mt-3">
-                <div className="text-sm text-purple-700 mb-1">進捗: 100%</div>
+                <div className="text-sm text-purple-700 mb-1">進捗サンプル</div>
                 <div className="w-full bg-purple-200 rounded-full h-2">
                   <div
                     className="bg-purple-500 h-2 rounded-full animate-pulse"
