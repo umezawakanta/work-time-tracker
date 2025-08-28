@@ -26,7 +26,7 @@ interface SurveyResponseData {
   >;
 }
 
-// モックデータを定義
+// モックデータを定義（無効化）
 const getMockData = () => {
   const mockParties: PoliticalParty[] = [
     { _id: '1', name: '自由民主党', shortName: '自民', colorCode: '#3498db' },
@@ -131,10 +131,11 @@ const getMockData = () => {
     return chartData;
   };
 
+  // Disabled: return empty structures instead of demo data in production
   return {
-    parties: mockParties,
-    mediaList: mockMediaList,
-    chartData: generateMockChartData(),
+    parties: [],
+    mediaList: [],
+    chartData: {},
     missingData: {},
   };
 };
@@ -370,42 +371,22 @@ export const useSurveyData = () => {
           throw new Error('Invalid survey data structure');
         }
       } else {
-        // APIが利用できない場合はモックデータを使用
-        if (hasApiError) {
-          console.warn('API error, falling back to mock data for political trends');
-          const mockData = getMockData();
-
-          setParties(mockData.parties);
-          setMediaList(mockData.mediaList);
-          setChartData(mockData.chartData);
-          setMissingData(mockData.missingData);
-
-          toast.error('APIエラーのため、デモデータを表示しています');
-        } else {
-          console.warn('API unavailable, using mock data for political trends');
-          const mockData = getMockData();
-
-          setParties(mockData.parties);
-          setMediaList(mockData.mediaList);
-          setChartData(mockData.chartData);
-          setMissingData(mockData.missingData);
-
-          toast.success('デモデータを表示しています');
-        }
+        // APIが利用できない場合でもモックデータは使用しない
+        console.warn('Survey/Party API unavailable; skipping chart data rendering');
+        setParties([]);
+        setMediaList([]);
+        setChartData({});
+        setMissingData({});
       }
     } catch (error) {
       console.error('Error fetching data:', error);
 
-      // エラー時はモックデータにフォールバック
-      console.warn('Falling back to mock data due to error');
-      const mockData = getMockData();
-
-      setParties(mockData.parties);
-      setMediaList(mockData.mediaList);
-      setChartData(mockData.chartData);
-      setMissingData(mockData.missingData);
-
-      toast.error('APIエラーのため、デモデータを表示しています');
+      // エラー時でもモックデータにはフォールバックしない
+      console.warn('Survey data fetch error; skipping chart data rendering');
+      setParties([]);
+      setMediaList([]);
+      setChartData({});
+      setMissingData({});
     } finally {
       setIsLoading(false);
     }

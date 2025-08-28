@@ -70,7 +70,8 @@ export class WorkTimeAnalyticsService extends EventEmitter {
 
   constructor() {
     super();
-    this.initializeDemoData();
+    // Disabled demo data seeding for production behavior
+    // this.initializeDemoData();
   }
 
   /**

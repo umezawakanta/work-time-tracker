@@ -148,53 +148,7 @@ export class SupportMatchingService extends EventEmitter {
    * デフォルト特性の初期化
    */
   private initializeDefaultCharacteristics(): void {
-    const demoCharacteristics: UserCharacteristics = {
-      userId: 'demo-user',
-      diagnostics: ['adhd'],
-      adhdSubtype: 'combined',
-      comorbidities: ['anxiety'],
-      strengths: ['創造性', '直感力', '問題解決'],
-      challenges: ['時間管理', '優先順位設定', '集中維持'],
-      copingStrategies: ['タイマー使用', 'リスト作成', '環境調整'],
-      triggers: ['騒音', '時間プレッシャー', '複数タスク'],
-      communication: {
-        style: 'flexible',
-        preferences: ['text', 'voice'],
-        pacePreference: 'moderate',
-        detailLevel: 'moderate',
-      },
-      availability: {
-        timezone: 'Asia/Tokyo',
-        preferredHours: [
-          { day: 'weekday', start: '19:00', end: '22:00' },
-          { day: 'weekend', start: '10:00', end: '18:00' },
-        ],
-        responseTime: 'within_hour',
-        sessionLength: 'medium',
-      },
-      experience: {
-        yearsWithDiagnosis: 3,
-        supportExperience: 1,
-        mentorshipExperience: 0,
-        groupExperience: 2,
-        professionalSupport: true,
-      },
-      personality: {
-        introversion: 60,
-        empathy: 85,
-        patience: 70,
-        optimism: 75,
-        reliability: 80,
-      },
-      interests: ['技術', '読書', '音楽', 'ゲーム'],
-      culturalBackground: {
-        country: 'JP',
-        language: 'ja',
-        culturalFactors: ['集団主義', '間接的コミュニケーション'],
-      },
-    };
-
-    this.userCharacteristics.set('demo-user', demoCharacteristics);
+    // Removed demo-user seeding to prevent mock data usage in production
   }
 
   /**
