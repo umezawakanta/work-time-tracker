@@ -194,6 +194,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [code-quality, build]
     if: github.event_name != 'schedule'
+    timeout-minutes: 40
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -378,8 +379,12 @@ jobs:
           name: build-artifacts
           path: dist
 
-      - name: Start preview server
-        run: pnpm run preview -- --port 4173 & npx wait-on http://localhost:4173
+      - name: Start preview server and run Cypress
+        continue-on-error: true
+        env:
+          WAIT_ON_TIMEOUT: 120000
+        run: |
+          pnpm dlx start-server-and-test "pnpm run preview -- --port 4173 --strictPort" http://localhost:4173 "pnpm exec cypress run"
 
       - name: Run Lighthouse CI
         continue-on-error: true

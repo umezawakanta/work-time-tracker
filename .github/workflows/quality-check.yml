@@ -319,10 +319,11 @@ jobs:
         run: pnpm run build
 
       - name: 🌐 Start Application
+        continue-on-error: true
+        env:
+          WAIT_ON_TIMEOUT: 120000
         run: |
-          pnpm run preview &
-          sleep 10
-          curl --retry 5 --retry-delay 2 --retry-connrefused http://localhost:4173 || true
+          pnpm dlx start-server-and-test "pnpm run preview -- --port 4173 --strictPort" http://localhost:4173 "echo 'server up'"
 
       - name: 🧪 Run E2E and write JSON summary
         continue-on-error: true

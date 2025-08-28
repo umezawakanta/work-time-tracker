@@ -9,6 +9,7 @@ on:
 jobs:
   preview:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       pull-requests: write
@@ -48,9 +49,11 @@ jobs:
         run: pnpm exec cypress install || true
 
       - name: Run E2E JSON summary (non-blocking)
+        continue-on-error: true
+        env:
+          WAIT_ON_TIMEOUT: 120000
         run: |
-          pnpm run preview -- --port 4173 & npx wait-on http://localhost:4173
-          npx cypress run --reporter json --reporter-options "output=cypress/results/summary.json" || true
+          pnpm dlx start-server-and-test "pnpm run preview -- --port 4173 --strictPort" http://localhost:4173 "pnpm exec cypress run --reporter json --reporter-options 'output=cypress/results/summary.json'"
 
       - name: Generate Dev Status and publish coverage
         run: |
