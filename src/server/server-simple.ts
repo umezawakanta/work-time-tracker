@@ -5,6 +5,14 @@ import { connectDB } from './config/database.js';
 import { Book } from './models/Book.js';
 import { TodoModel } from './models/Todo.js';
 import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
+import {
+  login as loginController,
+  register as registerController,
+  checkAuth as checkAuthController,
+  getUserData as getUserDataController,
+  refreshToken as refreshTokenController,
+} from './controllers/authController.js';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
@@ -42,6 +50,33 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`📥 ${req.method} ${req.url} - ${new Date().toISOString()}`);
   next();
 });
+
+// JWT Authentication middleware
+interface AuthedRequest extends Request {
+  user?: { id: string };
+}
+
+const authenticate = (req: AuthedRequest, res: Response, next: NextFunction) => {
+  try {
+    const rawAuth = req.headers.authorization;
+    const authHeader = Array.isArray(rawAuth) ? rawAuth[0] : rawAuth || '';
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      res.status(401).json({ message: '認証されていません' });
+      return;
+    }
+    const token = authHeader.replace('Bearer ', '').trim();
+    const secret = process.env.JWT_SECRET || 'dev-fallback-jwt-secret-key-change-in-production';
+    const decoded = jwt.verify(token, secret) as { id?: string };
+    if (!decoded?.id) {
+      res.status(401).json({ message: 'Invalid token' });
+      return;
+    }
+    req.user = { id: String(decoded.id) };
+    next();
+  } catch (err) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+};
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -311,91 +346,19 @@ app.delete('/api/wbs/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// Authentication endpoints
-app.post('/api/auth/login', (req, res) => {
-  console.log('✅ POST /api/auth/login called');
-  console.log('📨 Login request headers:', req.headers);
-  console.log('📝 Login request body:', req.body);
-  console.log('🌐 Login request origin:', req.get('origin'));
-
-  const { email, password } = req.body;
-
-  // Simple mock authentication - always success for development
-  if (email && password) {
-    const mockUser = {
-      id: 'user_' + Date.now(),
-      email: email,
-      name: email.split('@')[0],
-      role: 'user',
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    };
-
-    const mockToken = 'mock_jwt_token_' + Date.now();
-
-    res.json({
-      success: true,
-      message: 'Login successful',
-      user: mockUser,
-      token: mockToken,
-      timestamp: new Date().toISOString(),
-    });
-  } else {
-    res.status(400).json({
-      success: false,
-      message: 'Email and password are required',
-      timestamp: new Date().toISOString(),
-    });
-  }
+// Authentication endpoints (real controllers)
+app.post('/api/auth/login', (req: Request, res: Response) => {
+  void loginController(req, res);
 });
 
-app.post('/api/auth/register', (req, res) => {
-  console.log('✅ POST /api/auth/register called');
-  console.log('📝 Register request body:', req.body);
-
-  const { email, password, name } = req.body;
-
-  if (email && password) {
-    const mockUser = {
-      id: 'user_' + Date.now(),
-      email: email,
-      name: name || email.split('@')[0],
-      role: 'user',
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    };
-
-    const mockToken = 'mock_jwt_token_' + Date.now();
-
-    res.status(201).json({
-      success: true,
-      message: 'Registration successful',
-      user: mockUser,
-      token: mockToken,
-      timestamp: new Date().toISOString(),
-    });
-  } else {
-    res.status(400).json({
-      success: false,
-      message: 'Email and password are required',
-      timestamp: new Date().toISOString(),
-    });
-  }
+app.post('/api/auth/register', (req: Request, res: Response) => {
+  void registerController(req, res);
 });
 
 // Magic link endpoint (dev mock)
 app.post('/api/auth/magic-link', (req, res) => {
   console.log('✅ POST /api/auth/magic-link called');
-  const { email } = req.body || {};
-  if (!email || typeof email !== 'string') {
-    return res.status(400).json({ success: false, message: 'Email is required' });
-  }
-  // In dev, just respond success and echo email
-  return res.json({
-    success: true,
-    message: 'マジックリンクを送信しました（デモ環境: 実送信なし）',
-    email: String(email).toLowerCase(),
-  });
+  return res.status(501).json({ success: false, message: 'Not implemented' });
 });
 
 app.post('/api/auth/logout', (req, res) => {
@@ -407,104 +370,23 @@ app.post('/api/auth/logout', (req, res) => {
   });
 });
 
-app.get('/api/auth/me', (req, res) => {
-  console.log('✅ GET /api/auth/me called');
-
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const emailHeader = req.get('x-user-email') || '';
-    const email = emailHeader || 'demo@example.com';
-    const isAdmin = email.toLowerCase() === 'kanta13jp@gmail.com';
-    const mockUser = {
-      id: 'user_123',
-      email,
-      name: (email.split('@')[0] || 'Demo').replace(/\W+/g, ' '),
-      role: isAdmin ? 'admin' : 'user',
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    };
-
-    res.json({
-      success: true,
-      user: mockUser,
-      timestamp: new Date().toISOString(),
-    });
-  } else {
-    res.status(401).json({
-      success: false,
-      message: 'Unauthorized - No valid token provided',
-      timestamp: new Date().toISOString(),
-    });
-  }
+app.get('/api/auth/me', authenticate, (req: Request, res: Response) => {
+  void getUserDataController(req as AuthedRequest, res);
 });
 
 // whoami endpoint for frontend compatibility
-app.get('/api/auth/whoami', (req, res) => {
-  console.log('✅ GET /api/auth/whoami called');
-
-  // In dev, return a simple successful user payload similar to Vercel function shape
-  const authHeader = req.headers.authorization || '';
-  const hasToken = authHeader.startsWith('Bearer ') || true; // allow in dev
-
-  if (hasToken) {
-    const emailHeader = req.get('x-user-email') || '';
-    const email = emailHeader || 'demo@example.com';
-    const isAdmin = email.toLowerCase() === 'kanta13jp@gmail.com';
-    const mockUser = {
-      userId: 'user_123',
-      email,
-      role: isAdmin ? 'admin' : 'user',
-      roles: isAdmin ? ['admin', 'user'] : ['user'],
-      isVerified: true,
-      isAdmin,
-    };
-
-    return res
-      .status(200)
-      .json({ success: true, user: mockUser, timestamp: new Date().toISOString() });
-  }
-
-  return res
-    .status(401)
-    .json({ success: false, status: 401, code: 'UNAUTHORIZED', message: 'Unauthorized' });
+app.get('/api/auth/whoami', authenticate, (req: Request, res: Response) => {
+  void checkAuthController(req as AuthedRequest, res);
 });
 
 // /api/auth/check エンドポイントを追加
-app.get('/api/auth/check', (req: Request, res: Response) => {
-  console.log('✅ GET /api/auth/check called');
-
-  // 開発環境用の固定レスポンス
-  const emailHeader = req.get('x-user-email') || '';
-  const email = emailHeader || 'demo@example.com';
-  res.json({
-    isAuthenticated: true,
-    user: {
-      id: 'demo-user-id',
-      displayName: 'Demo User',
-      email,
-    },
-  });
+app.get('/api/auth/check', authenticate, (req: Request, res: Response) => {
+  void checkAuthController(req as AuthedRequest, res);
 });
 
 // /api/auth/user エンドポイントを追加
-app.get('/api/auth/user', (req: Request, res: Response) => {
-  console.log('✅ GET /api/auth/user called');
-
-  // 開発環境用の固定レスポンス
-  const emailHeader = req.get('x-user-email') || '';
-  const email = emailHeader || 'demo@example.com';
-  const isAdmin = email.toLowerCase() === 'kanta13jp@gmail.com';
-  res.json({
-    user: {
-      id: 'demo-user-id',
-      _id: 'demo-user-id',
-      displayName: 'Demo User',
-      email,
-      isAdmin,
-      role: isAdmin ? 'admin' : 'user',
-      roles: isAdmin ? ['admin', 'user'] : ['user'],
-    },
-  });
+app.get('/api/auth/user', authenticate, (req: Request, res: Response) => {
+  void getUserDataController(req as AuthedRequest, res);
 });
 
 // MongoDB風の高度なメモリストレージ
