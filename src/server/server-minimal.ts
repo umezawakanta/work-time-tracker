@@ -56,30 +56,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Mock todos endpoint
-app.get('/api/todos', (req, res) => {
-  console.log('✅ GET /api/todos called');
-  res.json([
-    {
-      id: '1',
-      task: 'サンプルタスク1',
-      completed: false,
-      priority: 1,
-      isPrioritized: true,
-      type: 'todo',
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: '2',
-      task: 'サンプルタスク2',
-      completed: true,
-      priority: 2,
-      isPrioritized: false,
-      type: 'todo',
-      createdAt: new Date().toISOString(),
-    },
-  ]);
-});
+// Remove mock todos to avoid conflicts with real server
 
 // Mock POST todos endpoint
 app.post('/api/todos', (req, res) => {
@@ -107,95 +84,11 @@ app.post('/api/todos', (req, res) => {
   });
 });
 
-// Mock projects endpoint
-app.get('/api/projects', (req, res) => {
-  console.log('✅ GET /api/projects called');
-  res.json({
-    success: true,
-    data: [
-      {
-        id: 'project-1',
-        name: 'Work Time Tracker',
-        description: 'ADHD/ASD特化の勤怠管理システム',
-        status: 'active',
-        progress: 95,
-        startDate: '2025-01-01',
-        endDate: '2025-02-28',
-        technologies: ['React', 'TypeScript', 'Node.js', 'MongoDB'],
-      },
-    ],
-    message: 'Projects loaded successfully',
-  });
-});
+// Remove mock projects
 
-// Mock blog endpoint
-app.get('/api/blog', (req, res) => {
-  console.log('✅ GET /api/blog called');
-  res.json([
-    {
-      id: 'blog-1',
-      title: 'ADHD/ASD特化の生産性向上術',
-      excerpt: 'ADHD・ASDの特性を活かした効率的な作業方法について解説します。',
-      content: 'ADHDやASDの方々が直面する課題を理解し、それらを強みに変える方法を紹介します...',
-      author: 'Work Time Tracker Team',
-      publishedAt: '2025-01-30T10:00:00Z',
-      tags: ['ADHD', 'ASD', '生産性', 'ライフハック'],
-      category: 'productivity',
-      status: 'published',
-    },
-    {
-      id: 'blog-2',
-      title: 'タスク管理の基本とコツ',
-      excerpt: '効果的なタスク管理でより良い日常を送るためのテクニック集です。',
-      content:
-        'タスクを適切に分割し、優先順位をつけることで、ストレスを減らしながら生産性を向上させる方法...',
-      author: 'Work Time Tracker Team',
-      publishedAt: '2025-01-29T14:30:00Z',
-      tags: ['タスク管理', '時間管理', '効率化'],
-      category: 'task-management',
-      status: 'published',
-    },
-    {
-      id: 'blog-3',
-      title: 'リモートワークでの集中力維持法',
-      excerpt: '在宅勤務やリモートワークで集中力を保つための実践的なアドバイス。',
-      content: '自宅での作業環境を整え、集中力を持続させるための具体的な方法をご紹介します...',
-      author: 'Work Time Tracker Team',
-      publishedAt: '2025-01-28T09:15:00Z',
-      tags: ['リモートワーク', '集中力', '環境整備'],
-      category: 'remote-work',
-      status: 'published',
-    },
-  ]);
-});
+// Remove mock blog
 
-// Mock auth endpoints
-app.post('/api/auth/login', (req, res) => {
-  console.log('✅ POST /api/auth/login called');
-  res.json({
-    success: true,
-    token: 'demo-jwt-token',
-    user: {
-      id: 'user-1',
-      email: 'demo@example.com',
-      name: 'Demo User',
-      role: 'user',
-    },
-  });
-});
-
-app.get('/api/auth/check', (req, res) => {
-  console.log('✅ GET /api/auth/check called');
-  res.json({
-    success: true,
-    user: {
-      id: 'user-1',
-      email: 'demo@example.com',
-      name: 'Demo User',
-      role: 'user',
-    },
-  });
-});
+// Remove mock auth endpoints – use real auth from server-simple
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

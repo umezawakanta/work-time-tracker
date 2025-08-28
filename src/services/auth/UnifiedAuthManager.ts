@@ -806,34 +806,6 @@ class UnifiedAuthManager extends EventEmitter {
   }
 
   /**
-   * 🎭 モックユーザーの作成
-   */
-  private createMockUser(provider: AuthProvider): UnifiedUser {
-    return {
-      uid: `${provider}_user_${Date.now()}`,
-      id: `${provider}_user_${Date.now()}`,
-      email: `demo@${provider}.example.com`,
-      name: `Demo User (${provider})`,
-      displayName: `Demo User (${provider})`,
-      avatar: undefined,
-      role: 'user',
-      provider,
-      isVerified: true,
-      lastLoginAt: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      preferences: {
-        theme: 'auto',
-        language: 'ja',
-        notifications: true,
-      },
-      subscription: {
-        plan: 'free',
-        status: 'active',
-      },
-    };
-  }
-
-  /**
    * 🆔 セッションIDの生成
    */
   private generateSessionId(): string {
