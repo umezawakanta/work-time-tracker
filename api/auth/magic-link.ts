@@ -30,31 +30,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
 
   try {
     const body: MagicLinkRequest = (req.body || {}) as MagicLinkRequest;
-    const emailRaw = String(body.email || '').trim().toLowerCase();
+    const emailRaw = String(body.email || '')
+      .trim()
+      .toLowerCase();
 
     if (!emailRaw) {
       res.status(400).json({ success: false as any, message: 'Email is required' } as any);
       return;
     }
     if (!isValidEmail(emailRaw)) {
-      res
-        .status(400)
-        .json({ success: false as any, message: 'Invalid email format' } as any);
+      res.status(400).json({ success: false as any, message: 'Invalid email format' } as any);
       return;
     }
 
-    // In a real implementation, create a one-time token and send email with login URL.
-    // For demo/preview environments, we just return success.
-    const response: MagicLinkResponse = {
-      success: true,
-      message: 'マジックリンクを送信しました（デモ環境: 実際の送信は行われません）',
-      email: emailRaw,
-    };
-    res.status(200).json(response as any);
+    // 現時点では実装されていないため、モック返却は行わず未実装を返す
+    res
+      .status(501)
+      .json({ success: false as any, message: 'Magic link login is not enabled' } as any);
   } catch (error) {
     console.error('[MAGIC-LINK] Error:', error);
     res.status(500).json({ success: false as any, message: 'Internal Server Error' } as any);
   }
 }
-
-
