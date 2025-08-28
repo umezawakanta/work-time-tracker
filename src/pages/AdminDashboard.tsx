@@ -623,7 +623,7 @@ const AdminDashboard: React.FC = () => {
 
       {/* 利用状況サマリ（analyticsタブに集約） */}
       {activeTab === 'analytics' && isAnalyticsLoading && !analytics ? (
-        <div className="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
               <CardContent className="pt-6">
@@ -641,7 +641,7 @@ const AdminDashboard: React.FC = () => {
           ))}
         </div>
       ) : activeTab === 'analytics' && analytics ? (
-        <div className="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
