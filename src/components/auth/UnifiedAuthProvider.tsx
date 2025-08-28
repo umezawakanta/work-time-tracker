@@ -14,9 +14,7 @@ import { unifiedSecurityMiddleware } from '@/services/security/UnifiedSecurityMi
 
 // 統一認証コンテキストの型定義
 export interface UnifiedAuthContextType extends UseUnifiedAuthReturn {
-  // 追加のヘルパーメソッド
-  loginWithDemo: () => Promise<void>;
-  loginAnonymous: () => Promise<void>;
+  // 追加のヘルパーメソッド（デモ/匿名ログインは削除）
   switchProvider: (provider: string) => Promise<void>;
   getSecurityStatus: () => string;
   isSecure: boolean;
@@ -94,46 +92,7 @@ export const UnifiedAuthProvider: React.FC<UnifiedAuthProviderProps> = ({
     },
   });
 
-  /**
-   * 🎭 デモログイン
-   */
-  const loginWithDemo = async (): Promise<void> => {
-    try {
-      const result = await authHook.login({
-        email: 'demo@example.com',
-        rememberMe: false,
-      });
-
-      if (result.success) {
-        toast.success('デモアカウントでログインしました');
-        navigate(fallbackRedirect);
-      } else {
-        toast.error(result.error || 'デモログインに失敗しました');
-      }
-    } catch (error) {
-      await authHook.handleError(error, 'demo_login');
-    }
-  };
-
-  /**
-   * 👻 匿名ログイン
-   */
-  const loginAnonymous = async (): Promise<void> => {
-    try {
-      const result = await authHook.login({
-        rememberMe: false,
-      });
-
-      if (result.success) {
-        toast.success('匿名ユーザーとしてログインしました');
-        navigate(fallbackRedirect);
-      } else {
-        toast.error(result.error || '匿名ログインに失敗しました');
-      }
-    } catch (error) {
-      await authHook.handleError(error, 'anonymous_login');
-    }
-  };
+  // デモ/匿名ログインは提供しない
 
   /**
    * 🔄 プロバイダー切り替え
@@ -326,8 +285,6 @@ export const UnifiedAuthProvider: React.FC<UnifiedAuthProviderProps> = ({
   // コンテキスト値の構築
   const contextValue: UnifiedAuthContextType = {
     ...authHook,
-    loginWithDemo,
-    loginAnonymous,
     switchProvider,
     getSecurityStatus,
     isSecure: isSecure(),
@@ -454,46 +411,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 /**
  * 🎭 デモ用ログインボタン
  */
-export const DemoLoginButton: React.FC<{ className?: string }> = ({ className }) => {
-  const { loginWithDemo, isLoading } = useUnifiedAuthContext();
-
-  return (
-    <button
-      onClick={loginWithDemo}
-      disabled={isLoading}
-      className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
-    >
-      {isLoading ? (
-        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-      ) : (
-        <span className="mr-2">🎭</span>
-      )}
-      デモログイン
-    </button>
-  );
-};
+export const DemoLoginButton: React.FC<{ className?: string }> = () => null;
 
 /**
  * 👻 匿名ログインボタン
  */
-export const AnonymousLoginButton: React.FC<{ className?: string }> = ({ className }) => {
-  const { loginAnonymous, isLoading } = useUnifiedAuthContext();
-
-  return (
-    <button
-      onClick={loginAnonymous}
-      disabled={isLoading}
-      className={`inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
-    >
-      {isLoading ? (
-        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400 mr-2"></div>
-      ) : (
-        <span className="mr-2">👻</span>
-      )}
-      匿名でアクセス
-    </button>
-  );
-};
+export const AnonymousLoginButton: React.FC<{ className?: string }> = () => null;
 
 /**
  * 🛡️ セキュリティステータス表示

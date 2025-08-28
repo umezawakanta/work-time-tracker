@@ -1050,7 +1050,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                       {user?.name || 'ゲストユーザー'}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                      {user?.email || 'demo@example.com'}
+                      {user?.email || ''}
                     </p>
                   </div>
                 </div>
