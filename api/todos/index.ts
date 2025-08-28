@@ -74,13 +74,26 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
 
   try {
     const requestId = (req.headers['x-request-id'] as string) || undefined;
-    const allowGuestTodos = process.env.ALLOW_GUEST_TODOS === 'true';
+    const vercelEnv = process.env.VERCEL_ENV || process.env.NODE_ENV;
+    const allowGuestTodos =
+      process.env.ALLOW_GUEST_TODOS === 'true' || (vercelEnv && vercelEnv !== 'production');
 
     // Attach user if Authorization header is present (optional auth)
     const hasAuthHeader = typeof req.headers.authorization === 'string';
     if (hasAuthHeader) {
       await new Promise<void>((resolve) => authMiddleware(req, res, resolve));
       if (res.headersSent) return; // authMiddleware already responded (e.g., invalid token)
+    }
+
+    // If still unauthenticated, try header-based user or allow guest in preview
+    if (!req.user) {
+      const headerUser = String((req.headers['x-user-id'] as string) || '').trim();
+      if (headerUser) {
+        (req as any).user = { userId: headerUser };
+      } else if (allowGuestTodos) {
+        const clientId = (req.headers['x-client-id'] as string) || requestId || 'anon';
+        (req as any).user = { userId: `guest_${clientId}` };
+      }
     }
 
     console.log('📥 Todos request', {
@@ -176,9 +189,15 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
       });
     } else if (req.method === 'POST') {
       if (!req.user) {
-        return res
-          .status(401)
-          .json({ success: false, status: 401, code: 'UNAUTHORIZED', message: '認証が必要です' });
+        // As a final fallback, allow guest creation when permitted
+        if (allowGuestTodos) {
+          const clientId = (req.headers['x-client-id'] as string) || requestId || 'anon';
+          (req as any).user = { userId: `guest_${clientId}` };
+        } else {
+          return res
+            .status(401)
+            .json({ success: false, status: 401, code: 'UNAUTHORIZED', message: '認証が必要です' });
+        }
       }
       // Read and normalize request body
       const rawBody = await readJson(req);
