@@ -206,7 +206,7 @@ interface AdaptiveUIProviderProps {
 
 export const AdaptiveUIProvider: React.FC<AdaptiveUIProviderProps> = ({
   children,
-  userId = 'demo-user',
+  userId,
   autoStart = true,
 }) => {
   const [adaptationState, setAdaptationState] = useState<AdaptationState>({
@@ -232,7 +232,7 @@ export const AdaptiveUIProvider: React.FC<AdaptiveUIProviderProps> = ({
 
   // 認知負荷監視の初期化
   useEffect(() => {
-    if (autoStart) {
+    if (autoStart && userId) {
       realtimeCognitiveLoadMonitor.startMonitoring(userId);
     }
 
