@@ -1569,6 +1569,100 @@ app.get('/api/analytics/live-metrics', (req, res) => {
   }
 });
 
+// ===== Additional analytics endpoints for AdminDashboard (dev mock) =====
+// Daily pageviews series
+app.get('/api/analytics/pageviews/daily', (req, res) => {
+  try {
+    const daysParam = Number(req.query.days || 7);
+    const days = Math.max(1, Math.min(90, Number.isFinite(daysParam) ? daysParam : 7));
+    const today = new Date();
+    const series: Array<{ day: string; views: number }> = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const key = __getDateKey(d);
+      const views = __pageviewBuckets[key] || 0;
+      series.push({ day: key, views });
+    }
+    return res.json({ success: true, data: { days, series } });
+  } catch (e) {
+    console.error('❌ Error in /api/analytics/pageviews/daily:', e);
+    return res.json({ success: true, data: { days: 7, series: [] }, degraded: true });
+  }
+});
+
+// Active users in the last N hours (simplified mock)
+app.get('/api/analytics/users/active', (req, res) => {
+  try {
+    const hoursParam = Number(req.query.hours || 24);
+    const hours = Math.max(1, Math.min(72, Number.isFinite(hoursParam) ? hoursParam : 24));
+    // Rough heuristic based on recent pageviews
+    const now = new Date();
+    let pv = 0;
+    for (let i = 0; i < Math.ceil(hours / 24); i++) {
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
+      pv += __pageviewBuckets[__getDateKey(d)] || 0;
+    }
+    const activeUsers = Math.max(
+      0,
+      Math.min(200, Math.round(pv / 3) || Math.floor(Math.random() * 40) + 10)
+    );
+    return res.json({ success: true, data: { hours, activeUsers } });
+  } catch (e) {
+    console.error('❌ Error in /api/analytics/users/active:', e);
+    return res.json({ success: true, data: { hours: 24, activeUsers: 0 }, degraded: true });
+  }
+});
+
+// 30d retention cohorts (simplified mock)
+app.get('/api/analytics/retention/30d', (req, res) => {
+  try {
+    const days = 30;
+    const today = new Date();
+    const cohorts: Array<{ date: string; size: number; days: number[] }> = [];
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - (i * 2 + 1));
+      const date = d.toISOString().slice(0, 10);
+      const size = 10 + (i % 7) * 3;
+      const arr: number[] = [];
+      for (let j = 0; j < days; j++) {
+        // simple decay
+        arr.push(Math.max(0, Math.round(size * Math.pow(0.92, j))));
+      }
+      cohorts.push({ date, size, days: arr });
+    }
+    cohorts.reverse();
+    return res.json({ success: true, data: { cohorts } });
+  } catch (e) {
+    console.error('❌ Error in /api/analytics/retention/30d:', e);
+    return res.json({ success: true, data: { cohorts: [] }, degraded: true });
+  }
+});
+
+// Recent error reports (mocked list)
+app.get('/api/admin/error-reports', (req, res) => {
+  try {
+    const limitParam = Number(req.query.limit || 10);
+    const limit = Math.max(1, Math.min(50, Number.isFinite(limitParam) ? limitParam : 10));
+    const list = Array.from({ length: limit }, (_, i) => ({
+      id: `err_${Date.now()}_${i}`,
+      createdAt: new Date(Date.now() - i * 3600_000).toISOString(),
+      message:
+        i % 3 === 0
+          ? 'NetworkError when attempting to fetch resource.'
+          : 'Unhandled exception in component',
+      url: i % 2 === 0 ? '/admin' : '/dev-status',
+      email: i % 4 === 0 ? 'user@example.com' : undefined,
+    }));
+    return res.json({ success: true, data: list });
+  } catch (e) {
+    console.error('❌ Error in /api/admin/error-reports:', e);
+    return res.json({ success: true, data: [], degraded: true });
+  }
+});
+
 // Admin analytics summary (mock)
 app.get('/api/admin/analytics/summary', (req, res) => {
   console.log('📊 GET /api/admin/analytics/summary called');
