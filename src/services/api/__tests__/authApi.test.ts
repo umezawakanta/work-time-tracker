@@ -66,9 +66,10 @@ describe('authApi', () => {
   };
 
   const mockRegisterData = {
-    name: 'New User',
+    displayName: 'New User',
     email: 'newuser@example.com',
     password: 'password123',
+    acceptTerms: true,
   };
 
   beforeEach(() => {
