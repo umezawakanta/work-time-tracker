@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AdaptiveCard } from '@/components/ui/AdaptiveCard';
 import { useRealtimeAdaptation } from '@/components/realtime/RealtimeAdaptationProvider';
+import { useAuth } from '@/hooks/useAuth';
 import CognitiveAICoachingService from '@/services/ai/CognitiveAICoachingService';
 import {
   Brain,
@@ -107,6 +108,8 @@ interface BehaviorPattern {
 
 export const CognitiveAICoachingDashboard: React.FC = () => {
   const { state: adaptationState } = useRealtimeAdaptation();
+  const { isAuthenticated, user } = useAuth();
+  const currentUserId = user?.id ?? user?._id ?? user?.uid ?? user?.email ?? null;
 
   // State Management
   const [aiService] = useState(() => new CognitiveAICoachingService());
@@ -120,13 +123,13 @@ export const CognitiveAICoachingDashboard: React.FC = () => {
 
   // AIサービスからのデータ取得
   const loadAIData = useCallback(async () => {
-    const userId = 'demo-user'; // 実際の実装ではauth contextから取得
+    if (!isAuthenticated || !currentUserId) return;
 
     try {
-      const recs = aiService.getActiveRecommendations(userId);
-      const ins = aiService.getCoachingInsights(userId);
-      const pats = aiService.getBehaviorPatterns(userId);
-      const stats = aiService.getModelStatistics(userId);
+      const recs = aiService.getActiveRecommendations(currentUserId);
+      const ins = aiService.getCoachingInsights(currentUserId);
+      const pats = aiService.getBehaviorPatterns(currentUserId);
+      const stats = aiService.getModelStatistics(currentUserId);
 
       setRecommendations(recs);
       setInsights(ins);
@@ -135,14 +138,14 @@ export const CognitiveAICoachingDashboard: React.FC = () => {
     } catch (error) {
       console.error('AI data loading error:', error);
     }
-  }, [aiService]);
+  }, [aiService, isAuthenticated, currentUserId]);
 
   // 認知データの送信（リアルタイム適応から）
   const sendCognitiveData = useCallback(async () => {
-    if (!adaptationState.cognitiveState) return;
+    if (!isAuthenticated || !currentUserId || !adaptationState.cognitiveState) return;
 
     const cognitiveData = {
-      userId: 'demo-user',
+      userId: currentUserId,
       timestamp: new Date(),
       cognitiveState: {
         attention: adaptationState.cognitiveState.attention,
@@ -183,7 +186,7 @@ export const CognitiveAICoachingDashboard: React.FC = () => {
     } catch (error) {
       console.error('Cognitive data recording error:', error);
     }
-  }, [adaptationState.cognitiveState, aiService]);
+  }, [adaptationState.cognitiveState, aiService, isAuthenticated, currentUserId]);
 
   // Initial data load
   useEffect(() => {
@@ -267,7 +270,8 @@ export const CognitiveAICoachingDashboard: React.FC = () => {
     recommendationId: string,
     feedback: 'positive' | 'negative'
   ) => {
-    aiService.provideFeedback('demo-user', recommendationId, feedback);
+    if (!currentUserId) return;
+    aiService.provideFeedback(currentUserId, recommendationId, feedback);
     loadAIData();
   };
 
