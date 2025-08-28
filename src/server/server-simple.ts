@@ -1752,52 +1752,86 @@ app.get('/api/admin/error-reports', async (req, res) => {
   }
 });
 
-// Admin analytics summary (mock)
-app.get('/api/admin/analytics/summary', (req, res) => {
-  console.log('📊 GET /api/admin/analytics/summary called');
-  const range = String(req.query.range || '7d');
-  const days = range === '24h' ? 1 : range === '7d' ? 7 : 30;
-  const dauSeries = Array.from({ length: days }, (_, i) => ({
-    day: `D${i + 1}`,
-    users: 10 + ((i * 7) % 13),
-  }));
-  res.json({
-    success: true,
-    data: {
-      totalUsers: 1247,
-      activeUsers: 89,
-      newUsers: 23,
-      returningUsers: 66,
-      averageSessionDuration: 847,
-      pageViewsTotal: 3421,
-      featureUsage: { ai_ok: 17, assessment_saved: 9, learning_saved: 12 },
-      topReferrers: [
-        { referrer: 'direct', count: 120 },
-        { referrer: 'google.com', count: 75 },
-        { referrer: 'twitter.com', count: 21 },
-        { referrer: 'github.com', count: 11 },
-        { referrer: 'news.ycombinator.com', count: 7 },
-      ],
-      compare: { today: 19, yesterday: 14, diff: 5, pct: 36 },
-      retentionCohort: Array.from({ length: days }, (_, i) => ({
-        day: `2025-08-${(i + 1).toString().padStart(2, '0')}`,
-        newUsers: 5 + (i % 3),
-        retainedNextDay: 2 + (i % 2),
-      })),
-      topErrors: [
-        { message: 'Cannot set properties of undefined (setting "Children")', count: 3, url: '/' },
-        { message: 'Route GET /api/admin/metrics not found', count: 2, url: '/admin' },
-        {
-          message: 'NetworkError when attempting to fetch resource.',
-          count: 1,
-          url: '/ai-assistant',
+// Admin analytics summary (DB-backed)
+app.get('/api/admin/analytics/summary', async (req, res) => {
+  try {
+    console.log('📊 GET /api/admin/analytics/summary called');
+    const range = String(req.query.range || '7d');
+    const now = new Date();
+    const from = new Date(now);
+    if (range === '24h') from.setDate(now.getDate() - 1);
+    else if (range === '7d') from.setDate(now.getDate() - 7);
+    else from.setDate(now.getDate() - 30);
+
+    const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
+
+    const match = { timestamp: { $gte: from, $lte: now } } as any;
+
+    const totalUsers = await AnalyticsEvent.distinct('userId')
+      .then((a: unknown[]) => a.filter(Boolean).length)
+      .catch(() => 0);
+    const activeUsers = await AnalyticsEvent.distinct('userId', match)
+      .then((a: unknown[]) => a.filter(Boolean).length)
+      .catch(() => 0);
+
+    const [newUsers, pageViewsTotal] = await Promise.all([
+      AnalyticsEvent.countDocuments({ ...match, event: 'register' }).catch(() => 0),
+      AnalyticsEvent.countDocuments({ ...match, event: 'page_view' }).catch(() => 0),
+    ]);
+
+    const sessionAgg = await AnalyticsEvent.aggregate([
+      { $match: { ...match, event: 'page_view_end' } },
+      { $group: { _id: null, avg: { $avg: { $ifNull: ['$data.timeSpent', 0] } } } },
+    ]).catch(() => [] as Array<{ avg: number }>);
+    const averageSessionDuration = Math.round((sessionAgg?.[0] as any)?.avg || 0);
+
+    const topReferrers = await AnalyticsEvent.aggregate([
+      { $match: { ...match, event: 'page_view', referrer: { $ne: null } } },
+      { $group: { _id: '$referrer', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 },
+      { $project: { referrer: '$_id', count: 1, _id: 0 } },
+    ]).catch(() => []);
+
+    // Simple day-over-day compare by event count
+    const todayKey = now.toISOString().slice(0, 10);
+    const y = new Date(now);
+    y.setDate(now.getDate() - 1);
+    const yKey = y.toISOString().slice(0, 10);
+    const dailyCounts = await AnalyticsEvent.aggregate([
+      { $match: { event: 'page_view', timestamp: { $gte: new Date(yKey), $lte: now } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } },
+          c: { $sum: 1 },
         },
-      ],
-      dauSeries,
-      generatedAt: new Date().toISOString(),
-      range,
-    },
-  });
+      },
+    ]).catch(() => [] as Array<{ _id: string; c: number }>);
+    const map = new Map(dailyCounts.map((d: any) => [String(d._id), Number(d.c || 0)]));
+    const today = map.get(todayKey) || 0;
+    const yesterday = map.get(yKey) || 0;
+    const diff = today - yesterday;
+    const pct = yesterday > 0 ? Math.round((diff / yesterday) * 100) : 0;
+
+    return res.json({
+      success: true,
+      data: {
+        totalUsers,
+        activeUsers,
+        newUsers,
+        returningUsers: Math.max(activeUsers - newUsers, 0),
+        averageSessionDuration,
+        pageViewsTotal,
+        topReferrers,
+        compare: { today, yesterday, diff, pct },
+        generatedAt: new Date().toISOString(),
+        range,
+      },
+    });
+  } catch (e) {
+    console.error('❌ Error in /api/admin/analytics/summary:', e);
+    return res.status(200).json({ success: true, data: {}, degraded: true });
+  }
 });
 
 // =============================
