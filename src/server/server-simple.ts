@@ -2480,63 +2480,21 @@ app.get('/api/admin/metrics/assessments/summary', (req, res) => {
   }
 });
 
-app.get('/api/admin/metrics/learning/summary', (req, res) => {
-  try {
-    const now = new Date();
-    return res.json({
-      ok: true,
-      data: { progressSaved30d: 34, uniqueLearners30d: 19, generatedAt: now.toISOString() },
-    });
-  } catch (e) {
-    return res.json({
-      ok: true,
-      data: { progressSaved30d: 0, uniqueLearners30d: 0 },
-      degraded: true,
-    });
-  }
+app.get('/api/admin/metrics/learning/summary', (_req, res) => {
+  // Not implemented with real analytics yet. Return empty until DB-backed implementation lands.
+  return res.json({ ok: true, data: { progressSaved30d: 0, uniqueLearners30d: 0 } });
 });
 
-// =============================
-// User endpoints (Mock)
-// =============================
-app.post('/api/user/assessments/iq', (req, res) => {
-  console.log('✅ POST /api/user/assessments/iq (mock) called');
-  const { score, total, scaledIQ, percentile } = req.body || {};
-  if (
-    typeof score !== 'number' ||
-    typeof total !== 'number' ||
-    typeof scaledIQ !== 'number' ||
-    typeof percentile !== 'number'
-  ) {
-    return res.status(400).json({ success: false, message: 'Invalid body' });
-  }
-  return res.json({ success: true, data: { saved: true } });
-});
-
-app.post('/api/user/assessments/mbti', (req, res) => {
-  console.log('✅ POST /api/user/assessments/mbti (mock) called');
-  const { type, scores } = req.body || {};
-  const validType = typeof type === 'string' && /^[E|I][S|N][T|F][J|P]$/.test(type);
-  const validScores =
-    scores &&
-    typeof scores.EI === 'number' &&
-    typeof scores.SN === 'number' &&
-    typeof scores.TF === 'number' &&
-    typeof scores.JP === 'number';
-  if (!validType || !validScores) {
-    return res.status(400).json({ success: false, message: 'Invalid body' });
-  }
-  return res.json({ success: true, data: { saved: true } });
-});
-
-app.post('/api/user/learning/progress', (req, res) => {
-  console.log('✅ POST /api/user/learning/progress (mock) called');
-  const { courseId, progress } = req.body || {};
-  if (typeof courseId !== 'string' || typeof progress !== 'number') {
-    return res.status(400).json({ success: false, message: 'Invalid body' });
-  }
-  return res.json({ success: true, data: { saved: true, courseId, progress } });
-});
+// Assessment/Learning endpoints are not yet implemented. Disable mocks explicitly.
+app.post('/api/user/assessments/iq', (_req, res) =>
+  res.status(501).json({ success: false, message: 'Not implemented' })
+);
+app.post('/api/user/assessments/mbti', (_req, res) =>
+  res.status(501).json({ success: false, message: 'Not implemented' })
+);
+app.post('/api/user/learning/progress', (_req, res) =>
+  res.status(501).json({ success: false, message: 'Not implemented' })
+);
 
 // 404 Error handler - must be after all known routes; allow future mocks via pattern
 app.use((req: Request, res: Response): void => {
