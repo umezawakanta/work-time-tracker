@@ -207,7 +207,10 @@ class ServerSideHardcodedAnalyzer {
   /**
    * 分析結果をコンパイル
    */
-  private compileAnalysisResult(issues: HardcodedIssue[]): AnalysisResult {
+  private compileAnalysisResult(
+    issues: HardcodedIssue[],
+    totalFilesAnalyzed: number
+  ): AnalysisResult {
     const criticalIssues = issues.filter((i) => i.severity === 'critical').length;
     const highPriorityIssues = issues.filter((i) => i.severity === 'high').length;
 
@@ -236,8 +239,8 @@ class ServerSideHardcodedAnalyzer {
       {} as Record<string, HardcodedIssue[]>
     );
 
-    // 全体スコア計算
-    const maxPossibleIssues = 1000;
+    // 全体スコア計算（プロジェクト規模に応じてスケール）
+    const maxPossibleIssues = Math.max(1, totalFilesAnalyzed * 10);
     const weightedIssues =
       criticalIssues * 4 +
       highPriorityIssues * 2 +
@@ -364,9 +367,9 @@ class ServerSideHardcodedAnalyzer {
       const files = await this.getAllSourceFiles();
       console.log(`📄 ${files.length}個のファイルを検出しました`);
 
-      // ファイル数が多い場合は最初の30件に制限
-      const filesToAnalyze = files.slice(0, 30);
-      console.log(`📊 分析対象: ${filesToAnalyze.length}/${files.length} ファイル`);
+      // すべての対象ファイルを分析（サンプリングは行わない）
+      const filesToAnalyze = files;
+      console.log(`📊 分析対象: ${filesToAnalyze.length}/${files.length} ファイル（全件）`);
 
       for (const file of filesToAnalyze) {
         try {
@@ -379,7 +382,7 @@ class ServerSideHardcodedAnalyzer {
       }
 
       console.log(`📊 分析結果をコンパイル中... (${issues.length}件の問題)`);
-      const result = this.compileAnalysisResult(issues);
+      const result = this.compileAnalysisResult(issues, filesToAnalyze.length);
 
       console.log(`✅ 固定データ分析完了: ${result.totalIssues}件の問題を検出`);
       return result;
