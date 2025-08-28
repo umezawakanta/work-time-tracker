@@ -274,25 +274,16 @@ describe('authApi', () => {
   });
 
   describe('checkAuth', () => {
-    it('should return true in mock mode', async () => {
-      // Enable mock mode by setting window property directly
-      (global.window as any).__VITE_USE_MOCK_DATA__ = 'true';
-
+    it('should return true when server reports authenticated', async () => {
+      mockedApi.get.mockResolvedValueOnce({ data: { isAuthenticated: true }, status: 200 } as any);
       const result = await authApi.checkAuth();
-
       expect(result).toBe(true);
-
-      // Clean up
-      delete (global.window as any).__VITE_USE_MOCK_DATA__;
     });
 
-    it('should return true when window.__VITE_USE_MOCK_DATA__ is set', async () => {
-      (window as any).__VITE_USE_MOCK_DATA__ = 'true';
-
+    it('should return false when server reports unauthenticated', async () => {
+      mockedApi.get.mockResolvedValueOnce({ data: { isAuthenticated: false }, status: 200 } as any);
       const result = await authApi.checkAuth();
-
-      expect(result).toBe(true);
-      delete (window as any).__VITE_USE_MOCK_DATA__;
+      expect(result).toBe(false);
     });
 
     it('should return false when not authenticated locally', async () => {
@@ -428,22 +419,7 @@ describe('authApi', () => {
   });
 
   describe('fetchUserData', () => {
-    it.skip('should return mock data in mock mode', async () => {
-      (window as any).__VITE_USE_MOCK_DATA__ = 'true';
-
-      const result = await authApi.fetchUserData();
-
-      expect(result).toEqual({
-        id: 'demo-user',
-        _id: 'demo-user-id',
-        name: 'デモユーザー',
-        username: 'demouser',
-        email: 'demo@example.com',
-        isAdmin: true,
-        avatar: '',
-      });
-      delete (window as any).__VITE_USE_MOCK_DATA__;
-    });
+    // mock mode path removed
 
     it('should fetch user data from server', async () => {
       const result = await authApi.fetchUserData();
