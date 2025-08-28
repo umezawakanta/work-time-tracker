@@ -5,6 +5,8 @@ import {
   NotificationType,
 } from '../../types/notification';
 import emailService from './emailService';
+import { connectDB } from '../config/database';
+import { TodoModel } from '../models/Todo';
 import cron, { ScheduledTask } from 'node-cron';
 
 /**
@@ -38,29 +40,15 @@ class NotificationService {
    * 全ユーザーの設定を読み込み
    */
   private async loadAllUserSettings() {
-    // TODO: データベースから設定を読み込む
-    // 現在はモックデータを使用
-    const mockSettings: NotificationSettings = {
-      userId: 'demo-user',
-      enabled: true,
-      emailAddress: 'demo@example.com',
-      notifyOnTaskAdd: true,
-      notifyOnTaskComplete: false,
-      notifyOnDeadlineApproaching: true,
-      deadlineWarningHours: 24,
-      dailyDigest: true,
-      dailyDigestTime: '09:00',
-      weeklyReport: false,
-      weeklyReportDay: 1,
-      monthlyReport: false,
-      monthlyReportDay: 1,
-      minPriorityForNotification: 3,
-      notificationCategories: [],
-      language: 'ja',
-      timezone: 'Asia/Tokyo',
-    };
-
-    this.userSettings.set('demo-user', mockSettings);
+    // 将来的に: DBから全ユーザー分の通知設定をロード
+    try {
+      await connectDB();
+      // NOTE: 通知設定のサーバーモデルとの差異があるため、初期ロードは未実装のままとします
+      // 必要になった時点でマッピング実装を追加してください
+      console.log('ℹ️ Notification settings initial load skipped (no mock, no-op)');
+    } catch (e) {
+      console.warn('⚠️ Notification settings load skipped due to DB error:', (e as Error).message);
+    }
   }
 
   /**
@@ -273,9 +261,28 @@ class NotificationService {
    * ユーザーのタスクを取得（モック実装）
    */
   private async getUserTasks(userId: string): Promise<TodoItem[]> {
-    // TODO: 実際のデータベースから取得
-    // 現在はモックデータを返す
-    return [];
+    try {
+      await connectDB();
+      const docs = await TodoModel.find({ userId }).sort({ createdAt: -1 });
+      // 可能な範囲で TodoItem に整形（不足は呼び出し側で未使用のため許容）
+      const priorityMap: Record<string, number> = { low: 1, medium: 2, high: 3, critical: 4 };
+      return (docs as any[]).map((d) => ({
+        _id: d._id?.toString?.() ?? d.id ?? '',
+        task: d.title,
+        description: d.description,
+        category: d.category,
+        type: d.type,
+        completed: Boolean(d.completed),
+        priority: priorityMap[String(d.priority)] ?? 1,
+        deadline: d.dueDate,
+        createdAt: d.createdAt,
+        updatedAt: d.updatedAt,
+        userId: d.userId,
+      })) as unknown as TodoItem[];
+    } catch (e) {
+      console.warn('⚠️ getUserTasks failed:', (e as Error).message);
+      return [];
+    }
   }
 
   /**
