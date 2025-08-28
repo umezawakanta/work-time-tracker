@@ -113,13 +113,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       } as LoginResponse);
     }
 
-    // データベース接続（本番で未設定でもフォールバック）
+    // データベース接続（失敗時のフォールバックは明示的な許可がある場合のみ）
+    const allowDemoFallback = process.env.ALLOW_DEMO_LOGIN_FALLBACK === 'true';
     let dbConnected = true;
     try {
       await connectDB();
     } catch (e) {
       dbConnected = false;
-      console.warn('Login API: DB not available, using demo user fallback.');
+      console.warn('Login API: DB not available');
+      if (!allowDemoFallback) {
+        return res.status(503).json({
+          success: false,
+          message: '現在ログインサービスを利用できません。しばらくしてから再試行してください。',
+          error: 'Service unavailable (DB connection failed)',
+        } as LoginResponse);
+      }
+      console.warn('Login API: Demo fallback is enabled via ALLOW_DEMO_LOGIN_FALLBACK=true');
     }
 
     // ユーザーの検索 or フォールバック
