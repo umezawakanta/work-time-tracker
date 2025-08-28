@@ -16,6 +16,8 @@ on:
 env:
   NODE_VERSION: '22'
   CACHE_VERSION: 'v1'
+  PNPM_HOME: ${{ runner.temp }}/pnpm
+  PNPM_STORE_PATH: ${{ runner.temp }}/pnpm-store
 
 jobs:
   # 🧪 テストカバレッジ測定
@@ -43,20 +45,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: 📦 Configure pnpm store (writable)
         run: |
-          mkdir -p "$RUNNER_TEMP/pnpm-store"
-          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
-          echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
+          mkdir -p "$PNPM_STORE_PATH"
+          pnpm config set store-dir "$PNPM_STORE_PATH"
           pnpm store path
 
       - name: 📦 Install Dependencies
-        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
-        env:
-          PNPM_HOME: ${{ env.PNPM_HOME }}
-          PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
+        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$PNPM_STORE_PATH"
 
       - name: 🏗️ Build Application
         run: pnpm run build
@@ -185,7 +182,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: 📦 Configure pnpm store (writable)
         run: |
@@ -300,7 +296,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: 📦 Configure pnpm store (writable)
         run: |
