@@ -139,10 +139,10 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.4.1
+      - name: 📦 Setup pnpm (corepack)
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.4.1 --activate
 
       - name: 🚀 Setup Node.js
         uses: actions/setup-node@v4
