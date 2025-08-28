@@ -2174,23 +2174,67 @@ app.get('/api/admin/metrics', async (req, res) => {
   }
 });
 
-app.get('/api/admin/users', (req, res) => {
-  console.log('✅ GET /api/admin/users (mock) called');
-  const page = Number(req.query.page || 1);
-  const limit = Number(req.query.limit || 20);
-  const total = 1;
-  const users = [
-    {
-      id: 'user_123',
-      email: 'demo@example.com',
-      name: 'Demo Admin',
-      role: 'admin',
-      roles: ['admin', 'user'],
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    },
-  ];
-  res.json({ success: true, data: users, page, limit, total, totalPages: 1 });
+app.get('/api/admin/users', async (req, res) => {
+  try {
+    const { User } = await import('./models/User.js');
+    const page = Math.max(1, Number(req.query.page || 1));
+    const limit = Math.max(1, Math.min(100, Number(req.query.limit || 20)));
+    const search = String(req.query.search || '').trim();
+    const role = String(req.query.role || '').trim();
+    const status = String(req.query.status || '').trim();
+
+    const filter: any = {};
+    if (role) filter.role = role;
+    if (status) filter.status = status;
+    if (search) {
+      filter.$or = [
+        { email: { $regex: search, $options: 'i' } },
+        { displayName: { $regex: search, $options: 'i' } },
+        { username: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    const total = await User.countDocuments(filter).catch(() => 0);
+    const rows = await User.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .select('uid email displayName username role status createdAt lastLoginAt')
+      .lean()
+      .catch(() => [] as any[]);
+
+    const users = rows.map((u: any) => ({
+      _id: String(u._id || u.uid || ''),
+      email: String(u.email || ''),
+      name: String(u.displayName || u.username || ''),
+      role: (u.role as string) || 'user',
+      roles: [(u.role as string) || 'user'],
+      isActive: String(u.status || 'inactive') === 'active',
+      blocked: String(u.status || '') === 'suspended',
+      lastLoginAt: u.lastLoginAt ? new Date(u.lastLoginAt).toISOString() : null,
+      createdAt: u.createdAt ? new Date(u.createdAt).toISOString() : new Date(0).toISOString(),
+    }));
+
+    return res.json({
+      success: true,
+      data: users,
+      page,
+      limit,
+      total,
+      totalPages: Math.max(1, Math.ceil(total / limit)),
+    });
+  } catch (e) {
+    console.error('❌ Error in /api/admin/users:', e);
+    return res.json({
+      success: true,
+      data: [],
+      page: 1,
+      limit: 20,
+      total: 0,
+      totalPages: 1,
+      degraded: true,
+    });
+  }
 });
 
 // Anthropic AI proxy endpoint
