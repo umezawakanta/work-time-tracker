@@ -1418,15 +1418,95 @@ app.get('/api/admin/metrics/paid-users/trend', (req, res) => {
 });
 
 // Admin revenue summary (dev mock)
-app.get('/api/admin/metrics/revenue/summary', (req, res) => {
+app.get('/api/admin/metrics/revenue/summary', async (req, res) => {
   try {
-    const mrr = 68000;
-    const prevMrr = 64000;
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    const { Subscription: SubscriptionModel, Payment: PaymentModel } = await import(
+      './models/Subscription.js'
+    );
+    const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
+
+    // Active paid subscriptions
+    const activePaid = await SubscriptionModel.countDocuments({
+      status: { $in: ['active'] },
+      planType: { $ne: 'free' },
+    }).catch(() => 0);
+
+    // MRR = active monthly sums + active yearly sums / 12
+    const [monthlyAgg, yearlyAgg] = await Promise.all([
+      SubscriptionModel.aggregate([
+        { $match: { status: 'active', planType: { $ne: 'free' }, billingCycle: 'monthly' } },
+        { $group: { _id: null, sum: { $sum: { $ifNull: ['$amount', 0] } } } },
+      ]).catch(() => [] as Array<{ sum: number }>),
+      SubscriptionModel.aggregate([
+        { $match: { status: 'active', planType: { $ne: 'free' }, billingCycle: 'yearly' } },
+        { $group: { _id: null, sum: { $sum: { $ifNull: ['$amount', 0] } } } },
+      ]).catch(() => [] as Array<{ sum: number }>),
+    ]);
+    const monthlySum = Number((monthlyAgg?.[0] as any)?.sum || 0);
+    const yearlySum = Number((yearlyAgg?.[0] as any)?.sum || 0);
+    const mrr = Math.round(monthlySum + yearlySum / 12);
+
+    // Prev MRR (previous month end snapshot approximation): use payments succeeded in prev month as proxy
+    const prevPayments = await PaymentModel.aggregate([
+      {
+        $match: {
+          status: 'succeeded',
+          $or: [
+            {
+              paidAt: { $gte: startOfPrevMonth.toISOString(), $lte: endOfPrevMonth.toISOString() },
+            },
+            { createdAt: { $gte: startOfPrevMonth, $lte: endOfPrevMonth } },
+          ],
+        },
+      },
+      { $group: { _id: null, sum: { $sum: { $ifNull: ['$amountReceived', '$amount'] } } } },
+    ]).catch(() => [] as Array<{ sum: number }>);
+    const prevMrr = Math.round(Number((prevPayments?.[0] as any)?.sum || 0));
+
     const arr = mrr * 12;
-    const activePaid = 12;
-    const newPaidThisMonth = 2;
-    const churnRate = 0; // mock
-    const conversionRate = 0; // mock
+
+    // New paid users this month = succeeded payments in this month (unique userIds)
+    const newPaidUsersAgg = await PaymentModel.aggregate([
+      {
+        $match: {
+          status: 'succeeded',
+          $or: [
+            { paidAt: { $gte: startOfMonth.toISOString() } },
+            { createdAt: { $gte: startOfMonth } },
+          ],
+        },
+      },
+      { $group: { _id: '$userId' } },
+      { $count: 'count' },
+    ]).catch(() => [] as Array<{ count: number }>);
+    const newPaidThisMonth = Number((newPaidUsersAgg?.[0] as any)?.count || 0);
+
+    // Churn rate approximation: cancellations in month / (active at start of month + cancellations)
+    const cancellationsThisMonth = await SubscriptionModel.countDocuments({
+      cancelledAt: { $gte: startOfMonth.toISOString() },
+    }).catch(() => 0);
+    const churnRate = Math.max(
+      0,
+      Math.min(
+        100,
+        Math.round(
+          (cancellationsThisMonth / Math.max(activePaid + cancellationsThisMonth, 1)) * 100
+        )
+      )
+    );
+
+    // Conversion rate approximation: new paid / new registrations in month (from AnalyticsEvent)
+    const newRegs = await AnalyticsEvent.countDocuments({
+      event: 'register',
+      timestamp: { $gte: startOfMonth, $lte: now },
+    }).catch(() => 0);
+    const conversionRate = newRegs > 0 ? Math.round((newPaidThisMonth / newRegs) * 100) : 0;
+
     return res.json({
       success: true,
       data: { mrr, arr, churnRate, conversionRate, activePaid, newPaidThisMonth, prevMrr },
