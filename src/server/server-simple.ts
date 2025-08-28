@@ -2127,18 +2127,50 @@ app.get('/api/admin/analytics/summary', async (req, res) => {
 app.get('/api/admin/metrics', async (req, res) => {
   try {
     const { User } = await import('./models/User.js');
+    const now = new Date();
     const total = await User.countDocuments({}).catch(() => 0);
     const active = await User.countDocuments({ status: 'active' }).catch(() => 0);
+    const newUsers24h = await User.countDocuments({
+      createdAt: { $gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) },
+    }).catch(() => 0);
+
     return res.json({
       success: true,
       data: {
-        usersTotal: total,
-        usersActive: active,
+        metrics: {
+          users: {
+            total,
+            active,
+            new: newUsers24h,
+          },
+          revenue: {
+            mrr: 0,
+            arr: 0,
+            conversionRate: 0,
+          },
+          system: {
+            uptime: 0,
+            responseTime: 0,
+            errorRate: 0,
+            activeConnections: 0,
+          },
+          support: {
+            openTickets: 0,
+            avgResponseTime: '0h',
+            satisfaction: 0,
+          },
+        },
+        priorityActions: [],
+        lastUpdate: new Date().toISOString(),
       },
     });
   } catch (e) {
     console.error('❌ Error in /api/admin/metrics:', e);
-    return res.json({ success: true, data: { usersTotal: 0, usersActive: 0 }, degraded: true });
+    return res.json({
+      success: true,
+      data: { metrics: { users: { total: 0, active: 0, new: 0 } } },
+      degraded: true,
+    });
   }
 });
 
