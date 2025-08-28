@@ -34,6 +34,8 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { RootState } from '@/store';
+import { useDispatch } from 'react-redux';
+import { fetchTodoItems } from '@/store/todoSlice';
 import { cn } from '@/lib/utils';
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, subDays, subWeeks } from 'date-fns';
 import { ja } from 'date-fns/locale';
@@ -102,51 +104,17 @@ export const TodoAnalytics: React.FC = () => {
   // Redux storeからTODOデータを取得（実際のプロジェクトではここから取得）
   const todos = useSelector((state: RootState) => state.todo?.items || []);
 
-  // デモデータ生成（実際の実装では実際のTODOデータを使用）
-  const generateDemoTodos = (): TodoItem[] => {
-    const categories = ['開発', 'デザイン', 'テスト', 'ドキュメント', 'レビュー', 'リサーチ'];
-    const priorities: Array<'low' | 'medium' | 'high' | 'urgent'> = [
-      'low',
-      'medium',
-      'high',
-      'urgent',
-    ];
-    const statuses: Array<'pending' | 'in-progress' | 'completed' | 'cancelled'> = [
-      'pending',
-      'in-progress',
-      'completed',
-      'cancelled',
-    ];
-
-    return Array.from({ length: 150 }, (_, index) => {
-      const createdAt = subDays(new Date(), Math.floor(Math.random() * 90));
-      const isCompleted = Math.random() > 0.3; // 70%完了率
-      const completedAt = isCompleted
-        ? new Date(createdAt.getTime() + Math.random() * 7 * 24 * 60 * 60 * 1000)
-        : undefined;
-
-      return {
-        id: `todo-${index}`,
-        title: `タスク ${index + 1}`,
-        description: `詳細な説明 ${index + 1}`,
-        category: categories[Math.floor(Math.random() * categories.length)],
-        priority: priorities[Math.floor(Math.random() * priorities.length)],
-        status: isCompleted ? 'completed' : statuses[Math.floor(Math.random() * 3)],
-        createdAt: createdAt.toISOString(),
-        completedAt: completedAt?.toISOString(),
-        estimatedTime: 30 + Math.floor(Math.random() * 120), // 30-150分
-        actualTime: isCompleted ? 20 + Math.floor(Math.random() * 180) : undefined, // 20-200分
-        tags: [`tag-${Math.floor(Math.random() * 10)}`],
-      };
-    });
-  };
-
-  const demoTodos = useMemo(() => generateDemoTodos(), []);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    // 実データをロード
+    dispatch(fetchTodoItems() as any);
+  }, [dispatch]);
 
   // 分析データの計算
   const analytics: AnalyticsMetrics = useMemo(() => {
     const now = new Date();
-    let filteredTodos = demoTodos;
+    // 実データのみ使用
+    let filteredTodos = todos as unknown as TodoItem[];
 
     // 時間範囲でフィルタ
     const daysBack = {
@@ -157,7 +125,7 @@ export const TodoAnalytics: React.FC = () => {
     }[timeRange];
 
     const startDate = subDays(now, daysBack);
-    filteredTodos = demoTodos.filter((todo) => new Date(todo.createdAt) >= startDate);
+    filteredTodos = filteredTodos.filter((todo) => new Date(todo.createdAt) >= startDate);
 
     const totalTasks = filteredTodos.length;
     const completedTasks = filteredTodos.filter((todo) => todo.status === 'completed').length;
@@ -218,7 +186,7 @@ export const TodoAnalytics: React.FC = () => {
       const weekStart = startOfWeek(subWeeks(now, i), { locale: ja });
       const weekEnd = endOfWeek(weekStart, { locale: ja });
 
-      const weekTodos = demoTodos.filter((todo) => {
+      const weekTodos = filteredTodos.filter((todo) => {
         const todoDate = new Date(todo.createdAt);
         return todoDate >= weekStart && todoDate <= weekEnd;
       });
@@ -264,7 +232,7 @@ export const TodoAnalytics: React.FC = () => {
       weeklyTrend: weeks,
       dailyProductivity,
     };
-  }, [demoTodos, timeRange]);
+  }, [todos, timeRange]);
 
   const refreshData = async () => {
     setIsLoading(true);

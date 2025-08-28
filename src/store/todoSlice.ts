@@ -343,33 +343,26 @@ export const toggleTodoPriority = createAsyncThunk(
 
 // プレミアム状態をチェックするアクションを追加
 export const checkPremiumStatus = createAsyncThunk('todo/checkPremiumStatus', async () => {
-  // 直接サービスAPIを使用せず、todoApiのサポートメソッドがない場合はモック実装
-  // 実際には適切なAPIエンドポイントを使用する必要があります
-  // モックデータを返す例（実装時には適切なAPI呼び出しに置き換えてください）
-  return { isPremium: true };
+  // 未実装: 明示的に false を返す（モック値を廃止）
+  return { isPremium: false };
 });
 
 // タスク分析サマリーを取得するアクションを追加
 export const fetchAnalysisSummary = createAsyncThunk('todo/fetchAnalysisSummary', async () => {
-  // 直接サービスAPIを使用せず、todoApiのサポートメソッドがない場合はモック実装
-  // 実際には適切なAPIエンドポイントを使用する必要があります
-  // モックデータを返す例（実装時には適切なAPI呼び出しに置き換えてください）
+  // 未実装: モック返却を廃止し、空データを返す
   return {
-    completionRate: 75,
-    averageTasksPerDay: 5.2,
-    mostProductiveDay: '水曜日',
+    completionRate: 0,
+    averageTasksPerDay: 0,
+    mostProductiveDay: '',
     categoryStats: {
-      input: 120,
-      output: 85,
+      input: 0,
+      output: 0,
     },
     categoryDistribution: {
-      input: 0.6,
-      output: 0.4,
+      input: 0,
+      output: 0,
     },
-    recommendations: [
-      'アウトプットタスクの比率を増やすことでバランス改善が見込めます。',
-      '午前中の集中タスクを増やして生産性向上を目指しましょう。',
-    ],
+    recommendations: [],
   };
 });
 
