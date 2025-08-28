@@ -412,8 +412,7 @@ export class CognitiveGrowthSupportService extends EventEmitter {
       },
     ];
 
-    // 全ユーザーにデフォルトスキルを設定（実際の実装ではユーザー固有）
-    this.cognitiveSkills.set('demo-user', defaultSkills);
+    // デフォルトのモックスキル投入を廃止（実データは外部から供給）
   }
 
   /**
@@ -483,7 +482,7 @@ export class CognitiveGrowthSupportService extends EventEmitter {
       },
     ];
 
-    this.personalizedStrategies.set('demo-user', defaultStrategies);
+    // デフォルトのモック戦略投入を廃止（実データは外部から供給）
   }
 
   /**
