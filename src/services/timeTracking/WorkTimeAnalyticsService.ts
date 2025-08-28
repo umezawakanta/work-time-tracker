@@ -231,8 +231,59 @@ export class WorkTimeAnalyticsService extends EventEmitter {
       return null;
     }
 
-    // 最も生産性の高い時間帯（勤務開始から4時間以内）
-    const mostProductiveHours = [9, 10, 11, 14, 15];
+    // 実データから生産性の高い時間帯を算出（休憩を除外）
+    const minutesByHour: number[] = Array.from({ length: 24 }, () => 0);
+    const addIntervalToHourBuckets = (start: Date, end: Date, weight: number = 1): void => {
+      if (end <= start) return;
+      // 正規化
+      const s = new Date(start.getTime());
+      const e = new Date(end.getTime());
+      // 各時台ごとに重なり分を加算
+      let cursor = new Date(s.getFullYear(), s.getMonth(), s.getDate(), s.getHours(), 0, 0, 0);
+      // 初期カーソルは開始時刻の時台
+      if (cursor < s)
+        cursor = new Date(s.getFullYear(), s.getMonth(), s.getDate(), s.getHours(), 0, 0, 0);
+      while (cursor < e) {
+        const hourIndex = cursor.getHours();
+        const hourStart = new Date(cursor);
+        const hourEnd = new Date(cursor);
+        hourEnd.setHours(hourEnd.getHours() + 1);
+        const overlapStart = s > hourStart ? s : hourStart;
+        const overlapEnd = e < hourEnd ? e : hourEnd;
+        const minutes = Math.max(
+          0,
+          Math.floor((overlapEnd.getTime() - overlapStart.getTime()) / 60000)
+        );
+        if (minutes > 0) {
+          minutesByHour[hourIndex] += minutes * weight;
+        }
+        cursor = hourEnd;
+      }
+    };
+
+    recentRecords.forEach((r) => {
+      const shiftStart = new Date(r.clockIn!);
+      const shiftEnd = new Date(r.clockOut!);
+
+      // シフト全体を加算
+      addIntervalToHourBuckets(shiftStart, shiftEnd, 1);
+      // 休憩を減算
+      r.breaks.forEach((b) => {
+        const breakStart = new Date(b.start);
+        const breakEnd = b.end
+          ? new Date(b.end)
+          : new Date(b.start.getTime() + (b.duration || 0) * 60000);
+        addIntervalToHourBuckets(breakStart, breakEnd, -1);
+      });
+
+      // 勤務開始から4時間は重み付け（生産性が高い傾向を反映）
+      const fourHoursAfterStart = new Date(shiftStart.getTime() + 4 * 60 * 60 * 1000);
+      addIntervalToHourBuckets(shiftStart, fourHoursAfterStart, 0.25);
+    });
+
+    const hourIndices = minutesByHour.map((minutes, hour) => ({ hour, minutes }));
+    hourIndices.sort((a, b) => b.minutes - a.minutes);
+    const mostProductiveHours = hourIndices.slice(0, 5).map((x) => x.hour);
 
     // 平均到着・退社時間
     const arrivalTimes = recentRecords.map(
@@ -260,6 +311,22 @@ export class WorkTimeAnalyticsService extends EventEmitter {
     const arrivalStdDev = Math.sqrt(arrivalVariance);
     const workConsistency = Math.max(0, 1 - arrivalStdDev / 60); // 1時間の標準偏差で一貫性0
 
+    // 推奨休憩タイミング（実データから多い開始時刻を抽出、時単位に丸め）
+    const breakStartCounter: Record<string, number> = {};
+    recentRecords.forEach((r) => {
+      r.breaks.forEach((b) => {
+        const h = new Date(b.start).getHours();
+        const key = `${String(h).padStart(2, '0')}:00`;
+        breakStartCounter[key] = (breakStartCounter[key] || 0) + 1;
+      });
+    });
+    const breakStarts = Object.entries(breakStartCounter)
+      .map(([time, count]) => ({ time, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 2)
+      .map((x) => x.time);
+    const preferredBreakTimes = breakStarts.length > 0 ? breakStarts : [];
+
     // 推奨事項
     const recommendations: string[] = [];
     if (overtimeFrequency > 0.3) {
@@ -276,7 +343,7 @@ export class WorkTimeAnalyticsService extends EventEmitter {
       mostProductiveHours,
       averageArrivalTime,
       averageDepartureTime,
-      preferredBreakTimes: ['12:00', '15:00'],
+      preferredBreakTimes,
       overtimeFrequency,
       workConsistency,
       recommendations,
