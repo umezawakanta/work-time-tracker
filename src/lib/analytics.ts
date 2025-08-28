@@ -128,7 +128,7 @@ const loadGoogleAnalytics = (): void => {
 const loadMixpanel = (): void => {
   if (typeof window === 'undefined') return;
   if ((window as any).__analytics_mixpanel_loaded) return;
-  let token: string | undefined =
+  const token: string | undefined =
     getEnv('VITE_MIXPANEL_TOKEN') ||
     (typeof process !== 'undefined'
       ? (process as any)?.env?.NEXT_PUBLIC_MIXPANEL_TOKEN
@@ -152,7 +152,7 @@ const loadMixpanel = (): void => {
 const loadAmplitude = (): void => {
   if (typeof window === 'undefined') return;
   if ((window as any).__analytics_amplitude_loaded) return;
-  let apiKey: string | undefined =
+  const apiKey: string | undefined =
     getEnv('VITE_AMPLITUDE_API_KEY') ||
     (typeof process !== 'undefined'
       ? (process as any)?.env?.NEXT_PUBLIC_AMPLITUDE_API_KEY

@@ -165,7 +165,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 
     console.log('Checking if user already exists with email:', email);
-    let user = (await User.findOne({ email })) as UserDocument | null;
+    const user = (await User.findOne({ email })) as UserDocument | null;
 
     if (user) {
       console.log('Registration failed: User already exists with email:', email);

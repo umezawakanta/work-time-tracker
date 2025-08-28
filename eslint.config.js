@@ -13,6 +13,7 @@ module.exports = tseslint.config(
       'vite.config.ts',
       '*.config.js',
       'coverage/**',
+      '.vercel/**',
       'jest.*.config.js', // Jest設定ファイルを除外
       'src/**/__tests__/**', // テストファイルのESLintチェックを緩和
       'src/**/__mocks__/**', // モックファイルを除外

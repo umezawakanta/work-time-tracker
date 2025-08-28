@@ -135,7 +135,6 @@ async function main() {
 
   await fs.mkdir(publicDir, { recursive: true });
   await fs.writeFile(outPath, JSON.stringify(summary, null, 2), 'utf8');
-  // eslint-disable-next-line no-console
   console.log(`Wrote dev status to ${path.relative(repoRoot, outPath)} (findings=${findings.length})`);
 
   // --- Optional: publish local test artifacts for /dev-status ---
@@ -191,7 +190,6 @@ async function main() {
 }
 
 main().catch((e) => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exit(1);
 });
