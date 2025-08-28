@@ -1314,8 +1314,12 @@ app.get('/api/admin/metrics/users/trend', async (req, res) => {
       { $sort: { day: 1 } },
     ]).catch(() => [] as Array<{ day: string; newUsers: number }>);
 
-    const activeMap = new Map<string, number>(dailyActive.map((r) => [r.day, r.activeUsers]));
-    const newMap = new Map<string, number>(registrations.map((r) => [r.day, r.newUsers]));
+    const activeMap = new Map<string, number>(
+      dailyActive.map((r: any) => [String(r.day), Number(r.activeUsers || 0)] as const)
+    );
+    const newMap = new Map<string, number>(
+      registrations.map((r: any) => [String(r.day), Number(r.newUsers || 0)] as const)
+    );
     const series: Array<{ day: string; newUsers: number; activeUsers: number }> = [];
     for (let i = days - 1; i >= 0; i--) {
       const d = new Date(now);
@@ -1409,7 +1413,9 @@ app.get('/api/admin/metrics/paid-users/trend', async (req, res) => {
       { $sort: { month: 1 } },
     ]).catch(() => [] as Array<{ month: string; count: number }>);
 
-    const map = new Map<string, number>(rows.map((r) => [r.month, r.count]));
+    const map = new Map<string, number>(
+      rows.map((r: any) => [String(r.month), Number(r.count || 0)] as const)
+    );
     const series: Array<{ month: string; count: number }> = [];
     for (let i = months - 1; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
