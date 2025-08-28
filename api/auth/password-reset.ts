@@ -83,11 +83,12 @@ const handleForgotPassword = async (req: VercelRequest, res: VercelResponse): Pr
 
   const successResponse: PasswordResetResponse = {
     success: true,
-    message: 'パスワードリセットのメールを送信しました（デモ環境のため実際には送信されません）',
+    message: 'パスワードリセットメールの送信を受け付けました',
     email: normalizedEmail,
   };
 
-  res.status(200).json(successResponse);
+  // 実際の送信処理はバックエンド/キューに委譲する前提で 202 を返す
+  res.status(202).json(successResponse);
 };
 
 // パスワードリセット処理
@@ -109,14 +110,11 @@ const handleResetPassword = async (req: VercelRequest, res: VercelResponse): Pro
     return;
   }
 
-  console.log('[PASSWORD-RESET] Password reset completed for token:', token);
+  console.log('[PASSWORD-RESET] Password reset requested for token:', token);
 
-  const successResponse: PasswordResetResponse = {
-    success: true,
-    message: 'パスワードをリセットしました',
-  };
-
-  res.status(200).json(successResponse);
+  // 実装未完了のため明示的に未実装を返す（モック返却を廃止）
+  sendErrorResponse(res, 501, 'Not implemented', 'パスワードリセットは現在未実装です');
+  return;
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
