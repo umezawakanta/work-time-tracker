@@ -224,14 +224,21 @@ jobs:
           name: build-artifacts
           path: dist
 
+      - name: Configure Cypress environment
+        run: |
+          mkdir -p "$RUNNER_TEMP/cypress"
+          echo "CYPRESS_CACHE_FOLDER=$RUNNER_TEMP/cypress" >> $GITHUB_ENV
+          echo "CYPRESS_VERIFY_TIMEOUT=120000" >> $GITHUB_ENV
+          echo "WAIT_ON_TIMEOUT=180000" >> $GITHUB_ENV
+          echo "CI=true" >> $GITHUB_ENV
+
       - name: Install Cypress binary
-        run: pnpm run cypress:install
+        run: pnpm exec cypress install --force
+
+      - name: Verify Cypress binary
+        run: pnpm exec cypress verify
 
       - name: Run E2E tests (headless, with readiness and strict port)
-        env:
-          CYPRESS_CACHE_FOLDER: ${{ runner.temp }}/cypress
-          CYPRESS_VERIFY_TIMEOUT: 120000
-          WAIT_ON_TIMEOUT: 180000
         run: |
           pnpm run test:e2e
 
