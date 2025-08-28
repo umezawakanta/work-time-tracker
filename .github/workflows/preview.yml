@@ -12,6 +12,9 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    env:
+      PNPM_HOME: ${{ runner.temp }}/pnpm
+      PNPM_STORE_PATH: ${{ runner.temp }}/pnpm-store
     steps:
       - name: Checkout
         uses: actions/checkout@v4

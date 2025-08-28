@@ -1,6 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { cors } from '../../lib/cors';
 import { requireAdmin } from '../../lib/authAdmin';
+// Use existing server models to query real counts
+import { connectDB } from '../../src/server/config/database';
+import { User } from '../../src/server/models/User';
 
 interface AdminMetrics {
   users: {
@@ -58,14 +61,23 @@ const handler = async (req: VercelRequest, res: VercelResponse): Promise<void> =
     const ctx = requireAdmin(req, res);
     if (!ctx) return;
 
-    // 実際のデータベースからメトリクスを取得
-    // デモ用のメトリクスデータ（実際の実装では実際のDBから取得）
+    // Connect DB and fetch real metrics
+    try {
+      await connectDB();
+    } catch {}
+    const totalUsers = await User.countDocuments({});
+    const activeUsers = await User.countDocuments({ status: 'active' });
+    const newUsers24h = await User.countDocuments({
+      createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    });
+
+    // Base metrics (keep other fields as placeholders until wired)
     const metrics: AdminMetrics = {
       users: {
-        total: 1847,
-        active: 1523,
-        new: 89,
-        growth: 12.3,
+        total: totalUsers,
+        active: activeUsers,
+        new: newUsers24h,
+        growth: 0,
       },
       revenue: {
         mrr: 12500000,
