@@ -1,4 +1,4 @@
-import type { MongoClient, Db, Collection } from 'mongodb';
+import type { MongoClient, Db, Collection, ObjectId } from 'mongodb';
 
 export interface ErrorReportDoc {
   _id?: string | unknown;
@@ -11,7 +11,19 @@ export interface ErrorReportDoc {
   createdAt: string; // ISO
 }
 
-let mongo: { client: MongoClient; db: Db; col: Collection<ErrorReportDoc> } | null = null;
+// DB schema uses MongoDB ObjectId for _id
+interface ErrorReportDbDoc {
+  _id?: ObjectId;
+  email?: string;
+  url?: string;
+  userAgent?: string;
+  message: string;
+  stack?: string;
+  componentStack?: string;
+  createdAt: string; // ISO
+}
+
+let mongo: { client: MongoClient; db: Db; col: Collection<ErrorReportDbDoc> } | null = null;
 let memoryStore: ErrorReportDoc[] = [];
 
 async function getMongo(): Promise<typeof mongo> {
@@ -24,7 +36,7 @@ async function getMongo(): Promise<typeof mongo> {
     await client.connect();
     const dbName = process.env.MONGODB_DB || process.env.MONGO_INITDB_DATABASE || 'app';
     const db = client.db(dbName);
-    const col = db.collection<ErrorReportDoc>('error_reports');
+    const col = db.collection<ErrorReportDbDoc>('error_reports');
     try {
       await col.createIndex({ createdAt: -1 }, { background: true });
       await col.createIndex({ email: 1, createdAt: -1 }, { background: true });
@@ -41,7 +53,9 @@ export async function saveErrorReport(doc: Omit<ErrorReportDoc, 'createdAt'>): P
   const m = await getMongo();
   if (m) {
     try {
-      await m.col.insertOne(item);
+      // Omit any incoming _id to let MongoDB assign ObjectId
+      const { _id: _omit, ...rest } = item;
+      await m.col.insertOne(rest as Omit<ErrorReportDbDoc, '_id'>);
       return;
     } catch (e) {
       // fall back to memory
@@ -58,12 +72,19 @@ export async function listErrorReports(limit = 50): Promise<ErrorReportDoc[]> {
     try {
       const cursor = m.col.find({}).sort({ createdAt: -1 }).limit(limit);
       const docs = await cursor.toArray();
-      return docs.map((d) => ({ ...d, _id: (d as any)._id?.toString?.() })) as ErrorReportDoc[];
+      return docs.map((d) => ({
+        _id: d._id ? d._id.toString() : undefined,
+        email: d.email,
+        url: d.url,
+        userAgent: d.userAgent,
+        message: d.message,
+        stack: d.stack,
+        componentStack: d.componentStack,
+        createdAt: d.createdAt,
+      })) as ErrorReportDoc[];
     } catch {
       // fall through
     }
   }
   return memoryStore.slice(-limit).reverse();
 }
-
-
