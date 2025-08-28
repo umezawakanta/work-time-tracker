@@ -52,9 +52,13 @@ import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
 
 interface AnalyticsDashboardProps {
   isAdminUser?: boolean;
+  hideTopPages?: boolean;
 }
 
-export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ isAdminUser = false }) => {
+export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
+  isAdminUser = false,
+  hideTopPages = false,
+}) => {
   const [analytics, setAnalytics] = useState<UserAnalytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'day' | 'week' | 'month'>('week');
@@ -311,25 +315,27 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ isAdminU
               </CardContent>
             </Card>
 
-            {/* ユーザージャーニー */}
-            <Card>
-              <CardHeader>
-                <CardTitle>人気ページ</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {analytics.topPages.map((page, index) => (
-                    <div key={page.page} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">{index + 1}</Badge>
-                        <span className="text-sm font-medium">{page.page}</span>
+            {/* 人気ページ（管理画面では重複回避のため非表示可） */}
+            {!hideTopPages && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>人気ページ</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {analytics.topPages.map((page, index) => (
+                      <div key={page.page} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{index + 1}</Badge>
+                          <span className="text-sm font-medium">{page.page}</span>
+                        </div>
+                        <span className="text-sm font-bold">{page.views.toLocaleString()}</span>
                       </div>
-                      <span className="text-sm font-bold">{page.views.toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </TabsContent>
 

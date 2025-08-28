@@ -1565,7 +1565,7 @@ const AdminDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
-          <AnalyticsDashboard isAdminUser={true} />
+          <AnalyticsDashboard isAdminUser={true} hideTopPages={true} />
           {/* 30日リテンション */}
           <Card>
             <CardHeader>

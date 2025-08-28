@@ -255,8 +255,35 @@ class UserTrackingService {
     try {
       const apiBaseUrl = this.getApiBaseUrl();
       const response = await fetch(`${apiBaseUrl}/analytics/summary?range=${timeRange}`);
-      const data = await response.json();
-      return data;
+      const raw = await response.json();
+      // API returns { success, data } – normalize to UserAnalytics
+      const payload: unknown =
+        raw && typeof raw === 'object' && 'data' in raw ? (raw as { data: unknown }).data : raw;
+
+      const analytics = payload as Partial<UserAnalytics>;
+
+      // Minimal shape validation with safe defaults to avoid runtime errors
+      return {
+        totalUsers: typeof analytics.totalUsers === 'number' ? analytics.totalUsers : 0,
+        activeUsers: typeof analytics.activeUsers === 'number' ? analytics.activeUsers : 0,
+        newUsers: typeof analytics.newUsers === 'number' ? analytics.newUsers : 0,
+        returningUsers: typeof analytics.returningUsers === 'number' ? analytics.returningUsers : 0,
+        averageSessionDuration:
+          typeof analytics.averageSessionDuration === 'number'
+            ? analytics.averageSessionDuration
+            : 0,
+        pageViewsTotal: typeof analytics.pageViewsTotal === 'number' ? analytics.pageViewsTotal : 0,
+        topPages: Array.isArray(analytics.topPages) ? (analytics.topPages as any) : [],
+        deviceBreakdown:
+          analytics.deviceBreakdown && typeof analytics.deviceBreakdown === 'object'
+            ? (analytics.deviceBreakdown as Record<string, number>)
+            : {},
+        trafficSources:
+          analytics.trafficSources && typeof analytics.trafficSources === 'object'
+            ? (analytics.trafficSources as Record<string, number>)
+            : {},
+        userJourney: Array.isArray(analytics.userJourney) ? (analytics.userJourney as any) : [],
+      };
     } catch (error) {
       console.error('Analytics fetch failed:', error);
       return this.getMockAnalytics();
