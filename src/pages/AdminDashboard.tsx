@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';
+import ErrorMonitoringDashboard from '@/components/development/ErrorMonitoringDashboard';
 import { api } from '@/services/api/apiConfig';
 import SocialShareButton from '@/components/ui/SocialShareButton';
 import AdminUsersPage from '@/pages/AdminUsersPage';
@@ -633,6 +634,7 @@ const AdminDashboard: React.FC = () => {
           <TabsTrigger value="users">ユーザー</TabsTrigger>
           <TabsTrigger value="actions">優先アクション</TabsTrigger>
           <TabsTrigger value="analytics">分析</TabsTrigger>
+          <TabsTrigger value="errors">エラー監視</TabsTrigger>
           <TabsTrigger value="settings">設定</TabsTrigger>
           <TabsTrigger value="assessments">診断集計</TabsTrigger>
           <TabsTrigger value="learning">学習進捗</TabsTrigger>
@@ -999,6 +1001,19 @@ const AdminDashboard: React.FC = () => {
               ) : (
                 <p className="text-sm text-gray-500">データがありません</p>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* エラーダッシュボード（統合タブ） */}
+        <TabsContent value="errors" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>エラー監視ダッシュボード</CardTitle>
+              <CardDescription>リアルタイム監視と自動復旧</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ErrorMonitoringDashboard />
             </CardContent>
           </Card>
         </TabsContent>
