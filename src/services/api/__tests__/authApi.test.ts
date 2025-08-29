@@ -1,6 +1,17 @@
-/// <reference types="vitest" />
-import { vi, describe, it, expect, beforeEach } from 'vitest';
-const jest = vi;
+/* Test runner globals (Vitest/Jest) を型エラーなしで扱うための宣言 */
+// ランタイムではグローバルに存在するため、型だけ any として宣言しておく
+// これにより Chai の Assertion 型による `toHaveBeenCalledWith` 等の型エラーを回避
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const expect: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const vi: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const describe: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const it: any;
+// Jest 互換 API を使用している箇所のため alias を定義
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const jest: any = vi;
 import { AxiosError } from 'axios';
 import * as authApi from '../authApi';
 import { api } from '../apiConfig';
