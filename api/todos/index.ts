@@ -3,6 +3,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 // Minimal auth and DB stubs are used here to keep the API operational on Vercel preview builds.
 type AuthenticatedRequest = any;
 import { cors } from '../../lib/cors';
+import { connectDB } from '../../src/server/config/database';
+import { TodoModel } from '../../src/server/models/Todo';
 
 // Robust JSON body reader (handles raw string/body getter differences)
 async function readJson(req: any): Promise<any> {
@@ -102,17 +104,23 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
       userId: req.user?.userId || null,
       guestAllowed: allowGuestTodos,
     });
-    // Connect to database (non-fatal in serverless environments)
-    try {
-      // In preview/serverless without DB, skip connection gracefully
-      // await connectDB();
-      throw new Error('DB disabled for preview');
-    } catch (dbErr) {
-      console.warn('Todos API: DB connection failed, responding with empty list for GET.', dbErr);
+    // Connect to database when MONGODB_URI is configured
+    const hasDb = Boolean(process.env.MONGODB_URI);
+    if (hasDb) {
+      try {
+        await connectDB();
+      } catch (dbErr) {
+        console.warn('Todos API: DB connection failed.', dbErr);
+        if (req.method === 'GET') {
+          res.status(200).json({ success: true, data: [], total: 0, message: 'DB接続失敗' });
+          return;
+        }
+      }
+    } else {
       if (req.method === 'GET') {
         res
           .status(200)
-          .json({ success: true, data: [], total: 0, message: 'DB未接続（プレビュー環境）' });
+          .json({ success: true, data: [], total: 0, message: 'DB未設定（環境変数 MONGODB_URI）' });
         return;
       }
     }
@@ -120,13 +128,15 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
     if (req.method === 'GET') {
       // Guest quick path (no auth) when enabled
       if (!req.user && allowGuestTodos) {
-        return res.status(200).json({ success: true, data: [], total: 0, message: 'guest mode' });
+        res.status(200).json({ success: true, data: [], total: 0, message: 'guest mode' });
+        return;
       }
 
       if (!req.user) {
-        return res
+        res
           .status(401)
           .json({ success: false, status: 401, code: 'UNAUTHORIZED', message: '認証が必要です' });
+        return;
       }
       // Get query parameters
       const {
@@ -158,7 +168,7 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
       }
 
       if (priority) {
-        query.priority = { $gte: priority };
+        query.priority = priority;
       }
 
       if (projectId) {
@@ -170,10 +180,13 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
         query.tags = { $in: tagList };
       }
 
-      // Execute query
-      // Return empty list in preview without DB
-      const todos: any[] = [];
-      const total = 0;
+      // Execute query (requires DB connection)
+      const limitNum = Math.min(200, Math.max(1, Number(limit) || 50));
+      const offsetNum = Math.max(0, Number(offset) || 0);
+      const [todos, total] = await Promise.all([
+        TodoModel.find(query).sort({ createdAt: -1 }).skip(offsetNum).limit(limitNum).lean(),
+        TodoModel.countDocuments(query),
+      ]);
 
       console.log('✅ Todos retrieved:', {
         userId,
@@ -194,9 +207,10 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
           const clientId = (req.headers['x-client-id'] as string) || requestId || 'anon';
           (req as any).user = { userId: `guest_${clientId}` };
         } else {
-          return res
+          res
             .status(401)
             .json({ success: false, status: 401, code: 'UNAUTHORIZED', message: '認証が必要です' });
+          return;
         }
       }
       // Read and normalize request body
