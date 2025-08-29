@@ -8,6 +8,18 @@ import { featureArtifactsRegistry } from '@/config/featureArtifacts';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { isArtifactApproved, setArtifactApproval } from '@/services/dev/featureStatusEngine';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function DocsViewer(): React.JSX.Element {
   const params = useParams();
@@ -37,6 +49,17 @@ export default function DocsViewer(): React.JSX.Element {
   const approved = docMeta.artifactId
     ? isArtifactApproved(docMeta.featureId, docMeta.artifactId)
     : false;
+  const [open, setOpen] = useState(false);
+  const checklist = [
+    '目的とスコープが具体的で検証可能',
+    '機能要件が網羅され曖昧さがない',
+    '非機能要件（性能/可用性/セキュリティ/アクセシビリティ）が定義済み',
+    'API入出力・データフロー・依存関係が明記されている',
+    '完了条件と受け入れ基準が明確',
+    'リスクと対応が列挙されている',
+  ];
+  const [checked, setChecked] = useState<Record<number, boolean>>({});
+  const allChecked = checklist.every((_, i) => checked[i]);
 
   useEffect(() => {
     let isMounted = true;
@@ -71,15 +94,45 @@ export default function DocsViewer(): React.JSX.Element {
           <p className="text-sm text-slate-600">{path}.md</p>
         </div>
         {user?.isAdmin && docMeta.artifactId && (
-          <Button
-            variant={approved ? 'secondary' : 'outline'}
-            onClick={() => {
-              setArtifactApproval(docMeta.featureId, docMeta.artifactId!, !approved);
-            }}
-            aria-label={`この成果物を${approved ? '未承認' : '承認'}にする`}
-          >
-            {approved ? '承認済' : '承認'}
-          </Button>
+          <AlertDialog open={open} onOpenChange={setOpen}>
+            <AlertDialogTrigger asChild>
+              <Button variant={approved ? 'secondary' : 'outline'}>
+                {approved ? '承認済' : '承認'}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>要件定義書 承認チェック</AlertDialogTitle>
+                <AlertDialogDescription>
+                  すべての項目にチェックを入れてから承認してください。
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="space-y-3 py-2">
+                {checklist.map((label, idx) => (
+                  <label key={idx} className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(checked[idx])}
+                      onChange={(e) => setChecked((s) => ({ ...s, [idx]: e.target.checked }))}
+                    />
+                    <span>{label}</span>
+                  </label>
+                ))}
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                <AlertDialogAction
+                  disabled={!allChecked}
+                  onClick={() => {
+                    setArtifactApproval(docMeta.featureId, docMeta.artifactId!, true);
+                    setOpen(false);
+                  }}
+                >
+                  承認する
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
       {loading && <p className="text-slate-500">読み込み中...</p>}
