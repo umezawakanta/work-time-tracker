@@ -48,17 +48,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ success: false, error: 'Missing userId' });
     }
 
-    let dbConnected = true;
+    const hasDb = Boolean(process.env.MONGODB_URI);
+    if (!hasDb) {
+      return res.status(503).json({
+        success: false,
+        error: 'DB_NOT_CONFIGURED',
+        message: '環境変数 MONGODB_URI が未設定です',
+      });
+    }
+
     try {
       await connectDB();
     } catch (e) {
-      dbConnected = false;
-    }
-
-    if (!dbConnected) {
       return res
-        .status(200)
-        .json({ success: true, data: [], message: 'DB未接続（プレビュー環境）' });
+        .status(503)
+        .json({ success: false, error: 'DB_CONNECTION_FAILED', message: 'DB接続に失敗しました' });
     }
 
     const docs = await ProjectModel.find({ userId: resolvedUserId })
