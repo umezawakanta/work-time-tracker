@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AccessibilityProvider } from '@/components/accessibility/AccessibilityProvider';
 import StatusBanners from '@/components/layout/StatusBanners';
+import FeatureAccessGuard from '@/components/layout/FeatureAccessGuard';
 import InstallBanner from '@/components/pwa/InstallBanner';
 import CookieConsent from '@/components/layout/CookieConsent';
 import MobileTabBar from '@/components/layout/MobileTabBar';
@@ -104,6 +105,15 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     badge: 'ガイド',
     gradient: 'from-green-400 via-blue-500 to-purple-500',
     accentColor: 'green',
+  },
+  {
+    icon: <Activity className="h-5 w-5" />,
+    label: '🧭 機能一覧（開発状況）',
+    path: '/features',
+    description: '機能別の完成状況とアクセス制御',
+    badge: '進行',
+    gradient: 'from-blue-400 via-cyan-500 to-emerald-500',
+    accentColor: 'cyan',
   },
   {
     icon: <Target className="h-5 w-5" />,
@@ -1196,7 +1206,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                 </li>
               </ol>
             </nav>
-            {children}
+            <FeatureAccessGuard>{children}</FeatureAccessGuard>
             <div className="mt-12">
               <div className="container mx-auto px-4">
                 <div className="rounded-xl border border-slate-200 bg-white dark:bg-slate-900 p-4 text-center">
