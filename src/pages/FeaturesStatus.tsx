@@ -51,18 +51,42 @@ export default function FeaturesStatusPage(): React.JSX.Element {
   const { user } = useAuth();
   const [statusFilter, setStatusFilter] = useState<FeatureStatus | 'all'>('all');
   const { data: derived, isLoading: isDeriving, refresh } = useDerivedFeatureStatuses();
+  const [sortByPriority, setSortByPriority] = useState<boolean>(true);
+  const [progressFilter, setProgressFilter] = useState<
+    'all' | 'not_started' | 'in_progress' | 'complete'
+  >('all');
 
   const byCategory = useMemo(() => {
     const m = new Map<string, Feature[]>();
     for (const f of featuresRegistry) {
       const effectiveStatus = (derived?.effective?.[f.id] ?? f.status) as FeatureStatus;
+      // 着手状況フィルタ
+      const isComplete = effectiveStatus === 'complete';
+      const isNotStarted = effectiveStatus === 'planning';
+      if (progressFilter === 'complete' && !isComplete) continue;
+      if (progressFilter === 'not_started' && !isNotStarted) continue;
+      if (progressFilter === 'in_progress' && (isComplete || isNotStarted)) continue;
+      // ステータスフィルタ
       if (statusFilter !== 'all' && effectiveStatus !== statusFilter) continue;
       const arr = m.get(f.category) || [];
       arr.push({ ...f, status: effectiveStatus });
       m.set(f.category, arr);
     }
-    return Array.from(m.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [statusFilter, derived]);
+    const priorityRank: Record<string, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
+    const entries = Array.from(m.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+    // カテゴリ内ソート
+    return entries.map(([category, list]) => {
+      const sorted = [...list].sort((a, b) => {
+        if (sortByPriority) {
+          const pa = priorityRank[(a as any).priority || 'P3'];
+          const pb = priorityRank[(b as any).priority || 'P3'];
+          if (pa !== pb) return pa - pb;
+        }
+        return a.name.localeCompare(b.name);
+      });
+      return [category, sorted] as [string, Feature[]];
+    });
+  }, [statusFilter, progressFilter, sortByPriority, derived]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -86,6 +110,34 @@ export default function FeaturesStatusPage(): React.JSX.Element {
         <Button variant="outline" size="sm" onClick={refresh} disabled={isDeriving}>
           自動判定を更新
         </Button>
+        <Button
+          variant={sortByPriority ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setSortByPriority((v) => !v)}
+        >
+          優先度順
+        </Button>
+      </div>
+
+      {/* 着手状況フィルタ */}
+      <div className="mb-6 flex flex-wrap gap-2">
+        {(
+          [
+            { key: 'all', label: 'すべて' },
+            { key: 'not_started', label: '未着手' },
+            { key: 'in_progress', label: '着手中' },
+            { key: 'complete', label: '完成' },
+          ] as const
+        ).map(({ key, label }) => (
+          <Button
+            key={key}
+            variant={progressFilter === key ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setProgressFilter(key)}
+          >
+            {label}
+          </Button>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 gap-6">
@@ -114,6 +166,9 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                             <Badge variant={statusBadgeVariant[f.status]}>
                               {statusLabel[f.status]}
                             </Badge>
+                            {(f as any).priority && (
+                              <Badge variant="outline">{(f as any).priority}</Badge>
+                            )}
                             {f.requiresRealAPI && <Badge variant="outline">実API必須</Badge>}
                           </div>
                           {derived?.suggested && (
