@@ -164,6 +164,33 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: true,
   },
+  {
+    id: 'cognitive-finance',
+    name: '💰 認知最適化財務管理',
+    path: '/cognitive-finance',
+    category: '財務',
+    description: 'ADHD/ASD特性に配慮した資産管理',
+    status: 'in_progress',
+    requiresRealAPI: true,
+  },
+  {
+    id: 'beta-user-recruitment',
+    name: '🌟 ベータユーザー募集',
+    path: '/beta-user-recruitment',
+    category: '運用',
+    description: '開発参加・フィードバック募集',
+    status: 'in_progress',
+    requiresRealAPI: true,
+  },
+  {
+    id: 'user-testing',
+    name: '🧪 実ユーザーテスト',
+    path: '/user-testing',
+    category: '品質',
+    description: 'ユーザビリティテスト・品質検証',
+    status: 'in_progress',
+    requiresRealAPI: true,
+  },
 ];
 
 const ALLOWLIST_PATHS: string[] = [

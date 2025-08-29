@@ -447,11 +447,13 @@ const App: React.FC = () => {
                               <Route
                                 path="/features"
                                 element={
-                                  <LayoutWrapper>
-                                    <LazyWrapper>
-                                      <FeaturesStatusPage />
-                                    </LazyWrapper>
-                                  </LayoutWrapper>
+                                  <RequireAdmin>
+                                    <LayoutWrapper>
+                                      <LazyWrapper>
+                                        <FeaturesStatusPage />
+                                      </LazyWrapper>
+                                    </LayoutWrapper>
+                                  </RequireAdmin>
                                 }
                               />
                               <Route
