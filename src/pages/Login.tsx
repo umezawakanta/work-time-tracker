@@ -17,18 +17,11 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'react-hot-toast';
 import { AxiosError } from 'axios';
-import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle, Mail, Lock, Shield } from 'lucide-react';
+import { Eye, EyeOff, Loader2, AlertCircle, Mail, Lock, Shield, CheckCircle } from 'lucide-react';
 import { useAnalytics } from '@/lib/analytics';
 import { useTranslation } from 'react-i18next';
 
-// Extend Window interface for custom properties
-declare global {
-  interface Window {
-    __VITE_USE_MOCK_DATA__?: string;
-    __API_CONNECTION_FAILED__?: boolean;
-    __API_AUTH_HEADER__?: string;
-  }
-}
+// (Removed legacy mock globals)
 
 export default function Login() {
   const { t } = useTranslation();
@@ -40,7 +33,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
-  const [showDemoMode, setShowDemoMode] = useState(false);
+  // Demo mode removed to avoid mock-like behavior
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -219,10 +212,7 @@ export default function Login() {
           setErrors({
             general: 'サーバーに接続できません。ネットワーク接続を確認してください。',
           });
-          // 本番環境でAPIに接続できない場合はデモモードを有効化
-          if (window.location.hostname === 'work-time-tracker-5d9q.vercel.app') {
-            setShowDemoMode(true);
-          }
+          // Demo mode removed: do not enable any offline login
         } else if (statusCode === 401) {
           const hintMessage = error.response?.data?.hint;
           const _availableAccounts = error.response?.data?.availableAccounts;
@@ -496,7 +486,7 @@ export default function Login() {
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     className={`pl-4 ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
-                    placeholder="demo@example.com または任意のメール"
+                    placeholder="メールアドレスを入力"
                     disabled={isSubmitting}
                     autoComplete="email"
                   />
@@ -527,7 +517,7 @@ export default function Login() {
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     className={`pl-4 pr-12 ${errors.password ? 'border-red-500 focus:border-red-500' : ''}`}
-                    placeholder="demo123 または admin123"
+                    placeholder="パスワードを入力"
                     disabled={isSubmitting}
                     autoComplete="current-password"
                   />
@@ -584,38 +574,7 @@ export default function Login() {
                 )}
               </Button>
 
-              {/* APIサーバー接続失敗時のデモログインボタン */}
-              {showDemoMode && (
-                <div className="space-y-2">
-                  <div className="text-center text-xs text-gray-500">または</div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full border-blue-300 text-blue-600 hover:bg-blue-50"
-                    onClick={() => {
-                      toast.error(
-                        'デモログインは削除されました。実際のアカウントでログインしてください。'
-                      );
-                    }}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        デモログイン中...
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        デモモードでログイン
-                      </>
-                    )}
-                  </Button>
-                  <div className="text-center text-xs text-gray-500">
-                    ※ サーバーに接続できない場合のオフライン体験モード
-                  </div>
-                </div>
-              )}
+              {/* Demo login UI removed */}
 
               <div className="text-center text-sm text-gray-600">
                 {t('auth.login.noAccount', 'アカウントをお持ちでない方は')}
