@@ -44,7 +44,7 @@ import {
   Package,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { getFeatureByPath } from '@/config/features';
+import { getFeatureByPath, isFeatureAccessible } from '@/config/features';
 
 /**
  * サイトマップメインページ
@@ -54,6 +54,12 @@ const SitemapPage: React.FC = () => {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+
+  const canShow = (path: string) => {
+    const res = isFeatureAccessible(path);
+    if (path.startsWith('/_bg/')) return false;
+    return res.allowed;
+  };
 
   // 全ページ・機能の定義
   const allPages = [
@@ -415,110 +421,124 @@ const SitemapPage: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <div className="p-3 bg-white rounded-lg border border-blue-200">
-              <div className="flex items-center space-x-2 mb-2">
-                <Home className="w-4 h-4 text-green-600" />
-                <span className="font-medium text-sm">ホームページ</span>
-                <Badge variant="outline" className="text-xs">
-                  最速
-                </Badge>
-                <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
-                  🔐
-                </Badge>
+            {canShow('/') && (
+              <div className="p-3 bg-white rounded-lg border border-blue-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Home className="w-4 h-4 text-green-600" />
+                  <span className="font-medium text-sm">ホームページ</span>
+                  <Badge variant="outline" className="text-xs">
+                    最速
+                  </Badge>
+                  <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                    🔐
+                  </Badge>
+                </div>
+                <p className="text-xs text-gray-600 mb-2">日常タスクのクイック追加（要ログイン）</p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full text-xs"
+                  onClick={() => navigate('/')}
+                >
+                  ログイン後に追加
+                </Button>
               </div>
-              <p className="text-xs text-gray-600 mb-2">日常タスクのクイック追加（要ログイン）</p>
-              <Button
-                size="sm"
-                variant="outline"
-                className="w-full text-xs"
-                onClick={() => navigate('/')}
-              >
-                ログイン後に追加
-              </Button>
-            </div>
+            )}
 
-            <div className="p-3 bg-white rounded-lg border border-blue-200">
-              <div className="flex items-center space-x-2 mb-2">
-                <CheckSquare className="w-4 h-4 text-blue-600" />
-                <span className="font-medium text-sm">従来タスク</span>
-                <Badge variant="outline" className="text-xs">
-                  詳細
-                </Badge>
-                <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
-                  🔐
-                </Badge>
+            {canShow('/todos') && (
+              <div className="p-3 bg-white rounded-lg border border-blue-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <CheckSquare className="w-4 h-4 text-blue-600" />
+                  <span className="font-medium text-sm">従来タスク</span>
+                  <Badge variant="outline" className="text-xs">
+                    詳細
+                  </Badge>
+                  <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                    🔐
+                  </Badge>
+                </div>
+                <p className="text-xs text-gray-600 mb-2">
+                  優先度・期限・カテゴリ設定（要ログイン）
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full text-xs"
+                  onClick={() => navigate('/todos')}
+                >
+                  ログイン後に管理
+                </Button>
               </div>
-              <p className="text-xs text-gray-600 mb-2">優先度・期限・カテゴリ設定（要ログイン）</p>
-              <Button
-                size="sm"
-                variant="outline"
-                className="w-full text-xs"
-                onClick={() => navigate('/todos')}
-              >
-                ログイン後に管理
-              </Button>
-            </div>
+            )}
 
-            <div className="p-3 bg-white rounded-lg border border-blue-200">
-              <div className="flex items-center space-x-2 mb-2">
-                <Play className="w-4 h-4 text-purple-600" />
-                <span className="font-medium text-sm">ゲームループ</span>
-                <Badge variant="outline" className="text-xs">
-                  AI分解
-                </Badge>
-                <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
-                  🔐
-                </Badge>
+            {canShow('/game-loop-tasks') && (
+              <div className="p-3 bg-white rounded-lg border border-blue-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Play className="w-4 h-4 text-purple-600" />
+                  <span className="font-medium text-sm">ゲームループ</span>
+                  <Badge variant="outline" className="text-xs">
+                    AI分解
+                  </Badge>
+                  <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                    🔐
+                  </Badge>
+                </div>
+                <p className="text-xs text-gray-600 mb-2">大きな作業を自動分解（要ログイン）</p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full text-xs"
+                  onClick={() => navigate('/game-loop-tasks')}
+                >
+                  ログイン後に分解
+                </Button>
               </div>
-              <p className="text-xs text-gray-600 mb-2">大きな作業を自動分解（要ログイン）</p>
-              <Button
-                size="sm"
-                variant="outline"
-                className="w-full text-xs"
-                onClick={() => navigate('/game-loop-tasks')}
-              >
-                ログイン後に分解
-              </Button>
-            </div>
+            )}
 
-            <div className="p-3 bg-white rounded-lg border border-blue-200">
-              <div className="flex items-center space-x-2 mb-2">
-                <BarChart3 className="w-4 h-4 text-orange-600" />
-                <span className="font-medium text-sm">統合ダッシュボード</span>
-                <Badge variant="outline" className="text-xs">
-                  プロジェクト
-                </Badge>
-                <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
-                  🔐
-                </Badge>
+            {canShow('/integrated-dashboard') && (
+              <div className="p-3 bg-white rounded-lg border border-blue-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <BarChart3 className="w-4 h-4 text-orange-600" />
+                  <span className="font-medium text-sm">統合ダッシュボード</span>
+                  <Badge variant="outline" className="text-xs">
+                    プロジェクト
+                  </Badge>
+                  <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                    🔐
+                  </Badge>
+                </div>
+                <p className="text-xs text-gray-600 mb-2">
+                  プロジェクト管理・進捗追跡（要ログイン）
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full text-xs"
+                  onClick={() => navigate('/integrated-dashboard')}
+                >
+                  ログイン後に管理
+                </Button>
               </div>
-              <p className="text-xs text-gray-600 mb-2">プロジェクト管理・進捗追跡（要ログイン）</p>
-              <Button
-                size="sm"
-                variant="outline"
-                className="w-full text-xs"
-                onClick={() => navigate('/integrated-dashboard')}
-              >
-                ログイン後に管理
-              </Button>
-            </div>
+            )}
 
-            <div className="p-3 bg-white rounded-lg border border-blue-200">
-              <div className="flex items-center space-x-2 mb-2">
-                <Brain className="w-4 h-4 text-indigo-600" />
-                <span className="font-medium text-sm">認知特化</span>
-                <Badge variant="outline" className="text-xs">
-                  ADHD対応
-                </Badge>
-                <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
-                  🔐
-                </Badge>
+            {canShow('/adhd-integrated-life') && (
+              <div className="p-3 bg-white rounded-lg border border-blue-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Brain className="w-4 h-4 text-indigo-600" />
+                  <span className="font-medium text-sm">認知特化</span>
+                  <Badge variant="outline" className="text-xs">
+                    ADHD対応
+                  </Badge>
+                  <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                    🔐
+                  </Badge>
+                </div>
+                <p className="text-xs text-gray-600 mb-2">認知特性に最適化（要ログイン）</p>
+                <Button size="sm" variant="outline" className="w-full text-xs" disabled>
+                  ログイン後に認知系機能から
+                </Button>
               </div>
-              <p className="text-xs text-gray-600 mb-2">認知特性に最適化（要ログイン）</p>
-              <Button size="sm" variant="outline" className="w-full text-xs" disabled>
-                ログイン後に認知系機能から
-              </Button>
-            </div>
+            )}
 
             <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200 flex items-center justify-center">
               <div className="text-center">

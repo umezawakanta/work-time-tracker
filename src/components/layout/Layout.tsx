@@ -890,6 +890,8 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
     const feature = getFeatureByPath(basePath);
     const isIncomplete = feature && feature.status !== 'complete';
     if (isIncomplete) return null;
+    // バックグラウンド専用パスは常に非表示
+    if (basePath.startsWith('/_bg/')) return null;
     if (item.path === '/admin' && !isAdmin) return null;
 
     return (
