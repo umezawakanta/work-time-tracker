@@ -205,8 +205,54 @@ export async function deriveAllFeatureStatuses(): Promise<DerivedStatusesResult>
     suggested[f.id] = s;
     const a = approved[f.id] ?? normalizeToNewStatus(f.status);
     // 有効値は「提案」と「承認済み」のうち低い方（すべて承認制）
-    effective[f.id] = minByOrder(a, s);
+    let eff = minByOrder(a, s);
+    // 追加ガード: 要件定義書が承認されていない場合は常に planning
+    if (!isRequirementsApproved(f.id)) {
+      eff = 'planning';
+    }
+    effective[f.id] = eff;
   }
 
   return { suggested, effective, approved, loadedAt: Date.now(), signals };
+}
+
+// ===== 承認（成果物単位）ストア =====
+type ArtifactApprovalMap = Record<string, Record<string, boolean>>; // featureId -> artifactId -> approved
+
+const ARTIFACT_APPROVAL_KEY = 'feature_artifact_approvals_v1';
+
+function readArtifactApprovals(): ArtifactApprovalMap {
+  try {
+    const raw = localStorage.getItem(ARTIFACT_APPROVAL_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw) as ArtifactApprovalMap;
+  } catch {
+    return {};
+  }
+}
+
+function writeArtifactApprovals(map: ArtifactApprovalMap): void {
+  try {
+    localStorage.setItem(ARTIFACT_APPROVAL_KEY, JSON.stringify(map));
+  } catch {}
+}
+
+export function setArtifactApproval(
+  featureId: string,
+  artifactId: string,
+  approved: boolean
+): void {
+  const map = readArtifactApprovals();
+  map[featureId] = map[featureId] || {};
+  map[featureId][artifactId] = approved;
+  writeArtifactApprovals(map);
+}
+
+export function isArtifactApproved(featureId: string, artifactId: string): boolean {
+  const map = readArtifactApprovals();
+  return Boolean(map[featureId]?.[artifactId]);
+}
+
+export function isRequirementsApproved(featureId: string): boolean {
+  return isArtifactApproved(featureId, 'requirements');
 }

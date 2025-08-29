@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useDerivedFeatureStatuses } from '@/hooks/useDerivedFeatureStatuses';
 import { NEW_STATUS_ORDER } from '@/services/dev/featureStatusEngine';
+import { setArtifactApproval, isArtifactApproved } from '@/services/dev/featureStatusEngine';
 
 const statusLabel: Record<FeatureStatus, string> = {
   planning: '計画中',
@@ -136,16 +137,34 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                             <div className="mt-3">
                               <p className="text-xs text-slate-500 mb-1">成果物:</p>
                               <ul className="grid grid-cols-2 gap-1 text-sm list-disc list-inside">
-                                {Object.values(featureArtifactsRegistry[f.id]).map((art) => (
-                                  <li key={art.title}>
-                                    <a
-                                      className="underline text-blue-600 hover:text-blue-700"
-                                      href={art.href}
-                                    >
-                                      {art.title}
-                                    </a>
-                                  </li>
-                                ))}
+                                {Object.entries(featureArtifactsRegistry[f.id]).map(
+                                  ([artifactId, art]) => {
+                                    const approved = isArtifactApproved(f.id, artifactId);
+                                    return (
+                                      <li key={art.title} className="flex items-center gap-2">
+                                        <a
+                                          className="underline text-blue-600 hover:text-blue-700"
+                                          href={art.href}
+                                        >
+                                          {art.title}
+                                        </a>
+                                        {user?.isAdmin && (
+                                          <Button
+                                            variant={approved ? 'secondary' : 'outline'}
+                                            size="xs"
+                                            onClick={() => {
+                                              setArtifactApproval(f.id, artifactId, !approved);
+                                              refresh();
+                                            }}
+                                            aria-label={`${art.title} を${approved ? '未承認' : '承認'}にする`}
+                                          >
+                                            {approved ? '承認済' : '承認'}
+                                          </Button>
+                                        )}
+                                      </li>
+                                    );
+                                  }
+                                )}
                               </ul>
                             </div>
                           )}
