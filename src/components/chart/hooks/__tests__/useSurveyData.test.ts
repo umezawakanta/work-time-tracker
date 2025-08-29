@@ -79,7 +79,7 @@ describe('useSurveyData', () => {
     expect(result.current.mediaList).toContain('NHK');
   });
 
-  it('APIエラー時にモックデータにフォールバックする', async () => {
+  it('APIエラー時は空状態を維持しモックにフォールバックしない', async () => {
     mockSurveyApi.getAll.mockRejectedValue(new Error('API Error'));
     mockPartyApi.getAll.mockRejectedValue(new Error('API Error'));
 
@@ -91,9 +91,12 @@ describe('useSurveyData', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(mockToast.error).toHaveBeenCalledWith('APIエラーのため、デモデータを表示しています');
-    expect(result.current.parties).toHaveLength(6); // モックデータの政党数
-    expect(result.current.mediaList).toContain('各社平均');
+    // 旧挙動: モックへフォールバック → 新挙動: 空状態
+    expect(mockToast.error).not.toHaveBeenCalled();
+    expect(result.current.parties).toEqual([]);
+    expect(result.current.mediaList).toEqual([]);
+    expect(result.current.chartData).toEqual({});
+    expect(result.current.missingData).toEqual({});
   });
 
   it('fetchSurveyDataが複数回呼び出されても正常に動作する', async () => {
@@ -126,7 +129,7 @@ describe('useSurveyData', () => {
     expect(mockPartyApi.getAll).toHaveBeenCalledTimes(2);
   });
 
-  it('HTMLレスポンスが返された場合にモックデータを使用する', async () => {
+  it('HTMLレスポンスが返された場合もモックに切り替えず空状態を維持する', async () => {
     const htmlResponse = '<!doctype html><html><head></head><body></body></html>';
     mockSurveyApi.getAll.mockResolvedValue({ data: htmlResponse });
     mockPartyApi.getAll.mockResolvedValue({ data: [] });
@@ -139,7 +142,10 @@ describe('useSurveyData', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(mockToast.success).toHaveBeenCalledWith('デモデータを表示しています');
-    expect(result.current.parties).toHaveLength(6); // モックデータの政党数
+    expect(mockToast.success).not.toHaveBeenCalled();
+    expect(result.current.parties).toEqual([]);
+    expect(result.current.mediaList).toEqual([]);
+    expect(result.current.chartData).toEqual({});
+    expect(result.current.missingData).toEqual({});
   });
 });
