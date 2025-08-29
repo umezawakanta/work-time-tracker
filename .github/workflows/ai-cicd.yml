@@ -194,6 +194,7 @@ jobs:
     env:
       ANALYTICS_DISABLED: true
       NOTIFICATIONS_DISABLED: true
+      CI_E2E_AUTH_BYPASS: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

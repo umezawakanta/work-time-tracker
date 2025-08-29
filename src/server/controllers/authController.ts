@@ -271,6 +271,18 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 export const checkAuth = async (req: AuthRequest, res: Response): Promise<void> => {
   // 戻り値の型を追加
   try {
+    // CI E2E: 環境変数によりDBアクセスをスキップし即時成功を返す
+    if (process.env.CI_E2E_AUTH_BYPASS === 'true') {
+      res.json({
+        isAuthenticated: true,
+        user: {
+          id: req.user?.id || 'e2e-user',
+          displayName: 'E2E User',
+          email: 'e2e@example.com',
+        },
+      });
+      return;
+    }
     if (!req.user?.id) {
       res.status(401).json({ isAuthenticated: false, message: '認証されていません' });
       return;

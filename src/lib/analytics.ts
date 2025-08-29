@@ -375,6 +375,10 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
     console.log(`[Analytics] Event: ${normalizedEvent}`, data);
     // dev時もリモート送信が有効ならPOST
     try {
+      // Skip posting entirely in CI to avoid hanging
+      if (process.env.ANALYTICS_DISABLED === 'true') {
+        return;
+      }
       if (ENV.ENABLE_ANALYTICS()) {
         const clientId = getClientId();
         const sessionId = getSessionId();
@@ -413,7 +417,7 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
     }
 
     // バックエンドにも保存
-    if (typeof fetch === 'function') {
+    if (typeof fetch === 'function' && process.env.ANALYTICS_DISABLED !== 'true') {
       const clientId = getClientId();
       const sessionId = getSessionId();
       schedulePost('/api/analytics/track', {
