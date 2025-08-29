@@ -37,6 +37,12 @@ import { ErrorMonitoringDashboard } from '@/components/development/ErrorMonitori
 import { api } from '@/services/api/apiConfig';
 import SocialShareButton from '@/components/ui/SocialShareButton';
 import AdminUsersPage from '@/pages/AdminUsersPage';
+import { useDerivedFeatureStatuses } from '@/hooks/useDerivedFeatureStatuses';
+import {
+  NEW_STATUS_ORDER,
+  setApprovedStatus,
+  toNextStatus,
+} from '@/services/dev/featureStatusEngine';
 import {
   LineChart,
   Line,
@@ -224,6 +230,24 @@ const AdminDashboard: React.FC = () => {
     Array<{ createdAt: string; message: string; url?: string; email?: string }>
   >([]);
   const [isErrorReportsLoading, setIsErrorReportsLoading] = useState<boolean>(false);
+
+  // 開発フロー（承認制）
+  const { data: derivedStatuses, refresh: refreshDerived } = useDerivedFeatureStatuses();
+  const adminFeatureId = 'admin';
+  const adminSuggested = derivedStatuses?.suggested?.[adminFeatureId];
+  const adminApproved = derivedStatuses?.approved?.[adminFeatureId];
+  const adminEffective = derivedStatuses?.effective?.[adminFeatureId];
+
+  const approveNextStep = () => {
+    if (!adminApproved || !adminSuggested) return;
+    const next = toNextStatus(adminApproved);
+    if (!next) return;
+    const idxNext = NEW_STATUS_ORDER.indexOf(next);
+    const idxSuggested = NEW_STATUS_ORDER.indexOf(adminSuggested);
+    const toSet = idxNext <= idxSuggested ? next : adminSuggested;
+    setApprovedStatus(adminFeatureId, toSet);
+    refreshDerived();
+  };
 
   // メトリクス取得
   const fetchMetrics = async () => {
@@ -597,6 +621,12 @@ const AdminDashboard: React.FC = () => {
             <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
             更新
           </Button>
+          {/* 承認付き進捗フロー制御 */}
+          {adminApproved && (
+            <Button variant="default" size="sm" onClick={approveNextStep}>
+              次の段階を承認
+            </Button>
+          )}
           <Button variant="outline" size="sm">
             <Download className="w-4 h-4 mr-1" />
             レポート出力
@@ -642,6 +672,35 @@ const AdminDashboard: React.FC = () => {
 
         <TabsContent value="overview" className="space-y-6">
           {/* 概要メトリクス */}
+          {/* 開発フローの現在位置 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>開発フロー（承認必須）</CardTitle>
+              <CardDescription>
+                提案: {adminSuggested ?? '—'} / 承認: {adminApproved ?? '—'} / 有効:{' '}
+                {adminEffective ?? '—'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {NEW_STATUS_ORDER.map((s) => (
+                  <Badge
+                    key={s}
+                    variant={
+                      adminEffective === s
+                        ? 'default'
+                        : adminApproved === s
+                          ? 'secondary'
+                          : 'outline'
+                    }
+                  >
+                    {s}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
           {metrics && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card>
