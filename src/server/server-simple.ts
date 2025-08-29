@@ -2,6 +2,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { connectDB } from './config/database.js';
+import mongoose from 'mongoose';
 import { Book } from './models/Book.js';
 import { TodoModel } from './models/Todo.js';
 import dotenv from 'dotenv';
@@ -88,6 +89,34 @@ const authenticate = (req: AuthedRequest, res: Response, next: NextFunction) => 
 app.get('/api/health', (req, res) => {
   console.log('✅ Health check called');
   res.json({ status: 'OK', message: 'Simple server running' });
+});
+
+// DB health
+app.get('/api/db/status', async (_req, res) => {
+  try {
+    const state = mongoose.connection.readyState; // 0=disc 1=conn 2=conn-ing 3=disc-ing
+    const ok = state === 1;
+    let version: string | null = null;
+    try {
+      const status: any = await mongoose.connection.db?.admin().serverStatus();
+      version = status?.version || null;
+    } catch {}
+    res.json({ success: true, connected: ok, state, version });
+  } catch (e) {
+    res.json({ success: true, connected: false, state: 0 });
+  }
+});
+
+app.post('/api/db/reconnect', async (_req, res) => {
+  try {
+    if (mongoose.connection.readyState === 1) {
+      await mongoose.disconnect();
+    }
+    await connectDB();
+    res.json({ success: mongoose.connection.readyState === 1 });
+  } catch (e) {
+    res.status(500).json({ success: false, message: 'Reconnect failed' });
+  }
 });
 
 // =============================
@@ -1565,6 +1594,30 @@ app.get('/api/analytics/events', (req, res) => {
 
   req.on('close', () => {
     console.log('📡 /api/analytics/events disconnected');
+    clearInterval(interval);
+    res.end();
+  });
+});
+
+// Notifications SSE (health + stream) used by Error Dashboard
+app.get('/api/notifications/health', (_req, res) => {
+  res.json({ success: true, sse: true });
+});
+
+app.get('/api/notifications/stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders?.();
+
+  const send = (event: string, data: unknown) => {
+    res.write(`event: ${event}\n`);
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+
+  send('heartbeat', { t: Date.now() });
+  const interval = setInterval(() => send('heartbeat', { t: Date.now() }), 10000);
+  req.on('close', () => {
     clearInterval(interval);
     res.end();
   });
