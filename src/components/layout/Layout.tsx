@@ -97,15 +97,6 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     accentColor: 'blue',
   },
   {
-    icon: <Home className="h-5 w-5" />,
-    label: '🏠 統合ダッシュボード',
-    path: '/integrated-dashboard',
-    description: 'メインダッシュボード画面',
-    badge: 'ダッシュボード',
-    gradient: 'from-blue-400 via-purple-500 to-pink-500',
-    accentColor: 'blue',
-  },
-  {
     icon: <Settings className="h-5 w-5" />,
     label: '🗺️ サイトマップ',
     path: '/sitemap',

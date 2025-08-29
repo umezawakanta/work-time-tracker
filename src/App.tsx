@@ -69,7 +69,6 @@ const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 // Core pages - Always loaded
 // import HomePage from './pages/HomePage';
 // import DashboardPage from './pages/DashboardPage';
-import IntegratedDashboard from './pages/IntegratedDashboard';
 // import CognitiveDashboard from './pages/CognitiveDashboard';
 import { ADHDTaskManager } from './components/cognitive/ADHDTaskManager';
 import { ADHDLifeManagementHub } from './components/cognitive/ADHDLifeManagementHub';
@@ -427,11 +426,11 @@ const App: React.FC = () => {
 
                               <Route
                                 path="/integrated-dashboard"
-                                element={
-                                  <LayoutWrapper>
-                                    <IntegratedDashboard />
-                                  </LayoutWrapper>
-                                }
+                                element={<Navigate to="/?tab=dashboard" replace />}
+                              />
+                              <Route
+                                path="/dashboard"
+                                element={<Navigate to="/?tab=dashboard" replace />}
                               />
                               <Route
                                 path="/sitemap"
