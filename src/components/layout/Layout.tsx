@@ -974,14 +974,14 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
   const adminAllowedSectionIds = new Set<string>(['features-status']);
 
   const filteredSections = menuSections
-    .map((section) => ({
-      ...section,
-      items: section.items.filter(
+    .map((section) => {
+      const filteredItems = section.items.filter(
         (item) =>
           item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
           (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
-      ),
-    }))
+      );
+      return { ...section, items: filteredItems };
+    })
     .filter((section) => {
       if (adminAllowedSectionIds.has(section.id)) {
         return isAdmin && section.items.length > 0;

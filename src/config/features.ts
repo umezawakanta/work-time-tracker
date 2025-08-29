@@ -91,6 +91,15 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: true,
   },
   {
+    id: 'daily-work-visualization',
+    name: '📊 日次勤務可視化',
+    path: '/daily-work-visualization',
+    category: '勤怠',
+    description: '当日の勤務/休憩/残業を可視化',
+    status: 'in_progress',
+    requiresRealAPI: true,
+  },
+  {
     id: 'reports',
     name: '勤怠レポート',
     path: '/reports',
