@@ -34,6 +34,9 @@ const GetAnalyticsSchema = z.object({
  */
 router.post('/track', async (req, res) => {
   try {
+    if (process.env.ANALYTICS_DISABLED === 'true' || !process.env.MONGODB_URI) {
+      return res.status(204).end();
+    }
     // リクエストボディの検証
     const validationResult = TrackEventSchema.safeParse(req.body);
 

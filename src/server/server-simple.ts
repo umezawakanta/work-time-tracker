@@ -1173,6 +1173,9 @@ const __getDateKey = (date = new Date()): string => date.toISOString().slice(0, 
 // Record pageview (DB-backed)
 app.post('/api/analytics/pageview', async (req, res) => {
   try {
+    if (process.env.ANALYTICS_DISABLED === 'true' || !process.env.MONGODB_URI) {
+      return res.status(204).end();
+    }
     const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
     const now = new Date();
     const key = __getDateKey(now);

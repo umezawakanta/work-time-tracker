@@ -26,12 +26,14 @@ class NotificationService {
    */
   private async initialize() {
     console.log('🔔 Notification service initializing...');
-
-    // データベースから全ユーザーの設定を読み込む（実装予定）
-    await this.loadAllUserSettings();
-
-    // 定期ジョブのスケジューリング
-    this.schedulePeriodicJobs();
+    if (process.env.NOTIFICATIONS_DISABLED === 'true' || !process.env.MONGODB_URI) {
+      console.log('ℹ️ Notification service disabled for this environment');
+    } else {
+      // データベースから全ユーザーの設定を読み込む（実装予定）
+      await this.loadAllUserSettings();
+      // 定期ジョブのスケジューリング
+      this.schedulePeriodicJobs();
+    }
 
     console.log('✅ Notification service initialized');
   }
