@@ -374,20 +374,27 @@ const SitemapPage: React.FC = () => {
         </div>
 
         {/* 新機能ハイライト */}
-        <Alert className="border-red-200 bg-red-50">
-          <Target className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-red-800">
-            <strong>🆕 新機能リリース:</strong>
-            「4象限マトリックス」でAI駆動のタスク分類・生産性分析が利用可能になりました！
-            <Button
-              variant="link"
-              className="p-0 ml-2 h-auto text-red-600 underline"
-              onClick={() => navigate('/quadrant-dashboard')}
-            >
-              今すぐ試す <ArrowRight className="w-3 h-3 ml-1" />
-            </Button>
-          </AlertDescription>
-        </Alert>
+        {/* 完成している場合のみ新機能CTAを表示（未完成はサイトマップから非表示） */}
+        {(() => {
+          const quad = getFeatureByPath('/quadrant-dashboard');
+          if (!quad || quad.status !== 'complete') return null;
+          return (
+            <Alert className="border-red-200 bg-red-50">
+              <Target className="h-4 w-4 text-red-600" />
+              <AlertDescription className="text-red-800">
+                <strong>🆕 新機能リリース:</strong>
+                「4象限マトリックス」でAI駆動のタスク分類・生産性分析が利用可能になりました！
+                <Button
+                  variant="link"
+                  className="p-0 ml-2 h-auto text-red-600 underline"
+                  onClick={() => navigate('/quadrant-dashboard')}
+                >
+                  今すぐ試す <ArrowRight className="w-3 h-3 ml-1" />
+                </Button>
+              </AlertDescription>
+            </Alert>
+          );
+        })()}
 
         {/* タスク追加クイックガイド */}
         <Card className="border-blue-200 bg-blue-50">

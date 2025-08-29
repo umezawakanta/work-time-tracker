@@ -43,6 +43,126 @@ export const featureArtifactsRegistry: Record<string, FeatureArtifacts> = {
     runbook: { title: '運用手順書', href: '/docs/features/sitemap/runbook' },
     faq: { title: 'FAQ', href: '/docs/features/sitemap/faq' },
   },
+  'quadrant-dashboard': {
+    requirements: { title: '要件定義書', href: '/docs/features/quadrant-dashboard/requirements' },
+    basic_design: { title: '基本設計書', href: '/docs/features/quadrant-dashboard/basic-design' },
+    detailed_design: {
+      title: '詳細設計書',
+      href: '/docs/features/quadrant-dashboard/detailed-design',
+    },
+    source_code: { title: 'ソースコード', href: '/quadrant-dashboard' },
+    github_actions: {
+      title: 'GitHub Actions',
+      href: '/docs/features/quadrant-dashboard/github-actions',
+    },
+    unit_test_spec: {
+      title: '単体試験仕様書',
+      href: '/docs/features/quadrant-dashboard/unit-test-spec',
+    },
+    unit_tests: {
+      title: 'ユニットテストコード',
+      href: '/docs/features/quadrant-dashboard/unit-tests',
+    },
+    e2e_tests: { title: 'e2eテストコード', href: '/docs/features/quadrant-dashboard/e2e-tests' },
+    integration_test_spec: {
+      title: '結合試験仕様書',
+      href: '/docs/features/quadrant-dashboard/integration-test-spec',
+    },
+    system_test_spec: {
+      title: '総合試験仕様書',
+      href: '/docs/features/quadrant-dashboard/system-test-spec',
+    },
+    operation_manual: {
+      title: '操作手順書',
+      href: '/docs/features/quadrant-dashboard/operation-manual',
+    },
+    runbook: { title: '運用手順書', href: '/docs/features/quadrant-dashboard/runbook' },
+    faq: { title: 'FAQ', href: '/docs/features/quadrant-dashboard/faq' },
+  },
+  'accessibility-audit': {
+    requirements: { title: '要件定義書', href: '/docs/features/accessibility-audit/requirements' },
+    basic_design: { title: '基本設計書', href: '/docs/features/accessibility-audit/basic-design' },
+    detailed_design: {
+      title: '詳細設計書',
+      href: '/docs/features/accessibility-audit/detailed-design',
+    },
+    source_code: { title: 'ソースコード', href: '/accessibility-audit' },
+    github_actions: {
+      title: 'GitHub Actions',
+      href: '/docs/features/accessibility-audit/github-actions',
+    },
+    unit_test_spec: {
+      title: '単体試験仕様書',
+      href: '/docs/features/accessibility-audit/unit-test-spec',
+    },
+    unit_tests: {
+      title: 'ユニットテストコード',
+      href: '/docs/features/accessibility-audit/unit-tests',
+    },
+    e2e_tests: { title: 'e2eテストコード', href: '/docs/features/accessibility-audit/e2e-tests' },
+    integration_test_spec: {
+      title: '結合試験仕様書',
+      href: '/docs/features/accessibility-audit/integration-test-spec',
+    },
+    system_test_spec: {
+      title: '総合試験仕様書',
+      href: '/docs/features/accessibility-audit/system-test-spec',
+    },
+    operation_manual: {
+      title: '操作手順書',
+      href: '/docs/features/accessibility-audit/operation-manual',
+    },
+    runbook: { title: '運用手順書', href: '/docs/features/accessibility-audit/runbook' },
+    faq: { title: 'FAQ', href: '/docs/features/accessibility-audit/faq' },
+  },
+  'advanced-performance-monitoring': {
+    requirements: {
+      title: '要件定義書',
+      href: '/docs/features/advanced-performance-monitoring/requirements',
+    },
+    basic_design: {
+      title: '基本設計書',
+      href: '/docs/features/advanced-performance-monitoring/basic-design',
+    },
+    detailed_design: {
+      title: '詳細設計書',
+      href: '/docs/features/advanced-performance-monitoring/detailed-design',
+    },
+    source_code: { title: 'ソースコード', href: '/advanced-performance-monitoring' },
+    github_actions: {
+      title: 'GitHub Actions',
+      href: '/docs/features/advanced-performance-monitoring/github-actions',
+    },
+    unit_test_spec: {
+      title: '単体試験仕様書',
+      href: '/docs/features/advanced-performance-monitoring/unit-test-spec',
+    },
+    unit_tests: {
+      title: 'ユニットテストコード',
+      href: '/docs/features/advanced-performance-monitoring/unit-tests',
+    },
+    e2e_tests: {
+      title: 'e2eテストコード',
+      href: '/docs/features/advanced-performance-monitoring/e2e-tests',
+    },
+    integration_test_spec: {
+      title: '結合試験仕様書',
+      href: '/docs/features/advanced-performance-monitoring/integration-test-spec',
+    },
+    system_test_spec: {
+      title: '総合試験仕様書',
+      href: '/docs/features/advanced-performance-monitoring/system-test-spec',
+    },
+    operation_manual: {
+      title: '操作手順書',
+      href: '/docs/features/advanced-performance-monitoring/operation-manual',
+    },
+    runbook: {
+      title: '運用手順書',
+      href: '/docs/features/advanced-performance-monitoring/runbook',
+    },
+    faq: { title: 'FAQ', href: '/docs/features/advanced-performance-monitoring/faq' },
+  },
   'cognitive-finance': {
     requirements: { title: '要件定義書', href: '/docs/features/cognitive-finance/requirements' },
     basic_design: { title: '基本設計書', href: '/docs/features/cognitive-finance/basic-design' },

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 const statusLabel: Record<FeatureStatus, string> = {
   complete: '完成',
@@ -20,6 +21,7 @@ const statusBadgeVariant: Record<FeatureStatus, 'default' | 'secondary' | 'outli
 
 export default function FeaturesStatusPage(): React.JSX.Element {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const byCategory = useMemo(() => {
     const m = new Map<string, Feature[]>();
@@ -51,6 +53,7 @@ export default function FeaturesStatusPage(): React.JSX.Element {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {features.map((f) => {
                   const isComplete = f.status === 'complete';
+                  const canNavigate = isComplete || Boolean(user?.isAdmin);
                   return (
                     <div
                       key={f.id}
@@ -89,10 +92,10 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                         </div>
                         <div>
                           <Button
-                            variant={isComplete ? 'default' : 'secondary'}
-                            disabled={!isComplete}
+                            variant={canNavigate ? 'default' : 'secondary'}
+                            disabled={!canNavigate}
                             onClick={() => navigate(f.path)}
-                            aria-disabled={!isComplete}
+                            aria-disabled={!canNavigate}
                             aria-label={`${f.name}へ移動`}
                           >
                             移動

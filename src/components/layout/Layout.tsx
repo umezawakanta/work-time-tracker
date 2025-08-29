@@ -993,21 +993,36 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
 
   const adminAllowedSectionIds = new Set<string>(['features-status']);
 
-  const filteredSections = menuSections
-    .map((section) => {
-      const filteredItems = section.items.filter(
-        (item) =>
-          item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-      return { ...section, items: filteredItems };
-    })
-    .filter((section) => {
-      if (adminAllowedSectionIds.has(section.id)) {
-        return isAdmin && section.items.length > 0;
-      }
-      return section.items.length > 0;
-    });
+  // 表示可能なメニューのみを事前にフィルタ（未完成機能は非表示、/adminは管理者のみ）
+  const computeVisibleSections = (sections: MenuSection[]): MenuSection[] => {
+    const lower = searchQuery.toLowerCase();
+    return sections
+      .map((section) => {
+        const visibleItems = section.items.filter((item) => {
+          // 検索フィルタ
+          const matchesSearch =
+            lower === '' ||
+            item.label.toLowerCase().includes(lower) ||
+            (item.description && item.description.toLowerCase().includes(lower));
+          if (!matchesSearch) return false;
+
+          // 役割/機能ステータスによる表示制御
+          if (item.path === '/admin' && !isAdmin) return false;
+          const feature = getFeatureByPath(item.path);
+          if (feature && feature.status !== 'complete') return false;
+          return true;
+        });
+        return { ...section, items: visibleItems };
+      })
+      .filter((section) => {
+        if (adminAllowedSectionIds.has(section.id)) {
+          return isAdmin && section.items.length > 0;
+        }
+        return section.items.length > 0;
+      });
+  };
+
+  const filteredSections = computeVisibleSections(menuSections);
 
   return (
     <AccessibilityProvider>
