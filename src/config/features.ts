@@ -124,6 +124,15 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: true,
   },
   {
+    id: 'adhd-cognitive-assessment',
+    name: '🧪 認知機能評価',
+    path: '/adhd-cognitive-assessment',
+    category: 'コア',
+    description: 'WEIS準拠の科学的認知機能測定',
+    status: 'in_progress',
+    requiresRealAPI: true,
+  },
+  {
     id: 'learning',
     name: '学習ハブ',
     path: '/learning',
@@ -162,6 +171,7 @@ const ALLOWLIST_PATHS: string[] = [
   '/home',
   '/features',
   '/sitemap',
+  '/docs',
   '/login',
   '/register',
   '/privacy',

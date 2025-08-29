@@ -195,6 +195,7 @@ const MobileOptimizationPage = lazy(() => import('@/pages/MobileOptimizationPage
 const ChangelogPage = lazy(() => import('@/pages/Changelog'));
 const DevelopmentStatusPage = lazy(() => import('@/pages/DevelopmentStatus'));
 const FeaturesStatusPage = lazy(() => import('@/pages/FeaturesStatus'));
+const DocsViewerPage = lazy(() => import('@/pages/DocsViewer'));
 
 // 🎯 Personal Development & Life Management
 const AbstinenceManager = lazy(() => import('@/pages/AbstinenceManager'));
@@ -449,6 +450,16 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <FeaturesStatusPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/docs/*"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <DocsViewerPage />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }

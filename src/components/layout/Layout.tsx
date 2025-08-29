@@ -18,6 +18,7 @@ import ThreeStepTour, { TourStepId } from '@/components/engagement/ThreeStepTour
 import { getWeekCount } from '@/services/learning/streak';
 import { useAnalytics } from '@/lib/analytics';
 import { LanguageSwitcher } from '@/components/internationalization/LanguageSwitcher';
+import { getFeatureByPath } from '@/config/features';
 import { logout } from '@/services/api/authApi';
 import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/referral';
 import {
@@ -874,6 +875,9 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
 
   const renderMenuItem = (item: MenuItem) => {
     const isActive = location.pathname === item.path;
+    const feature = getFeatureByPath(item.path);
+    const isIncomplete = feature && feature.status !== 'complete';
+    if (isIncomplete) return null;
 
     return (
       <Link
