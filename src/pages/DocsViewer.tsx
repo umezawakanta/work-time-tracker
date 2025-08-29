@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import { featureArtifactsRegistry } from '@/config/featureArtifacts';
+import { featureArtifactsRegistry, ArtifactId } from '@/config/featureArtifacts';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { isArtifactApproved, setArtifactApproval } from '@/services/dev/featureStatusEngine';
@@ -34,12 +34,12 @@ export default function DocsViewer(): React.JSX.Element {
     // path は /docs/features/:featureId/:doc
     const segments = path.split('/').filter(Boolean);
     const featureId = segments[2] || '';
-    let artifactId: string | null = null;
+    let artifactId: ArtifactId | null = null;
     const reg = featureArtifactsRegistry[featureId as keyof typeof featureArtifactsRegistry];
     if (reg) {
       for (const [aId, link] of Object.entries(reg)) {
         if (link.href === path) {
-          artifactId = aId;
+          artifactId = aId as ArtifactId;
           break;
         }
       }
@@ -50,16 +50,66 @@ export default function DocsViewer(): React.JSX.Element {
     ? isArtifactApproved(docMeta.featureId, docMeta.artifactId)
     : false;
   const [open, setOpen] = useState(false);
-  const checklist = [
-    '目的とスコープが具体的で検証可能',
-    '機能要件が網羅され曖昧さがない',
-    '非機能要件（性能/可用性/セキュリティ/アクセシビリティ）が定義済み',
-    'API入出力・データフロー・依存関係が明記されている',
-    '完了条件と受け入れ基準が明確',
-    'リスクと対応が列挙されている',
-  ];
+
+  // 成果物タイプ別チェックリスト
+  const checklist = useMemo<string[]>(() => {
+    switch (docMeta.artifactId) {
+      case 'requirements':
+        return [
+          '目的とスコープが具体的で検証可能',
+          '機能要件が網羅され曖昧さがない',
+          '非機能要件（性能/可用性/セキュリティ/アクセシビリティ）が定義済み',
+          'API入出力・データフロー・依存関係が明記されている',
+          '完了条件と受け入れ基準が明確',
+          'リスクと対応が列挙されている',
+        ];
+      case 'basic_design':
+        return [
+          '画面/コンポーネント構成と責務が適切に定義されている',
+          '入力項目・バリデーション・エラー表示の方針が定義済み',
+          'API 呼び出しと例外/再試行の振る舞いが設計済み',
+          'ローディング/成功/失敗時の UX が定義済み',
+          'アクセス制御・権限・FeatureAccessGuard の考慮がある',
+          'アクセシビリティ/セキュリティの基本方針が明記されている',
+        ];
+      case 'detailed_design':
+        return [
+          'API I/F（入出力スキーマ・エラーケース）が網羅されている',
+          'トークン保存/更新処理のシーケンスが定義されている',
+          'ルーティングと遷移条件（post_login_redirect など）が明確',
+          '状態管理とテスト観点（単体/結合/総合）が定義済み',
+          'セキュリティ詳細（XSS/CSRF/トークン保護）が定義済み',
+          'ログ/監査・計測項目が定義されている',
+        ];
+      default:
+        return [
+          '内容の完全性と一貫性が確認できる',
+          '関連機能/依存関係との整合性が取れている',
+          'テスト/運用観点の考慮が含まれている',
+        ];
+    }
+  }, [docMeta.artifactId]);
   const [checked, setChecked] = useState<Record<number, boolean>>({});
   const allChecked = checklist.every((_, i) => checked[i]);
+
+  const approvalTitle = useMemo(() => {
+    const labelMap: Record<ArtifactId, string> = {
+      requirements: '要件定義書',
+      basic_design: '基本設計書',
+      detailed_design: '詳細設計書',
+      source_code: 'ソースコード',
+      github_actions: 'GitHub Actions',
+      unit_test_spec: '単体試験仕様書',
+      unit_tests: 'ユニットテストコード',
+      e2e_tests: 'e2eテストコード',
+      integration_test_spec: '結合試験仕様書',
+      system_test_spec: '総合試験仕様書',
+      operation_manual: '操作手順書',
+      runbook: '運用手順書',
+      faq: 'FAQ',
+    };
+    return docMeta.artifactId ? `${labelMap[docMeta.artifactId]} 承認チェック` : '承認チェック';
+  }, [docMeta.artifactId]);
 
   useEffect(() => {
     let isMounted = true;
@@ -102,7 +152,7 @@ export default function DocsViewer(): React.JSX.Element {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>要件定義書 承認チェック</AlertDialogTitle>
+                <AlertDialogTitle>{approvalTitle}</AlertDialogTitle>
                 <AlertDialogDescription>
                   すべての項目にチェックを入れてから承認してください。
                 </AlertDialogDescription>
