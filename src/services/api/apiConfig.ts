@@ -194,7 +194,7 @@ api.interceptors.request.use(
       }
     }
 
-    // トークンがあればヘッダーに追加
+    // トークンがあればヘッダーに追加（本番・プレビュー・開発問わず）
     if (tokenCache) {
       config.headers.Authorization = `Bearer ${tokenCache}`;
       try {

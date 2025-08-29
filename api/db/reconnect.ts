@@ -25,5 +25,3 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     res.status(500).json({ success: false, message: 'Reconnect failed' } as any);
   }
 }
-
-

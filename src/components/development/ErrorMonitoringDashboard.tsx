@@ -18,6 +18,7 @@ import {
   Server,
 } from 'lucide-react';
 import { ErrorRecoveryService } from '@/services/ErrorRecoveryService';
+import { fetchWithAuth } from '@/services/api/fetchWithAuth';
 import { toast } from '@/components/ui/use-toast';
 
 interface ErrorMetrics {
@@ -64,6 +65,7 @@ export const ErrorMonitoringDashboard: React.FC = () => {
   useEffect(() => {
     updateMetrics();
     startRealtimeUpdates();
+    startSse();
 
     return () => {
       if (realtimeUpdateInterval) {
@@ -103,6 +105,19 @@ export const ErrorMonitoringDashboard: React.FC = () => {
     } catch (error) {
       console.error('メトリクス更新エラー:', error);
     }
+  };
+
+  const startSse = () => {
+    try {
+      const es = new EventSource('/api/notifications/stream');
+      es.addEventListener('heartbeat', () => {
+        // 軽量更新
+        updateMetrics();
+      });
+      es.onerror = () => {
+        es.close();
+      };
+    } catch {}
   };
 
   const performManualRecovery = async (errorType: string) => {
@@ -307,6 +322,9 @@ export const ErrorMonitoringDashboard: React.FC = () => {
                       </div>
                     </div>
                   ))}
+                  {Object.keys(metrics.errorTypes).length === 0 && (
+                    <div className="text-sm text-muted-foreground">エラーは検出されていません</div>
+                  )}
                 </div>
               </CardContent>
             </Card>

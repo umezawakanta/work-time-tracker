@@ -460,6 +460,19 @@ export class ErrorRecoveryService {
     };
 
     this.handleGlobalError(errorReport);
+    // 送信（ベストエフォート）
+    try {
+      fetch('/api/admin/error-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: error.message,
+          stack: error.stack,
+          url: typeof window !== 'undefined' ? window.location.href : undefined,
+          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+        }),
+      }).catch(() => undefined);
+    } catch {}
   }
 
   /**
@@ -538,25 +551,9 @@ export class ErrorRecoveryService {
 
     try {
       // WebSocket接続確認
-      const ws = new WebSocket('ws://localhost:3001/notifications');
-      await new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          ws.close();
-          reject();
-        }, 2000);
-
-        ws.onopen = () => {
-          clearTimeout(timeout);
-          ws.close();
-          results.websocket = true;
-          resolve(void 0);
-        };
-
-        ws.onerror = () => {
-          clearTimeout(timeout);
-          reject();
-        };
-      });
+      // Use SSE health check instead of WS
+      const sseHealth = await fetch('/api/notifications/health');
+      results.websocket = sseHealth.ok;
     } catch (e) {
       results.websocket = false;
     }
@@ -571,7 +568,16 @@ export class ErrorRecoveryService {
 
     try {
       // 認証確認
-      const authResponse = await fetch('/api/auth/check');
+      // 認証はBearer必須
+      const authResponse = await fetch('/api/auth/check', {
+        headers: {
+          Authorization:
+            (typeof window !== 'undefined' && window.__API_AUTH_HEADER__) ||
+            (typeof localStorage !== 'undefined' && localStorage.getItem('access_token')
+              ? `Bearer ${localStorage.getItem('access_token')}`
+              : ''),
+        },
+      });
       results.auth = authResponse.ok;
     } catch (e) {
       results.auth = false;

@@ -31,5 +31,3 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     res.status(200).json({ success: true, connected: false, state: 0 } as any);
   }
 }
-
-
