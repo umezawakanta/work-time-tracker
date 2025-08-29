@@ -163,6 +163,180 @@ export const featureArtifactsRegistry: Record<string, FeatureArtifacts> = {
     },
     faq: { title: 'FAQ', href: '/docs/features/advanced-performance-monitoring/faq' },
   },
+  'production-optimization': {
+    requirements: {
+      title: '要件定義書',
+      href: '/docs/features/production-optimization/requirements',
+    },
+    basic_design: {
+      title: '基本設計書',
+      href: '/docs/features/production-optimization/basic-design',
+    },
+    detailed_design: {
+      title: '詳細設計書',
+      href: '/docs/features/production-optimization/detailed-design',
+    },
+    source_code: { title: 'ソースコード', href: '/production-optimization' },
+    github_actions: {
+      title: 'GitHub Actions',
+      href: '/docs/features/production-optimization/github-actions',
+    },
+    unit_test_spec: {
+      title: '単体試験仕様書',
+      href: '/docs/features/production-optimization/unit-test-spec',
+    },
+    unit_tests: {
+      title: 'ユニットテストコード',
+      href: '/docs/features/production-optimization/unit-tests',
+    },
+    e2e_tests: {
+      title: 'e2eテストコード',
+      href: '/docs/features/production-optimization/e2e-tests',
+    },
+    integration_test_spec: {
+      title: '結合試験仕様書',
+      href: '/docs/features/production-optimization/integration-test-spec',
+    },
+    system_test_spec: {
+      title: '総合試験仕様書',
+      href: '/docs/features/production-optimization/system-test-spec',
+    },
+    operation_manual: {
+      title: '操作手順書',
+      href: '/docs/features/production-optimization/operation-manual',
+    },
+    runbook: { title: '運用手順書', href: '/docs/features/production-optimization/runbook' },
+    faq: { title: 'FAQ', href: '/docs/features/production-optimization/faq' },
+  },
+  'mobile-optimization': {
+    requirements: { title: '要件定義書', href: '/docs/features/mobile-optimization/requirements' },
+    basic_design: { title: '基本設計書', href: '/docs/features/mobile-optimization/basic-design' },
+    detailed_design: {
+      title: '詳細設計書',
+      href: '/docs/features/mobile-optimization/detailed-design',
+    },
+    source_code: { title: 'ソースコード', href: '/mobile-optimization' },
+    github_actions: {
+      title: 'GitHub Actions',
+      href: '/docs/features/mobile-optimization/github-actions',
+    },
+    unit_test_spec: {
+      title: '単体試験仕様書',
+      href: '/docs/features/mobile-optimization/unit-test-spec',
+    },
+    unit_tests: {
+      title: 'ユニットテストコード',
+      href: '/docs/features/mobile-optimization/unit-tests',
+    },
+    e2e_tests: { title: 'e2eテストコード', href: '/docs/features/mobile-optimization/e2e-tests' },
+    integration_test_spec: {
+      title: '結合試験仕様書',
+      href: '/docs/features/mobile-optimization/integration-test-spec',
+    },
+    system_test_spec: {
+      title: '総合試験仕様書',
+      href: '/docs/features/mobile-optimization/system-test-spec',
+    },
+    operation_manual: {
+      title: '操作手順書',
+      href: '/docs/features/mobile-optimization/operation-manual',
+    },
+    runbook: { title: '運用手順書', href: '/docs/features/mobile-optimization/runbook' },
+    faq: { title: 'FAQ', href: '/docs/features/mobile-optimization/faq' },
+  },
+  'error-dashboard': {
+    requirements: { title: '要件定義書', href: '/docs/features/error-dashboard/requirements' },
+    basic_design: { title: '基本設計書', href: '/docs/features/error-dashboard/basic-design' },
+    detailed_design: {
+      title: '詳細設計書',
+      href: '/docs/features/error-dashboard/detailed-design',
+    },
+    source_code: { title: 'ソースコード', href: '/error-dashboard' },
+    github_actions: {
+      title: 'GitHub Actions',
+      href: '/docs/features/error-dashboard/github-actions',
+    },
+    unit_test_spec: {
+      title: '単体試験仕様書',
+      href: '/docs/features/error-dashboard/unit-test-spec',
+    },
+    unit_tests: {
+      title: 'ユニットテストコード',
+      href: '/docs/features/error-dashboard/unit-tests',
+    },
+    e2e_tests: { title: 'e2eテストコード', href: '/docs/features/error-dashboard/e2e-tests' },
+    integration_test_spec: {
+      title: '結合試験仕様書',
+      href: '/docs/features/error-dashboard/integration-test-spec',
+    },
+    system_test_spec: {
+      title: '総合試験仕様書',
+      href: '/docs/features/error-dashboard/system-test-spec',
+    },
+    operation_manual: {
+      title: '操作手順書',
+      href: '/docs/features/error-dashboard/operation-manual',
+    },
+    runbook: { title: '運用手順書', href: '/docs/features/error-dashboard/runbook' },
+    faq: { title: 'FAQ', href: '/docs/features/error-dashboard/faq' },
+  },
+  'coverage-report': {
+    requirements: { title: '要件定義書', href: '/docs/features/coverage-report/requirements' },
+    basic_design: { title: '基本設計書', href: '/docs/features/coverage-report/basic-design' },
+    detailed_design: {
+      title: '詳細設計書',
+      href: '/docs/features/coverage-report/detailed-design',
+    },
+    source_code: { title: 'ソースコード', href: '/coverage-report' },
+    github_actions: {
+      title: 'GitHub Actions',
+      href: '/docs/features/coverage-report/github-actions',
+    },
+    unit_test_spec: {
+      title: '単体試験仕様書',
+      href: '/docs/features/coverage-report/unit-test-spec',
+    },
+    unit_tests: {
+      title: 'ユニットテストコード',
+      href: '/docs/features/coverage-report/unit-tests',
+    },
+    e2e_tests: { title: 'e2eテストコード', href: '/docs/features/coverage-report/e2e-tests' },
+    integration_test_spec: {
+      title: '結合試験仕様書',
+      href: '/docs/features/coverage-report/integration-test-spec',
+    },
+    system_test_spec: {
+      title: '総合試験仕様書',
+      href: '/docs/features/coverage-report/system-test-spec',
+    },
+    operation_manual: {
+      title: '操作手順書',
+      href: '/docs/features/coverage-report/operation-manual',
+    },
+    runbook: { title: '運用手順書', href: '/docs/features/coverage-report/runbook' },
+    faq: { title: 'FAQ', href: '/docs/features/coverage-report/faq' },
+  },
+  'dev-status': {
+    requirements: { title: '要件定義書', href: '/docs/features/dev-status/requirements' },
+    basic_design: { title: '基本設計書', href: '/docs/features/dev-status/basic-design' },
+    detailed_design: { title: '詳細設計書', href: '/docs/features/dev-status/detailed-design' },
+    source_code: { title: 'ソースコード', href: '/dev-status' },
+    github_actions: { title: 'GitHub Actions', href: '/docs/features/dev-status/github-actions' },
+    unit_test_spec: { title: '単体試験仕様書', href: '/docs/features/dev-status/unit-test-spec' },
+    unit_tests: { title: 'ユニットテストコード', href: '/docs/features/dev-status/unit-tests' },
+    e2e_tests: { title: 'e2eテストコード', href: '/docs/features/dev-status/e2e-tests' },
+    integration_test_spec: {
+      title: '結合試験仕様書',
+      href: '/docs/features/dev-status/integration-test-spec',
+    },
+    system_test_spec: {
+      title: '総合試験仕様書',
+      href: '/docs/features/dev-status/system-test-spec',
+    },
+    operation_manual: { title: '操作手順書', href: '/docs/features/dev-status/operation-manual' },
+    runbook: { title: '運用手順書', href: '/docs/features/dev-status/runbook' },
+    faq: { title: 'FAQ', href: '/docs/features/dev-status/faq' },
+  },
   'cognitive-finance': {
     requirements: { title: '要件定義書', href: '/docs/features/cognitive-finance/requirements' },
     basic_design: { title: '基本設計書', href: '/docs/features/cognitive-finance/basic-design' },
