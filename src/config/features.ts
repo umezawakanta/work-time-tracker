@@ -66,6 +66,15 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: true,
   },
   {
+    id: 'worktime-form',
+    name: '📝 勤怠フォーム',
+    path: '/worktime-form',
+    category: '勤怠',
+    description: '詳細な勤怠情報入力フォーム',
+    status: 'in_progress',
+    requiresRealAPI: true,
+  },
+  {
     id: 'realtime-clock',
     name: 'リアルタイム勤怠',
     path: '/realtime-clock',
