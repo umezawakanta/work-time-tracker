@@ -124,15 +124,7 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     accentColor: 'indigo',
   },
-  {
-    icon: <Brain className="h-5 w-5" />,
-    label: '🧠 ADHD統合ライフ',
-    path: '/adhd-integrated-life',
-    description: 'ADHD/ASD特化型生活支援システム',
-    badge: 'コア',
-    gradient: 'from-purple-500 via-indigo-500 to-blue-500',
-    accentColor: 'purple',
-  },
+  // ADHD統合ライフは未完成のためメニューから除外（機能一覧のみで表示）
   {
     icon: <Brain className="h-5 w-5" />,
     label: '🤖 AI秘書',
@@ -172,15 +164,6 @@ const adhdSpecializedMenuItems: MenuItem[] = [
     badge: '科学的',
     gradient: 'from-violet-500 via-purple-500 to-indigo-500',
     accentColor: 'violet',
-  },
-  {
-    icon: <Brain className="h-5 w-5" />,
-    label: '📅 統合ライフページ',
-    path: '/adhd-integrated-life-page',
-    description: 'ADHD/ASD総合ライフ管理',
-    badge: '重要',
-    gradient: 'from-blue-500 via-teal-500 to-green-500',
-    accentColor: 'blue',
   },
   {
     icon: <DollarSign className="h-5 w-5" />,
