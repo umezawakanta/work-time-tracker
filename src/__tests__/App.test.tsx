@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import React, { ReactNode } from 'react';
 import { screen, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -275,7 +275,7 @@ describe('App', () => {
     );
     // 認証が必要なページはログインページにリダイレクトされる
     // ログインページまたは何らかのリダイレクトが発生していることを確認
-    expect(document.querySelector('body')).toBeInTheDocument();
+    expect(document.querySelector('body')).to.be.ok;
   });
 
   test('redirects to login for work time entry (requires auth)', () => {
@@ -286,7 +286,7 @@ describe('App', () => {
       { disableRouter: true }
     );
     // 認証が必要なページはログインページにリダイレクトされる
-    expect(document.querySelector('body')).toBeInTheDocument();
+    expect(document.querySelector('body')).to.be.ok;
   });
 
   test('renders not found page for reports (requires auth)', () => {
@@ -298,7 +298,7 @@ describe('App', () => {
     );
 
     // The mocked App should render the NotFound component
-    expect(screen.getByText('404 - ページが見つかりません')).toBeInTheDocument();
+    expect(screen.getByText('404 - ページが見つかりません')).to.exist;
   });
 
   test('renders not found page for invalid route', () => {
@@ -310,8 +310,8 @@ describe('App', () => {
     );
 
     // The mocked App should render the NotFound component
-    expect(screen.getByText('404 - ページが見つかりません')).toBeInTheDocument();
-    expect(screen.getByText('ホームに戻る')).toBeInTheDocument();
+    expect(screen.getByText('404 - ページが見つかりません')).to.exist;
+    expect(screen.getByText('ホームに戻る')).to.exist;
   });
 
   test('renders login page correctly', () => {
@@ -321,7 +321,7 @@ describe('App', () => {
       </MemoryRouter>,
       { disableRouter: true }
     );
-    expect(document.querySelector('body')).toBeInTheDocument();
+    expect(document.querySelector('body')).to.be.ok;
   });
 
   test('renders register page correctly', () => {
@@ -331,7 +331,7 @@ describe('App', () => {
       </MemoryRouter>,
       { disableRouter: true }
     );
-    expect(document.querySelector('body')).toBeInTheDocument();
+    expect(document.querySelector('body')).to.be.ok;
   });
 
   test('renders political trends page correctly', () => {
@@ -341,6 +341,6 @@ describe('App', () => {
       </MemoryRouter>,
       { disableRouter: true }
     );
-    expect(document.querySelector('body')).toBeInTheDocument();
+    expect(document.querySelector('body')).to.be.ok;
   });
 });
