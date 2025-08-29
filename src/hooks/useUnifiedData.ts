@@ -214,7 +214,10 @@ export function useUnifiedData(options: UseUnifiedDataOptions = {}): UseUnifiedD
     const healthCheck = await unifiedDataService.performHealthCheck();
 
     if (debugMode) {
-      console.log('🏥 Health check result:', healthCheck);
+      // Suppress health check logs in production to avoid noise
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🏥 Health check result:', healthCheck);
+      }
     }
 
     return healthCheck;

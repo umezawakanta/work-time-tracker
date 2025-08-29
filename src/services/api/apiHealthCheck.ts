@@ -198,11 +198,13 @@ class ApiHealthCheckService {
     };
 
     this.lastReport = report;
-    console.log(
-      '🩺 Health check completed:',
-      overall,
-      `(${healthyCount}/${checks.length} healthy)`
-    );
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        '🩺 Health check completed:',
+        overall,
+        `(${healthyCount}/${checks.length} healthy)`
+      );
+    }
 
     // 重要な問題がある場合は通知
     if (overall === 'unhealthy') {
@@ -237,7 +239,9 @@ class ApiHealthCheckService {
       5 * 60 * 1000
     );
 
-    console.log('⏰ Periodic health check started (every 5 minutes)');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('⏰ Periodic health check started (every 5 minutes)');
+    }
   }
 
   /**
@@ -307,7 +311,9 @@ class ApiHealthCheckService {
       clearInterval(this.checkInterval);
       this.checkInterval = null;
     }
-    console.log('🧹 API Health Check Service cleaned up');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🧹 API Health Check Service cleaned up');
+    }
   }
 }
 

@@ -85,9 +85,8 @@ const authenticate = (req: AuthedRequest, res: Response, next: NextFunction) => 
   }
 };
 
-// Health check
-app.get('/api/health', (req, res) => {
-  console.log('✅ Health check called');
+// Health check (no noisy logs)
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'OK', message: 'Simple server running' });
 });
 
@@ -2158,8 +2157,7 @@ app.post('/api/ai/anthropic', async (req, res) => {
 });
 
 // Health check for AI API
-app.get('/api/ai/health', (req, res) => {
-  console.log('🤖 GET /api/ai/health called');
+app.get('/api/ai/health', (_req, res) => {
   res.json({
     status: 'OK',
     hasApiKey: !!ANTHROPIC_API_KEY,
