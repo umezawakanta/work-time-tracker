@@ -102,55 +102,50 @@ export function computeSuggestedFeatureStatus(
   feature: Feature,
   signals: { devStatus: DevStatusFlags | null; testSummary: TestSummary | null }
 ): FeatureStatus {
-  let current: FeatureStatus = normalizeToNewStatus(feature.status);
-
   const artifacts = featureArtifactsRegistry[feature.id] || {};
 
-  // planning: 要件定義着手
-  if (artifacts.requirements) current = maxStatus(current, 'planning');
-
-  // designing: 基本/詳細設計
-  if (artifacts.basic_design || artifacts.detailed_design) {
-    current = maxStatus(current, 'designing');
-  }
-
-  // developing: 実装（ソースコード登録）
-  if (artifacts.source_code) current = maxStatus(current, 'developing');
-
-  // unit testing: 単体テスト（spec or coverage）
-  if (artifacts.unit_tests || artifacts.unit_test_spec || signals.testSummary?.unit?.hasCoverage) {
-    current = maxStatus(current, 'unit_testing');
-  }
-
-  // integration testing: e2e 等が利用可能
-  if (artifacts.e2e_tests || signals.testSummary?.e2e?.available) {
-    current = maxStatus(current, 'integration_testing');
-  }
-
-  // system testing: 本番相当で実API接続（モックでない）
+  // シグナル
   const isMocked =
     signals.devStatus?.flags?.mockRoutes?.some((p) => feature.path.startsWith(p)) ?? false;
   const realOk = !feature.requiresRealAPI || !USE_MOCK_DATA;
+
+  // アーティファクト有無
+  const hasRequirements = Boolean(artifacts.requirements);
+  const hasDesign = Boolean(artifacts.basic_design || artifacts.detailed_design);
+  const hasSource = Boolean(artifacts.source_code);
+  const hasUnit = Boolean(
+    artifacts.unit_tests || artifacts.unit_test_spec || signals.testSummary?.unit?.hasCoverage
+  );
+  const hasE2E = Boolean(artifacts.e2e_tests || signals.testSummary?.e2e?.available);
+  const hasDocsAny = Boolean(artifacts.operation_manual || artifacts.runbook || artifacts.faq);
+
+  // 段階的推定（前段を満たさない限り次に進まない）
+  let current: FeatureStatus = 'planning';
+  if (!hasRequirements) return current;
+
+  current = 'designing';
+  if (!hasDesign) return current;
+
+  current = 'developing';
+  if (!hasSource) return current;
+
+  current = 'unit_testing';
+  if (!hasUnit) return current;
+
+  current = 'integration_testing';
+  if (!hasE2E) return current;
+
   if (!isMocked && realOk) {
-    current = maxStatus(current, 'system_testing');
+    current = 'system_testing';
+  } else {
+    return current;
   }
 
-  // documenting: 操作手順書/運用手順書/FAQ
-  if (artifacts.operation_manual || artifacts.runbook || artifacts.faq) {
-    current = maxStatus(current, 'documenting');
+  if (hasDocsAny) {
+    current = 'documenting';
   }
 
-  // review: ドキュメントレビュー（自動判定はせず、提案として document までで十分）
-  // release_pending: モックでなければ出荷準備可能
-  if (!isMocked) {
-    current = maxStatus(current, 'release_pending');
-  }
-
-  // complete: 既存宣言が complete かつ実API条件クリア時のみ提案
-  if (feature.status === 'complete' && !isMocked && realOk) {
-    current = 'complete';
-  }
-
+  // review / release_pending / complete は承認でのみ進行（自動では進めない）
   return current;
 }
 
