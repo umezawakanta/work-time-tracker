@@ -44,6 +44,7 @@ import {
   Package,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { getFeatureByPath } from '@/config/features';
 
 /**
  * サイトマップメインページ
@@ -351,6 +352,10 @@ const SitemapPage: React.FC = () => {
 
   // ページナビゲーション
   const handlePageNavigation = (path: string) => {
+    const feature = getFeatureByPath(path);
+    if (feature && feature.status !== 'complete') {
+      return; // 非完成は遷移不可
+    }
     navigate(path);
   };
 
@@ -563,43 +568,48 @@ const SitemapPage: React.FC = () => {
         {/* グリッド表示 */}
         <TabsContent value="grid" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredPages.map((page) => (
-              <Card
-                key={page.path}
-                className={`hover:shadow-md transition-shadow cursor-pointer border-2 ${
-                  page.isNew ? 'border-red-200 bg-red-50' : 'border-transparent'
-                }`}
-                onClick={() => handlePageNavigation(page.path)}
-              >
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      {page.icon}
-                      <CardTitle className="text-sm">{page.name}</CardTitle>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      {page.isNew && (
-                        <Badge variant="destructive" className="text-xs">
-                          NEW!
+            {filteredPages
+              .filter((p) => {
+                const feature = getFeatureByPath(p.path);
+                return !feature || feature.status === 'complete';
+              })
+              .map((page) => (
+                <Card
+                  key={page.path}
+                  className={`hover:shadow-md transition-shadow cursor-pointer border-2 ${
+                    page.isNew ? 'border-red-200 bg-red-50' : 'border-transparent'
+                  }`}
+                  onClick={() => handlePageNavigation(page.path)}
+                >
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        {page.icon}
+                        <CardTitle className="text-sm">{page.name}</CardTitle>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        {page.isNew && (
+                          <Badge variant="destructive" className="text-xs">
+                            NEW!
+                          </Badge>
+                        )}
+                        <Badge className={`text-xs ${getStatusColor(page.status)}`}>
+                          {page.status === 'active' && 'アクティブ'}
+                          {page.status === 'available' && '利用可能'}
+                          {page.status === 'new' && '新機能'}
                         </Badge>
-                      )}
-                      <Badge className={`text-xs ${getStatusColor(page.status)}`}>
-                        {page.status === 'active' && 'アクティブ'}
-                        {page.status === 'available' && '利用可能'}
-                        {page.status === 'new' && '新機能'}
-                      </Badge>
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-xs mb-3">{page.description}</CardDescription>
-                  <div className="flex items-center justify-between">
-                    <code className="text-xs bg-gray-100 px-2 py-1 rounded">{page.path}</code>
-                    <ExternalLink className="w-3 h-3 text-gray-400" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-xs mb-3">{page.description}</CardDescription>
+                    <div className="flex items-center justify-between">
+                      <code className="text-xs bg-gray-100 px-2 py-1 rounded">{page.path}</code>
+                      <ExternalLink className="w-3 h-3 text-gray-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
           </div>
 
           {filteredPages.length === 0 && (
@@ -629,7 +639,12 @@ const SitemapPage: React.FC = () => {
           {categories
             .filter((cat) => cat.id !== 'all')
             .map((category) => {
-              const categoryPages = filteredPages.filter((page) => page.category === category.id);
+              const categoryPages = filteredPages.filter((page) => {
+                const match = page.category === category.id;
+                if (!match) return false;
+                const feature = getFeatureByPath(page.path);
+                return !feature || feature.status === 'complete';
+              });
               if (categoryPages.length === 0) return null;
 
               return (
