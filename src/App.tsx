@@ -1015,7 +1015,16 @@ const App: React.FC = () => {
                                   </LayoutWrapper>
                                 }
                               />
-                              <Route path="/error-dashboard" element={<ErrorDashboardPage />} />
+                              <Route
+                                path="/error-dashboard"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <ErrorDashboardPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
                               <Route
                                 path="/testing-dashboard"
                                 element={

@@ -3,6 +3,7 @@ import { PageLayout } from '@/components/layout/PageLayout';
 import { ErrorMonitoringDashboard } from '@/components/development/ErrorMonitoringDashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { ErrorRecoveryService } from '@/services/ErrorRecoveryService';
 import { Bug, Shield, Activity, TrendingUp, CheckCircle2 } from 'lucide-react';
 
@@ -93,6 +94,20 @@ const ErrorDashboardPage: React.FC = () => {
               <p className="text-sm text-muted-foreground">システム全体の安定性と信頼性を向上</p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* 401時のログイン導線 */}
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            onClick={() => {
+              try {
+                window.location.assign('/login');
+              } catch {}
+            }}
+          >
+            ログイン
+          </Button>
         </div>
 
         {/* メインダッシュボード */}

@@ -86,7 +86,10 @@ export const ErrorMonitoringDashboard: React.FC = () => {
     try {
       const errorRecoveryService = ErrorRecoveryService.getInstance();
       const stats = errorRecoveryService.getRecoveryStats();
-      const diagnosis = await errorRecoveryService.performSelfDiagnosis();
+      const diagnosis = await errorRecoveryService.performSelfDiagnosis().catch((e) => {
+        // 401等は上位でハンドリング
+        return { server: false, websocket: false, database: false, auth: false } as any;
+      });
 
       // 直近のサマリをAPIから取得（存在すれば）
       try {

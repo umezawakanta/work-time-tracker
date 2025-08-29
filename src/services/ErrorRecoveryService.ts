@@ -569,15 +569,16 @@ export class ErrorRecoveryService {
     try {
       // 認証確認
       // 認証はBearer必須
-      const authResponse = await fetch('/api/auth/check', {
-        headers: {
-          Authorization:
-            (typeof window !== 'undefined' && window.__API_AUTH_HEADER__) ||
-            (typeof localStorage !== 'undefined' && localStorage.getItem('access_token')
-              ? `Bearer ${localStorage.getItem('access_token')}`
-              : ''),
-        },
-      });
+      const token =
+        (typeof localStorage !== 'undefined' &&
+          (localStorage.getItem('accessToken') ||
+            localStorage.getItem('access_token') ||
+            sessionStorage.getItem('access_token') ||
+            sessionStorage.getItem('accessToken'))) ||
+        '';
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const authResponse = await fetch('/api/auth/check', { headers });
       results.auth = authResponse.ok;
     } catch (e) {
       results.auth = false;
