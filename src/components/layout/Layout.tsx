@@ -722,6 +722,23 @@ const getMenuSections = (t: (key: string) => string): MenuSection[] => [
     defaultExpanded: false,
   },
   {
+    id: 'features-status',
+    title: '機能一覧・進捗',
+    icon: <Activity className="h-4 w-4" />,
+    items: [
+      {
+        icon: <Activity className="h-5 w-5" />,
+        label: '🧭 機能一覧（開発状況）',
+        path: '/features',
+        description: '機能別の完成状況とアクセス制御',
+        badge: '進行',
+        gradient: 'from-blue-400 via-cyan-500 to-emerald-500',
+        accentColor: 'cyan',
+      },
+    ],
+    defaultExpanded: true,
+  },
+  {
     id: 'personal-lifestyle',
     title: '個人・ライフスタイル',
     icon: <Bed className="h-4 w-4" />,

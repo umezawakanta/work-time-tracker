@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { featuresRegistry, Feature, FeatureStatus } from '@/config/features';
+import { featureArtifactsRegistry } from '@/config/featureArtifacts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -68,6 +69,23 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                             <p className="text-sm text-muted-foreground mt-1">{f.description}</p>
                           )}
                           <p className="text-xs text-slate-500 mt-1">path: {f.path}</p>
+                          {featureArtifactsRegistry[f.id] && (
+                            <div className="mt-3">
+                              <p className="text-xs text-slate-500 mb-1">成果物:</p>
+                              <ul className="grid grid-cols-2 gap-1 text-sm list-disc list-inside">
+                                {Object.values(featureArtifactsRegistry[f.id]).map((art) => (
+                                  <li key={art.title}>
+                                    <a
+                                      className="underline text-blue-600 hover:text-blue-700"
+                                      href={art.href}
+                                    >
+                                      {art.title}
+                                    </a>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                         </div>
                         <div>
                           <Button

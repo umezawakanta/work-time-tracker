@@ -23,6 +23,15 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: false,
   },
   {
+    id: 'sitemap',
+    name: 'サイトマップ',
+    path: '/sitemap',
+    category: 'コア',
+    description: '全機能一覧・使用ガイド・新機能案内',
+    status: 'complete',
+    requiresRealAPI: false,
+  },
+  {
     id: 'dashboard',
     name: '統合ダッシュボード',
     path: '/integrated-dashboard',
