@@ -631,6 +631,16 @@ const projectMenuItems: MenuItem[] = [
     gradient: 'from-blue-500 via-indigo-500 to-purple-500',
     accentColor: 'blue',
   },
+  // 管理者のみ: 管理者ダッシュボードはフィルタで非管理者から隠す
+  {
+    icon: <Shield className="h-5 w-5" />,
+    label: '🛡️ 管理者ダッシュボード',
+    path: '/admin',
+    description: '管理・運用メトリクス/設定',
+    badge: 'Admin',
+    gradient: 'from-red-500 via-rose-500 to-pink-500',
+    accentColor: 'red',
+  },
 ];
 
 // ユーザー・設定メニューアイテム
@@ -870,6 +880,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
     const feature = getFeatureByPath(item.path);
     const isIncomplete = feature && feature.status !== 'complete';
     if (isIncomplete) return null;
+    if (item.path === '/admin' && !isAdmin) return null;
 
     return (
       <Link
