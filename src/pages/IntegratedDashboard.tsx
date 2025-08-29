@@ -38,6 +38,7 @@ import { ProjectHubProject, IntegratedTask, ProjectAlert } from '@/types/project
 import { useAuth } from '@/hooks/useAuth';
 import { useMongoTodos } from '@/hooks/useMongoTodos';
 import { SmartProductivityDashboard } from '@/components/ai/SmartProductivityDashboard';
+import DailyVictoryWidget from '@/components/widgets/DailyVictoryWidget';
 import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/referral';
 import { toast } from 'react-hot-toast';
 import { gameLoopTaskService, GameLoopStats } from '@/services/productivity/GameLoopTaskService';
@@ -704,6 +705,9 @@ const IntegratedDashboard: React.FC = () => {
 
         <TabsContent value="overview" className="space-y-6">
           {/* 概要コンテンツ */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <DailyVictoryWidget />
+          </div>
         </TabsContent>
 
         {/* AI生産性ダッシュボード */}

@@ -23,6 +23,7 @@ import notificationService from './services/notificationService.js';
 import emailService from './services/emailService.js';
 import blogRoutes from './routes/blogRoutes.js';
 import { BlogPost } from './models/BlogPost.js';
+import { DailyVictory } from './models/DailyVictory.js';
 
 const app = express();
 const PORT = 3001;
@@ -2173,6 +2174,10 @@ console.log('   POST /api/analytics/track'); // 追加
 console.log('   GET  /api/analytics/summary'); // 追加
 console.log('   GET  /api/analytics/live-metrics'); // 追加
 console.log('   POST /api/analytics/pageview'); // 追加
+console.log('   GET  /api/daily-victory/today');
+console.log('   GET  /api/daily-victory/history');
+console.log('   POST /api/daily-victory/today');
+console.log('   PATCH /api/daily-victory/today');
 console.log('   GET  /api/admin/metrics/pageviews/trend'); // 追加
 console.log('   POST /api/ai/anthropic'); // 追加
 console.log('   GET  /api/ai/health'); // 追加
@@ -2397,6 +2402,139 @@ app.post('/api/user/assessments/mbti', (_req, res) =>
 app.post('/api/user/learning/progress', (_req, res) =>
   res.status(501).json({ success: false, message: 'Not implemented' })
 );
+
+// =============================
+// Daily Victory (DB-backed)
+// =============================
+app.get('/api/daily-victory/today', async (req, res) => {
+  try {
+    if (!process.env.MONGODB_URI) return res.json({ success: true, data: null });
+    const userId = (req as any)?.user?.id;
+    if (!userId) return res.status(401).json({ success: false, message: '認証が必要です' });
+    const key = new Date().toISOString().slice(0, 10);
+    const doc = await DailyVictory.findOne({ userId, date: key }).lean();
+    const data = doc
+      ? {
+          date: doc.date,
+          winCondition: doc.winCondition,
+          criteria: doc.criteria,
+          result: doc.result,
+          score: doc.score,
+          notes: doc.notes,
+          createdAt: doc.createdAt?.toISOString(),
+          updatedAt: doc.updatedAt?.toISOString(),
+        }
+      : null;
+    return res.json({ success: true, data });
+  } catch (e) {
+    console.error('❌ Error in GET /api/daily-victory/today:', e);
+    return res.status(500).json({ success: false, message: 'Internal error' });
+  }
+});
+
+app.get('/api/daily-victory/history', async (req, res) => {
+  try {
+    if (!process.env.MONGODB_URI) return res.json({ success: true, data: [] });
+    const userId = (req as any)?.user?.id;
+    if (!userId) return res.status(401).json({ success: false, message: '認証が必要です' });
+    const limit = Math.max(1, Math.min(90, Number(req.query.limit || 30)));
+    const docs = await DailyVictory.find({ userId }).sort({ date: -1 }).limit(limit).lean();
+    const data = docs.map((d) => ({
+      date: d.date,
+      winCondition: d.winCondition,
+      criteria: d.criteria,
+      result: d.result,
+      score: d.score,
+      notes: d.notes,
+      createdAt: d.createdAt?.toISOString(),
+      updatedAt: d.updatedAt?.toISOString(),
+    }));
+    return res.json({ success: true, data });
+  } catch (e) {
+    console.error('❌ Error in GET /api/daily-victory/history:', e);
+    return res.status(500).json({ success: false, message: 'Internal error' });
+  }
+});
+
+app.post('/api/daily-victory/today', async (req, res) => {
+  try {
+    if (!process.env.MONGODB_URI)
+      return res.status(503).json({ success: false, message: 'DB未設定（MONGODB_URI）' });
+    const userId = (req as any)?.user?.id;
+    if (!userId) return res.status(401).json({ success: false, message: '認証が必要です' });
+    const { winCondition, criteria } = req.body || {};
+    if (!winCondition || !Array.isArray(criteria) || criteria.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'winCondition と criteria は必須です' });
+    }
+    const date = new Date().toISOString().slice(0, 10);
+    const updated = await DailyVictory.findOneAndUpdate(
+      { userId, date },
+      {
+        userId,
+        date,
+        winCondition: String(winCondition),
+        criteria: criteria.map(String),
+        result: 'pending',
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    return res.json({
+      success: true,
+      data: {
+        date: updated.date,
+        winCondition: updated.winCondition,
+        criteria: updated.criteria,
+        result: updated.result,
+        score: updated.score,
+        notes: updated.notes,
+        createdAt: updated.createdAt?.toISOString(),
+        updatedAt: updated.updatedAt?.toISOString(),
+      },
+    });
+  } catch (e) {
+    console.error('❌ Error in POST /api/daily-victory/today:', e);
+    return res.status(500).json({ success: false, message: 'Internal error' });
+  }
+});
+
+app.patch('/api/daily-victory/today', async (req, res) => {
+  try {
+    if (!process.env.MONGODB_URI)
+      return res.status(503).json({ success: false, message: 'DB未設定（MONGODB_URI）' });
+    const userId = (req as any)?.user?.id;
+    if (!userId) return res.status(401).json({ success: false, message: '認証が必要です' });
+    const { result, notes, score } = req.body || {};
+    if (result !== 'win' && result !== 'lose') {
+      return res.status(400).json({ success: false, message: 'result は win か lose が必要です' });
+    }
+    const date = new Date().toISOString().slice(0, 10);
+    const updated = await DailyVictory.findOneAndUpdate(
+      { userId, date },
+      { result, notes, score },
+      { new: true }
+    );
+    if (!updated)
+      return res.status(404).json({ success: false, message: '本日の勝利条件が未設定です' });
+    return res.json({
+      success: true,
+      data: {
+        date: updated.date,
+        winCondition: updated.winCondition,
+        criteria: updated.criteria,
+        result: updated.result,
+        score: updated.score,
+        notes: updated.notes,
+        createdAt: updated.createdAt?.toISOString(),
+        updatedAt: updated.updatedAt?.toISOString(),
+      },
+    });
+  } catch (e) {
+    console.error('❌ Error in PATCH /api/daily-victory/today:', e);
+    return res.status(500).json({ success: false, message: 'Internal error' });
+  }
+});
 
 // 404 Error handler - must be after all known routes; allow future mocks via pattern
 app.use((req: Request, res: Response): void => {
