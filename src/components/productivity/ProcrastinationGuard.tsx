@@ -152,6 +152,11 @@ export const ProcrastinationGuard: React.FC = () => {
     return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
   };
 
+  // 完全に無効化するための早期リターン（機能フラグとスヌーズを併用）
+  if (!settings.enabled) {
+    return null;
+  }
+
   return (
     <>
       {/* Floating action button */}
@@ -173,7 +178,7 @@ export const ProcrastinationGuard: React.FC = () => {
       )}
 
       {/* Micro anchor timer */}
-      {microTimerMs > 0 && (
+      {settings.enabled && microTimerMs > 0 && (
         <div
           aria-live="polite"
           className="fixed bottom-4 right-4 z-40 rounded bg-emerald-600 text-white px-3 py-2 shadow"

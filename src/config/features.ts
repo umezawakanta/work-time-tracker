@@ -27,6 +27,8 @@ export interface Feature {
   status: FeatureStatus;
   requiresRealAPI?: boolean;
   priority?: 'P0' | 'P1' | 'P2' | 'P3';
+  // 無効化（全ユーザー/管理者含めアクセス不可・メニュー非表示）
+  disabled?: boolean;
 }
 
 export const featuresRegistry: Feature[] = [
@@ -310,6 +312,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P3',
+    disabled: true,
   },
   {
     id: 'procrastination-guard',
@@ -319,6 +322,7 @@ export const featuresRegistry: Feature[] = [
     description: 'バックグラウンドの先延ばし防止ガード',
     status: 'in_progress',
     requiresRealAPI: false,
+    disabled: true,
   },
   {
     id: 'admin',
@@ -722,6 +726,9 @@ export function isFeatureAccessible(pathname: string): {
   }
   const feature = getFeatureByPath(pathname);
   if (!feature) return { allowed: true };
+  if ((feature as any).disabled) {
+    return { allowed: false, reason: '無効化された機能です', feature };
+  }
   if (feature.status !== 'complete') {
     return { allowed: false, reason: '未完成の機能です', feature };
   }
