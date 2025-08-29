@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';
-import ErrorMonitoringDashboard from '@/components/development/ErrorMonitoringDashboard';
+import { ErrorMonitoringDashboard } from '@/components/development/ErrorMonitoringDashboard';
 import { api } from '@/services/api/apiConfig';
 import SocialShareButton from '@/components/ui/SocialShareButton';
 import AdminUsersPage from '@/pages/AdminUsersPage';
