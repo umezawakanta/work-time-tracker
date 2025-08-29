@@ -107,15 +107,7 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     gradient: 'from-green-400 via-blue-500 to-purple-500',
     accentColor: 'green',
   },
-  {
-    icon: <Activity className="h-5 w-5" />,
-    label: '🧭 機能一覧（開発状況）',
-    path: '/features',
-    description: '機能別の完成状況とアクセス制御',
-    badge: '進行',
-    gradient: 'from-blue-400 via-cyan-500 to-emerald-500',
-    accentColor: 'cyan',
-  },
+  // 機能一覧（開発状況）は管理者のみ表示（下部の features-status セクションで条件表示）
   {
     icon: <Target className="h-5 w-5" />,
     label: '📋 タスク管理センター',
@@ -977,6 +969,10 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
   };
 
   // サイドバーの検索機能
+  const isAdmin = Boolean(user?.isAdmin);
+
+  const adminAllowedSectionIds = new Set<string>(['features-status']);
+
   const filteredSections = menuSections
     .map((section) => ({
       ...section,
@@ -986,7 +982,12 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
       ),
     }))
-    .filter((section) => section.items.length > 0);
+    .filter((section) => {
+      if (adminAllowedSectionIds.has(section.id)) {
+        return isAdmin && section.items.length > 0;
+      }
+      return section.items.length > 0;
+    });
 
   return (
     <AccessibilityProvider>
