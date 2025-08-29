@@ -55,6 +55,7 @@ export default function FeaturesStatusPage(): React.JSX.Element {
   const [progressFilter, setProgressFilter] = useState<
     'all' | 'not_started' | 'in_progress' | 'complete'
   >('all');
+  const [viewMode, setViewMode] = useState<'category' | 'priority'>('priority');
 
   const byCategory = useMemo(() => {
     const m = new Map<string, Feature[]>();
@@ -88,6 +89,27 @@ export default function FeaturesStatusPage(): React.JSX.Element {
     });
   }, [statusFilter, progressFilter, sortByPriority, derived]);
 
+  const prioritizedList = useMemo(() => {
+    const priorityRank: Record<string, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
+    const list: Feature[] = [];
+    for (const f of featuresRegistry) {
+      const effectiveStatus = (derived?.effective?.[f.id] ?? f.status) as FeatureStatus;
+      const isComplete = effectiveStatus === 'complete';
+      const isNotStarted = effectiveStatus === 'planning';
+      if (progressFilter === 'complete' && !isComplete) continue;
+      if (progressFilter === 'not_started' && !isNotStarted) continue;
+      if (progressFilter === 'in_progress' && (isComplete || isNotStarted)) continue;
+      if (statusFilter !== 'all' && effectiveStatus !== statusFilter) continue;
+      list.push({ ...f, status: effectiveStatus });
+    }
+    return list.sort((a, b) => {
+      const pa = priorityRank[(a as any).priority || 'P3'];
+      const pb = priorityRank[(b as any).priority || 'P3'];
+      if (pa !== pb) return pa - pb;
+      return a.name.localeCompare(b.name);
+    });
+  }, [statusFilter, progressFilter, derived]);
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <h1 className="text-3xl font-bold mb-2">機能一覧と開発状況</h1>
@@ -117,6 +139,20 @@ export default function FeaturesStatusPage(): React.JSX.Element {
         >
           優先度順
         </Button>
+        <Button
+          variant={viewMode === 'priority' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setViewMode('priority')}
+        >
+          リスト(優先度順)
+        </Button>
+        <Button
+          variant={viewMode === 'category' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setViewMode('category')}
+        >
+          カテゴリ表示
+        </Button>
       </div>
 
       {/* 着手状況フィルタ */}
@@ -140,110 +176,179 @@ export default function FeaturesStatusPage(): React.JSX.Element {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        {byCategory.map(([category, features]) => (
-          <Card key={category}>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>{category}</span>
-                <Badge variant="outline">{features.length} 件</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {features.map((f) => {
-                  const isComplete = f.status === 'complete';
-                  const canNavigate = isComplete || Boolean(user?.isAdmin);
-                  return (
-                    <div
-                      key={f.id}
-                      className={`p-4 rounded-lg border ${isComplete ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200'}`}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
+      {viewMode === 'priority' ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>優先度リスト</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="text-left">
+                    <th className="p-2">優先度</th>
+                    <th className="p-2">機能</th>
+                    <th className="p-2">ステータス</th>
+                    <th className="p-2">カテゴリ</th>
+                    <th className="p-2 hidden md:table-cell">path</th>
+                    <th className="p-2">API</th>
+                    <th className="p-2">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {prioritizedList.map((f) => {
+                    const isComplete = f.status === 'complete';
+                    const canNavigate = isComplete || Boolean(user?.isAdmin);
+                    return (
+                      <tr key={f.id} className="border-t">
+                        <td className="p-2">
+                          <Badge variant="outline">{(f as any).priority || 'P3'}</Badge>
+                        </td>
+                        <td className="p-2">
                           <div className="flex items-center gap-2">
-                            <h3 className="font-semibold">{f.name}</h3>
-                            <Badge variant={statusBadgeVariant[f.status]}>
-                              {statusLabel[f.status]}
-                            </Badge>
-                            {(f as any).priority && (
-                              <Badge variant="outline">{(f as any).priority}</Badge>
-                            )}
-                            {f.requiresRealAPI && <Badge variant="outline">実API必須</Badge>}
+                            <span className="font-medium">{f.name}</span>
                           </div>
-                          {derived?.suggested && (
-                            <p className="text-[11px] text-slate-500 mt-1">
-                              提案:{' '}
-                              {statusLabel[(derived.suggested[f.id] ?? f.status) as FeatureStatus]}{' '}
-                              / 承認:{' '}
-                              {statusLabel[(derived.approved?.[f.id] ?? f.status) as FeatureStatus]}
-                            </p>
-                          )}
-                          {f.description && (
-                            <p className="text-sm text-muted-foreground mt-1">{f.description}</p>
-                          )}
-                          <p className="text-xs text-slate-500 mt-1">path: {f.path}</p>
-                          {derived?.signals && (
-                            <p className="text-[11px] text-slate-400 mt-1">
-                              自動判定: dev-status.json / test-summary.json から推定
-                            </p>
-                          )}
-                          {featureArtifactsRegistry[f.id] && (
-                            <div className="mt-3">
-                              <p className="text-xs text-slate-500 mb-1">成果物:</p>
-                              <ul className="grid grid-cols-2 gap-1 text-sm list-disc list-inside">
-                                {Object.entries(featureArtifactsRegistry[f.id]).map(
-                                  ([artifactId, art]) => {
-                                    const approved = isArtifactApproved(f.id, artifactId);
-                                    return (
-                                      <li key={art.title} className="flex items-center gap-2">
-                                        <a
-                                          className="underline text-blue-600 hover:text-blue-700"
-                                          href={art.href}
-                                        >
-                                          {art.title}
-                                        </a>
-                                        {user?.isAdmin && (
-                                          <Button
-                                            variant={approved ? 'secondary' : 'outline'}
-                                            size="xs"
-                                            onClick={() => {
-                                              setArtifactApproval(f.id, artifactId, !approved);
-                                              refresh();
-                                            }}
-                                            aria-label={`${art.title} を${approved ? '未承認' : '承認'}にする`}
-                                          >
-                                            {approved ? '承認済' : '承認'}
-                                          </Button>
-                                        )}
-                                      </li>
-                                    );
-                                  }
-                                )}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                        <div>
+                        </td>
+                        <td className="p-2">
+                          <Badge variant={statusBadgeVariant[f.status]}>
+                            {statusLabel[f.status]}
+                          </Badge>
+                        </td>
+                        <td className="p-2">{f.category}</td>
+                        <td className="p-2 hidden md:table-cell text-slate-500">{f.path}</td>
+                        <td className="p-2">{f.requiresRealAPI ? '実API' : '-'}</td>
+                        <td className="p-2">
                           <Button
                             variant={canNavigate ? 'default' : 'secondary'}
+                            size="sm"
                             disabled={!canNavigate}
                             onClick={() => navigate(f.path)}
-                            aria-disabled={!canNavigate}
-                            aria-label={`${f.name}へ移動`}
                           >
                             移動
                           </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 gap-6">
+          {byCategory.map(([category, features]) => (
+            <Card key={category}>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>{category}</span>
+                  <Badge variant="outline">{features.length} 件</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {features.map((f) => {
+                    const isComplete = f.status === 'complete';
+                    const canNavigate = isComplete || Boolean(user?.isAdmin);
+                    return (
+                      <div
+                        key={f.id}
+                        className={`p-4 rounded-lg border ${isComplete ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200'}`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold">{f.name}</h3>
+                              <Badge variant={statusBadgeVariant[f.status]}>
+                                {statusLabel[f.status]}
+                              </Badge>
+                              {(f as any).priority && (
+                                <Badge variant="outline">{(f as any).priority}</Badge>
+                              )}
+                              {f.requiresRealAPI && <Badge variant="outline">実API必須</Badge>}
+                            </div>
+                            {derived?.suggested && (
+                              <p className="text-[11px] text-slate-500 mt-1">
+                                提案:{' '}
+                                {
+                                  statusLabel[
+                                    (derived.suggested[f.id] ?? f.status) as FeatureStatus
+                                  ]
+                                }{' '}
+                                / 承認:{' '}
+                                {
+                                  statusLabel[
+                                    (derived.approved?.[f.id] ?? f.status) as FeatureStatus
+                                  ]
+                                }
+                              </p>
+                            )}
+                            {f.description && (
+                              <p className="text-sm text-muted-foreground mt-1">{f.description}</p>
+                            )}
+                            <p className="text-xs text-slate-500 mt-1">path: {f.path}</p>
+                            {derived?.signals && (
+                              <p className="text-[11px] text-slate-400 mt-1">
+                                自動判定: dev-status.json / test-summary.json から推定
+                              </p>
+                            )}
+                            {featureArtifactsRegistry[f.id] && (
+                              <div className="mt-3">
+                                <p className="text-xs text-slate-500 mb-1">成果物:</p>
+                                <ul className="grid grid-cols-2 gap-1 text-sm list-disc list-inside">
+                                  {Object.entries(featureArtifactsRegistry[f.id]).map(
+                                    ([artifactId, art]) => {
+                                      const approved = isArtifactApproved(f.id, artifactId);
+                                      return (
+                                        <li key={art.title} className="flex items-center gap-2">
+                                          <a
+                                            className="underline text-blue-600 hover:text-blue-700"
+                                            href={art.href}
+                                          >
+                                            {art.title}
+                                          </a>
+                                          {user?.isAdmin && (
+                                            <Button
+                                              variant={approved ? 'secondary' : 'outline'}
+                                              size="xs"
+                                              onClick={() => {
+                                                setArtifactApproval(f.id, artifactId, !approved);
+                                                refresh();
+                                              }}
+                                              aria-label={`${art.title} を${approved ? '未承認' : '承認'}にする`}
+                                            >
+                                              {approved ? '承認済' : '承認'}
+                                            </Button>
+                                          )}
+                                        </li>
+                                      );
+                                    }
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <Button
+                              variant={canNavigate ? 'default' : 'secondary'}
+                              disabled={!canNavigate}
+                              onClick={() => navigate(f.path)}
+                              aria-disabled={!canNavigate}
+                              aria-label={`${f.name}へ移動`}
+                            >
+                              移動
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
