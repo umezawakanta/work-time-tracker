@@ -70,7 +70,7 @@ const authenticate = (req: AuthedRequest, res: Response, next: NextFunction) => 
       return;
     }
     const token = authHeader.replace('Bearer ', '').trim();
-    const secret = process.env.JWT_SECRET || 'dev-fallback-jwt-secret-key-change-in-production';
+    const secret = process.env.JWT_SECRET || 'development-secret-key-change-in-production';
     const decoded = jwt.verify(token, secret) as { id?: string };
     if (!decoded?.id) {
       res.status(401).json({ message: 'Invalid token' });
@@ -328,7 +328,7 @@ app.delete('/api/sleep-records/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// WBS endpoints not implemented yet - disable explicit mocks
+// WBS endpoints not implemented yet
 app.post('/api/wbs', (_req, res) =>
   res.status(501).json({ success: false, message: 'Not implemented' })
 );
@@ -351,7 +351,7 @@ app.post('/api/auth/register', (req: Request, res: Response) => {
   void registerController(req, res);
 });
 
-// Magic link endpoint (dev mock)
+// Magic link endpoint (not implemented)
 app.post('/api/auth/magic-link', (req, res) => {
   console.log('✅ POST /api/auth/magic-link called');
   return res.status(501).json({ success: false, message: 'Not implemented' });
@@ -626,7 +626,7 @@ app.post('/api/todos', async (req, res) => {
       tags: Array.isArray(tags) ? tags : [],
       dueDate: dueDate || deadline || undefined,
       estimatedMinutes: estimatedMinutes || (estimatedTime ? parseInt(estimatedTime) : undefined),
-      userId: 'user1001', // デモユーザー
+      userId: (req as any)?.user?.id,
       completed: false,
       source: 'manual' as const,
       context: [],
@@ -868,134 +868,18 @@ app.post('/api/todos/reset', async (req, res) => {
 });
 
 // GET todos/history - todo completion history
-app.get('/api/todos/history', async (req, res) => {
-  console.log('✅ GET /api/todos/history called');
-
-  try {
-    // Generate mock history data for the past 30 days
-    const history = [];
-    const today = new Date();
-
-    for (let i = 29; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-
-      // Generate random completion count (0-8 tasks per day)
-      const completedCount = Math.floor(Math.random() * 9);
-
-      history.push({
-        date: dateStr,
-        completedCount,
-        day: date.toLocaleDateString('ja-JP', { weekday: 'short' }),
-      });
-    }
-
-    console.log(`📊 Generated history for ${history.length} days`);
-
-    res.json({
-      success: true,
-      data: history,
-      message: 'TODO履歴を取得しました',
-    });
-  } catch (error) {
-    console.error('❌ Error in GET /api/todos/history:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch history',
-      message: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
+app.get('/api/todos/history', async (_req, res) => {
+  return res.status(501).json({ success: false, message: 'Not implemented' });
 });
 
 // GET todos/history/daily - daily history summary
-app.get('/api/todos/history/daily', async (req, res) => {
-  console.log('✅ GET /api/todos/history/daily called');
-
-  try {
-    // Generate mock daily summary for the past 7 days
-    const dailyHistory = [];
-    const today = new Date();
-
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-
-      // Generate random daily stats
-      const completed = Math.floor(Math.random() * 8);
-      const total = completed + Math.floor(Math.random() * 5);
-
-      dailyHistory.push({
-        date: dateStr,
-        completed,
-        total,
-        completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
-        day: date.toLocaleDateString('ja-JP', { weekday: 'short' }),
-        dayOfMonth: date.getDate(),
-      });
-    }
-
-    console.log(`📅 Generated daily history for ${dailyHistory.length} days`);
-
-    res.json({
-      success: true,
-      data: dailyHistory,
-      message: '日別履歴を取得しました',
-    });
-  } catch (error) {
-    console.error('❌ Error in GET /api/todos/history/daily:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch daily history',
-      message: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
+app.get('/api/todos/history/daily', async (_req, res) => {
+  return res.status(501).json({ success: false, message: 'Not implemented' });
 });
 
 // GET projects
-app.get('/api/projects', (req, res) => {
-  console.log('✅ GET /api/projects called');
-
-  const demoProjects = [
-    {
-      id: 'proj-1',
-      name: 'Work Time Tracker',
-      description: 'ADHD特化型時間管理アプリケーション',
-      status: 'active',
-      progress: 75,
-      priority: 'high',
-      startDate: '2024-01-01',
-      endDate: '2024-12-31',
-      tags: ['React', 'TypeScript', 'Node.js'],
-      tasks: [
-        { id: 'task-1', title: 'フロントエンド開発', completed: true },
-        { id: 'task-2', title: 'バックエンドAPI', completed: true },
-        { id: 'task-3', title: 'デプロイメント', completed: false },
-      ],
-    },
-    {
-      id: 'proj-2',
-      name: 'AI統合システム',
-      description: 'Gemini AIを活用したタスク分析システム',
-      status: 'active',
-      progress: 60,
-      priority: 'medium',
-      startDate: '2024-02-01',
-      endDate: '2024-06-30',
-      tags: ['AI', 'Machine Learning', 'API'],
-      tasks: [
-        { id: 'task-4', title: 'AI API統合', completed: true },
-        { id: 'task-5', title: 'データ分析機能', completed: false },
-      ],
-    },
-  ];
-
-  res.json({
-    success: true,
-    data: demoProjects,
-    message: 'Projects retrieved successfully',
-  });
+app.get('/api/projects', (_req, res) => {
+  return res.status(501).json({ success: false, message: 'Not implemented' });
 });
 
 // Temporarily remove 404 handler - will be moved after all routes
@@ -1268,7 +1152,7 @@ app.get('/api/admin/metrics/pageviews/trend', async (req, res) => {
   }
 });
 
-// Admin top pages (dev mock)
+// Admin top pages
 app.get('/api/admin/metrics/top-pages', async (req, res) => {
   try {
     const windowParam = String(req.query.window || '7d');
@@ -1651,7 +1535,7 @@ app.get('/api/status/ci', async (req, res) => {
   }
 });
 
-// Server-Sent Events for realtime analytics (dev mock)
+// Server-Sent Events for realtime analytics
 app.get('/api/analytics/events', (req, res) => {
   console.log('📡 GET /api/analytics/events (SSE) connected');
   res.setHeader('Content-Type', 'text/event-stream');
@@ -1788,7 +1672,7 @@ app.get('/api/analytics/live-metrics', async (req, res) => {
   }
 });
 
-// ===== Additional analytics endpoints for AdminDashboard (dev mock) =====
+// ===== Additional analytics endpoints for AdminDashboard =====
 // Daily pageviews series
 app.get('/api/analytics/pageviews/daily', async (req, res) => {
   try {
@@ -1825,7 +1709,7 @@ app.get('/api/analytics/pageviews/daily', async (req, res) => {
   }
 });
 
-// Active users in the last N hours (simplified mock)
+// Active users in the last N hours (simplified)
 app.get('/api/analytics/users/active', async (req, res) => {
   try {
     const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
@@ -1844,7 +1728,7 @@ app.get('/api/analytics/users/active', async (req, res) => {
   }
 });
 
-// 30d retention cohorts (simplified mock)
+// 30d retention cohorts (simplified)
 app.get('/api/analytics/retention/30d', async (req, res) => {
   try {
     const { AnalyticsEvent } = await import('./models/AnalyticsEvent.js');
@@ -1900,7 +1784,7 @@ app.get('/api/analytics/retention/30d', async (req, res) => {
   }
 });
 
-// Recent error reports (mocked list)
+// Recent error reports
 app.get('/api/admin/error-reports', async (req, res) => {
   try {
     const limitParam = Number(req.query.limit || 10);
@@ -2458,7 +2342,7 @@ app.get('/api/notifications/status', (req, res) => {
   });
 });
 
-// ==== Admin metrics summaries (dev mock) ====
+// ==== Admin metrics summaries ====
 app.get('/api/admin/metrics/users/summary', (req, res) => {
   try {
     const now = new Date();
@@ -2547,9 +2431,7 @@ const startServer = async () => {
     dbConnected = true;
     console.log('✅ Database connected successfully');
   } catch (error) {
-    console.warn(
-      '⚠️ Database connection failed. Running in degraded mode (mock auth, limited APIs).'
-    );
+    console.warn('⚠️ Database connection failed. Running in degraded mode (limited APIs).');
     console.warn('   Set MONGODB_URI in .env.local to enable full features.');
   }
 
