@@ -304,7 +304,7 @@ export const featuresRegistry: Feature[] = [
     path: '/impulse-countermeasures',
     category: '衝動対策',
     description: '衝動性への対処法・行動設計（プレースホルダー）',
-    status: 'in_progress',
+    status: 'planning',
     requiresRealAPI: false,
   },
   {
@@ -456,6 +456,15 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: true,
   },
   {
+    id: 'billing-payments',
+    name: '課金',
+    path: '/subscription',
+    category: 'サブスクリプション・請求',
+    description: '決済/課金処理（バックエンド連携）',
+    status: 'planning',
+    requiresRealAPI: true,
+  },
+  {
     id: 'subscription-upgrade',
     name: '⭐ アップグレード',
     path: '/subscription-upgrade',
@@ -492,6 +501,16 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: false,
   },
+  // 規約
+  {
+    id: 'terms-of-service',
+    name: '利用規約',
+    path: '/docs/terms',
+    category: 'コア',
+    description: 'サービス利用規約（ドキュメント表示）',
+    status: 'planning',
+    requiresRealAPI: false,
+  },
   {
     id: 'wbs-creator',
     name: '📊 WBSクリエイター',
@@ -519,6 +538,34 @@ export const featuresRegistry: Feature[] = [
     description: 'ユーザープロフィール設定',
     status: 'in_progress',
     requiresRealAPI: false,
+  },
+  // 認証・アカウント
+  {
+    id: 'login',
+    name: 'ログイン',
+    path: '/login',
+    category: 'ユーザー・設定',
+    description: 'サインイン（メール/外部IdP）',
+    status: 'developing',
+    requiresRealAPI: true,
+  },
+  {
+    id: 'user-registration',
+    name: 'ユーザー登録',
+    path: '/register',
+    category: 'ユーザー・設定',
+    description: '新規アカウント作成',
+    status: 'planning',
+    requiresRealAPI: true,
+  },
+  {
+    id: 'logout',
+    name: 'ログアウト',
+    path: '/_bg/logout',
+    category: 'ユーザー・設定',
+    description: 'セッション終了（バックグラウンド機能）',
+    status: 'planning',
+    requiresRealAPI: true,
   },
   // 生産性
   {
