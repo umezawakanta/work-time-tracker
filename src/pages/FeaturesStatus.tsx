@@ -54,7 +54,7 @@ export default function FeaturesStatusPage(): React.JSX.Element {
   const byCategory = useMemo(() => {
     const m = new Map<string, Feature[]>();
     for (const f of featuresRegistry) {
-      const effectiveStatus = derived?.map?.[f.id] ?? f.status;
+      const effectiveStatus = (derived?.effective?.[f.id] ?? f.status) as FeatureStatus;
       if (statusFilter !== 'all' && effectiveStatus !== statusFilter) continue;
       const arr = m.get(f.category) || [];
       arr.push({ ...f, status: effectiveStatus });
