@@ -1,5 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 export default function DocsViewer(): React.JSX.Element {
   const params = useParams();
@@ -41,7 +45,9 @@ export default function DocsViewer(): React.JSX.Element {
       {!loading && error && <p className="text-red-600">{error}</p>}
       {!loading && !error && (
         <article className="prose prose-slate max-w-none">
-          <pre className="whitespace-pre-wrap text-sm leading-6">{content}</pre>
+          <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
+            {content || ''}
+          </ReactMarkdown>
         </article>
       )}
     </div>
