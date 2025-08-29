@@ -886,7 +886,8 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
 
   const renderMenuItem = (item: MenuItem) => {
     const isActive = location.pathname === item.path;
-    const feature = getFeatureByPath(item.path);
+    const basePath = item.path.split('?')[0].split('#')[0];
+    const feature = getFeatureByPath(basePath);
     const isIncomplete = feature && feature.status !== 'complete';
     if (isIncomplete) return null;
     if (item.path === '/admin' && !isAdmin) return null;
