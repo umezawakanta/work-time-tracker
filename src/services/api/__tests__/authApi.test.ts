@@ -1,4 +1,6 @@
-/// <reference types="vitest/globals" />
+/// <reference types="vitest" />
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+const jest = vi;
 import { AxiosError } from 'axios';
 import * as authApi from '../authApi';
 import { api } from '../apiConfig';
