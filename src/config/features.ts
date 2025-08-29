@@ -185,6 +185,15 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: true,
   },
   {
+    id: 'quadrant-dashboard',
+    name: '🎯 4象限マトリックス',
+    path: '/quadrant-dashboard',
+    category: '分析',
+    description: 'AI駆動タスク分類・生産性分析',
+    status: 'in_progress',
+    requiresRealAPI: false,
+  },
+  {
     id: 'quality-dashboard',
     name: '品質ダッシュボード',
     path: '/quality-dashboard',

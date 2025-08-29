@@ -641,6 +641,15 @@ const projectMenuItems: MenuItem[] = [
     gradient: 'from-red-500 via-rose-500 to-pink-500',
     accentColor: 'red',
   },
+  {
+    icon: <AlertTriangle className="h-5 w-5" />,
+    label: '🐞 不具合登録',
+    path: '/bugs/new',
+    description: '機能に紐づく不具合の登録',
+    badge: '品質',
+    gradient: 'from-amber-500 via-orange-500 to-red-500',
+    accentColor: 'amber',
+  },
 ];
 
 // ユーザー・設定メニューアイテム
