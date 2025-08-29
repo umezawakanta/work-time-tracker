@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useDerivedFeatureStatuses } from '@/hooks/useDerivedFeatureStatuses';
 
 const statusLabel: Record<FeatureStatus, string> = {
   complete: '完成',
@@ -31,17 +32,19 @@ export default function FeaturesStatusPage(): React.JSX.Element {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [statusFilter, setStatusFilter] = useState<FeatureStatus | 'all'>('all');
+  const { data: derived, isLoading: isDeriving, refresh } = useDerivedFeatureStatuses();
 
   const byCategory = useMemo(() => {
     const m = new Map<string, Feature[]>();
     for (const f of featuresRegistry) {
-      if (statusFilter !== 'all' && f.status !== statusFilter) continue;
+      const effectiveStatus = derived?.map?.[f.id] ?? f.status;
+      if (statusFilter !== 'all' && effectiveStatus !== statusFilter) continue;
       const arr = m.get(f.category) || [];
-      arr.push(f);
+      arr.push({ ...f, status: effectiveStatus });
       m.set(f.category, arr);
     }
     return Array.from(m.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [statusFilter]);
+  }, [statusFilter, derived]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -73,6 +76,9 @@ export default function FeaturesStatusPage(): React.JSX.Element {
             {s === 'all' ? 'すべて' : statusLabel[s as FeatureStatus]}
           </Button>
         ))}
+        <Button variant="outline" size="sm" onClick={refresh} disabled={isDeriving}>
+          自動判定を更新
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
@@ -107,6 +113,11 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                             <p className="text-sm text-muted-foreground mt-1">{f.description}</p>
                           )}
                           <p className="text-xs text-slate-500 mt-1">path: {f.path}</p>
+                          {derived?.signals && (
+                            <p className="text-[11px] text-slate-400 mt-1">
+                              自動判定: dev-status.json / test-summary.json から推定
+                            </p>
+                          )}
                           {featureArtifactsRegistry[f.id] && (
                             <div className="mt-3">
                               <p className="text-xs text-slate-500 mb-1">成果物:</p>
