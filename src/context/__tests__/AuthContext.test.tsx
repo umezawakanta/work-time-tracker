@@ -9,6 +9,12 @@
  * - Jest fake timers無限ループ
  */
 
+import '@testing-library/jest-dom';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const expect: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const it: any;
+
 // Mock other dependencies
 jest.mock('@/services/api/authApi');
 jest.mock('@/utils/logger');
@@ -659,8 +665,8 @@ describe('AuthContext', () => {
         () => {
           expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
           // In development mode with localhost and no logout flag, should get fast auth
-          // which creates "Demo User (Dev)", not "Demo User (No Token)"
-          expect(screen.getByTestId('user-name')).toHaveTextContent('Demo User (Dev)');
+          // which creates "Development User", not "No Token" user
+          expect(screen.getByTestId('user-name')).toHaveTextContent('Development User');
         },
         { timeout: 5000 }
       );

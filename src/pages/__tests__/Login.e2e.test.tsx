@@ -215,23 +215,6 @@ describe.skip('Login Page E2E - TEMPORARILY DISABLED FOR DEPLOYMENT', () => {
         expect(authApi.login).toHaveBeenCalledWith('admin@example.com', 'admin123', false);
       });
     });
-
-    it('should handle demo quick login', async () => {
-      const user = userEvent.setup();
-      (authApi.login as jest.Mock).mockResolvedValue({
-        success: true,
-        data: { user: { id: 'demo', email: 'demo@example.com' } },
-      });
-
-      renderWithProviders(<Login />);
-
-      const demoButton = screen.getByRole('button', { name: 'デモログイン' });
-      await user.click(demoButton);
-
-      await waitFor(() => {
-        expect(authApi.login).toHaveBeenCalledWith('demo@example.com', 'demo123', false);
-      });
-    });
   });
 
   describe('Accessibility', () => {

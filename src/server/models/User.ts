@@ -10,7 +10,7 @@ export interface UserDocument extends Document {
   lastName?: string;
   avatar?: string;
   password: string; // Add password property
-  provider: 'jwt' | 'firebase' | 'google' | 'github' | 'demo';
+  provider: 'jwt' | 'firebase' | 'google' | 'github';
   isVerified: boolean;
   role: 'user' | 'admin' | 'manager' | 'guest';
   permissions: string[];
@@ -215,7 +215,7 @@ const UserSchema = new Schema(
     // 認証情報
     provider: {
       type: String,
-      enum: ['jwt', 'firebase', 'google', 'github', 'demo'],
+      enum: ['jwt', 'firebase', 'google', 'github'],
       required: true,
     },
     password: { type: String, required: true },

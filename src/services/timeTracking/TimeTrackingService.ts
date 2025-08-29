@@ -247,7 +247,7 @@ export class TimeTrackingService extends EventEmitter {
       updatedAt: new Date(),
     };
 
-    // Do not seed demo user pattern in production
+    // Do not seed user pattern in production
   }
 
   /**
@@ -288,7 +288,7 @@ export class TimeTrackingService extends EventEmitter {
       },
     };
 
-    // Do not seed demo user alerts in production
+    // Do not seed user alerts in production
   }
 
   /**

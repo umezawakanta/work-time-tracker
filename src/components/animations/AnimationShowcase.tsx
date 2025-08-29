@@ -29,7 +29,7 @@ export const AnimationShowcase: React.FC = () => {
   const [liked, setLiked] = useState(false);
   const [rating, setRating] = useState(3);
 
-  const handleLoadingDemo = () => {
+  const handleLoadingToggle = () => {
     setLoading((v) => !v);
   };
 
@@ -111,7 +111,7 @@ export const AnimationShowcase: React.FC = () => {
         </Card>
       </div>
 
-      {/* アニメーションデモ */}
+      {/* アニメーションサンプル */}
       <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
         <Tabs defaultValue="interactions" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
@@ -283,7 +283,7 @@ export const AnimationShowcase: React.FC = () => {
                   <h4 className="font-semibold mb-3">ローディングボタン</h4>
                   <div className="flex gap-4">
                     <Button
-                      onClick={handleLoadingDemo}
+                      onClick={handleLoadingToggle}
                       disabled={loading}
                       className="transition-all duration-200"
                     >
@@ -331,7 +331,7 @@ export const AnimationShowcase: React.FC = () => {
         </Tabs>
       </div>
 
-      {/* フローティングアクションボタン風デモ */}
+      {/* フローティングアクションボタン例 */}
       <div className="fixed bottom-6 right-6 flex flex-col gap-2">
         <Button
           size="icon"

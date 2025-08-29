@@ -14,7 +14,7 @@ import { unifiedSecurityMiddleware } from '@/services/security/UnifiedSecurityMi
 
 // 統一認証コンテキストの型定義
 export interface UnifiedAuthContextType extends UseUnifiedAuthReturn {
-  // 追加のヘルパーメソッド（デモ/匿名ログインは削除）
+  // 追加のヘルパーメソッド（匿名ログインは提供しない）
   switchProvider: (provider: string) => Promise<void>;
   getSecurityStatus: () => string;
   isSecure: boolean;
@@ -92,7 +92,7 @@ export const UnifiedAuthProvider: React.FC<UnifiedAuthProviderProps> = ({
     },
   });
 
-  // デモ/匿名ログインは提供しない
+  // 匿名ログインは提供しない
 
   /**
    * 🔄 プロバイダー切り替え
@@ -407,11 +407,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   return <>{children}</>;
 };
-
-/**
- * 🎭 デモ用ログインボタン
- */
-export const DemoLoginButton: React.FC<{ className?: string }> = () => null;
 
 /**
  * 👻 匿名ログインボタン
