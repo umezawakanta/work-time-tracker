@@ -7,25 +7,42 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useDerivedFeatureStatuses } from '@/hooks/useDerivedFeatureStatuses';
+import { NEW_STATUS_ORDER } from '@/services/dev/featureStatusEngine';
 
 const statusLabel: Record<FeatureStatus, string> = {
-  complete: '完成',
-  in_progress: '開発中',
-  planned: '計画中',
-  testing: 'テスト中',
-  docs: 'ドキュメント整備中',
+  planning: '計画中',
+  designing: '設計中',
+  developing: '開発中',
+  unit_testing: '単体テスト中',
+  integration_testing: '結合テスト中',
+  system_testing: '総合テスト中',
+  documenting: 'ドキュメント整備中',
   review: '確認中',
   release_pending: 'リリース待ち',
+  complete: '完成',
+  // back-compat
+  planned: '計画中',
+  in_progress: '開発中',
+  testing: '単体テスト中',
+  docs: 'ドキュメント整備中',
 };
 
 const statusBadgeVariant: Record<FeatureStatus, 'default' | 'secondary' | 'outline'> = {
-  complete: 'default',
-  in_progress: 'secondary',
-  planned: 'outline',
-  testing: 'secondary',
-  docs: 'outline',
+  planning: 'outline',
+  designing: 'outline',
+  developing: 'secondary',
+  unit_testing: 'secondary',
+  integration_testing: 'secondary',
+  system_testing: 'secondary',
+  documenting: 'outline',
   review: 'secondary',
   release_pending: 'secondary',
+  complete: 'default',
+  // back-compat
+  planned: 'outline',
+  in_progress: 'secondary',
+  testing: 'secondary',
+  docs: 'outline',
 };
 
 export default function FeaturesStatusPage(): React.JSX.Element {
@@ -55,18 +72,7 @@ export default function FeaturesStatusPage(): React.JSX.Element {
 
       {/* ステータスフィルター */}
       <div className="mb-4 flex flex-wrap gap-2">
-        {(
-          [
-            'all',
-            'complete',
-            'in_progress',
-            'planned',
-            'testing',
-            'docs',
-            'review',
-            'release_pending',
-          ] as const
-        ).map((s) => (
+        {(['all', ...NEW_STATUS_ORDER] as const).map((s) => (
           <Button
             key={s}
             variant={statusFilter === s ? 'default' : 'outline'}
@@ -109,6 +115,14 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                             </Badge>
                             {f.requiresRealAPI && <Badge variant="outline">実API必須</Badge>}
                           </div>
+                          {derived?.suggested && (
+                            <p className="text-[11px] text-slate-500 mt-1">
+                              提案:{' '}
+                              {statusLabel[(derived.suggested[f.id] ?? f.status) as FeatureStatus]}{' '}
+                              / 承認:{' '}
+                              {statusLabel[(derived.approved?.[f.id] ?? f.status) as FeatureStatus]}
+                            </p>
+                          )}
                           {f.description && (
                             <p className="text-sm text-muted-foreground mt-1">{f.description}</p>
                           )}

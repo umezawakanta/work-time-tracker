@@ -1,13 +1,22 @@
 import { USE_MOCK_DATA } from '@/services/api/apiConfig';
 
 export type FeatureStatus =
-  | 'complete'
+  // New granular flow
+  | 'planning' // 計画中
+  | 'designing' // 設計中
+  | 'developing' // 開発中
+  | 'unit_testing' // 単体テスト中（ユニット）
+  | 'integration_testing' // 結合テスト中（ローカル手動操作/e2e）
+  | 'system_testing' // 総合テスト中（本番環境での操作）
+  | 'documenting' // ドキュメント整備中
+  | 'review' // 確認中（ドキュメントレビュー）
+  | 'release_pending' // リリース待ち
+  | 'complete' // 完成
+  // Back-compat (will be mapped)
   | 'in_progress'
   | 'planned'
   | 'testing'
-  | 'docs'
-  | 'review'
-  | 'release_pending';
+  | 'docs';
 
 export interface Feature {
   id: string;
