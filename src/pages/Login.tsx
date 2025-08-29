@@ -33,7 +33,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
-  // Demo mode removed to avoid mock-like behavior
+  // Offline/test modes are not supported to avoid mock-like behavior
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -212,7 +212,7 @@ export default function Login() {
           setErrors({
             general: 'サーバーに接続できません。ネットワーク接続を確認してください。',
           });
-          // Demo mode removed: do not enable any offline login
+          // Do not enable any offline login
         } else if (statusCode === 401) {
           const hintMessage = error.response?.data?.hint;
           const _availableAccounts = error.response?.data?.availableAccounts;
@@ -574,7 +574,7 @@ export default function Login() {
                 )}
               </Button>
 
-              {/* Demo login UI removed */}
+              {/* Alternative login UI removed */}
 
               <div className="text-center text-sm text-gray-600">
                 {t('auth.login.noAccount', 'アカウントをお持ちでない方は')}

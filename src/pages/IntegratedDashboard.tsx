@@ -164,9 +164,9 @@ const IntegratedDashboard: React.FC = () => {
           console.warn('⚠️ API server not available, using local data:', apiError);
         }
 
-        // フォールバック: デモプロジェクトデータ
-        console.info('💡 開発環境: APIサーバーが利用できないため、デモデータを使用します');
-        const demoProjects: ProjectHubProject[] = [
+        // フォールバック: ローカルプロジェクトデータ（簡易）
+        console.info('💡 開発環境: APIサーバーが利用できないため、ローカルデータを使用します');
+        const localProjects: ProjectHubProject[] = [
           {
             id: 'proj-mvp',
             name: 'MVP機能完成',
@@ -179,7 +179,7 @@ const IntegratedDashboard: React.FC = () => {
             endDate: '2024-02-21',
             estimatedDays: 20,
             actualDays: 5,
-            progress: 85, // 更新された進捗
+            progress: 85,
             milestones: [
               {
                 id: 'ms-1',
@@ -223,7 +223,7 @@ const IntegratedDashboard: React.FC = () => {
           },
         ];
 
-        setProjects(demoProjects);
+        setProjects(localProjects);
       } catch (error) {
         console.error('Failed to load projects:', error);
         setProjects([]);

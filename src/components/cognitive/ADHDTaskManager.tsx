@@ -164,62 +164,9 @@ export const ADHDTaskManager: React.FC = () => {
             // 既存タスクの読み込み
             const savedTasks = await service.loadTasks();
 
-            // 初回起動時はデモデータを作成
+            // 初回起動時は空データのまま開始
             if (savedTasks.length === 0) {
-              const demoTasks: ADHDTask[] = [
-                {
-                  id: '1',
-                  title: '朝のルーティン完了',
-                  status: 'done',
-                  priority: 'high',
-                  energyRequired: 'low',
-                  estimatedMinutes: 30,
-                  actualMinutes: 25,
-                  breakdownSteps: ['歯磨き', '薬服用', '朝食', '身支度'],
-                  completedSteps: 4,
-                  category: 'health',
-                  sensoryLoad: 'low',
-                  dopamineReward: 7,
-                  executiveDifficulty: 'easy',
-                  createdAt: new Date(),
-                  completedAt: new Date(),
-                  isHyperfocusRisk: false,
-                },
-                {
-                  id: '2',
-                  title: 'プロジェクトレポート作成',
-                  status: 'today',
-                  priority: 'high',
-                  energyRequired: 'high',
-                  estimatedMinutes: 120,
-                  breakdownSteps: ['資料収集', '構成案作成', '本文執筆', '見直し'],
-                  completedSteps: 1,
-                  category: 'work',
-                  sensoryLoad: 'medium',
-                  dopamineReward: 9,
-                  executiveDifficulty: 'hard',
-                  createdAt: new Date(),
-                  isHyperfocusRisk: true,
-                },
-                {
-                  id: '3',
-                  title: '部屋の片付け',
-                  status: 'ideas',
-                  priority: 'medium',
-                  energyRequired: 'medium',
-                  estimatedMinutes: 60,
-                  breakdownSteps: ['机の上整理', '床の片付け', '掃除機かけ'],
-                  completedSteps: 0,
-                  category: 'personal',
-                  sensoryLoad: 'high',
-                  dopamineReward: 6,
-                  executiveDifficulty: 'medium',
-                  createdAt: new Date(),
-                  isHyperfocusRisk: false,
-                },
-              ];
-              await service.saveTasks(demoTasks);
-              setTasks(demoTasks);
+              setTasks([]);
             } else {
               setTasks(savedTasks);
             }

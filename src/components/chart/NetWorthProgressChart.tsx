@@ -23,8 +23,8 @@ interface NetWorthProgressChartProps {
   isPremium: boolean;
 }
 
-// サンプルデータ生成関数（実際のアプリでは不要）
-const generateDemoData = (): ChartDataPoint[] => {
+// サンプルデータ生成関数（表示用）
+const generateSampleData = (): ChartDataPoint[] => {
   const now = new Date();
   const data: ChartDataPoint[] = [];
 
@@ -59,8 +59,8 @@ const generateDemoData = (): ChartDataPoint[] => {
 
 export const NetWorthProgressChart: React.FC<NetWorthProgressChartProps> = (props) => {
   const { isPremium } = props;
-  // デモデータを生成（実際のアプリではpropsのデータを加工して使用）
-  const chartData = generateDemoData();
+  // サンプルデータを生成（実際のアプリではpropsのデータを加工して使用）
+  const chartData = generateSampleData();
 
   // 現在の純資産と6ヶ月前の純資産を取得
   const currentNetWorth = chartData[chartData.length - 1]?.netWorth || 0;

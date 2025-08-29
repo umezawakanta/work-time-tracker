@@ -270,7 +270,7 @@ export interface UserProfile extends BaseEntity {
   avatar?: string;
 
   // 認証情報
-  provider: 'jwt' | 'firebase' | 'google' | 'github' | 'demo';
+  provider: 'jwt' | 'firebase' | 'google' | 'github';
   isVerified: boolean;
   role: 'user' | 'admin' | 'manager' | 'guest';
   permissions: string[];

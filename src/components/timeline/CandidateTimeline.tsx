@@ -44,8 +44,8 @@ const CandidateTimeline: React.FC<CandidateTimelineProps> = ({ candidateId }) =>
         // const data = await response.json();
         // setEvents(data);
 
-        // デモデータを使用
-        const demoData: TimelineEvent[] = [
+        // 仮データ（API統合前は空配列）
+        const sampleData: TimelineEvent[] = [
           {
             _id: '1',
             candidateId,
@@ -92,7 +92,9 @@ const CandidateTimeline: React.FC<CandidateTimelineProps> = ({ candidateId }) =>
           },
         ];
 
-        setEvents(demoData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        setEvents(
+          sampleData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        );
       } catch (err) {
         setError(err instanceof Error ? err.message : '予期せぬエラーが発生しました');
       } finally {

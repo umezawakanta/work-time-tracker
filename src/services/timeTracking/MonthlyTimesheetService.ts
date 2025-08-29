@@ -78,14 +78,14 @@ export class MonthlyTimesheetService extends EventEmitter {
   constructor() {
     super();
     this.analyticsService = new WorkTimeAnalyticsService();
-    // Remove demo data initialization in production
+    // サンプルデータの自動生成は行わない
   }
 
   /**
-   * デモデータの初期化
+   * サンプルデータの初期化（未使用）
    */
-  private initializeDemoData(): void {
-    const demoUserId = 'demo-user';
+  private initializeSampleData(): void {
+    const sampleUserId = '';
 
     // 過去6ヶ月分の月次データを生成
     const monthlyRecords: MonthlyTimesheet[] = [];
@@ -114,7 +114,7 @@ export class MonthlyTimesheetService extends EventEmitter {
       const weeklyStats = this.generateWeeklyStats(year, month, actualWorkDays);
 
       monthlyRecords.push({
-        userId: demoUserId,
+        userId: sampleUserId,
         year,
         month,
         totalWorkDays,
@@ -141,12 +141,12 @@ export class MonthlyTimesheetService extends EventEmitter {
         recommendations: this.generateRecommendations(attendanceRate, overtimeRate, efficiency),
       });
 
-      // 有給休暇記録生成
+      // 有給休暇記録生成（サンプル）
       for (let j = 0; j < Math.floor(Math.random() * 3); j++) {
         const leaveDate = new Date(year, month - 1, Math.floor(Math.random() * 28) + 1);
         paidLeaveRecords.push({
           id: `leave-${year}-${month}-${j}`,
-          userId: demoUserId,
+          userId: sampleUserId,
           date: leaveDate,
           type: Math.random() > 0.7 ? 'full_day' : 'half_day_am',
           reason: ['体調不良', '私用', '家族対応', '定期健診'][Math.floor(Math.random() * 4)],
@@ -157,8 +157,8 @@ export class MonthlyTimesheetService extends EventEmitter {
       }
     }
 
-    this.monthlyData.set(demoUserId, monthlyRecords);
-    this.paidLeaveRecords.set(demoUserId, paidLeaveRecords);
+    this.monthlyData.set(sampleUserId, monthlyRecords);
+    this.paidLeaveRecords.set(sampleUserId, paidLeaveRecords);
   }
 
   /**

@@ -29,8 +29,8 @@ interface PWAFeature {
   title: string;
   description: string;
   icon: React.ComponentType<any>;
-  status: 'active' | 'inactive' | 'demo';
-  demoAction?: () => void;
+  status: 'active' | 'inactive';
+  testAction?: () => void;
   details: string[];
 }
 
@@ -231,7 +231,7 @@ const PWAPage: React.FC = () => {
       description: '先進的なキャッシュ戦略とバックグラウンド処理',
       icon: Settings,
       status: 'active',
-      demoAction: updateServiceWorker,
+      testAction: updateServiceWorker,
       details: [
         '複数のキャッシュ戦略（Cache First, Network First, Stale While Revalidate）',
         'バックグラウンド同期機能',
@@ -246,7 +246,7 @@ const PWAPage: React.FC = () => {
       description: 'インテリジェントなデータ同期と競合解決',
       icon: Database,
       status: 'active',
-      demoAction: testOfflineFeatures,
+      testAction: testOfflineFeatures,
       details: [
         'オフライン時の操作キューイング',
         'オンライン復帰時の自動同期',
@@ -261,7 +261,7 @@ const PWAPage: React.FC = () => {
       description: 'ターゲティングとキャンペーン管理機能',
       icon: Bell,
       status: pushPermission === 'granted' ? 'active' : 'inactive',
-      demoAction: requestNotificationPermission,
+      testAction: requestNotificationPermission,
       details: [
         'リッチ通知（画像、アクション、音声）',
         'ユーザーセグメンテーション',
@@ -275,8 +275,8 @@ const PWAPage: React.FC = () => {
       title: 'ネイティブアプリ体験',
       description: 'ホーム画面追加とアプリライクな操作感',
       icon: Smartphone,
-      status: isInstallable ? 'active' : 'demo',
-      demoAction: handleInstallApp,
+      status: isInstallable ? 'active' : 'inactive',
+      testAction: handleInstallApp,
       details: [
         'ワンクリックインストール',
         'ネイティブアプリのような起動画面',
@@ -291,7 +291,7 @@ const PWAPage: React.FC = () => {
       description: '高速読み込みと滑らかな操作体験',
       icon: Zap,
       status: 'active',
-      demoAction: checkStorageUsage,
+      testAction: checkStorageUsage,
       details: [
         'Core Web Vitals最適化',
         'レスポンス時間の短縮',
@@ -473,7 +473,7 @@ const PWAPage: React.FC = () => {
             <TabsTrigger value="features">PWA機能</TabsTrigger>
             <TabsTrigger value="capabilities">対応状況</TabsTrigger>
             <TabsTrigger value="dashboard">詳細管理</TabsTrigger>
-            <TabsTrigger value="demo">デモ・テスト</TabsTrigger>
+            <TabsTrigger value="demo">テスト</TabsTrigger>
           </TabsList>
 
           {/* PWA機能タブ */}
@@ -502,20 +502,8 @@ const PWAPage: React.FC = () => {
                             <CardDescription>{feature.description}</CardDescription>
                           </div>
                         </div>
-                        <Badge
-                          variant={
-                            feature.status === 'active'
-                              ? 'default'
-                              : feature.status === 'inactive'
-                                ? 'secondary'
-                                : 'outline'
-                          }
-                        >
-                          {feature.status === 'active'
-                            ? '有効'
-                            : feature.status === 'inactive'
-                              ? '無効'
-                              : 'デモ'}
+                        <Badge variant={feature.status === 'active' ? 'default' : 'secondary'}>
+                          {feature.status === 'active' ? '有効' : '無効'}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -528,9 +516,9 @@ const PWAPage: React.FC = () => {
                           </li>
                         ))}
                       </ul>
-                      {feature.demoAction && (
+                      {feature.testAction && (
                         <Button
-                          onClick={feature.demoAction}
+                          onClick={feature.testAction}
                           variant="outline"
                           size="sm"
                           className="w-full"

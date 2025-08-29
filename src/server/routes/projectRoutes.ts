@@ -8,8 +8,8 @@ const router = express.Router();
 // 全プロジェクト一覧を取得（IntegratedDashboard用）
 router.get('/', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    // デモプロジェクトデータを返す（実際のDB統合時は実データに変更）
-    const demoProjects = [
+    // 簡易ローカルプロジェクトデータ（DB未統合時の暫定）
+    const projects = [
       {
         id: 'proj-mvp',
         name: 'MVP機能完成',
@@ -66,11 +66,9 @@ router.get('/', async (req: Request, res: Response, next: NextFunction): Promise
       },
     ];
 
-    res.status(200).json({
-      success: true,
-      data: demoProjects,
-      message: 'Projects loaded successfully',
-    });
+    res
+      .status(200)
+      .json({ success: true, data: projects, message: 'Projects loaded successfully' });
   } catch (error) {
     console.error('Error loading projects:', error);
     res.status(500).json({

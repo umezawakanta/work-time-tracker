@@ -352,7 +352,7 @@ class ComprehensiveAssetManagementService extends EventEmitter {
 
     // デモデータがない場合は作成
     if (this.accounts.size === 0) {
-      this.createDemoData();
+      // サンプルデータの自動生成は行わない
     }
   }
 
@@ -1017,7 +1017,7 @@ class ComprehensiveAssetManagementService extends EventEmitter {
   /**
    * デモデータ作成
    */
-  private createDemoData(): void {
+  private createSampleData(): void {
     // デモ口座作成
     this.addAccount({
       name: 'メイン口座（UFJ銀行）',
@@ -1039,7 +1039,7 @@ class ComprehensiveAssetManagementService extends EventEmitter {
     });
 
     // デモ取引作成
-    const demoTransactions = [
+    const sampleTransactions = [
       { description: 'コンビニ セブンイレブン', amount: -800, category: '食費' },
       { description: 'スーパー イオン', amount: -3200, category: '食費' },
       { description: 'JR東日本', amount: -340, category: '交通費' },
@@ -1047,7 +1047,7 @@ class ComprehensiveAssetManagementService extends EventEmitter {
       { description: 'Amazon', amount: -1500, category: '娯楽費' },
     ];
 
-    demoTransactions.forEach((txn) => {
+    sampleTransactions.forEach((txn) => {
       this.addTransaction({
         accountId: Array.from(this.accounts.keys())[0],
         ...txn,

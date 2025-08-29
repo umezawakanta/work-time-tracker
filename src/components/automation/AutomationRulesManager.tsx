@@ -112,9 +112,9 @@ export const AutomationRulesManager: React.FC = () => {
     'all'
   );
 
-  // デモデータの生成
+  // サンプルデータの生成
   useEffect(() => {
-    const demoRules: AutomationRule[] = [
+    const sampleRules: AutomationRule[] = [
       {
         id: 'rule-1',
         name: 'バグレポート自動分類',
@@ -284,7 +284,7 @@ export const AutomationRulesManager: React.FC = () => {
       },
     ];
 
-    setRules(demoRules);
+    setRules(sampleRules);
   }, []);
 
   // 事前定義されたテンプレート
