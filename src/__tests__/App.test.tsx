@@ -1,4 +1,6 @@
 import '@testing-library/jest-dom';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const expect: any;
 import React, { ReactNode } from 'react';
 import { screen, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
