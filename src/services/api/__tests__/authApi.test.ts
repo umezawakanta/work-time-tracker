@@ -1,3 +1,4 @@
+/// <reference types="vitest/globals" />
 import { AxiosError } from 'axios';
 import * as authApi from '../authApi';
 import { api } from '../apiConfig';
