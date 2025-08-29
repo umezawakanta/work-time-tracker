@@ -1075,7 +1075,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           {/* メニューコンテンツ */}
           <ScrollArea className="flex-1 px-3 py-4">
             <nav className="space-y-2" role="navigation" aria-label="サイドナビゲーション">
-              {(searchQuery ? filteredSections : menuSections).map(renderSection)}
+              {filteredSections.map(renderSection)}
             </nav>
           </ScrollArea>
 
