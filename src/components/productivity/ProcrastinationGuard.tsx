@@ -27,7 +27,8 @@ function loadSettings(): GuardSettings {
     const raw = localStorage.getItem(STORAGE_KEY_SETTINGS);
     if (raw) return JSON.parse(raw) as GuardSettings;
   } catch {}
-  return { enabled: true, promptOnReturnMs: 60_000 };
+  // 既定で無効化（グローバル機能を使うまで表示しない）
+  return { enabled: false, promptOnReturnMs: 60_000 };
 }
 
 function saveSettings(s: GuardSettings): void {
@@ -60,6 +61,13 @@ export const ProcrastinationGuard: React.FC = () => {
   const lastHiddenAtRef = useRef<number>(0);
 
   const snoozed = useMemo(() => Date.now() < getSnoozeUntil(), []);
+
+  // 右下ボタンが表示される場合のデバッグ用（必要時のみ）
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.debug('[PG] settings', settings, 'snoozed', snoozed);
+    }
+  }, [settings, snoozed]);
 
   const startMicroTimer = useCallback(
     (ms: number) => {
