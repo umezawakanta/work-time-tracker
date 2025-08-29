@@ -26,6 +26,7 @@ export interface Feature {
   description?: string;
   status: FeatureStatus;
   requiresRealAPI?: boolean;
+  priority?: 'P0' | 'P1' | 'P2' | 'P3';
 }
 
 export const featuresRegistry: Feature[] = [
@@ -37,6 +38,7 @@ export const featuresRegistry: Feature[] = [
     description: 'ホームとダッシュボード（タブ切替）',
     status: 'complete',
     requiresRealAPI: false,
+    priority: 'P2',
   },
   {
     id: 'sitemap',
@@ -46,6 +48,7 @@ export const featuresRegistry: Feature[] = [
     description: '全機能一覧・使用ガイド・新機能案内',
     status: 'complete',
     requiresRealAPI: false,
+    priority: 'P2',
   },
   {
     id: 'dashboard',
@@ -306,6 +309,7 @@ export const featuresRegistry: Feature[] = [
     description: '衝動性への対処法・行動設計（プレースホルダー）',
     status: 'planning',
     requiresRealAPI: false,
+    priority: 'P3',
   },
   {
     id: 'procrastination-guard',
@@ -454,6 +458,7 @@ export const featuresRegistry: Feature[] = [
     description: 'サブスクリプション管理',
     status: 'in_progress',
     requiresRealAPI: true,
+    priority: 'P1',
   },
   {
     id: 'billing-payments',
@@ -463,6 +468,7 @@ export const featuresRegistry: Feature[] = [
     description: '決済/課金処理（バックエンド連携）',
     status: 'planning',
     requiresRealAPI: true,
+    priority: 'P1',
   },
   {
     id: 'subscription-upgrade',
@@ -510,6 +516,7 @@ export const featuresRegistry: Feature[] = [
     description: 'サービス利用規約（ドキュメント表示）',
     status: 'planning',
     requiresRealAPI: false,
+    priority: 'P1',
   },
   {
     id: 'wbs-creator',
@@ -538,6 +545,7 @@ export const featuresRegistry: Feature[] = [
     description: 'ユーザープロフィール設定',
     status: 'in_progress',
     requiresRealAPI: false,
+    priority: 'P2',
   },
   // 認証・アカウント
   {
@@ -548,6 +556,7 @@ export const featuresRegistry: Feature[] = [
     description: 'サインイン（メール/外部IdP）',
     status: 'developing',
     requiresRealAPI: true,
+    priority: 'P0',
   },
   {
     id: 'user-registration',
@@ -557,6 +566,7 @@ export const featuresRegistry: Feature[] = [
     description: '新規アカウント作成',
     status: 'planning',
     requiresRealAPI: true,
+    priority: 'P0',
   },
   {
     id: 'logout',
@@ -566,6 +576,7 @@ export const featuresRegistry: Feature[] = [
     description: 'セッション終了（バックグラウンド機能）',
     status: 'planning',
     requiresRealAPI: true,
+    priority: 'P0',
   },
   // 生産性
   {
