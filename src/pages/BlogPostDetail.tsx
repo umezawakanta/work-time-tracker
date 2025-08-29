@@ -50,6 +50,7 @@ import {
   Tag,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import SocialShareButton from '@/components/ui/SocialShareButton';
 
 const BlogPostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -148,10 +149,13 @@ const BlogPostDetail: React.FC = () => {
         </Button>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleShare}>
-            <Share className="h-4 w-4 mr-2" />
-            Share
-          </Button>
+          <SocialShareButton
+            variant="outline"
+            size="sm"
+            url={window.location.href}
+            title={post.title}
+            description={`${post.content.substring(0, 100)}...`}
+          />
 
           {canModifyPost() && (
             <DropdownMenu>
