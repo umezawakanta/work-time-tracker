@@ -1,6 +1,13 @@
 import { USE_MOCK_DATA } from '@/services/api/apiConfig';
 
-export type FeatureStatus = 'complete' | 'in_progress' | 'planned';
+export type FeatureStatus =
+  | 'complete'
+  | 'in_progress'
+  | 'planned'
+  | 'testing'
+  | 'docs'
+  | 'review'
+  | 'release_pending';
 
 export interface Feature {
   id: string;

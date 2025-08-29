@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { featuresRegistry, Feature, FeatureStatus } from '@/config/features';
 import { featureArtifactsRegistry } from '@/config/featureArtifacts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,27 +11,37 @@ const statusLabel: Record<FeatureStatus, string> = {
   complete: '完成',
   in_progress: '開発中',
   planned: '計画中',
+  testing: 'テスト中',
+  docs: 'ドキュメント整備中',
+  review: '確認中',
+  release_pending: 'リリース待ち',
 };
 
 const statusBadgeVariant: Record<FeatureStatus, 'default' | 'secondary' | 'outline'> = {
   complete: 'default',
   in_progress: 'secondary',
   planned: 'outline',
+  testing: 'secondary',
+  docs: 'outline',
+  review: 'secondary',
+  release_pending: 'secondary',
 };
 
 export default function FeaturesStatusPage(): React.JSX.Element {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [statusFilter, setStatusFilter] = useState<FeatureStatus | 'all'>('all');
 
   const byCategory = useMemo(() => {
     const m = new Map<string, Feature[]>();
     for (const f of featuresRegistry) {
+      if (statusFilter !== 'all' && f.status !== statusFilter) continue;
       const arr = m.get(f.category) || [];
       arr.push(f);
       m.set(f.category, arr);
     }
     return Array.from(m.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-  }, []);
+  }, [statusFilter]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -39,6 +49,31 @@ export default function FeaturesStatusPage(): React.JSX.Element {
       <p className="text-muted-foreground mb-6">
         完成の定義: 本番環境で実APIに接続し、不具合なく動作していること（デモ/モック不可）。
       </p>
+
+      {/* ステータスフィルター */}
+      <div className="mb-4 flex flex-wrap gap-2">
+        {(
+          [
+            'all',
+            'complete',
+            'in_progress',
+            'planned',
+            'testing',
+            'docs',
+            'review',
+            'release_pending',
+          ] as const
+        ).map((s) => (
+          <Button
+            key={s}
+            variant={statusFilter === s ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setStatusFilter(s as any)}
+          >
+            {s === 'all' ? 'すべて' : statusLabel[s as FeatureStatus]}
+          </Button>
+        ))}
+      </div>
 
       <div className="grid grid-cols-1 gap-6">
         {byCategory.map(([category, features]) => (
