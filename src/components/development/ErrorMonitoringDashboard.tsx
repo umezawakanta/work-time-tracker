@@ -88,6 +88,22 @@ export const ErrorMonitoringDashboard: React.FC = () => {
       const stats = errorRecoveryService.getRecoveryStats();
       const diagnosis = await errorRecoveryService.performSelfDiagnosis();
 
+      // 直近のサマリをAPIから取得（存在すれば）
+      try {
+        const res = await fetch('/api/admin/error-reports?limit=200');
+        if (res.ok) {
+          const json = await res.json();
+          const list: Array<{ message: string }> = Array.isArray(json?.data) ? json.data : [];
+          const byType: Record<string, number> = {};
+          for (const r of list) {
+            const key = classifyError(r.message);
+            byType[key] = (byType[key] || 0) + 1;
+          }
+          stats.errorTypes = { ...stats.errorTypes, ...byType };
+          stats.totalErrors = Math.max(stats.totalErrors, list.length);
+        }
+      } catch {}
+
       // リアルタイムエラー数を算出（過去1分間）
       const realtimeErrors = stats.totalErrors; // 簡易実装
 
@@ -105,6 +121,16 @@ export const ErrorMonitoringDashboard: React.FC = () => {
     } catch (error) {
       console.error('メトリクス更新エラー:', error);
     }
+  };
+
+  const classifyError = (msg: string): string => {
+    if (!msg) return 'unknown';
+    const s = msg.toLowerCase();
+    if (s.includes('401') || s.includes('unauthorized')) return 'auth_failure';
+    if (s.includes('500') || s.includes('internal')) return 'api_500';
+    if (s.includes('mongo') || s.includes('database')) return 'database_error';
+    if (s.includes('network') || s.includes('failed to fetch')) return 'network_error';
+    return 'other';
   };
 
   const startSse = () => {
