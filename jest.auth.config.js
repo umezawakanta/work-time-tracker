@@ -23,6 +23,9 @@ module.exports = {
     '<rootDir>/src/context/**/*AuthContext*.test.{ts,tsx}',
     // Pages: Register minimal page tests
     '<rootDir>/src/pages/**/*Register*.test.{ts,tsx}',
+    // Pages: Forgot/Reset Password tests
+    '<rootDir>/src/pages/**/*ForgotPassword*.test.{ts,tsx}',
+    '<rootDir>/src/pages/**/*ResetPassword*.test.{ts,tsx}',
   ],
 
   // モジュール解決設定
