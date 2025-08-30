@@ -790,7 +790,7 @@ const Home: React.FC = () => {
                 )}
 
                 {isFeatureCompleteVisible('/_bg/hero-benefit-2') && (
-                  <Card className="bg-white/80 border shadow吸">
+                  <Card className="bg-white/80 border shadow-sm">
                     <CardContent className="p-6">
                       <img
                         src="/icons/icon-128x128.svg"
@@ -828,21 +828,25 @@ const Home: React.FC = () => {
                 )}
               </div>
             </div>
-            <HowItWorks />
+            {isFeatureCompleteVisible('/_bg/how-it-works') && <HowItWorks />}
             {isFeatureCompleteVisible('/invite') && (
               <div className="container mx-auto px-4 max-w-7xl py-6">
                 <MagicLinkCta />
               </div>
             )}
-            <SocialProof />
+            {isFeatureCompleteVisible('/_bg/testimonials') && <SocialProof />}
             <div className="container mx-auto px-4 max-w-7xl mb-8">
-              <WeeklyReportPreview />
-              <div className="mt-8">
-                <UserStories />
-              </div>
-              <div className="mt-8">
-                <FocusTimerQuick />
-              </div>
+              {isFeatureCompleteVisible('/_bg/weekly-report') && <WeeklyReportPreview />}
+              {isFeatureCompleteVisible('/_bg/testimonials') && (
+                <div className="mt-8">
+                  <UserStories />
+                </div>
+              )}
+              {isFeatureCompleteVisible('/_bg/focus-timer-quick') && (
+                <div className="mt-8">
+                  <FocusTimerQuick />
+                </div>
+              )}
             </div>
 
             <div className="container mx-auto px-4 py-6 pb-[calc(3.5rem+env(safe-area-inset-bottom))] sm:py-8 max-w-7xl">
@@ -923,224 +927,240 @@ const Home: React.FC = () => {
               {stats && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                   {/* Tasks Progress */}
-                  <Card className="bg-white/70 backdrop-blur border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 bg-emerald-100 rounded-full">
-                          <CheckCircle className="w-6 h-6 text-emerald-600" />
+                  {isFeatureCompleteVisible('/_bg/stats-today') && (
+                    <Card className="bg-white/70 backdrop-blur border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="p-3 bg-emerald-100 rounded-full">
+                            <CheckCircle className="w-6 h-6 text-emerald-600" />
+                          </div>
+                          <Badge className="bg-emerald-100 text-emerald-700">今日</Badge>
                         </div>
-                        <Badge className="bg-emerald-100 text-emerald-700">今日</Badge>
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-1">
-                        {stats.tasksCompleted}/{stats.totalTasks}
-                      </h3>
-                      <p className="text-gray-600 text-sm mb-3">タスク完了</p>
-                      <Progress value={stats.completionRate} className="h-2" />
-                      <p className="text-xs text-gray-500 mt-2">{stats.completionRate}% 完了</p>
-                    </CardContent>
-                  </Card>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                          {stats.tasksCompleted}/{stats.totalTasks}
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-3">タスク完了</p>
+                        <Progress value={stats.completionRate} className="h-2" />
+                        <p className="text-xs text-gray-500 mt-2">{stats.completionRate}% 完了</p>
+                      </CardContent>
+                    </Card>
+                  )}
 
                   {/* Streak */}
-                  <Card className="bg-white/70 backdrop-blur border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 bg-orange-100 rounded-full">
-                          <Flame className="w-6 h-6 text-orange-600" />
+                  {isFeatureCompleteVisible('/_bg/stats-streak') && (
+                    <Card className="bg-white/70 backdrop-blur border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="p-3 bg-orange-100 rounded-full">
+                            <Flame className="w-6 h-6 text-orange-600" />
+                          </div>
+                          <Badge className="bg-orange-100 text-orange-700">連続</Badge>
                         </div>
-                        <Badge className="bg-orange-100 text-orange-700">連続</Badge>
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-1">{stats.streakDays}</h3>
-                      <p className="text-gray-600 text-sm mb-3">日間継続</p>
-                      <div className="flex items-center gap-1">
-                        {[...Array(7)].map((_, i) => (
-                          <div
-                            key={i}
-                            className={cn(
-                              'w-3 h-3 rounded-full',
-                              i < stats.streakDays ? 'bg-orange-500' : 'bg-gray-200'
-                            )}
-                          />
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                          {stats.streakDays}
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-3">日間継続</p>
+                        <div className="flex items-center gap-1">
+                          {[...Array(7)].map((_, i) => (
+                            <div
+                              key={i}
+                              className={cn(
+                                'w-3 h-3 rounded-full',
+                                i < stats.streakDays ? 'bg-orange-500' : 'bg-gray-200'
+                              )}
+                            />
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
 
                   {/* XP Progress */}
-                  <Card className="bg-white/70 backdrop-blur border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 bg-purple-100 rounded-full">
-                          <Star className="w-6 h-6 text-purple-600" />
+                  {isFeatureCompleteVisible('/_bg/stats-xp') && (
+                    <Card className="bg-white/70 backdrop-blur border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="p-3 bg-purple-100 rounded-full">
+                            <Star className="w-6 h-6 text-purple-600" />
+                          </div>
+                          <Badge className="bg-purple-100 text-purple-700">XP</Badge>
                         </div>
-                        <Badge className="bg-purple-100 text-purple-700">XP</Badge>
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-1">{stats.xp}</h3>
-                      <p className="text-gray-600 text-sm mb-3">経験値</p>
-                      <Progress value={((stats.xp % 250) / 250) * 100} className="h-2" />
-                      <p className="text-xs text-gray-500 mt-2">
-                        次のレベルまで {stats.nextLevelXP - stats.xp} XP
-                      </p>
-                    </CardContent>
-                  </Card>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-1">{stats.xp}</h3>
+                        <p className="text-gray-600 text-sm mb-3">経験値</p>
+                        <Progress value={((stats.xp % 250) / 250) * 100} className="h-2" />
+                        <p className="text-xs text-gray-500 mt-2">
+                          次のレベルまで {stats.nextLevelXP - stats.xp} XP
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
 
                   {/* Badges */}
-                  <Card className="bg-white/70 backdrop-blur border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 bg-yellow-100 rounded-full">
-                          <Trophy className="w-6 h-6 text-yellow-600" />
+                  {isFeatureCompleteVisible('/_bg/stats-badges') && (
+                    <Card className="bg-white/70 backdrop-blur border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="p-3 bg-yellow-100 rounded-full">
+                            <Trophy className="w-6 h-6 text-yellow-600" />
+                          </div>
+                          <Badge className="bg-yellow-100 text-yellow-700">バッジ</Badge>
                         </div>
-                        <Badge className="bg-yellow-100 text-yellow-700">バッジ</Badge>
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-1">
-                        {stats.badgesEarned}/{stats.totalBadges}
-                      </h3>
-                      <p className="text-gray-600 text-sm mb-3">獲得済み</p>
-                      <Progress
-                        value={(stats.badgesEarned / stats.totalBadges) * 100}
-                        className="h-2"
-                      />
-                      <p className="text-xs text-gray-500 mt-2">
-                        {Math.round((stats.badgesEarned / stats.totalBadges) * 100)}% コンプリート
-                      </p>
-                    </CardContent>
-                  </Card>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                          {stats.badgesEarned}/{stats.totalBadges}
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-3">獲得済み</p>
+                        <Progress
+                          value={(stats.badgesEarned / stats.totalBadges) * 100}
+                          className="h-2"
+                        />
+                        <p className="text-xs text-gray-500 mt-2">
+                          {Math.round((stats.badgesEarned / stats.totalBadges) * 100)}% コンプリート
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
               )}
 
               {/* Quick Actions */}
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Zap className="w-6 h-6 text-blue-600" />
-                  クイックアクション
-                </h2>
+              {isFeatureCompleteVisible('/_bg/quick-actions') && (
+                <div className="mb-12">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <Zap className="w-6 h-6 text-blue-600" />
+                    クイックアクション
+                  </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {quickActions
-                    .filter((action) => isFeatureAccessible(action.path).allowed)
-                    .map((action) => (
-                      <Card
-                        key={action.id}
-                        className={cn(
-                          'group cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105',
-                          action.featured
-                            ? 'bg-gradient-to-br from-white via-white to-blue-50'
-                            : 'bg-white/70 backdrop-blur'
-                        )}
-                        onClick={() => navigate(action.path)}
-                      >
-                        <CardContent className="p-6">
-                          <div className="flex items-start justify-between mb-4">
-                            <div
-                              className={cn(
-                                'p-3 rounded-xl bg-gradient-to-r',
-                                action.gradient,
-                                'shadow-lg'
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {quickActions
+                      .filter((action) => isFeatureAccessible(action.path).allowed)
+                      .map((action) => (
+                        <Card
+                          key={action.id}
+                          className={cn(
+                            'group cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105',
+                            action.featured
+                              ? 'bg-gradient-to-br from-white via-white to-blue-50'
+                              : 'bg-white/70 backdrop-blur'
+                          )}
+                          onClick={() => navigate(action.path)}
+                        >
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div
+                                className={cn(
+                                  'p-3 rounded-xl bg-gradient-to-r',
+                                  action.gradient,
+                                  'shadow-lg'
+                                )}
+                              >
+                                <div className="text-white">{action.icon}</div>
+                              </div>
+                              {action.featured && (
+                                <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                                  おすすめ
+                                </Badge>
                               )}
-                            >
-                              <div className="text-white">{action.icon}</div>
                             </div>
-                            {action.featured && (
-                              <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                                おすすめ
-                              </Badge>
-                            )}
-                          </div>
 
-                          <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                            {action.title}
-                          </h3>
-                          <p className="text-gray-600 text-sm mb-4">{action.description}</p>
+                            <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                              {action.title}
+                            </h3>
+                            <p className="text-gray-600 text-sm mb-4">{action.description}</p>
 
-                          <div className="flex items-center justify-between">
-                            <span className={cn('text-sm font-medium', action.color)}>
-                              開始する
-                            </span>
-                            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                            <div className="flex items-center justify-between">
+                              <span className={cn('text-sm font-medium', action.color)}>
+                                開始する
+                              </span>
+                              <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Feature Highlights */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                 {/* AI Enhancement */}
-                <Card className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-0 shadow-xl">
-                  <CardContent className="p-8">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg">
-                        <Brain className="w-8 h-8 text-white" />
+                {isFeatureCompleteVisible('/_bg/ai-enhancements') && (
+                  <Card className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-0 shadow-xl">
+                    <CardContent className="p-8">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg">
+                          <Brain className="w-8 h-8 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900">AI強化機能</h3>
+                          <Badge className="bg-blue-100 text-blue-700">NEW</Badge>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-900">AI強化機能</h3>
-                        <Badge className="bg-blue-100 text-blue-700">NEW</Badge>
-                      </div>
-                    </div>
 
-                    <p className="text-gray-600 mb-6">
-                      AIがあなたの行動パターンを分析し、最適なタスク提案と生産性向上をサポートします
-                    </p>
+                      <p className="text-gray-600 mb-6">
+                        AIがあなたの行動パターンを分析し、最適なタスク提案と生産性向上をサポートします
+                      </p>
 
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="text-center p-3 bg-white/50 rounded-lg">
-                        <Activity className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-                        <p className="text-sm font-medium">行動分析</p>
+                      <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="text-center p-3 bg-white/50 rounded-lg">
+                          <Activity className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                          <p className="text-sm font-medium">行動分析</p>
+                        </div>
+                        <div className="text-center p-3 bg-white/50 rounded-lg">
+                          <Target className="w-6 h-6 text-purple-600 mx-auto mb-2" />
+                          <p className="text-sm font-medium">最適化提案</p>
+                        </div>
                       </div>
-                      <div className="text-center p-3 bg-white/50 rounded-lg">
-                        <Target className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-                        <p className="text-sm font-medium">最適化提案</p>
-                      </div>
-                    </div>
 
-                    <Button
-                      onClick={() => navigate('/ai-gamification')}
-                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                    >
-                      <PlayCircle className="w-4 h-4 mr-2" />
-                      AI機能を体験
-                    </Button>
-                  </CardContent>
-                </Card>
+                      <Button
+                        onClick={() => navigate('/ai-gamification')}
+                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                      >
+                        <PlayCircle className="w-4 h-4 mr-2" />
+                        AI機能を体験
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Community */}
-                <Card className="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 border-0 shadow-xl">
-                  <CardContent className="p-8">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-3 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl shadow-lg">
-                        <Users className="w-8 h-8 text-white" />
+                {isFeatureCompleteVisible('/community') && (
+                  <Card className="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 border-0 shadow-xl">
+                    <CardContent className="p-8">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-3 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl shadow-lg">
+                          <Users className="w-8 h-8 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900">コミュニティ機能</h3>
+                          <Badge className="bg-emerald-100 text-emerald-700">準備中</Badge>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-900">コミュニティ機能</h3>
-                        <Badge className="bg-emerald-100 text-emerald-700">準備中</Badge>
-                      </div>
-                    </div>
 
-                    <p className="text-gray-600 mb-6">
-                      他のユーザーと進捗を共有し、モチベーションを高め合うコミュニティに参加しましょう
-                    </p>
+                      <p className="text-gray-600 mb-6">
+                        他のユーザーと進捗を共有し、モチベーションを高め合うコミュニティに参加しましょう
+                      </p>
 
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="text-center p-3 bg-white/50 rounded-lg">
-                        <Trophy className="w-6 h-6 text-emerald-600 mx-auto mb-2" />
-                        <p className="text-sm font-medium">ランキング</p>
+                      <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="text-center p-3 bg-white/50 rounded-lg">
+                          <Trophy className="w-6 h-6 text-emerald-600 mx-auto mb-2" />
+                          <p className="text-sm font-medium">ランキング</p>
+                        </div>
+                        <div className="text-center p-3 bg-white/50 rounded-lg">
+                          <Shield className="w-6 h-6 text-teal-600 mx-auto mb-2" />
+                          <p className="text-sm font-medium">チーム戦</p>
+                        </div>
                       </div>
-                      <div className="text-center p-3 bg-white/50 rounded-lg">
-                        <Shield className="w-6 h-6 text-teal-600 mx-auto mb-2" />
-                        <p className="text-sm font-medium">チーム戦</p>
-                      </div>
-                    </div>
 
-                    <Button
-                      variant="outline"
-                      className="w-full border-emerald-300 text-emerald-700 hover:bg-emerald-50"
-                      disabled
-                    >
-                      近日公開予定
-                    </Button>
-                  </CardContent>
-                </Card>
+                      <Button
+                        variant="outline"
+                        className="w-full border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                        disabled
+                      >
+                        近日公開予定
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
 
               {/* Premium CTA */}
@@ -1164,14 +1184,16 @@ const Home: React.FC = () => {
                 )}
 
               {/* Quick Add Todo */}
-              <div className="fixed bottom-6 right-6">
-                <Button
-                  onClick={() => navigate('/todos')}
-                  className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110"
-                >
-                  <Plus className="w-8 h-8" />
-                </Button>
-              </div>
+              {isFeatureCompleteVisible('/_bg/quick-add-todo') && (
+                <div className="fixed bottom-6 right-6">
+                  <Button
+                    onClick={() => navigate('/todos')}
+                    className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110"
+                  >
+                    <Plus className="w-8 h-8" />
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Bottom CTA duplicate */}
