@@ -310,7 +310,7 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                                           {user?.isAdmin && (
                                             <Button
                                               variant={approved ? 'secondary' : 'outline'}
-                                              size="xs"
+                                              size="sm"
                                               onClick={() => {
                                                 setArtifactApproval(f.id, artifactId, !approved);
                                                 refresh();
