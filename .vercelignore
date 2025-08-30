@@ -88,3 +88,19 @@ uploads/
 # Lighthouse reports
 lighthouse/
 lighthouserc.json 
+
+# ----------------------------
+# Limit Vercel API build scope
+# Build only login-related auth endpoints and health check for now
+# Ignore all API routes by default, then allowlist needed ones
+api/**
+!api/health.ts
+!api/auth/
+!api/auth/**
+# Shared API utilities used by auth endpoints
+!api/_utils/
+!api/_utils/**
+!api/_lib/
+!api/_lib/**
+!api/_schemas/
+!api/_schemas/**
