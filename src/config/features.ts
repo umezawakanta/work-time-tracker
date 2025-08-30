@@ -604,6 +604,16 @@ export const featuresRegistry: Feature[] = [
     priority: 'P3',
   },
   {
+    id: 'version-info',
+    name: 'バージョン情報',
+    path: '/_bg/version-info',
+    category: 'コア',
+    description: 'ビルド/リリース情報の表示',
+    status: 'planning',
+    requiresRealAPI: false,
+    priority: 'P2',
+  },
+  {
     id: 'learning-streak',
     name: '学習ストリーク',
     path: '/_bg/learning-streak',

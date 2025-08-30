@@ -684,13 +684,15 @@ const Home: React.FC = () => {
                         明日の次の一手: 「AI秘書で今日の計画を1分で作成」
                       </div>
                       <div className="ml-auto flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          onClick={() => navigate('/ai-assistant')}
-                          aria-label="AI秘書を開く"
-                        >
-                          開く
-                        </Button>
+                        {isFeatureAccessible('/ai-assistant').allowed && (
+                          <Button
+                            size="sm"
+                            onClick={() => navigate('/ai-assistant')}
+                            aria-label="AI秘書を開く"
+                          >
+                            開く
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           variant="outline"
@@ -1182,11 +1184,13 @@ const Home: React.FC = () => {
             </div>
 
             {/* Footer: Version Info */}
-            <div className="bg-white border-t">
-              <div className="container mx-auto px-4 max-w-7xl py-6">
-                <VersionInfo />
+            {isFeatureCompleteVisible('/_bg/version-info') && (
+              <div className="bg-white border-t">
+                <div className="container mx-auto px-4 max-w-7xl py-6">
+                  <VersionInfo />
+                </div>
               </div>
-            </div>
+            )}
           </TabsContent>
           <TabsContent value="dashboard">
             <div className="bg-white">
