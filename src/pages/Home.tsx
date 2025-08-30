@@ -724,7 +724,7 @@ const Home: React.FC = () => {
                 </div>
               )}
 
-              {showDailyNudge && (
+              {showDailyNudge && isFeatureCompleteVisible('/_bg/daily-nudge') && (
                 <div className="mb-6">
                   <Card className="bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-100">
                     <CardContent className="p-4 flex items-center gap-3">
@@ -1199,9 +1199,11 @@ const Home: React.FC = () => {
             {/* Bottom CTA duplicate */}
             <div className="bg-white border-t">
               <div className="container mx-auto px-4 max-w-7xl py-10 text-center">
-                <div className="mb-6 text-left">
-                  <InlineNPS />
-                </div>
+                {isFeatureCompleteVisible('/_bg/nps-inline') && (
+                  <div className="mb-6 text-left">
+                    <InlineNPS />
+                  </div>
+                )}
                 {isFeatureCompleteVisible('/_bg/bottom-cta-heading') && (
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
                     今日からはじめよう
