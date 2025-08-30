@@ -105,3 +105,8 @@ api/**
 !api/_lib/**
 !api/_schemas/
 !api/_schemas/**
+
+# Bring in only the server files required by auth endpoints
+!src/server/config/database.ts
+!src/server/models/**
+!src/server/utils/**
