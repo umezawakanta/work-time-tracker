@@ -406,7 +406,9 @@ const Home: React.FC = () => {
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList>
             <TabsTrigger value="home">ホーム</TabsTrigger>
-            <TabsTrigger value="dashboard">ダッシュボード</TabsTrigger>
+            {isFeatureAccessible('/integrated-dashboard').allowed && (
+              <TabsTrigger value="dashboard">ダッシュボード</TabsTrigger>
+            )}
           </TabsList>
           <TabsContent value="home">
             {/* Onboarding Modal */}
@@ -557,18 +559,20 @@ const Home: React.FC = () => {
                       AI秘書を使う
                     </Button>
                   )}
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="px-6 py-6 text-base md:text-lg w-full sm:w-auto"
-                    onClick={() => navigate('/assessments')}
-                    aria-label="自己診断を始める"
-                  >
-                    自己診断を始める
-                    <Badge variant="secondary" className="ml-2 align-middle">
-                      5–10分
-                    </Badge>
-                  </Button>
+                  {isFeatureAccessible('/assessments').allowed && (
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="px-6 py-6 text-base md:text-lg w-full sm:w-auto"
+                      onClick={() => navigate('/assessments')}
+                      aria-label="自己診断を始める"
+                    >
+                      自己診断を始める
+                      <Badge variant="secondary" className="ml-2 align-middle">
+                        5–10分
+                      </Badge>
+                    </Button>
+                  )}
                   {isFeatureCompleteVisible('/invite') && (
                     <div className="w-full sm:w-auto min-w-[280px]">
                       <MagicLinkCta />
@@ -829,69 +833,76 @@ const Home: React.FC = () => {
 
             <div className="container mx-auto px-4 py-6 pb-[calc(3.5rem+env(safe-area-inset-bottom))] sm:py-8 max-w-7xl">
               {/* Newsletter signup CTA */}
-              <div className="mb-10 max-w-2xl mx-auto">
-                <Card className="bg-white/90 border shadow-sm">
-                  <CardContent className="p-5">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">
-                      ニュースレターに登録
-                    </h3>
-                    <p className="text-gray-600 text-sm text-center mb-3">
-                      最新機能と生産性Tipsをお届けします（週1回程度）
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center gap-3">
-                      <Input
-                        placeholder="メールアドレス"
-                        value={newsletterEmail}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setNewsletterEmail(e.target.value)
-                        }
-                        type="email"
-                        aria-label="ニュースレターのメールアドレス"
-                      />
-                      <Button
-                        onClick={async () => {
-                          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newsletterEmail)) return;
-                          setNewsletterSending(true);
-                          try {
-                            // Backend wiring can replace this no-op
-                            trackEvent('newsletter_subscribe', {
-                              domain: newsletterEmail.split('@')[1],
-                            });
-                            toast.success('登録ありがとうございます！');
-                            setNewsletterEmail('');
-                          } catch {}
-                          setNewsletterSending(false);
-                        }}
-                        disabled={newsletterSending || !newsletterEmail}
-                        aria-label="ニュースレターに登録"
-                      >
-                        {newsletterSending ? '送信中...' : '登録する'}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+              {isFeatureCompleteVisible('/_bg/newsletter') && (
+                <div className="mb-10 max-w-2xl mx-auto">
+                  <Card className="bg-white/90 border shadow-sm">
+                    <CardContent className="p-5">
+                      <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">
+                        ニュースレターに登録
+                      </h3>
+                      <p className="text-gray-600 text-sm text-center mb-3">
+                        最新機能と生産性Tipsをお届けします（週1回程度）
+                      </p>
+                      <div className="flex flex-col sm:flex-row items-center gap-3">
+                        <Input
+                          placeholder="メールアドレス"
+                          value={newsletterEmail}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            setNewsletterEmail(e.target.value)
+                          }
+                          type="email"
+                          aria-label="ニュースレターのメールアドレス"
+                        />
+                        <Button
+                          onClick={async () => {
+                            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newsletterEmail)) return;
+                            setNewsletterSending(true);
+                            try {
+                              trackEvent('newsletter_subscribe', {
+                                domain: newsletterEmail.split('@')[1],
+                              });
+                              toast.success('登録ありがとうございます！');
+                              setNewsletterEmail('');
+                            } catch {}
+                            setNewsletterSending(false);
+                          }}
+                          disabled={newsletterSending || !newsletterEmail}
+                          aria-label="ニュースレターに登録"
+                        >
+                          {newsletterSending ? '送信中...' : '登録する'}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
               {/* Header Section (subsequent heading after Hero's h1) */}
               <div className="text-center mb-12">
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                  {getWelcomeMessage()}, {user?.name || 'ユーザー'}さん！
-                </h2>
-                <p className="text-xl text-gray-600 mb-6">
-                  {pz.prefersPlanning
-                    ? '今日の時間割を確認し、計画通りに進めましょう'
-                    : 'まずは優先タスクを1つだけ着手しましょう'}
-                </p>
+                {isFeatureCompleteVisible('/_bg/home-greeting') && (
+                  <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                    {getWelcomeMessage()}, {user?.name || 'ユーザー'}さん！
+                  </h2>
+                )}
+                {isFeatureCompleteVisible('/_bg/planning-suggestion') && (
+                  <p className="text-xl text-gray-600 mb-6">
+                    {pz.prefersPlanning
+                      ? '今日の時間割を確認し、計画通りに進めましょう'
+                      : 'まずは優先タスクを1つだけ着手しましょう'}
+                  </p>
+                )}
 
                 {/* Level badge */}
-                <div
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-semibold shadow-lg"
-                  role="status"
-                  aria-label="ユーザーレベル"
-                >
-                  <Crown className="w-5 h-5" />
-                  レベル {stats?.currentLevel ?? 1}
-                  <Sparkles className="w-4 h-4" />
-                </div>
+                {isFeatureCompleteVisible('/_bg/level-badge') && (
+                  <div
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-semibold shadow-lg"
+                    role="status"
+                    aria-label="ユーザーレベル"
+                  >
+                    <Crown className="w-5 h-5" />
+                    レベル {stats?.currentLevel ?? 1}
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                )}
               </div>
 
               {/* Stats Overview */}
@@ -991,47 +1002,51 @@ const Home: React.FC = () => {
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {quickActions.map((action) => (
-                    <Card
-                      key={action.id}
-                      className={cn(
-                        'group cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105',
-                        action.featured
-                          ? 'bg-gradient-to-br from-white via-white to-blue-50'
-                          : 'bg-white/70 backdrop-blur'
-                      )}
-                      onClick={() => navigate(action.path)}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <div
-                            className={cn(
-                              'p-3 rounded-xl bg-gradient-to-r',
-                              action.gradient,
-                              'shadow-lg'
+                  {quickActions
+                    .filter((action) => isFeatureAccessible(action.path).allowed)
+                    .map((action) => (
+                      <Card
+                        key={action.id}
+                        className={cn(
+                          'group cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105',
+                          action.featured
+                            ? 'bg-gradient-to-br from-white via-white to-blue-50'
+                            : 'bg-white/70 backdrop-blur'
+                        )}
+                        onClick={() => navigate(action.path)}
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between mb-4">
+                            <div
+                              className={cn(
+                                'p-3 rounded-xl bg-gradient-to-r',
+                                action.gradient,
+                                'shadow-lg'
+                              )}
+                            >
+                              <div className="text-white">{action.icon}</div>
+                            </div>
+                            {action.featured && (
+                              <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                                おすすめ
+                              </Badge>
                             )}
-                          >
-                            <div className="text-white">{action.icon}</div>
                           </div>
-                          {action.featured && (
-                            <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                              おすすめ
-                            </Badge>
-                          )}
-                        </div>
 
-                        <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                          {action.title}
-                        </h3>
-                        <p className="text-gray-600 text-sm mb-4">{action.description}</p>
+                          <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                            {action.title}
+                          </h3>
+                          <p className="text-gray-600 text-sm mb-4">{action.description}</p>
 
-                        <div className="flex items-center justify-between">
-                          <span className={cn('text-sm font-medium', action.color)}>開始する</span>
-                          <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                          <div className="flex items-center justify-between">
+                            <span className={cn('text-sm font-medium', action.color)}>
+                              開始する
+                            </span>
+                            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                 </div>
               </div>
 
