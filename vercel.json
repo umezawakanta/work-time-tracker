@@ -70,19 +70,7 @@
         "api/**/schemas/**",
         "api/**/templates/**"
       ],
-      "excludeFiles": [
-        "**/*.test.*",
-        "**/*.spec.*",
-        "cypress/**",
-        "coverage/**",
-        "docs/**",
-        "stories/**",
-        "**/*.stories.*",
-        "src/**",
-        "**/*.md",
-        ".github/**",
-        ".vscode/**"
-      ]
+      "excludeFiles": "{**/*.test.*,**/*.spec.*,cypress/**,coverage/**,docs/**,stories/**,**/*.stories.*,src/**,**/*.md,.github/**,.vscode/**}"
     }
   },
   "crons": [
