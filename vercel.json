@@ -60,16 +60,10 @@
     }
   ],
   "functions": {
-    "api/**/*.ts": {
+    "api/**": {
       "runtime": "nodejs22.x",
       "memory": 512,
       "maxDuration": 10,
-      "includeFiles": [
-        "api/_lib/**",
-        "api/_utils/**",
-        "api/**/schemas/**",
-        "api/**/templates/**"
-      ],
       "excludeFiles": "{**/*.test.*,**/*.spec.*,cypress/**,coverage/**,docs/**,stories/**,**/*.stories.*,src/**,**/*.md,.github/**,.vscode/**}"
     }
   },
