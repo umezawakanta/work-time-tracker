@@ -941,6 +941,16 @@ export const featuresRegistry: Feature[] = [
     priority: 'P2',
   },
   {
+    id: 'header-user-info',
+    name: 'ヘッダーユーザー情報',
+    path: '/_bg/header-user-info',
+    category: 'コア',
+    description: 'ヘッダー右の表示名/メールの表示',
+    status: 'planning',
+    requiresRealAPI: false,
+    priority: 'P1',
+  },
+  {
     id: 'how-it-works',
     name: 'How It Works セクション',
     path: '/_bg/how-it-works',

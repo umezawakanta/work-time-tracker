@@ -1198,33 +1198,35 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                 </a> */}
 
                 {/* ユーザー情報とログアウト（ヘッダー右） */}
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                    <User className="h-4 w-4 text-white" />
+                {getFeatureByPath('/_bg/header-user-info')?.status === 'complete' && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <User className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="hidden sm:block min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        {user?.displayName ||
+                          user?.username ||
+                          user?.name ||
+                          user?.email ||
+                          'ユーザー'}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        {user?.email || ''}
+                      </p>
+                    </div>
+                    <Button
+                      onClick={handleLogout}
+                      variant="outline"
+                      size="sm"
+                      className="justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950"
+                      aria-label="ログアウト"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      ログアウト
+                    </Button>
                   </div>
-                  <div className="hidden sm:block min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                      {user?.displayName ||
-                        user?.username ||
-                        user?.name ||
-                        user?.email ||
-                        'ユーザー'}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                      {user?.email || ''}
-                    </p>
-                  </div>
-                  <Button
-                    onClick={handleLogout}
-                    variant="outline"
-                    size="sm"
-                    className="justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950"
-                    aria-label="ログアウト"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    ログアウト
-                  </Button>
-                </div>
+                )}
               </div>
             </div>
           </header>
