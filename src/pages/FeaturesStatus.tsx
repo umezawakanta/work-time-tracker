@@ -135,15 +135,17 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                   const eff = (derived?.effective?.[id] ?? f.status) as FeatureStatus;
                   const order = NEW_STATUS_ORDER;
                   const progress = Math.round(((order.indexOf(eff) + 1) / order.length) * 100);
-                  // 仮のリリース予定日は優先度から雰囲気で配置（実装時はフィールド化）
-                  const idx = pickIds.indexOf(id);
-                  const date = new Date();
-                  date.setDate(date.getDate() + (idx + 1));
-                  const y = date.getFullYear();
-                  const m = String(date.getMonth() + 1).padStart(2, '0');
-                  const d = String(date.getDate()).padStart(2, '0');
+                  // 目標リリース日（feature.targetRelease があれば使用）
+                  const ymd = (f as any).targetRelease || '';
+                  let y = '';
+                  let m = '';
+                  let d = '';
+                  if (ymd && /^\d{4}-\d{2}-\d{2}$/.test(ymd)) {
+                    [y, m, d] = ymd.split('-');
+                  }
                   const name = f.name;
-                  lines.push(`${name}：${progress}% リリース予定日：${y}/${m}/${d}`);
+                  const dateStr = y ? `${y}/${m}/${d}` : '未設定';
+                  lines.push(`${name}：${progress}% リリース予定日：${dateStr}`);
                 }
                 const text = lines.join('\n');
                 const shareText = `開発状況アップデート\n------------------\n${text}\n------------------`;

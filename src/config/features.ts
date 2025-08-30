@@ -29,6 +29,8 @@ export interface Feature {
   priority?: 'P0' | 'P1' | 'P2' | 'P3';
   // 無効化（全ユーザー/管理者含めアクセス不可・メニュー非表示）
   disabled?: boolean;
+  // 目標リリース日（例: 2025-09-01）
+  targetRelease?: string;
 }
 
 export const featuresRegistry: Feature[] = [
@@ -1089,6 +1091,7 @@ export const featuresRegistry: Feature[] = [
     status: 'developing',
     requiresRealAPI: true,
     priority: 'P0',
+    targetRelease: '2025-09-01',
   },
   {
     id: 'user-registration',
@@ -1099,6 +1102,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: true,
     priority: 'P0',
+    targetRelease: '2025-09-03',
   },
   {
     id: 'logout',
@@ -1109,6 +1113,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: true,
     priority: 'P0',
+    targetRelease: '2025-09-02',
   },
   // 生産性
   {

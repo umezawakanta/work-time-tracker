@@ -68,7 +68,13 @@ import { getVariant } from '@/lib/ab';
 import { useAnalytics } from '@/lib/analytics';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import IntegratedDashboard from '@/pages/IntegratedDashboard';
-import { isFeatureAccessible, getFeatureByPath } from '@/config/features';
+import {
+  isFeatureAccessible,
+  getFeatureByPath,
+  FeatureStatus,
+  featuresRegistry,
+} from '@/config/features';
+import { NEW_STATUS_ORDER } from '@/services/dev/featureStatusEngine';
 
 interface DashboardStats {
   tasksCompleted: number;
@@ -1259,11 +1265,21 @@ const Home: React.FC = () => {
                     variant="outline"
                     onClick={() => {
                       try {
-                        const lines = [
-                          'ログイン機能：進捗確認中',
-                          'ログアウト機能：進捗確認中',
-                          'ユーザー登録機能：進捗確認中',
-                        ];
+                        const order = ['login', 'logout', 'user-registration'];
+                        const lines: string[] = [];
+                        // 進捗は featuresRegistry から段階割合で近似（ホームは軽量版）
+                        for (const id of order) {
+                          const f = (featuresRegistry as any).find((x: any) => x.id === id);
+                          if (!f) continue;
+                          const eff = f.status as any;
+                          const idx = (NEW_STATUS_ORDER as any).indexOf(eff);
+                          const progress = Math.round(
+                            ((idx + 1) / (NEW_STATUS_ORDER as any).length) * 100
+                          );
+                          const ymd = f.targetRelease || '';
+                          const dateStr = ymd ? ymd.replaceAll('-', '/') : '未設定';
+                          lines.push(`${f.name}：${progress}% リリース予定日：${dateStr}`);
+                        }
                         const text = lines.join('\n');
                         const shareText = `開発状況アップデート\n------------------\n${text}\n------------------`;
                         const url = typeof window !== 'undefined' ? window.location.origin : '';
