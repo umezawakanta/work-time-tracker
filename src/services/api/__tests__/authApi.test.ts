@@ -146,7 +146,7 @@ describe('authApi', () => {
   });
 
   describe('register', () => {
-    it.skip('should register user successfully', async () => {
+    it('should register user successfully', async () => {
       const result = await authApi.register(mockRegisterData);
 
       expect(mockedApi.post).toHaveBeenCalledWith('/auth/register', mockRegisterData);
@@ -160,7 +160,7 @@ describe('authApi', () => {
       expect(result).toEqual(mockAuthResponse);
     });
 
-    it.skip('should handle registration error', async () => {
+    it('should handle registration error', async () => {
       const error = new AxiosError('Registration failed');
       mockedApi.post.mockRejectedValue(error);
 
@@ -183,7 +183,7 @@ describe('authApi', () => {
     const email = 'test@example.com';
     const password = 'password123';
 
-    it.skip('should login successfully with accessToken and refreshToken', async () => {
+    it('should login successfully with accessToken and refreshToken', async () => {
       const result = await authApi.login(email, password, false);
 
       expect(mockedApi.post).toHaveBeenCalledWith('/auth/login', {
@@ -338,7 +338,7 @@ describe('authApi', () => {
       expect(result).toBe(true); // Should maintain auth state in dev
     });
 
-    it.skip('should clear tokens on 401 error', async () => {
+    it('should clear tokens on 401 error', async () => {
       // Complete test isolation - clear all previous mock calls
       jest.clearAllMocks();
 
