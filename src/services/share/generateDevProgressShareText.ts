@@ -124,20 +124,8 @@ function summarizeForTwitterIntent(
 
 export function openShare(text: string, url: string): void {
   if (typeof window === 'undefined') return;
-  // Prefer native share when available (mobile/desktop supporting Web Share API)
-  const nav = window.navigator as Navigator & { share?: (data: ShareData) => Promise<void> };
-  if (typeof nav.share === 'function') {
-    nav.share({ text, url }).catch(() => {
-      // fallback to Twitter intent on any failure
-      const MAX_URL = 1800; // stay well under typical URL limits
-      const safeText = summarizeForTwitterIntent(text, url, MAX_URL);
-      const intent = buildTwitterIntentUrl(safeText, url);
-      window.open(intent, '_blank');
-    });
-    return;
-  }
-  // Fallback: Twitter web intent with robust summarization
-  const MAX_URL = 1800;
+  // Always use Twitter Web Intent to ensure text+URL appear (native share may drop text)
+  const MAX_URL = 1800; // stay well under typical URL limits
   const safeText = summarizeForTwitterIntent(text, url, MAX_URL);
   const intent = buildTwitterIntentUrl(safeText, url);
   window.open(intent, '_blank');
