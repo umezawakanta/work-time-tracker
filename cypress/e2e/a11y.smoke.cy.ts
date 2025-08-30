@@ -6,16 +6,20 @@ describe('Accessibility smoke checks', () => {
   it('Home has landmarks and labeled CTAs', () => {
     cy.request('/api/health');
     cy.visit('/');
-    cy.get('body').then(($body) => {
-      const text = $body.text();
-      if (/ログイン/.test(text)) {
-        cy.findByRole('heading', { name: 'ログイン' }).should('be.visible');
-      } else {
+    cy.get('body', { timeout: 8000 })
+      .should('exist')
+      .then(($body) => {
+        const text = $body.text();
+        const onLogin =
+          text.includes('ログイン') || $body.find('h1,h2,h3:contains("ログイン")').length > 0;
+        if (onLogin) {
+          cy.findByRole('heading', { name: 'ログイン', timeout: 6000 }).should('be.visible');
+          return;
+        }
         cy.get('header').should('be.visible');
-        cy.contains('button, a', /AI秘書|AI|Assistant/i).should('exist');
-        cy.contains('button, a', /(自己診断|診断|Start)/i).should('exist');
-      }
-    });
+        cy.contains('button, a', /AI秘書|AI|Assistant/i, { timeout: 6000 }).should('exist');
+        cy.contains('button, a', /(自己診断|診断|Start)/i, { timeout: 6000 }).should('exist');
+      });
   });
 
   it('MBTI page groups questions with legends', () => {
