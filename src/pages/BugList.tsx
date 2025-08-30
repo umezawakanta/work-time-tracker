@@ -46,7 +46,6 @@ export default function BugListPage(): React.JSX.Element {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [featureId, status]);
 
   useEffect(() => {
@@ -54,7 +53,6 @@ export default function BugListPage(): React.JSX.Element {
     if (featureId) qs.set('featureId', featureId);
     if (status) qs.set('status', status);
     setSearchParams(qs, { replace: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [featureId, status]);
 
   return (

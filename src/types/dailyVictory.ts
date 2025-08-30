@@ -21,4 +21,4 @@ export interface DailyOutcomeResponse {
   message?: string;
 }
 
-export interface DailyHistoryItem extends DailyOutcomeRecord {}
+export type DailyHistoryItem = DailyOutcomeRecord;
