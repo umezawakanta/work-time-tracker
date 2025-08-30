@@ -23,14 +23,22 @@ cypress/
 coverage/
 .nyc_output/
 
-# Documentation
+# Documentation (limit scope; keep docs served from public/)
 docs/
-*.md
+!public/docs/**
 !README.md
 
-# Serverless/API code (ensure API functions are deployed)
-/src/core/
-/src/api/
+# Server-only code not needed for Vercel build
+src/server/**
+
+# Test utilities (already excluded by patterns, add explicit dirs)
+src/test/**
+src/test-utils/**
+**/__tests__/**
+
+# Storybook and stories
+.storybook/
+**/*.stories.*
 
 # IDE files
 .vscode/
