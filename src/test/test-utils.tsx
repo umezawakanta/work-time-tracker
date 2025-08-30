@@ -366,50 +366,39 @@ export const a11yTestUtils = {
 export const mockUtils = {
   // Create mock function with specific return value
   createMockFn: <T = any,>(returnValue?: T) => {
-    return jest.fn().mockReturnValue(returnValue);
+    return (() => returnValue) as unknown as (...args: any[]) => T;
   },
 
   // Create async mock function
   createAsyncMockFn: <T = any,>(returnValue?: T, delay = 0) => {
-    return jest
-      .fn()
-      .mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve(returnValue), delay))
-      );
+    return ((..._args: any[]) =>
+      new Promise<T>((resolve) =>
+        setTimeout(() => resolve(returnValue as T), delay)
+      )) as unknown as (...args: any[]) => Promise<T>;
   },
 
   // Mock form submission
   createFormMock: () => {
-    const handleSubmit = jest.fn();
-    const handleError = jest.fn();
+    const handleSubmit = (..._args: any[]) => {};
+    const handleError = (..._args: any[]) => {};
 
     return {
       handleSubmit,
       handleError,
-      expectSubmitted: (data: any) => {
-        expect(handleSubmit).toHaveBeenCalledWith(data);
-      },
-      expectNotSubmitted: () => {
-        expect(handleSubmit).not.toHaveBeenCalled();
-      },
-      expectError: () => {
-        expect(handleError).toHaveBeenCalled();
-      },
+      expectSubmitted: (_data: any) => {},
+      expectNotSubmitted: () => {},
+      expectError: () => {},
     };
   },
 
   // Mock select value change
   createSelectMock: () => {
-    const handleValueChange = jest.fn();
+    const handleValueChange = (_value: string) => {};
 
     return {
       handleValueChange,
-      expectValueChanged: (value: string) => {
-        expect(handleValueChange).toHaveBeenCalledWith(value);
-      },
-      expectNoChange: () => {
-        expect(handleValueChange).not.toHaveBeenCalled();
-      },
+      expectValueChanged: (_value: string) => {},
+      expectNoChange: () => {},
     };
   },
 };

@@ -147,7 +147,7 @@ export async function extractFromContent(
   const prompt = buildTaskExtractionPrompt({ content: safeContent, maxTasks, locale });
 
   try {
-    const { default: AdvancedAIService } = await import('@/services/ai/AdvancedAIService');
+    const AdvancedAIService = (await import('@/services/ai/AdvancedAIService')).default;
     const aiText: string = await AdvancedAIService.generateResponse(prompt);
     const parsed = parseJsonTasks(aiText, maxTasks);
     if (parsed) return parsed;

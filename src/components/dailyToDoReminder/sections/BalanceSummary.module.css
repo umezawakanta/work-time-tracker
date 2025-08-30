@@ -1,8 +1,43 @@
 .summaryCard {
+}
+.summaryHeader {
+}
+.summaryTitle {
+}
+.summaryIcon {
+}
+.metricsContainer {
+}
+.metricItem {
+}
+.metricIcon {
+}
+.metricContent {
+}
+.metricTitle {
+}
+.metricValue {
+}
+.metricStatus {
+}
+.inputHeavy {
+}
+.outputHeavy {
+}
+.balanced {
+}
+.recommendationBox {
+}
+.recommendationTitle {
+}
+.recommendationText {
+}
+.summaryCard {
   margin-top: 1rem;
   border-radius: 0.5rem;
   background-color: #ffffff;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 

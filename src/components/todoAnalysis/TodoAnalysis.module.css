@@ -1,3 +1,23 @@
+.container {
+}
+.title {
+}
+.loadingContainer {
+}
+.loadingText {
+}
+.loadingSubtext {
+}
+.contentContainer {
+}
+.updatedText {
+}
+.sectionTitle {
+}
+.recommendationsList {
+}
+.recommendationItem {
+}
 /* src/components/todoAnalysis/TodoAnalysis.module.css */
 .container {
   padding: 1rem;

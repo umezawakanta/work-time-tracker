@@ -73,10 +73,10 @@ export const MockAuthProvider: React.FC<{
 
   const mockContextValue = {
     isAuthenticated,
-    setIsAuthenticated: jest.fn(),
+    setIsAuthenticated: () => {},
     loading: false,
     user: isAuthenticated ? mockUser : null,
-    setUser: jest.fn(),
+    setUser: () => {},
     fetchUser: async (): Promise<void> => {},
     updateProfile: async (_data: { name: string; email: string }): Promise<void> => {},
     sessionExpired: false,

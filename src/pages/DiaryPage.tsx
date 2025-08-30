@@ -40,9 +40,7 @@ import AchievementsList from '@/components/AchievementsList';
 import { format } from 'date-fns';
 
 // 遅延ロードするコンポーネント
-const StatsView = lazy(() =>
-  import('@/components/StatsView').then((m) => ({ default: m.default }))
-);
+const StatsView = lazy(() => import('@/components/StatsView'));
 
 // defaultAchievementsの定義
 const defaultAchievements: Achievement[] = [
