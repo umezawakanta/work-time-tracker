@@ -888,7 +888,7 @@ export const featuresRegistry: Feature[] = [
     path: '/_bg/share-dev-progress',
     category: 'コア',
     description: 'Xへ開発状況をシェアするボタン',
-    status: 'developing',
+    status: 'integration_testing',
     requiresRealAPI: false,
     priority: 'P0',
   },
