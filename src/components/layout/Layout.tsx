@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   generateDevProgressShareText,
   openShare,
+  getCanonicalUrl,
 } from '@/services/share/generateDevProgressShareText';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -1176,7 +1177,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                         const shareText = generateDevProgressShareText({
                           featureIds: ['login', 'logout', 'user-registration'],
                         });
-                        const url = typeof window !== 'undefined' ? window.location.origin : '';
+                        const url = getCanonicalUrl();
                         openShare(shareText, url);
                       } catch {}
                     }}

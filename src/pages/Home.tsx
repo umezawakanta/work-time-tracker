@@ -78,6 +78,7 @@ import { NEW_STATUS_ORDER } from '@/services/dev/featureStatusEngine';
 import {
   generateDevProgressShareText,
   openShare,
+  getCanonicalUrl,
 } from '@/services/share/generateDevProgressShareText';
 
 interface DashboardStats {
@@ -1271,7 +1272,7 @@ const Home: React.FC = () => {
                     onClick={() => {
                       try {
                         const shareText = generateDevProgressShareText();
-                        const url = typeof window !== 'undefined' ? window.location.origin : '';
+                        const url = getCanonicalUrl();
                         openShare(shareText, url);
                       } catch {}
                     }}

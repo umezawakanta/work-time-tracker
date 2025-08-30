@@ -12,6 +12,7 @@ import { NEW_STATUS_ORDER, normalizeToNewStatus } from '@/services/dev/featureSt
 import {
   generateDevProgressShareText,
   openShare,
+  getCanonicalUrl,
 } from '@/services/share/generateDevProgressShareText';
 import { setArtifactApproval, isArtifactApproved } from '@/services/dev/featureStatusEngine';
 
@@ -142,7 +143,7 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                   featureIds: ['login', 'logout', 'user-registration'],
                   statuses: derived?.effective ?? null,
                 });
-                const url = typeof window !== 'undefined' ? window.location.origin : '';
+                const url = getCanonicalUrl();
                 openShare(shareText, url);
               } catch {}
             }}
