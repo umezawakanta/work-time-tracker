@@ -1,3 +1,7 @@
+/// <reference types="cypress" />
+/// <reference types="@testing-library/cypress" />
+/// <reference types="cypress-real-events" />
+
 describe('Accessibility smoke checks', () => {
   it('Home has landmarks and labeled CTAs', () => {
     cy.request('/api/health');
