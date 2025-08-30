@@ -59,14 +59,7 @@
       "destination": "/index.html"
     }
   ],
-  "functions": {
-    "api/**": {
-      "runtime": "nodejs22.x",
-      "memory": 512,
-      "maxDuration": 10,
-      "excludeFiles": "{**/*.test.*,**/*.spec.*,cypress/**,coverage/**,docs/**,stories/**,**/*.stories.*,src/**,**/*.md,.github/**,.vscode/**}"
-    }
-  },
+  
   "crons": [
     {
       "path": "/api/analytics/aggregate-daily",
