@@ -11,7 +11,9 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 
 // ⚡ Dynamic Import for Heavy Components
-const MarkdownRenderer = lazy(() => import('@/components/MarkdownRenderer'));
+const MarkdownRenderer = lazy(() =>
+  import('@/components/MarkdownRenderer').then((m) => ({ default: m.default }))
+);
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

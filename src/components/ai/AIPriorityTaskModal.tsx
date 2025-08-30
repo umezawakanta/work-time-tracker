@@ -48,7 +48,7 @@ export const AIPriorityTaskModal: React.FC<AIPriorityTaskModalProps> = ({
   const ai = useAIAction<string, Suggestion>(
     async (p, _opts) => {
       try {
-        const { default: AdvancedAIService } = await import('@/services/ai/AdvancedAIService');
+        const AdvancedAIService = (await import('@/services/ai/AdvancedAIService')).default;
         const text = await AdvancedAIService.generateResponse(p);
         // Try to parse JSON first
         const match = text.match(/\{[\s\S]*\}/);

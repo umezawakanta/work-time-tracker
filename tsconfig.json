@@ -47,6 +47,9 @@
       ],
       "@/contexts/*": [
         "./src/contexts/*"
+      ],
+      "@/api/*": [
+        "./src/api/*"
       ]
     },
     "forceConsistentCasingInFileNames": true
@@ -61,6 +64,7 @@
     "dist",
     "coverage",
     "api/**/*",
+    "src/server/**",
     "src/test/**",
     "src/test-utils/**",
     "src/**/*.test.ts",

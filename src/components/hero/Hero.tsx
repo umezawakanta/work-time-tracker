@@ -3,7 +3,9 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { HERO_COPY } from '@/constants/copy';
 import HeroBackgroundImage from '@/components/hero/HeroBackgroundImage';
-const AIPriorityTaskModal = lazy(() => import('@/components/ai/AIPriorityTaskModal'));
+const AIPriorityTaskModal = lazy(() =>
+  import('@/components/ai/AIPriorityTaskModal').then((m) => ({ default: m.default }))
+);
 import { trackCtaClick } from '@/lib/track';
 
 export interface HeroProps {
