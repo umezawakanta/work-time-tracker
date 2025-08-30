@@ -62,12 +62,13 @@ export default function FeaturesStatusPage(): React.JSX.Element {
     const m = new Map<string, Feature[]>();
     for (const f of featuresRegistry) {
       const effectiveStatus = (derived?.effective?.[f.id] ?? f.status) as FeatureStatus;
+      const suggestedStatus = (derived?.suggested?.[f.id] ?? effectiveStatus) as FeatureStatus;
       // 着手状況フィルタ
-      const isComplete = effectiveStatus === 'complete';
-      const isNotStarted = effectiveStatus === 'planning';
-      if (progressFilter === 'complete' && !isComplete) continue;
-      if (progressFilter === 'not_started' && !isNotStarted) continue;
-      if (progressFilter === 'in_progress' && (isComplete || isNotStarted)) continue;
+      const isCompleteEff = effectiveStatus === 'complete';
+      const isNotStartedProg = suggestedStatus === 'planning';
+      if (progressFilter === 'complete' && !isCompleteEff) continue;
+      if (progressFilter === 'not_started' && !isNotStartedProg) continue;
+      if (progressFilter === 'in_progress' && (isCompleteEff || isNotStartedProg)) continue;
       // ステータスフィルタ
       if (statusFilter !== 'all' && effectiveStatus !== statusFilter) continue;
       const arr = m.get(f.category) || [];
@@ -95,11 +96,12 @@ export default function FeaturesStatusPage(): React.JSX.Element {
     const list: Feature[] = [];
     for (const f of featuresRegistry) {
       const effectiveStatus = (derived?.effective?.[f.id] ?? f.status) as FeatureStatus;
-      const isComplete = effectiveStatus === 'complete';
-      const isNotStarted = effectiveStatus === 'planning';
-      if (progressFilter === 'complete' && !isComplete) continue;
-      if (progressFilter === 'not_started' && !isNotStarted) continue;
-      if (progressFilter === 'in_progress' && (isComplete || isNotStarted)) continue;
+      const suggestedStatus = (derived?.suggested?.[f.id] ?? effectiveStatus) as FeatureStatus;
+      const isCompleteEff = effectiveStatus === 'complete';
+      const isNotStartedProg = suggestedStatus === 'planning';
+      if (progressFilter === 'complete' && !isCompleteEff) continue;
+      if (progressFilter === 'not_started' && !isNotStartedProg) continue;
+      if (progressFilter === 'in_progress' && (isCompleteEff || isNotStartedProg)) continue;
       if (statusFilter !== 'all' && effectiveStatus !== statusFilter) continue;
       list.push({ ...f, status: effectiveStatus });
     }
