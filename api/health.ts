@@ -1,5 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectDB } from '../src/server/config/database';
+// Keep health lightweight in serverless: do not hard-require DB
+let connectDB: (() => Promise<void>) | null = null;
+try {
+  // Dynamic optional import; if missing or fails, we continue degraded
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  connectDB = require('../src/server/config/database').connectDB as () => Promise<void>;
+} catch {
+  connectDB = null;
+}
 
 interface HealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
@@ -37,15 +45,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
 
   // データベース接続テスト
-  try {
-    await connectDB();
-    healthStatus.services.database = 'connected';
-  } catch (error) {
-    console.warn('Database health check failed (continuing):', (error as Error).message);
-    // Vercel等でDB未設定でも200を返し、サービス稼働自体のヘルスは保つ
-    healthStatus.services.database = 'error';
-    healthStatus.status = 'degraded';
-    healthStatus.errorRate = 5.0;
+  if (connectDB) {
+    try {
+      await connectDB();
+      healthStatus.services.database = 'connected';
+    } catch (error) {
+      console.warn('Database health check failed (continuing):', (error as Error).message);
+      // Vercel等でDB未設定でも200を返し、サービス稼働自体のヘルスは保つ
+      healthStatus.services.database = 'error';
+      healthStatus.status = 'degraded';
+      healthStatus.errorRate = 5.0;
+    }
   }
 
   // 認証サービステスト

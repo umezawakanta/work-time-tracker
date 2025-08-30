@@ -91,20 +91,39 @@ lighthouserc.json
 
 # ----------------------------
 # Limit Vercel API build scope
-# Build only login-related auth endpoints and health check for now
-# Ignore all API routes by default, then allowlist needed ones
-api/**
-!api/
-!api/health.ts
-!api/auth/
-!api/auth/**
-# Shared API utilities used by auth endpoints
-!api/_utils/
-!api/_utils/**
-!api/_lib/
-!api/_lib/**
-!api/_schemas/
-!api/_schemas/**
+# Keep only auth endpoints and /api/health
+# Ignore specific non-auth API directories
+api/admin/**
+api/ai/**
+api/analysis/**
+api/analytics/**
+api/automation/**
+api/blog/**
+api/blogs/**
+api/books/**
+api/bugs/**
+api/daily/**
+api/daily-victory/**
+api/db/**
+api/debt/**
+api/developer/**
+api/finance/**
+api/implementation/**
+api/legal/**
+api/notifications/**
+api/operations/**
+api/progress/**
+api/projects/**
+api/quality/**
+api/sales/**
+api/status/**
+api/subscriptions/**
+api/testing/**
+api/todos/**
+api/user/**
+api/userSubscription/**
+api/webhooks/**
+api/worktime/**
 
 # Bring in only the server files required by auth endpoints
 !src/server/config/database.ts
