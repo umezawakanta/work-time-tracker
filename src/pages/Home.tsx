@@ -68,7 +68,7 @@ import { getVariant } from '@/lib/ab';
 import { useAnalytics } from '@/lib/analytics';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import IntegratedDashboard from '@/pages/IntegratedDashboard';
-import { isFeatureAccessible } from '@/config/features';
+import { isFeatureAccessible, getFeatureByPath } from '@/config/features';
 
 interface DashboardStats {
   tasksCompleted: number;
@@ -115,6 +115,17 @@ const Home: React.FC = () => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSending, setNewsletterSending] = useState(false);
   const { trackEvent } = useAnalytics();
+
+  const isFeatureCompleteVisible = (path: string): boolean => {
+    try {
+      const f = getFeatureByPath(path);
+      if (!f) return false;
+      if ((f as any).disabled) return false;
+      return f.status === 'complete';
+    } catch {
+      return false;
+    }
+  };
 
   // Tabs: sync with ?tab=
   const [searchParams, setSearchParams] = useSearchParams();
@@ -483,7 +494,7 @@ const Home: React.FC = () => {
                           AI秘書を開く
                         </Button>
                       )}
-                      {onboardingStep === 2 && (
+                      {onboardingStep === 2 && isFeatureAccessible('/assessments').allowed && (
                         <Button
                           onClick={() => {
                             try {
@@ -499,7 +510,7 @@ const Home: React.FC = () => {
                           自己診断を始める
                         </Button>
                       )}
-                      {onboardingStep === 3 && (
+                      {onboardingStep === 3 && isFeatureCompleteVisible('/invite') && (
                         <Button
                           onClick={async () => {
                             try {
@@ -558,9 +569,11 @@ const Home: React.FC = () => {
                       5–10分
                     </Badge>
                   </Button>
-                  <div className="w-full sm:w-auto min-w-[280px]">
-                    <MagicLinkCta />
-                  </div>
+                  {isFeatureCompleteVisible('/invite') && (
+                    <div className="w-full sm:w-auto min-w-[280px]">
+                      <MagicLinkCta />
+                    </div>
+                  )}
                 </div>
                 {stats?.streakDays > 0 && (
                   <div className="mt-3 flex justify-center">
@@ -621,7 +634,7 @@ const Home: React.FC = () => {
                   </Card>
                 </div>
               )}
-              {ownRef && (
+              {ownRef && isFeatureCompleteVisible('/invite') && (
                 <div className="mb-6">
                   <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-100">
                     <CardContent className="p-4 flex items-center gap-3">
@@ -647,14 +660,16 @@ const Home: React.FC = () => {
                         >
                           招待を送る
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => navigate('/invite')}
-                          aria-label="招待ページを開く"
-                        >
-                          詳細を見る
-                        </Button>
+                        {isFeatureCompleteVisible('/invite') && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => navigate('/invite')}
+                            aria-label="招待ページを開く"
+                          >
+                            詳細を見る
+                          </Button>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -794,9 +809,11 @@ const Home: React.FC = () => {
               </div>
             </div>
             <HowItWorks />
-            <div className="container mx-auto px-4 max-w-7xl py-6">
-              <MagicLinkCta />
-            </div>
+            {isFeatureCompleteVisible('/invite') && (
+              <div className="container mx-auto px-4 max-w-7xl py-6">
+                <MagicLinkCta />
+              </div>
+            )}
             <SocialProof />
             <div className="container mx-auto px-4 max-w-7xl mb-8">
               <WeeklyReportPreview />
@@ -1146,17 +1163,19 @@ const Home: React.FC = () => {
                       AI秘書を使う
                     </Button>
                   )}
-                  <Button
-                    variant="outline"
-                    className="px-6 py-6 text-base md:text-lg"
-                    onClick={() => navigate('/assessments')}
-                    aria-label="自己診断を始める"
-                  >
-                    自己診断を始める
-                    <Badge variant="secondary" className="ml-2 align-middle">
-                      5–10分
-                    </Badge>
-                  </Button>
+                  {isFeatureAccessible('/assessments').allowed && (
+                    <Button
+                      variant="outline"
+                      className="px-6 py-6 text-base md:text-lg"
+                      onClick={() => navigate('/assessments')}
+                      aria-label="自己診断を始める"
+                    >
+                      自己診断を始める
+                      <Badge variant="secondary" className="ml-2 align-middle">
+                        5–10分
+                      </Badge>
+                    </Button>
+                  )}
                 </div>
                 <p className="mt-2 text-xs text-gray-500">無料・匿名OK・いつでも退会可能</p>
               </div>
