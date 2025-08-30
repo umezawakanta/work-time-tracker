@@ -592,6 +592,22 @@ const App: React.FC = () => {
                                   </LayoutWrapper>
                                 }
                               />
+                              {/* Background feature anchors → redirect to docs */}
+                              <Route
+                                path="/_bg/share-dev-progress"
+                                element={
+                                  <Navigate
+                                    to="/docs/features/share-dev-progress/detailed-design"
+                                    replace
+                                  />
+                                }
+                              />
+                              <Route
+                                path="/_bg/logout"
+                                element={
+                                  <Navigate to="/docs/features/logout/detailed-design" replace />
+                                }
+                              />
                               <Route
                                 path="/bugs"
                                 element={

@@ -36,14 +36,12 @@ export function generateDevProgressShareText(opts?: ShareProgressOptions): strin
 }
 
 export function openShare(text: string, url: string): void {
-  if (typeof navigator !== 'undefined' && (navigator as any).share) {
-    (navigator as any).share({ text, url }).catch(() => {
-      // noop
-    });
-  } else if (typeof window !== 'undefined') {
-    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}%0A${encodeURIComponent(
+  // Prefer Twitter Web Intent to ensure text is preserved on X
+  if (typeof window !== 'undefined') {
+    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(
       url
     )}`;
     window.open(intent, '_blank');
+    return;
   }
 }
