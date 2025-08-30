@@ -204,8 +204,16 @@ export async function deriveAllFeatureStatuses(): Promise<DerivedStatusesResult>
     const s = computeSuggestedFeatureStatus(f, signals);
     suggested[f.id] = s;
     const a = approved[f.id] ?? normalizeToNewStatus(f.status);
-    // 有効値は「提案」と「承認済み」のうち低い方（すべて承認制）
-    let eff = minByOrder(a, s);
+    // Cap（承認で到達可能な最大段階）: 提案がdocumentingまで到達し、かつ当該機能の全成果物が承認済みならcompleteまで許容
+    let cap: FeatureStatus = s;
+    if (s === 'documenting') {
+      const arts = Object.keys(featureArtifactsRegistry[f.id] || {});
+      const allApproved = arts.length > 0 && arts.every((k) => isArtifactApproved(f.id, k));
+      if (allApproved) cap = 'complete';
+      else cap = 'review';
+    }
+    // 有効値は「承認済み」と「到達可能上限」のうち低い方
+    let eff = minByOrder(a, cap);
     // 追加ガード: 要件定義書が承認されていない場合は常に planning
     if (!isRequirementsApproved(f.id)) {
       eff = 'planning';
