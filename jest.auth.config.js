@@ -21,6 +21,8 @@ module.exports = {
     '<rootDir>/src/services/api/__tests__/authApi.test.{ts,tsx}',
     // AuthContext (provider-level behavior)
     '<rootDir>/src/context/**/*AuthContext*.test.{ts,tsx}',
+    // Pages: Register minimal page tests
+    '<rootDir>/src/pages/**/*Register*.test.{ts,tsx}',
   ],
 
   // モジュール解決設定
