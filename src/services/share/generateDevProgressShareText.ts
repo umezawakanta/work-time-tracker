@@ -35,6 +35,8 @@ export function generateDevProgressShareText(opts?: ShareProgressOptions): strin
   } else {
     candidates = candidates.filter((f) => inProgressSet.has(normalizeToNewStatus(f.status)));
   }
+  // 共有機能そのものや無効化中の機能は除外
+  candidates = candidates.filter((f) => f.id !== 'share-dev-progress' && !(f as any).disabled);
 
   // 優先度順→名前順
   const priorityOrder: Record<string, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
