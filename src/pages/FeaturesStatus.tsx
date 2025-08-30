@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useDerivedFeatureStatuses } from '@/hooks/useDerivedFeatureStatuses';
 import { getFeatureByPath } from '@/config/features';
-import { NEW_STATUS_ORDER } from '@/services/dev/featureStatusEngine';
+import { NEW_STATUS_ORDER, normalizeToNewStatus } from '@/services/dev/featureStatusEngine';
 import { setArtifactApproval, isArtifactApproved } from '@/services/dev/featureStatusEngine';
 
 const statusLabel: Record<FeatureStatus, string> = {
@@ -58,17 +58,22 @@ export default function FeaturesStatusPage(): React.JSX.Element {
   >('all');
   const [viewMode, setViewMode] = useState<'category' | 'priority'>('priority');
 
+  const IN_PROGRESS_FEATURE_IDS = useMemo(
+    () => new Set<string>(['login', 'logout', 'user-registration', 'share-dev-progress']),
+    []
+  );
+
   const byCategory = useMemo(() => {
     const m = new Map<string, Feature[]>();
     for (const f of featuresRegistry) {
       const effectiveStatus = (derived?.effective?.[f.id] ?? f.status) as FeatureStatus;
-      const suggestedStatus = (derived?.suggested?.[f.id] ?? effectiveStatus) as FeatureStatus;
-      // 着手状況フィルタ
+      // 着手状況フィルタ（レジストリ状態ベース）
+      const base = normalizeToNewStatus(f.status as FeatureStatus);
       const isCompleteEff = effectiveStatus === 'complete';
-      const isNotStartedProg = suggestedStatus === 'planning';
+      const isNotStartedBase = base === 'planning';
       if (progressFilter === 'complete' && !isCompleteEff) continue;
-      if (progressFilter === 'not_started' && !isNotStartedProg) continue;
-      if (progressFilter === 'in_progress' && (isCompleteEff || isNotStartedProg)) continue;
+      if (progressFilter === 'not_started' && !isNotStartedBase) continue;
+      if (progressFilter === 'in_progress' && !IN_PROGRESS_FEATURE_IDS.has(f.id)) continue;
       // ステータスフィルタ
       if (statusFilter !== 'all' && effectiveStatus !== statusFilter) continue;
       const arr = m.get(f.category) || [];
@@ -96,12 +101,12 @@ export default function FeaturesStatusPage(): React.JSX.Element {
     const list: Feature[] = [];
     for (const f of featuresRegistry) {
       const effectiveStatus = (derived?.effective?.[f.id] ?? f.status) as FeatureStatus;
-      const suggestedStatus = (derived?.suggested?.[f.id] ?? effectiveStatus) as FeatureStatus;
+      const base = normalizeToNewStatus(f.status as FeatureStatus);
       const isCompleteEff = effectiveStatus === 'complete';
-      const isNotStartedProg = suggestedStatus === 'planning';
+      const isNotStartedBase = base === 'planning';
       if (progressFilter === 'complete' && !isCompleteEff) continue;
-      if (progressFilter === 'not_started' && !isNotStartedProg) continue;
-      if (progressFilter === 'in_progress' && (isCompleteEff || isNotStartedProg)) continue;
+      if (progressFilter === 'not_started' && !isNotStartedBase) continue;
+      if (progressFilter === 'in_progress' && !IN_PROGRESS_FEATURE_IDS.has(f.id)) continue;
       if (statusFilter !== 'all' && effectiveStatus !== statusFilter) continue;
       list.push({ ...f, status: effectiveStatus });
     }
