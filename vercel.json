@@ -3,7 +3,7 @@
   "buildCommand": "pnpm run vercel-build-ci",
   "outputDirectory": "dist",
   "framework": null,
-  "installCommand": "pnpm install --no-frozen-lockfile --prefer-offline",
+  "installCommand": "pnpm config set store-dir .pnpm-store && pnpm install --prefer-offline --frozen-lockfile=false",
   "devCommand": "pnpm run dev",
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "headers": [
@@ -59,6 +59,35 @@
       "destination": "/index.html"
     }
   ],
+  "cache": [
+    ".pnpm-store"
+  ],
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "nodejs22.x",
+      "memory": 512,
+      "maxDuration": 10,
+      "includeFiles": [
+        "api/_lib/**",
+        "api/_utils/**",
+        "api/**/schemas/**",
+        "api/**/templates/**"
+      ],
+      "excludeFiles": [
+        "**/*.test.*",
+        "**/*.spec.*",
+        "cypress/**",
+        "coverage/**",
+        "docs/**",
+        "stories/**",
+        "**/*.stories.*",
+        "src/**",
+        "**/*.md",
+        ".github/**",
+        ".vscode/**"
+      ]
+    }
+  },
   "crons": [
     {
       "path": "/api/analytics/aggregate-daily",

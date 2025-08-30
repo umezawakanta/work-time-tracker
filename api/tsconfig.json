@@ -8,13 +8,16 @@
     "types": [
       "node"
     ],
-    "isolatedModules": false
+    "isolatedModules": false,
+    "skipLibCheck": true
   },
   "include": [
     "**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "../src"
+    "../src",
+    "**/*.test.*",
+    "**/*.spec.*"
   ]
 }
