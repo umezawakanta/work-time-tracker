@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -784,7 +784,10 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
   const { user, setIsAuthenticated, setUser } = useAuth();
   const { trackEvent } = useAnalytics();
   const isDarkMode = theme === 'dark';
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // サイドバーのホバー表示制御
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const closeTimerRef = useRef<number | null>(null);
+  const isCollapsed = !isSidebarOpen;
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     core: true,
@@ -1037,15 +1040,41 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         コンテンツにスキップ
       </a>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-        {/* サイドバー */}
+        {/* 左端ホットゾーン（ホバーでサイドバー展開） */}
+        <div
+          className="fixed left-0 top-0 bottom-0 w-2 z-50"
+          onMouseEnter={() => {
+            if (closeTimerRef.current) {
+              clearTimeout(closeTimerRef.current);
+              closeTimerRef.current = null;
+            }
+            setIsSidebarOpen(true);
+          }}
+        />
+
+        {/* サイドバー（オーバーレイ） */}
         <aside
-          className={`${isCollapsed ? 'w-16' : 'w-72'} bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col shadow-lg`}
+          className={`fixed left-0 top-0 bottom-0 z-40 w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-lg transform transition-transform duration-300 ease-in-out ${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+          onMouseEnter={() => {
+            if (closeTimerRef.current) {
+              clearTimeout(closeTimerRef.current);
+              closeTimerRef.current = null;
+            }
+            setIsSidebarOpen(true);
+          }}
+          onMouseLeave={() => {
+            closeTimerRef.current = window.setTimeout(() => {
+              setIsSidebarOpen(false);
+            }, 200);
+          }}
         >
           {/* ヘッダー */}
           <div className="p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setIsCollapsed(!isCollapsed)}
+                onClick={() => setIsSidebarOpen((v) => !v)}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 aria-label={isCollapsed ? 'サイドバーを展開' : 'サイドバーを折りたたむ'}
               >
@@ -1083,7 +1112,11 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           </div>
 
           {/* メニューコンテンツ */}
-          <ScrollArea className="flex-1 px-3 py-4">
+          <ScrollArea
+            className="flex-1 px-3 py-4"
+            onMouseEnter={() => setIsSidebarOpen(true)}
+            onMouseLeave={() => setIsSidebarOpen(false)}
+          >
             <nav className="space-y-2" role="navigation" aria-label="サイドナビゲーション">
               {filteredSections.map(renderSection)}
             </nav>
@@ -1097,9 +1130,9 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         <main id="main-content" role="main" className="flex-1 flex flex-col min-h-screen">
           {/* トップナビゲーション */}
           <header
-            className="fixed top-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 z-40"
+            className={`fixed top-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 z-30 transition-[left] duration-300`}
             role="banner"
-            style={{ left: isCollapsed ? '4rem' : '18rem' }}
+            style={{ left: isSidebarOpen ? '18rem' : '0' }}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -1233,7 +1266,10 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           </header>
 
           {/* ページコンテンツ */}
-          <div className="flex-1 p-6 pt-24 pb-28">
+          <div
+            className="flex-1 p-6 pt-24 pb-28 transition-[padding-left] duration-300"
+            style={{ paddingLeft: isSidebarOpen ? '18rem' : '0' }}
+          >
             <StatusBanners
               isWip={wipRoutes.some((p) => location.pathname.startsWith(p))}
               isMock={mockRoutes.some((p) => location.pathname.startsWith(p))}
@@ -1304,8 +1340,8 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
               </div>
             )}
             <footer
-              className="hidden sm:block fixed bottom-0 right-0 z-30"
-              style={{ left: isCollapsed ? '4rem' : '18rem' }}
+              className={`hidden sm:block fixed bottom-0 right-0 z-30 transition-[left] duration-300`}
+              style={{ left: isSidebarOpen ? '18rem' : '0' }}
             >
               <div className="container mx-auto px-4">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400">
