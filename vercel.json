@@ -59,9 +59,6 @@
       "destination": "/index.html"
     }
   ],
-  "cache": [
-    ".pnpm-store"
-  ],
   "functions": {
     "api/**/*.ts": {
       "runtime": "nodejs22.x",
