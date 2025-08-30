@@ -32,7 +32,7 @@ export function generateDevProgressShareText(opts?: ShareProgressOptions): strin
     lines.push(`${f.name}：${progress}% リリース予定日：${dateStr}`);
   }
   const body = lines.join('\n');
-  return `開発状況アップデート\n------------------\n${body}\n------------------`;
+  return `開発状況アップデート\n------------------\n${body}`;
 }
 
 export function openShare(text: string, url: string): void {
@@ -44,4 +44,13 @@ export function openShare(text: string, url: string): void {
     window.open(intent, '_blank');
     return;
   }
+}
+
+export function getCanonicalUrl(): string {
+  try {
+    const env = (import.meta as any).env as Record<string, unknown>;
+    const fromEnv = (env?.VITE_CANONICAL_URL as string) || '';
+    if (fromEnv) return fromEnv;
+  } catch {}
+  return 'https://work-time-tracker-five.vercel.app';
 }
