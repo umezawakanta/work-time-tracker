@@ -214,7 +214,7 @@ describe('authApi', () => {
       expect(mockedTokenManager.setRememberMe).toHaveBeenCalledWith(true);
     });
 
-    it.skip('should handle legacy token format', async () => {
+    it('should handle legacy token format', async () => {
       const legacyResponse = {
         token: 'legacy-token',
         user: mockUser,
