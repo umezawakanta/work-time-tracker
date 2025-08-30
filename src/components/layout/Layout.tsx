@@ -1097,8 +1097,9 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         <main id="main-content" role="main" className="flex-1 flex flex-col min-h-screen">
           {/* トップナビゲーション */}
           <header
-            className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4"
+            className="fixed top-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 z-40"
             role="banner"
+            style={{ left: isCollapsed ? '4rem' : '18rem' }}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -1232,7 +1233,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           </header>
 
           {/* ページコンテンツ */}
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-6 pt-24 pb-28">
             <StatusBanners
               isWip={wipRoutes.some((p) => location.pathname.startsWith(p))}
               isMock={mockRoutes.some((p) => location.pathname.startsWith(p))}
@@ -1302,7 +1303,10 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                 </div>
               </div>
             )}
-            <footer className="mt-6">
+            <footer
+              className="hidden sm:block fixed bottom-0 right-0 z-30"
+              style={{ left: isCollapsed ? '4rem' : '18rem' }}
+            >
               <div className="container mx-auto px-4">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400">
                   {getFeatureByPath('/terms')?.status === 'complete' && (
