@@ -11,9 +11,12 @@ describe('Accessibility smoke checks', () => {
       .then(($body) => {
         const text = $body.text();
         const onLogin =
-          text.includes('ログイン') || $body.find('h1,h2,h3:contains("ログイン")').length > 0;
+          text.includes('ログイン') ||
+          text.includes('Login') ||
+          text.includes('メールアドレス') ||
+          text.includes('Email');
         if (onLogin) {
-          cy.findByRole('heading', { name: 'ログイン', timeout: 6000 }).should('be.visible');
+          cy.findByRole('heading', { name: /ログイン|Login/i, timeout: 6000 }).should('be.visible');
           return;
         }
         cy.get('header').should('be.visible');

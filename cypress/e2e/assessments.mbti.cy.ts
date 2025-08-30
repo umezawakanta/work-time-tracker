@@ -8,8 +8,9 @@ describe('Assessments navigation smoke', () => {
     cy.get('body', { timeout: 8000 })
       .should('exist')
       .then(($body) => {
-        if ($body.text().includes('ログイン')) {
-          cy.findByRole('heading', { name: 'ログイン', timeout: 6000 }).should('be.visible');
+        const text = $body.text();
+        if (text.includes('ログイン') || text.includes('Login')) {
+          cy.findByRole('heading', { name: /ログイン|Login/i, timeout: 6000 }).should('be.visible');
           return;
         }
         cy.findByRole('button', { name: 'MBTIテストを開始', timeout: 6000 }).click();
