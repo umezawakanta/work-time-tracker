@@ -416,8 +416,12 @@ export function trackEvent(eventName: string, data: EventData = {}): void {
       });
     }
 
-    // バックエンドにも保存
-    if (typeof fetch === 'function' && process.env.ANALYTICS_DISABLED !== 'true') {
+    // バックエンドにも保存（環境で有効化されている場合のみ）
+    if (
+      typeof fetch === 'function' &&
+      process.env.ANALYTICS_DISABLED !== 'true' &&
+      ENV.ENABLE_ANALYTICS()
+    ) {
       const clientId = getClientId();
       const sessionId = getSessionId();
       schedulePost('/api/analytics/track', {
@@ -458,14 +462,16 @@ export function trackPageView(pagePath: string, pageTitle?: string): void {
     if (process.env.NODE_ENV !== 'production') {
       console.log(`[Analytics] Page View: ${pagePath} (${pageTitle})`);
       try {
-        schedulePost('/api/analytics/pageview', {
-          path: pagePath,
-          title: pageTitle,
-          referrer: document.referrer,
-          clientId,
-          sessionId,
-          utm,
-        });
+        if (ENV.ENABLE_ANALYTICS()) {
+          schedulePost('/api/analytics/pageview', {
+            path: pagePath,
+            title: pageTitle,
+            referrer: document.referrer,
+            clientId,
+            sessionId,
+            utm,
+          });
+        }
       } catch {}
       return;
     }
@@ -491,7 +497,7 @@ export function trackPageView(pagePath: string, pageTitle?: string): void {
       });
     }
 
-    if (typeof fetch === 'function') {
+    if (typeof fetch === 'function' && ENV.ENABLE_ANALYTICS()) {
       schedulePost('/api/analytics/pageview', {
         path: pagePath,
         title: pageTitle,
@@ -702,8 +708,7 @@ try {
 
     const sendVitals = () => {
       try {
-        const allowDev = ENV.ENABLE_ANALYTICS();
-        if (process.env.NODE_ENV !== 'production' && !allowDev) return;
+        if (!ENV.ENABLE_ANALYTICS()) return;
         const clientId = getClientId();
         const sessionId = getSessionId();
         const path = typeof window !== 'undefined' ? window.location.pathname : undefined;

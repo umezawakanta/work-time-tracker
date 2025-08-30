@@ -184,6 +184,10 @@ const SNSShareComponent: React.FC<{
 
   const trackShare = async (platformId: string, content: ShareableContent) => {
     try {
+      const enable = (window as any)?.__VITE_ENV__?.VITE_ENABLE_ANALYTICS === 'true';
+      if (!enable) {
+        return;
+      }
       const response = await fetch('/api/analytics/track-share', {
         method: 'POST',
         headers: {
