@@ -493,6 +493,16 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: true,
   },
   {
+    id: 'subscription-management',
+    name: 'サブスクリプション管理',
+    path: '/subscription-management',
+    category: 'サブスクリプション・請求',
+    description: 'プラン管理・アップグレード・請求設定',
+    status: 'planning',
+    requiresRealAPI: true,
+    priority: 'P1',
+  },
+  {
     id: 'asset-liability-report',
     name: '📊 資産負債レポート',
     path: '/asset-liability-report',

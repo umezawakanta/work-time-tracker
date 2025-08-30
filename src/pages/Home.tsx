@@ -68,6 +68,7 @@ import { getVariant } from '@/lib/ab';
 import { useAnalytics } from '@/lib/analytics';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import IntegratedDashboard from '@/pages/IntegratedDashboard';
+import { isFeatureAccessible } from '@/config/features';
 
 interface DashboardStats {
   tasksCompleted: number;
@@ -535,14 +536,16 @@ const Home: React.FC = () => {
                   IQ/MBTIなどの診断結果に基づいて、あなた専用に最適化された体験を提供します。
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <Button
-                    size="lg"
-                    className="px-6 py-6 text-base md:text-lg w-full sm:w-auto"
-                    onClick={() => navigate('/ai-assistant')}
-                    aria-label="AI秘書を使う"
-                  >
-                    AI秘書を使う
-                  </Button>
+                  {isFeatureAccessible('/ai-assistant').allowed && (
+                    <Button
+                      size="lg"
+                      className="px-6 py-6 text-base md:text-lg w-full sm:w-auto"
+                      onClick={() => navigate('/ai-assistant')}
+                      aria-label="AI秘書を使う"
+                    >
+                      AI秘書を使う
+                    </Button>
+                  )}
                   <Button
                     variant="outline"
                     size="lg"
@@ -1093,23 +1096,24 @@ const Home: React.FC = () => {
               </div>
 
               {/* Premium CTA */}
-              {!hasActiveSubscription && (
-                <Card className="bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500 border-0 shadow-2xl text-white">
-                  <CardContent className="p-8 text-center">
-                    <Crown className="w-16 h-16 mx-auto mb-4 text-yellow-200" />
-                    <h3 className="text-2xl font-bold mb-4">プレミアムでさらに強力に</h3>
-                    <p className="text-purple-100 mb-6 max-w-2xl mx-auto">
-                      限定バッジ、高度なAI分析、チーム機能など、プレミアム限定の機能で生産性を次のレベルへ
-                    </p>
-                    <Button
-                      onClick={() => navigate('/subscription-management')}
-                      className="bg-white text-purple-600 hover:bg-gray-100 font-bold px-8 py-3"
-                    >
-                      プレミアムを始める
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
+              {!hasActiveSubscription &&
+                isFeatureAccessible('/subscription-management').allowed && (
+                  <Card className="bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500 border-0 shadow-2xl text-white">
+                    <CardContent className="p-8 text-center">
+                      <Crown className="w-16 h-16 mx-auto mb-4 text-yellow-200" />
+                      <h3 className="text-2xl font-bold mb-4">プレミアムでさらに強力に</h3>
+                      <p className="text-purple-100 mb-6 max-w-2xl mx-auto">
+                        限定バッジ、高度なAI分析、チーム機能など、プレミアム限定の機能で生産性を次のレベルへ
+                      </p>
+                      <Button
+                        onClick={() => navigate('/subscription-management')}
+                        className="bg-white text-purple-600 hover:bg-gray-100 font-bold px-8 py-3"
+                      >
+                        プレミアムを始める
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
 
               {/* Quick Add Todo */}
               <div className="fixed bottom-6 right-6">
@@ -1133,13 +1137,15 @@ const Home: React.FC = () => {
                 </h2>
                 <p className="text-gray-600 mb-6">AI秘書と自己診断で、最短60秒の一歩から。</p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <Button
-                    className="px-6 py-6 text-base md:text-lg"
-                    onClick={() => navigate('/ai-assistant')}
-                    aria-label="AI秘書を使う"
-                  >
-                    AI秘書を使う
-                  </Button>
+                  {isFeatureAccessible('/ai-assistant').allowed && (
+                    <Button
+                      className="px-6 py-6 text-base md:text-lg"
+                      onClick={() => navigate('/ai-assistant')}
+                      aria-label="AI秘書を使う"
+                    >
+                      AI秘書を使う
+                    </Button>
+                  )}
                   <Button
                     variant="outline"
                     className="px-6 py-6 text-base md:text-lg"
