@@ -510,6 +510,28 @@ export const featureArtifactsRegistry: Record<string, FeatureArtifacts> = {
       href: '/docs/features/share-dev-progress/detailed-design',
     },
     source_code: { title: 'ソースコード', href: '/_bg/share-dev-progress' },
+    unit_test_spec: {
+      title: '単体試験仕様書',
+      href: '/docs/features/share-dev-progress/unit-test-spec',
+    },
+    e2e_tests: {
+      title: 'e2eテスト（プレースホルダー）',
+      href: '/docs/features/share-dev-progress/e2e-tests',
+    },
+    integration_test_spec: {
+      title: '結合試験仕様書',
+      href: '/docs/features/share-dev-progress/integration-test-spec',
+    },
+    system_test_spec: {
+      title: '総合試験仕様書',
+      href: '/docs/features/share-dev-progress/system-test-spec',
+    },
+    operation_manual: {
+      title: '操作手順書',
+      href: '/docs/features/share-dev-progress/operation-manual',
+    },
+    runbook: { title: '運用手順書', href: '/docs/features/share-dev-progress/runbook' },
+    faq: { title: 'FAQ', href: '/docs/features/share-dev-progress/faq' },
   },
   admin: {
     requirements: { title: '要件定義書', href: '/docs/features/admin/requirements' },
