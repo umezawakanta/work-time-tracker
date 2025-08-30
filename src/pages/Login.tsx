@@ -182,9 +182,13 @@ export default function Login() {
       // refreshAuthは呼ばない（すでにユーザー情報とトークンは設定済み）
       console.log('✅ Login complete - user and tokens set');
 
-      // ログイン成功後、管理者なら /admin にリダイレクト、そうでなければ元のページ
+      // ログイン成功後の遷移先決定（post_login_redirect を最優先）
+      const stored = sessionStorage.getItem('post_login_redirect');
+      if (stored) {
+        sessionStorage.removeItem('post_login_redirect');
+      }
       const isAdmin = (u?: any) => Boolean(u?.isAdmin) || u?.role === 'admin';
-      const target = isAdmin(user as any) || from === '/admin' ? '/admin' : from;
+      const target = stored || (isAdmin(user as any) || from === '/admin' ? '/admin' : from);
       console.log('🔀 Redirecting to:', target);
       navigate(target, { replace: true });
     } catch (error) {
