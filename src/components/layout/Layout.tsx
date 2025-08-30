@@ -1174,9 +1174,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                     data-testid="share-dev-progress-header-btn"
                     onClick={() => {
                       try {
-                        const shareText = generateDevProgressShareText({
-                          featureIds: ['login', 'logout', 'user-registration'],
-                        });
+                        const shareText = generateDevProgressShareText();
                         const url = getCanonicalUrl();
                         openShare(shareText, url);
                       } catch {}

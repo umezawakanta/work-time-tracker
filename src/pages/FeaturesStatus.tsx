@@ -140,7 +140,7 @@ export default function FeaturesStatusPage(): React.JSX.Element {
             onClick={() => {
               try {
                 const shareText = generateDevProgressShareText({
-                  featureIds: ['login', 'logout', 'user-registration'],
+                  // statuses を渡すだけで、着手中の全機能を動的抽出
                   statuses: derived?.effective ?? null,
                 });
                 const url = getCanonicalUrl();
