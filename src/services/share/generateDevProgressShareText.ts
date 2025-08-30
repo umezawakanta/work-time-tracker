@@ -1,5 +1,5 @@
 import { FeatureStatus, featuresRegistry } from '@/config/features';
-import { NEW_STATUS_ORDER } from '@/services/dev/featureStatusEngine';
+import { NEW_STATUS_ORDER, normalizeToNewStatus } from '@/services/dev/featureStatusEngine';
 
 export interface ShareProgressOptions {
   featureIds?: string[];
@@ -13,16 +13,43 @@ function getFeatureProgressPercent(status: FeatureStatus): number {
 }
 
 export function generateDevProgressShareText(opts?: ShareProgressOptions): string {
-  const ids = opts?.featureIds ?? ['login', 'logout', 'user-registration'];
   const map = opts?.statuses ?? null;
+  const providedIds = opts?.featureIds ?? null;
+  const inProgressSet = new Set<FeatureStatus>([
+    'designing',
+    'developing',
+    'unit_testing',
+    'integration_testing',
+    'system_testing',
+    'documenting',
+    'review',
+    'release_pending',
+  ]);
+
+  // 対象機能の決定
+  let candidates = featuresRegistry.slice();
+  if (providedIds) {
+    candidates = candidates.filter((f) => providedIds.includes(f.id));
+  } else if (map) {
+    candidates = candidates.filter((f) => inProgressSet.has(map[f.id] as FeatureStatus));
+  } else {
+    candidates = candidates.filter((f) => inProgressSet.has(normalizeToNewStatus(f.status)));
+  }
+
+  // 優先度順→名前順
+  const priorityOrder: Record<string, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  candidates.sort((a, b) => {
+    const pa = priorityOrder[(a as any).priority || 'P3'];
+    const pb = priorityOrder[(b as any).priority || 'P3'];
+    if (pa !== pb) return pa - pb;
+    return a.name.localeCompare(b.name);
+  });
+
+  // 行生成
   const lines: string[] = [];
-  for (const id of ids) {
-    const f = (featuresRegistry as any).find((x: any) => x.id === id) as
-      | { id: string; name: string; status: FeatureStatus; targetRelease?: string }
-      | undefined;
-    if (!f) continue;
-    const useStatus = (map?.[id] ?? f.status) as FeatureStatus;
-    const progress = getFeatureProgressPercent(useStatus);
+  for (const f of candidates) {
+    const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
+    const progress = getFeatureProgressPercent(status);
     const ymd = (f as any).targetRelease || '';
     let dateStr = '未設定';
     if (typeof ymd === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(ymd)) {
@@ -31,6 +58,7 @@ export function generateDevProgressShareText(opts?: ShareProgressOptions): strin
     }
     lines.push(`${f.name}：${progress}% リリース予定日：${dateStr}`);
   }
+
   const body = lines.join('\n');
   return `開発状況アップデート\n------------------\n${body}`;
 }
