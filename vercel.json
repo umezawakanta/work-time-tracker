@@ -59,7 +59,6 @@
       "destination": "/index.html"
     }
   ],
-  
   "crons": [
     {
       "path": "/api/analytics/aggregate-daily",
