@@ -575,6 +575,7 @@ export default function Register() {
               type="submit"
               className="w-full"
               disabled={isSubmitting || hasErrors || !acceptTerms}
+              data-testid="register-submit-btn"
             >
               {isSubmitting ? (
                 <>

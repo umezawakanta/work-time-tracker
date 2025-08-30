@@ -1280,6 +1280,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                     variant="outline"
                     size="sm"
                     className="justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950"
+                    data-testid="header-logout-btn"
                     aria-label="ログアウト"
                   >
                     <LogOut className="h-4 w-4" />
