@@ -579,14 +579,16 @@ const Home: React.FC = () => {
                     </div>
                   )}
                 </div>
-                {stats?.streakDays > 0 && (
+                {isFeatureCompleteVisible('/_bg/hero-disclaimer') && stats?.streakDays > 0 && (
                   <div className="mt-3 flex justify-center">
                     <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-orange-700 border border-orange-200 text-sm">
                       <Flame className="w-4 h-4" /> 連続 {stats.streakDays} 日
                     </span>
                   </div>
                 )}
-                <p className="mt-2 text-xs text-gray-500">無料・匿名OK・いつでも退会可能</p>
+                {isFeatureCompleteVisible('/_bg/hero-disclaimer') && (
+                  <p className="mt-2 text-xs text-gray-500">無料・匿名OK・いつでも退会可能</p>
+                )}
               </div>
             </div>
             {/* 3 Benefits (with lazy images for LCP optimization below-the-fold) */}
@@ -1166,10 +1168,14 @@ const Home: React.FC = () => {
                 <div className="mb-6 text-left">
                   <InlineNPS />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                  今日からはじめよう
-                </h2>
-                <p className="text-gray-600 mb-6">AI秘書と自己診断で、最短60秒の一歩から。</p>
+                {isFeatureCompleteVisible('/_bg/bottom-cta-heading') && (
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                    今日からはじめよう
+                  </h2>
+                )}
+                {isFeatureCompleteVisible('/_bg/bottom-tagline') && (
+                  <p className="text-gray-600 mb-6">AI秘書と自己診断で、最短60秒の一歩から。</p>
+                )}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                   {isFeatureAccessible('/ai-assistant').allowed && (
                     <Button
@@ -1194,7 +1200,9 @@ const Home: React.FC = () => {
                     </Button>
                   )}
                 </div>
-                <p className="mt-2 text-xs text-gray-500">無料・匿名OK・いつでも退会可能</p>
+                {isFeatureCompleteVisible('/_bg/hero-disclaimer') && (
+                  <p className="mt-2 text-xs text-gray-500">無料・匿名OK・いつでも退会可能</p>
+                )}
               </div>
             </div>
 
