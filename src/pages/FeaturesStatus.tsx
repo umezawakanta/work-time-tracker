@@ -9,6 +9,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { useDerivedFeatureStatuses } from '@/hooks/useDerivedFeatureStatuses';
 import { getFeatureByPath } from '@/config/features';
 import { NEW_STATUS_ORDER, normalizeToNewStatus } from '@/services/dev/featureStatusEngine';
+import {
+  generateDevProgressShareText,
+  openShare,
+} from '@/services/share/generateDevProgressShareText';
 import { setArtifactApproval, isArtifactApproved } from '@/services/dev/featureStatusEngine';
 
 const statusLabel: Record<FeatureStatus, string> = {
@@ -126,45 +130,19 @@ export default function FeaturesStatusPage(): React.JSX.Element {
       </p>
 
       {/* 開発状況をシェア */}
-      {getFeatureByPath('/_bg/share-dev-progress')?.status === 'complete' && (
+      {getFeatureByPath('/_bg/share-dev-progress')?.status && (
         <div className="mb-4">
           <Button
             variant="outline"
             size="sm"
             onClick={() => {
               try {
-                // 主要P0/P1候補を抽出（例: ログイン/ログアウト/登録）
-                const pickIds = ['login', 'logout', 'user-registration'];
-                const lines: string[] = [];
-                for (const id of pickIds) {
-                  const f = featuresRegistry.find((x) => x.id === id);
-                  if (!f) continue;
-                  const eff = (derived?.effective?.[id] ?? f.status) as FeatureStatus;
-                  const order = NEW_STATUS_ORDER;
-                  const progress = Math.round(((order.indexOf(eff) + 1) / order.length) * 100);
-                  // 目標リリース日（feature.targetRelease があれば使用）
-                  const ymd = (f as any).targetRelease || '';
-                  let y = '';
-                  let m = '';
-                  let d = '';
-                  if (ymd && /^\d{4}-\d{2}-\d{2}$/.test(ymd)) {
-                    [y, m, d] = ymd.split('-');
-                  }
-                  const name = f.name;
-                  const dateStr = y ? `${y}/${m}/${d}` : '未設定';
-                  lines.push(`${name}：${progress}% リリース予定日：${dateStr}`);
-                }
-                const text = lines.join('\n');
-                const shareText = `開発状況アップデート\n------------------\n${text}\n------------------`;
+                const shareText = generateDevProgressShareText({
+                  featureIds: ['login', 'logout', 'user-registration'],
+                  statuses: derived?.effective ?? null,
+                });
                 const url = typeof window !== 'undefined' ? window.location.origin : '';
-                if (navigator.share) {
-                  navigator.share({ text: shareText, url }).catch(() => {});
-                } else {
-                  const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                    shareText
-                  )}%0A${encodeURIComponent(url)}`;
-                  window.open(intent, '_blank');
-                }
+                openShare(shareText, url);
               } catch {}
             }}
             aria-label="開発状況をシェア"

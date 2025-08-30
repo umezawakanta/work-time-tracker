@@ -502,6 +502,15 @@ export const featureArtifactsRegistry: Record<string, FeatureArtifacts> = {
     runbook: { title: '運用手順書', href: '/docs/features/logout/runbook' },
     faq: { title: 'FAQ', href: '/docs/features/logout/faq' },
   },
+  'share-dev-progress': {
+    requirements: { title: '要件定義書', href: '/docs/features/share-dev-progress/requirements' },
+    basic_design: { title: '基本設計書', href: '/docs/features/share-dev-progress/basic-design' },
+    detailed_design: {
+      title: '詳細設計書',
+      href: '/docs/features/share-dev-progress/detailed-design',
+    },
+    source_code: { title: 'ソースコード', href: '/_bg/share-dev-progress' },
+  },
   admin: {
     requirements: { title: '要件定義書', href: '/docs/features/admin/requirements' },
     basic_design: { title: '基本設計書', href: '/docs/features/admin/basic-design' },

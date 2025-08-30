@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
+import {
+  generateDevProgressShareText,
+  openShare,
+} from '@/services/share/generateDevProgressShareText';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -1161,24 +1165,18 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                     ダッシュボード
                   </h2>
                 )}
-                {getFeatureByPath('/_bg/share-dev-progress')?.status === 'complete' && (
+                {getFeatureByPath('/_bg/share-dev-progress') && (
                   <Button
                     variant="outline"
                     size="sm"
                     className="ml-2"
                     onClick={() => {
                       try {
-                        const shareText =
-                          '開発状況アップデート\n（詳細は機能一覧をご確認ください）';
+                        const shareText = generateDevProgressShareText({
+                          featureIds: ['login', 'logout', 'user-registration'],
+                        });
                         const url = typeof window !== 'undefined' ? window.location.origin : '';
-                        if (navigator.share) {
-                          navigator.share({ text: shareText, url }).catch(() => {});
-                        } else {
-                          const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                            shareText
-                          )}%0A${encodeURIComponent(url)}`;
-                          window.open(intent, '_blank');
-                        }
+                        openShare(shareText, url);
                       } catch {}
                     }}
                     aria-label="開発状況をシェア"

@@ -75,6 +75,10 @@ import {
   featuresRegistry,
 } from '@/config/features';
 import { NEW_STATUS_ORDER } from '@/services/dev/featureStatusEngine';
+import {
+  generateDevProgressShareText,
+  openShare,
+} from '@/services/share/generateDevProgressShareText';
 
 interface DashboardStats {
   tasksCompleted: number;
@@ -1258,39 +1262,16 @@ const Home: React.FC = () => {
             )}
 
             {/* Share Dev Progress */}
-            {isFeatureCompleteVisible('/_bg/share-dev-progress') && (
+            {getFeatureByPath('/_bg/share-dev-progress') && (
               <div className="bg-white border-t">
                 <div className="container mx-auto px-4 max-w-7xl py-6 text-center">
                   <Button
                     variant="outline"
                     onClick={() => {
                       try {
-                        const order = ['login', 'logout', 'user-registration'];
-                        const lines: string[] = [];
-                        // 進捗は featuresRegistry から段階割合で近似（ホームは軽量版）
-                        for (const id of order) {
-                          const f = (featuresRegistry as any).find((x: any) => x.id === id);
-                          if (!f) continue;
-                          const eff = f.status as any;
-                          const idx = (NEW_STATUS_ORDER as any).indexOf(eff);
-                          const progress = Math.round(
-                            ((idx + 1) / (NEW_STATUS_ORDER as any).length) * 100
-                          );
-                          const ymd = f.targetRelease || '';
-                          const dateStr = ymd ? ymd.replaceAll('-', '/') : '未設定';
-                          lines.push(`${f.name}：${progress}% リリース予定日：${dateStr}`);
-                        }
-                        const text = lines.join('\n');
-                        const shareText = `開発状況アップデート\n------------------\n${text}\n------------------`;
+                        const shareText = generateDevProgressShareText();
                         const url = typeof window !== 'undefined' ? window.location.origin : '';
-                        if (navigator.share) {
-                          navigator.share({ text: shareText, url }).catch(() => {});
-                        } else {
-                          const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                            shareText
-                          )}%0A${encodeURIComponent(url)}`;
-                          window.open(intent, '_blank');
-                        }
+                        openShare(shareText, url);
                       } catch {}
                     }}
                     aria-label="開発状況をシェア"
