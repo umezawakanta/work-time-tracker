@@ -1170,6 +1170,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                     variant="outline"
                     size="sm"
                     className="ml-2"
+                    data-testid="share-dev-progress-header-btn"
                     onClick={() => {
                       try {
                         const shareText = generateDevProgressShareText({

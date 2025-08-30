@@ -135,6 +135,7 @@ export default function FeaturesStatusPage(): React.JSX.Element {
           <Button
             variant="outline"
             size="sm"
+            data-testid="share-dev-progress-features-btn"
             onClick={() => {
               try {
                 const shareText = generateDevProgressShareText({

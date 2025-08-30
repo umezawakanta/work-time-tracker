@@ -1267,6 +1267,7 @@ const Home: React.FC = () => {
                 <div className="container mx-auto px-4 max-w-7xl py-6 text-center">
                   <Button
                     variant="outline"
+                    data-testid="share-dev-progress-home-btn"
                     onClick={() => {
                       try {
                         const shareText = generateDevProgressShareText();
