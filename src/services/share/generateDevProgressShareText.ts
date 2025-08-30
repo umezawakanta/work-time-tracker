@@ -26,6 +26,11 @@ export function generateDevProgressShareText(opts?: ShareProgressOptions): strin
     'release_pending',
   ]);
 
+  const hasValidYmd = (value: unknown): value is string => {
+    if (typeof value !== 'string') return false;
+    return /^\d{4}-\d{2}-\d{2}$/.test(value);
+  };
+
   // 対象機能の決定
   let candidates = featuresRegistry.slice();
   if (providedIds) {
@@ -38,11 +43,14 @@ export function generateDevProgressShareText(opts?: ShareProgressOptions): strin
   // 共有機能そのものや無効化中の機能は除外
   candidates = candidates.filter((f) => f.id !== 'share-dev-progress' && !(f as any).disabled);
 
+  // 共有要件: 着手中かつリリース予定日が設定済み(YYYY-MM-DD)
+  candidates = candidates.filter((f) => hasValidYmd(f.targetRelease));
+
   // 優先度順→名前順
-  const priorityOrder: Record<string, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  const priorityOrder: Record<'P0' | 'P1' | 'P2' | 'P3', number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
   candidates.sort((a, b) => {
-    const pa = priorityOrder[(a as any).priority || 'P3'];
-    const pb = priorityOrder[(b as any).priority || 'P3'];
+    const pa = priorityOrder[(a.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
+    const pb = priorityOrder[(b.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
     if (pa !== pb) return pa - pb;
     return a.name.localeCompare(b.name);
   });
@@ -52,12 +60,9 @@ export function generateDevProgressShareText(opts?: ShareProgressOptions): strin
   for (const f of candidates) {
     const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
     const progress = getFeatureProgressPercent(status);
-    const ymd = (f as any).targetRelease || '';
-    let dateStr = '未設定';
-    if (typeof ymd === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(ymd)) {
-      const [y, m, d] = ymd.split('-');
-      dateStr = `${y}/${m}/${d}`;
-    }
+    const ymd = f.targetRelease as string; // filtered above to be valid
+    const [y, m, d] = ymd.split('-');
+    const dateStr = `${y}/${m}/${d}`;
     lines.push(`${f.name}：${progress}% リリース予定日：${dateStr}`);
   }
 
@@ -135,9 +140,16 @@ export function openShare(text: string, url: string): void {
 
 export function getCanonicalUrl(): string {
   try {
-    const env = (import.meta as any).env as Record<string, unknown>;
-    const fromEnv = (env?.VITE_CANONICAL_URL as string) || '';
-    if (fromEnv) return fromEnv;
+    // Prefer window-injected env (works in browser and Jest)
+    if (typeof window !== 'undefined') {
+      const injected = (window as any)?.__VITE_ENV__?.VITE_CANONICAL_URL as unknown;
+      if (typeof injected === 'string' && injected) return injected;
+    }
+    // Fallback to process.env for Node/Jest
+    if (typeof process !== 'undefined' && (process as any).env) {
+      const fromProc = (process as any).env.VITE_CANONICAL_URL as unknown;
+      if (typeof fromProc === 'string' && fromProc) return fromProc;
+    }
   } catch {}
   return 'https://work-time-tracker-five.vercel.app';
 }

@@ -10,7 +10,7 @@ declare const it: any;
 import { AxiosError } from 'axios';
 import * as authApi from '../authApi';
 import { api } from '../apiConfig';
-import { tokenManager } from '../../auth/TokenManager';
+import { tokenManager } from '@/services/auth/TokenManager';
 import { getEnv, getBooleanEnv, isDev, isProd } from '../../../utils/env';
 
 // Mock dependencies
@@ -161,7 +161,9 @@ describe('authApi', () => {
     });
 
     it('should handle registration error', async () => {
-      const error = new AxiosError('Registration failed');
+      const error = new Error('Registration failed');
+      (error as any).name = 'AxiosError';
+      (error as any).isAxiosError = true;
       mockedApi.post.mockRejectedValue(error);
 
       await expect(authApi.register(mockRegisterData)).rejects.toThrow('Registration failed');
@@ -250,7 +252,9 @@ describe('authApi', () => {
     });
 
     it.skip('should handle network error', async () => {
-      const error = new AxiosError('Network Error');
+      const error: any = new Error('Network Error');
+      error.name = 'AxiosError';
+      error.isAxiosError = true;
       error.response = { status: 500, data: { message: 'Server Error' } } as any;
       error.config = { url: '/auth/login', baseURL: 'http://localhost:3001' } as any;
       error.code = 'ECONNREFUSED';
@@ -362,7 +366,9 @@ describe('authApi', () => {
       mockedTokenManager.clearTokens.mockImplementation(() => Promise.resolve());
 
       // Create proper AxiosError with complete response structure
-      const authError = new AxiosError('Unauthorized', 'ERR_BAD_REQUEST');
+      const authError: any = new Error('Unauthorized');
+      authError.name = 'AxiosError';
+      authError.isAxiosError = true;
       authError.response = {
         status: 401,
         statusText: 'Unauthorized',
@@ -376,7 +382,6 @@ describe('authApi', () => {
         headers: {},
       } as any;
       authError.code = 'ERR_BAD_REQUEST';
-      authError.name = 'AxiosError';
 
       mockedApi.get.mockRejectedValue(authError);
 

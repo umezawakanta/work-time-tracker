@@ -4,7 +4,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import ResetPassword from '../ResetPassword';
-import { AxiosError } from 'axios';
 
 jest.mock('react-hot-toast', () => ({
   toast: { success: jest.fn(), error: jest.fn() },
@@ -25,6 +24,20 @@ const renderWithToken = (token: string | null) => {
 };
 
 describe('ResetPassword Page', () => {
+  const axiosLike = (status: number, statusText: string, data: Record<string, unknown> = {}) => {
+    const err: any = new Error(statusText);
+    err.name = 'AxiosError';
+    err.isAxiosError = true;
+    err.response = {
+      status,
+      statusText,
+      headers: {},
+      config: {} as any,
+      data,
+    };
+    err.config = { url: '/auth/password-reset', method: 'post' } as any;
+    return err;
+  };
   it('shows error when token missing', async () => {
     renderWithToken(null);
     await screen.findByText('リセットリンクが無効です');
@@ -88,14 +101,7 @@ describe('ResetPassword Page', () => {
 
   it('shows token invalid error from API 400', async () => {
     const { verifyResetToken } = jest.requireMock('@/services/api/authApi');
-    const axiosError = new AxiosError('Bad Request', 'ERR_BAD_REQUEST', undefined, undefined, {
-      status: 400,
-      statusText: 'Bad Request',
-      headers: {},
-      config: {} as any,
-      data: {},
-    });
-    verifyResetToken.mockRejectedValueOnce(axiosError);
+    verifyResetToken.mockRejectedValueOnce(axiosLike(400, 'Bad Request', {}));
 
     renderWithToken('invalid');
 
@@ -106,14 +112,7 @@ describe('ResetPassword Page', () => {
     const user = userEvent.setup();
     const { verifyResetToken, resetPassword } = jest.requireMock('@/services/api/authApi');
     verifyResetToken.mockResolvedValueOnce({ valid: true });
-    const axiosError = new AxiosError('Unprocessable', 'ERR_BAD_REQUEST', undefined, undefined, {
-      status: 422,
-      statusText: 'Unprocessable Entity',
-      headers: {},
-      config: {} as any,
-      data: {},
-    });
-    resetPassword.mockRejectedValueOnce(axiosError);
+    resetPassword.mockRejectedValueOnce(axiosLike(422, 'Unprocessable Entity', {}));
 
     renderWithToken('valid');
     const pwd = await screen.findByLabelText('新しいパスワード');

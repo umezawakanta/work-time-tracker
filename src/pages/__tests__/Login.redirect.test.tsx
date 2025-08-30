@@ -15,13 +15,13 @@ jest.mock('react-i18next', () => ({
 }));
 
 // Mock useAuth
-const setIsAuthenticated = jest.fn();
-const setUser = jest.fn();
+const mockSetIsAuthenticated = jest.fn();
+const mockSetUser = jest.fn();
 jest.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({
     isAuthenticated: false,
-    setIsAuthenticated,
-    setUser,
+    setIsAuthenticated: mockSetIsAuthenticated,
+    setUser: mockSetUser,
     refreshAuth: jest.fn(),
     user: null,
   }),
@@ -59,7 +59,7 @@ describe('Login redirect behavior', () => {
       // The Login component uses navigate; we cannot easily assert URL here without router assertions.
       // Instead, assert that post_login_redirect was consumed.
       expect(sessionStorage.getItem('post_login_redirect')).toBeNull();
-      expect(setIsAuthenticated).toHaveBeenCalledWith(true);
+      expect(mockSetIsAuthenticated).toHaveBeenCalledWith(true);
     });
   });
 });

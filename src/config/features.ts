@@ -492,6 +492,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: true,
     priority: 'P1',
+    targetRelease: '2025-09-06',
   },
   {
     id: 'billing-payments',
@@ -891,6 +892,7 @@ export const featuresRegistry: Feature[] = [
     status: 'system_testing',
     requiresRealAPI: false,
     priority: 'P0',
+    targetRelease: '2025-08-31',
   },
   {
     id: 'sidebar-search',
@@ -1316,6 +1318,7 @@ export const featuresRegistry: Feature[] = [
     status: 'developing',
     requiresRealAPI: true,
     priority: 'P1',
+    targetRelease: '2025-09-04',
   },
   {
     id: 'reset-password',
@@ -1326,6 +1329,7 @@ export const featuresRegistry: Feature[] = [
     status: 'developing',
     requiresRealAPI: true,
     priority: 'P1',
+    targetRelease: '2025-09-05',
   },
   {
     id: 'notification-settings',
@@ -1386,6 +1390,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: true,
     priority: 'P1',
+    targetRelease: '2025-09-07',
   },
   {
     id: 'improvement-implementation',

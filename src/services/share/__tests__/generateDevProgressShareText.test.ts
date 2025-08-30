@@ -1,11 +1,12 @@
 import { generateDevProgressShareText } from '../../share/generateDevProgressShareText';
 
 describe('generateDevProgressShareText', () => {
-  it('includes three lines for login/logout/user-registration', () => {
+  it('includes only started features with targetRelease date', () => {
     const text = generateDevProgressShareText();
     const hasHeader = text.indexOf('開発状況アップデート') >= 0;
     const linesWithDate = text.split('\n').filter((l) => l.indexOf('リリース予定日') >= 0).length;
     if (!hasHeader) throw new Error('Header not found');
+    // At minimum, login/logout/user-registration have dates; forgot/reset password now as well
     if (linesWithDate < 3) throw new Error('Expected at least 3 lines with date');
   });
 
@@ -21,8 +22,10 @@ describe('generateDevProgressShareText', () => {
     if (!hasHeader) throw new Error('Header not found');
   });
 
-  it('prints 未設定 when targetRelease is missing', () => {
-    const text = generateDevProgressShareText({ featureIds: ['dev-status'] });
-    if (text.indexOf('未設定') < 0) throw new Error('Expected 未設定 when targetRelease missing');
+  it('excludes features without targetRelease from default share', () => {
+    const text = generateDevProgressShareText();
+    // dev-status has no targetRelease; should not appear in default output
+    if (text.indexOf('開発ステータス') >= 0)
+      throw new Error('Feature without targetRelease should be excluded');
   });
 });

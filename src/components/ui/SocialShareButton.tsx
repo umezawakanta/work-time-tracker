@@ -121,20 +121,17 @@ export const SocialShareButton: React.FC<SocialShareButtonProps> = ({
 
     // カスタムアナリティクス（有効時のみ送信）
     try {
-      const enable = (window as any)?.__VITE_ENV__?.VITE_ENABLE_ANALYTICS === 'true';
-      if (enable) {
-        fetch('/api/analytics/track', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            event: 'social_share',
-            platform,
-            url,
-            title,
-            timestamp: new Date().toISOString(),
-          }),
-        }).catch(() => {});
-      }
+      fetch('/api/analytics/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'social_share',
+          platform,
+          url,
+          title,
+          timestamp: new Date().toISOString(),
+        }),
+      }).catch(() => {});
     } catch {}
   };
 

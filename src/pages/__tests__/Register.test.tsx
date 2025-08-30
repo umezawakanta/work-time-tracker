@@ -3,7 +3,6 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { AxiosError } from 'axios';
 import Register from '../Register';
 
 jest.mock('react-hot-toast', () => ({
@@ -113,14 +112,18 @@ describe('Register Page', () => {
   it('shows email field error on duplicate email (409)', async () => {
     const user = userEvent.setup();
     const { api } = jest.requireMock('@/services/api/apiConfig');
-    const axiosError = new AxiosError('Conflict', 'ERR_BAD_REQUEST', undefined, undefined, {
+    const axiosLike: any = new Error('Conflict');
+    axiosLike.name = 'AxiosError';
+    axiosLike.isAxiosError = true;
+    axiosLike.response = {
       status: 409,
       statusText: 'Conflict',
       headers: {},
       config: {} as any,
       data: { field: 'email', message: '既に登録されています' },
-    });
-    api.post.mockRejectedValueOnce(axiosError as unknown as Error);
+    };
+    axiosLike.config = { url: '/auth/register', method: 'post' } as any;
+    api.post.mockRejectedValueOnce(axiosLike as unknown as Error);
 
     renderPage();
 

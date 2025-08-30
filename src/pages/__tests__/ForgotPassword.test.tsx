@@ -4,7 +4,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import ForgotPassword from '../ForgotPassword';
-import { AxiosError } from 'axios';
 
 jest.mock('react-hot-toast', () => ({
   toast: { success: jest.fn(), error: jest.fn() },
@@ -15,6 +14,24 @@ jest.mock('@/services/api/authApi', () => ({
 }));
 
 describe('ForgotPassword Page', () => {
+  const makeAxiosLikeError = (
+    status: number,
+    statusText: string,
+    data: Record<string, unknown> = {}
+  ) => {
+    const err: any = new Error(statusText);
+    err.name = 'AxiosError';
+    err.isAxiosError = true;
+    err.response = {
+      status,
+      statusText,
+      headers: {},
+      config: {} as any,
+      data,
+    };
+    err.config = { url: '/auth/password-reset', method: 'post' } as any;
+    return err;
+  };
   const renderPage = () =>
     render(
       <MemoryRouter>
@@ -53,13 +70,7 @@ describe('ForgotPassword Page', () => {
   it('shows 404 message when email not found', async () => {
     const user = userEvent.setup();
     const { requestPasswordReset } = jest.requireMock('@/services/api/authApi');
-    const axiosError = new AxiosError('Not Found', 'ERR_BAD_REQUEST', undefined, undefined, {
-      status: 404,
-      statusText: 'Not Found',
-      headers: {},
-      config: {} as any,
-      data: { message: 'not found' },
-    });
+    const axiosError = makeAxiosLikeError(404, 'Not Found', { message: 'not found' });
     requestPasswordReset.mockRejectedValueOnce(axiosError);
 
     renderPage();
@@ -75,19 +86,7 @@ describe('ForgotPassword Page', () => {
   it('shows 429 message when rate limited', async () => {
     const user = userEvent.setup();
     const { requestPasswordReset } = jest.requireMock('@/services/api/authApi');
-    const axiosError = new AxiosError(
-      'Too Many Requests',
-      'ERR_BAD_REQUEST',
-      undefined,
-      undefined,
-      {
-        status: 429,
-        statusText: 'Too Many Requests',
-        headers: {},
-        config: {} as any,
-        data: { message: 'rate' },
-      }
-    );
+    const axiosError = makeAxiosLikeError(429, 'Too Many Requests', { message: 'rate' });
     requestPasswordReset.mockRejectedValueOnce(axiosError);
 
     renderPage();
