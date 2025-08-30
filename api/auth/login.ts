@@ -1,7 +1,20 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectDB } from '../../src/server/config/database';
-import { User } from '../../src/server/models/User';
-import { SubscriptionModel } from '../../src/server/models/Subscription';
+// Optional server imports to avoid hard failure when not deployed
+let connectDB: (() => Promise<void>) | null = null;
+let User: any = null;
+let SubscriptionModel: any = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  connectDB = require('../../src/server/config/database').connectDB as () => Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  User = require('../../src/server/models/User').User;
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  SubscriptionModel = require('../../src/server/models/Subscription').SubscriptionModel;
+} catch {
+  connectDB = null;
+  User = null;
+  SubscriptionModel = null;
+}
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
@@ -115,6 +128,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // データベース接続（失敗時はサービス不可として返却）
     try {
+      if (!connectDB || !User) throw new Error('Server modules not available');
       await connectDB();
     } catch (e) {
       console.warn('Login API: DB not available');
@@ -212,10 +226,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // ユーザーのサブスクリプション情報を取得
-    const subscription = await SubscriptionModel.findOne({
-      userId: user.id,
-      status: { $in: ['active', 'trialing'] },
-    });
+    let subscription: any = null;
+    try {
+      if (SubscriptionModel) {
+        subscription = await SubscriptionModel.findOne({
+          userId: user.id,
+          status: { $in: ['active', 'trialing'] },
+        });
+      }
+    } catch {}
 
     // 最終ログイン時刻の更新（バリデーション回避の部分更新）
     try {
