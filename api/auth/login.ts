@@ -3,17 +3,22 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 let connectDB: (() => Promise<void>) | null = null;
 let User: any = null;
 let SubscriptionModel: any = null;
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  connectDB = require('../../src/server/config/database').connectDB as () => Promise<void>;
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  User = require('../../src/server/models/User').User;
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  SubscriptionModel = require('../../src/server/models/Subscription').SubscriptionModel;
-} catch {
-  connectDB = null;
-  User = null;
-  SubscriptionModel = null;
+
+async function loadServerModules(): Promise<boolean> {
+  if (connectDB && User) return true;
+  try {
+    const dbMod = await import('../../src/server/config/database.js');
+    connectDB = dbMod.connectDB as () => Promise<void>;
+    const userMod = await import('../../src/server/models/User.js');
+    User = (userMod as any).User;
+    try {
+      const subMod = await import('../../src/server/models/Subscription.js');
+      SubscriptionModel = (subMod as any).SubscriptionModel;
+    } catch {}
+    return true;
+  } catch {
+    return false;
+  }
 }
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -129,7 +134,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // データベース接続（失敗時はプレビュー用のインメモリデモ応答）
     let dbReady = true;
     try {
-      if (!connectDB || !User) throw new Error('Server modules not available');
+      const loaded = await loadServerModules();
+      if (!loaded || !connectDB) throw new Error('Server modules not available');
       await connectDB();
     } catch (e) {
       dbReady = false;

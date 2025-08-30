@@ -1,12 +1,15 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 // Keep health lightweight in serverless: do not hard-require DB
 let connectDB: (() => Promise<void>) | null = null;
-try {
-  // Dynamic optional import; if missing or fails, we continue degraded
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  connectDB = require('../src/server/config/database').connectDB as () => Promise<void>;
-} catch {
-  connectDB = null;
+async function loadDB(): Promise<boolean> {
+  if (connectDB) return true;
+  try {
+    const mod = await import('../src/server/config/database.js');
+    connectDB = (mod as any).connectDB as () => Promise<void>;
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 interface HealthStatus {
@@ -45,7 +48,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
 
   // データベース接続テスト
-  if (connectDB) {
+  if (await loadDB()) {
     try {
       await connectDB();
       healthStatus.services.database = 'connected';
