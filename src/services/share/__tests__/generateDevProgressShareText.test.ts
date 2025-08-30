@@ -20,4 +20,9 @@ describe('generateDevProgressShareText', () => {
     const hasHeader = text.indexOf('開発状況アップデート') >= 0;
     if (!hasHeader) throw new Error('Header not found');
   });
+
+  it('prints 未設定 when targetRelease is missing', () => {
+    const text = generateDevProgressShareText({ featureIds: ['dev-status'] });
+    if (text.indexOf('未設定') < 0) throw new Error('Expected 未設定 when targetRelease missing');
+  });
 });
