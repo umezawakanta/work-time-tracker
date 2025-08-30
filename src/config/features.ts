@@ -881,6 +881,16 @@ export const featuresRegistry: Feature[] = [
     priority: 'P2',
   },
   {
+    id: 'share-dev-progress',
+    name: '開発状況をシェア',
+    path: '/_bg/share-dev-progress',
+    category: 'コア',
+    description: 'Xへ開発状況をシェアするボタン',
+    status: 'planning',
+    requiresRealAPI: false,
+    priority: 'P2',
+  },
+  {
     id: 'sidebar-search',
     name: 'サイドバー検索',
     path: '/_bg/sidebar-search',

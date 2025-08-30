@@ -1161,6 +1161,31 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                     ダッシュボード
                   </h2>
                 )}
+                {getFeatureByPath('/_bg/share-dev-progress')?.status === 'complete' && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="ml-2"
+                    onClick={() => {
+                      try {
+                        const shareText =
+                          '開発状況アップデート\n（詳細は機能一覧をご確認ください）';
+                        const url = typeof window !== 'undefined' ? window.location.origin : '';
+                        if (navigator.share) {
+                          navigator.share({ text: shareText, url }).catch(() => {});
+                        } else {
+                          const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                            shareText
+                          )}%0A${encodeURIComponent(url)}`;
+                          window.open(intent, '_blank');
+                        }
+                      } catch {}
+                    }}
+                    aria-label="開発状況をシェア"
+                  >
+                    開発状況をシェア
+                  </Button>
+                )}
               </div>
 
               <div className="flex items-center gap-4">

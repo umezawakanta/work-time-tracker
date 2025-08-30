@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useDerivedFeatureStatuses } from '@/hooks/useDerivedFeatureStatuses';
+import { getFeatureByPath } from '@/config/features';
 import { NEW_STATUS_ORDER } from '@/services/dev/featureStatusEngine';
 import { setArtifactApproval, isArtifactApproved } from '@/services/dev/featureStatusEngine';
 
@@ -116,6 +117,53 @@ export default function FeaturesStatusPage(): React.JSX.Element {
       <p className="text-muted-foreground mb-6">
         完成の定義: 本番環境で実APIに接続し、不具合なく動作していること（デモ/モック不可）。
       </p>
+
+      {/* 開発状況をシェア */}
+      {getFeatureByPath('/_bg/share-dev-progress')?.status === 'complete' && (
+        <div className="mb-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              try {
+                // 主要P0/P1候補を抽出（例: ログイン/ログアウト/登録）
+                const pickIds = ['login', 'logout', 'user-registration'];
+                const lines: string[] = [];
+                for (const id of pickIds) {
+                  const f = featuresRegistry.find((x) => x.id === id);
+                  if (!f) continue;
+                  const eff = (derived?.effective?.[id] ?? f.status) as FeatureStatus;
+                  const order = NEW_STATUS_ORDER;
+                  const progress = Math.round(((order.indexOf(eff) + 1) / order.length) * 100);
+                  // 仮のリリース予定日は優先度から雰囲気で配置（実装時はフィールド化）
+                  const idx = pickIds.indexOf(id);
+                  const date = new Date();
+                  date.setDate(date.getDate() + (idx + 1));
+                  const y = date.getFullYear();
+                  const m = String(date.getMonth() + 1).padStart(2, '0');
+                  const d = String(date.getDate()).padStart(2, '0');
+                  const name = f.name;
+                  lines.push(`${name}：${progress}% リリース予定日：${y}/${m}/${d}`);
+                }
+                const text = lines.join('\n');
+                const shareText = `開発状況アップデート\n------------------\n${text}\n------------------`;
+                const url = typeof window !== 'undefined' ? window.location.origin : '';
+                if (navigator.share) {
+                  navigator.share({ text: shareText, url }).catch(() => {});
+                } else {
+                  const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                    shareText
+                  )}%0A${encodeURIComponent(url)}`;
+                  window.open(intent, '_blank');
+                }
+              } catch {}
+            }}
+            aria-label="開発状況をシェア"
+          >
+            開発状況をシェア
+          </Button>
+        </div>
+      )}
 
       {/* ステータスフィルター */}
       <div className="mb-4 flex flex-wrap gap-2">

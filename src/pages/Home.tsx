@@ -1250,6 +1250,40 @@ const Home: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {/* Share Dev Progress */}
+            {isFeatureCompleteVisible('/_bg/share-dev-progress') && (
+              <div className="bg-white border-t">
+                <div className="container mx-auto px-4 max-w-7xl py-6 text-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      try {
+                        const lines = [
+                          'ログイン機能：進捗確認中',
+                          'ログアウト機能：進捗確認中',
+                          'ユーザー登録機能：進捗確認中',
+                        ];
+                        const text = lines.join('\n');
+                        const shareText = `開発状況アップデート\n------------------\n${text}\n------------------`;
+                        const url = typeof window !== 'undefined' ? window.location.origin : '';
+                        if (navigator.share) {
+                          navigator.share({ text: shareText, url }).catch(() => {});
+                        } else {
+                          const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                            shareText
+                          )}%0A${encodeURIComponent(url)}`;
+                          window.open(intent, '_blank');
+                        }
+                      } catch {}
+                    }}
+                    aria-label="開発状況をシェア"
+                  >
+                    開発状況をシェア
+                  </Button>
+                </div>
+              </div>
+            )}
           </TabsContent>
           <TabsContent value="dashboard">
             <div className="bg-white">
