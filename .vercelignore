@@ -94,6 +94,7 @@ lighthouserc.json
 # Build only login-related auth endpoints and health check for now
 # Ignore all API routes by default, then allowlist needed ones
 api/**
+!api/
 !api/health.ts
 !api/auth/
 !api/auth/**

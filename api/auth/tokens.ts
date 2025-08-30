@@ -21,6 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'HEAD') {
+    // HEAD should succeed for health probing
     res.status(200).end();
     return;
   }

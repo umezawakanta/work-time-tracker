@@ -73,10 +73,11 @@ export class TokenManager {
   private async initializeWithHealthCheck(): Promise<void> {
     try {
       // まずAPI健全性をチェック（複数エンドポイントでフォールバック）
+      // Prefer health first to avoid noisy 404s when some endpoints are not deployed
       const checks: Array<{ url: string; method: 'HEAD' | 'GET' }> = [
+        { url: '/api/health', method: 'GET' },
         { url: '/api/auth/tokens', method: 'HEAD' },
         { url: '/api/auth/check', method: 'GET' },
-        { url: '/api/health', method: 'GET' },
       ];
 
       for (const check of checks) {
