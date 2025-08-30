@@ -38,7 +38,7 @@
         "test:file": "jest --testPathPattern",
         "test:specific": "jest --testNamePattern",
         "test:integration": "jest --config jest.integration.config.js",
-        "start:servers:ci": "npm-run-all -p \"cross-env ANALYTICS_DISABLED=true NOTIFICATIONS_DISABLED=true pnpm run server\" \"pnpm run preview -- --port 4173 --strictPort\"",
+        "start:servers:ci": "cross-env ANALYTICS_DISABLED=true NOTIFICATIONS_DISABLED=true run-p server \"preview -- --port 4173 --strictPort\"",
         "test:e2e": "start-server-and-test \"pnpm run start:servers:ci\" http://localhost:4173 \"cypress run --browser chrome --headless --config video=false -- --no-sandbox --disable-gpu --disable-dev-shm-usage\"",
         "test:e2e:open": "vite preview --port 4173 & npx wait-on http://localhost:4173 && cypress open",
         "test:coverage": "jest --coverage --coverageReporters=text-lcov",

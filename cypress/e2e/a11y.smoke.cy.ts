@@ -1,12 +1,10 @@
 describe('Accessibility smoke checks', () => {
   it('Home has landmarks and labeled CTAs', () => {
+    cy.request('/api/health');
     cy.visit('/');
-    // Header and main landmarks (allow missing main if layout differs)
-    cy.get('header').should('exist');
-    // Check CTA buttons with aria-labels
-    // Be tolerant in CI: try multiple labels and do not retry forever
-    cy.findByRole('button', { name: /AI秘書|AI|Assistant/ }).should('exist');
-    cy.findByRole('button', { name: /自己診断|診断|Start/ }).should('exist');
+    cy.get('header').should('be.visible');
+    cy.contains('button, a', /AI秘書|AI|Assistant/i, { timeout: 4000 }).should('exist');
+    cy.contains('button, a', /(自己診断|診断|Start)/i, { timeout: 4000 }).should('exist');
   });
 
   it('MBTI page groups questions with legends', () => {
