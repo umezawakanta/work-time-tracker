@@ -1054,8 +1054,14 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
 
               {!isCollapsed && (
                 <div className="flex-1">
-                  <h1 className="text-lg font-bold text-gray-900 dark:text-white">LifeSync</h1>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">生産性プラットフォーム</p>
+                  {getFeatureByPath('/_bg/app-brand-title')?.status === 'complete' && (
+                    <h1 className="text-lg font-bold text-gray-900 dark:text-white">LifeSync</h1>
+                  )}
+                  {getFeatureByPath('/_bg/app-brand-subtitle')?.status === 'complete' && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      生産性プラットフォーム
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -1063,13 +1069,15 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
             {!isCollapsed && (
               <div className="mt-4 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="メニューを検索..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-9 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
-                />
+                {getFeatureByPath('/_bg/sidebar-search')?.status === 'complete' && (
+                  <Input
+                    type="text"
+                    placeholder="メニューを検索..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 h-9 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
+                  />
+                )}
               </div>
             )}
           </div>
@@ -1114,9 +1122,11 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                 >
                   友だちを招待
                 </Button> */}
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  ダッシュボード
-                </h2>
+                {getFeatureByPath('/_bg/header-page-title')?.status === 'complete' && (
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    ダッシュボード
+                  </h2>
+                )}
               </div>
 
               <div className="flex items-center gap-4">
@@ -1235,76 +1245,108 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
               navigateTo={(path) => navigate(path)}
             />
             {/* パンくず（最小）*/}
-            <nav className="mb-4 text-sm text-slate-600 dark:text-slate-300" aria-label="パンくず">
-              <ol className="flex items-center gap-2">
-                <li>
-                  <Link to="/" className="hover:underline">
-                    ホーム
-                  </Link>
-                </li>
-                <li aria-hidden>›</li>
-                <li>
-                  <span aria-current="page">{location.pathname.replace('/', '') || 'トップ'}</span>
-                </li>
-              </ol>
-            </nav>
+            {getFeatureByPath('/_bg/breadcrumbs')?.status === 'complete' && (
+              <nav
+                className="mb-4 text-sm text-slate-600 dark:text-slate-300"
+                aria-label="パンくず"
+              >
+                <ol className="flex items-center gap-2">
+                  <li>
+                    <Link to="/" className="hover:underline">
+                      ホーム
+                    </Link>
+                  </li>
+                  <li aria-hidden>›</li>
+                  <li>
+                    <span aria-current="page">
+                      {location.pathname.replace('/', '') || 'トップ'}
+                    </span>
+                  </li>
+                </ol>
+              </nav>
+            )}
             <FeatureAccessGuard>{children}</FeatureAccessGuard>
-            <div className="mt-12">
-              <div className="container mx-auto px-4">
-                <div className="rounded-xl border border-slate-200 bg-white dark:bg-slate-900 p-4 text-center">
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    通信は暗号化。データの第三者提供は一切ありません。
-                    <a
-                      href="/status"
-                      className="ml-2 underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      システム稼働状況
-                    </a>{' '}
-                    ·{' '}
-                    <a
-                      href="/security"
-                      className="underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      セキュリティ方針
-                    </a>
-                  </p>
+            {getFeatureByPath('/_bg/footer-security-banner')?.status === 'complete' && (
+              <div className="mt-12">
+                <div className="container mx-auto px-4">
+                  <div className="rounded-xl border border-slate-200 bg-white dark:bg-slate-900 p-4 text-center">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      通信は暗号化。データの第三者提供は一切ありません。
+                      {getFeatureByPath('/status')?.status === 'complete' && (
+                        <a
+                          href="/status"
+                          className="ml-2 underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          システム稼働状況
+                        </a>
+                      )}{' '}
+                      {getFeatureByPath('/status')?.status === 'complete' &&
+                        getFeatureByPath('/security')?.status === 'complete' &&
+                        ' · '}
+                      {getFeatureByPath('/security')?.status === 'complete' && (
+                        <a
+                          href="/security"
+                          className="underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          セキュリティ方針
+                        </a>
+                      )}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
             <footer className="mt-6">
               <div className="container mx-auto px-4">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400">
-                  <Link
-                    to="/terms"
-                    className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
-                  >
-                    利用規約
-                  </Link>
-                  <span className="hidden sm:inline-block">·</span>
-                  <Link
-                    to="/privacy"
-                    className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
-                  >
-                    プライバシー
-                  </Link>
-                  <span className="hidden sm:inline-block">·</span>
-                  <Link
-                    to="/invite"
-                    className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
-                  >
-                    友だちを招待
-                  </Link>
-                  <span className="hidden sm:inline-block">·</span>
-                  <Link
-                    to="/contact"
-                    className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
-                  >
-                    お問い合わせ
-                  </Link>
+                  {getFeatureByPath('/terms')?.status === 'complete' && (
+                    <Link
+                      to="/terms"
+                      className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
+                    >
+                      利用規約
+                    </Link>
+                  )}
+                  {getFeatureByPath('/terms')?.status === 'complete' &&
+                    getFeatureByPath('/privacy')?.status === 'complete' && (
+                      <span className="hidden sm:inline-block">·</span>
+                    )}
+                  {getFeatureByPath('/privacy')?.status === 'complete' && (
+                    <Link
+                      to="/privacy"
+                      className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
+                    >
+                      プライバシー
+                    </Link>
+                  )}
+                  {getFeatureByPath('/privacy')?.status === 'complete' &&
+                    getFeatureByPath('/invite')?.status === 'complete' && (
+                      <span className="hidden sm:inline-block">·</span>
+                    )}
+                  {getFeatureByPath('/invite')?.status === 'complete' && (
+                    <Link
+                      to="/invite"
+                      className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
+                    >
+                      友だちを招待
+                    </Link>
+                  )}
+                  {getFeatureByPath('/invite')?.status === 'complete' &&
+                    getFeatureByPath('/contact')?.status === 'complete' && (
+                      <span className="hidden sm:inline-block">·</span>
+                    )}
+                  {getFeatureByPath('/contact')?.status === 'complete' && (
+                    <Link
+                      to="/contact"
+                      className="hover:text-slate-700 dark:hover:text-slate-200 underline-offset-2 hover:underline"
+                    >
+                      お問い合わせ
+                    </Link>
+                  )}
                 </div>
               </div>
             </footer>
