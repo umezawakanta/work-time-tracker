@@ -66,7 +66,10 @@ export function generateDevProgressShareText(opts?: ShareProgressOptions): strin
 export function openShare(text: string, url: string): void {
   // Prefer Twitter Web Intent to ensure text is preserved on X
   if (typeof window !== 'undefined') {
-    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(
+    // Truncate text to keep URL length reasonable (avoid HTTP 431 on some browsers)
+    const MAX_TEXT = 2400; // generous cap
+    const safeText = text.length > MAX_TEXT ? text.slice(0, MAX_TEXT - 3) + '…' : text;
+    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(safeText)}&url=${encodeURIComponent(
       url
     )}`;
     window.open(intent, '_blank');
