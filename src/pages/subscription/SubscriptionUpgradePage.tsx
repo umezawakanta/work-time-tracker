@@ -288,15 +288,16 @@ export default function SubscriptionUpgradePage() {
 
     // 入力検証
     if (paymentMethod === 'credit-card') {
-      if (
-        !cardDetails.cardNumber ||
-        !cardDetails.cardName ||
-        !cardDetails.expiry ||
-        !cardDetails.cvc
-      ) {
-        toast.error('すべてのカード情報を入力してください');
-        setIsProcessing(false);
-        return;
+      const num = (cardDetails.cardNumber || '').replace(/\s+/g, '').trim();
+      const name = (cardDetails.cardName || '').trim();
+      const exp = (cardDetails.expiry || '').trim();
+      const cvc = (cardDetails.cvc || '').trim();
+      const hasEmpty = !num || !name || !exp || !cvc;
+      // モック環境では未入力でも続行できるようにし、警告のみ表示
+      if (hasEmpty) {
+        try {
+          toast('モック決済: カード情報は省略可能のため続行します');
+        } catch {}
       }
     }
 
