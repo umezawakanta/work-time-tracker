@@ -1287,7 +1287,7 @@ const App: React.FC = () => {
 
                               {/* ⚙️ System Management */}
                               <Route
-                                path="/subscription"
+                                path="/subscription-management"
                                 element={
                                   <LayoutWrapper>
                                     <LazyWrapper>
