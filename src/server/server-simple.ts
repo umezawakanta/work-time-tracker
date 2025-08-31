@@ -2488,6 +2488,7 @@ const __subscriptionsByUser: Map<string, RuntimeSubscription> = new Map();
 // GET /api/subscription/status
 app.get('/api/subscription/status', (req, res) => {
   try {
+    res.setHeader('Cache-Control', 'no-store');
     const userId = (req as any)?.user?.id || 'local-dev-user';
     const sub = __subscriptionsByUser.get(userId);
     if (!sub) return res.json({ plan: null, status: null, renewAt: null, card: null });
