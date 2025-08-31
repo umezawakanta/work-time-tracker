@@ -244,7 +244,14 @@ const SubscriptionPage: React.FC = () => {
   const handleOpenPortal = async (): Promise<void> => {
     try {
       const { url } = await subscriptionGatewayApi.openPortal();
-      window.location.href = url;
+      // 同一オリジンの場合はSPA遷移で確実に画面が切り替わるようにする
+      if (typeof window !== 'undefined' && url.startsWith(window.location.origin)) {
+        const path = url.replace(window.location.origin, '');
+        navigate(path);
+      } else {
+        // 外部URLは通常の遷移
+        window.location.assign(url);
+      }
     } catch (e) {
       toast.error('ポータルの起動に失敗しました');
     }
