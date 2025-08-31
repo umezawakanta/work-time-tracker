@@ -421,6 +421,10 @@ export const featureArtifactsRegistry: Record<string, FeatureArtifacts> = {
     source_code: { title: 'ソースコード', href: '/subscription' },
     unit_test_spec: { title: '単体試験仕様書', href: '/docs/features/subscription/unit-test-spec' },
     unit_tests: { title: 'ユニットテストコード', href: '/docs/features/subscription/unit-tests' },
+    integration_test_spec: {
+      title: '結合試験仕様書',
+      href: '/docs/features/subscription/integration-test-spec',
+    },
     e2e_tests: { title: 'e2eテストコード', href: '/docs/features/subscription/e2e-tests' },
     system_test_spec: {
       title: '総合試験仕様書',
