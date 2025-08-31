@@ -2357,6 +2357,119 @@ app.get('/api/subscription/monthly-totals', (_req, res) => {
 });
 
 // =============================
+// User Subscription (per-user) - minimal mock for UpgradePage
+// =============================
+type DevUserSubscription = {
+  _id: string;
+  userId: string;
+  planId: string;
+  status: 'active' | 'canceled' | 'expired';
+  currentPeriodEnd: string;
+  cancelAtPeriodEnd?: boolean;
+};
+
+const __userSubscriptions = new Map<string, DevUserSubscription>();
+const createUserSubId = () => 'us_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+
+app.get('/api/userSubscription', (_req, res) => {
+  res.json(Array.from(__userSubscriptions.values()));
+});
+
+app.get('/api/userSubscription/user/:userId', (req, res) => {
+  const userId = String(req.params.userId);
+  const sub = Array.from(__userSubscriptions.values()).find((s) => s.userId === userId) || null;
+  return res.json({ data: sub });
+});
+
+app.post('/api/userSubscription', (req, res) => {
+  try {
+    const { userId, planId, status, currentPeriodEnd, cancelAtPeriodEnd } = (req.body || {}) as {
+      userId?: string;
+      planId?: string;
+      status?: 'active' | 'canceled' | 'expired';
+      currentPeriodEnd?: string | Date;
+      cancelAtPeriodEnd?: boolean;
+    };
+    if (!userId || !planId)
+      return res.status(400).json({ success: false, message: 'userId/planId are required' });
+    // Overwrite existing sub for user to keep one active doc per user
+    for (const [id, s] of __userSubscriptions.entries()) {
+      if (s.userId === userId) __userSubscriptions.delete(id);
+    }
+    const id = createUserSubId();
+    const sub: DevUserSubscription = {
+      _id: id,
+      userId,
+      planId,
+      status: status || 'active',
+      currentPeriodEnd:
+        typeof currentPeriodEnd === 'string'
+          ? currentPeriodEnd
+          : new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString(),
+      cancelAtPeriodEnd: Boolean(cancelAtPeriodEnd),
+    };
+    __userSubscriptions.set(id, sub);
+    return res.status(201).json({ success: true, data: { subscription: sub } });
+  } catch (e) {
+    return res.status(500).json({ success: false, message: 'Failed to create user subscription' });
+  }
+});
+
+app.put('/api/userSubscription/:id', (req, res) => {
+  const { id } = req.params;
+  const prev = __userSubscriptions.get(id);
+  if (!prev) return res.status(404).json({ success: false, message: 'Not found' });
+  const body = req.body || {};
+  const next: DevUserSubscription = {
+    ...prev,
+    planId: body.planId != null ? String(body.planId) : prev.planId,
+    status: body.status != null ? body.status : prev.status,
+    currentPeriodEnd:
+      body.currentPeriodEnd != null
+        ? typeof body.currentPeriodEnd === 'string'
+          ? body.currentPeriodEnd
+          : new Date(body.currentPeriodEnd).toISOString()
+        : prev.currentPeriodEnd,
+    cancelAtPeriodEnd:
+      body.cancelAtPeriodEnd != null ? Boolean(body.cancelAtPeriodEnd) : prev.cancelAtPeriodEnd,
+  };
+  __userSubscriptions.set(id, next);
+  return res.json(next);
+});
+
+app.post('/api/userSubscription/:id/cancel-immediately', (req, res) => {
+  const { id } = req.params;
+  const prev = __userSubscriptions.get(id);
+  if (!prev) return res.status(404).json({ success: false, message: 'Not found' });
+  const next: DevUserSubscription = { ...prev, status: 'canceled', cancelAtPeriodEnd: false };
+  __userSubscriptions.set(id, next);
+  return res.json({ success: true, data: next });
+});
+
+app.post('/api/userSubscription/:id/reactivate', (req, res) => {
+  const { id } = req.params;
+  const prev = __userSubscriptions.get(id);
+  if (!prev) return res.status(404).json({ success: false, message: 'Not found' });
+  const next: DevUserSubscription = {
+    ...prev,
+    status: 'active',
+    cancelAtPeriodEnd: false,
+    currentPeriodEnd: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString(),
+  };
+  __userSubscriptions.set(id, next);
+  return res.json({ success: true, data: next });
+});
+
+app.post('/api/userSubscription/payment-method', (_req, res) => {
+  // No-op mock
+  return res.json({ success: true });
+});
+
+app.get('/api/userSubscription/invoices/:userId', (_req, res) => {
+  return res.json({ success: true, data: [] });
+});
+
+// =============================
 // Subscription (Dev Mock)
 // =============================
 type SubscriptionStatus = 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete';
