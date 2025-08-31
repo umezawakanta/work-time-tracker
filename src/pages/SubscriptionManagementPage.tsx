@@ -392,6 +392,9 @@ export default function SubscriptionManagementPage() {
   const [paymentSource, setPaymentSource] = useState('all'); // "all", "credit", "bank"
   const [checkStatus, setCheckStatus] = useState('all'); // "all", "checked", "unchecked"
 
+  // 安全な配列アクセスを保証（先に初期化して以降で参照）
+  const safeSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
+
   const [newSubscription, setNewSubscription] = useState<Omit<SubscriptionService, '_id'>>({
     name: '',
     billingDate: 0,
@@ -509,9 +512,6 @@ export default function SubscriptionManagementPage() {
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
-
-  // 安全な配列アクセスを保証
-  const safeSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
 
   // sortedAndFilteredSubscriptionsの安全な処理
   const sortedAndFilteredSubscriptions = safeSubscriptions
