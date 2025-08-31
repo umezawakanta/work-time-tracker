@@ -28,6 +28,8 @@ import { DailyVictory } from './models/DailyVictory.js';
 
 const app = express();
 const PORT = 3001;
+// Disable ETag to avoid 304 on dev mock endpoints (ensures fresh JSON each time)
+app.set('etag', false);
 
 // Anthropic API configuration
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
@@ -2488,7 +2490,12 @@ const __subscriptionsByUser: Map<string, RuntimeSubscription> = new Map();
 // GET /api/subscription/status
 app.get('/api/subscription/status', (req, res) => {
   try {
-    res.setHeader('Cache-Control', 'no-store');
+    // Prevent browser caching and conditional requests
+    res.status(200);
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.removeHeader('ETag');
     const userId = (req as any)?.user?.id || 'local-dev-user';
     const sub = __subscriptionsByUser.get(userId);
     if (!sub) return res.json({ plan: null, status: null, renewAt: null, card: null });
