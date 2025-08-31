@@ -528,7 +528,7 @@ export const featuresRegistry: Feature[] = [
     path: '/subscription-management',
     category: 'サブスクリプション・請求',
     description: 'プラン管理・アップグレード・請求設定',
-    status: 'planning',
+    status: 'system_testing',
     requiresRealAPI: true,
     priority: 'P1',
   },
