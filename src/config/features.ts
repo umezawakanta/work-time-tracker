@@ -489,7 +489,7 @@ export const featuresRegistry: Feature[] = [
     path: '/subscription',
     category: 'サブスクリプション・請求',
     description: 'サブスクリプション管理',
-    status: 'system_testing',
+    status: 'release_pending',
     requiresRealAPI: true,
     priority: 'P1',
     targetRelease: '2025-09-06',
