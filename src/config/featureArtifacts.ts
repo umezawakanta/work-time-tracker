@@ -416,11 +416,29 @@ export const featureArtifactsRegistry: Record<string, FeatureArtifacts> = {
       title: '要件定義書',
       href: '/docs/features/subscription/requirements',
     },
+    basic_design: { title: '基本設計書', href: '/docs/features/subscription/basic-design' },
+    detailed_design: { title: '詳細設計書', href: '/docs/features/subscription/detailed-design' },
+    source_code: { title: 'ソースコード', href: '/subscription' },
+    unit_tests: { title: 'ユニットテストコード', href: '/docs/features/subscription/unit-tests' },
+    e2e_tests: { title: 'e2eテストコード', href: '/docs/features/subscription/e2e-tests' },
+    system_test_spec: {
+      title: '総合試験仕様書',
+      href: '/docs/features/subscription/system-test-spec',
+    },
   },
   'bug-list': {
     requirements: {
       title: '要件定義書',
       href: '/docs/features/bug-list/requirements',
+    },
+    basic_design: { title: '基本設計書', href: '/docs/features/bug-list/basic-design' },
+    detailed_design: { title: '詳細設計書', href: '/docs/features/bug-list/detailed-design' },
+    source_code: { title: 'ソースコード', href: '/bugs' },
+    unit_tests: { title: 'ユニットテストコード', href: '/docs/features/bug-list/unit-tests' },
+    e2e_tests: { title: 'e2eテストコード', href: '/docs/features/bug-list/e2e-tests' },
+    system_test_spec: {
+      title: '総合試験仕様書',
+      href: '/docs/features/bug-list/system-test-spec',
     },
   },
   'user-testing': {

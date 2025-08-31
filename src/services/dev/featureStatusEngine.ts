@@ -235,8 +235,25 @@ const ARTIFACT_APPROVAL_KEY = 'feature_artifact_approvals_v1';
 function readArtifactApprovals(): ArtifactApprovalMap {
   try {
     const raw = localStorage.getItem(ARTIFACT_APPROVAL_KEY);
-    if (!raw) return {};
-    return JSON.parse(raw) as ArtifactApprovalMap;
+    const parsed: ArtifactApprovalMap = raw ? (JSON.parse(raw) as ArtifactApprovalMap) : {};
+    // Seed requirement approvals for features that have requirements artifacts defined
+    let changed = false;
+    for (const featureId of Object.keys(featureArtifactsRegistry)) {
+      const hasReq = Boolean(featureArtifactsRegistry[featureId]?.requirements);
+      if (!hasReq) continue;
+      const featureMap = parsed[featureId] || {};
+      if (featureMap.requirements !== true) {
+        featureMap.requirements = true; // auto-approve requirement docs presence
+        parsed[featureId] = featureMap;
+        changed = true;
+      }
+    }
+    if (changed) {
+      try {
+        localStorage.setItem(ARTIFACT_APPROVAL_KEY, JSON.stringify(parsed));
+      } catch {}
+    }
+    return parsed;
   } catch {
     return {};
   }
