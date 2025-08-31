@@ -67,6 +67,9 @@ export default function FeaturesStatusPage(): React.JSX.Element {
     const n = normalizeToNewStatus(s);
     return n !== 'planning' && n !== 'complete';
   };
+  const hasRequirements = (id: string): boolean => {
+    return Boolean(featureArtifactsRegistry[id]?.requirements);
+  };
 
   const byCategory = useMemo(() => {
     const m = new Map<string, Feature[]>();
@@ -78,7 +81,11 @@ export default function FeaturesStatusPage(): React.JSX.Element {
       const isNotStartedBase = base === 'planning';
       if (progressFilter === 'complete' && !isCompleteEff) continue;
       if (progressFilter === 'not_started' && !isNotStartedBase) continue;
-      if (progressFilter === 'in_progress' && !isInProgressStatus(effectiveStatus)) continue;
+      if (
+        progressFilter === 'in_progress' &&
+        !(isInProgressStatus(effectiveStatus) && hasRequirements(f.id))
+      )
+        continue;
       // ステータスフィルタ
       if (statusFilter !== 'all' && effectiveStatus !== statusFilter) continue;
       const arr = m.get(f.category) || [];
@@ -111,7 +118,11 @@ export default function FeaturesStatusPage(): React.JSX.Element {
       const isNotStartedBase = base === 'planning';
       if (progressFilter === 'complete' && !isCompleteEff) continue;
       if (progressFilter === 'not_started' && !isNotStartedBase) continue;
-      if (progressFilter === 'in_progress' && !isInProgressStatus(effectiveStatus)) continue;
+      if (
+        progressFilter === 'in_progress' &&
+        !(isInProgressStatus(effectiveStatus) && hasRequirements(f.id))
+      )
+        continue;
       if (statusFilter !== 'all' && effectiveStatus !== statusFilter) continue;
       list.push({ ...f, status: effectiveStatus });
     }
