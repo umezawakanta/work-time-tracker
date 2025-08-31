@@ -303,7 +303,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-lg">
+      <Card className="w-full max-w-md shadow-lg bg-white dark:bg-white dark:text-gray-900">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-gray-900">
             {t('auth.register.title', 'アカウント登録')}
@@ -338,7 +338,7 @@ export default function Register() {
                   value={formData.name}
                   onChange={(e) => updateField('name', e.target.value)}
                   onBlur={() => handleFieldBlur('name')}
-                  className={`pl-4 ${validationErrors.name ? 'border-red-500 focus:border-red-500' : ''}`}
+                  className={`pl-4 bg-white text-gray-900 placeholder:text-gray-500 ${validationErrors.name ? 'border-red-500 focus:border-red-500' : ''}`}
                   placeholder="田中 太郎"
                   disabled={isSubmitting}
                 />
@@ -373,7 +373,7 @@ export default function Register() {
                   value={formData.email}
                   onChange={(e) => updateField('email', e.target.value)}
                   onBlur={() => handleFieldBlur('email')}
-                  className={`pl-4 ${validationErrors.email ? 'border-red-500 focus:border-red-500' : ''}`}
+                  className={`pl-4 bg-white text-gray-900 placeholder:text-gray-500 ${validationErrors.email ? 'border-red-500 focus:border-red-500' : ''}`}
                   placeholder="example@email.com"
                   disabled={isSubmitting}
                   autoComplete="email"
@@ -408,7 +408,7 @@ export default function Register() {
                   value={formData.referralCode}
                   onChange={(e) => updateField('referralCode', e.target.value)}
                   onBlur={() => handleFieldBlur('referralCode')}
-                  className={`pl-4 ${validationErrors.referralCode ? 'border-red-500 focus:border-red-500' : ''}`}
+                  className={`pl-4 bg-white text-gray-900 placeholder:text-gray-500 ${validationErrors.referralCode ? 'border-red-500 focus:border-red-500' : ''}`}
                   placeholder="例: u-abc123"
                   disabled={isSubmitting}
                   autoComplete="off"
@@ -444,7 +444,7 @@ export default function Register() {
                   value={formData.password}
                   onChange={(e) => updateField('password', e.target.value)}
                   onBlur={() => handleFieldBlur('password')}
-                  className={`pl-4 pr-12 ${validationErrors.password ? 'border-red-500 focus:border-red-500' : ''}`}
+                  className={`pl-4 pr-12 bg-white text-gray-900 placeholder:text-gray-500 ${validationErrors.password ? 'border-red-500 focus:border-red-500' : ''}`}
                   placeholder="8文字以上の安全なパスワード"
                   disabled={isSubmitting}
                   autoComplete="new-password"
@@ -494,7 +494,7 @@ export default function Register() {
                   value={formData.confirmPassword}
                   onChange={(e) => updateField('confirmPassword', e.target.value)}
                   onBlur={() => handleFieldBlur('confirmPassword')}
-                  className={`pl-4 pr-12 ${validationErrors.confirmPassword ? 'border-red-500 focus:border-red-500' : ''}`}
+                  className={`pl-4 pr-12 bg-white text-gray-900 placeholder:text-gray-500 ${validationErrors.confirmPassword ? 'border-red-500 focus:border-red-500' : ''}`}
                   placeholder="上記と同じパスワードを入力"
                   disabled={isSubmitting}
                   autoComplete="new-password"
