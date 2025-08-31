@@ -2181,6 +2181,182 @@ app.get('/api/ai/health', (_req, res) => {
 });
 
 // =============================
+// General Subscriptions (In-memory)
+// Matches frontend subscriptionApi.ts expectations
+// =============================
+type UIPaymentMethod =
+  | 'credit'
+  | 'bank'
+  | 'paypal'
+  | 'apple'
+  | 'google'
+  | { type: 'credit' | 'bank' | 'paypal' | 'apple' | 'google'; isDefault?: boolean };
+
+type UISubscription = {
+  _id: string;
+  name: string;
+  billingDate: string | number;
+  type: string;
+  amount: number;
+  paymentMethod?: UIPaymentMethod;
+  bankAccount?: string;
+  isActive: boolean;
+  expiresAt?: string;
+  checkedMonths?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+const __uiSubscriptions: Map<string, UISubscription> = new Map();
+const createUiSubId = () => 'usub_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+
+const toMonthKey = (billingDate: string | number): string | null => {
+  try {
+    const s = String(billingDate);
+    if (s.includes('/')) {
+      const parts = s.split('/');
+      // Expect YYYY/MM[/DD]
+      if (parts.length >= 2) return `${parts[0]}/${parts[1].padStart(2, '0')}`;
+      return null;
+    }
+    // Possibly YYYYMMDD or YYYYMM
+    if (s.length >= 6) return `${s.slice(0, 4)}/${s.slice(4, 6)}`;
+    return null;
+  } catch {
+    return null;
+  }
+};
+
+app.get('/api/subscription', (_req, res) => {
+  const rows = Array.from(__uiSubscriptions.values()).sort((a, b) => {
+    const at = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const bt = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return bt - at;
+  });
+  res.json(rows);
+});
+
+app.post('/api/subscription', (req, res) => {
+  try {
+    const body = (req.body || {}) as Partial<UISubscription>;
+    if (!body.name || body.amount == null) {
+      return res.status(400).json({ success: false, message: 'name と amount は必須です' });
+    }
+    const id = createUiSubId();
+    const now = new Date().toISOString();
+    const doc: UISubscription = {
+      _id: id,
+      name: String(body.name),
+      billingDate: body.billingDate ?? '1970/01/01',
+      type: String(body.type || 'その他'),
+      amount: Number(body.amount) || 0,
+      paymentMethod: body.paymentMethod ?? { type: 'credit', isDefault: true },
+      bankAccount: body.bankAccount,
+      isActive: Boolean(body.isActive ?? true),
+      expiresAt: body.expiresAt ?? new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString(),
+      checkedMonths: Array.isArray(body.checkedMonths) ? body.checkedMonths.map(String) : [],
+      createdAt: now,
+      updatedAt: now,
+    };
+    __uiSubscriptions.set(id, doc);
+    res.status(201).json(doc);
+  } catch (e) {
+    res.status(500).json({ success: false, message: 'Failed to create subscription' });
+  }
+});
+
+app.put('/api/subscription/:id', (req, res) => {
+  const { id } = req.params;
+  const prev = __uiSubscriptions.get(id);
+  if (!prev) return res.status(404).json({ success: false, message: 'Not found' });
+  const body = (req.body || {}) as Partial<UISubscription>;
+  const next: UISubscription = {
+    ...prev,
+    name: body.name != null ? String(body.name) : prev.name,
+    billingDate: body.billingDate != null ? body.billingDate : prev.billingDate,
+    type: body.type != null ? String(body.type) : prev.type,
+    amount: body.amount != null ? Number(body.amount) : prev.amount,
+    paymentMethod:
+      body.paymentMethod != null ? (body.paymentMethod as UIPaymentMethod) : prev.paymentMethod,
+    bankAccount: body.bankAccount != null ? String(body.bankAccount) : prev.bankAccount,
+    isActive: body.isActive != null ? Boolean(body.isActive) : prev.isActive,
+    expiresAt: body.expiresAt != null ? String(body.expiresAt) : prev.expiresAt,
+    checkedMonths: Array.isArray(body.checkedMonths)
+      ? body.checkedMonths.map(String)
+      : prev.checkedMonths || [],
+    updatedAt: new Date().toISOString(),
+  };
+  __uiSubscriptions.set(id, next);
+  res.json(next);
+});
+
+app.delete('/api/subscription/:id', (req, res) => {
+  const { id } = req.params;
+  const existed = __uiSubscriptions.has(id);
+  __uiSubscriptions.delete(id);
+  res.json({ success: true, existed });
+});
+
+app.patch('/api/subscription/:id/check-status', (req, res) => {
+  const { id } = req.params;
+  const { month, checked } = (req.body || {}) as { month?: string; checked?: boolean };
+  const prev = __uiSubscriptions.get(id);
+  if (!prev) return res.status(404).json({ success: false, message: 'Not found' });
+  if (!month) return res.status(400).json({ success: false, message: 'month is required' });
+  const set = new Set((prev.checkedMonths || []).map(String));
+  if (checked) set.add(month);
+  else set.delete(month);
+  const next = { ...prev, checkedMonths: Array.from(set), updatedAt: new Date().toISOString() };
+  __uiSubscriptions.set(id, next);
+  res.json(next);
+});
+
+app.get('/api/subscription/month/:yearMonth', (req, res) => {
+  const ym = String(req.params.yearMonth || '');
+  const rows = Array.from(__uiSubscriptions.values()).filter(
+    (s) => toMonthKey(s.billingDate) === ym
+  );
+  res.json(rows);
+});
+
+app.get('/api/subscription/type/:type', (req, res) => {
+  const t = String(req.params.type || '');
+  const rows = Array.from(__uiSubscriptions.values()).filter((s) => String(s.type) === t);
+  res.json(rows);
+});
+
+app.get('/api/subscription/payment-method/:paymentMethod', (req, res) => {
+  const p = String(req.params.paymentMethod || '');
+  const rows = Array.from(__uiSubscriptions.values()).filter((s) => {
+    const pm = s.paymentMethod as any;
+    const typ = typeof pm === 'object' && pm ? pm.type : pm;
+    return String(typ) === p;
+  });
+  res.json(rows);
+});
+
+app.get('/api/subscription/total-amount', (_req, res) => {
+  const totalAmount = Array.from(__uiSubscriptions.values()).reduce(
+    (sum, s) => sum + (Number(s.amount) || 0),
+    0
+  );
+  res.json({ totalAmount });
+});
+
+app.get('/api/subscription/monthly-totals', (_req, res) => {
+  const map = new Map<string, number>();
+  for (const s of __uiSubscriptions.values()) {
+    const key = toMonthKey(s.billingDate);
+    if (!key) continue;
+    map.set(key, (map.get(key) || 0) + (Number(s.amount) || 0));
+  }
+  const entries = Array.from(map.entries())
+    .sort(([a], [b]) => (a > b ? 1 : -1))
+    .map(([month, amount]) => ({ month, amount }));
+  res.json(entries);
+});
+
+// =============================
 // Subscription (Dev Mock)
 // =============================
 type SubscriptionStatus = 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete';
