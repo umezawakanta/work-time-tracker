@@ -185,6 +185,9 @@ const SubscriptionPage = lazy(() =>
 const SubscriptionManagementPage = lazy(() =>
   import('@/pages/SubscriptionManagementPage').then((m) => ({ default: m.default }))
 );
+const SubscriptionManagement = lazy(() =>
+  import('@/components/SubscriptionManagement').then((m) => ({ default: m.default }))
+);
 const SubscriptionUpgradePage = lazy(() =>
   import('@/pages/subscription/SubscriptionUpgradePage').then((m) => ({ default: m.default }))
 );
