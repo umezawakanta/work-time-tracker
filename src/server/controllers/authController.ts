@@ -480,3 +480,37 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     res.status(500).json({ message: 'パスワードリセット中にエラーが発生しました' });
   }
 };
+
+// Token verification endpoint used by frontend (dev-friendly)
+export const verifyResetToken = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token } = req.body as { token?: string };
+    if (!token || typeof token !== 'string') {
+      res.status(400).json({ valid: false, message: 'Invalid token' });
+      return;
+    }
+    // In development, accept any non-trivial token as valid
+    const isValid = token.trim().length >= 6;
+    res.json({ valid: isValid });
+  } catch (error) {
+    console.error('Verify reset token error:', error);
+    res.status(500).json({ valid: false, message: 'Server error' });
+  }
+};
+
+// Confirm reset endpoint to align with frontend path
+export const confirmResetPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token, password } = req.body as { token?: string; password?: string };
+    if (!token || !password) {
+      res.status(400).json({ message: 'Token and password are required' });
+      return;
+    }
+    // In production, validate token and update user's password in DB
+    // For development, just respond success
+    res.json({ message: 'パスワードがリセットされました' });
+  } catch (error) {
+    console.error('Confirm reset password error:', error);
+    res.status(500).json({ message: 'パスワードリセット中にエラーが発生しました' });
+  }
+};

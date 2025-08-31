@@ -9,6 +9,8 @@ import {
   refreshToken,
   requestPasswordReset,
   resetPassword,
+  verifyResetToken,
+  confirmResetPassword,
 } from '../controllers/authController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { User } from '../models/User.js';
@@ -26,6 +28,9 @@ router.get('/user', /* authMiddleware, */ getUserData);
 router.post('/refresh', refreshToken);
 router.post('/password-reset', requestPasswordReset);
 router.post('/reset-password', resetPassword);
+// Frontend-compatible endpoints
+router.post('/password-reset/verify', verifyResetToken);
+router.post('/password-reset/confirm', confirmResetPassword);
 
 // 管理者権限付与エンドポイント（開発用）
 router.post(
