@@ -2503,8 +2503,21 @@ app.post('/api/subscription/checkout', (req, res) => {
   if (!planId || typeof planId !== 'string') {
     return res.status(400).json({ error: 'planId is required' });
   }
+  // In dev/mock, immediately create/activate the subscription for the current user
+  const userId = (req as any)?.user?.id || 'local-dev-user';
+  const sub: RuntimeSubscription = {
+    id: `sub_${Date.now()}`,
+    userId,
+    plan: planId,
+    status: 'active',
+    renewAt: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString(),
+    card: { last4: '4242', brand: 'visa' },
+  };
+  __subscriptionsByUser.set(userId, sub);
+
   const sessionId = `sess_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-  const sessionUrl = `http://localhost:3000/subscription?session_id=${sessionId}`;
+  // Return success flag so frontend can show toast and refetch
+  const sessionUrl = `http://localhost:3000/subscription?success=1&session_id=${sessionId}`;
   return res.json({ sessionUrl });
 });
 
