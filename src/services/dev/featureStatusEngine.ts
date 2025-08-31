@@ -265,10 +265,5 @@ export function isArtifactApproved(featureId: string, artifactId: string): boole
 }
 
 export function isRequirementsApproved(featureId: string): boolean {
-  // If explicitly approved in local store, honor it
-  if (isArtifactApproved(featureId, 'requirements')) return true;
-  // Allow skipping admin approval when requirements doc exists
-  // (Project policy: approval may be omitted if there is no issue)
-  const hasReqDoc = Boolean(featureArtifactsRegistry[featureId]?.requirements);
-  return hasReqDoc;
+  return isArtifactApproved(featureId, 'requirements');
 }

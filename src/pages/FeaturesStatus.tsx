@@ -70,6 +70,10 @@ export default function FeaturesStatusPage(): React.JSX.Element {
   const hasRequirements = (id: string): boolean => {
     return Boolean(featureArtifactsRegistry[id]?.requirements);
   };
+  const isRequirementsApprovedStrict = (id: string): boolean => {
+    // 着手中表示は少なくとも要件定義が承認済みの場合のみ
+    return isArtifactApproved(id, 'requirements');
+  };
 
   const byCategory = useMemo(() => {
     const m = new Map<string, Feature[]>();
@@ -83,7 +87,11 @@ export default function FeaturesStatusPage(): React.JSX.Element {
       if (progressFilter === 'not_started' && !isNotStartedBase) continue;
       if (
         progressFilter === 'in_progress' &&
-        !(isInProgressStatus(effectiveStatus) && hasRequirements(f.id))
+        !(
+          isInProgressStatus(effectiveStatus) &&
+          hasRequirements(f.id) &&
+          isRequirementsApprovedStrict(f.id)
+        )
       )
         continue;
       // ステータスフィルタ
@@ -120,7 +128,11 @@ export default function FeaturesStatusPage(): React.JSX.Element {
       if (progressFilter === 'not_started' && !isNotStartedBase) continue;
       if (
         progressFilter === 'in_progress' &&
-        !(isInProgressStatus(effectiveStatus) && hasRequirements(f.id))
+        !(
+          isInProgressStatus(effectiveStatus) &&
+          hasRequirements(f.id) &&
+          isRequirementsApprovedStrict(f.id)
+        )
       )
         continue;
       if (statusFilter !== 'all' && effectiveStatus !== statusFilter) continue;
