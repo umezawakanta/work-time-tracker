@@ -35,7 +35,7 @@ const AdminUsersPage: React.FC = () => {
   const [query, setQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
   const [confirm, setConfirm] = useState<{
-    type: 'promote' | 'demote' | 'block' | 'unblock';
+    type: 'promote' | 'demote' | 'block' | 'unblock' | 'delete';
     user: PublicUser;
   } | null>(null);
 
@@ -279,6 +279,13 @@ const AdminUsersPage: React.FC = () => {
                             >
                               {u.blocked ? 'Unblock (ブロック解除)' : 'Block (ブロック)'}
                             </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => setConfirm({ type: 'delete', user: u })}
+                              aria-label="ユーザー削除"
+                            >
+                              Delete (削除)
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>
@@ -301,6 +308,8 @@ const AdminUsersPage: React.FC = () => {
                   {confirm?.type === 'demote' && '一般ユーザーに変更しますか？'}
                   {confirm?.type === 'block' && 'このユーザーをブロックしますか？'}
                   {confirm?.type === 'unblock' && 'このユーザーのブロックを解除しますか？'}
+                  {confirm?.type === 'delete' &&
+                    'このユーザーを削除しますか？（取り消しできません）'}
                 </AlertDialogTitle>
                 <AlertDialogDescription id="admin-user-confirm-desc">
                   対象: {confirm?.user.email}
@@ -318,8 +327,17 @@ const AdminUsersPage: React.FC = () => {
                     if (!c) return;
                     if (c.type === 'promote' || c.type === 'demote') {
                       await handlePromoteDemote(c.user);
-                    } else {
+                    } else if (c.type === 'block' || c.type === 'unblock') {
                       await handleToggleBlock(c.user);
+                    } else {
+                      try {
+                        const { deleteUser } = await import('@/services/api/adminUsersApi');
+                        await deleteUser(c.user._id);
+                        toast.success('ユーザーを削除しました');
+                        void fetchPage();
+                      } catch {
+                        toast.error('削除に失敗しました');
+                      }
                     }
                   }}
                 >

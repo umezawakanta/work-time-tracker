@@ -20,7 +20,7 @@ export interface ListUsersResponse {
 export async function listUsers(params: ListUsersParams = {}): Promise<ListUsersResponse> {
   const { q = '', page = 1, limit = 20, sort = '-createdAt' } = params;
   const res = await api.get<ListUsersResponse>('/admin/users', {
-    params: { q, page, limit, sort },
+    params: { search: q, page, limit, sort },
   });
   return res.data;
 }
@@ -40,4 +40,12 @@ export interface UpdateUserResponse {
 export async function updateUser(id: string, payload: UpdateUserPayload): Promise<PublicUser> {
   const res = await api.patch<UpdateUserResponse>(`/admin/users/${id}`, payload);
   return res.data.data;
+}
+
+export interface DeleteUserResponse {
+  success: true;
+}
+
+export async function deleteUser(id: string): Promise<void> {
+  await api.delete<DeleteUserResponse>(`/admin/users/${id}`);
 }
