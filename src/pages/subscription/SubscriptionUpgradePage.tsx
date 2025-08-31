@@ -348,23 +348,23 @@ export default function SubscriptionUpgradePage() {
         <DialogContent className="max-w-md" aria-modal="true" role="dialog">
           <DialogHeader>
             <DialogTitle>お支払い情報</DialogTitle>
-            <DialogDescription>
-              {selectedPlanDetails && (
-                <div className="mt-2">
-                  <Badge className="mb-2">
-                    {selectedPlanDetails.name} (
-                    {selectedPlanDetails.interval === 'month' ? '月額' : '年額'})
-                  </Badge>
-                  <p className="font-medium text-lg">
-                    ¥{selectedPlanDetails.price.toLocaleString()}
-                    <span className="text-sm font-normal text-gray-500">
-                      /{selectedPlanDetails.interval === 'month' ? '月' : '年'}
-                    </span>
-                  </p>
-                </div>
-              )}
-            </DialogDescription>
+            <DialogDescription>プランと支払い情報を確認してください</DialogDescription>
           </DialogHeader>
+
+          {selectedPlanDetails && (
+            <div className="mt-2">
+              <Badge className="mb-2">
+                {selectedPlanDetails.name} (
+                {selectedPlanDetails.interval === 'month' ? '月額' : '年額'})
+              </Badge>
+              <div className="font-medium text-lg">
+                ¥{selectedPlanDetails.price.toLocaleString()}
+                <span className="text-sm font-normal text-gray-500">
+                  /{selectedPlanDetails.interval === 'month' ? '月' : '年'}
+                </span>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-4 py-4">
             <RadioGroup
