@@ -1,6 +1,6 @@
 // src/pages/SubscriptionPage.tsx
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +21,9 @@ import { useAuth } from '@/hooks/useAuth';
 import EnhancedSubscriptionForm from '@/components/subscription/EnhancedSubscriptionForm';
 import { formatPrice } from '@/config/stripe';
 import { toast } from 'react-hot-toast';
+import subscriptionGatewayApi, {
+  type SubscriptionStatusResponse,
+} from '@/services/api/subscriptionGatewayApi';
 
 interface SubscriptionPlan {
   id: string;
@@ -178,8 +181,38 @@ const subscriptionPlans: SubscriptionPlan[] = [
 const SubscriptionPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState<SubscriptionStatusResponse | null>(null);
+  const [statusLoading, setStatusLoading] = useState<boolean>(false);
+
+  const fetchStatus = async (): Promise<void> => {
+    try {
+      setStatusLoading(true);
+      const data = await subscriptionGatewayApi.getSubscriptionStatus();
+      setStatus(data);
+    } catch (e) {
+      // In dev, status may be anonymous; avoid noisy errors
+    } finally {
+      setStatusLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void fetchStatus();
+  }, []);
+
+  // Handle /subscription?success=1 redirect result
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('success') === '1') {
+      toast.success('申込が完了しました');
+      void fetchStatus();
+      // Clean URL
+      navigate('/subscription', { replace: true });
+    }
+  }, [location.search, navigate]);
 
   // 現在のプランに基づいてフィルタリング
   const currentPlans = subscriptionPlans.filter((plan) => plan.billingCycle === billingCycle);
@@ -194,6 +227,37 @@ const SubscriptionPage: React.FC = () => {
     navigate('/subscription-upgrade', {
       state: { selectedPlan: plan },
     });
+  };
+
+  const handleCheckout = async (plan: SubscriptionPlan): Promise<void> => {
+    try {
+      setIsLoading(true);
+      const { sessionUrl } = await subscriptionGatewayApi.startCheckout({ planId: plan.id });
+      window.location.href = sessionUrl;
+    } catch (e) {
+      toast.error('チェックアウトの開始に失敗しました');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOpenPortal = async (): Promise<void> => {
+    try {
+      const { url } = await subscriptionGatewayApi.openPortal();
+      window.location.href = url;
+    } catch (e) {
+      toast.error('ポータルの起動に失敗しました');
+    }
+  };
+
+  const handleCancel = async (): Promise<void> => {
+    try {
+      await subscriptionGatewayApi.cancelSubscriptionGateway({ atPeriodEnd: true });
+      toast.success('次回更新日以降に解約されます');
+      void fetchStatus();
+    } catch (e) {
+      toast.error('解約の処理に失敗しました');
+    }
   };
 
   const renderFeatureList = (features: string[]) => (
@@ -228,6 +292,44 @@ const SubscriptionPage: React.FC = () => {
           あなたのワークフローに最適なプランを選択してください。
           14日間の無料トライアルですべての機能をお試しいただけます。
         </p>
+      </div>
+
+      {/* ステータスヘッダー */}
+      <div className="mb-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">現在のステータス</CardTitle>
+            <CardDescription>
+              {statusLoading ? (
+                '読み込み中...'
+              ) : status?.status ? (
+                <span>
+                  状態: <Badge>{status.status}</Badge>
+                  {status.renewAt ? (
+                    <span className="ml-3 text-gray-600">
+                      次回請求日: {new Date(status.renewAt).toLocaleDateString('ja-JP')}
+                    </span>
+                  ) : null}
+                  {status.card ? (
+                    <span className="ml-3 text-gray-600">
+                      カード: {status.card.brand.toUpperCase()} •••• {status.card.last4}
+                    </span>
+                  ) : null}
+                </span>
+              ) : (
+                '未加入'
+              )}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={handleOpenPortal} disabled={isLoading}>
+              支払い情報を管理（ポータル）
+            </Button>
+            <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
+              解約（次回以降）
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       {/* 請求サイクル選択 */}
@@ -336,6 +438,19 @@ const SubscriptionPage: React.FC = () => {
                   </>
                 )}
               </Button>
+              {plan.id !== 'free' && (
+                <Button
+                  variant="outline"
+                  className="w-full mt-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void handleCheckout(plan);
+                  }}
+                  disabled={isLoading}
+                >
+                  チェックアウトで申し込む
+                </Button>
+              )}
             </CardContent>
           </Card>
         ))}
