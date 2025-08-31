@@ -419,6 +419,7 @@ export const featureArtifactsRegistry: Record<string, FeatureArtifacts> = {
     basic_design: { title: '基本設計書', href: '/docs/features/subscription/basic-design' },
     detailed_design: { title: '詳細設計書', href: '/docs/features/subscription/detailed-design' },
     source_code: { title: 'ソースコード', href: '/subscription' },
+    unit_test_spec: { title: '単体試験仕様書', href: '/docs/features/subscription/unit-test-spec' },
     unit_tests: { title: 'ユニットテストコード', href: '/docs/features/subscription/unit-tests' },
     e2e_tests: { title: 'e2eテストコード', href: '/docs/features/subscription/e2e-tests' },
     system_test_spec: {
