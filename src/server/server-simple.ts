@@ -574,8 +574,8 @@ app.get('/api/todos', async (req, res) => {
 
     // フロントエンドが期待する形式でTodoデータを変換
     const formattedTodos = todos.map((todo) => ({
-      _id: todo._id.toString(),
-      id: todo._id.toString(),
+      _id: String((todo as any)._id),
+      id: String((todo as any)._id),
       task: todo.title || todo.description || '',
       title: todo.title,
       description: todo.description,
@@ -680,8 +680,8 @@ app.post('/api/todos', async (req, res) => {
 
     // フロントエンドが期待する形式でデータを変換
     const formattedTodo = {
-      _id: savedTodo._id.toString(),
-      id: savedTodo._id.toString(),
+      _id: String((savedTodo as any)._id),
+      id: String((savedTodo as any)._id),
       task: savedTodo.title || savedTodo.description || '',
       title: savedTodo.title,
       description: savedTodo.description,
@@ -787,8 +787,8 @@ app.put('/api/todos/:id', async (req, res) => {
 
     // フロントエンドが期待する形式でデータを変換
     const formattedTodo = {
-      _id: updatedTodo._id.toString(),
-      id: updatedTodo._id.toString(),
+      _id: String((updatedTodo as any)._id),
+      id: String((updatedTodo as any)._id),
       task: updatedTodo.title || updatedTodo.description || '',
       title: updatedTodo.title,
       description: updatedTodo.description,
@@ -837,8 +837,8 @@ app.delete('/api/todos/:id', async (req, res) => {
 
     // フロントエンドが期待する形式でデータを変換
     const formattedDeletedTodo = {
-      _id: deletedTodo._id.toString(),
-      id: deletedTodo._id.toString(),
+      _id: String((deletedTodo as any)._id),
+      id: String((deletedTodo as any)._id),
       task: deletedTodo.title || deletedTodo.description || '',
       title: deletedTodo.title,
       description: deletedTodo.description,
@@ -1850,7 +1850,7 @@ app.get('/api/admin/error-reports', async (req, res) => {
     } catch {}
 
     const { default: mongoose } = await import('mongoose');
-    const rows = await mongoose.connection.db
+    const rows = await (mongoose.connection.db as any)
       .collection('error_reports')
       .find({}, { sort: { createdAt: -1 } as any })
       .limit(limit)
@@ -2180,6 +2180,101 @@ app.get('/api/ai/health', (_req, res) => {
   });
 });
 
+// =============================
+// Subscription (Dev Mock)
+// =============================
+type SubscriptionStatus = 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete';
+type PaymentCard = { last4: string; brand: string };
+type RuntimeSubscription = {
+  id: string;
+  userId: string;
+  plan: string; // planId
+  status: SubscriptionStatus;
+  renewAt: string | null; // ISO date
+  card: PaymentCard | null;
+};
+
+const __subscriptionsByUser: Map<string, RuntimeSubscription> = new Map();
+
+// GET /api/subscription/status
+app.get('/api/subscription/status', (req, res) => {
+  try {
+    const userId = (req as any)?.user?.id || 'local-dev-user';
+    const sub = __subscriptionsByUser.get(userId);
+    if (!sub) return res.json({ plan: null, status: null, renewAt: null, card: null });
+    return res.json({ plan: sub.plan, status: sub.status, renewAt: sub.renewAt, card: sub.card });
+  } catch (e) {
+    return res.status(503).json({ error: 'Service unavailable' });
+  }
+});
+
+// POST /api/subscription/checkout → returns sessionUrl
+app.post('/api/subscription/checkout', (req, res) => {
+  const { planId } = (req.body || {}) as { planId?: string };
+  if (!planId || typeof planId !== 'string') {
+    return res.status(400).json({ error: 'planId is required' });
+  }
+  const sessionId = `sess_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const sessionUrl = `http://localhost:3000/subscription?session_id=${sessionId}`;
+  return res.json({ sessionUrl });
+});
+
+// POST /api/subscription/portal → returns management url
+app.post('/api/subscription/portal', (_req, res) => {
+  const url = 'http://localhost:3000/subscription?portal=1';
+  return res.json({ url });
+});
+
+// POST /api/subscription/cancel
+app.post('/api/subscription/cancel', (req, res) => {
+  try {
+    const userId = (req as any)?.user?.id || 'local-dev-user';
+    const atPeriodEnd = Boolean((req.body || {}).atPeriodEnd);
+    const sub = __subscriptionsByUser.get(userId);
+    if (!sub) {
+      // Idempotent cancel for mock
+      return res.json({ success: true });
+    }
+    if (atPeriodEnd) {
+      sub.status = 'active';
+      sub.renewAt = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString();
+    } else {
+      sub.status = 'canceled';
+      sub.renewAt = null;
+    }
+    __subscriptionsByUser.set(userId, sub);
+    return res.json({ success: true });
+  } catch (e) {
+    return res.status(503).json({ error: 'Service unavailable' });
+  }
+});
+
+// Legacy dev route used by EnhancedSubscriptionForm
+// POST /api/subscriptions/create → creates mock subscription and returns message
+app.post('/api/subscriptions/create', (req, res) => {
+  try {
+    const userId = (req as any)?.user?.id || 'local-dev-user';
+    const { planId } = (req.body || {}) as { planId?: string };
+    if (!planId) return res.status(400).json({ message: 'planId is required' });
+
+    const sub: RuntimeSubscription = {
+      id: `sub_${Date.now()}`,
+      userId,
+      plan: planId,
+      status: 'active',
+      renewAt: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString(),
+      card: { last4: '4242', brand: 'visa' },
+    };
+    __subscriptionsByUser.set(userId, sub);
+    return res.json({
+      success: true,
+      data: { subscription: sub, message: 'Subscription created successfully' },
+    });
+  } catch (e) {
+    return res.status(500).json({ success: false, message: 'Failed to create subscription' });
+  }
+});
+
 // Blog API routes (MongoDB-backed)
 console.log('📚 Loading blog routes...');
 app.use('/api/blog', blogRoutes);
@@ -2283,7 +2378,7 @@ app.post('/api/todos/notify-added', async (req, res) => {
     // 通知を送信（TodoDocumentをTodoItem形式に変換）
     const priorityMap = { low: 1, medium: 2, high: 3, critical: 5 };
     const todoItem = {
-      _id: todo._id.toString(),
+      _id: String((todo as any)._id),
       task: todo.title, // TodoDocumentではtitleプロパティ
       priority: priorityMap[todo.priority] || 2,
       isPrioritized: todo.priority === 'high' || todo.priority === 'critical',
