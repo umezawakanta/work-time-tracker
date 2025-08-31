@@ -349,6 +349,9 @@ const SubscriptionPage: React.FC = () => {
                       次回請求日: {new Date(status.renewAt).toLocaleDateString('ja-JP')}
                     </span>
                   ) : null}
+                  {status.atPeriodEnd ? (
+                    <span className="ml-3 text-orange-600">解約予定: 次回更新日に終了</span>
+                  ) : null}
                   {status.card ? (
                     <span className="ml-3 text-gray-600">
                       カード: {status.card.brand.toUpperCase()} •••• {status.card.last4}

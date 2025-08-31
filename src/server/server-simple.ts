@@ -2483,6 +2483,7 @@ type RuntimeSubscription = {
   status: SubscriptionStatus;
   renewAt: string | null; // ISO date
   card: PaymentCard | null;
+  cancelAtPeriodEnd: boolean;
 };
 
 const __subscriptionsByUser: Map<string, RuntimeSubscription> = new Map();
@@ -2498,8 +2499,15 @@ app.get('/api/subscription/status', (req, res) => {
     res.removeHeader('ETag');
     const userId = (req as any)?.user?.id || 'local-dev-user';
     const sub = __subscriptionsByUser.get(userId);
-    if (!sub) return res.json({ plan: null, status: null, renewAt: null, card: null });
-    return res.json({ plan: sub.plan, status: sub.status, renewAt: sub.renewAt, card: sub.card });
+    if (!sub)
+      return res.json({ plan: null, status: null, renewAt: null, card: null, atPeriodEnd: false });
+    return res.json({
+      plan: sub.plan,
+      status: sub.status,
+      renewAt: sub.renewAt,
+      card: sub.card,
+      atPeriodEnd: sub.cancelAtPeriodEnd,
+    });
   } catch (e) {
     return res.status(503).json({ error: 'Service unavailable' });
   }
@@ -2520,6 +2528,7 @@ app.post('/api/subscription/checkout', (req, res) => {
     status: 'active',
     renewAt: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString(),
     card: { last4: '4242', brand: 'visa' },
+    cancelAtPeriodEnd: false,
   };
   __subscriptionsByUser.set(userId, sub);
 
@@ -2546,11 +2555,13 @@ app.post('/api/subscription/cancel', (req, res) => {
       return res.json({ success: true });
     }
     if (atPeriodEnd) {
+      sub.cancelAtPeriodEnd = true;
       sub.status = 'active';
-      sub.renewAt = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString();
+      sub.renewAt = sub.renewAt || new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString();
     } else {
       sub.status = 'canceled';
       sub.renewAt = null;
+      sub.cancelAtPeriodEnd = false;
     }
     __subscriptionsByUser.set(userId, sub);
     return res.json({ success: true });
@@ -2574,6 +2585,7 @@ app.post('/api/subscriptions/create', (req, res) => {
       status: 'active',
       renewAt: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString(),
       card: { last4: '4242', brand: 'visa' },
+      cancelAtPeriodEnd: false,
     };
     __subscriptionsByUser.set(userId, sub);
     return res.json({

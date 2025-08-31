@@ -5,6 +5,7 @@ export interface SubscriptionStatusResponse {
   status: 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete' | null;
   renewAt?: string | null;
   card?: { last4: string; brand: string } | null;
+  atPeriodEnd?: boolean;
 }
 
 export interface CheckoutRequest {
