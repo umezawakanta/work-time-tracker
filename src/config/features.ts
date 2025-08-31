@@ -510,7 +510,7 @@ export const featuresRegistry: Feature[] = [
     path: '/subscription-upgrade',
     category: 'サブスクリプション・請求',
     description: 'プレミアムプランへのアップグレード',
-    status: 'in_progress',
+    status: 'system_testing',
     requiresRealAPI: true,
   },
   {
@@ -1539,7 +1539,11 @@ export function isFeatureAccessible(pathname: string): {
   if ((feature as any).disabled) {
     return { allowed: false, reason: '無効化された機能です', feature };
   }
-  if (feature.status !== 'complete') {
+  // 実運用に向けた試験段階（結合/総合/リリース待ち）はアクセス許可
+  const allowDuringTesting = ['integration_testing', 'system_testing', 'release_pending'].includes(
+    feature.status as string
+  );
+  if (!(feature.status === 'complete' || allowDuringTesting)) {
     return { allowed: false, reason: '未完成の機能です', feature };
   }
   if (feature.requiresRealAPI && USE_MOCK_DATA) {
