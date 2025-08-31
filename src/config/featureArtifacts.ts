@@ -374,10 +374,6 @@ export const featureArtifactsRegistry: Record<string, FeatureArtifacts> = {
     faq: { title: 'FAQ', href: '/docs/features/cognitive-finance/faq' },
   },
   'beta-user-recruitment': {
-    requirements: {
-      title: '要件定義書',
-      href: '/docs/features/beta-user-recruitment/requirements',
-    },
     basic_design: {
       title: '基本設計書',
       href: '/docs/features/beta-user-recruitment/basic-design',
@@ -414,6 +410,18 @@ export const featureArtifactsRegistry: Record<string, FeatureArtifacts> = {
     },
     runbook: { title: '運用手順書', href: '/docs/features/beta-user-recruitment/runbook' },
     faq: { title: 'FAQ', href: '/docs/features/beta-user-recruitment/faq' },
+  },
+  subscription: {
+    requirements: {
+      title: '要件定義書',
+      href: '/docs/features/subscription/requirements',
+    },
+  },
+  'bug-list': {
+    requirements: {
+      title: '要件定義書',
+      href: '/docs/features/bug-list/requirements',
+    },
   },
   'user-testing': {
     requirements: { title: '要件定義書', href: '/docs/features/user-testing/requirements' },

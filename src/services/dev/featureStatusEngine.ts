@@ -103,6 +103,7 @@ export function computeSuggestedFeatureStatus(
   signals: { devStatus: DevStatusFlags | null; testSummary: TestSummary | null }
 ): FeatureStatus {
   const artifacts = featureArtifactsRegistry[feature.id] || {};
+  const hasReq = Boolean(artifacts.requirements);
 
   // シグナル
   const isMocked =
@@ -126,6 +127,8 @@ export function computeSuggestedFeatureStatus(
   current = 'designing';
   if (!hasDesign) return current;
 
+  // If requirements missing, force planning no matter other artifacts (safety)
+  if (!hasReq) return 'planning';
   current = 'developing';
   if (!hasSource) return current;
 
