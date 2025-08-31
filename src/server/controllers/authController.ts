@@ -147,13 +147,14 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     console.log('Request body:', JSON.stringify(req.body, null, 2));
     console.log('Request headers:', JSON.stringify(req.headers, null, 2));
 
-    const { name, email, password } = req.body;
+    const { name, displayName, email, password } = req.body;
+    const resolvedName = String((name ?? displayName ?? '') as string).trim();
 
     // 必須フィールドの検証とログ出力
-    if (!name || !email || !password) {
+    if (!resolvedName || !email || !password) {
       console.error('Registration validation error: Missing required fields');
       console.error('Missing fields:', {
-        name: !name ? 'missing' : 'present',
+        name: !resolvedName ? 'missing' : 'present',
         email: !email ? 'missing' : 'present',
         password: !password ? 'missing' : 'present',
       });
@@ -177,7 +178,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 
     console.log('Creating new user with data:', {
-      name,
+      name: resolvedName,
       email,
       passwordLength: typeof password === 'string' ? password.length : 'unknown',
     });
@@ -188,7 +189,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const createdUser = (await User.create({
       uid,
       email,
-      displayName: name,
+      displayName: resolvedName,
       provider: 'jwt',
       password: hashed,
       preferences: {},
@@ -207,7 +208,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       refreshToken: tokens.refreshToken,
       user: {
         id: userId,
-        displayName: (createdUser as { displayName?: string }).displayName || name,
+        displayName: (createdUser as { displayName?: string }).displayName || resolvedName,
         email,
         isAdmin: ((createdUser as { role?: string }).role || '') === 'admin',
       },
