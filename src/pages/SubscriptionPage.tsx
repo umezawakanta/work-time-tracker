@@ -186,6 +186,7 @@ const SubscriptionPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<SubscriptionStatusResponse | null>(null);
   const [statusLoading, setStatusLoading] = useState<boolean>(false);
+  const isPortalMode = new URLSearchParams(location.search).get('portal') === '1';
 
   const fetchStatus = async (): Promise<void> => {
     try {
@@ -286,6 +287,37 @@ const SubscriptionPage: React.FC = () => {
       <div>チームメンバー: {limits.teamMembers === -1 ? '無制限' : `${limits.teamMembers}人`}</div>
     </div>
   );
+
+  if (isPortalMode) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-3xl">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl">支払い情報管理ポータル（モック）</CardTitle>
+            <CardDescription>
+              この画面はゲートウェイのカスタマーポータルを模した検証用ビューです。
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-sm text-gray-700">
+              - カードの更新/確認
+              <br />- 請求先情報の更新
+              <br />- 請求履歴/領収書ダウンロード
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => navigate('/subscription', { replace: true })}
+              >
+                戻る
+              </Button>
+              <Button onClick={() => navigate('/billing-history')}>請求履歴を見る</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
