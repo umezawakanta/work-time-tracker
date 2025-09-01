@@ -1018,8 +1018,10 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           if (!matchesSearch) return false;
 
           // 役割/機能ステータスによる表示制御
-          if (item.path === '/admin' && !isAdmin) return false;
-          const feature = getFeatureByPath(item.path);
+          const basePath = item.path.split('?')[0].split('#')[0];
+          if (basePath.startsWith('/_bg/')) return false;
+          if (basePath === '/admin' && !isAdmin) return false;
+          const feature = getFeatureByPath(basePath);
           if (feature && feature.status !== 'complete') return false;
           return true;
         });

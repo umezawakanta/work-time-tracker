@@ -40,7 +40,7 @@ export const featuresRegistry: Feature[] = [
     path: '/',
     category: 'コア',
     description: 'ホームとダッシュボード（タブ切替）',
-    status: 'complete',
+    status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
   },
@@ -50,7 +50,7 @@ export const featuresRegistry: Feature[] = [
     path: '/sitemap',
     category: 'コア',
     description: '全機能一覧・使用ガイド・新機能案内',
-    status: 'complete',
+    status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
   },
@@ -318,9 +318,9 @@ export const featuresRegistry: Feature[] = [
     id: 'features',
     name: '🧭 機能一覧（開発状況）',
     path: '/features',
-    category: 'システム・分析',
+    category: '機能一覧・進捗',
     description: '機能別の完成状況とアクセス制御',
-    status: 'complete',
+    status: 'planning',
     requiresRealAPI: false,
   },
   {
@@ -637,7 +637,7 @@ export const featuresRegistry: Feature[] = [
     path: '/subscription',
     category: 'サブスクリプション・請求',
     description: 'サブスクリプション管理',
-    status: 'complete',
+    status: 'planning',
     requiresRealAPI: true,
     priority: 'P1',
     targetRelease: '2025-09-06',
@@ -1406,7 +1406,7 @@ export const featuresRegistry: Feature[] = [
     path: '/changelog',
     category: 'コア',
     description: 'バージョン履歴と変更点',
-    status: 'complete',
+    status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
   },
@@ -1416,7 +1416,7 @@ export const featuresRegistry: Feature[] = [
     path: '/privacy',
     category: 'コア',
     description: 'プライバシーポリシー',
-    status: 'complete',
+    status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
   },
@@ -1466,7 +1466,7 @@ export const featuresRegistry: Feature[] = [
     path: '/forgot-password',
     category: 'ユーザー・設定',
     description: 'パスワードリセットメール送信',
-    status: 'complete',
+    status: 'planning',
     requiresRealAPI: true,
     priority: 'P1',
     targetRelease: '2025-09-04',
@@ -1477,7 +1477,7 @@ export const featuresRegistry: Feature[] = [
     path: '/reset-password',
     category: 'ユーザー・設定',
     description: 'パスワード再設定画面',
-    status: 'complete',
+    status: 'planning',
     requiresRealAPI: true,
     priority: 'P1',
     targetRelease: '2025-09-05',
@@ -1694,7 +1694,7 @@ export function isFeatureAccessible(pathname: string): {
   const allowDuringTesting = ['integration_testing', 'system_testing', 'release_pending'].includes(
     feature.status as string
   );
-  if (!(feature.status === 'complete' || allowDuringTesting)) {
+  if (!(feature.status === 'planning' || allowDuringTesting)) {
     return { allowed: false, reason: '未完成の機能です', feature };
   }
   if (feature.requiresRealAPI && USE_MOCK_DATA) {
