@@ -26,15 +26,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     return;
   }
   try {
-    const ok = await ensureDB();
-    if (!ok || !connectDB) throw new Error('db module missing');
+    const dbReady = await ensureDB();
+    if (!dbReady || !connectDB) throw new Error('db module missing');
     await connectDB();
     const state = mongoose.connection.readyState; // 0=disconnected 1=connected 2=connecting 3=disconnecting
-    const ok = state === 1;
+    const connected = state === 1;
     const mongoVersion = (await mongoose.connection.db?.admin().serverStatus())?.version;
     res.status(200).json({
       success: true,
-      connected: ok,
+      connected,
       state,
       version: mongoVersion || null,
       host: mongoose.connection.host,

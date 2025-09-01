@@ -7,13 +7,7 @@
   "devCommand": "pnpm run dev",
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {
-    "api/auth/register.ts": {
-      "includeFiles": "src/server/**"
-    },
-    "api/auth/login.ts": {
-      "includeFiles": "src/server/**"
-    },
-    "api/db/status.ts": {
+    "api/**": {
       "includeFiles": "src/server/**"
     }
   },
