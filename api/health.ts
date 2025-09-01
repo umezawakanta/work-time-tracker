@@ -1,6 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-// Keep health lightweight in serverless: do not hard-require DB
-import { connectMongoDirect, maskMongoUri } from './_lib/mongo';
+// Keep health lightweight in serverless: avoid ESM imports at top-level (CJS runtime)
+async function getMongoLib() {
+  const mod = await import('./_lib/mongo.js');
+  return {
+    connectMongoDirect: (mod as any).connectMongoDirect as () => Promise<void>,
+    maskMongoUri: (mod as any).maskMongoUri as (uri?: string) => string,
+    mongoose: (mod as any).mongoose,
+  };
+}
 let connectDB: (() => Promise<void>) | null = null;
 console.warn('[health] connectDB:', connectDB);
 async function loadDB(): Promise<boolean> {
@@ -69,6 +76,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const hasUri = Boolean(process.env.MONGODB_URI);
       console.warn('[health] hasUri:', hasUri);
+      const { connectMongoDirect, maskMongoUri } = await getMongoLib();
       const uriMasked = maskMongoUri(process.env.MONGODB_URI);
       console.warn('[health] uriMasked:', uriMasked);
       console.log('[health] DB check start', {
@@ -94,6 +102,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         labels: err?.errorLabels,
       });
       try {
+        const { connectMongoDirect } = await getMongoLib();
         console.warn('[health] connectMongoDirect:');
         await connectMongoDirect();
         console.warn('[health] connectMongoDirect: success');
@@ -124,6 +133,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Server DB module unavailable → try direct connect path
     console.warn('[health] DB module unavailable; attempting direct mongo connect');
     try {
+      const { connectMongoDirect } = await getMongoLib();
       await connectMongoDirect();
       healthStatus.services.database = 'connected';
       console.log('[health] DB check result: connected (direct: no module)');
