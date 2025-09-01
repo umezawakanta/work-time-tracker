@@ -92,12 +92,18 @@ lighthouserc.json
 # ----------------------------
 # Minimize API deployment scope (allowlist only the required routes)
 api/**
+!api/
 !api/health.ts
 !api/db/status.ts
+!api/_lib/
 !api/_lib/**
+!api/_schemas/
 !api/_schemas/**
+!api/auth/
 !api/auth/**
+!api/admin/
 !api/admin/metrics.ts
+!api/admin/analytics/
 !api/admin/analytics/summary.ts
 !api/admin/metrics/top-pages.ts
 !api/admin/metrics/users/trend.ts
@@ -107,7 +113,9 @@ api/**
 !api/admin/metrics/assessments/summary.ts
 !api/admin/metrics/learning/summary.ts
 !api/admin/error-reports.ts
+!api/admin/users/
 !api/admin/users/**
+!api/analytics/
 !api/analytics/pageviews/daily.ts
 !api/analytics/live-metrics.ts
 !api/analytics/users/active.ts
