@@ -6,12 +6,15 @@ let SubscriptionModel: any = null;
 async function loadServerModules(): Promise<boolean> {
   if (connectDB && User) return true;
   try {
-    const dbMod = await import('../../src/server/config/database.js');
+    const dbModPath = '../../src/server/config/' + 'database.js';
+    const dbMod = await import(dbModPath as string);
     connectDB = (dbMod as any).connectDB as () => Promise<void>;
-    const userMod = await import('../../src/server/models/User.js');
+    const userModPath = '../../src/server/models/' + 'User.js';
+    const userMod = await import(userModPath as string);
     User = (userMod as any).User;
     try {
-      const subMod = await import('../../src/server/models/Subscription.js');
+      const subModPath = '../../src/server/models/' + 'Subscription.js';
+      const subMod = await import(subModPath as string);
       SubscriptionModel = (subMod as any).SubscriptionModel;
     } catch {}
     return true;

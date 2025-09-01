@@ -4,7 +4,8 @@ let connectDB: (() => Promise<void>) | null = null;
 async function loadDB(): Promise<boolean> {
   if (connectDB) return true;
   try {
-    const mod = await import('../src/server/config/database.js');
+    const modPath = '../src/server/config/' + 'database.js';
+    const mod = await import(modPath as string);
     connectDB = (mod as any).connectDB as () => Promise<void>;
     return true;
   } catch {

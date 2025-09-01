@@ -1,7 +1,22 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import jwt from 'jsonwebtoken';
-import { connectDB } from '../../src/server/config/database';
-import { User } from '../../src/server/models/User';
+// Lazy-load server modules to avoid bundle-time resolution issues
+let connectDB: (() => Promise<void>) | null = null;
+let User: any = null;
+async function loadServerModules(): Promise<boolean> {
+  if (connectDB && User) return true;
+  try {
+    const dbModPath = '../../src/server/config/' + 'database.js';
+    const dbMod = await import(dbModPath as string);
+    connectDB = (dbMod as any).connectDB as () => Promise<void>;
+    const userModPath = '../../src/server/models/' + 'User.js';
+    const userMod = await import(userModPath as string);
+    User = (userMod as any).User;
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 interface RefreshTokenRequest {
   refreshToken: string;
@@ -61,6 +76,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('🔄 Refreshing tokens...');
 
     // Connect to database
+    const loaded = await loadServerModules();
+    if (!loaded || !connectDB) throw new Error('Server modules not available');
     await connectDB();
 
     // Verify refresh token
