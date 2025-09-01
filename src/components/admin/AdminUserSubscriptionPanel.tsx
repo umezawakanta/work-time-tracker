@@ -58,7 +58,7 @@ const AdminUserSubscriptionPanel: React.FC<Props> = ({ user, open, onOpenChange 
     if (open) {
       void load();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // user._id の変更時にも再読込
   }, [open, user?._id]);
 
   const renewDate = useMemo(() => {
