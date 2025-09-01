@@ -17,6 +17,7 @@ async function loadServerModules(): Promise<boolean> {
     } catch {}
     return true;
   } catch {
+    console.warn('[auth/login] Failed to load server modules');
     return false;
   }
 }
@@ -136,10 +137,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const loaded = await loadServerModules();
       if (!loaded || !connectDB) throw new Error('Server modules not available');
+      const hasUri = Boolean(process.env.MONGODB_URI);
+      const uriMasked = (process.env.MONGODB_URI || '').replace(
+        /(mongodb(\+srv)?:\/\/)([^:@]+)(:[^@]+)?@/i,
+        '$1****:****@'
+      );
+      console.log('[auth/login] DB connect start', {
+        hasUri,
+        uri: hasUri ? uriMasked : 'undefined',
+        nodeEnv: process.env.NODE_ENV,
+      });
       await connectDB();
+      console.log('[auth/login] DB connect success');
     } catch (e) {
       dbReady = false;
-      console.warn('Login API: DB not available, using preview demo login');
+      const msg = e instanceof Error ? e.message : String(e);
+      console.warn('[auth/login] DB connect failed, using preview demo login', { message: msg });
     }
 
     // プレビュー/デモ: DBが無い場合の簡易ログイン

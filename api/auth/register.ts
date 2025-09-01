@@ -16,6 +16,7 @@ async function loadServerModules(): Promise<boolean> {
     } catch {}
     return true;
   } catch {
+    console.warn('[auth/register] Failed to load server modules');
     return false;
   }
 }
@@ -154,11 +155,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // データベース接続（失敗時はサービス不可として返却）
     try {
+      const hasUri = Boolean(process.env.MONGODB_URI);
+      const uriMasked = (process.env.MONGODB_URI || '').replace(
+        /(mongodb(\+srv)?:\/\/)([^:@]+)(:[^@]+)?@/i,
+        '$1****:****@'
+      );
+      console.log('[auth/register] DB connect start', {
+        hasUri,
+        uri: hasUri ? uriMasked : 'undefined',
+        nodeEnv: process.env.NODE_ENV,
+      });
       const loaded = await loadServerModules();
       if (!loaded || !connectDB) throw new Error('Server modules not available');
       await connectDB();
+      console.log('[auth/register] DB connect success');
     } catch (e) {
-      console.warn('Register API: DB not available');
+      const msg = e instanceof Error ? e.message : String(e);
+      console.warn('[auth/register] DB connect failed', { message: msg });
       return res.status(503).json({
         success: false,
         message: '現在ユーザー登録サービスを利用できません。しばらくしてから再試行してください。',

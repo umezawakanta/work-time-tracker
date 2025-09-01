@@ -8,6 +8,7 @@ async function loadDB(): Promise<boolean> {
     connectDB = (mod as any).connectDB as () => Promise<void>;
     return true;
   } catch {
+    console.warn('[health] Failed to load DB module (expected in some builds)');
     return false;
   }
 }
@@ -50,8 +51,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // データベース接続テスト
   if (await loadDB()) {
     try {
+      const hasUri = Boolean(process.env.MONGODB_URI);
+      const uriMasked = (process.env.MONGODB_URI || '').replace(
+        /(mongodb(\+srv)?:\/\/)([^:@]+)(:[^@]+)?@/i,
+        '$1****:****@'
+      );
+      console.log('[health] DB check start', {
+        hasUri,
+        uri: hasUri ? uriMasked : 'undefined',
+        nodeEnv: process.env.NODE_ENV,
+      });
       await connectDB();
       healthStatus.services.database = 'connected';
+      console.log('[health] DB check result: connected');
     } catch (error) {
       console.warn('Database health check failed (continuing):', (error as Error).message);
       // Vercel等でDB未設定でも200を返し、サービス稼働自体のヘルスは保つ
