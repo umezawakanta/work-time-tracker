@@ -308,8 +308,9 @@ async function handler(req: any, res: any) {
         .map((s) => s.trim().toLowerCase())
         .filter(Boolean);
       const isAllowedEmail = allowedEmails.includes((email || '').toLowerCase());
-      if (allowFirstSetup && isAllowedEmail && user && user.metadata) {
+      if (allowFirstSetup && isAllowedEmail && user && (user as any).metadata) {
         try {
+          const { bcrypt } = await getLibs();
           const newHash = await bcrypt.hash(password, 12);
           const userIdForUpdate = (user as any)?._id || (user as any)?.id;
           if (!userIdForUpdate) throw new Error('Missing user id');
@@ -493,3 +494,5 @@ async function handler(req: any, res: any) {
     } as LoginResponse);
   }
 }
+
+export default handler;
