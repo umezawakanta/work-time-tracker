@@ -7,8 +7,11 @@
   "devCommand": "pnpm run dev",
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {
-    "api/**": {
-      "includeFiles": "src/server/**"
+    "api/auth/**": {
+      "includeFiles": "src/server/{config/database.js,models/User.js,models/Subscription.js}"
+    },
+    "api/db/**": {
+      "includeFiles": "src/server/config/database.js"
     }
   },
   "headers": [
