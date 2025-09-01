@@ -95,18 +95,24 @@ async function ensureModels(): Promise<void> {
       const existingUser = (mongoose.models as any)?.User;
       if (existingUser) {
         User = existingUser;
+        console.log('[auth/register] Using existing mongoose.models.User');
       } else {
         const userSchema = new mongoose.Schema({}, { strict: false });
         User = mongoose.model('User', userSchema, 'users');
+        console.log('[auth/register] Created fallback User model (collection="users")');
       }
     }
     if (!SubscriptionModel) {
       const existingSub = (mongoose.models as any)?.Subscription;
       if (existingSub) {
         SubscriptionModel = existingSub;
+        console.log('[auth/register] Using existing mongoose.models.Subscription');
       } else {
         const subSchema = new mongoose.Schema({}, { strict: false });
         SubscriptionModel = mongoose.model('Subscription', subSchema, 'subscriptions');
+        console.log(
+          '[auth/register] Created fallback Subscription model (collection="subscriptions")'
+        );
       }
     }
   } catch (e) {
@@ -196,6 +202,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!loaded || !connectDB) throw new Error('Server modules not available');
       await connectDB();
       console.log('[auth/register] DB connect success');
+      console.log('[auth/register] conn info', {
+        state: mongoose.connection.readyState,
+        host: mongoose.connection.host,
+        name: mongoose.connection.name,
+      });
     } catch (e) {
       const err: any = e;
       console.warn('[auth/register] Primary DB connect failed, trying direct mongo connect', {
@@ -209,6 +220,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       try {
         await connectMongoDirect();
         console.log('[auth/register] DB connect success (direct)');
+        console.log('[auth/register] conn info', {
+          state: mongoose.connection.readyState,
+          host: mongoose.connection.host,
+          name: mongoose.connection.name,
+        });
       } catch (e2) {
         const err2: any = e2;
         console.warn('[auth/register] DB connect failed (direct)', {
@@ -231,7 +247,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!User || !SubscriptionModel) {
       await ensureModels();
     }
+    console.log('[auth/register] findOne(users) start', {
+      modelReady: Boolean(User),
+      connState: (mongoose as any).connection?.readyState,
+      dbName: (mongoose as any).connection?.name,
+      email: (email || '').replace(/^[^@]+/, '***'),
+    });
     const existingUser = await User.findOne({ email: email.toLowerCase() });
+    console.log('[auth/register] findOne(users) done', {
+      found: Boolean(existingUser),
+      id: (existingUser as any)?._id || (existingUser as any)?.id || null,
+    });
     if (existingUser) {
       return res.status(409).json({
         success: false,
@@ -360,7 +386,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     // ユーザーの保存
+    console.log('[auth/register] save(users) start');
     const savedUser = await newUser.save();
+    console.log('[auth/register] save(users) done', {
+      id: savedUser?.id || (savedUser as any)?._id || null,
+    });
 
     // 無料プランのサブスクリプション作成
     const freeSubscription = new SubscriptionModel({
@@ -404,7 +434,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       addOns: [],
     });
 
+    console.log('[auth/register] save(subscriptions) start');
     await freeSubscription.save();
+    console.log('[auth/register] save(subscriptions) done', {
+      id: freeSubscription?.id || null,
+    });
 
     // JWTトークンの生成
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
