@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import jwt from 'jsonwebtoken';
+import { connectMongoDirect, maskMongoUri } from '../_lib/mongo';
 // Lazy-load server modules to avoid bundle-time resolution issues
 let connectDB: (() => Promise<void>) | null = null;
 let User: any = null;
@@ -76,9 +77,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('🔄 Refreshing tokens...');
 
     // Connect to database
-    const loaded = await loadServerModules();
-    if (!loaded || !connectDB) throw new Error('Server modules not available');
-    await connectDB();
+    try {
+      const loaded = await loadServerModules();
+      if (!loaded || !connectDB) throw new Error('Server modules not available');
+      await connectDB();
+    } catch (e) {
+      // fallback to direct connection
+      await connectMongoDirect();
+    }
 
     // Verify refresh token
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';

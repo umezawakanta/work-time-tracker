@@ -27,6 +27,7 @@ async function loadServerModules(): Promise<boolean> {
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
+import { connectMongoDirect, maskMongoUri } from '../_lib/mongo';
 
 // Login request interface
 interface LoginRequest {
@@ -141,10 +142,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const loaded = await loadServerModules();
       if (!loaded || !connectDB) throw new Error('Server modules not available');
       const hasUri = Boolean(process.env.MONGODB_URI);
-      const uriMasked = (process.env.MONGODB_URI || '').replace(
-        /(mongodb(\+srv)?:\/\/)([^:@]+)(:[^@]+)?@/i,
-        '$1****:****@'
-      );
+      const uriMasked = maskMongoUri(process.env.MONGODB_URI);
       console.log('[auth/login] DB connect start', {
         hasUri,
         uri: hasUri ? uriMasked : 'undefined',
@@ -154,8 +152,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.log('[auth/login] DB connect success');
     } catch (e) {
       dbReady = false;
-      const msg = e instanceof Error ? e.message : String(e);
-      console.warn('[auth/login] DB connect failed, using preview demo login', { message: msg });
+      console.warn('[auth/login] Primary DB connect failed, trying direct mongo connect');
+      try {
+        await connectMongoDirect();
+        console.log('[auth/login] DB connect success (direct)');
+        dbReady = true;
+      } catch (e2) {
+        const msg = e2 instanceof Error ? e2.message : String(e2);
+        console.warn('[auth/login] DB connect failed (direct), using preview demo login', {
+          message: msg,
+        });
+      }
     }
 
     // プレビュー/デモ: DBが無い場合の簡易ログイン

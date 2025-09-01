@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 // Keep health lightweight in serverless: do not hard-require DB
+import { connectMongoDirect, maskMongoUri } from './_lib/mongo';
 let connectDB: (() => Promise<void>) | null = null;
 async function loadDB(): Promise<boolean> {
   if (connectDB) return true;
@@ -53,10 +54,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (await loadDB()) {
     try {
       const hasUri = Boolean(process.env.MONGODB_URI);
-      const uriMasked = (process.env.MONGODB_URI || '').replace(
-        /(mongodb(\+srv)?:\/\/)([^:@]+)(:[^@]+)?@/i,
-        '$1****:****@'
-      );
+      const uriMasked = maskMongoUri(process.env.MONGODB_URI);
       console.log('[health] DB check start', {
         hasUri,
         uri: hasUri ? uriMasked : 'undefined',
@@ -66,11 +64,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       healthStatus.services.database = 'connected';
       console.log('[health] DB check result: connected');
     } catch (error) {
-      console.warn('Database health check failed (continuing):', (error as Error).message);
-      // Vercel等でDB未設定でも200を返し、サービス稼働自体のヘルスは保つ
-      healthStatus.services.database = 'error';
-      healthStatus.status = 'degraded';
-      healthStatus.errorRate = 5.0;
+      console.warn('[health] Primary DB connect failed, trying direct mongo connect');
+      try {
+        await connectMongoDirect();
+        healthStatus.services.database = 'connected';
+        console.log('[health] DB check result: connected (direct)');
+      } catch (e2) {
+        console.warn('Database health check failed (continuing):', (e2 as Error).message);
+        healthStatus.services.database = 'error';
+        healthStatus.status = 'degraded';
+        healthStatus.errorRate = 5.0;
+      }
     }
   }
 

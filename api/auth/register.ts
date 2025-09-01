@@ -25,6 +25,7 @@ async function loadServerModules(): Promise<boolean> {
 }
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { connectMongoDirect, maskMongoUri } from '../_lib/mongo';
 
 // Helper functions (simplified for API route)
 const createEntityId = (prefix: string = 'entity'): string => {
@@ -159,10 +160,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // データベース接続（失敗時はサービス不可として返却）
     try {
       const hasUri = Boolean(process.env.MONGODB_URI);
-      const uriMasked = (process.env.MONGODB_URI || '').replace(
-        /(mongodb(\+srv)?:\/\/)([^:@]+)(:[^@]+)?@/i,
-        '$1****:****@'
-      );
+      const uriMasked = maskMongoUri(process.env.MONGODB_URI);
       console.log('[auth/register] DB connect start', {
         hasUri,
         uri: hasUri ? uriMasked : 'undefined',
@@ -173,13 +171,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await connectDB();
       console.log('[auth/register] DB connect success');
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      console.warn('[auth/register] DB connect failed', { message: msg });
-      return res.status(503).json({
-        success: false,
-        message: '現在ユーザー登録サービスを利用できません。しばらくしてから再試行してください。',
-        error: 'Service unavailable (DB connection failed)',
-      } as RegisterResponse);
+      console.warn('[auth/register] Primary DB connect failed, trying direct mongo connect');
+      try {
+        await connectMongoDirect();
+        console.log('[auth/register] DB connect success (direct)');
+      } catch (e2) {
+        const msg = e2 instanceof Error ? e2.message : String(e2);
+        console.warn('[auth/register] DB connect failed (direct)', { message: msg });
+        return res.status(503).json({
+          success: false,
+          message: '現在ユーザー登録サービスを利用できません。しばらくしてから再試行してください。',
+          error: 'Service unavailable (DB connection failed)',
+        } as RegisterResponse);
+      }
     }
 
     // 既存ユーザーの確認
