@@ -1,5 +1,30 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  if (req.method !== 'GET') {
+    res.status(405).json({ ok: false, message: 'Method Not Allowed' } as any);
+    return;
+  }
+  // Minimal event-stream mock
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+  });
+  res.write(`event: ping\n`);
+  res.write(`data: {"ok":true}\n\n`);
+  res.end();
+}
+
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
