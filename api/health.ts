@@ -1,11 +1,29 @@
 // Keep health lightweight in serverless: avoid ESM imports/exports at top-level (CJS runtime)
+declare function __non_esm_import__(path: string): any;
+const nonEsmImport: (p: string) => any = (p: string) =>
+  (Function('return import(p)') as any)({ p }).catch(() =>
+    (globalThis as any).require ? (globalThis as any).require(p) : null
+  );
+
 async function getMongoLib() {
-  const mod = await import('./_lib/mongo.js');
-  return {
-    connectMongoDirect: (mod as any).connectMongoDirect as () => Promise<void>,
-    maskMongoUri: (mod as any).maskMongoUri as (uri?: string) => string,
-    mongoose: (mod as any).mongoose,
-  };
+  // Prefer dynamic import; fallback to require when available
+  try {
+    const mod = await import('./_lib/mongo.js');
+    return {
+      connectMongoDirect: (mod as any).connectMongoDirect as () => Promise<void>,
+      maskMongoUri: (mod as any).maskMongoUri as (uri?: string) => string,
+      mongoose: (mod as any).mongoose,
+    };
+  } catch {
+    const mod: any = (globalThis as any).require
+      ? (globalThis as any).require('./_lib/mongo')
+      : null;
+    return {
+      connectMongoDirect: mod.connectMongoDirect,
+      maskMongoUri: mod.maskMongoUri,
+      mongoose: mod.mongoose,
+    };
+  }
 }
 let connectDB: (() => Promise<void>) | null = null;
 console.warn('[health] connectDB:', connectDB);
