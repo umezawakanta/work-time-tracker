@@ -361,10 +361,13 @@ export const DashboardGuide: React.FC<DashboardGuideProps> = ({ onClose, classNa
           </Button>
 
           <div className="flex gap-2">
-            {guideSteps.map((_, index) => (
+            {guideSteps.map((step, index) => (
               <button
                 key={index}
+                type="button"
                 onClick={() => setCurrentStep(index)}
+                title={`ステップ ${index + 1}: ${step.title}`}
+                aria-label={`Go to step ${index + 1}: ${step.title}`}
                 className={cn(
                   'w-3 h-3 rounded-full transition-all duration-200',
                   index === currentStep
@@ -373,7 +376,9 @@ export const DashboardGuide: React.FC<DashboardGuideProps> = ({ onClose, classNa
                       ? 'bg-green-500'
                       : 'bg-gray-300'
                 )}
-              />
+              >
+                <span className="sr-only">{`ステップ ${index + 1}: ${step.title}`}</span>
+              </button>
             ))}
           </div>
 
