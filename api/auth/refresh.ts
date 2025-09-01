@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import jwt from 'jsonwebtoken';
 import { connectMongoDirect, maskMongoUri } from '../_lib/mongo';
+import { mongoose } from '../_lib/mongo';
 // Lazy-load server modules to avoid bundle-time resolution issues
 let connectDB: (() => Promise<void>) | null = null;
 let User: any = null;
@@ -16,6 +17,21 @@ async function loadServerModules(): Promise<boolean> {
     return true;
   } catch {
     return false;
+  }
+}
+
+async function ensureUserModel(): Promise<void> {
+  if (User) return;
+  try {
+    const existing = (mongoose.models as any)?.User;
+    if (existing) {
+      User = existing;
+      return;
+    }
+    const schema = new mongoose.Schema({}, { strict: false });
+    User = mongoose.model('User', schema, 'users');
+  } catch (e) {
+    console.warn('[auth/refresh] Failed to ensure fallback User model', e);
   }
 }
 
@@ -115,6 +131,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Get user from database
+    if (!User) {
+      await ensureUserModel();
+    }
     const user = await User.findOne({
       $or: [{ _id: decodedToken.userId }, { id: decodedToken.userId }],
     });

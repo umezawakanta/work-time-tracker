@@ -26,6 +26,7 @@ async function loadServerModules(): Promise<boolean> {
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { connectMongoDirect, maskMongoUri } from '../_lib/mongo';
+import { mongoose } from '../_lib/mongo';
 
 // Helper functions (simplified for API route)
 const createEntityId = (prefix: string = 'entity'): string => {
@@ -85,6 +86,31 @@ async function readJson(req: VercelRequest): Promise<any> {
     return raw ? JSON.parse(raw) : {};
   } catch {
     throw Object.assign(new Error('Invalid JSON'), { statusCode: 400 });
+  }
+}
+
+async function ensureModels(): Promise<void> {
+  try {
+    if (!User) {
+      const existingUser = (mongoose.models as any)?.User;
+      if (existingUser) {
+        User = existingUser;
+      } else {
+        const userSchema = new mongoose.Schema({}, { strict: false });
+        User = mongoose.model('User', userSchema, 'users');
+      }
+    }
+    if (!SubscriptionModel) {
+      const existingSub = (mongoose.models as any)?.Subscription;
+      if (existingSub) {
+        SubscriptionModel = existingSub;
+      } else {
+        const subSchema = new mongoose.Schema({}, { strict: false });
+        SubscriptionModel = mongoose.model('Subscription', subSchema, 'subscriptions');
+      }
+    }
+  } catch (e) {
+    console.warn('[auth/register] Failed to ensure fallback models', e);
   }
 }
 
@@ -202,6 +228,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // 既存ユーザーの確認
+    if (!User || !SubscriptionModel) {
+      await ensureModels();
+    }
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return res.status(409).json({
