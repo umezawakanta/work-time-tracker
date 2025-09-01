@@ -1252,7 +1252,7 @@ export const featuresRegistry: Feature[] = [
     path: '/register',
     category: 'ユーザー・設定',
     description: '新規アカウント作成',
-    status: 'release_pending',
+    status: 'system_testing',
     requiresRealAPI: true,
     priority: 'P0',
     targetRelease: '2025-09-03',

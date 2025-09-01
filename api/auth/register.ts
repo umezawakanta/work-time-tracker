@@ -1,32 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-// Lazy-load server modules to work in serverless bundles
-let connectDB: (() => Promise<void>) | null = null;
-let User: any = null;
-let SubscriptionModel: any = null;
-async function loadServerModules(): Promise<boolean> {
-  if (connectDB && User) return true;
-  try {
-    const dbModPath = '../../src/server/config/' + 'database.js';
-    const dbMod = await import(dbModPath as string);
-    connectDB = (dbMod as any).connectDB as () => Promise<void>;
-    const userModPath = '../../src/server/models/' + 'User.js';
-    const userMod = await import(userModPath as string);
-    User = (userMod as any).User;
-    try {
-      const subModPath = '../../src/server/models/' + 'Subscription.js';
-      const subMod = await import(subModPath as string);
-      SubscriptionModel = (subMod as any).SubscriptionModel;
-    } catch {}
-    return true;
-  } catch {
-    console.warn('[auth/register] Failed to load server modules');
-    return false;
-  }
-}
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { connectMongoDirect, maskMongoUri } from '../_lib/mongo';
 import { mongoose } from '../_lib/mongo';
+import { ensureUserModel } from '../_schemas/user';
+import { ensureSubscriptionModel } from '..//_schemas/subscription';
 
 // Helper functions (simplified for API route)
 const createEntityId = (prefix: string = 'entity'): string => {
@@ -89,35 +67,11 @@ async function readJson(req: VercelRequest): Promise<any> {
   }
 }
 
+let User: any = null;
+let SubscriptionModel: any = null;
 async function ensureModels(): Promise<void> {
-  try {
-    if (!User) {
-      const existingUser = (mongoose.models as any)?.User;
-      if (existingUser) {
-        User = existingUser;
-        console.log('[auth/register] Using existing mongoose.models.User');
-      } else {
-        const userSchema = new mongoose.Schema({}, { strict: false });
-        User = mongoose.model('User', userSchema, 'users');
-        console.log('[auth/register] Created fallback User model (collection="users")');
-      }
-    }
-    if (!SubscriptionModel) {
-      const existingSub = (mongoose.models as any)?.Subscription;
-      if (existingSub) {
-        SubscriptionModel = existingSub;
-        console.log('[auth/register] Using existing mongoose.models.Subscription');
-      } else {
-        const subSchema = new mongoose.Schema({}, { strict: false });
-        SubscriptionModel = mongoose.model('Subscription', subSchema, 'subscriptions');
-        console.log(
-          '[auth/register] Created fallback Subscription model (collection="subscriptions")'
-        );
-      }
-    }
-  } catch (e) {
-    console.warn('[auth/register] Failed to ensure fallback models', e);
-  }
+  User = ensureUserModel();
+  SubscriptionModel = ensureSubscriptionModel();
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -189,27 +143,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       } as RegisterResponse);
     }
 
-    // データベース接続（失敗時はサービス不可として返却）
+    // データベース接続（直接接続）
+    const hasUri = Boolean(process.env.MONGODB_URI);
+    const uriMasked = maskMongoUri(process.env.MONGODB_URI);
+    console.log('[auth/register] DB connect start', {
+      hasUri,
+      uri: hasUri ? uriMasked : 'undefined',
+      nodeEnv: process.env.NODE_ENV,
+    });
     try {
-      const hasUri = Boolean(process.env.MONGODB_URI);
-      const uriMasked = maskMongoUri(process.env.MONGODB_URI);
-      console.log('[auth/register] DB connect start', {
-        hasUri,
-        uri: hasUri ? uriMasked : 'undefined',
-        nodeEnv: process.env.NODE_ENV,
-      });
-      const loaded = await loadServerModules();
-      if (!loaded || !connectDB) throw new Error('Server modules not available');
-      await connectDB();
-      console.log('[auth/register] DB connect success');
-      console.log('[auth/register] conn info', {
-        state: mongoose.connection.readyState,
-        host: mongoose.connection.host,
-        name: mongoose.connection.name,
-      });
+      await connectMongoDirect();
     } catch (e) {
       const err: any = e;
-      console.warn('[auth/register] Primary DB connect failed, trying direct mongo connect', {
+      console.warn('[auth/register] DB connect failed', {
         name: err?.name,
         message: err?.message,
         code: err?.code,
@@ -217,36 +163,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         reasonMessage: err?.reason?.message,
         labels: err?.errorLabels,
       });
-      try {
-        await connectMongoDirect();
-        console.log('[auth/register] DB connect success (direct)');
-        console.log('[auth/register] conn info', {
-          state: mongoose.connection.readyState,
-          host: mongoose.connection.host,
-          name: mongoose.connection.name,
-        });
-      } catch (e2) {
-        const err2: any = e2;
-        console.warn('[auth/register] DB connect failed (direct)', {
-          name: err2?.name,
-          message: err2?.message,
-          code: err2?.code,
-          reasonCode: err2?.reason?.code,
-          reasonMessage: err2?.reason?.message,
-          labels: err2?.errorLabels,
-        });
-        return res.status(503).json({
-          success: false,
-          message: '現在ユーザー登録サービスを利用できません。しばらくしてから再試行してください。',
-          error: 'Service unavailable (DB connection failed)',
-        } as RegisterResponse);
-      }
+      return res.status(503).json({
+        success: false,
+        message: '現在ユーザー登録サービスを利用できません。しばらくしてから再試行してください。',
+        error: 'Service unavailable (DB connection failed)',
+      } as RegisterResponse);
     }
+    console.log('[auth/register] DB connect success', {
+      state: mongoose.connection.readyState,
+      host: mongoose.connection.host,
+      name: mongoose.connection.name,
+    });
 
     // 既存ユーザーの確認
-    if (!User || !SubscriptionModel) {
-      await ensureModels();
-    }
+    await ensureModels();
     console.log('[auth/register] findOne(users) start', {
       modelReady: Boolean(User),
       connState: (mongoose as any).connection?.readyState,
