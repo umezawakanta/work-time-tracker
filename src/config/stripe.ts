@@ -4,18 +4,24 @@ import { ENV, getEnv } from '@/utils/env';
 
 // Environment variables validation
 const validateStripeConfig = () => {
+  console.warn('[validateStripeConfig] validateStripeConfig');
   const requiredServerKeys = ['STRIPE_SECRET_KEY'];
+  console.warn('[validateStripeConfig] requiredServerKeys:', requiredServerKeys);
   const requiredClientKeys = ['VITE_STRIPE_PUBLISHABLE_KEY'];
+  console.warn('[validateStripeConfig] requiredClientKeys:', requiredClientKeys);
 
   // Server-side validation (Node.js environment)
   if (typeof window === 'undefined') {
     const missingServerKeys = requiredServerKeys.filter((key) => !process.env[key]);
-
+    console.warn('[validateStripeConfig] missingServerKeys:', missingServerKeys);
     if (missingServerKeys.length > 0) {
+      console.warn('[validateStripeConfig] missingServerKeys:', missingServerKeys);
       if (process.env.NODE_ENV === 'development') {
+        console.warn('[validateStripeConfig] missingServerKeys:', missingServerKeys);
         console.warn('🚧 Development: Missing Stripe server keys:', missingServerKeys);
         return false;
       } else {
+        console.warn('[validateStripeConfig] missingServerKeys:', missingServerKeys);
         console.error('❌ Production: Missing required Stripe server keys:', missingServerKeys);
         throw new Error(`Missing Stripe server configuration: ${missingServerKeys.join(', ')}`);
       }
@@ -67,9 +73,14 @@ if (typeof window !== 'undefined') {
   const isConfigValid = validateStripeConfig();
 
   if (isConfigValid && ENV.STRIPE_PUBLISHABLE_KEY()) {
+    console.warn('[stripePromise] isConfigValid:', isConfigValid);
+    console.warn('[stripePromise] ENV.STRIPE_PUBLISHABLE_KEY():', ENV.STRIPE_PUBLISHABLE_KEY());
     stripePromise = loadStripe(ENV.STRIPE_PUBLISHABLE_KEY()!);
+    console.warn('[stripePromise] stripePromise:', stripePromise);
     console.log('✅ Stripe client initialized successfully');
   } else {
+    console.warn('[stripePromise] isConfigValid:', isConfigValid);
+    console.warn('[stripePromise] ENV.STRIPE_PUBLISHABLE_KEY():', ENV.STRIPE_PUBLISHABLE_KEY());
     console.log('🎭 Development: Using mock Stripe client');
     stripePromise = Promise.resolve(null);
   }

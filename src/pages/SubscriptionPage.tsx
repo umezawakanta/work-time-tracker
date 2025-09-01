@@ -179,16 +179,26 @@ const subscriptionPlans: SubscriptionPlan[] = [
 ];
 
 const SubscriptionPage: React.FC = () => {
+  console.warn('[SubscriptionPage] SubscriptionPage');
   const { user } = useAuth();
+  console.warn('[SubscriptionPage] user:', user);
   const navigate = useNavigate();
+  console.warn('[SubscriptionPage] navigate:', navigate);
   const location = useLocation();
+  console.warn('[SubscriptionPage] location:', location);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  console.warn('[SubscriptionPage] billingCycle:', billingCycle);
   const [isLoading, setIsLoading] = useState(false);
+  console.warn('[SubscriptionPage] isLoading:', isLoading);
   const [status, setStatus] = useState<SubscriptionStatusResponse | null>(null);
+  console.warn('[SubscriptionPage] status:', status);
   const [statusLoading, setStatusLoading] = useState<boolean>(false);
+  console.warn('[SubscriptionPage] statusLoading:', statusLoading);
   const isPortalMode = new URLSearchParams(location.search).get('portal') === '1';
+  console.warn('[SubscriptionPage] isPortalMode:', isPortalMode);
 
   const fetchStatus = async (): Promise<void> => {
+    console.warn('[SubscriptionPage] fetchStatus');
     try {
       setStatusLoading(true);
       const data = await subscriptionGatewayApi.getSubscriptionStatus();
@@ -207,6 +217,7 @@ const SubscriptionPage: React.FC = () => {
   // Handle /subscription?success=1 redirect result
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
+    console.warn('[SubscriptionPage] searchParams:', searchParams);
     if (searchParams.get('success') === '1') {
       toast.success('申込が完了しました');
       void fetchStatus();
@@ -219,6 +230,8 @@ const SubscriptionPage: React.FC = () => {
   const currentPlans = subscriptionPlans.filter((plan) => plan.billingCycle === billingCycle);
 
   const handlePlanSelect = (plan: SubscriptionPlan) => {
+    console.warn('[SubscriptionPage] handlePlanSelect');
+    console.warn('[SubscriptionPage] plan:', plan);
     if (plan.id === 'free') {
       toast.success('フリープランが選択されました');
       return;
@@ -231,6 +244,7 @@ const SubscriptionPage: React.FC = () => {
   };
 
   const handleCheckout = async (plan: SubscriptionPlan): Promise<void> => {
+    console.warn('[SubscriptionPage] handleCheckout');
     try {
       setIsLoading(true);
       const { sessionUrl } = await subscriptionGatewayApi.startCheckout({ planId: plan.id });
@@ -243,6 +257,7 @@ const SubscriptionPage: React.FC = () => {
   };
 
   const handleOpenPortal = async (): Promise<void> => {
+    console.warn('[SubscriptionPage] handleOpenPortal');
     try {
       const { url } = await subscriptionGatewayApi.openPortal();
       // 同一オリジンの場合はSPA遷移で確実に画面が切り替わるようにする
@@ -259,6 +274,7 @@ const SubscriptionPage: React.FC = () => {
   };
 
   const handleCancel = async (): Promise<void> => {
+    console.warn('[SubscriptionPage] handleCancel');
     try {
       await subscriptionGatewayApi.cancelSubscriptionGateway({ atPeriodEnd: true });
       toast.success('次回更新日以降に解約されます');
