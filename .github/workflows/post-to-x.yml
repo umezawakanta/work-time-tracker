@@ -27,7 +27,7 @@ jobs:
       - name: Build release note message (JA)
         id: msg
         run: |
-          node -e "const fs=require('fs'); const tag=process.env.GITHUB_REF?.split('/').pop()||''; const cl=JSON.parse(fs.readFileSync('public/changelog.json','utf8')); const entry=cl.entries.find(e=>('v'+e.version)===tag||e.version===tag)||cl.entries[0]; const title='Work Time Tracker '+(tag||('v'+entry.version))+' を公開しました'; let notes=(entry?.notes||'').trim(); if(notes.length>260) notes=notes.slice(0,257)+'...'; const url='https://work-time-tracker-5d9q.vercel.app'; const out=title+'\n\n'+notes+'\n\n'+url+'\n#お知らせ #アップデート'; console.log(out); fs.writeFileSync('tweet.txt', out);"
+          node -e "const fs=require('fs'); const tag=process.env.GITHUB_REF?.split('/').pop()||''; const cl=JSON.parse(fs.readFileSync('public/changelog.json','utf8')); const entry=cl.entries.find(e=>('v'+e.version)===tag||e.version===tag)||cl.entries[0]; const title='Work Time Tracker '+(tag||('v'+entry.version))+' を公開しました'; let notes=(entry?.notes||'').trim(); if(notes.length>260) notes=notes.slice(0,257)+'...'; const url='https://work-time-tracker-five.vercel.app'; const out=title+'\n\n'+notes+'\n\n'+url+'\n#お知らせ #アップデート'; console.log(out); fs.writeFileSync('tweet.txt', out);"
       - name: Post to X
         env:
           X_APP_KEY: ${{ secrets.X_APP_KEY }}

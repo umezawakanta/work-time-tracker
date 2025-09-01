@@ -44,7 +44,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
   // CORS
   const origin = req.headers.origin;
-  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-5d9q.vercel.app'];
+  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
   const isPreview = origin && origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);
   const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
   res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin! : '*');

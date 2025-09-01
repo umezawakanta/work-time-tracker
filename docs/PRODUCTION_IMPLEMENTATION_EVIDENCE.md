@@ -305,7 +305,7 @@
 
 ### 🌍 本番URL
 
-- **Production**: https://work-time-tracker-5d9q.vercel.app
+- **Production**: https://work-time-tracker-five.vercel.app
 - **Status**: ✅ 稼働中
 - **SSL**: ✅ 有効
 - **Performance**: ✅ 最適化済み

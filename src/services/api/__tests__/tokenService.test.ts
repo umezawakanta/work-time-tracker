@@ -66,7 +66,7 @@ describe('tokenService', () => {
     });
 
     it.skip('should use production API URL for production hostname', async () => {
-      global.window.location.hostname = 'work-time-tracker-5d9q.vercel.app';
+      global.window.location.hostname = 'work-time-tracker-five.vercel.app';
       global.process.env.NODE_ENV = 'production';
 
       const mockResponse = { data: { token: 'production-token' } };
@@ -75,7 +75,7 @@ describe('tokenService', () => {
       const result = await fetchTokenFromDB();
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith(
-        'https://work-time-tracker-5d9q.vercel.app/api/auth/token'
+        'https://work-time-tracker-five.vercel.app/api/auth/token'
       );
       expect(result).toBe('production-token');
     });
@@ -90,7 +90,7 @@ describe('tokenService', () => {
       const result = await fetchTokenFromDB();
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith(
-        'https://work-time-tracker-5d9q.vercel.app/api/auth/token'
+        'https://work-time-tracker-five.vercel.app/api/auth/token'
       );
       expect(result).toBe('preview-token');
     });
@@ -225,7 +225,7 @@ describe('tokenService', () => {
         await fetchTokenFromDB();
 
         expect(mockAxiosInstance.get).toHaveBeenCalledWith(
-          'https://work-time-tracker-5d9q.vercel.app/api/auth/token'
+          'https://work-time-tracker-five.vercel.app/api/auth/token'
         );
       });
     });

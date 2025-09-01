@@ -69,7 +69,7 @@ async function readJson(req: VercelRequest): Promise<any> {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   const origin = req.headers.origin;
-  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-5d9q.vercel.app'];
+  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
 
   const isVercelPreview =
     origin && origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);
@@ -172,6 +172,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       firstName: firstName || '',
       lastName: lastName || '',
       provider: 'jwt',
+      // スキーマ要件に合わせてハッシュ済みパスワードを保存
+      password: hashedPassword,
       role: 'user',
       isVerified: false, // メール認証が必要
       permissions: ['read:own_data', 'write:own_data'],
@@ -269,7 +271,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         referralCode: referralCode || null,
         acceptedTermsAt: now,
         subscribedNewsletter: subscribeNewsletter,
-        hashedPassword: hashedPassword, // Store securely
+        // 互換性のため metadata にも保持（ログイン側は複数候補を参照）
+        hashedPassword: hashedPassword,
       },
     });
 

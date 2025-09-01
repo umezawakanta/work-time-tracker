@@ -52,7 +52,7 @@ const allowedOrigins = [
   'http://127.0.0.1:3000',
   'http://localhost:5173', // Vite dev server
   'http://127.0.0.1:5173',
-  'https://work-time-tracker-5d9q.vercel.app',
+  'https://work-time-tracker-five.vercel.app',
   ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []),
 ];
 

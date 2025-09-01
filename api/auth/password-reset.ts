@@ -34,7 +34,7 @@ const setCorsHeaders = (res: VercelResponse, origin: string | undefined): void =
   const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:3001',
-    'https://work-time-tracker-5d9q.vercel.app',
+    'https://work-time-tracker-five.vercel.app',
   ];
 
   const isVercelPreview = origin?.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);

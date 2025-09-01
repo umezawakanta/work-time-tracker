@@ -4,7 +4,7 @@ const { User } = require('../../src/server/models/User');
 const jwt = require('jsonwebtoken');
 
 function setCorsHeaders(res, origin) {
-    const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-5d9q.vercel.app'];
+    const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
     const isVercelPreview = origin && /^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/.test(origin);
     const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isVercelPreview);
     res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');

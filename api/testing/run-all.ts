@@ -4,7 +4,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   const origin = req.headers.origin;
   const allowedOrigins = [
-    'https://work-time-tracker-5d9q.vercel.app',
+    'https://work-time-tracker-five.vercel.app',
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:3002',

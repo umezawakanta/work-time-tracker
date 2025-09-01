@@ -160,7 +160,7 @@ describe('apiConfig', () => {
     });
 
     it.skip('should use mock data in production without proper API URL', () => {
-      global.window.location.hostname = 'work-time-tracker-5d9q.vercel.app';
+      global.window.location.hostname = 'work-time-tracker-five.vercel.app';
       mockedGetEnv.mockImplementation((key: string) => {
         if (key === 'VITE_API_BASE_URL') return 'http://localhost:3001';
         return '';
@@ -175,13 +175,13 @@ describe('apiConfig', () => {
 
   describe('Base URL configuration', () => {
     it.skip('should use production API for production hostname', () => {
-      global.window.location.hostname = 'work-time-tracker-5d9q.vercel.app';
+      global.window.location.hostname = 'work-time-tracker-five.vercel.app';
 
       jest.resetModules();
       require('../apiConfig');
 
       expect(mockedAxios.create).toHaveBeenCalledWith({
-        baseURL: 'https://work-time-tracker-5d9q.vercel.app/api',
+        baseURL: 'https://work-time-tracker-five.vercel.app/api',
         timeout: 30000,
         headers: {
           'Content-Type': 'application/json',
@@ -196,7 +196,7 @@ describe('apiConfig', () => {
       require('../apiConfig');
 
       expect(mockedAxios.create).toHaveBeenCalledWith({
-        baseURL: 'https://work-time-tracker-5d9q.vercel.app/api',
+        baseURL: 'https://work-time-tracker-five.vercel.app/api',
         timeout: 30000,
         headers: {
           'Content-Type': 'application/json',

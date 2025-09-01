@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://work-time-tracker-5d9q.vercel.app/sitemap.xml
+Sitemap: https://work-time-tracker-five.vercel.app/sitemap.xml
 
 

@@ -22,12 +22,12 @@ class ImplementationService {
     // 環境に応じたAPIベースURLの設定
     const hostname = window.location.hostname;
 
-    if (hostname === 'work-time-tracker-5d9q.vercel.app') {
+    if (hostname === 'work-time-tracker-five.vercel.app') {
       // 本番環境
-      this.baseUrl = 'https://work-time-tracker-5d9q.vercel.app/api/implementation';
+      this.baseUrl = 'https://work-time-tracker-five.vercel.app/api/implementation';
     } else if (hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/)) {
       // プレビュー環境
-      this.baseUrl = 'https://work-time-tracker-5d9q.vercel.app/api/implementation';
+      this.baseUrl = 'https://work-time-tracker-five.vercel.app/api/implementation';
     } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
       // ローカル開発環境
       this.baseUrl = 'http://localhost:3001/api/implementation';

@@ -21,7 +21,7 @@ interface RefreshResponse {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   const origin = req.headers.origin;
-  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-5d9q.vercel.app'];
+  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
 
   const isVercelPreview =
     origin && origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);

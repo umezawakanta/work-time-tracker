@@ -73,7 +73,7 @@ export const VersionInfo: React.FC = () => {
   const shareToX = () => {
     try {
       const latest = entries[0];
-      const url = 'https://work-time-tracker-5d9q.vercel.app';
+      const url = 'https://work-time-tracker-five.vercel.app';
       const title = latest
         ? `Work Time Tracker v${latest.version} を公開しました`
         : 'Work Time Tracker 更新情報';
@@ -86,7 +86,7 @@ export const VersionInfo: React.FC = () => {
   const shareToLINE = () => {
     try {
       const latest = entries[0];
-      const url = 'https://work-time-tracker-5d9q.vercel.app';
+      const url = 'https://work-time-tracker-five.vercel.app';
       const title = latest
         ? `Work Time Tracker v${latest.version} を公開しました`
         : 'Work Time Tracker 更新情報';

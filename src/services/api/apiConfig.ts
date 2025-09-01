@@ -40,11 +40,11 @@ console.log('🌐 Current hostname:', hostname);
 
 let baseURL: string;
 
-if (hostname === 'work-time-tracker-5d9q.vercel.app') {
-  baseURL = 'https://work-time-tracker-5d9q.vercel.app/api';
+if (hostname === 'work-time-tracker-five.vercel.app') {
+  baseURL = 'https://work-time-tracker-five.vercel.app/api';
   console.log('🚀 Production: Using production API server:', baseURL);
 } else if (hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/)) {
-  baseURL = 'https://work-time-tracker-5d9q.vercel.app/api';
+  baseURL = 'https://work-time-tracker-five.vercel.app/api';
   console.log('🔧 Preview: Using production API server:', baseURL);
 } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
   // ローカル開発環境: Viteのプロキシを活用して同一オリジンで呼び出す
@@ -67,11 +67,11 @@ console.log('🔗 Final API Base URL:', baseURL);
 // 本番環境での健全性チェック
 if (
   typeof window !== 'undefined' &&
-  (window.location.hostname === 'work-time-tracker-5d9q.vercel.app' ||
+  (window.location.hostname === 'work-time-tracker-five.vercel.app' ||
     window.location.hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/))
 ) {
   const envType =
-    window.location.hostname === 'work-time-tracker-5d9q.vercel.app'
+    window.location.hostname === 'work-time-tracker-five.vercel.app'
       ? '本番環境'
       : 'プレビュー環境';
   console.log(`🏥 ${envType}健全性チェック開始...`);
@@ -286,7 +286,7 @@ api.interceptors.response.use(
       // 本番環境でAPIサーバーに接続できない場合の案内
       if (
         typeof window !== 'undefined' &&
-        window.location.hostname === 'work-time-tracker-5d9q.vercel.app'
+        window.location.hostname === 'work-time-tracker-five.vercel.app'
       ) {
         console.warn(
           '💡 本番環境: APIサーバーに接続できません。デモモードの利用を検討してください。'

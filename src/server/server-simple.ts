@@ -1551,7 +1551,7 @@ app.get('/api/status/ci', async (req, res) => {
     }));
     const vercel = Array.from({ length: limit }).map((_, i) => ({
       uid: `dpl_${Date.now() - i}`,
-      url: 'work-time-tracker-5d9q.vercel.app',
+      url: 'work-time-tracker-five.vercel.app',
       state: i % 4 === 0 ? 'ERROR' : 'READY',
       createdAt: Date.now() - i * 3600_000,
       commit: { sha: undefined, message: undefined },

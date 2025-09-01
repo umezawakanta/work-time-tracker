@@ -162,7 +162,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // 本番/プレビュー以外はサーバ確認をスキップ
       const host = typeof window !== 'undefined' ? window.location.hostname : '';
       const isTrustedHost =
-        host === 'work-time-tracker-5d9q.vercel.app' ||
+        host === 'work-time-tracker-five.vercel.app' ||
         /^work-time-tracker-5d9q-.*\.vercel\.app$/.test(host);
 
       if (!isTrustedHost) {

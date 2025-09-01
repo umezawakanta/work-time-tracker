@@ -9,7 +9,7 @@ export async function cors(req: VercelRequest, res: VercelResponse) {
   const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://work-time-tracker-5d9q.vercel.app',
+    'https://work-time-tracker-five.vercel.app',
     ...extra,
   ];
 

@@ -441,10 +441,10 @@ class UserTrackingService {
     if (typeof window !== 'undefined') {
       const hostname = window.location.hostname;
 
-      if (hostname === 'work-time-tracker-5d9q.vercel.app') {
-        return 'https://work-time-tracker-5d9q.vercel.app/api';
+      if (hostname === 'work-time-tracker-five.vercel.app') {
+        return 'https://work-time-tracker-five.vercel.app/api';
       } else if (hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/)) {
-        return 'https://work-time-tracker-5d9q.vercel.app/api';
+        return 'https://work-time-tracker-five.vercel.app/api';
       } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
         return 'http://localhost:3001/api';
       } else {
