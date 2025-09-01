@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 function hasDbPath(uriRaw: string): boolean {
   // path exists if there is a slash followed by non-? characters before query or end
-  return /^(mongodb(\+srv)?):\/\/[^/]+\/[^(\?)]/.test(uriRaw);
+  return /^(mongodb(\+srv)?):\/\/[^/]+\/[^?]+/.test(uriRaw);
 }
 
 function getDbNameFromUri(uriRaw: string): string | undefined {
