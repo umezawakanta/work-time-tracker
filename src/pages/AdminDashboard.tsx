@@ -37,6 +37,7 @@ import { ErrorMonitoringDashboard } from '@/components/development/ErrorMonitori
 import { api } from '@/services/api/apiConfig';
 import SocialShareButton from '@/components/ui/SocialShareButton';
 import AdminUsersPage from '@/pages/AdminUsersPage';
+import { isFeatureAccessible } from '@/config/features';
 import { useDerivedFeatureStatuses } from '@/hooks/useDerivedFeatureStatuses';
 import {
   NEW_STATUS_ORDER,
@@ -617,20 +618,24 @@ const AdminDashboard: React.FC = () => {
               {w}
             </Button>
           ))}
-          <Button variant="outline" size="sm" onClick={fetchMetrics} disabled={isLoading}>
-            <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
-            更新
-          </Button>
+          {isFeatureAccessible('/_bg/admin/refresh').allowed && (
+            <Button variant="outline" size="sm" onClick={fetchMetrics} disabled={isLoading}>
+              <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
+              更新
+            </Button>
+          )}
           {/* 承認付き進捗フロー制御 */}
-          {adminApproved && (
+          {adminApproved && isFeatureAccessible('/_bg/admin/approve-next').allowed && (
             <Button variant="default" size="sm" onClick={approveNextStep}>
               次の段階を承認
             </Button>
           )}
-          <Button variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-1" />
-            レポート出力
-          </Button>
+          {isFeatureAccessible('/_bg/admin/export-report').allowed && (
+            <Button variant="outline" size="sm">
+              <Download className="w-4 h-4 mr-1" />
+              レポート出力
+            </Button>
+          )}
         </div>
       </div>
 
@@ -660,515 +665,549 @@ const AdminDashboard: React.FC = () => {
           id="admin-tabs"
           className="grid w-full grid-cols-7 sticky top-0 z-30 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b"
         >
-          <TabsTrigger value="overview">概要</TabsTrigger>
-          <TabsTrigger value="users">ユーザー</TabsTrigger>
-          <TabsTrigger value="actions">優先アクション</TabsTrigger>
-          <TabsTrigger value="analytics">分析</TabsTrigger>
-          <TabsTrigger value="errors">エラー監視</TabsTrigger>
-          <TabsTrigger value="settings">設定</TabsTrigger>
-          <TabsTrigger value="assessments">診断集計</TabsTrigger>
-          <TabsTrigger value="learning">学習進捗</TabsTrigger>
+          {isFeatureAccessible('/admin/overview').allowed && (
+            <TabsTrigger value="overview">概要</TabsTrigger>
+          )}
+          {isFeatureAccessible('/admin/users').allowed && (
+            <TabsTrigger value="users">ユーザー</TabsTrigger>
+          )}
+          {isFeatureAccessible('/admin/actions').allowed && (
+            <TabsTrigger value="actions">優先アクション</TabsTrigger>
+          )}
+          {isFeatureAccessible('/admin/analytics').allowed && (
+            <TabsTrigger value="analytics">分析</TabsTrigger>
+          )}
+          {isFeatureAccessible('/admin/errors').allowed && (
+            <TabsTrigger value="errors">エラー監視</TabsTrigger>
+          )}
+          {isFeatureAccessible('/admin/settings').allowed && (
+            <TabsTrigger value="settings">設定</TabsTrigger>
+          )}
+          {isFeatureAccessible('/admin/assessments').allowed && (
+            <TabsTrigger value="assessments">診断集計</TabsTrigger>
+          )}
+          {isFeatureAccessible('/admin/learning').allowed && (
+            <TabsTrigger value="learning">学習進捗</TabsTrigger>
+          )}
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
-          {/* 概要メトリクス */}
-          {/* 開発フローの現在位置 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>開発フロー（承認必須）</CardTitle>
-              <CardDescription>
-                提案: {adminSuggested ?? '—'} / 承認: {adminApproved ?? '—'} / 有効:{' '}
-                {adminEffective ?? '—'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {NEW_STATUS_ORDER.map((s) => (
-                  <Badge
-                    key={s}
-                    variant={
-                      adminEffective === s
-                        ? 'default'
-                        : adminApproved === s
-                          ? 'secondary'
-                          : 'outline'
-                    }
-                  >
-                    {s}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {metrics && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">総ユーザー数</p>
-                      <p className="text-2xl font-bold">
-                        {(
-                          Number(analytics?.totalUsers || 0) || metrics.users.total
-                        ).toLocaleString()}
-                      </p>
-                      <p className="text-xs text-green-600">+{metrics.users.newToday} 今日</p>
-                    </div>
-                    <Users className="w-8 h-8 text-blue-600" />
-                  </div>
-                  <Progress
-                    value={
-                      (Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
-                        ? (metrics.users.active /
-                            (Number(analytics?.totalUsers || 0) || metrics.users.total)) *
-                          100
-                        : 0
-                    }
-                    className="mt-2"
-                  />
-                  <p className="text-xs text-gray-600 mt-1">
-                    アクティブ率:{' '}
-                    {(Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
-                      ? Math.round(
-                          (metrics.users.active /
-                            (Number(analytics?.totalUsers || 0) || metrics.users.total)) *
-                            100
-                        )
-                      : 0}
-                    %
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">月次売上 (MRR)</p>
-                      <p className="text-2xl font-bold">¥{metrics.revenue.mrr.toLocaleString()}</p>
-                      <p className="text-xs text-green-600">
-                        +¥{Number(metrics.revenue.todayRevenue || 0).toLocaleString()} 今日
-                      </p>
-                    </div>
-                    <DollarSign className="w-8 h-8 text-green-600" />
-                  </div>
-                  <Progress value={metrics.revenue.conversionRate} className="mt-2" />
-                  <p className="text-xs text-gray-600 mt-1">
-                    コンバージョン率: {metrics.revenue.conversionRate}%
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">システム稼働率</p>
-                      <p className="text-2xl font-bold">{metrics.system.uptime}%</p>
-                      <p className="text-xs text-blue-600">
-                        {metrics.system.responseTime}ms 平均応答
-                      </p>
-                    </div>
-                    <Activity className="w-8 h-8 text-purple-600" />
-                  </div>
-                  <Progress value={metrics.system.uptime} className="mt-2" />
-                  <p className="text-xs text-gray-600 mt-1">
-                    エラー率: {metrics.system.errorRate}%
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">サポート</p>
-                      <p className="text-2xl font-bold">{metrics.support.openTickets}</p>
-                      <p className="text-xs text-orange-600">未対応チケット</p>
-                    </div>
-                    <Mail className="w-8 h-8 text-orange-600" />
-                  </div>
-                  <div className="mt-2 flex items-center">
-                    <span className="text-xs text-gray-600">
-                      平均応答: {metrics.support.avgResponseTime} | 満足度:{' '}
-                      {metrics.support.satisfaction}/5
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* ライブメトリクス */}
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">ライブアクティブ</p>
-                      <p className="text-2xl font-bold">
-                        {isLiveLoading ? '—' : (liveMetrics?.activeUsers ?? 0)}
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        完了率: {isLiveLoading ? '—' : `${liveMetrics?.completionRate ?? 0}%`}
-                      </p>
-                    </div>
-                    <Activity className="w-8 h-8 text-rose-500" />
-                  </div>
-                  <div className="mt-2 text-xs text-gray-600">
-                    今日のタスク: {isLiveLoading ? '—' : (liveMetrics?.todaysTasks ?? 0)} /
-                    週次傾向: {isLiveLoading ? '—' : (liveMetrics?.weeklyTrend ?? 0)}%
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* 今日のタスク */}
+        {isFeatureAccessible('/admin/overview').allowed && (
+          <TabsContent value="overview" className="space-y-6">
+            {/* 概要メトリクス */}
+            {/* 開発フローの現在位置 */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Target className="w-5 h-5 mr-2" />
-                  今日の重要タスク
-                </CardTitle>
+                <CardTitle>開発フロー（承認必須）</CardTitle>
+                <CardDescription>
+                  提案: {adminSuggested ?? '—'} / 承認: {adminApproved ?? '—'} / 有効:{' '}
+                  {adminEffective ?? '—'}
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {priorityActions.slice(0, 3).map((action) => (
-                    <div
-                      key={action.id}
-                      className="flex items-center justify-between p-3 border rounded-lg"
+                <div className="flex flex-wrap gap-2">
+                  {NEW_STATUS_ORDER.map((s) => (
+                    <Badge
+                      key={s}
+                      variant={
+                        adminEffective === s
+                          ? 'default'
+                          : adminApproved === s
+                            ? 'secondary'
+                            : 'outline'
+                      }
                     >
-                      <div className="flex-1">
-                        <p className="font-medium">{action.title}</p>
-                        <p className="text-sm text-gray-600">{action.description}</p>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <Badge
-                            variant={action.urgency === 'critical' ? 'destructive' : 'secondary'}
-                          >
-                            {action.urgency}
-                          </Badge>
-                          {action.deadline && (
-                            <span className="text-xs text-gray-500">期限: {action.deadline}</span>
-                          )}
-                        </div>
-                      </div>
-                      {!action.completed && (
-                        <Button size="sm" onClick={() => completeAction(action.id)}>
-                          完了
-                        </Button>
-                      )}
-                    </div>
+                      {s}
+                    </Badge>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* システム状況 */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Activity className="w-5 h-5 mr-2" />
-                  システム状況
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">データベース</span>
-                    <div className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
-                      <span className="text-sm text-green-600">正常</span>
+            {metrics && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">総ユーザー数</p>
+                        <p className="text-2xl font-bold">
+                          {(
+                            Number(analytics?.totalUsers || 0) || metrics.users.total
+                          ).toLocaleString()}
+                        </p>
+                        <p className="text-xs text-green-600">+{metrics.users.newToday} 今日</p>
+                      </div>
+                      <Users className="w-8 h-8 text-blue-600" />
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">API サーバー</span>
-                    <div className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
-                      <span className="text-sm text-green-600">正常</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">CDN</span>
-                    <div className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
-                      <span className="text-sm text-green-600">正常</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">決済システム</span>
-                    <div className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
-                      <span className="text-sm text-green-600">正常</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+                    <Progress
+                      value={
+                        (Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
+                          ? (metrics.users.active /
+                              (Number(analytics?.totalUsers || 0) || metrics.users.total)) *
+                            100
+                          : 0
+                      }
+                      className="mt-2"
+                    />
+                    <p className="text-xs text-gray-600 mt-1">
+                      アクティブ率:{' '}
+                      {(Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
+                        ? Math.round(
+                            (metrics.users.active /
+                              (Number(analytics?.totalUsers || 0) || metrics.users.total)) *
+                              100
+                          )
+                        : 0}
+                      %
+                    </p>
+                  </CardContent>
+                </Card>
 
-        {/* 診断集計（実データ） */}
-        <TabsContent value="assessments" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>診断サマリ</CardTitle>
-              <CardDescription>IQ/MBTI保存数と直近30日合計</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isAssessLoading ? (
-                <div className="h-20 bg-gray-200 rounded animate-pulse" />
-              ) : assessSummary ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                  <div>
-                    <p className="text-sm text-gray-600">IQ保存</p>
-                    <p className="text-3xl font-bold">{assessSummary.iqSaved}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">MBTI保存</p>
-                    <p className="text-3xl font-bold">{assessSummary.mbtiSaved}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">直近30日 合計</p>
-                    <p className="text-3xl font-bold">{assessSummary.totalSaved30d}</p>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500">データがありません</p>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">月次売上 (MRR)</p>
+                        <p className="text-2xl font-bold">
+                          ¥{metrics.revenue.mrr.toLocaleString()}
+                        </p>
+                        <p className="text-xs text-green-600">
+                          +¥{Number(metrics.revenue.todayRevenue || 0).toLocaleString()} 今日
+                        </p>
+                      </div>
+                      <DollarSign className="w-8 h-8 text-green-600" />
+                    </div>
+                    <Progress value={metrics.revenue.conversionRate} className="mt-2" />
+                    <p className="text-xs text-gray-600 mt-1">
+                      コンバージョン率: {metrics.revenue.conversionRate}%
+                    </p>
+                  </CardContent>
+                </Card>
 
-        {/* 学習進捗（実データ） */}
-        <TabsContent value="learning" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>学習サマリ</CardTitle>
-              <CardDescription>直近30日の進捗保存とユニーク学習者</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLearningLoading ? (
-                <div className="h-20 bg-gray-200 rounded animate-pulse" />
-              ) : learningSummary ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
-                  <div>
-                    <p className="text-sm text-gray-600">進捗保存（30日）</p>
-                    <p className="text-3xl font-bold">{learningSummary.progressSaved30d}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">ユニーク学習者（30日）</p>
-                    <p className="text-3xl font-bold">{learningSummary.uniqueLearners30d}</p>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500">データがありません</p>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">システム稼働率</p>
+                        <p className="text-2xl font-bold">{metrics.system.uptime}%</p>
+                        <p className="text-xs text-blue-600">
+                          {metrics.system.responseTime}ms 平均応答
+                        </p>
+                      </div>
+                      <Activity className="w-8 h-8 text-purple-600" />
+                    </div>
+                    <Progress value={metrics.system.uptime} className="mt-2" />
+                    <p className="text-xs text-gray-600 mt-1">
+                      エラー率: {metrics.system.errorRate}%
+                    </p>
+                  </CardContent>
+                </Card>
 
-        <TabsContent value="actions" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>優先アクション一覧</CardTitle>
-              <CardDescription>緊急度の高い順に表示されています</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {priorityActions.map((action) => (
-                  <Card key={action.id} className={action.completed ? 'opacity-50' : ''}>
-                    <CardContent className="pt-4">
-                      <div className="flex items-start justify-between">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">サポート</p>
+                        <p className="text-2xl font-bold">{metrics.support.openTickets}</p>
+                        <p className="text-xs text-orange-600">未対応チケット</p>
+                      </div>
+                      <Mail className="w-8 h-8 text-orange-600" />
+                    </div>
+                    <div className="mt-2 flex items-center">
+                      <span className="text-xs text-gray-600">
+                        平均応答: {metrics.support.avgResponseTime} | 満足度:{' '}
+                        {metrics.support.satisfaction}/5
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* ライブメトリクス */}
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">ライブアクティブ</p>
+                        <p className="text-2xl font-bold">
+                          {isLiveLoading ? '—' : (liveMetrics?.activeUsers ?? 0)}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          完了率: {isLiveLoading ? '—' : `${liveMetrics?.completionRate ?? 0}%`}
+                        </p>
+                      </div>
+                      <Activity className="w-8 h-8 text-rose-500" />
+                    </div>
+                    <div className="mt-2 text-xs text-gray-600">
+                      今日のタスク: {isLiveLoading ? '—' : (liveMetrics?.todaysTasks ?? 0)} /
+                      週次傾向: {isLiveLoading ? '—' : (liveMetrics?.weeklyTrend ?? 0)}%
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* 今日のタスク */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Target className="w-5 h-5 mr-2" />
+                    今日の重要タスク
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {priorityActions.slice(0, 3).map((action) => (
+                      <div
+                        key={action.id}
+                        className="flex items-center justify-between p-3 border rounded-lg"
+                      >
                         <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <h3 className="font-medium">{action.title}</h3>
+                          <p className="font-medium">{action.title}</p>
+                          <p className="text-sm text-gray-600">{action.description}</p>
+                          <div className="flex items-center space-x-2 mt-1">
                             <Badge
-                              variant={
-                                action.urgency === 'critical'
-                                  ? 'destructive'
-                                  : action.urgency === 'high'
-                                    ? 'default'
-                                    : 'secondary'
-                              }
+                              variant={action.urgency === 'critical' ? 'destructive' : 'secondary'}
                             >
                               {action.urgency}
                             </Badge>
-                            {action.completed && (
-                              <Badge variant="outline" className="text-green-600">
-                                完了
-                              </Badge>
+                            {action.deadline && (
+                              <span className="text-xs text-gray-500">期限: {action.deadline}</span>
                             )}
-                          </div>
-                          <p className="text-gray-600 mb-2">{action.description}</p>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            {action.assignee && <span>担当: {action.assignee}</span>}
-                            {action.deadline && <span>期限: {action.deadline}</span>}
-                            <span>カテゴリ: {action.category}</span>
                           </div>
                         </div>
                         {!action.completed && (
                           <Button size="sm" onClick={() => completeAction(action.id)}>
-                            <CheckCircle className="w-4 h-4 mr-1" />
                             完了
                           </Button>
                         )}
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-        <TabsContent value="analytics" className="space-y-6">
-          <AnalyticsDashboard isAdminUser={true} hideTopPages={true} />
-          {/* 30日リテンション */}
-          <Card>
-            <CardHeader>
-              <CardTitle>30日リテンション（簡易）</CardTitle>
-              <CardDescription>D1%は翌日継続率。サイズはコホート人数。</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isRetentionLoading ? (
-                <div className="h-24 bg-gray-200 rounded animate-pulse" />
-              ) : retention.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm">
-                    <thead>
-                      <tr className="text-left">
-                        <th className="p-2">開始日</th>
-                        <th className="p-2">サイズ</th>
-                        <th className="p-2">D1%</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {retention.slice(-14).map((r, i) => {
-                        const d1 = r.days?.[1] || 0;
-                        const pct = r.size > 0 ? Math.round((d1 / r.size) * 100) : 0;
-                        return (
-                          <tr key={`${r.date}-${i}`} className="border-t">
-                            <td className="p-2 whitespace-nowrap">{r.date}</td>
-                            <td className="p-2">{r.size}</td>
-                            <td className="p-2">{pct}%</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+              {/* システム状況 */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Activity className="w-5 h-5 mr-2" />
+                    システム状況
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">データベース</span>
+                      <div className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-600">正常</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">API サーバー</span>
+                      <div className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-600">正常</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">CDN</span>
+                      <div className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-600">正常</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">決済システム</span>
+                      <div className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-600">正常</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        )}
+
+        {/* 診断集計（実データ） */}
+        {isFeatureAccessible('/admin/assessments').allowed && (
+          <TabsContent value="assessments" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>診断サマリ</CardTitle>
+                <CardDescription>IQ/MBTI保存数と直近30日合計</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isAssessLoading ? (
+                  <div className="h-20 bg-gray-200 rounded animate-pulse" />
+                ) : assessSummary ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div>
+                      <p className="text-sm text-gray-600">IQ保存</p>
+                      <p className="text-3xl font-bold">{assessSummary.iqSaved}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">MBTI保存</p>
+                      <p className="text-3xl font-bold">{assessSummary.mbtiSaved}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">直近30日 合計</p>
+                      <p className="text-3xl font-bold">{assessSummary.totalSaved30d}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">データがありません</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {/* 学習進捗（実データ） */}
+        {isFeatureAccessible('/admin/learning').allowed && (
+          <TabsContent value="learning" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>学習サマリ</CardTitle>
+                <CardDescription>直近30日の進捗保存とユニーク学習者</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLearningLoading ? (
+                  <div className="h-20 bg-gray-200 rounded animate-pulse" />
+                ) : learningSummary ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+                    <div>
+                      <p className="text-sm text-gray-600">進捗保存（30日）</p>
+                      <p className="text-3xl font-bold">{learningSummary.progressSaved30d}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">ユニーク学習者（30日）</p>
+                      <p className="text-3xl font-bold">{learningSummary.uniqueLearners30d}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">データがありません</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {isFeatureAccessible('/admin/actions').allowed && (
+          <TabsContent value="actions" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>優先アクション一覧</CardTitle>
+                <CardDescription>緊急度の高い順に表示されています</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {priorityActions.map((action) => (
+                    <Card key={action.id} className={action.completed ? 'opacity-50' : ''}>
+                      <CardContent className="pt-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h3 className="font-medium">{action.title}</h3>
+                              <Badge
+                                variant={
+                                  action.urgency === 'critical'
+                                    ? 'destructive'
+                                    : action.urgency === 'high'
+                                      ? 'default'
+                                      : 'secondary'
+                                }
+                              >
+                                {action.urgency}
+                              </Badge>
+                              {action.completed && (
+                                <Badge variant="outline" className="text-green-600">
+                                  完了
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-gray-600 mb-2">{action.description}</p>
+                            <div className="flex items-center space-x-4 text-sm text-gray-500">
+                              {action.assignee && <span>担当: {action.assignee}</span>}
+                              {action.deadline && <span>期限: {action.deadline}</span>}
+                              <span>カテゴリ: {action.category}</span>
+                            </div>
+                          </div>
+                          {!action.completed && (
+                            <Button size="sm" onClick={() => completeAction(action.id)}>
+                              <CheckCircle className="w-4 h-4 mr-1" />
+                              完了
+                            </Button>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
-              ) : (
-                <p className="text-sm text-gray-500">データがありません</p>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {isFeatureAccessible('/admin/analytics').allowed && (
+          <TabsContent value="analytics" className="space-y-6">
+            <AnalyticsDashboard isAdminUser={true} hideTopPages={true} />
+            {/* 30日リテンション */}
+            <Card>
+              <CardHeader>
+                <CardTitle>30日リテンション（簡易）</CardTitle>
+                <CardDescription>D1%は翌日継続率。サイズはコホート人数。</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isRetentionLoading ? (
+                  <div className="h-24 bg-gray-200 rounded animate-pulse" />
+                ) : retention.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm">
+                      <thead>
+                        <tr className="text-left">
+                          <th className="p-2">開始日</th>
+                          <th className="p-2">サイズ</th>
+                          <th className="p-2">D1%</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {retention.slice(-14).map((r, i) => {
+                          const d1 = r.days?.[1] || 0;
+                          const pct = r.size > 0 ? Math.round((d1 / r.size) * 100) : 0;
+                          return (
+                            <tr key={`${r.date}-${i}`} className="border-t">
+                              <td className="p-2 whitespace-nowrap">{r.date}</td>
+                              <td className="p-2">{r.size}</td>
+                              <td className="p-2">{pct}%</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">データがありません</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
 
         {/* エラーダッシュボード（統合タブ） */}
-        <TabsContent value="errors" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>エラー監視ダッシュボード</CardTitle>
-              <CardDescription>リアルタイム監視と自動復旧</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ErrorMonitoringDashboard />
-            </CardContent>
-          </Card>
-        </TabsContent>
+        {isFeatureAccessible('/admin/errors').allowed && (
+          <TabsContent value="errors" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>エラー監視ダッシュボード</CardTitle>
+                <CardDescription>リアルタイム監視と自動復旧</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ErrorMonitoringDashboard />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
 
-        <TabsContent value="users" className="space-y-6">
-          <AdminUsersPage />
-        </TabsContent>
+        {isFeatureAccessible('/admin/users').allowed && (
+          <TabsContent value="users" className="space-y-6">
+            <AdminUsersPage />
+          </TabsContent>
+        )}
 
-        <TabsContent value="settings" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>システム設定</CardTitle>
-              <CardDescription>管理者のみアクセス可能な設定項目</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* AI設定 */}
-                <Card className="border-blue-200 bg-blue-50">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-semibold text-blue-900">🤖 Gemini AI設定</h4>
-                        <p className="text-sm text-blue-700">
-                          AIアイゼンハワーマトリックスを有効化
+        {isFeatureAccessible('/admin/settings').allowed && (
+          <TabsContent value="settings" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>システム設定</CardTitle>
+                <CardDescription>管理者のみアクセス可能な設定項目</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* AI設定 */}
+                  <Card className="border-blue-200 bg-blue-50">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-semibold text-blue-900">🤖 Gemini AI設定</h4>
+                          <p className="text-sm text-blue-700">
+                            AIアイゼンハワーマトリックスを有効化
+                          </p>
+                        </div>
+                        <Badge variant="outline" className="text-orange-600 border-orange-300">
+                          要設定
+                        </Badge>
+                      </div>
+                      <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                        <p className="text-sm text-yellow-800">
+                          <strong>設定方法:</strong>
+                          <br />
+                          1. プロジェクトルートに <code>.env.local</code> ファイルを作成
+                          <br />
+                          2. <code>VITE_GEMINI_API_KEY=your_api_key</code> を追加
+                          <br />
+                          3.{' '}
+                          <a
+                            href="https://makersuite.google.com/app/apikey"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline"
+                          >
+                            Google AI Studio
+                          </a>{' '}
+                          でキーを取得
+                          <br />
+                          4. 開発サーバーを再起動 (<code>pnpm dev</code>)
                         </p>
                       </div>
-                      <Badge variant="outline" className="text-orange-600 border-orange-300">
-                        要設定
-                      </Badge>
-                    </div>
-                    <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
-                      <p className="text-sm text-yellow-800">
-                        <strong>設定方法:</strong>
-                        <br />
-                        1. プロジェクトルートに <code>.env.local</code> ファイルを作成
-                        <br />
-                        2. <code>VITE_GEMINI_API_KEY=your_api_key</code> を追加
-                        <br />
-                        3.{' '}
-                        <a
-                          href="https://makersuite.google.com/app/apikey"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline"
-                        >
-                          Google AI Studio
-                        </a>{' '}
-                        でキーを取得
-                        <br />
-                        4. 開発サーバーを再起動 (<code>pnpm dev</code>)
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
 
-                {/* SNSシェア機能 */}
-                <Card className="border-green-200 bg-green-50">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-semibold text-green-900">📢 SNSシェア機能</h4>
-                        <p className="text-sm text-green-700">ユーザー拡散とマーケティング</p>
+                  {/* SNSシェア機能 */}
+                  <Card className="border-green-200 bg-green-50">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-semibold text-green-900">📢 SNSシェア機能</h4>
+                          <p className="text-sm text-green-700">ユーザー拡散とマーケティング</p>
+                        </div>
+                        <SocialShareButton
+                          title="Work Time Tracker - AI搭載タスク管理"
+                          description="ADHDユーザー特化のAI搭載タスク管理ツール！"
+                        />
                       </div>
-                      <SocialShareButton
-                        title="Work Time Tracker - AI搭載タスク管理"
-                        description="ADHDユーザー特化のAI搭載タスク管理ツール！"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
 
-                {/* 既存の設定項目 */}
-                <Button variant="outline" className="w-full justify-start">
-                  <Users className="w-4 h-4 mr-2" />
-                  ユーザー管理
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <CreditCard className="w-4 h-4 mr-2" />
-                  決済設定
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Shield className="w-4 h-4 mr-2" />
-                  セキュリティ設定
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Database className="w-4 h-4 mr-2" />
-                  データベース管理
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Settings className="w-4 h-4 mr-2" />
-                  システム設定
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  {/* 既存の設定項目 */}
+                  <Button variant="outline" className="w-full justify-start">
+                    <Users className="w-4 h-4 mr-2" />
+                    ユーザー管理
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    決済設定
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Shield className="w-4 h-4 mr-2" />
+                    セキュリティ設定
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Database className="w-4 h-4 mr-2" />
+                    データベース管理
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Settings className="w-4 h-4 mr-2" />
+                    システム設定
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
