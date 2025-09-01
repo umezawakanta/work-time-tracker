@@ -449,6 +449,37 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: false,
     priority: 'P3',
   },
+  // 管理ダッシュボード ヘッダーの期間切替（未完了は非表示）
+  {
+    id: 'admin-window-7d',
+    name: '管理 期間切替 7d',
+    path: '/_bg/admin/window-7d',
+    category: '運用',
+    status: 'planning',
+    requiresRealAPI: false,
+    priority: 'P3',
+    disabled: true,
+  },
+  {
+    id: 'admin-window-30d',
+    name: '管理 期間切替 30d',
+    path: '/_bg/admin/window-30d',
+    category: '運用',
+    status: 'planning',
+    requiresRealAPI: false,
+    priority: 'P3',
+    disabled: true,
+  },
+  {
+    id: 'admin-window-90d',
+    name: '管理 期間切替 90d',
+    path: '/_bg/admin/window-90d',
+    category: '運用',
+    status: 'planning',
+    requiresRealAPI: false,
+    priority: 'P3',
+    disabled: true,
+  },
   // 個人・ライフスタイル
   {
     id: 'bookshelf',

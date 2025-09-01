@@ -608,16 +608,33 @@ const AdminDashboard: React.FC = () => {
           <p className="text-gray-600">最終更新: {lastUpdate.toLocaleString()}</p>
         </div>
         <div className="flex items-center space-x-2">
-          {(['7d', '30d', '90d'] as const).map((w) => (
+          {isFeatureAccessible('/_bg/admin/window-7d').allowed && (
             <Button
-              key={w}
-              variant={pageviewWindow === w ? 'default' : 'outline'}
+              variant={pageviewWindow === '7d' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setPageviewWindow(w)}
+              onClick={() => setPageviewWindow('7d')}
             >
-              {w}
+              7d
             </Button>
-          ))}
+          )}
+          {isFeatureAccessible('/_bg/admin/window-30d').allowed && (
+            <Button
+              variant={pageviewWindow === '30d' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setPageviewWindow('30d')}
+            >
+              30d
+            </Button>
+          )}
+          {isFeatureAccessible('/_bg/admin/window-90d').allowed && (
+            <Button
+              variant={pageviewWindow === '90d' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setPageviewWindow('90d')}
+            >
+              90d
+            </Button>
+          )}
           {isFeatureAccessible('/_bg/admin/refresh').allowed && (
             <Button variant="outline" size="sm" onClick={fetchMetrics} disabled={isLoading}>
               <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
