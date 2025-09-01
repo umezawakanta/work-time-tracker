@@ -460,6 +460,16 @@ export const featuresRegistry: Feature[] = [
     priority: 'P3',
     disabled: true,
   },
+  {
+    id: 'admin-title',
+    name: '管理 タイトル表示',
+    path: '/_bg/admin/title',
+    category: '運用',
+    status: 'planning',
+    requiresRealAPI: false,
+    priority: 'P3',
+    disabled: true,
+  },
   // 管理ダッシュボード ヘッダーの期間切替（未完了は非表示）
   {
     id: 'admin-window-7d',
