@@ -28,6 +28,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 import { connectMongoDirect, maskMongoUri } from '../_lib/mongo';
+import { mongoose } from '../_lib/mongo';
 
 // Login request interface
 interface LoginRequest {
@@ -77,6 +78,21 @@ async function readJson(req: VercelRequest): Promise<any> {
     return raw ? JSON.parse(raw) : {};
   } catch {
     throw Object.assign(new Error('Invalid JSON'), { statusCode: 400 });
+  }
+}
+
+async function ensureUserModel(): Promise<void> {
+  if (User) return;
+  try {
+    const existing = (mongoose.models as any)?.User;
+    if (existing) {
+      User = existing;
+      return;
+    }
+    const schema = new mongoose.Schema({}, { strict: false });
+    User = mongoose.model('User', schema, 'users');
+  } catch (e) {
+    console.warn('[auth/login] Failed to ensure fallback User model', e);
   }
 }
 
@@ -237,6 +253,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // ユーザーの検索（DB有り）
+    if (!User) {
+      await ensureUserModel();
+    }
     const user = await User.findOne({ email: email.toLowerCase() });
 
     if (!user) {
