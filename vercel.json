@@ -6,6 +6,30 @@
   "installCommand": "pnpm config set store-dir .pnpm-store && pnpm install --prefer-offline --frozen-lockfile=false",
   "devCommand": "pnpm run dev",
   "ignoreCommand": "node scripts/vercel-ignore.js",
+  "functions": {
+    "api/auth/register.ts": {
+      "runtime": "nodejs22.x",
+      "includeFiles": [
+        "src/server/config/database.js",
+        "src/server/models/User.js",
+        "src/server/models/Subscription.js"
+      ]
+    },
+    "api/auth/login.ts": {
+      "runtime": "nodejs22.x",
+      "includeFiles": [
+        "src/server/config/database.js",
+        "src/server/models/User.js",
+        "src/server/models/Subscription.js"
+      ]
+    },
+    "api/db/status.ts": {
+      "runtime": "nodejs22.x",
+      "includeFiles": [
+        "src/server/config/database.js"
+      ]
+    }
+  },
   "headers": [
     {
       "source": "/version.json",
