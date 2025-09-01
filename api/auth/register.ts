@@ -1,7 +1,24 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectDB } from '../../src/server/config/database';
-import { User } from '../../src/server/models/User';
-import { SubscriptionModel } from '../../src/server/models/Subscription';
+// Lazy-load server modules to work in serverless bundles
+let connectDB: (() => Promise<void>) | null = null;
+let User: any = null;
+let SubscriptionModel: any = null;
+async function loadServerModules(): Promise<boolean> {
+  if (connectDB && User) return true;
+  try {
+    const dbMod = await import('../../src/server/config/database.js');
+    connectDB = (dbMod as any).connectDB as () => Promise<void>;
+    const userMod = await import('../../src/server/models/User.js');
+    User = (userMod as any).User;
+    try {
+      const subMod = await import('../../src/server/models/Subscription.js');
+      SubscriptionModel = (subMod as any).SubscriptionModel;
+    } catch {}
+    return true;
+  } catch {
+    return false;
+  }
+}
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -72,7 +89,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
 
   const isVercelPreview =
-    origin && origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);
+    origin && origin.match(/^https:\/\/work-time-tracker-five-.*\.vercel\.app$/);
   const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isVercelPreview);
 
   res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
@@ -137,6 +154,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // データベース接続（失敗時はサービス不可として返却）
     try {
+      const loaded = await loadServerModules();
+      if (!loaded || !connectDB) throw new Error('Server modules not available');
       await connectDB();
     } catch (e) {
       console.warn('Register API: DB not available');
