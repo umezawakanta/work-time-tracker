@@ -90,42 +90,25 @@ lighthouse/
 lighthouserc.json 
 
 # ----------------------------
-# Limit Vercel API build scope
-# Keep only auth endpoints and /api/health
-# Ignore specific non-auth API directories
-api/admin/**
-api/ai/**
-api/analysis/**
-api/analytics/**
-api/automation/**
-api/blog/**
-api/blogs/**
-api/books/**
-api/bugs/**
-api/daily/**
-api/daily-victory/**
-api/db/**
-api/debt/**
-api/developer/**
-api/finance/**
-api/implementation/**
-api/legal/**
-api/notifications/**
-api/operations/**
-api/progress/**
-api/projects/**
-api/quality/**
-api/sales/**
-api/status/**
-api/subscriptions/**
-api/testing/**
-api/todos/**
-api/user/**
-api/userSubscription/**
-api/webhooks/**
-api/worktime/**
-
-# Bring in only the server files required by auth endpoints
-!src/server/config/database.ts
-!src/server/models/**
-!src/server/utils/**
+# Minimize API deployment scope (allowlist only the required routes)
+api/**
+!api/health.ts
+!api/db/status.ts
+!api/_lib/**
+!api/_schemas/**
+!api/auth/**
+!api/admin/metrics.ts
+!api/admin/analytics/summary.ts
+!api/admin/metrics/top-pages.ts
+!api/admin/metrics/users/trend.ts
+!api/admin/metrics/revenue/trend.ts
+!api/admin/metrics/revenue/summary.ts
+!api/admin/metrics/paid-users/trend.ts
+!api/admin/metrics/assessments/summary.ts
+!api/admin/metrics/learning/summary.ts
+!api/admin/error-reports.ts
+!api/admin/users/**
+!api/analytics/pageviews/daily.ts
+!api/analytics/live-metrics.ts
+!api/analytics/users/active.ts
+!api/analytics/retention/30d.ts
