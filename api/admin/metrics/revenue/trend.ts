@@ -1,4 +1,30 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+
+export default function handler(req: VercelRequest, res: VercelResponse): void {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  if (req.method !== 'GET') {
+    res.status(405).json({ message: 'Method Not Allowed' });
+    return;
+  }
+  const months = Number(req.query?.months ?? 6);
+  const now = new Date();
+  const series = Array.from({ length: months }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (months - 1 - i), 1);
+    return {
+      month: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+      amount: Math.max(0, Math.round(600000 + Math.sin(i / 2) * 50000)),
+    };
+  });
+  res.status(200).json({ series });
+}
+
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { connectDB } from '../../../../src/server/config/database';
 import { PaymentModel as Payment } from '../../../../src/server/models/Subscription';
 

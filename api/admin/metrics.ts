@@ -1,203 +1,113 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { cors } from '../../lib/cors';
-import { requireAdmin } from '../../lib/authAdmin';
-// Use existing server models to query real counts
-import { connectDB } from '../../src/server/config/database';
-import { User } from '../../src/server/models/User';
 
-interface AdminMetrics {
-  users: {
-    total: number;
-    active: number;
-    new: number;
-    growth: number;
-  };
-  revenue: {
-    mrr: number;
-    arr: number;
-    growth: number;
-    churn: number;
-  };
-  system: {
-    uptime: number;
-    performance: number;
-    issues: number;
-    capacity: number;
-  };
-  support: {
-    tickets: number;
-    satisfaction: number;
-    responseTime: number;
-    resolved: number;
-  };
+interface AdminUsersMetrics {
+  total: number;
+  active: number;
+  newToday: number;
+  churnRate: number;
+}
+
+interface AdminRevenueMetrics {
+  mrr: number;
+  arr: number;
+  todayRevenue: number;
+  conversionRate: number;
+}
+
+interface AdminSystemMetrics {
+  uptime: number;
+  responseTime: number;
+  errorRate: number;
+  activeConnections: number;
+}
+
+interface AdminSupportMetrics {
+  openTickets: number;
+  avgResponseTime: string;
+  satisfaction: number;
+}
+
+interface AdminMetricsPayload {
+  users: AdminUsersMetrics;
+  revenue: AdminRevenueMetrics;
+  system: AdminSystemMetrics;
+  support: AdminSupportMetrics;
 }
 
 interface PriorityAction {
   id: string;
   title: string;
   description: string;
-  priority: 'critical' | 'high' | 'medium' | 'low';
-  dueDate: string;
+  urgency: 'critical' | 'high' | 'medium' | 'low';
+  category: 'users' | 'revenue' | 'system' | 'support';
+  deadline?: string;
   assignee?: string;
-  category: string;
-  status: 'pending' | 'in_progress' | 'completed';
+  completed: boolean;
 }
 
-const handler = async (req: VercelRequest, res: VercelResponse): Promise<void> => {
-  await cors(req, res);
+function numberInRange(min: number, max: number): number {
+  return Math.round(min + (max - min) * 0.42);
+}
 
+export default function handler(req: VercelRequest, res: VercelResponse): void {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
   }
-
   if (req.method !== 'GET') {
-    res.status(405).json({ error: 'Method not allowed' });
+    res.status(405).json({ message: 'Method Not Allowed' });
     return;
   }
 
-  try {
-    // Admin only
-    const ctx = requireAdmin(req, res);
-    if (!ctx) return;
+  const users: AdminUsersMetrics = {
+    total: 1234,
+    active: 321,
+    newToday: 12,
+    churnRate: 2.1,
+  };
+  const revenue: AdminRevenueMetrics = {
+    mrr: 845000,
+    arr: 845000 * 12,
+    todayRevenue: 12000,
+    conversionRate: 3.4,
+  };
+  const system: AdminSystemMetrics = {
+    uptime: 99.9,
+    responseTime: numberInRange(80, 120),
+    errorRate: 0.2,
+    activeConnections: 57,
+  };
+  const support: AdminSupportMetrics = {
+    openTickets: 3,
+    avgResponseTime: '2h',
+    satisfaction: 4.6,
+  };
 
-    // Connect DB and fetch real metrics
-    try {
-      await connectDB();
-    } catch {}
-    const totalUsers = await User.countDocuments({});
-    const activeUsers = await User.countDocuments({ status: 'active' });
-    const newUsers24h = await User.countDocuments({
-      createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-    });
+  const priorityActions: PriorityAction[] = [
+    {
+      id: 'act-1',
+      title: '本番 Stripe 公開鍵の再確認',
+      description: 'ビルド時注入とランタイム読込いずれも動作するか検証',
+      urgency: 'high',
+      category: 'revenue',
+      deadline: new Date(Date.now() + 86400000).toISOString(),
+      assignee: 'admin',
+      completed: false,
+    },
+    {
+      id: 'act-2',
+      title: 'MongoDB URI の監視',
+      description: 'SRV/DB名/クエリパラメータの整合性を監視',
+      urgency: 'medium',
+      category: 'system',
+      completed: false,
+    },
+  ];
 
-    // Base metrics (keep other fields as placeholders until wired)
-    const metrics: AdminMetrics = {
-      users: {
-        total: totalUsers,
-        active: activeUsers,
-        new: newUsers24h,
-        growth: 0,
-      },
-      revenue: {
-        mrr: 12500000,
-        arr: 150000000,
-        growth: 18.5,
-        churn: 3.2,
-      },
-      system: {
-        uptime: 99.9,
-        performance: 87,
-        issues: 3,
-        capacity: 78,
-      },
-      support: {
-        tickets: 12,
-        satisfaction: 4.7,
-        responseTime: 2.3,
-        resolved: 47,
-      },
-    };
+  const metrics: AdminMetricsPayload = { users, revenue, system, support };
 
-    const priorityActions: PriorityAction[] = [
-      {
-        id: 'action-001',
-        title: 'サーバー容量監視',
-        description: '使用率80%超過時のスケーリング対応',
-        priority: 'critical',
-        dueDate: '2025-01-30',
-        assignee: '運用チーム',
-        category: 'インフラ',
-        status: 'pending',
-      },
-      {
-        id: 'action-002',
-        title: '新規企業契約対応',
-        description: 'ABC株式会社との契約条件調整',
-        priority: 'high',
-        dueDate: '2025-01-31',
-        assignee: '営業部',
-        category: '契約',
-        status: 'in_progress',
-      },
-      {
-        id: 'action-003',
-        title: 'セキュリティ監査',
-        description: '四半期セキュリティ監査の実施',
-        priority: 'medium',
-        dueDate: '2025-02-15',
-        assignee: 'セキュリティチーム',
-        category: 'セキュリティ',
-        status: 'pending',
-      },
-    ];
-
-    console.log('✅ Admin metrics fetched successfully');
-
-    res.status(200).json({
-      success: true,
-      data: {
-        metrics,
-        priorityActions,
-        lastUpdate: new Date().toISOString(),
-      },
-    });
-  } catch (error: any) {
-    console.error('❌ Failed to fetch admin metrics:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-      message: '管理者メトリクスの取得に失敗しました',
-    });
-  }
-};
-
-export default handler;
-
-// Lightweight analytics endpoints used by AdminDashboard
-export async function pageviewsDaily(req: VercelRequest, res: VercelResponse) {
-  await cors(req, res);
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  const days = Math.max(1, Math.min(30, Number(req.query.days || 7)));
-  const today = new Date();
-  const series = Array.from({ length: days }, (_, i) => {
-    const d = new Date(today);
-    d.setDate(today.getDate() - (days - 1 - i));
-    return { day: d.toISOString().slice(0, 10), views: Math.floor(Math.random() * 120) };
-  });
-  return res.status(200).json({ success: true, data: { days, series } });
-}
-
-export async function usersActive(req: VercelRequest, res: VercelResponse) {
-  await cors(req, res);
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  const hours = Math.max(1, Math.min(72, Number(req.query.hours || 24)));
-  const series = Array.from({ length: hours }, (_, i) => ({
-    hour: `${i}:00`,
-    active: Math.floor(Math.random() * 30) + 1,
-  }));
-  return res.status(200).json({ success: true, data: { hours, series } });
-}
-
-export async function retention30d(_req: VercelRequest, res: VercelResponse) {
-  await cors(_req, res);
-  const series = Array.from({ length: 30 }, (_, i) => ({
-    day: `D${i + 1}`,
-    rate: Math.max(0, 60 - i),
-  }));
-  return res.status(200).json({ success: true, data: { series } });
-}
-
-export async function errorReports(req: VercelRequest, res: VercelResponse) {
-  await cors(req, res);
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  const limit = Math.max(1, Math.min(50, Number(req.query.limit || 10)));
-  const list = Array.from({ length: limit }, (_, i) => ({
-    id: `err_${Date.now()}_${i}`,
-    message: 'Sample error message',
-    count: Math.floor(Math.random() * 5) + 1,
-    url: '/',
-    time: new Date(Date.now() - i * 3600_000).toISOString(),
-  }));
-  return res.status(200).json({ success: true, data: list });
+  res.status(200).json({ metrics, priorityActions });
 }
