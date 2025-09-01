@@ -1,5 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-// Keep health lightweight in serverless: avoid ESM imports at top-level (CJS runtime)
+// Keep health lightweight in serverless: avoid ESM imports/exports at top-level (CJS runtime)
 async function getMongoLib() {
   const mod = await import('./_lib/mongo.js');
   return {
@@ -48,7 +47,7 @@ interface HealthStatus {
   environment: string;
 }
 
-async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: any, res: any) {
   if (req.method !== 'GET') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
@@ -190,4 +189,4 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   });
 }
 
-export = handler;
+module.exports = handler;
