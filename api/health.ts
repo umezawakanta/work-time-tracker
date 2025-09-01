@@ -2,12 +2,18 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 // Keep health lightweight in serverless: do not hard-require DB
 import { connectMongoDirect, maskMongoUri } from './_lib/mongo';
 let connectDB: (() => Promise<void>) | null = null;
+console.warn('[health] connectDB:', connectDB);
 async function loadDB(): Promise<boolean> {
+  console.warn('[health] loadDB:', connectDB);
   if (connectDB) return true;
+  console.warn('[health] loadDB:', connectDB);
   try {
     const modPath = '../src/server/config/' + 'database.js';
+    console.warn('[health] loadDB:', modPath);
     const mod = await import(modPath as string);
+    console.warn('[health] loadDB:', mod);
     connectDB = (mod as any).connectDB as () => Promise<void>;
+    console.warn('[health] loadDB:', connectDB);
     return true;
   } catch {
     console.warn('[health] Failed to load DB module (expected in some builds)');
