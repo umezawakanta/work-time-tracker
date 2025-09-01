@@ -256,7 +256,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!User) {
       await ensureUserModel();
     }
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const emailLc = (email || '').toLowerCase();
+    const maskedEmail = emailLc.replace(/^[^@]+/, '***');
+    console.log('[auth/login] findOne(users) start', {
+      modelReady: Boolean(User),
+      connState: (mongoose as any).connection?.readyState,
+      dbName: (mongoose as any).connection?.name,
+      email: maskedEmail,
+    });
+    const user = await User.findOne({ email: emailLc });
+    console.log('[auth/login] findOne(users) done', {
+      found: Boolean(user),
+      id: (user as any)?._id || (user as any)?.id || null,
+    });
 
     if (!user) {
       return res.status(401).json({
