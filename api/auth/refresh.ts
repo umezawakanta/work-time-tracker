@@ -82,6 +82,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!loaded || !connectDB) throw new Error('Server modules not available');
       await connectDB();
     } catch (e) {
+      const err: any = e;
+      console.warn('[auth/refresh] Primary DB connect failed, trying direct mongo connect', {
+        name: err?.name,
+        message: err?.message,
+        code: err?.code,
+        reasonCode: err?.reason?.code,
+        reasonMessage: err?.reason?.message,
+        labels: err?.errorLabels,
+      });
       // fallback to direct connection
       await connectMongoDirect();
     }

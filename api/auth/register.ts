@@ -171,13 +171,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await connectDB();
       console.log('[auth/register] DB connect success');
     } catch (e) {
-      console.warn('[auth/register] Primary DB connect failed, trying direct mongo connect');
+      const err: any = e;
+      console.warn('[auth/register] Primary DB connect failed, trying direct mongo connect', {
+        name: err?.name,
+        message: err?.message,
+        code: err?.code,
+        reasonCode: err?.reason?.code,
+        reasonMessage: err?.reason?.message,
+        labels: err?.errorLabels,
+      });
       try {
         await connectMongoDirect();
         console.log('[auth/register] DB connect success (direct)');
       } catch (e2) {
-        const msg = e2 instanceof Error ? e2.message : String(e2);
-        console.warn('[auth/register] DB connect failed (direct)', { message: msg });
+        const err2: any = e2;
+        console.warn('[auth/register] DB connect failed (direct)', {
+          name: err2?.name,
+          message: err2?.message,
+          code: err2?.code,
+          reasonCode: err2?.reason?.code,
+          reasonMessage: err2?.reason?.message,
+          labels: err2?.errorLabels,
+        });
         return res.status(503).json({
           success: false,
           message: '現在ユーザー登録サービスを利用できません。しばらくしてから再試行してください。',

@@ -152,17 +152,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.log('[auth/login] DB connect success');
     } catch (e) {
       dbReady = false;
+      const err: any = e;
       console.warn('[auth/login] Primary DB connect failed, trying direct mongo connect', {
-        message: e instanceof Error ? e.message : String(e),
+        name: err?.name,
+        message: err?.message,
+        code: err?.code,
+        reasonCode: err?.reason?.code,
+        reasonMessage: err?.reason?.message,
+        labels: err?.errorLabels,
       });
       try {
         await connectMongoDirect();
         console.log('[auth/login] DB connect success (direct)');
         dbReady = true;
       } catch (e2) {
-        const msg = e2 instanceof Error ? e2.message : String(e2);
+        const err2: any = e2;
         console.warn('[auth/login] DB connect failed (direct), using preview demo login', {
-          message: msg,
+          name: err2?.name,
+          message: err2?.message,
+          code: err2?.code,
+          reasonCode: err2?.reason?.code,
+          reasonMessage: err2?.reason?.message,
+          labels: err2?.errorLabels,
         });
       }
     }

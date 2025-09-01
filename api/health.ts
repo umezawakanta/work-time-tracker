@@ -15,8 +15,14 @@ async function loadDB(): Promise<boolean> {
     connectDB = (mod as any).connectDB as () => Promise<void>;
     console.warn('[health] loadDB:', connectDB);
     return true;
-  } catch {
-    console.warn('[health] Failed to load DB module (expected in some builds)');
+  } catch (e) {
+    const err: any = e;
+    console.warn('[health] Failed to load DB module (expected in some builds)', {
+      name: err?.name,
+      message: err?.message,
+      code: err?.code,
+      stack: process.env.NODE_ENV === 'development' ? err?.stack : undefined,
+    });
     return false;
   }
 }
@@ -72,15 +78,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       healthStatus.services.database = 'connected';
       console.log('[health] DB check result: connected');
     } catch (error) {
+      const err: any = error;
       console.warn('[health] Primary DB connect failed, trying direct mongo connect', {
-        message: error instanceof Error ? error.message : String(error),
+        name: err?.name,
+        message: err?.message,
+        code: err?.code,
+        reasonCode: err?.reason?.code,
+        reasonMessage: err?.reason?.message,
+        labels: err?.errorLabels,
       });
       try {
         await connectMongoDirect();
         healthStatus.services.database = 'connected';
         console.log('[health] DB check result: connected (direct)');
       } catch (e2) {
-        console.warn('[health] Database health check failed (continuing):', (e2 as Error).message);
+        const err2: any = e2;
+        console.warn('[health] Database health check failed (continuing)', {
+          name: err2?.name,
+          message: err2?.message,
+          code: err2?.code,
+          reasonCode: err2?.reason?.code,
+          reasonMessage: err2?.reason?.message,
+          labels: err2?.errorLabels,
+        });
         healthStatus.services.database = 'error';
         healthStatus.status = 'degraded';
         healthStatus.errorRate = 5.0;
