@@ -1,5 +1,16 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectDB } from '../../src/server/config/database';
+// Use dynamic import to align with other API routes
+let connectDB: (() => Promise<void>) | null = null;
+async function ensureDB() {
+  if (connectDB) return true;
+  try {
+    const dbMod = await import('../../src/server/config/database.js');
+    connectDB = (dbMod as any).connectDB as () => Promise<void>;
+    return true;
+  } catch {
+    return false;
+  }
+}
 import mongoose from 'mongoose';
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
@@ -15,6 +26,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     return;
   }
   try {
+    const ok = await ensureDB();
+    if (!ok || !connectDB) throw new Error('db module missing');
     await connectDB();
     const state = mongoose.connection.readyState; // 0=disconnected 1=connected 2=connecting 3=disconnecting
     const ok = state === 1;
