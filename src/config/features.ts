@@ -426,9 +426,10 @@ export const featuresRegistry: Feature[] = [
     name: '管理 更新ボタン',
     path: '/_bg/admin/refresh',
     category: '運用',
-    status: 'complete',
+    status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    disabled: true,
   },
   {
     id: 'admin-approve-next',
@@ -448,6 +449,16 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P3',
+  },
+  {
+    id: 'admin-last-updated',
+    name: '管理 最終更新表示',
+    path: '/_bg/admin/last-updated',
+    category: '運用',
+    status: 'planning',
+    requiresRealAPI: false,
+    priority: 'P3',
+    disabled: true,
   },
   // 管理ダッシュボード ヘッダーの期間切替（未完了は非表示）
   {
