@@ -350,7 +350,7 @@ export const featuresRegistry: Feature[] = [
     path: '/admin',
     category: '運用',
     description: '管理・運用メトリクス/設定',
-    status: 'in_progress',
+    status: 'system_testing',
     requiresRealAPI: true,
   },
   // 管理者ダッシュボード細分化（未完了は非表示）
