@@ -1,21 +1,33 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-// Optional server imports to avoid hard failure when not deployed
+// Avoid top-level ESM imports to be CJS-compatible in Vercel functions
 let connectDB: (() => Promise<void>) | null = null;
 let User: any = null;
 let SubscriptionModel: any = null;
+let mongoose: any = null;
+
+async function getLibs() {
+  const mongoMod: any = await import('../_lib/mongo.js');
+  mongoose = mongoMod.mongoose;
+  const bcryptMod: any = await import('bcryptjs');
+  const jwtMod: any = await import('jsonwebtoken');
+  const cookieMod: any = await import('cookie');
+  return {
+    connectMongoDirect: mongoMod.connectMongoDirect as () => Promise<void>,
+    maskMongoUri: mongoMod.maskMongoUri as (uri?: string) => string,
+    bcrypt: (bcryptMod as any).default || bcryptMod,
+    jwt: (jwtMod as any).default || jwtMod,
+    serialize: cookieMod.serialize as (name: string, val: string, opts?: any) => string,
+  };
+}
 
 async function loadServerModules(): Promise<boolean> {
   if (connectDB && User) return true;
   try {
-    const dbModPath = '../../src/server/config/' + 'database.js';
-    const dbMod = await import(dbModPath as string);
-    connectDB = dbMod.connectDB as () => Promise<void>;
-    const userModPath = '../../src/server/models/' + 'User.js';
-    const userMod = await import(userModPath as string);
+    const dbMod = await import('../../src/server/config/' + 'database.js');
+    connectDB = (dbMod as any).connectDB as () => Promise<void>;
+    const userMod = await import('../../src/server/models/' + 'User.js');
     User = (userMod as any).User;
     try {
-      const subModPath = '../../src/server/models/' + 'Subscription.js';
-      const subMod = await import(subModPath as string);
+      const subMod = await import('../../src/server/models/' + 'Subscription.js');
       SubscriptionModel = (subMod as any).SubscriptionModel;
     } catch {}
     return true;
@@ -24,11 +36,6 @@ async function loadServerModules(): Promise<boolean> {
     return false;
   }
 }
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { serialize } from 'cookie';
-import { connectMongoDirect, maskMongoUri } from '../_lib/mongo';
-import { mongoose } from '../_lib/mongo';
 
 // Login request interface
 interface LoginRequest {
@@ -61,7 +68,7 @@ interface LoginResponse {
 }
 
 // Robust JSON reader for Vercel Node (handles object, string, or raw stream)
-async function readJson(req: VercelRequest): Promise<any> {
+async function readJson(req: any): Promise<any> {
   try {
     const existingBody: unknown = (req as any).body;
     if (existingBody !== undefined) {
@@ -84,19 +91,19 @@ async function readJson(req: VercelRequest): Promise<any> {
 async function ensureUserModel(): Promise<void> {
   if (User) return;
   try {
-    const existing = (mongoose.models as any)?.User;
+    const existing = (mongoose as any).models?.User;
     if (existing) {
       User = existing;
       return;
     }
-    const schema = new mongoose.Schema({}, { strict: false });
-    User = mongoose.model('User', schema, 'users');
+    const schema = new (mongoose as any).Schema({}, { strict: false });
+    User = (mongoose as any).model('User', schema, 'users');
   } catch (e) {
     console.warn('[auth/login] Failed to ensure fallback User model', e);
   }
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: any, res: any) {
   // CORS設定
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
@@ -155,6 +162,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // データベース接続（失敗時はプレビュー用のインメモリデモ応答）
     let dbReady = true;
     try {
+      const { maskMongoUri, connectMongoDirect } = await getLibs();
       const loaded = await loadServerModules();
       if (!loaded || !connectDB) throw new Error('Server modules not available');
       const hasUri = Boolean(process.env.MONGODB_URI);
@@ -178,6 +186,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         labels: err?.errorLabels,
       });
       try {
+        const { connectMongoDirect } = await getLibs();
         await connectMongoDirect();
         console.log('[auth/login] DB connect success (direct)');
         dbReady = true;
@@ -196,6 +205,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // プレビュー/デモ: DBが無い場合の簡易ログイン
     if (!dbReady) {
+      const { jwt, serialize } = await getLibs();
       const isDemoUser = /@/.test(email) && password && password.length >= 4;
       if (!isDemoUser) {
         return res.status(401).json({
@@ -327,6 +337,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
+    const { bcrypt } = await getLibs();
     const isPasswordValid = await bcrypt.compare(password, passwordToCompare);
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -379,6 +390,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // JWTトークンの生成（管理者クレームを付与）
+    const { jwt, serialize } = await getLibs();
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
     const tokenExpiry = rememberMe ? '30d' : '7d';
     const adminEmails = (process.env.ADMIN_EMAILS || '')
