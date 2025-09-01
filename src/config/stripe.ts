@@ -78,7 +78,8 @@ const validateStripeConfig = () => {
       } else {
         console.error('❌ Production: Missing required Stripe client keys:', missingClientKeys);
         debugStripeEnv();
-        throw new Error(`Missing Stripe client configuration: ${missingClientKeys.join(', ')}`);
+        // Never crash the client; fall back to mock Stripe in production too
+        return false;
       }
     }
   }
@@ -110,7 +111,13 @@ if (typeof window === 'undefined') {
 let stripePromise: Promise<StripeJS | null> | null = null;
 
 if (typeof window !== 'undefined') {
-  const isConfigValid = validateStripeConfig();
+  let isConfigValid = false;
+  try {
+    isConfigValid = validateStripeConfig();
+  } catch (e) {
+    console.warn('[stripe.client] validateStripeConfig threw; falling back to mock', e);
+    isConfigValid = false;
+  }
 
   if (isConfigValid && ENV.STRIPE_PUBLISHABLE_KEY()) {
     const key = ENV.STRIPE_PUBLISHABLE_KEY()!;
