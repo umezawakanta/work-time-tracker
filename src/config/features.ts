@@ -520,8 +520,9 @@ export const featuresRegistry: Feature[] = [
     path: '/billing-history',
     category: 'サブスクリプション・請求',
     description: '過去の請求書と支払い履歴',
-    status: 'in_progress',
+    status: 'integration_testing',
     requiresRealAPI: true,
+    targetRelease: '2025-09-09',
   },
   {
     id: 'subscription-management',
@@ -532,6 +533,7 @@ export const featuresRegistry: Feature[] = [
     status: 'system_testing',
     requiresRealAPI: true,
     priority: 'P1',
+    targetRelease: '2025-09-10',
   },
   {
     id: 'asset-liability-report',
@@ -1388,7 +1390,7 @@ export const featuresRegistry: Feature[] = [
     path: '/bugs',
     category: 'プロジェクト管理',
     description: '不具合の一覧と管理',
-    status: 'system_testing',
+    status: 'release_pending',
     requiresRealAPI: true,
     priority: 'P1',
     targetRelease: '2025-09-07',

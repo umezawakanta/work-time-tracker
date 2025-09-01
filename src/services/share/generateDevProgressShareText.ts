@@ -57,13 +57,23 @@ export function generateDevProgressShareText(opts?: ShareProgressOptions): strin
 
   // 行生成
   const lines: string[] = [];
+  lines.push(`本日の進捗（${new Date().toLocaleDateString('ja-JP')}）`);
+  lines.push('');
   for (const f of candidates) {
     const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
     const progress = getFeatureProgressPercent(status);
     const ymd = f.targetRelease as string; // filtered above to be valid
     const [y, m, d] = ymd.split('-');
     const dateStr = `${y}/${m}/${d}`;
-    lines.push(`${f.name}：${progress}% リリース予定日：${dateStr}`);
+    const emoji =
+      status === 'release_pending'
+        ? '🚀'
+        : status === 'system_testing'
+          ? '🧪'
+          : status === 'integration_testing'
+            ? '🔗'
+            : '✅';
+    lines.push(`${emoji} ${f.name}：${progress}%（予定日: ${dateStr}）`);
   }
 
   const body = lines.join('\n');
