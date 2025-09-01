@@ -9,25 +9,15 @@
   "functions": {
     "api/auth/register.ts": {
       "runtime": "nodejs22.x",
-      "includeFiles": [
-        "src/server/config/database.js",
-        "src/server/models/User.js",
-        "src/server/models/Subscription.js"
-      ]
+      "includeFiles": "src/server/**"
     },
     "api/auth/login.ts": {
       "runtime": "nodejs22.x",
-      "includeFiles": [
-        "src/server/config/database.js",
-        "src/server/models/User.js",
-        "src/server/models/Subscription.js"
-      ]
+      "includeFiles": "src/server/**"
     },
     "api/db/status.ts": {
       "runtime": "nodejs22.x",
-      "includeFiles": [
-        "src/server/config/database.js"
-      ]
+      "includeFiles": "src/server/**"
     }
   },
   "headers": [
