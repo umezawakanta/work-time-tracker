@@ -93,9 +93,15 @@ lighthouserc.json
 # Minimize API deployment scope (allowlist only specific top-level dirs)
 api/*
 !api/health.ts
+!api/db
 !api/db/**
+!api/_lib
 !api/_lib/**
+!api/_schemas
 !api/_schemas/**
+!api/auth
 !api/auth/**
+!api/admin
 !api/admin/**
+!api/analytics
 !api/analytics/**
