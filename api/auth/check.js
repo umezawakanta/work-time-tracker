@@ -28,7 +28,8 @@ module.exports = async function handler(req, res) {
 
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            res.status(401).json({ isAuthenticated: false, error: 'No valid authorization header' });
+            // Relaxed behavior: return 200 with isAuthenticated=false for health checks
+            res.status(200).json({ isAuthenticated: false, message: 'No auth header' });
             return;
         }
 
@@ -43,17 +44,17 @@ module.exports = async function handler(req, res) {
                 audience: 'work-time-tracker-users',
             });
         } catch (e) {
-            res.status(401).json({ isAuthenticated: false, error: 'Invalid token' });
+            res.status(200).json({ isAuthenticated: false, message: 'Invalid token' });
             return;
         }
 
         const user = await User.findOne({ $or: [{ _id: decodedToken.userId }, { id: decodedToken.userId }] });
         if (!user) {
-            res.status(401).json({ isAuthenticated: false, error: 'User not found' });
+            res.status(200).json({ isAuthenticated: false, message: 'User not found' });
             return;
         }
         if (user.status !== 'active') {
-            res.status(401).json({ isAuthenticated: false, error: 'Account inactive' });
+            res.status(200).json({ isAuthenticated: false, message: 'Account inactive' });
             return;
         }
         user.lastActivityAt = new Date();
@@ -73,7 +74,7 @@ module.exports = async function handler(req, res) {
             message: 'OK',
         });
     } catch (error) {
-        res.status(500).json({ isAuthenticated: false, error: 'Internal server error' });
+        res.status(200).json({ isAuthenticated: false, message: 'Internal error' });
     }
 };
 
