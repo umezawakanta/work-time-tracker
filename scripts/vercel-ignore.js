@@ -19,7 +19,16 @@ try {
         .split('\n')
         .filter(Boolean);
 
-    const onlyTrivial = diff.every((f) =>
+    // 強制ビルド対象（API/サーバ/設定変更）は常にビルド
+    const forceBuild = diff.some((f) =>
+        [
+            'api/',
+            'src/server/',
+            'vercel.json',
+        ].some((p) => f.startsWith(p) || f === p)
+    );
+
+    const onlyTrivial = !forceBuild && diff.every((f) =>
         [
             'docs/',
             'coverage/',
