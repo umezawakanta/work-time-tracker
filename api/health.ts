@@ -63,10 +63,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
 
   // データベース接続テスト
-  if (await loadDB()) {
+  const loaded = await loadDB();
+  console.warn('[health] loaded:', loaded);
+  if (loaded) {
     try {
       const hasUri = Boolean(process.env.MONGODB_URI);
+      console.warn('[health] hasUri:', hasUri);
       const uriMasked = maskMongoUri(process.env.MONGODB_URI);
+      console.warn('[health] uriMasked:', uriMasked);
       console.log('[health] DB check start', {
         hasUri,
         uri: hasUri ? uriMasked : 'undefined',
@@ -75,10 +79,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         region: process.env.VERCEL_REGION || process.env.AWS_REGION || 'unknown',
       });
       await connectDB();
+      console.warn('[health] connectDB: success');
       healthStatus.services.database = 'connected';
       console.log('[health] DB check result: connected');
     } catch (error) {
       const err: any = error;
+      console.warn('[health] Primary DB connect failed, trying direct mongo connect:', err);
       console.warn('[health] Primary DB connect failed, trying direct mongo connect', {
         name: err?.name,
         message: err?.message,
@@ -88,11 +94,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         labels: err?.errorLabels,
       });
       try {
+        console.warn('[health] connectMongoDirect:');
         await connectMongoDirect();
+        console.warn('[health] connectMongoDirect: success');
         healthStatus.services.database = 'connected';
+        console.warn('[health] connectMongoDirect: success');
         console.log('[health] DB check result: connected (direct)');
       } catch (e2) {
         const err2: any = e2;
+        console.warn('[health] connectMongoDirect: error');
         console.warn('[health] Database health check failed (continuing)', {
           name: err2?.name,
           message: err2?.message,
@@ -101,10 +111,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           reasonMessage: err2?.reason?.message,
           labels: err2?.errorLabels,
         });
+        console.warn('[health] connectMongoDirect: error');
         healthStatus.services.database = 'error';
+        console.warn('[health] connectMongoDirect: error');
         healthStatus.status = 'degraded';
+        console.warn('[health] connectMongoDirect: error');
         healthStatus.errorRate = 5.0;
+        console.warn('[health] connectMongoDirect: error');
       }
+    }
+  } else {
+    // Server DB module unavailable → try direct connect path
+    console.warn('[health] DB module unavailable; attempting direct mongo connect');
+    try {
+      await connectMongoDirect();
+      healthStatus.services.database = 'connected';
+      console.log('[health] DB check result: connected (direct: no module)');
+    } catch (e3) {
+      const err3: any = e3;
+      console.warn('[health] Direct connect failed (no module)', {
+        name: err3?.name,
+        message: err3?.message,
+        code: err3?.code,
+        reasonCode: err3?.reason?.code,
+        reasonMessage: err3?.reason?.message,
+        labels: err3?.errorLabels,
+      });
+      healthStatus.services.database = 'error';
+      healthStatus.status = 'degraded';
+      healthStatus.errorRate = 5.0;
     }
   }
 
