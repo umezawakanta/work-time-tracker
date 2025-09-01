@@ -896,8 +896,15 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
     const isActive = location.pathname === item.path;
     const basePath = item.path.split('?')[0].split('#')[0];
     const feature = getFeatureByPath(basePath);
-    const isIncomplete = feature && feature.status !== 'complete';
-    if (isIncomplete) return null;
+    if (feature && (feature as any).disabled) return null;
+    const status = (feature?.status as string) || undefined;
+    const allowedStatuses = new Set([
+      'complete',
+      'integration_testing',
+      'system_testing',
+      'release_pending',
+    ]);
+    if (feature && !allowedStatuses.has(status!)) return null;
     // バックグラウンド専用パスは常に非表示
     if (basePath.startsWith('/_bg/')) return null;
     if (item.path === '/admin' && !isAdmin) return null;
@@ -1022,7 +1029,15 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           if (basePath.startsWith('/_bg/')) return false;
           if (basePath === '/admin' && !isAdmin) return false;
           const feature = getFeatureByPath(basePath);
-          if (feature && feature.status !== 'complete') return false;
+          if (feature && (feature as any).disabled) return false;
+          const status = (feature?.status as string) || undefined;
+          const allowedStatuses = new Set([
+            'complete',
+            'integration_testing',
+            'system_testing',
+            'release_pending',
+          ]);
+          if (feature && !allowedStatuses.has(status!)) return false;
           return true;
         });
         return { ...section, items: visibleItems };
