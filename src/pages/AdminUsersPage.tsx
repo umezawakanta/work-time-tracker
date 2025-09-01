@@ -22,6 +22,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertTriangle, Users } from 'lucide-react';
 import { listUsers, updateUser } from '@/services/api/adminUsersApi';
+import AdminUserSubscriptionPanel from '@/components/admin/AdminUserSubscriptionPanel';
 import type { PublicUser } from '@/types/admin';
 import { toast } from 'react-hot-toast';
 
@@ -38,6 +39,7 @@ const AdminUsersPage: React.FC = () => {
     type: 'promote' | 'demote' | 'block' | 'unblock' | 'delete';
     user: PublicUser;
   } | null>(null);
+  const [subPanelUser, setSubPanelUser] = useState<PublicUser | null>(null);
 
   const totalPages = useMemo(() => Math.max(Math.ceil(total / limit), 1), [total, limit]);
 
@@ -259,6 +261,13 @@ const AdminUsersPage: React.FC = () => {
                             <DropdownMenuLabel>操作</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
+                              onClick={() => setSubPanelUser(u)}
+                              aria-label="サブスクリプション管理"
+                            >
+                              Manage Subscription
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
                               onClick={() =>
                                 setConfirm({
                                   type: u.role === 'admin' ? 'demote' : 'promote',
@@ -377,6 +386,14 @@ const AdminUsersPage: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {subPanelUser && (
+        <AdminUserSubscriptionPanel
+          user={subPanelUser}
+          open={!!subPanelUser}
+          onOpenChange={(o) => !o && setSubPanelUser(null)}
+        />
+      )}
     </div>
   );
 };
