@@ -269,7 +269,13 @@ export const DashboardGuide: React.FC<DashboardGuideProps> = ({ onClose, classNa
             LifeSync 使い方ガイド
           </CardTitle>
           {onClose && (
-            <Button variant="ghost" size="sm" onClick={onClose}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              aria-label="ガイドを閉じる"
+              title="ガイドを閉じる"
+            >
               <X className="h-5 w-5" />
             </Button>
           )}
