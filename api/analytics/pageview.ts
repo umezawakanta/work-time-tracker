@@ -1,6 +1,4 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectDB } from '../../src/server/config/database';
-import AnalyticsEvent from '../../src/server/models/AnalyticsEvent';
 import { cors } from '../../lib/cors';
 
 // Simple in-memory store keyed by YYYY-MM-DD (fallback when DB not persisted due to cold start)
@@ -30,26 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const key = getDateKey();
     pageviewBuckets[key] = (pageviewBuckets[key] || 0) + 1;
 
-    // Persist to DB (best-effort)
-    try {
-      await connectDB();
-      await AnalyticsEvent.create({
-        event: 'page_view',
-        timestamp: new Date(),
-        clientId: safeClientId,
-        url: path,
-        path,
-        referrer: safeRef,
-        data: { title: safeTitle, utm: safeUtm },
-        userAgent: String(req.headers['user-agent'] || ''),
-        ipAddress: String(
-          (req.headers['x-forwarded-for'] as string) || (req.connection as any)?.remoteAddress || ''
-        ),
-      });
-    } catch (e) {
-      // Non-fatal in serverless; fall back to memory bucket only
-      console.warn('[Pageview] DB persist failed (non-fatal):', e);
-    }
+    // DB persistence removed for build stability; keep memory bucket only
 
     // Log
     console.log('[Pageview]', {

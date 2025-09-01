@@ -99,6 +99,8 @@ api/*
 !api/_lib/**
 !api/_schemas
 !api/_schemas/**
+!api/_utils
+!api/_utils/**
 !api/auth
 !api/auth/**
 !api/admin

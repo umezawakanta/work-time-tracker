@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import mongoose from 'mongoose';
-import { connectDB } from '../../src/server/config/database';
+import { connectMongoDirect } from '../_lib/mongo';
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -18,7 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     if (mongoose.connection.readyState === 1) {
       await mongoose.disconnect();
     }
-    await connectDB();
+    await connectMongoDirect();
     const ok = mongoose.connection.readyState === 1;
     res.status(200).json({ success: ok } as any);
   } catch (e) {

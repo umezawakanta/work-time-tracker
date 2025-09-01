@@ -1,17 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-// Use dynamic import to align with other API routes
-let connectDB: (() => Promise<void>) | null = null;
-async function ensureDB() {
-  if (connectDB) return true;
-  try {
-    const dbMod = await import('../../src/server/config/database.js');
-    connectDB = (dbMod as any).connectDB as () => Promise<void>;
-    return true;
-  } catch {
-    return false;
-  }
-}
-import mongoose from 'mongoose';
+import { connectMongoDirect, mongoose } from '../_lib/mongo';
 
 function ensureDbName(uriRaw: string | undefined): string | undefined {
   if (!uriRaw) return uriRaw;
@@ -32,14 +20,10 @@ function maskMongoUri(uriRaw: string | undefined): string {
 }
 
 async function directConnect(): Promise<void> {
-  const uri = ensureDbName(process.env.MONGODB_URI);
-  if (!uri) throw new Error('MONGODB_URI is not set');
-  await mongoose.connect(uri, {
-    maxPoolSize: 10,
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000,
-    bufferCommands: false,
-  } as any);
+  // connectMongoDirect already ensures dbName when missing
+  const hasUri = Boolean(process.env.MONGODB_URI);
+  if (!hasUri) throw new Error('MONGODB_URI is not set');
+  await connectMongoDirect();
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
@@ -58,18 +42,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     const envHasMongo = Boolean(process.env.MONGODB_URI);
     console.log('[db/status] Start', {
       envHasMongo,
-      uri: maskMongoUri(process.env.MONGODB_URI),
+      uri: process.env.MONGODB_URI ? 'mongodb+srv://****:****@...' : 'undefined',
       nodeEnv: process.env.NODE_ENV,
       vercel: Boolean(process.env.VERCEL),
     });
-    const dbReady = await ensureDB();
-    if (dbReady && connectDB) {
-      console.log('[db/status] Using connectDB() from server module');
-      await connectDB();
-    } else {
-      console.log('[db/status] Falling back to direct mongoose.connect');
-      await directConnect();
-    }
+    await directConnect();
     const state = mongoose.connection.readyState; // 0=disconnected 1=connected 2=connecting 3=disconnecting
     const connected = state === 1;
     let mongoVersion: string | null = null;
