@@ -43,7 +43,7 @@ let baseURL: string;
 if (hostname === 'work-time-tracker-five.vercel.app') {
   baseURL = 'https://work-time-tracker-five.vercel.app/api';
   console.log('🚀 Production: Using production API server:', baseURL);
-} else if (hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/)) {
+} else if (hostname.match(/^work-time-tracker-five-.*\.vercel\.app$/)) {
   baseURL = 'https://work-time-tracker-five.vercel.app/api';
   console.log('🔧 Preview: Using production API server:', baseURL);
 } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
@@ -68,7 +68,7 @@ console.log('🔗 Final API Base URL:', baseURL);
 if (
   typeof window !== 'undefined' &&
   (window.location.hostname === 'work-time-tracker-five.vercel.app' ||
-    window.location.hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/))
+    window.location.hostname.match(/^work-time-tracker-five-.*\.vercel\.app$/))
 ) {
   const envType =
     window.location.hostname === 'work-time-tracker-five.vercel.app'
