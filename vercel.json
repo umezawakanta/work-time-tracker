@@ -8,15 +8,12 @@
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {
     "api/auth/register.ts": {
-      "runtime": "nodejs20.x",
       "includeFiles": "src/server/**"
     },
     "api/auth/login.ts": {
-      "runtime": "nodejs20.x",
       "includeFiles": "src/server/**"
     },
     "api/db/status.ts": {
-      "runtime": "nodejs20.x",
       "includeFiles": "src/server/**"
     }
   },
