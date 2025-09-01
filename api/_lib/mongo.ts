@@ -1,10 +1,13 @@
 import mongoose from 'mongoose';
 
-function ensureDbName(uriRaw: string | undefined): string | undefined {
-  if (!uriRaw) return uriRaw;
-  const needsDb = /^(mongodb(\+srv)?):\/\/[^/]+\/(?=(\?|$))/.test(uriRaw);
-  if (needsDb) return uriRaw.replace(/\/(?=(\?|$))/, '/workTimeTracker$1');
-  return uriRaw;
+function hasDbPath(uriRaw: string): boolean {
+  // path exists if there is a slash followed by non-? characters before query or end
+  return /^(mongodb(\+srv)?):\/\/[^/]+\/[^(\?)]/.test(uriRaw);
+}
+
+function getDbNameFromUri(uriRaw: string): string | undefined {
+  const m = uriRaw.match(/^(mongodb(\+srv)?):\/\/[^/]+\/([^?]*)/);
+  return m && m[3] ? decodeURIComponent(m[3]) : undefined;
 }
 
 export function maskMongoUri(uriRaw: string | undefined): string {
@@ -17,7 +20,7 @@ export function maskMongoUri(uriRaw: string | undefined): string {
 }
 
 export async function connectMongoDirect(): Promise<void> {
-  const uri = ensureDbName(process.env.MONGODB_URI);
+  const uri = process.env.MONGODB_URI;
   if (!uri) throw new Error('MONGODB_URI is not set');
   const isSrv = /^mongodb\+srv:\/\//i.test(uri);
   const hasCred = /:\/\//.test(uri) && /@/.test(uri);
@@ -31,17 +34,24 @@ export async function connectMongoDirect(): Promise<void> {
     hasCred,
     readyStateBefore: beforeState,
   });
+  const uriHasDb = hasDbPath(uri);
+  const dbNameFromUri = getDbNameFromUri(uri);
+  const dbNameToUse = uriHasDb ? undefined : 'workTimeTracker';
   try {
-    await mongoose.connect(uri, {
+    const opts: any = {
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       bufferCommands: false,
-    } as any);
+    };
+    if (dbNameToUse) opts.dbName = dbNameToUse;
+    await mongoose.connect(uri, opts);
     console.log('[mongo] direct connect success', {
       readyStateAfter: mongoose.connection.readyState,
       host: mongoose.connection.host,
       name: mongoose.connection.name,
+      dbFromUri: dbNameFromUri || null,
+      dbApplied: dbNameToUse || 'fromUri',
     });
   } catch (error) {
     const err: any = error;
