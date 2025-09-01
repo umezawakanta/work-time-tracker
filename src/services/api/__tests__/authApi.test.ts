@@ -10,7 +10,7 @@ declare const it: any;
 import { AxiosError } from 'axios';
 import * as authApi from '../authApi';
 import { api } from '../apiConfig';
-import { tokenManager } from '@/services/auth/TokenManager';
+import { tokenManager } from '../../auth/TokenManager';
 import { getEnv, getBooleanEnv, isDev, isProd } from '../../../utils/env';
 
 // Mock dependencies

@@ -59,18 +59,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         hasUri,
         uri: hasUri ? uriMasked : 'undefined',
         nodeEnv: process.env.NODE_ENV,
+        vercel: Boolean(process.env.VERCEL),
+        region: process.env.VERCEL_REGION || process.env.AWS_REGION || 'unknown',
       });
       await connectDB();
       healthStatus.services.database = 'connected';
       console.log('[health] DB check result: connected');
     } catch (error) {
-      console.warn('[health] Primary DB connect failed, trying direct mongo connect');
+      console.warn('[health] Primary DB connect failed, trying direct mongo connect', {
+        message: error instanceof Error ? error.message : String(error),
+      });
       try {
         await connectMongoDirect();
         healthStatus.services.database = 'connected';
         console.log('[health] DB check result: connected (direct)');
       } catch (e2) {
-        console.warn('Database health check failed (continuing):', (e2 as Error).message);
+        console.warn('[health] Database health check failed (continuing):', (e2 as Error).message);
         healthStatus.services.database = 'error';
         healthStatus.status = 'degraded';
         healthStatus.errorRate = 5.0;

@@ -72,7 +72,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     }
     const state = mongoose.connection.readyState; // 0=disconnected 1=connected 2=connecting 3=disconnecting
     const connected = state === 1;
-    const mongoVersion = (await mongoose.connection.db?.admin().serverStatus())?.version;
+    let mongoVersion: string | null = null;
+    try {
+      mongoVersion = (await mongoose.connection.db?.admin().serverStatus())?.version || null;
+    } catch (verErr) {
+      console.warn('[db/status] Failed to read serverStatus', {
+        message: verErr instanceof Error ? verErr.message : String(verErr),
+      });
+    }
     console.log('[db/status] Result', {
       connected,
       state,

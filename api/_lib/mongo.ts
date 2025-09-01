@@ -19,12 +19,23 @@ export function maskMongoUri(uriRaw: string | undefined): string {
 export async function connectMongoDirect(): Promise<void> {
   const uri = ensureDbName(process.env.MONGODB_URI);
   if (!uri) throw new Error('MONGODB_URI is not set');
+  const isSrv = /^mongodb\+srv:\/\//i.test(uri);
+  const hasCred = /:\/\//.test(uri) && /@/.test(uri);
+  console.log('[mongo] direct connect begin', {
+    nodeEnv: process.env.NODE_ENV,
+    vercel: Boolean(process.env.VERCEL),
+    hasUri: Boolean(process.env.MONGODB_URI),
+    uri: maskMongoUri(process.env.MONGODB_URI),
+    isSrv,
+    hasCred,
+  });
   await mongoose.connect(uri, {
     maxPoolSize: 10,
     serverSelectionTimeoutMS: 5000,
     socketTimeoutMS: 45000,
     bufferCommands: false,
   } as any);
+  console.log('[mongo] direct connect readyState:', mongoose.connection.readyState);
 }
 
 export function mongoReadyState(): number {

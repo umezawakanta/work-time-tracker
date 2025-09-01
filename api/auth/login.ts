@@ -152,7 +152,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.log('[auth/login] DB connect success');
     } catch (e) {
       dbReady = false;
-      console.warn('[auth/login] Primary DB connect failed, trying direct mongo connect');
+      console.warn('[auth/login] Primary DB connect failed, trying direct mongo connect', {
+        message: e instanceof Error ? e.message : String(e),
+      });
       try {
         await connectMongoDirect();
         console.log('[auth/login] DB connect success (direct)');
