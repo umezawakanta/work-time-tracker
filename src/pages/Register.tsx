@@ -538,13 +538,13 @@ export default function Register() {
                   onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
                   disabled={isSubmitting}
                 />
-                <div className="text-sm">
-                  <Label htmlFor="terms" className="text-gray-700 cursor-pointer">
-                    <Link to="/terms" className="text-blue-600 hover:underline">
+                <div className="text-sm text-gray-800">
+                  <Label htmlFor="terms" className="text-gray-800 cursor-pointer">
+                    <Link to="/terms" className="text-blue-700 hover:underline">
                       {t('footer.terms', '利用規約')}
                     </Link>
                     および
-                    <Link to="/privacy" className="text-blue-600 hover:underline">
+                    <Link to="/privacy" className="text-blue-700 hover:underline">
                       {t('footer.privacy', 'プライバシーポリシー')}
                     </Link>
                     {t('auth.register.termsSuffix', 'に同意します')}
@@ -573,7 +573,7 @@ export default function Register() {
           <CardFooter className="flex flex-col space-y-4">
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300 disabled:text-gray-600 disabled:hover:bg-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               disabled={isSubmitting || hasErrors || !acceptTerms}
               data-testid="register-submit-btn"
             >
