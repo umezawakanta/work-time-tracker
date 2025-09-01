@@ -101,6 +101,11 @@ api/**
 !api/_schemas/**
 !api/auth/
 !api/auth/**
+!api/auth/login.ts
+!api/auth/token.ts
+!api/auth/register.ts
+!api/auth/refresh.ts
+!api/auth/logout.ts
 !api/admin/
 !api/admin/metrics.ts
 !api/admin/analytics/
