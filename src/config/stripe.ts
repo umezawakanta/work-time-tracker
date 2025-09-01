@@ -2,26 +2,63 @@ import Stripe from 'stripe';
 import { loadStripe, Stripe as StripeJS } from '@stripe/stripe-js';
 import { ENV, getEnv } from '@/utils/env';
 
+// Mask helper for safe console logging
+const maskKey = (raw?: string): string => {
+  if (!raw) return 'undefined';
+  const head = raw.slice(0, 6);
+  const tail = raw.slice(-4);
+  return `${head}...${tail} (len=${raw.length})`;
+};
+
+const debugStripeEnv = () => {
+  try {
+    let importMetaEnv: Record<string, any> | undefined;
+    try {
+      importMetaEnv = (0, eval)('import.meta').env as Record<string, any> | undefined;
+    } catch {}
+    const fromImportMeta = importMetaEnv?.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
+    const fromHelper = ENV.STRIPE_PUBLISHABLE_KEY();
+    const winEnv = typeof window !== 'undefined' ? (window as any).__VITE_ENV__ : undefined;
+    const fromWindow = winEnv?.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
+    const fromProcess =
+      typeof process !== 'undefined'
+        ? (process.env as any)?.VITE_STRIPE_PUBLISHABLE_KEY
+        : undefined;
+
+    console.log('[stripe.env] diagnostics', {
+      isBrowser: typeof window !== 'undefined',
+      hasImportMeta: Boolean(importMetaEnv),
+      key_importMeta: maskKey(fromImportMeta),
+      key_helper: maskKey(fromHelper || undefined),
+      key_window: maskKey(fromWindow),
+      key_process: maskKey(fromProcess),
+      nodeEnv: typeof process !== 'undefined' ? process.env?.NODE_ENV : 'unknown',
+    });
+  } catch (e) {
+    console.warn('[stripe.env] diagnostics failed', e);
+  }
+};
+
 // Environment variables validation
 const validateStripeConfig = () => {
-  console.warn('[validateStripeConfig] validateStripeConfig');
+  console.log('[validateStripeConfig] start', { isBrowser: typeof window !== 'undefined' });
   const requiredServerKeys = ['STRIPE_SECRET_KEY'];
-  console.warn('[validateStripeConfig] requiredServerKeys:', requiredServerKeys);
+  console.log('[validateStripeConfig] requiredServerKeys:', requiredServerKeys);
   const requiredClientKeys = ['VITE_STRIPE_PUBLISHABLE_KEY'];
-  console.warn('[validateStripeConfig] requiredClientKeys:', requiredClientKeys);
+  console.log('[validateStripeConfig] requiredClientKeys:', requiredClientKeys);
 
   // Server-side validation (Node.js environment)
   if (typeof window === 'undefined') {
     const missingServerKeys = requiredServerKeys.filter((key) => !process.env[key]);
-    console.warn('[validateStripeConfig] missingServerKeys:', missingServerKeys);
+    console.error('[validateStripeConfig] missingServerKeys:', missingServerKeys);
     if (missingServerKeys.length > 0) {
-      console.warn('[validateStripeConfig] missingServerKeys:', missingServerKeys);
+      console.error('[validateStripeConfig] missingServerKeys:', missingServerKeys);
       if (process.env.NODE_ENV === 'development') {
-        console.warn('[validateStripeConfig] missingServerKeys:', missingServerKeys);
-        console.warn('🚧 Development: Missing Stripe server keys:', missingServerKeys);
+        console.error('[validateStripeConfig] missingServerKeys:', missingServerKeys);
+        console.error('🚧 Development: Missing Stripe server keys:', missingServerKeys);
         return false;
       } else {
-        console.warn('[validateStripeConfig] missingServerKeys:', missingServerKeys);
+        console.error('[validateStripeConfig] missingServerKeys:', missingServerKeys);
         console.error('❌ Production: Missing required Stripe server keys:', missingServerKeys);
         throw new Error(`Missing Stripe server configuration: ${missingServerKeys.join(', ')}`);
       }
@@ -30,14 +67,17 @@ const validateStripeConfig = () => {
 
   // Client-side validation (browser environment)
   if (typeof window !== 'undefined') {
+    debugStripeEnv();
     const missingClientKeys = requiredClientKeys.filter((key) => !getEnv(key));
 
     if (missingClientKeys.length > 0) {
       if (ENV.isDev()) {
-        console.warn('🚧 Development: Missing Stripe client keys:', missingClientKeys);
+        console.error('🚧 Development: Missing Stripe client keys:', missingClientKeys);
+        debugStripeEnv();
         return false;
       } else {
         console.error('❌ Production: Missing required Stripe client keys:', missingClientKeys);
+        debugStripeEnv();
         throw new Error(`Missing Stripe client configuration: ${missingClientKeys.join(', ')}`);
       }
     }
@@ -73,14 +113,15 @@ if (typeof window !== 'undefined') {
   const isConfigValid = validateStripeConfig();
 
   if (isConfigValid && ENV.STRIPE_PUBLISHABLE_KEY()) {
-    console.warn('[stripePromise] isConfigValid:', isConfigValid);
-    console.warn('[stripePromise] ENV.STRIPE_PUBLISHABLE_KEY():', ENV.STRIPE_PUBLISHABLE_KEY());
-    stripePromise = loadStripe(ENV.STRIPE_PUBLISHABLE_KEY()!);
-    console.warn('[stripePromise] stripePromise:', stripePromise);
+    const key = ENV.STRIPE_PUBLISHABLE_KEY()!;
+    console.log('[stripe.client] initializing', { key: maskKey(key) });
+    stripePromise = loadStripe(key);
     console.log('✅ Stripe client initialized successfully');
   } else {
-    console.warn('[stripePromise] isConfigValid:', isConfigValid);
-    console.warn('[stripePromise] ENV.STRIPE_PUBLISHABLE_KEY():', ENV.STRIPE_PUBLISHABLE_KEY());
+    console.warn('[stripe.client] config invalid or missing key', {
+      isConfigValid,
+      key: maskKey(ENV.STRIPE_PUBLISHABLE_KEY() || undefined),
+    });
     console.log('🎭 Development: Using mock Stripe client');
     stripePromise = Promise.resolve(null);
   }
