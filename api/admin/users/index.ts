@@ -1,28 +1,25 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import mongoose from 'mongoose';
-import { connectDB } from '../../../src/server/config/database';
-import { User } from '../../../src/server/models/User';
-import { cors } from '../../../lib/cors';
-import { requireAdmin } from '../../../lib/authAdmin';
-import { sendError } from '../../../lib/apiError';
-import { toPublicUsers, assertNoSensitiveFields } from '../../../lib/publicUser';
+import { connectMongoDirect, mongoose } from '../../_lib/mongo';
+import { ensureUserModel } from '../../_schemas/user';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  await cors(req, res);
+  // Basic CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const ctx = requireAdmin(req, res);
-  if (!ctx) return; // 403 already sent
-
   if (req.method !== 'GET') {
-    return sendError(res, 405, 'METHOD_NOT_ALLOWED', '許可されていないメソッドです');
+    return res.status(405).json({ success: false, message: 'Method Not Allowed' } as any);
   }
 
   try {
-    await connectDB();
+    await connectMongoDirect();
+    const User = ensureUserModel() as any;
 
     const {
       q = '',
+      search = '',
       page = '1',
       limit = '20',
       sort = '-createdAt',
@@ -33,21 +30,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const skip = (pageNum - 1) * limitNum;
 
     const filter: Record<string, unknown> = {};
-    if (q) {
-      const regex = new RegExp(String(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-      filter.$or = [{ email: regex }, { displayName: regex }, { username: regex }];
+    const qInput = q || search;
+    if (qInput) {
+      const regex = new RegExp(String(qInput).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+      (filter as any).$or = [{ email: regex }, { displayName: regex }, { username: regex }];
     }
 
-    // 強制: 役割フィルタが存在する場合はホワイトリスト ['user','admin'] のみ許容
     const roleQuery = (req.query as any)?.role;
     if (roleQuery) {
       const wanted = String(roleQuery).toLowerCase();
-      if (wanted === 'user' || wanted === 'admin') {
-        (filter as any).role = wanted;
-      }
+      if (wanted === 'user' || wanted === 'admin') (filter as any).role = wanted;
     }
 
-    // Parse sort string like "-createdAt,email"
     const sortObj: Record<string, 1 | -1> = {};
     String(sort)
       .split(',')
@@ -64,38 +58,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       User.countDocuments(filter),
     ]);
 
-    // Map to public shape
-    const data = toPublicUsers(items as any[]);
-
-    // Audit log for admin listing
-    console.log('ADMIN_USER_LIST', {
-      actor: ctx.userId,
-      q: String(q || ''),
-      page: pageNum,
-      limit: limitNum,
-      sort: String(sort),
-      returned: data.length,
-      total,
+    const toPublic = (u: any) => ({
+      _id: String(u._id),
+      email: String(u.email || ''),
+      name: String(u.displayName || u.username || u.name || ''),
+      role: String(u.role || 'user'),
+      blocked: Boolean(u.blocked) || String(u.status || '') === 'suspended',
+      isActive: Boolean(u.isActive) || String(u.status || '') === 'active',
+      lastLoginAt: u.lastLoginAt || u.metadata?.lastLoginAt || null,
     });
 
-    const responsePayload = {
+    const data = (items as any[]).map(toPublic);
+
+    return res.status(200).json({
       success: true,
       data,
       page: pageNum,
       limit: limitNum,
       total,
       totalPages: Math.ceil(total / limitNum),
-    } as const;
-    assertNoSensitiveFields(responsePayload);
-    return res.status(200).json(responsePayload);
+    } as const);
   } catch (error) {
     console.error('❌ ADMIN_USER_LIST error:', error);
     const isCastErr = error instanceof mongoose.Error.CastError;
-    return sendError(
-      res,
-      isCastErr ? 400 : 500,
-      isCastErr ? 'BAD_REQUEST' : 'INTERNAL_ERROR',
-      isCastErr ? '無効なリクエストです' : 'サーバーエラーが発生しました'
-    );
+    return res
+      .status(isCastErr ? 400 : 500)
+      .json({
+        success: false,
+        message: isCastErr ? '無効なリクエストです' : 'サーバーエラー',
+      } as any);
   }
 }
