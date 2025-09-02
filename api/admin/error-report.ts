@@ -16,8 +16,8 @@ import { rateLimit } from '../_utils/rateLimit';
 const limiter = rateLimit({ windowMs: 60000, max: 30 });
 
 async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
-  await cors(req, res);
-  if (!(await limiter(req, res))) return;
+  await cors(req as any, res as any);
+  if (!(await limiter(req as any, res as any))) return;
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') {
