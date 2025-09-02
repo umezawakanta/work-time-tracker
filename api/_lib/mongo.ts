@@ -80,4 +80,4 @@ function mongoReadyState(): number {
   return (mongoose && mongoose.connection && mongoose.connection.readyState) || 0;
 }
 
-module.exports = { connectMongoDirect, maskMongoUri, mongoReadyState, getMongoose, mongoose };
+export = { connectMongoDirect, maskMongoUri, mongoReadyState, getMongoose, mongoose };
