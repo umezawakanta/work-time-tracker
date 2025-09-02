@@ -117,7 +117,7 @@ const handleResetPassword = async (req: VercelRequest, res: VercelResponse): Pro
   return;
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
+async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   try {
     const origin = req.headers.origin;
     setCorsHeaders(res, origin);
@@ -174,3 +174,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     );
   }
 }
+
+module.exports = handler;

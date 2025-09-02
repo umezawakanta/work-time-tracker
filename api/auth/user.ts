@@ -1,1 +1,2 @@
-export { default } from './whoami';
+const handler = require('./whoami');
+module.exports = handler;

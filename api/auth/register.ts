@@ -74,7 +74,7 @@ async function ensureModels(): Promise<void> {
   SubscriptionModel = ensureSubscriptionModel();
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
@@ -428,3 +428,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } as RegisterResponse);
   }
 }
+
+module.exports = handler;

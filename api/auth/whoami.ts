@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import jwt from 'jsonwebtoken';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
@@ -63,3 +63,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 }
+
+module.exports = handler;

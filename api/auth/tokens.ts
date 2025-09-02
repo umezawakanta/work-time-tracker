@@ -10,7 +10,7 @@ interface TokenPair {
 // インメモリストレージ（実際の本番環境ではデータベースを使用）
 const tokenStorage = new Map<string, TokenPair>();
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, HEAD, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -43,3 +43,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   res.status(405).json({ error: 'Method not allowed' });
 }
+
+module.exports = handler;

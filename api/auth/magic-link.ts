@@ -15,7 +15,7 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
+async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   await cors(req, res);
 
   if (req.method === 'OPTIONS') {
@@ -52,3 +52,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     res.status(500).json({ success: false as any, message: 'Internal Server Error' } as any);
   }
 }
+
+module.exports = handler;
