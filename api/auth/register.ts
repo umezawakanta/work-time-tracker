@@ -1,12 +1,26 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const mongoLib = require('../_lib/mongo');
-const connectMongoDirect = mongoLib.connectMongoDirect as () => Promise<void>;
-const maskMongoUri = mongoLib.maskMongoUri as (uri?: string) => string;
-const mongoose = mongoLib.mongoose;
-// Use dynamic CJS-friendly imports for schemas
-const { ensureUserModel } = require('../_schemas/user');
-const { ensureSubscriptionModel } = require('../_schemas/subscription');
+let connectMongoDirect: () => Promise<void>;
+let maskMongoUri: (uri?: string) => string;
+let mongoose: any;
+
+async function getMongoLib() {
+  const mod: any = await import('../_lib/mongo.js');
+  const lib = (mod as any).default || mod;
+  connectMongoDirect = lib.connectMongoDirect as () => Promise<void>;
+  maskMongoUri = lib.maskMongoUri as (uri?: string) => string;
+  mongoose = lib.mongoose || (lib.getMongoose ? await lib.getMongoose() : null);
+}
+
+async function getSchemas() {
+  const userMod: any = await import('../_schemas/user.js');
+  const subMod: any = await import('../_schemas/subscription.js');
+  const uLib = (userMod as any).default || userMod;
+  const sLib = (subMod as any).default || subMod;
+  return {
+    ensureUserModel: (uLib as any).ensureUserModel as () => any,
+    ensureSubscriptionModel: (sLib as any).ensureSubscriptionModel as () => any,
+  };
+}
 
 // Helper functions (simplified for API route)
 const createEntityId = (prefix: string = 'entity'): string => {
@@ -71,10 +85,6 @@ async function readJson(req: VercelRequest): Promise<any> {
 
 let User: any = null;
 let SubscriptionModel: any = null;
-async function ensureModels(): Promise<void> {
-  User = ensureUserModel();
-  SubscriptionModel = ensureSubscriptionModel();
-}
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
@@ -146,6 +156,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // データベース接続（直接接続）
+    await getMongoLib();
     const hasUri = Boolean(process.env.MONGODB_URI);
     const uriMasked = maskMongoUri(process.env.MONGODB_URI);
     console.log('[auth/register] DB connect start', {
@@ -178,7 +189,9 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     // 既存ユーザーの確認
-    await ensureModels();
+    const { ensureUserModel, ensureSubscriptionModel } = await getSchemas();
+    User = ensureUserModel();
+    SubscriptionModel = ensureSubscriptionModel();
     console.log('[auth/register] findOne(users) start', {
       modelReady: Boolean(User),
       connState: (mongoose as any).connection?.readyState,

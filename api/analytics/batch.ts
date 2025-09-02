@@ -49,8 +49,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // For now, acknowledge-only mode; DB persistence removed to avoid server imports
-    let saved = list.length;
-    let errors = 0;
+    const saved = list.length;
+    const errors = 0;
 
     console.log(`[${opId}] Batch processed: saved=${saved}, errors=${errors}`);
     res.status(200).json({ success: true, saved, errors } as BatchResponseBody);

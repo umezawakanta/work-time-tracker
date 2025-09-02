@@ -5,9 +5,9 @@ let SubscriptionModel: any = null;
 let mongoose: any = null;
 
 async function getLibs() {
-  // CJS import of shared mongo lib
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const mongoMod: any = require('../_lib/mongo');
+  // dynamically import shared mongo lib to satisfy linter
+  const mod: any = await import('../_lib/mongo.js');
+  const mongoMod: any = (mod as any).default || mod;
   if (mongoMod.mongoose) {
     mongoose = mongoMod.mongoose;
   } else if (mongoMod.getMongoose) {
