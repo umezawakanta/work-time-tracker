@@ -16,7 +16,7 @@ const mongoLib = require('../../_lib/mongo');
 const connectMongoDirect = mongoLib.connectMongoDirect as () => Promise<void>;
 const mongoose = mongoLib.mongoose as typeof import('mongoose');
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   // Basic CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -104,3 +104,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } as any);
   }
 }
+
+module.exports = handler;
