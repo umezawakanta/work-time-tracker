@@ -9,14 +9,14 @@ interface VercelResponse {
   setHeader: (n: string, v: string) => void;
   end: () => void;
 }
-import { cors } from '../../../lib/cors';
 
 function clamp(n: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, n));
 }
 
 async function handler(req: VercelRequest, res: VercelResponse) {
-  await cors(req as any, res as any);
+  const { cors } = await import('../../../lib/cors');
+  await (cors as any)(req as any, res as any);
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET')
     return res.status(405).json({ success: false, error: 'METHOD_NOT_ALLOWED' });
