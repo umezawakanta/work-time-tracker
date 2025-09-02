@@ -54,10 +54,9 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     await connectMongoDirect();
-    const mod: any = await import('../../_schemas/user.js');
-    const lib = (mod as any).default || mod;
-    const ensureUserModel = lib.ensureUserModel as () => any;
-    const User = ensureUserModel();
+    const lib = require('../../_schemas/user');
+    const ensureUserModel = (lib as any).ensureUserModel as () => Promise<any>;
+    const User = await ensureUserModel();
 
     const body = await readJson(req);
     const updates: Record<string, unknown> = {};

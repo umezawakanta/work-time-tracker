@@ -31,8 +31,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     await connectMongoDirect();
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const schemaLib = require('../../_schemas/user');
-    const ensureUserModel = (schemaLib as any).ensureUserModel as () => unknown;
-    const User = ensureUserModel() as any;
+    const ensureUserModel = (schemaLib as any).ensureUserModel as () => Promise<any>;
+    const User = await ensureUserModel();
 
     const {
       q = '',
