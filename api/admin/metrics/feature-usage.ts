@@ -12,9 +12,9 @@ import { cors } from '../../../lib/cors';
 import { requireAdmin } from '../../../lib/authAdmin';
 
 async function handler(req: VercelRequest, res: VercelResponse) {
-  await cors(req, res);
+  await cors(req as any, res as any);
   if (req.method === 'OPTIONS') return res.status(200).end();
-  const ctx = requireAdmin(req, res);
+  const ctx = requireAdmin(req as any, res as any);
   if (!ctx) return;
 
   if (req.method !== 'GET') {

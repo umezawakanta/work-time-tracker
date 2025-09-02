@@ -1,4 +1,7 @@
-import { mongoose } from '../_lib/mongo';
+// CJS-friendly: avoid top-level ESM import
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const mongoLib = require('../_lib/mongo');
+const mongoose = mongoLib.mongoose as typeof import('mongoose');
 
 const UserSchema = new mongoose.Schema(
   {
@@ -35,6 +38,8 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-export function ensureUserModel() {
+function ensureUserModel() {
   return mongoose.models.User || mongoose.model('User', UserSchema, 'users');
 }
+
+module.exports = { ensureUserModel };
