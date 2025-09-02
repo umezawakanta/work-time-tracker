@@ -39,11 +39,11 @@ async function readJson(req: VercelRequest): Promise<any> {
 async function handler(req: VercelRequest, res: VercelResponse) {
   // Basic CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'PATCH, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'PATCH, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  if (req.method !== 'PATCH') {
+  if (req.method !== 'PATCH' && req.method !== 'DELETE') {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' } as any);
   }
 
@@ -58,6 +58,15 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     const lib = (mod as any).default || mod;
     const ensureUserModel = (lib as any).ensureUserModel as () => Promise<any>;
     const User = await ensureUserModel();
+
+    if (req.method === 'DELETE') {
+      await User.updateOne(
+        { _id: id },
+        { $set: { status: 'suspended' } },
+        { runValidators: false }
+      );
+      return res.status(200).json({ success: true } as any);
+    }
 
     const body = await readJson(req);
     const updates: Record<string, unknown> = {};

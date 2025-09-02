@@ -1,3 +1,3 @@
-// CJS-friendly re-export without require() linter violations
-import whoami from './whoami.js';
-module.exports = whoami as any;
+// TypeScript import assignment to re-export CJS handler without ESM default
+import handler = require('./whoami.js');
+export = handler;
