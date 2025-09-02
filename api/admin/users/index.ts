@@ -1,9 +1,20 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined>;
+  query?: Record<string, unknown>;
+}
+
+interface VercelResponse {
+  status: (code: number) => VercelResponse;
+  json: (body: unknown) => void;
+  setHeader: (name: string, value: string) => void;
+  end: () => void;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const mongoLib = require('../../_lib/mongo');
 const connectMongoDirect = mongoLib.connectMongoDirect as () => Promise<void>;
 const mongoose = mongoLib.mongoose as typeof import('mongoose');
-import { ensureUserModel } from '../../_schemas/user';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Basic CORS
@@ -18,6 +29,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     await connectMongoDirect();
+    const mod: any = await import('../../_schemas/user.js');
+    const schemaLib = (mod as any).default || mod;
+    const ensureUserModel = schemaLib.ensureUserModel as () => unknown;
     const User = ensureUserModel() as any;
 
     const {
