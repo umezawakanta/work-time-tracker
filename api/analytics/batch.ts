@@ -1,4 +1,14 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined>;
+  body?: unknown;
+}
+interface VercelResponse {
+  status: (c: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (n: string, v: string) => void;
+  end: () => void;
+}
 import { cors } from '../../lib/cors';
 
 interface BatchedEvent {
@@ -20,8 +30,8 @@ interface BatchResponseBody {
   message?: string;
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  await cors(req, res);
+async function handler(req: VercelRequest, res: VercelResponse) {
+  await cors(req as any, res as any);
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') {
     res.status(405).json({ success: false, message: 'Method Not Allowed' } as BatchResponseBody);
@@ -49,3 +59,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(200).json({ success: true, saved: 0, errors: 0 } as BatchResponseBody);
   }
 }
+
+module.exports = handler;

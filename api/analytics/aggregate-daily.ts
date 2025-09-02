@@ -1,8 +1,19 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getMemorySample, saveAnalyticsEvent } from '../_lib/analyticsStore.js';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined>;
+  query?: Record<string, any>;
+}
+interface VercelResponse {
+  status: (c: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (n: string, v: string) => void;
+  end: () => void;
+}
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { getMemorySample, saveAnalyticsEvent } = require('../_lib/analyticsStore');
 
 // Minimal daily aggregation stub: writes an 'daily_aggregate' event per day with counts
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const now = new Date();
     const todayKey = now.toISOString().slice(0, 10);
@@ -46,3 +57,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ ok: false, error: 'Internal error' });
   }
 }
+
+module.exports = handler;

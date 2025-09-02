@@ -1,4 +1,7 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelResponse {
+  status: (c: number) => VercelResponse;
+  json: (b: unknown) => void;
+}
 // Remove server middleware import to avoid build failure in Vercel
 
 interface AnalyticsRequest {
@@ -384,4 +387,4 @@ function getDays(timeRange: string): number {
   }
 }
 
-export default handler;
+module.exports = handler;

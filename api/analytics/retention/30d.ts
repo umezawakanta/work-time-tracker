@@ -1,5 +1,17 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getMemorySample } from '../../_lib/analyticsStore';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined>;
+  query?: Record<string, unknown>;
+}
+interface VercelResponse {
+  status: (c: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (n: string, v: string) => void;
+  end: () => void;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { getMemorySample } = require('../../_lib/analyticsStore');
 
 type CohortRow = {
   date: string; // cohort start date (YYYY-MM-DD)
@@ -11,7 +23,7 @@ function toDateKey(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -31,7 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // NOTE: For now we use in-memory sample. Can be swapped to Mongo aggregation later.
     const events = getMemorySample(5000)
-      .filter((e) => {
+      .filter((e: any) => {
         try {
           const t = new Date(e.timestamp);
           return t >= start && t <= end && !!(e.sessionId || e.clientId || e.ip);
@@ -39,7 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return false;
         }
       })
-      .map((e) => ({
+      .map((e: any) => ({
         t: new Date(e.timestamp as string),
         key: String(e.sessionId || e.clientId || e.ip || ''),
       }));
@@ -95,3 +107,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ ok: false, error: 'Internal error' });
   }
 }
+
+module.exports = handler;

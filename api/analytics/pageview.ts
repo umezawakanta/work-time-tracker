@@ -1,4 +1,14 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined>;
+  body?: unknown;
+}
+interface VercelResponse {
+  status: (c: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (n: string, v: string) => void;
+  end: () => void;
+}
 import { cors } from '../../lib/cors';
 
 // Simple in-memory store keyed by YYYY-MM-DD (fallback when DB not persisted due to cold start)
@@ -8,8 +18,8 @@ function getDateKey(date = new Date()): string {
   return date.toISOString().slice(0, 10);
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  await cors(req, res);
+async function handler(req: VercelRequest, res: VercelResponse) {
+  await cors(req as any, res as any);
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method Not Allowed' });
@@ -50,3 +60,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 // Export store for other endpoints in the same runtime (best-effort)
 export { pageviewBuckets };
+
+module.exports = handler;

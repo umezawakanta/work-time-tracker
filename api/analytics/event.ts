@@ -1,6 +1,18 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { analyticsEventSchema } from '../_schemas/analytics.js';
-import { saveAnalyticsEvent } from '../_lib/analyticsStore.js';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, any>;
+  body?: unknown;
+  socket?: any;
+}
+interface VercelResponse {
+  status: (c: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (n: string, v: string) => void;
+  end: () => void;
+}
+import { analyticsEventSchema } from '../_schemas/analytics';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { saveAnalyticsEvent } = require('../_lib/analyticsStore');
 
 type AnalyticsEventBody = {
   event: string;
@@ -35,7 +47,7 @@ function sanitizeData(input: unknown): Record<string, unknown> | undefined {
   }
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -87,3 +99,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ ok: false, error: 'Internal error' });
   }
 }
+
+module.exports = handler;

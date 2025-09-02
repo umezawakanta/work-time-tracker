@@ -1,4 +1,14 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined>;
+  query?: Record<string, any>;
+}
+interface VercelResponse {
+  status: (c: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (n: string, v: string) => void;
+  end: () => void;
+}
 import { cors } from '../../lib/cors';
 
 type RangeParam = 'day' | 'week' | 'month' | '24h' | '7d' | '30d';
@@ -14,8 +24,8 @@ function resolveWindow(range: string | undefined): { from: Date; to: Date } {
   return { from, to: now };
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  await cors(req, res);
+async function handler(req: VercelRequest, res: VercelResponse) {
+  await cors(req as any, res as any);
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, error: 'METHOD_NOT_ALLOWED' });
@@ -43,3 +53,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     },
   });
 }
+
+module.exports = handler;
