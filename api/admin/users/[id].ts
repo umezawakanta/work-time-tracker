@@ -13,7 +13,6 @@ interface VercelResponse {
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const mongoLib = require('../../_lib/mongo');
 const connectMongoDirect = mongoLib.connectMongoDirect as () => Promise<void>;
-const mongoose = mongoLib.mongoose as typeof import('mongoose');
 
 type AllowedRole = 'user' | 'admin';
 const ALLOWED_ROLES: AllowedRole[] = ['user', 'admin'];
@@ -47,15 +46,20 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' } as any);
   }
 
+  let m: any = null;
   try {
     const id = String(req.query.id || '');
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    // connect first to ensure mongoose is available
+    await connectMongoDirect();
+    const mod: any = await import('../../_lib/mongo.js');
+    const ml = (mod as any).default || mod;
+    m = ml.mongoose || (ml.getMongoose ? await ml.getMongoose() : null);
+
+    if (!id || !m?.Types?.ObjectId?.isValid?.(id)) {
       return res.status(400).json({ success: false, message: '無効なユーザーIDです' } as any);
     }
-
-    await connectMongoDirect();
-    const mod: any = await import('../../_schemas/user.js');
-    const lib = (mod as any).default || mod;
+    const userMod: any = await import('../../_schemas/user.js');
+    const lib = (userMod as any).default || userMod;
     const ensureUserModel = (lib as any).ensureUserModel as () => Promise<any>;
     const User = await ensureUserModel();
 
@@ -147,7 +151,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ success: true, data: toPublic(refreshed) } as const);
   } catch (error) {
     console.error('❌ ADMIN_USER_UPDATE error:', error);
-    const isCastErr = error instanceof mongoose.Error.CastError;
+    const isCastErr = m?.Error ? error instanceof m.Error.CastError : false;
     const status = (error as any)?.statusCode || (isCastErr ? 400 : 500);
     return res.status(status).json({
       success: false,
