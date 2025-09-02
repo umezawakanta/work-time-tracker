@@ -54,7 +54,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     await connectMongoDirect();
-    const lib = require('../../_schemas/user');
+    const mod: any = await import('../../_schemas/user.js');
+    const lib = (mod as any).default || mod;
     const ensureUserModel = (lib as any).ensureUserModel as () => Promise<any>;
     const User = await ensureUserModel();
 
