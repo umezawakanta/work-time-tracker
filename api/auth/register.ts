@@ -4,8 +4,9 @@ const mongoLib = require('../_lib/mongo');
 const connectMongoDirect = mongoLib.connectMongoDirect as () => Promise<void>;
 const maskMongoUri = mongoLib.maskMongoUri as (uri?: string) => string;
 const mongoose = mongoLib.mongoose;
-import { ensureUserModel } from '../_schemas/user';
-import { ensureSubscriptionModel } from '..//_schemas/subscription';
+// Use dynamic CJS-friendly imports for schemas
+const { ensureUserModel } = require('../_schemas/user');
+const { ensureSubscriptionModel } = require('../_schemas/subscription');
 
 // Helper functions (simplified for API route)
 const createEntityId = (prefix: string = 'entity'): string => {

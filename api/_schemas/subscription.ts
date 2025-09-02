@@ -1,4 +1,7 @@
-import { mongoose } from '../_lib/mongo';
+// CJS-friendly: avoid top-level ESM import
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const mongoLib = require('../_lib/mongo');
+const mongoose = mongoLib.mongoose as typeof import('mongoose');
 
 const SubscriptionSchema = new mongoose.Schema(
   {
@@ -22,9 +25,11 @@ const SubscriptionSchema = new mongoose.Schema(
   { timestamps: true, strict: false }
 );
 
-export function ensureSubscriptionModel() {
+function ensureSubscriptionModel() {
   return (
     mongoose.models.Subscription ||
     mongoose.model('Subscription', SubscriptionSchema, 'subscriptions')
   );
 }
+
+module.exports = { ensureSubscriptionModel };
