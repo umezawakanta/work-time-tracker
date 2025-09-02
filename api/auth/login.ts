@@ -5,8 +5,14 @@ let SubscriptionModel: any = null;
 let mongoose: any = null;
 
 async function getLibs() {
-  const mongoMod: any = await import('../_lib/mongo.js');
-  mongoose = mongoMod.mongoose;
+  // CJS import of shared mongo lib
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const mongoMod: any = require('../_lib/mongo');
+  if (mongoMod.mongoose) {
+    mongoose = mongoMod.mongoose;
+  } else if (mongoMod.getMongoose) {
+    mongoose = await mongoMod.getMongoose();
+  }
   const bcryptMod: any = await import('bcryptjs');
   const jwtMod: any = await import('jsonwebtoken');
   const cookieMod: any = await import('cookie');

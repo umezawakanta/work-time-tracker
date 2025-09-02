@@ -1,4 +1,11 @@
-import mongoose from 'mongoose';
+// CJS-friendly dynamic import of mongoose (avoid top-level ESM import)
+let mongoose: any = null;
+async function getMongoose(): Promise<any> {
+  if (mongoose) return mongoose;
+  const mod: any = await import('mongoose');
+  mongoose = mod.default || mod;
+  return mongoose;
+}
 
 function hasDbPath(uriRaw: string): boolean {
   // path exists if there is a slash followed by non-? characters before query or end
@@ -10,7 +17,7 @@ function getDbNameFromUri(uriRaw: string): string | undefined {
   return m && m[3] ? decodeURIComponent(m[3]) : undefined;
 }
 
-export function maskMongoUri(uriRaw: string | undefined): string {
+function maskMongoUri(uriRaw: string | undefined): string {
   if (!uriRaw) return 'undefined';
   try {
     return uriRaw.replace(/(mongodb(\+srv)?:\/\/)([^:@]+)(:[^@]+)?@/i, '$1****:****@');
@@ -19,12 +26,13 @@ export function maskMongoUri(uriRaw: string | undefined): string {
   }
 }
 
-export async function connectMongoDirect(): Promise<void> {
+async function connectMongoDirect(): Promise<void> {
   const uri = process.env.MONGODB_URI;
   if (!uri) throw new Error('MONGODB_URI is not set');
+  const m = await getMongoose();
   const isSrv = /^mongodb\+srv:\/\//i.test(uri);
   const hasCred = /:\/\//.test(uri) && /@/.test(uri);
-  const beforeState = mongoose.connection.readyState;
+  const beforeState = m.connection.readyState;
   console.log('[mongo] direct connect begin', {
     nodeEnv: process.env.NODE_ENV,
     vercel: Boolean(process.env.VERCEL),
@@ -45,11 +53,11 @@ export async function connectMongoDirect(): Promise<void> {
       bufferCommands: false,
     };
     if (dbNameToUse) opts.dbName = dbNameToUse;
-    await mongoose.connect(uri, opts);
+    await m.connect(uri, opts);
     console.log('[mongo] direct connect success', {
-      readyStateAfter: mongoose.connection.readyState,
-      host: mongoose.connection.host,
-      name: mongoose.connection.name,
+      readyStateAfter: m.connection.readyState,
+      host: m.connection.host,
+      name: m.connection.name,
       dbFromUri: dbNameFromUri || null,
       dbApplied: dbNameToUse || 'fromUri',
     });
@@ -62,14 +70,14 @@ export async function connectMongoDirect(): Promise<void> {
       reasonCode: err?.reason?.code,
       reasonMessage: err?.reason?.message,
       labels: err?.errorLabels,
-      readyStateAfter: mongoose.connection.readyState,
+      readyStateAfter: (mongoose && mongoose.connection && mongoose.connection.readyState) || 0,
     });
     throw error;
   }
 }
 
-export function mongoReadyState(): number {
-  return mongoose.connection.readyState;
+function mongoReadyState(): number {
+  return (mongoose && mongoose.connection && mongoose.connection.readyState) || 0;
 }
 
-export { mongoose };
+module.exports = { connectMongoDirect, maskMongoUri, mongoReadyState, getMongoose, mongoose };

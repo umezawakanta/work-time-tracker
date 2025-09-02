@@ -1,8 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { connectMongoDirect, maskMongoUri } from '../_lib/mongo';
-import { mongoose } from '../_lib/mongo';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const mongoLib = require('../_lib/mongo');
+const connectMongoDirect = mongoLib.connectMongoDirect as () => Promise<void>;
+const maskMongoUri = mongoLib.maskMongoUri as (uri?: string) => string;
+const mongoose = mongoLib.mongoose;
 import { ensureUserModel } from '../_schemas/user';
 import { ensureSubscriptionModel } from '..//_schemas/subscription';
 
@@ -196,7 +197,9 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       } as RegisterResponse);
     }
 
-    // パスワードのハッシュ化
+    // パスワードのハッシュ化（動的ロードでCJS互換）
+    const bcryptMod: any = await import('bcryptjs');
+    const bcrypt = (bcryptMod as any).default || bcryptMod;
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // ユーザーIDとタイムスタンプの生成
@@ -371,6 +374,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     // JWTトークンの生成
+    const jwtMod: any = await import('jsonwebtoken');
+    const jwt = (jwtMod as any).default || jwtMod;
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
     const token = jwt.sign(
       {

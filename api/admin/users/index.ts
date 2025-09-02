@@ -1,5 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectMongoDirect, mongoose } from '../../_lib/mongo';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const mongoLib = require('../../_lib/mongo');
+const connectMongoDirect = mongoLib.connectMongoDirect as () => Promise<void>;
+const mongoose = mongoLib.mongoose as typeof import('mongoose');
 import { ensureUserModel } from '../../_schemas/user';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -81,11 +84,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (error) {
     console.error('❌ ADMIN_USER_LIST error:', error);
     const isCastErr = error instanceof mongoose.Error.CastError;
-    return res
-      .status(isCastErr ? 400 : 500)
-      .json({
-        success: false,
-        message: isCastErr ? '無効なリクエストです' : 'サーバーエラー',
-      } as any);
+    return res.status(isCastErr ? 400 : 500).json({
+      success: false,
+      message: isCastErr ? '無効なリクエストです' : 'サーバーエラー',
+    } as any);
   }
 }

@@ -1,5 +1,4 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import jwt from 'jsonwebtoken';
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS
@@ -31,6 +30,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    const jwtMod: any = await import('jsonwebtoken');
+    const jwt = (jwtMod as any).default || jwtMod;
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
     const decoded = jwt.verify(token, jwtSecret, {
       issuer: 'work-time-tracker',

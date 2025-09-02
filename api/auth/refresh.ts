@@ -1,7 +1,16 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import jwt from 'jsonwebtoken';
-import { connectMongoDirect, maskMongoUri } from '../_lib/mongo';
-import { mongoose } from '../_lib/mongo';
+let mongoose: any = null;
+async function getMongoLib() {
+  const mod: any = await import('../_lib/mongo.js');
+  const lib = (mod as any).default || mod;
+  if (!mongoose) {
+    mongoose = lib.mongoose || (lib.getMongoose ? await lib.getMongoose() : null);
+  }
+  return {
+    connectMongoDirect: lib.connectMongoDirect as () => Promise<void>,
+    maskMongoUri: lib.maskMongoUri as (uri?: string) => string,
+  };
+}
 // Lazy-load server modules to avoid bundle-time resolution issues
 let connectDB: (() => Promise<void>) | null = null;
 let User: any = null;
@@ -23,6 +32,9 @@ async function loadServerModules(): Promise<boolean> {
 async function ensureUserModel(): Promise<void> {
   if (User) return;
   try {
+    if (!mongoose) {
+      await getMongoLib();
+    }
     const existing = (mongoose.models as any)?.User;
     if (existing) {
       User = existing;
@@ -108,10 +120,13 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         labels: err?.errorLabels,
       });
       // fallback to direct connection
+      const { connectMongoDirect } = await getMongoLib();
       await connectMongoDirect();
     }
 
     // Verify refresh token
+    const jwtMod: any = await import('jsonwebtoken');
+    const jwt = (jwtMod as any).default || jwtMod;
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
 
     let decodedToken: any;

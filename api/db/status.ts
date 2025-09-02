@@ -1,5 +1,15 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectMongoDirect, mongoose } from '../_lib/mongo';
+let mongoose: any = null;
+async function getMongoLib() {
+  const mod: any = await import('../_lib/mongo.js');
+  const lib = (mod as any).default || mod;
+  if (!mongoose) {
+    mongoose = lib.mongoose || (lib.getMongoose ? await lib.getMongoose() : null);
+  }
+  return {
+    connectMongoDirect: lib.connectMongoDirect as () => Promise<void>,
+  };
+}
 
 function ensureDbName(uriRaw: string | undefined): string | undefined {
   if (!uriRaw) return uriRaw;
@@ -23,6 +33,7 @@ async function directConnect(): Promise<void> {
   // connectMongoDirect already ensures dbName when missing
   const hasUri = Boolean(process.env.MONGODB_URI);
   if (!hasUri) throw new Error('MONGODB_URI is not set');
+  const { connectMongoDirect } = await getMongoLib();
   await connectMongoDirect();
 }
 
