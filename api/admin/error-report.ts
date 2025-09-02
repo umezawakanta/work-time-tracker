@@ -1,11 +1,21 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined>;
+  body?: unknown;
+}
+interface VercelResponse {
+  status: (c: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (n: string, v: string) => void;
+  end: () => void;
+}
 import { saveErrorReport } from '../_lib/errorStore';
 import { cors } from '../../lib/cors';
 import { rateLimit } from '../_utils/rateLimit';
 
 const limiter = rateLimit({ windowMs: 60000, max: 30 });
 
-export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
+async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   await cors(req, res);
   if (!(await limiter(req, res))) return;
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -36,3 +46,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     res.status(500).json({ success: false, message: 'Failed to save error report' } as any);
   }
 }
+
+module.exports = handler;

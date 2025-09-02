@@ -1,4 +1,15 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined>;
+  query?: Record<string, unknown>;
+}
+
+interface VercelResponse {
+  status: (code: number) => VercelResponse;
+  json: (body: unknown) => void;
+  setHeader: (name: string, value: string) => void;
+  end: () => void;
+}
 
 interface AdminUsersMetrics {
   total: number;
@@ -49,7 +60,7 @@ function numberInRange(min: number, max: number): number {
   return Math.round(min + (max - min) * 0.42);
 }
 
-export default function handler(req: VercelRequest, res: VercelResponse): void {
+function handler(req: VercelRequest, res: VercelResponse): void {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -111,3 +122,5 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
 
   res.status(200).json({ metrics, priorityActions });
 }
+
+module.exports = handler;

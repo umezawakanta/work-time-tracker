@@ -1,6 +1,19 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectMongoDirect, mongoose } from '../../_lib/mongo';
-import { ensureUserModel } from '../../_schemas/user';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined>;
+  query: Record<string, unknown>;
+  on: any;
+}
+interface VercelResponse {
+  status: (c: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (n: string, v: string) => void;
+  end: () => void;
+}
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const mongoLib = require('../../_lib/mongo');
+const connectMongoDirect = mongoLib.connectMongoDirect as () => Promise<void>;
+const mongoose = mongoLib.mongoose as typeof import('mongoose');
 
 type AllowedRole = 'user' | 'admin';
 const ALLOWED_ROLES: AllowedRole[] = ['user', 'admin'];
@@ -23,7 +36,7 @@ async function readJson(req: VercelRequest): Promise<any> {
   }
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   // Basic CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'PATCH, OPTIONS');
@@ -41,6 +54,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     await connectMongoDirect();
+    const mod: any = await import('../../_schemas/user.js');
+    const lib = (mod as any).default || mod;
+    const ensureUserModel = lib.ensureUserModel as () => any;
     const User = ensureUserModel();
 
     const body = await readJson(req);
@@ -124,11 +140,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('❌ ADMIN_USER_UPDATE error:', error);
     const isCastErr = error instanceof mongoose.Error.CastError;
     const status = (error as any)?.statusCode || (isCastErr ? 400 : 500);
-    return res
-      .status(status)
-      .json({
-        success: false,
-        message: status === 400 ? '無効なリクエストです' : 'サーバーエラーが発生しました',
-      } as any);
+    return res.status(status).json({
+      success: false,
+      message: status === 400 ? '無効なリクエストです' : 'サーバーエラーが発生しました',
+    } as any);
   }
 }
+
+module.exports = handler;

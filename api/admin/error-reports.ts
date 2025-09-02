@@ -1,6 +1,17 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined>;
+  query?: Record<string, unknown>;
+}
 
-export default function handler(req: VercelRequest, res: VercelResponse): void {
+interface VercelResponse {
+  status: (code: number) => VercelResponse;
+  json: (body: unknown) => void;
+  setHeader: (name: string, value: string) => void;
+  end: () => void;
+}
+
+function handler(req: VercelRequest, res: VercelResponse): void {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -24,3 +35,5 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
 }
 
 // duplicate removed
+
+module.exports = handler;
