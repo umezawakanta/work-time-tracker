@@ -1,3 +1,3 @@
-// TypeScript import assignment to re-export CJS handler without ESM default
-import handler = require('./whoami.js');
-export = handler;
+/* eslint-disable @typescript-eslint/no-require-imports */
+const handler = require('./whoami.js');
+module.exports = handler;
