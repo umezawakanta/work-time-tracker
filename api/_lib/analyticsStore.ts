@@ -1,6 +1,5 @@
-import type { MongoClient, Db, Collection } from 'mongodb';
-
-export interface AnalyticsEventDoc {
+// Avoid top-level ESM imports/exports for Vercel CJS runtime
+interface AnalyticsEventDoc {
   event: string;
   data?: Record<string, unknown>;
   clientId?: string;
@@ -13,19 +12,19 @@ export interface AnalyticsEventDoc {
 }
 
 let memoryStore: AnalyticsEventDoc[] = [];
-let mongo: { client: MongoClient; db: Db; col: Collection<AnalyticsEventDoc> } | null = null;
+let mongo: { client: any; db: any; col: any } | null = null;
 
 async function getMongo(): Promise<typeof mongo> {
   try {
     const uri = process.env.MONGODB_URI || process.env.MONGODB_URL;
     if (!uri) return null;
-    const { MongoClient: MC } = await import('mongodb');
+    const { MongoClient: MC } = (await import('mongodb')) as any;
     if (mongo) return mongo;
     const client = new MC(uri, { maxPoolSize: 2 });
     await client.connect();
     const dbName = process.env.MONGODB_DB || process.env.MONGO_INITDB_DATABASE || 'app';
     const db = client.db(dbName);
-    const col = db.collection<AnalyticsEventDoc>('analytics_events');
+    const col = db.collection('analytics_events');
     try {
       // Best-effort indexes
       await col.createIndex({ event: 1, timestamp: -1 }, { background: true });
@@ -39,7 +38,7 @@ async function getMongo(): Promise<typeof mongo> {
   }
 }
 
-export async function saveAnalyticsEvent(doc: AnalyticsEventDoc): Promise<void> {
+async function saveAnalyticsEvent(doc: AnalyticsEventDoc): Promise<void> {
   const item: AnalyticsEventDoc = { ...doc, createdAt: new Date() };
   const m = await getMongo();
   if (m) {
@@ -59,11 +58,11 @@ export async function saveAnalyticsEvent(doc: AnalyticsEventDoc): Promise<void> 
   if (memoryStore.length > 5000) memoryStore = memoryStore.slice(-2500);
 }
 
-export function getMemorySample(limit = 50): AnalyticsEventDoc[] {
+function getMemorySample(limit = 50): AnalyticsEventDoc[] {
   return memoryStore.slice(-limit);
 }
 
-export async function countActiveUsersSince(sinceIso: string): Promise<number> {
+async function countActiveUsersSince(sinceIso: string): Promise<number> {
   const since = new Date(sinceIso);
   if (Number.isNaN(since.getTime())) return 0;
   const m = await getMongo();
@@ -91,3 +90,5 @@ export async function countActiveUsersSince(sinceIso: string): Promise<number> {
   }
   return uniq.size;
 }
+
+module.exports = { saveAnalyticsEvent, getMemorySample, countActiveUsersSince };
