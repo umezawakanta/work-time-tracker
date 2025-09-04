@@ -30,7 +30,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const stripeMod: any = await import('../_lib/stripe');
+    const stripeMod: any = await import('../_lib/stripe.js');
     const { getStripe } = (stripeMod as any).default || stripeMod;
     const stripe = await getStripe();
     const priceId = (req.body && req.body.planId) || process.env.STRIPE_DEFAULT_PRICE_ID;
@@ -52,24 +52,3 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 }
 
 module.exports = handler as any;
-
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-  if (req.method !== 'POST') {
-    res.status(405).json({ message: 'Method Not Allowed' } as any);
-    return;
-  }
-  // Minimal mock: immediately return a session URL pointing back to success state
-  const base =
-    process.env.VITE_APP_URL || (typeof req.headers.origin === 'string' ? req.headers.origin : '');
-  const sessionUrl = `${base || ''}/subscription?success=1`;
-  res.status(200).json({ sessionUrl } as any);
-}
