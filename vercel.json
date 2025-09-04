@@ -9,6 +9,21 @@
   "functions": {
     "api/**/*.ts": {
       "includeFiles": "src/server/**"
+    },
+    "api/notifications/health.ts": {
+      "runtime": "nodejs22.x"
+    },
+    "api/notifications/stream.ts": {
+      "runtime": "nodejs22.x"
+    },
+    "api/analytics/summary.ts": {
+      "runtime": "nodejs22.x"
+    },
+    "api/db/status.ts": {
+      "runtime": "nodejs22.x"
+    },
+    "api/db/reconnect.ts": {
+      "runtime": "nodejs22.x"
     }
   },
   "headers": [
