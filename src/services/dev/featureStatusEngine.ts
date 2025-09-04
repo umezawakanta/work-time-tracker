@@ -218,12 +218,8 @@ export async function deriveAllFeatureStatuses(): Promise<DerivedStatusesResult>
       const allApproved = arts.length > 0 && arts.every((k) => isArtifactApproved(f.id, k));
       cap = allApproved ? 'complete' : 'review';
     }
-    // 有効値は「承認済み」と「到達可能上限」のうち低い方
-    let eff = minByOrder(a, cap);
-    // 追加ガード: 要件定義書が承認されていない場合は常に planning
-    if (!isRequirementsApproved(f.id)) {
-      eff = 'planning';
-    }
+    // 有効値は「承認済み」と「到達可能上限」のうち低い方（要件承認の有無では落とさない）
+    const eff = minByOrder(a, cap);
     effective[f.id] = eff;
   }
 

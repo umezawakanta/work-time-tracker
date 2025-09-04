@@ -165,17 +165,16 @@ export const login = async (
 };
 
 export const logout = async (): Promise<void> => {
-  // TokenManagerを使用してクリーンアップ
+  try {
+    // サーバーにログアウトを通知（httpOnly Cookie 破棄）
+    await api.post('/auth/logout', {});
+  } catch (e) {
+    console.warn('Logout API call failed (continuing client cleanup):', e);
+  }
+
+  // クライアント側トークンを確実に削除
   tokenManager.clearTokens();
-
-  // 注意: バックエンドにログアウトエンドポイントが実装されていないため、
-  // クライアントサイドでのトークン削除のみ行います。
-  // 将来的にバックエンドでセッション管理が必要になった場合は、
-  // ここにAPI呼び出しを追加してください。
-
-  // 開発環境での自動認証を無効化するフラグを設定
   sessionStorage.setItem('user-logged-out', 'true');
-
   console.log('🚪 Logout completed - tokens cleared');
 };
 
