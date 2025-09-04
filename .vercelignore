@@ -103,6 +103,8 @@ api/*
 !api/_utils/**
 !api/auth
 !api/auth/**
+!api/subscription
+!api/subscription/**
 !api/bugs
 !api/bugs/**
 !api/admin
