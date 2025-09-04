@@ -1,4 +1,14 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined> & { [key: string]: any };
+  body?: any;
+}
+interface VercelResponse {
+  status: (code: number) => VercelResponse;
+  json: (body: any) => void;
+  setHeader: (name: string, value: string) => void;
+  end: () => void;
+}
 
 interface TokenPair {
   accessToken: string;
