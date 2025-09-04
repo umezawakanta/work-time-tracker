@@ -1,4 +1,15 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined> & { [key: string]: any };
+  body?: unknown;
+  on: any;
+}
+interface VercelResponse {
+  status: (code: number) => VercelResponse;
+  json: (body: unknown) => void;
+  setHeader: (name: string, value: string) => void;
+  end: () => void;
+}
 let connectMongoDirect: () => Promise<void>;
 let maskMongoUri: (uri?: string) => string;
 let mongoose: any;
