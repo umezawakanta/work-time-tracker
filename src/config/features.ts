@@ -1538,7 +1538,7 @@ export const featuresRegistry: Feature[] = [
     path: '/bugs',
     category: 'プロジェクト管理',
     description: '不具合の一覧と管理',
-    status: 'release_pending',
+    status: 'complete',
     requiresRealAPI: true,
     priority: 'P1',
     targetRelease: '2025-09-07',
