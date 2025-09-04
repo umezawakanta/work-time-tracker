@@ -29,8 +29,26 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const successUrl = 'https://work-time-tracker-five.vercel.app/subscription?success=1';
-  res.status(200).json({ sessionUrl: successUrl });
+  try {
+    const stripeMod: any = await import('../_lib/stripe');
+    const { getStripe } = (stripeMod as any).default || stripeMod;
+    const stripe = await getStripe();
+    const priceId = (req.body && req.body.planId) || process.env.STRIPE_DEFAULT_PRICE_ID;
+    if (!priceId) throw new Error('Missing price id');
+    const successUrl = 'https://work-time-tracker-five.vercel.app/subscription?success=1';
+    const cancelUrl = 'https://work-time-tracker-five.vercel.app/subscription';
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      line_items: [{ price: priceId, quantity: 1 }],
+    });
+    res.status(200).json({ sessionUrl: session.url });
+  } catch {
+    // Stripe未設定時はフォールバックURL
+    const successUrl = 'https://work-time-tracker-five.vercel.app/subscription?success=1';
+    res.status(200).json({ sessionUrl: successUrl });
+  }
 }
 
 module.exports = handler as any;

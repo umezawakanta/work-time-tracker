@@ -28,15 +28,33 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // 実装メモ: 本番Stripe連携時は顧客IDから状態を取得する。
-  // ここではDB/Stripeに依存しない最小限の中立ステータスを返す。
-  res.status(200).json({
-    plan: null,
-    status: null,
-    renewAt: null,
-    card: null,
-    atPeriodEnd: false,
-  });
+  try {
+    const stripeMod: any = await import('../_lib/stripe');
+    const { getStripe } = (stripeMod as any).default || stripeMod;
+    const stripe = await getStripe();
+    const customerId = process.env.STRIPE_CUSTOMER_ID; // 将来: ユーザーから解決
+    if (!customerId) throw new Error('No customer context');
+    const subs = await stripe.subscriptions.list({ customer: customerId, limit: 1 });
+    const s = subs.data[0] || null;
+    const paymentMethods = await stripe.paymentMethods.list({
+      customer: customerId,
+      type: 'card',
+      limit: 1,
+    });
+    const pm = paymentMethods.data[0] || null;
+    res.status(200).json({
+      plan: s?.items?.data?.[0]?.price?.id || null,
+      status: (s?.status as any) || null,
+      renewAt: s?.current_period_end ? new Date(s.current_period_end * 1000).toISOString() : null,
+      card: pm ? { last4: pm.card?.last4, brand: pm.card?.brand } : null,
+      atPeriodEnd: Boolean(s?.cancel_at_period_end),
+    });
+  } catch {
+    // フォールバック: 中立ステータス
+    res
+      .status(200)
+      .json({ plan: null, status: null, renewAt: null, card: null, atPeriodEnd: false });
+  }
 }
 
 module.exports = handler as any;

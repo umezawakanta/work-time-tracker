@@ -27,9 +27,22 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // 同一オリジンのモックポータルページに遷移（Docs/将来のポータルへ置換可）
-  const url = 'https://work-time-tracker-five.vercel.app/subscription?portal=1';
-  res.status(200).json({ url });
+  try {
+    const stripeMod: any = await import('../_lib/stripe');
+    const { getStripe } = (stripeMod as any).default || stripeMod;
+    const stripe = await getStripe();
+    const customerId = process.env.STRIPE_CUSTOMER_ID; // 将来: 認証から取得
+    if (!customerId) throw new Error('No customer context');
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: 'https://work-time-tracker-five.vercel.app/subscription',
+    });
+    res.status(200).json({ url: session.url });
+  } catch {
+    // フォールバック: 同一オリジンのモックポータル
+    const url = 'https://work-time-tracker-five.vercel.app/subscription?portal=1';
+    res.status(200).json({ url });
+  }
 }
 
 module.exports = handler as any;
