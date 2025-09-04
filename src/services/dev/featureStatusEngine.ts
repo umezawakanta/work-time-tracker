@@ -206,14 +206,17 @@ export async function deriveAllFeatureStatuses(): Promise<DerivedStatusesResult>
   for (const f of featuresRegistry) {
     const s = computeSuggestedFeatureStatus(f, signals);
     suggested[f.id] = s;
-    const a = approved[f.id] ?? normalizeToNewStatus(f.status);
-    // Cap（承認で到達可能な最大段階）: 提案がdocumentingまで到達し、かつ当該機能の全成果物が承認済みならcompleteまで許容
-    let cap: FeatureStatus = s;
-    if (s === 'documenting') {
+    const normalized = normalizeToNewStatus(f.status);
+    // レジストリの状態が進んだ場合、承認値は少なくともレジストリ状態まで引き上げる
+    const a0 = approved[f.id] ?? normalized;
+    const a = maxStatus(a0, normalized);
+    // Cap（到達可能上限）: レジストリ状態と提案状態の高い方を基本とし、
+    // documenting までの提案時のみ、成果物承認で review/complete を決める
+    let cap: FeatureStatus = maxStatus(s, normalized);
+    if (cap !== 'complete' && s === 'documenting') {
       const arts = Object.keys(featureArtifactsRegistry[f.id] || {});
       const allApproved = arts.length > 0 && arts.every((k) => isArtifactApproved(f.id, k));
-      if (allApproved) cap = 'complete';
-      else cap = 'review';
+      cap = allApproved ? 'complete' : 'review';
     }
     // 有効値は「承認済み」と「到達可能上限」のうち低い方
     let eff = minByOrder(a, cap);
