@@ -64,11 +64,10 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     const User = await ensureUserModel();
 
     if (req.method === 'DELETE') {
-      await User.updateOne(
-        { _id: id },
-        { $set: { status: 'suspended' } },
-        { runValidators: false }
-      );
+      const result = await User.deleteOne({ _id: id });
+      if (!result || (result as any).deletedCount === 0) {
+        return res.status(404).json({ success: false, message: 'ユーザーが見つかりません' } as any);
+      }
       return res.status(200).json({ success: true } as any);
     }
 
