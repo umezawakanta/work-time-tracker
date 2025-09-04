@@ -1,7 +1,17 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, unknown>;
+  body?: unknown;
+}
+interface VercelResponse {
+  status: (n: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (k: string, v: string) => void;
+  end: () => void;
+}
 import mongoose from 'mongoose';
 
-export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
+async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -26,3 +36,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     res.status(500).json({ success: false, message: 'Reconnect failed' } as any);
   }
 }
+
+module.exports = handler as any;

@@ -1,4 +1,14 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, unknown>;
+  query?: Record<string, unknown>;
+}
+interface VercelResponse {
+  status: (n: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (k: string, v: string) => void;
+  end: () => void;
+}
 let mongoose: any = null;
 async function getMongoLib() {
   const mod: any = await import('../_lib/mongo.js');
@@ -37,7 +47,7 @@ async function directConnect(): Promise<void> {
   await connectMongoDirect();
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
+async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -88,3 +98,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     res.status(200).json({ success: true, connected: false, state: 0 } as any);
   }
 }
+
+module.exports = handler as any;
