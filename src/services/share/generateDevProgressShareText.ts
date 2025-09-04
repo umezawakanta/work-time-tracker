@@ -73,7 +73,7 @@ export function generateDevProgressShareText(opts?: ShareProgressOptions): strin
           : status === 'integration_testing'
             ? '🔗'
             : '✅';
-    lines.push(`${emoji} ${f.name}：${progress}%（予定日: ${dateStr}）`);
+    lines.push(`${emoji} ${f.name}：${progress}%（リリース予定日: ${dateStr}）`);
   }
 
   const body = lines.join('\n');

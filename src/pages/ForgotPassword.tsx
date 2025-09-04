@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'react-hot-toast';
-import { AxiosError } from 'axios';
+import axios from 'axios';
 import { Mail, ArrowLeft, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function ForgotPassword() {
@@ -50,7 +50,7 @@ export default function ForgotPassword() {
     } catch (error) {
       console.error('パスワードリセット要求エラー:', error);
 
-      if (error instanceof AxiosError) {
+      if (axios.isAxiosError(error)) {
         const statusCode = error.response?.status;
         const errorMessage = error.response?.data?.message;
 

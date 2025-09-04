@@ -45,7 +45,7 @@
         "test:coverage:html": "jest --coverage --coverageReporters=html",
         "test:coverage:full": "jest --coverage --coverageReporters=html --coverageReporters=lcov --coverageReporters=text --coverageReporters=clover",
         "test:coverage:serve": "pnpm run test:coverage:full && npx http-server coverage/lcov-report -p 8080 -o",
-        "test:ci": "jest --ci --coverage --watchAll=false",
+        "test:ci": "jest --ci --coverage --watchAll=false --runInBand --reporters=default --forceExit --detectOpenHandles",
         "lighthouse:autorun": "lhci autorun",
         "lighthouse:manual": "lighthouse http://localhost:3002 --output html --output-path ./lighthouse-report.html",
         "lighthouse:ci": "lhci autorun --assert --upload.target=temporary-public-storage",

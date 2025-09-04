@@ -25,6 +25,13 @@ jest.mock('react-router-dom', () => {
   const React = require('react');
   return {
     useNavigate: () => jest.fn(),
+    useLocation: () => ({
+      pathname: '/subscription',
+      search: '',
+      hash: '',
+      state: null,
+      key: 'test',
+    }),
     BrowserRouter: ({ children }: any) => React.createElement('div', null, children),
   };
 });

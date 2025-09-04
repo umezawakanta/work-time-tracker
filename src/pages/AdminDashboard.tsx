@@ -604,9 +604,7 @@ const AdminDashboard: React.FC = () => {
       {/* ヘッダー */}
       <div className="flex items-center justify-between">
         <div>
-          {isFeatureAccessible('/_bg/admin/title').allowed && (
-            <h1 className="text-3xl font-bold">管理者ダッシュボード</h1>
-          )}
+          <h1 className="text-3xl font-bold">管理者ダッシュボード</h1>
           {isFeatureAccessible('/_bg/admin/last-updated').allowed && (
             <p className="text-gray-600">最終更新: {lastUpdate.toLocaleString()}</p>
           )}

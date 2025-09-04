@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'react-hot-toast';
 import { api } from '@/services/api/apiConfig';
-import { AxiosError } from 'axios';
+import axios from 'axios';
 import { Eye, EyeOff, CheckCircle, XCircle, AlertCircle, User, Mail, Lock } from 'lucide-react';
 import { tokenManager } from '@/services/auth/TokenManager';
 import { useAnalytics } from '@/lib/analytics';
@@ -256,7 +256,7 @@ export default function Register() {
     } catch (error) {
       console.error('登録エラー:', error);
 
-      if (error instanceof AxiosError) {
+      if (axios.isAxiosError(error)) {
         const errorMessage = error.response?.data?.message;
         const errorField = error.response?.data?.field;
 

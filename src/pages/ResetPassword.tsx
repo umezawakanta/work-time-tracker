@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'react-hot-toast';
-import { AxiosError } from 'axios';
+import axios from 'axios';
 import {
   Lock,
   Eye,
@@ -100,7 +100,7 @@ export default function ResetPassword() {
       } catch (error) {
         console.error('Token verification failed:', error);
 
-        if (error instanceof AxiosError) {
+        if (axios.isAxiosError(error)) {
           const statusCode = error.response?.status;
           if (statusCode === 400) {
             setErrors({ token: 'リセットトークンが無効または期限切れです' });
@@ -171,7 +171,7 @@ export default function ResetPassword() {
     } catch (error) {
       console.error('パスワードリセットエラー:', error);
 
-      if (error instanceof AxiosError) {
+      if (axios.isAxiosError(error)) {
         const statusCode = error.response?.status;
         const errorMessage = error.response?.data?.message;
 

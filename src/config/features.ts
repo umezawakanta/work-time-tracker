@@ -385,7 +385,7 @@ export const featuresRegistry: Feature[] = [
     name: '管理 分析',
     path: '/admin/analytics',
     category: '運用',
-    status: 'planning',
+    status: 'system_testing',
     requiresRealAPI: true,
   },
   {
@@ -393,7 +393,7 @@ export const featuresRegistry: Feature[] = [
     name: '管理 エラー監視',
     path: '/admin/errors',
     category: '運用',
-    status: 'planning',
+    status: 'system_testing',
     requiresRealAPI: false,
   },
   {
