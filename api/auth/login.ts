@@ -209,8 +209,8 @@ async function handler(req: any, res: any) {
       }
     }
 
-    // プレビュー/デモ: DBが無い場合の簡易ログイン
-    if (!dbReady) {
+    // プレビュー/デモ: DBが無い場合の簡易ログイン（本番では無効）
+    if (!dbReady && process.env.NODE_ENV !== 'production') {
       const { jwt, serialize } = await getLibs();
       const isDemoUser = /@/.test(email) && password && password.length >= 4;
       if (!isDemoUser) {
