@@ -33,12 +33,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // 最低限: httpOnly Cookie を無効化
-    const expired = 'Thu, 01 Jan 1970 00:00:00 GMT';
-    const cookieBase = 'HttpOnly; Secure; SameSite=None; Path=/';
-    // 互換性のため単一Cookieのみ確実に破棄（複数は環境により配列が許可されないことがある）
-    res.setHeader('Set-Cookie', `access_token=; Expires=${expired}; Max-Age=0; ${cookieBase}`);
-
+    // 現時点ではサーバーサイドのセッションは保持していないため、
+    // クッキー破棄はクライアント側に委ねる（Set-Cookie は送らない）
     // 監査ログ（簡易）
     console.log('[auth/logout] user logged out');
 
