@@ -1,7 +1,5 @@
 // Plain JS to avoid TS duplication during Vercel build
-const { connectDB } = require('../../src/server/config/database');
-const { User } = require('../../src/server/models/User');
-const jwt = require('jsonwebtoken');
+let jwt;
 
 function setCorsHeaders(res, origin) {
     const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
@@ -34,7 +32,8 @@ module.exports = async function handler(req, res) {
         }
 
         const token = authHeader.replace('Bearer ', '').trim();
-        await connectDB();
+        // DB 依存を排除。トークンの整合性のみ軽量確認（本番のヘルス用途）
+        if (!jwt) jwt = require('jsonwebtoken');
         const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
 
         let decodedToken;
@@ -48,31 +47,8 @@ module.exports = async function handler(req, res) {
             return;
         }
 
-        const user = await User.findOne({ $or: [{ _id: decodedToken.userId }, { id: decodedToken.userId }] });
-        if (!user) {
-            res.status(200).json({ isAuthenticated: false, message: 'User not found' });
-            return;
-        }
-        if (user.status !== 'active') {
-            res.status(200).json({ isAuthenticated: false, message: 'Account inactive' });
-            return;
-        }
-        user.lastActivityAt = new Date();
-        await user.save();
-
-        res.status(200).json({
-            isAuthenticated: true,
-            user: {
-                id: user.id,
-                email: user.email,
-                displayName: user.displayName,
-                role: user.role,
-                isVerified: user.isVerified,
-                avatar: user.avatar,
-                provider: user.provider,
-            },
-            message: 'OK',
-        });
+        // DB照会は行わない（軽量化/依存排除）。ペイロードから最小情報を返す。
+        res.status(200).json({ isAuthenticated: true, userId: decodedToken.userId, message: 'OK' });
     } catch (error) {
         res.status(200).json({ isAuthenticated: false, message: 'Internal error' });
     }
