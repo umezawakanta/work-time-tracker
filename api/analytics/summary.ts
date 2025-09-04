@@ -9,7 +9,6 @@ interface VercelResponse {
   setHeader: (n: string, v: string) => void;
   end: () => void;
 }
-import { cors } from '../../lib/cors';
 
 type RangeParam = 'day' | 'week' | 'month' | '24h' | '7d' | '30d';
 
@@ -25,7 +24,9 @@ function resolveWindow(range: string | undefined): { from: Date; to: Date } {
 }
 
 async function handler(req: VercelRequest, res: VercelResponse) {
-  await cors(req as any, res as any);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, error: 'METHOD_NOT_ALLOWED' });

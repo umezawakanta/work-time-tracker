@@ -1,6 +1,15 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, unknown>;
+}
+interface VercelResponse {
+  status: (n: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (k: string, v: string) => void;
+  end: () => void;
+}
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -9,15 +18,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
   if (req.method !== 'GET') {
-    res.status(405).json({ ok: false, message: 'Method Not Allowed' } as any);
+    res.status(405).json({ ok: false } as any);
     return;
   }
   res.status(200).json({ ok: true, ts: new Date().toISOString() } as any);
 }
 
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(_req: VercelRequest, res: VercelResponse): Promise<void> {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.status(200).json({ success: true, sse: true } as any);
-}
+module.exports = handler as any;
