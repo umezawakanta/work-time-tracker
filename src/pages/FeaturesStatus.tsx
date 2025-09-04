@@ -63,6 +63,32 @@ export default function FeaturesStatusPage(): React.JSX.Element {
   >('all');
   const [viewMode, setViewMode] = useState<'category' | 'priority'>('priority');
 
+  const nextActionFor = (f: Feature): string | null => {
+    const s = (derived?.effective?.[f.id] ?? f.status) as FeatureStatus;
+    switch (s) {
+      case 'planning':
+        return '要求仕様書の作成';
+      case 'designing':
+        return '基本設計書の作成';
+      case 'developing':
+        return 'ユニットテストの整備・実装完了';
+      case 'unit_testing':
+        return '結合試験仕様の作成と実行';
+      case 'integration_testing':
+        return '総合試験仕様の確認（本番での動作確認）';
+      case 'system_testing':
+        return 'ドキュメント整備（運用手順・FAQ）';
+      case 'documenting':
+        return 'レビュー・承認フローへ進める';
+      case 'review':
+        return 'リリース判定（release_pending へ）';
+      case 'release_pending':
+        return '本番リリース実施・完成へ更新';
+      default:
+        return null;
+    }
+  };
+
   const isInProgressStatus = (s: FeatureStatus): boolean => {
     const n = normalizeToNewStatus(s);
     return n !== 'planning' && n !== 'complete';
@@ -286,6 +312,11 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                           >
                             移動
                           </Button>
+                          {nextActionFor(f) && (
+                            <p className="mt-1 text-xs text-slate-500">
+                              次のアクション: {nextActionFor(f)}
+                            </p>
+                          )}
                         </td>
                       </tr>
                     );
@@ -345,6 +376,11 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                             )}
                             {f.description && (
                               <p className="text-sm text-muted-foreground mt-1">{f.description}</p>
+                            )}
+                            {nextActionFor(f) && (
+                              <p className="text-xs text-slate-500 mt-2">
+                                次のアクション: {nextActionFor(f)}
+                              </p>
                             )}
                             <p className="text-xs text-slate-500 mt-1">path: {f.path}</p>
                             {derived?.signals && (
