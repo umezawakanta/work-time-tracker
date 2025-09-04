@@ -201,8 +201,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
     // 既存ユーザーの確認
     const { ensureUserModel, ensureSubscriptionModel } = await getSchemas();
-    User = ensureUserModel();
-    SubscriptionModel = ensureSubscriptionModel();
+    User = await ensureUserModel();
+    SubscriptionModel = await ensureSubscriptionModel();
     console.log('[auth/register] findOne(users) start', {
       modelReady: Boolean(User),
       connState: (mongoose as any).connection?.readyState,
