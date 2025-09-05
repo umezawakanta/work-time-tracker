@@ -26,8 +26,8 @@ export default function BugListPage(): React.JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [bugs, setBugs] = useState<BugItem[]>([]);
-  const [featureId, setFeatureId] = useState<string>(searchParams.get('featureId') || '');
-  const [status, setStatus] = useState<string>(searchParams.get('status') || '');
+  const [featureId, setFeatureId] = useState<string>(searchParams.get('featureId') || 'all');
+  const [status, setStatus] = useState<string>(searchParams.get('status') || 'all');
 
   const selectableFeatures = featuresRegistry
     .map((f) => ({ id: f.id, name: f.name }))
@@ -36,8 +36,8 @@ export default function BugListPage(): React.JSX.Element {
   const load = async () => {
     setLoading(true);
     const qs = new URLSearchParams();
-    if (featureId) qs.set('featureId', featureId);
-    if (status) qs.set('status', status);
+    if (featureId !== 'all') qs.set('featureId', featureId);
+    if (status !== 'all') qs.set('status', status);
     const res = await fetch('/api/bugs?' + qs.toString());
     const data = await res.json();
     setBugs(data?.data || []);
@@ -50,8 +50,8 @@ export default function BugListPage(): React.JSX.Element {
 
   useEffect(() => {
     const qs = new URLSearchParams();
-    if (featureId) qs.set('featureId', featureId);
-    if (status) qs.set('status', status);
+    if (featureId !== 'all') qs.set('featureId', featureId);
+    if (status !== 'all') qs.set('status', status);
     setSearchParams(qs, { replace: true });
   }, [featureId, status]);
 
@@ -71,7 +71,7 @@ export default function BugListPage(): React.JSX.Element {
                 <SelectValue placeholder="すべて" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">すべて</SelectItem>
+                <SelectItem value="all">すべて</SelectItem>
                 {selectableFeatures.map((f) => (
                   <SelectItem key={f.id} value={f.id}>
                     {f.name}
@@ -87,7 +87,7 @@ export default function BugListPage(): React.JSX.Element {
                 <SelectValue placeholder="すべて" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">すべて</SelectItem>
+                <SelectItem value="all">すべて</SelectItem>
                 <SelectItem value="open">未対応</SelectItem>
                 <SelectItem value="in_progress">対応中</SelectItem>
                 <SelectItem value="resolved">修正済み</SelectItem>
