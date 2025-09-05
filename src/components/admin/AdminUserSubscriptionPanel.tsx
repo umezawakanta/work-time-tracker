@@ -96,7 +96,7 @@ const AdminUserSubscriptionPanel: React.FC<Props> = ({ user, open, onOpenChange 
     if (!sub) return;
     try {
       setLoading(true);
-      const updated = await updateUserSubscriptionCorrect(user._id, { planId: planInput });
+      const updated = await updateUserSubscription(user._id, { planId: planInput });
       setSub(updated);
       toast.success('プランを更新しました');
     } catch {
