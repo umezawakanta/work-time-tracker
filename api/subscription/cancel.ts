@@ -30,11 +30,16 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const atPeriodEnd = Boolean((req.body && (req.body as any).atPeriodEnd) ?? true);
+    // Resolve current user and stripe customer
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const ctx = require('../_lib/user-context.js');
     const stripeMod: any = await import('../_lib/stripe.js');
     const { getStripe } = (stripeMod as any).default || stripeMod;
     const stripe = await getStripe();
-    const customerId = process.env.STRIPE_CUSTOMER_ID;
-    if (!customerId) throw new Error('No customer context');
+    const auth = await ctx.verifyJwtAndExtract(req as any);
+    const User = await ctx.ensureDbAndUserModel();
+    const user = await ctx.findUserByIdLoose(User, auth.userId);
+    const customerId = await ctx.ensureStripeCustomerForUser(user, stripe);
     const subs = await stripe.subscriptions.list({ customer: customerId, limit: 1 });
     const s = subs.data[0];
     if (!s) throw new Error('No active subscription');

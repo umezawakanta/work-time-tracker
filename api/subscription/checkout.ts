@@ -30,9 +30,16 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    // Resolve current user and stripe customer
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const ctx = require('../_lib/user-context.js');
     const stripeMod: any = await import('../_lib/stripe.js');
     const { getStripe } = (stripeMod as any).default || stripeMod;
     const stripe = await getStripe();
+    const auth = await ctx.verifyJwtAndExtract(req as any);
+    const User = await ctx.ensureDbAndUserModel();
+    const user = await ctx.findUserByIdLoose(User, auth.userId);
+    await ctx.ensureStripeCustomerForUser(user, stripe);
     const priceId = (req.body && req.body.planId) || process.env.STRIPE_DEFAULT_PRICE_ID;
     if (!priceId) throw new Error('Missing price id');
     const successUrl = 'https://work-time-tracker-five.vercel.app/subscription?success=1';
