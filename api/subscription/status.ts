@@ -49,11 +49,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       card: pm ? { last4: pm.card?.last4, brand: pm.card?.brand } : null,
       atPeriodEnd: Boolean(s?.cancel_at_period_end),
     });
-  } catch {
-    // フォールバック: 中立ステータス
-    res
-      .status(200)
-      .json({ plan: null, status: null, renewAt: null, card: null, atPeriodEnd: false });
+  } catch (e: any) {
+    res.status(500).json({ error: 'SUBSCRIPTION_STATUS_FAILED', message: e?.message || 'unknown' });
   }
 }
 

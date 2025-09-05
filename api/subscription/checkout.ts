@@ -44,10 +44,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       line_items: [{ price: priceId, quantity: 1 }],
     });
     res.status(200).json({ sessionUrl: session.url });
-  } catch {
-    // Stripe未設定時はフォールバックURL
-    const successUrl = 'https://work-time-tracker-five.vercel.app/subscription?success=1';
-    res.status(200).json({ sessionUrl: successUrl });
+  } catch (e: any) {
+    res.status(500).json({ error: 'CHECKOUT_FAILED', message: e?.message || 'unknown' });
   }
 }
 

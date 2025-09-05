@@ -38,10 +38,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       return_url: 'https://work-time-tracker-five.vercel.app/subscription',
     });
     res.status(200).json({ url: session.url });
-  } catch {
-    // フォールバック: 同一オリジンのモックポータル
-    const url = 'https://work-time-tracker-five.vercel.app/subscription?portal=1';
-    res.status(200).json({ url });
+  } catch (e: any) {
+    res.status(500).json({ error: 'PORTAL_FAILED', message: e?.message || 'unknown' });
   }
 }
 

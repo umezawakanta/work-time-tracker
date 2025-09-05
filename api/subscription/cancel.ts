@@ -28,7 +28,25 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  res.status(200).json({ success: true });
+  try {
+    const atPeriodEnd = Boolean((req.body && (req.body as any).atPeriodEnd) ?? true);
+    const stripeMod: any = await import('../_lib/stripe.js');
+    const { getStripe } = (stripeMod as any).default || stripeMod;
+    const stripe = await getStripe();
+    const customerId = process.env.STRIPE_CUSTOMER_ID;
+    if (!customerId) throw new Error('No customer context');
+    const subs = await stripe.subscriptions.list({ customer: customerId, limit: 1 });
+    const s = subs.data[0];
+    if (!s) throw new Error('No active subscription');
+    if (atPeriodEnd) {
+      await stripe.subscriptions.update(s.id, { cancel_at_period_end: true });
+    } else {
+      await stripe.subscriptions.cancel(s.id);
+    }
+    res.status(200).json({ success: true });
+  } catch (e: any) {
+    res.status(500).json({ success: false, error: 'CANCEL_FAILED', message: e?.message || 'unknown' });
+  }
 }
 
 module.exports = handler as any;
