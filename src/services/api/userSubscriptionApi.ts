@@ -158,11 +158,9 @@ export const createUserSubscription = async (subscriptionData: {
 };
 
 // 自動更新の設定変更
-export const updateAutoRenewal = async (id: string, cancelAtPeriodEnd: boolean) => {
+export const updateAutoRenewal = async (userId: string, cancelAtPeriodEnd: boolean) => {
   try {
-    const response = await api.patch(`/userSubscription/${id}/cancel`, {
-      cancelAtPeriodEnd,
-    });
+    const response = await api.put(`/userSubscription/user/${userId}`, { cancelAtPeriodEnd });
     return response.data;
   } catch (error) {
     console.error('Error updating auto renewal:', error);
@@ -217,11 +215,12 @@ export const scheduleSubscriptionChange = async (
 };
 
 // サブスクリプション解約
-export const cancelSubscription = async (id: string, reason?: string) => {
+export const cancelSubscription = async (userId: string, reason?: string) => {
   try {
-    const response = await api.post(`/userSubscription/${id}/cancel-immediately`, {
-      reason,
-    });
+    // 即時解約は DELETE エンドポイントを使用
+    const response = await api.delete(`/userSubscription/user/${userId}`, {
+      data: { reason },
+    } as any);
     return response.data;
   } catch (error) {
     console.error('Error canceling subscription:', error);
@@ -230,9 +229,13 @@ export const cancelSubscription = async (id: string, reason?: string) => {
 };
 
 // 解約後の復活
-export const reactivateSubscription = async (id: string) => {
+export const reactivateSubscription = async (userId: string) => {
   try {
-    const response = await api.post(`/userSubscription/${id}/reactivate`);
+    const response = await api.put(`/userSubscription/user/${userId}`, {
+      status: 'active',
+      cancelAtPeriodEnd: false,
+      canceledAt: undefined,
+    });
     return response.data;
   } catch (error) {
     console.error('Error reactivating subscription:', error);

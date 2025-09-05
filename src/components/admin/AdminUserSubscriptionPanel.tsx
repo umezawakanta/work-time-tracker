@@ -111,7 +111,7 @@ const AdminUserSubscriptionPanel: React.FC<Props> = ({ user, open, onOpenChange 
     try {
       setLoading(true);
       const next = !(sub.cancelAtPeriodEnd ?? false);
-      const updated = await updateAutoRenewal(sub._id, next);
+      const updated = await updateAutoRenewal(user._id, next);
       setSub(updated);
       toast.success(next ? '次回更新で解約予定にしました' : '自動更新を再開しました');
     } catch {
@@ -125,7 +125,7 @@ const AdminUserSubscriptionPanel: React.FC<Props> = ({ user, open, onOpenChange 
     if (!sub) return;
     try {
       setLoading(true);
-      const updated = await cancelSubscription(sub._id, 'admin_action');
+      const updated = await cancelSubscription(user._id, 'admin_action');
       setSub(updated);
       toast.success('即時解約しました');
     } catch {
@@ -139,7 +139,7 @@ const AdminUserSubscriptionPanel: React.FC<Props> = ({ user, open, onOpenChange 
     if (!sub) return;
     try {
       setLoading(true);
-      const updated = await reactivateSubscription(sub._id);
+      const updated = await reactivateSubscription(user._id);
       setSub(updated);
       toast.success('再開しました');
     } catch {
