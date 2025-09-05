@@ -81,11 +81,27 @@ export const addUserSubscription = async (
 
 // ユーザーサブスクリプションを更新
 export const updateUserSubscription = async (
-  id: string,
+  userId: string,
   subscription: Partial<Omit<UserSubscription, '_id'>>
 ): Promise<UserSubscription> => {
   try {
-    const response = await api.put(`/userSubscription/${id}`, subscription);
+    if (!userId) throw new Error('userId is required');
+    const response = await api.put(`/userSubscription/user/${userId}`, subscription);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating user subscription:', error);
+    throw error;
+  }
+};
+
+// 正しい実装（上の一時的な書き換えを確定）
+export const updateUserSubscriptionCorrect = async (
+  userId: string,
+  subscription: Partial<Omit<UserSubscription, '_id'>>
+): Promise<UserSubscription> => {
+  try {
+    if (!userId) throw new Error('userId is required');
+    const response = await api.put(`/userSubscription/user/${userId}`, subscription);
     return response.data;
   } catch (error) {
     console.error('Error updating user subscription:', error);
@@ -247,6 +263,8 @@ const userSubscriptionApi = {
   scheduleSubscriptionChange,
   cancelSubscription,
   reactivateSubscription,
+  // 一時的に互換エイリアス（古い呼び出し箇所のため）
+  updateUserSubscriptionCorrect: updateUserSubscription,
 };
 
 export default userSubscriptionApi;

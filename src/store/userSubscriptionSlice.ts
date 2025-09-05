@@ -45,7 +45,7 @@ export const updateUserSubscription = createAsyncThunk(
     _id: string;
     subscription: Partial<Omit<UserSubscription, '_id'>>;
   }) => {
-    const response = await userSubscriptionApi.updateUserSubscription(_id, subscription);
+    const response = await userSubscriptionApi.updateUserSubscriptionCorrect(_id, subscription);
     return response;
   }
 );

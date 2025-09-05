@@ -235,7 +235,7 @@ export default function SubscriptionUpgradePage() {
 
       // 現在のサブスクリプションがある場合は更新、なければ新規作成
       if (currentSubscription) {
-        await userSubscriptionApi.updateUserSubscription(currentSubscription._id, {
+        await userSubscriptionApi.updateUserSubscription(user._id, {
           planId,
           status: 'active',
           currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30日後
@@ -553,7 +553,7 @@ export default function SubscriptionUpgradePage() {
                   onClick={async () => {
                     try {
                       setIsProcessing(true);
-                      await userSubscriptionApi.updateUserSubscription(currentSubscription._id, {
+                      await userSubscriptionApi.updateUserSubscription(user._id, {
                         cancelAtPeriodEnd: !currentSubscription.cancelAtPeriodEnd,
                       });
                       // 最新のサブスクリプション情報を再取得
