@@ -23,6 +23,9 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
 import { UserSubscription } from '@/types';
+import subscriptionGatewayApi, {
+  type SubscriptionStatusResponse,
+} from '@/services/api/subscriptionGatewayApi';
 import { useAnalytics } from '@/lib/analytics';
 
 // Type definition for interval
@@ -165,6 +168,7 @@ export default function SubscriptionUpgradePage() {
   const [interval, setInterval] = useState<'monthly' | 'yearly'>('monthly');
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [currentSubscription, setCurrentSubscription] = useState<UserSubscription | null>(null);
+  const [gatewayStatus, setGatewayStatus] = useState<SubscriptionStatusResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
@@ -184,6 +188,11 @@ export default function SubscriptionUpgradePage() {
           setIsLoading(true);
           const response = await userSubscriptionApi.getUserSubscription(user.id);
           setCurrentSubscription(response.data);
+          // 決済ゲートウェイの実ステータスも取得
+          try {
+            const gw = await subscriptionGatewayApi.getSubscriptionStatus();
+            setGatewayStatus(gw);
+          } catch {}
 
           // 現在のプランがあれば、そのプランを選択状態にする
           if (response.data && response.data.planId) {
@@ -209,10 +218,18 @@ export default function SubscriptionUpgradePage() {
 
     // フリープラン以外を選択した場合は支払いダイアログを表示
     if (planId !== 'free') {
-      try {
-        trackEvent('subscription_start_checkout', { planId, interval });
-      } catch {}
-      setShowPaymentDialog(true);
+      // 直接Stripe Checkoutへ遷移（サーバ側のデフォルトPrice IDを使用）
+      (async () => {
+        try {
+          trackEvent('subscription_start_checkout', { planId, interval });
+        } catch {}
+        try {
+          const { sessionUrl } = await subscriptionGatewayApi.startCheckout({ planId: '' as any });
+          if (sessionUrl) window.location.href = sessionUrl;
+        } catch (e) {
+          toast.error('チェックアウトの開始に失敗しました');
+        }
+      })();
     } else {
       // フリープランはダイアログなしで直接選択可能
       try {
@@ -553,14 +570,26 @@ export default function SubscriptionUpgradePage() {
                   onClick={async () => {
                     try {
                       setIsProcessing(true);
-                      await userSubscriptionApi.updateUserSubscription(user._id, {
-                        cancelAtPeriodEnd: !currentSubscription.cancelAtPeriodEnd,
-                      });
+                      // 決済ゲートウェイに合わせる: 次回以降の解約を設定
+                      if (!currentSubscription.cancelAtPeriodEnd) {
+                        await subscriptionGatewayApi.cancelSubscriptionGateway({
+                          atPeriodEnd: true,
+                        });
+                      } else {
+                        // 再開はポータルで可能。暫定ではユーザ購読のフラグを戻す
+                        await userSubscriptionApi.updateUserSubscription(user._id, {
+                          cancelAtPeriodEnd: false,
+                        });
+                      }
                       // 最新のサブスクリプション情報を再取得
                       const response = await userSubscriptionApi.getUserSubscription(
                         user?.id || ''
                       );
                       setCurrentSubscription(response.data);
+                      try {
+                        const gw = await subscriptionGatewayApi.getSubscriptionStatus();
+                        setGatewayStatus(gw);
+                      } catch {}
                       toast.success(
                         currentSubscription.cancelAtPeriodEnd
                           ? '自動更新が有効になりました'
@@ -578,6 +607,23 @@ export default function SubscriptionUpgradePage() {
                   {currentSubscription.cancelAtPeriodEnd
                     ? '自動更新を有効にする'
                     : '自動更新を停止する'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    try {
+                      setIsProcessing(true);
+                      const { url } = await subscriptionGatewayApi.openPortal();
+                      if (url) window.location.href = url;
+                    } catch {
+                      toast.error('ポータルの取得に失敗しました');
+                    } finally {
+                      setIsProcessing(false);
+                    }
+                  }}
+                  disabled={isProcessing}
+                >
+                  支払い情報を管理（ポータル）
                 </Button>
               </div>
             )}
