@@ -34,9 +34,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const mongoLib = require('../../_lib/mongo');
       await mongoLib.connectMongoDirect();
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { ensureUserSubscriptionModel } = require('../../_schemas/userSubscription.js');
-      const UserSubscription = await ensureUserSubscriptionModel();
+      const schemaMod: any = await import('../../_schemas/userSubscription.js');
+      const UserSubscription = await (schemaMod as any).ensureUserSubscriptionModel();
       const doc = await UserSubscription.findOne({ userId: String(userId) });
       if (!doc) {
         return res.status(404).json({
@@ -61,11 +60,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const mongoLib2 = require('../../_lib/mongo');
       await mongoLib2.connectMongoDirect();
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const {
-        ensureUserSubscriptionModel: ensure2,
-      } = require('../../_schemas/userSubscription.js');
-      const UserSubscription2 = await ensure2();
+      const schemaMod2: any = await import('../../_schemas/userSubscription.js');
+      const UserSubscription2 = await (schemaMod2 as any).ensureUserSubscriptionModel();
       const updates = { ...(req.body as object), updatedAt: new Date() } as Record<string, unknown>;
       const doc = await UserSubscription2.findOneAndUpdate(
         { userId: String(userId) },
@@ -90,11 +86,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const mongoLib3 = require('../../_lib/mongo');
       await mongoLib3.connectMongoDirect();
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const {
-        ensureUserSubscriptionModel: ensure3,
-      } = require('../../_schemas/userSubscription.js');
-      const UserSubscription3 = await ensure3();
+      const schemaMod3: any = await import('../../_schemas/userSubscription.js');
+      const UserSubscription3 = await (schemaMod3 as any).ensureUserSubscriptionModel();
       const doc = await UserSubscription3.findOneAndUpdate(
         { userId: String(userId) },
         { $set: { status: 'canceled', cancelAtPeriodEnd: true, canceledAt: new Date() } },
