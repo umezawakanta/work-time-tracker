@@ -60,7 +60,11 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!api).*)",
+      "source": "/docs/(.*)",
+      "destination": "/docs/$1.md"
+    },
+    {
+      "source": "/((?!api|docs).*)",
       "destination": "/index.html"
     }
   ],
