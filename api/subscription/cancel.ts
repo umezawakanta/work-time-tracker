@@ -45,7 +45,9 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     }
     res.status(200).json({ success: true });
   } catch (e: any) {
-    res.status(500).json({ success: false, error: 'CANCEL_FAILED', message: e?.message || 'unknown' });
+    res
+      .status(500)
+      .json({ success: false, error: 'CANCEL_FAILED', message: e?.message || 'unknown' });
   }
 }
 
