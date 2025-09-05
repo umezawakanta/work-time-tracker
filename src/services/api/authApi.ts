@@ -166,10 +166,11 @@ export const login = async (
 
 export const logout = async (): Promise<void> => {
   try {
-    // サーバーにログアウトを通知（httpOnly Cookie 破棄）
-    await api.post('/auth/logout', {});
+    // サーバー通知は発火のみ。最大1.5秒で切り上げてUIをブロックしない
+    const p = api.post('/auth/logout', {}).catch(() => {});
+    await Promise.race([p, new Promise((r) => setTimeout(r, 1500))]);
   } catch (e) {
-    console.warn('Logout API call failed (continuing client cleanup):', e);
+    console.warn('Logout API call issue (continuing client cleanup):', e);
   }
 
   // クライアント側トークンを確実に削除
