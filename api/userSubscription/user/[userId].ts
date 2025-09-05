@@ -3,12 +3,22 @@
  * /api/userSubscription/user/[userId]
  */
 
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectDB } from '../../../src/server/config/database';
-import { UserSubscription } from '../../../src/server/models/userSubscription';
+// CJS-friendly: avoid importing server TS modules at edge
+interface VercelRequest {
+  method?: string;
+  headers: Record<string, string | undefined> & { [k: string]: any };
+  query: Record<string, string | string[]>;
+  body?: any;
+}
+interface VercelResponse {
+  status: (n: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (k: string, v: string) => void;
+  end: () => void;
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const { userId } = req.query;
+  const { userId } = req.query as { userId?: string };
 
   try {
     // 入力検証
@@ -20,13 +30,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      // DB接続
-      try {
-        await connectDB();
-      } catch (_) {
-        return res.status(503).json({ message: 'Service unavailable (DB connection failed)' });
-      }
-
+      // DB接続（direct）とモデル解決
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const mongoLib = require('../../_lib/mongo');
+      await mongoLib.connectMongoDirect();
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { ensureUserSubscriptionModel } = require('../../_schemas/userSubscription.js');
+      const UserSubscription = await ensureUserSubscriptionModel();
       const doc = await UserSubscription.findOne({ userId: String(userId) });
       if (!doc) {
         return res.status(404).json({
@@ -47,14 +57,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      try {
-        await connectDB();
-      } catch (_) {
-        return res.status(503).json({ message: 'Service unavailable (DB connection failed)' });
-      }
-
+      // DB接続（direct）
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const mongoLib2 = require('../../_lib/mongo');
+      await mongoLib2.connectMongoDirect();
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const {
+        ensureUserSubscriptionModel: ensure2,
+      } = require('../../_schemas/userSubscription.js');
+      const UserSubscription2 = await ensure2();
       const updates = { ...(req.body as object), updatedAt: new Date() } as Record<string, unknown>;
-      const doc = await UserSubscription.findOneAndUpdate(
+      const doc = await UserSubscription2.findOneAndUpdate(
         { userId: String(userId) },
         { $set: updates },
         { new: true, runValidators: true }
@@ -73,13 +86,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      try {
-        await connectDB();
-      } catch (_) {
-        return res.status(503).json({ message: 'Service unavailable (DB connection failed)' });
-      }
-
-      const doc = await UserSubscription.findOneAndUpdate(
+      // DB接続（direct）
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const mongoLib3 = require('../../_lib/mongo');
+      await mongoLib3.connectMongoDirect();
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const {
+        ensureUserSubscriptionModel: ensure3,
+      } = require('../../_schemas/userSubscription.js');
+      const UserSubscription3 = await ensure3();
+      const doc = await UserSubscription3.findOneAndUpdate(
         { userId: String(userId) },
         { $set: { status: 'canceled', cancelAtPeriodEnd: true, canceledAt: new Date() } },
         { new: true, runValidators: true }
