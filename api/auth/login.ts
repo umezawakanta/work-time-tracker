@@ -114,14 +114,14 @@ async function handler(req: any, res: any) {
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
 
-  const isVercelPreview =
-    origin && origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);
-  const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isVercelPreview);
+  const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
+  const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
 
   res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
