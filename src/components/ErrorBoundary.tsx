@@ -121,11 +121,11 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     if (this.state.hasError) {
       const aiError = this.props.variant === 'app' && this.isAIError(this.state.error);
       return (
-        <div className="container mx-auto px-4 py-10 text-center">
-          <h1 className="text-2xl font-bold mb-3">
+        <div className="container mx-auto px-4 py-10 text-center text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold mb-3 text-gray-900 dark:text-gray-100">
             {aiError ? 'AI機能でエラーが発生しました' : 'エラーが発生しました'}
           </h1>
-          <p className="mb-4 text-slate-700">
+          <p className="mb-4 text-slate-800 dark:text-gray-300">
             {aiError
               ? 'APIキー・レート制限・ネットワーク状態をご確認ください。問題が続く場合は設定を見直してください。'
               : '申し訳ありませんが、予期せぬエラーが発生しました。'}
