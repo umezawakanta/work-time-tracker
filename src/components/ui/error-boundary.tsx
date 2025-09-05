@@ -144,13 +144,13 @@ export class ErrorBoundary extends Component<Props, State> {
       const errorCategory = error ? this.getErrorCategory(error) : 'Unknown';
 
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-          <Card className="w-full max-w-2xl">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-950 text-gray-900 dark:text-gray-100 p-4">
+          <Card className="w-full max-w-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-sm">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <AlertTriangle className="h-8 w-8 text-red-500" />
                 <div>
-                  <CardTitle className="text-xl text-gray-900">
+                  <CardTitle className="text-xl text-gray-900 dark:text-gray-100">
                     申し訳ございません。エラーが発生しました
                   </CardTitle>
                   <div className="flex items-center space-x-2 mt-2">
@@ -163,16 +163,16 @@ export class ErrorBoundary extends Component<Props, State> {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <h4 className="font-medium text-red-800 mb-2">エラーの詳細:</h4>
-                <p className="text-sm text-red-700 font-mono bg-red-100 p-2 rounded">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 rounded-lg p-4">
+                <h4 className="font-medium text-red-800 dark:text-red-300 mb-2">エラーの詳細:</h4>
+                <p className="text-sm text-red-700 dark:text-red-300 font-mono bg-red-100 dark:bg-red-900/30 p-2 rounded">
                   {error?.message || 'Unknown error occurred'}
                 </p>
               </div>
 
               <div className="space-y-3">
-                <h4 className="font-medium text-gray-800">推奨される対処法:</h4>
-                <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                <h4 className="font-medium text-gray-800 dark:text-gray-200">推奨される対処法:</h4>
+                <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1 list-disc list-inside">
                   <li>ページを再読み込みして再試行してください</li>
                   <li>ブラウザのキャッシュをクリアしてください</li>
                   <li>別のブラウザでアクセスしてみてください</li>
@@ -201,16 +201,16 @@ export class ErrorBoundary extends Component<Props, State> {
 
               {process.env.NODE_ENV === 'development' && error && (
                 <details className="mt-4">
-                  <summary className="cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
+                  <summary className="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">
                     開発者向け詳細情報
                   </summary>
-                  <div className="mt-2 p-3 bg-gray-100 rounded-lg">
-                    <div className="text-xs font-mono text-gray-800 whitespace-pre-wrap">
+                  <div className="mt-2 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <div className="text-xs font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
                       {error.stack}
                     </div>
                     {this.state.errorInfo && (
                       <div className="mt-3 pt-3 border-t border-gray-300">
-                        <div className="text-xs font-mono text-gray-800 whitespace-pre-wrap">
+                        <div className="text-xs font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
                           {this.state.errorInfo.componentStack}
                         </div>
                       </div>
