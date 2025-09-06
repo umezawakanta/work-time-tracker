@@ -405,9 +405,11 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
         throw new Error(errorMessage);
       }
 
-      // 既存のメイン口座を削除
+      // 既存のメイン口座を削除（新しいメイン口座がある場合のみ）
       if (valid.length > 0 && valid[0].isMain) {
         try {
+          console.log('既存のメイン口座を削除中...');
+          
           const deleteResponse = await fetch('/api/bank-accounts', {
             method: 'GET',
             headers: {
@@ -426,7 +428,7 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
             console.log(`既存のメイン口座: ${mainAccounts.length} 件`);
 
             // 既存のメイン口座を削除
-            for (const account of mainAccounts) {
+            const deletePromises = mainAccounts.map(async (account: any) => {
               try {
                 const deleteResult = await fetch(`/api/bank-accounts/${account._id}`, {
                   method: 'DELETE',
@@ -437,15 +439,25 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
 
                 if (deleteResult.ok) {
                   console.log(`メイン口座削除成功: ${account._id}`);
+                  return true;
                 } else {
                   console.warn(`メイン口座削除失敗: ${account._id}`);
+                  return false;
                 }
               } catch (deleteError) {
                 console.warn(`メイン口座削除エラー: ${account._id}`, deleteError);
+                return false;
               }
-            }
+            });
 
-            console.log(`既存のメイン口座 ${mainAccounts.length} 件を削除しました`);
+            // すべての削除処理が完了するまで待機
+            const deleteResults = await Promise.all(deletePromises);
+            const successCount = deleteResults.filter(result => result).length;
+            
+            console.log(`既存のメイン口座 ${successCount}/${mainAccounts.length} 件を削除しました`);
+            
+            // 削除が完了するまで少し待機
+            await new Promise(resolve => setTimeout(resolve, 500));
           }
         } catch (error) {
           console.warn('既存のメイン口座削除でエラー:', error);

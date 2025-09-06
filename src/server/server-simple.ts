@@ -1377,9 +1377,30 @@ app.get('/api/asset-liability-report', (req, res) => {
   const userIdStr = String(userId);
 
   // 実際のデータを取得（初期化は行わない）
-
-  const assets = assetStore.get(userIdStr) || [];
+  let assets = assetStore.get(userIdStr) || [];
   const debts = debtStore.get(userIdStr) || [];
+
+  // 銀行口座データを資産に統合
+  try {
+    const bankAccounts = bankAccountsStore.get(userIdStr) || [];
+    const bankAssets = bankAccounts
+      .filter((account: any) => account.isActive && account.lastBalance)
+      .map((account: any) => ({
+        _id: `bank_${account._id}`,
+        date: account.lastUpdated || new Date().toISOString(),
+        value: account.lastBalance,
+        description: `${account.bankName} ${account.accountName}`,
+        account: account.accountType,
+        createdAt: account.createdAt,
+        updatedAt: account.updatedAt,
+      }));
+
+    // 銀行口座の資産を既存の資産に追加
+    assets = [...assets, ...bankAssets];
+    console.log(`銀行口座から ${bankAssets.length} 件の資産を統合しました`);
+  } catch (error) {
+    console.error('銀行口座データの統合でエラー:', error);
+  }
 
   // 財務指標を計算
   const totalAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
