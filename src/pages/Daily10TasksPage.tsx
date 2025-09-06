@@ -107,6 +107,38 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
   const totalSubtasks = task.subtasks?.length || 0;
   const subtaskProgress = totalSubtasks > 0 ? (completedSubtasks / totalSubtasks) * 100 : 0;
 
+  // タスク固有のメッセージを生成
+  const getTaskMessage = () => {
+    if (progress?.completed) {
+      return '✅ 完了しました！お疲れ様でした。';
+    }
+
+    const taskMessages: { [key: string]: string } = {
+      '1': '💰 財布の中の現金残高を確認して、資産管理ページに入力しろ！',
+      '2': '📊 銀行口座の残高をチェックして、資産状況を把握しよう！',
+      '3': '📅 カレンダーを開いて、今後の予定を確認しよう！',
+      '4': '💳 固定費の支払い状況をチェックして、家計を管理しよう！',
+      '5': '💸 利息の支払いを確認して、お金の無駄をなくそう！',
+      '6': '⚡ 光熱費の使用量をチェックして、節約を心がけよう！',
+      '7': '🎸 ギターを手に取って、今日も練習しよう！',
+      '8': '🍽️ 食器を洗って、キッチンを清潔に保とう！',
+      '9': '👨‍🍳 冷蔵庫を開けて、今日の料理を決めよう！',
+      '10': '🛁 お風呂に入って、一日の疲れを癒そう！',
+      '11': '📚 本を開いて、知識を深めよう！',
+      '12': '💻 コードを書いて、このサイトをより良くしよう！',
+      '13': '📰 古い新聞を整理して、部屋をすっきりさせよう！',
+      '14': '📄 チラシを分別して、リサイクルに協力しよう！',
+      '15': '❄️ 冷蔵庫の中身を確認して、食材を無駄にしないようにしよう！',
+      '16': '🧹 掃除機をかけて、床をきれいにしよう！',
+      '17': '👕 洗濯物を集めて、清潔な衣類を保とう！',
+      '18': '☀️ 洗濯物を干して、太陽の光で乾かそう！',
+      '19': '👔 洗濯物をたたんで、整理整頓しよう！',
+      '20': '📦 押入れを整理して、収納をスッキリさせよう！',
+    };
+
+    return taskMessages[task.id] || 'このタスクに取り組んでみましょう！';
+  };
+
   return (
     <Card className="mb-4">
       <CardContent className="p-4">
@@ -126,6 +158,11 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
                   {completedSubtasks}/{totalSubtasks} サブタスク
                 </Badge>
               )}
+            </div>
+
+            {/* タスク固有のメッセージ */}
+            <div className="mb-3 p-2 bg-gray-50 rounded-md">
+              <p className="text-sm text-gray-700">{getTaskMessage()}</p>
             </div>
 
             {/* サブタスク進捗バー */}
@@ -208,6 +245,51 @@ const Daily10TasksPage: React.FC = () => {
   const { tasks, progress, stats, isLoading, error, updateProgress } = useDaily10Tasks();
   const [activeTab, setActiveTab] = useState('tasks');
 
+  // タスク状況に応じたメッセージを生成
+  const getMotivationalMessage = () => {
+    if (!progress?.tasks || tasks.length === 0) {
+      return '今日も一日頑張りましょう！まずは最初のタスクから始めてみてください。';
+    }
+
+    const completedTasks = progress.tasks.filter((task) => task.completed).length;
+    const totalTasks = tasks.length;
+    const completionRate = (completedTasks / totalTasks) * 100;
+
+    // 未完了のタスクを特定
+    const incompleteTasks = tasks.filter((task) => {
+      const taskProgress = progress.tasks.find((t) => t.taskId === task.id);
+      return !taskProgress?.completed;
+    });
+
+    // 特定のタスクに基づくメッセージ
+    const financeTasks = incompleteTasks.filter((task) => task.category === 'finance');
+    const householdTasks = incompleteTasks.filter((task) => task.category === 'household');
+    const personalTasks = incompleteTasks.filter((task) => task.category === 'personal');
+
+    if (completionRate === 0) {
+      return '今日はまだ何も始めていませんね。まずは「直近3ヶ月の収入と支出をすべて把握する」から始めてみませんか？';
+    } else if (completionRate < 25) {
+      if (financeTasks.length > 0) {
+        return '財布の中の現金残高を確認して、資産管理ページに入力しろ！お金の管理は毎日が大切です。';
+      }
+      return 'いいスタートです！続けて次のタスクにも取り組んでみましょう。';
+    } else if (completionRate < 50) {
+      if (householdTasks.length > 0) {
+        return '家事も大切なタスクです。洗い物や掃除を済ませて、清潔な環境を保ちましょう！';
+      }
+      return '順調に進んでいます！あと半分で今日の目標達成です。';
+    } else if (completionRate < 75) {
+      if (personalTasks.length > 0) {
+        return '自分の時間も大切にしましょう。読書やギターの練習でリフレッシュしてください！';
+      }
+      return '素晴らしい進捗です！あと少しで今日の目標を達成できます。';
+    } else if (completionRate < 100) {
+      return 'もうすぐ完了です！最後の一押しで今日の目標を達成しましょう！';
+    } else {
+      return '🎉 おめでとうございます！今日の目標を100%達成しました！明日も頑張りましょう！';
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -243,6 +325,19 @@ const Daily10TasksPage: React.FC = () => {
         <p className="text-sm text-gray-500">
           各タスクは5分以内で完了できるサブタスクに分割されています
         </p>
+
+        {/* 動的メッセージ表示 */}
+        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0">
+              <Target className="h-5 w-5 text-blue-600 mt-0.5" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-blue-900 mb-1">今日のメッセージ</h3>
+              <p className="text-sm text-blue-800">{getMotivationalMessage()}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
