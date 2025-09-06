@@ -28,6 +28,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
   const map = opts?.statuses ?? null;
   const providedIds = opts?.featureIds ?? null;
   const inProgressSet = new Set<FeatureStatus>([
+    'planning',
     'designing',
     'developing',
     'unit_testing',
@@ -97,7 +98,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
     const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
     if (status === 'complete') {
       completedFeatures.push(f);
-    } else if (inProgressSet.has(status) && hasValidYmd(f.targetRelease)) {
+    } else if (inProgressSet.has(status)) {
       inProgressFeatures.push(f);
     }
   }
@@ -106,11 +107,16 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
   if (completedFeatures.length > 0) {
     lines.push('🎉 リリース済み機能');
 
-    // リリース日順でソート（最新順）
+    // 優先度順でソート（P0 > P1 > P2 > P3）
+    const priorityOrder: Record<'P0' | 'P1' | 'P2' | 'P3', number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
     const sortedCompleted = completedFeatures.sort((a, b) => {
+      const pa = priorityOrder[(a.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
+      const pb = priorityOrder[(b.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
+      if (pa !== pb) return pa - pb;
+      // 同じ優先度の場合はリリース日順（新しい順）
       const dateA = a.targetRelease ? new Date(a.targetRelease) : new Date(0);
       const dateB = b.targetRelease ? new Date(b.targetRelease) : new Date(0);
-      return dateB.getTime() - dateA.getTime(); // 降順（新しい順）
+      return dateB.getTime() - dateA.getTime();
     });
 
     const recentCompleted = sortedCompleted.slice(0, 3); // 直近の3件のみ表示
@@ -153,9 +159,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
     for (const f of topInProgress) {
       const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
       const progress = getFeatureProgressPercent(status);
-      const ymd = f.targetRelease as string; // filtered above to be valid
-      const [y, m, d] = ymd.split('-');
-      const dateStr = `${y}/${m}/${d}`;
+
       const emoji =
         status === 'release_pending'
           ? '🚀'
@@ -163,8 +167,18 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
             ? '🧪'
             : status === 'integration_testing'
               ? '🔗'
-              : '✅';
-      lines.push(`${emoji} ${f.name}：${progress}%（リリース予定日: ${dateStr}）`);
+              : status === 'planning'
+                ? '📋'
+                : '✅';
+
+      if (hasValidYmd(f.targetRelease)) {
+        const ymd = f.targetRelease as string;
+        const [y, m, d] = ymd.split('-');
+        const dateStr = `${y}/${m}/${d}`;
+        lines.push(`${emoji} ${f.name}：${progress}%（リリース予定日: ${dateStr}）`);
+      } else {
+        lines.push(`${emoji} ${f.name}：${progress}%（開発中）`);
+      }
     }
 
     // 他にも開発中機能がある場合は省略表示
