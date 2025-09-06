@@ -84,7 +84,6 @@ async function handler(req: VercelRequest, res: VercelResponse) {
           },
           $set: {
             lastOccurredAt: now,
-            description,
             severity,
             status,
             source,

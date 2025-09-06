@@ -1598,7 +1598,7 @@ export const featuresRegistry: Feature[] = [
     path: '/_bg/client-error-reporting',
     category: '品質',
     description: 'フロントエンドの自動/手動報告',
-    status: 'planning',
+    status: 'complete',
     requiresRealAPI: true,
     priority: 'P1',
   },
