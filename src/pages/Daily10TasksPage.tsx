@@ -360,7 +360,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
                   size="sm"
                   className="w-full"
                   onClick={() => {
-                    if (taskLink.href === '/bank-accounts') {
+                    if (
+                      taskLink.href === '/bank-accounts' ||
+                      taskLink.href === '/asset-liability-report'
+                    ) {
                       window.location.href = taskLink.href;
                     } else {
                       window.open(taskLink.href, '_blank');
