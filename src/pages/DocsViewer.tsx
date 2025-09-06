@@ -242,6 +242,7 @@ export default function DocsViewer(): React.JSX.Element {
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label="カテゴリを選択"
           >
             <option value="all">すべてのカテゴリ</option>
             {Object.entries(categories).map(([key, category]) => (
