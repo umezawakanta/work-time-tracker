@@ -371,9 +371,18 @@ const AdminDashboard: React.FC = () => {
   const fetchRetention30d = async () => {
     try {
       setIsRetentionLoading(true);
-      const { data } = await api.get('analytics/retention/30d');
+      // 管理者用分析APIからリテンションデータを取得
+      const { data } = await api.get('admin/analytics?range=30d');
       const payload = (data && (data.data || data)) as any;
-      const rows = Array.isArray(payload?.cohorts) ? payload.cohorts : [];
+      const retentionData = Array.isArray(payload?.retentionData) ? payload.retentionData : [];
+
+      // データ形式を変換
+      const rows = retentionData.map((item: any) => ({
+        date: item.startDate,
+        size: item.size,
+        days: [0, item.d1Rate || 0], // D1率を配列形式に変換
+      }));
+
       setRetention(rows);
     } catch (e) {
       console.error('Failed to fetch 30d retention:', e);
@@ -1123,6 +1132,99 @@ const AdminDashboard: React.FC = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* タスク統計 */}
+            <Card>
+              <CardHeader>
+                <CardTitle>タスク統計</CardTitle>
+                <CardDescription>タスクの完了率と進捗状況</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {analytics?.taskStats?.total || 0}
+                    </div>
+                    <div className="text-sm text-gray-500">総タスク数</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">
+                      {analytics?.taskStats?.completed || 0}
+                    </div>
+                    <div className="text-sm text-gray-500">完了タスク</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">
+                      {analytics?.taskStats?.completionRate || 0}%
+                    </div>
+                    <div className="text-sm text-gray-500">完了率</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-orange-600">
+                      {analytics?.taskStats?.inRange || 0}
+                    </div>
+                    <div className="text-sm text-gray-500">期間内タスク</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* デバイス・地域統計 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>デバイス統計</CardTitle>
+                  <CardDescription>アクセスデバイスの分布</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {analytics?.deviceStats ? (
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">デスクトップ</span>
+                        <span className="font-medium">{analytics.deviceStats.desktop}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">モバイル</span>
+                        <span className="font-medium">{analytics.deviceStats.mobile}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">タブレット</span>
+                        <span className="font-medium">{analytics.deviceStats.tablet}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">データがありません</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>地域統計</CardTitle>
+                  <CardDescription>アクセス地域の分布</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {analytics?.regionStats ? (
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">日本</span>
+                        <span className="font-medium">{analytics.regionStats.JP}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">アメリカ</span>
+                        <span className="font-medium">{analytics.regionStats.US}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">その他</span>
+                        <span className="font-medium">{analytics.regionStats.Other}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">データがありません</p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         )}
 

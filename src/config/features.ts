@@ -387,10 +387,10 @@ export const featuresRegistry: Feature[] = [
     name: '管理 分析',
     path: '/admin/analytics',
     category: '運用',
-    status: 'system_testing',
+    status: 'complete',
     requiresRealAPI: true,
     priority: 'P0',
-    targetRelease: '2025-09-10',
+    targetRelease: '2025-09-06',
   },
   {
     id: 'admin-errors',

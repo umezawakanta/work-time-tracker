@@ -71,13 +71,21 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   const loadAnalytics = async () => {
     setIsLoading(true);
     try {
-      const data = await userTrackingService.getAnalytics(timeRange);
+      let data;
+      if (isAdminUser) {
+        // 管理者の場合は管理者用APIを使用
+        const rangeMap = { day: '1d', week: '7d', month: '30d' };
+        data = await userTrackingService.getAdminAnalytics(rangeMap[timeRange]);
+      } else {
+        // 一般ユーザーの場合は従来のAPIを使用
+        data = await userTrackingService.getAnalytics(timeRange);
+      }
       setAnalytics(data);
     } catch (error) {
       await unifiedErrorHandler.handleError(error, {
         component: 'AnalyticsDashboard',
         action: 'loadAnalytics',
-        additionalData: { timeRange },
+        additionalData: { timeRange, isAdminUser },
       });
       toast.error('解析データの読み込みに失敗しました');
     } finally {

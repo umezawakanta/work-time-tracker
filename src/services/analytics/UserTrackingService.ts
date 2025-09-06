@@ -291,6 +291,31 @@ class UserTrackingService {
   }
 
   /**
+   * 📊 管理者用解析データ取得
+   */
+  public async getAdminAnalytics(timeRange: string = '7d'): Promise<any> {
+    try {
+      const apiBaseUrl = this.getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/admin/analytics?range=${timeRange}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      return result.data;
+    } catch (error) {
+      console.error('Admin analytics fetch error:', error);
+      throw error;
+    }
+  }
+
+  /**
    * 🎯 A/Bテスト記録
    */
   public trackABTest(testName: string, variant: string): void {
