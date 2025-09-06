@@ -40,6 +40,26 @@ const mockTasks = [
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
   },
+  {
+    id: 'task_11',
+    name: '読書',
+    description: '知識習得と教養向上のための読書時間',
+    category: 'personal' as const,
+    isActive: true,
+    order: 11,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'task_12',
+    name: 'このサイトの開発を進める',
+    description: 'Work Time Trackerの機能開発と改善',
+    category: 'personal' as const,
+    isActive: true,
+    order: 12,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
 ];
 
 const mockProgress = {
@@ -129,7 +149,7 @@ describe('Daily10TasksPage', () => {
     );
 
     expect(screen.getByText('今日の進捗')).toBeInTheDocument();
-    expect(screen.getByText('1/2')).toBeInTheDocument();
+    expect(screen.getByText('1/4')).toBeInTheDocument();
     expect(screen.getByText('50% 完了')).toBeInTheDocument();
     expect(screen.getByText('連続実行')).toBeInTheDocument();
     expect(screen.getByText('5日')).toBeInTheDocument();
@@ -144,6 +164,8 @@ describe('Daily10TasksPage', () => {
 
     expect(screen.getByText('直近3ヶ月の収入と支出をすべて把握する')).toBeInTheDocument();
     expect(screen.getByText('ギターの練習')).toBeInTheDocument();
+    expect(screen.getByText('読書')).toBeInTheDocument();
+    expect(screen.getByText('このサイトの開発を進める')).toBeInTheDocument();
   });
 
   test('should handle task completion toggle', async () => {

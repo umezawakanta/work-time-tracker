@@ -113,6 +113,26 @@ const DEFAULT_TASKS: DailyTask[] = [
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
   },
+  {
+    id: 'task_11',
+    name: '読書',
+    description: '知識習得と教養向上のための読書時間',
+    category: 'personal',
+    isActive: true,
+    order: 11,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'task_12',
+    name: 'このサイトの開発を進める',
+    description: 'Work Time Trackerの機能開発と改善',
+    category: 'personal',
+    isActive: true,
+    order: 12,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
 ];
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {

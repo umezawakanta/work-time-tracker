@@ -20,6 +20,8 @@ import {
   Music,
   Utensils,
   Droplets,
+  BookOpen,
+  Code,
 } from 'lucide-react';
 import { useDaily10Tasks } from '@/hooks/useDaily10Tasks';
 import { DailyTask, TaskProgress } from '@/types/daily10';
@@ -29,6 +31,22 @@ const categoryIcons = {
   planning: CalendarIcon,
   personal: Home,
   health: Target,
+};
+
+// 個別タスク用のアイコンマッピング
+const taskIcons: { [key: string]: React.ComponentType<any> } = {
+  task_1: DollarSign,
+  task_2: DollarSign,
+  task_3: CalendarIcon,
+  task_4: DollarSign,
+  task_5: DollarSign,
+  task_6: DollarSign,
+  task_7: Music,
+  task_8: Utensils,
+  task_9: Utensils,
+  task_10: Droplets,
+  task_11: BookOpen,
+  task_12: Code,
 };
 
 const categoryColors = {
@@ -47,7 +65,7 @@ interface TaskItemProps {
 const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
   const [notes, setNotes] = useState(progress?.notes || '');
   const [showNotes, setShowNotes] = useState(false);
-  const IconComponent = categoryIcons[task.category];
+  const IconComponent = taskIcons[task.id] || categoryIcons[task.category];
 
   const handleToggle = (completed: boolean) => {
     onUpdate(task.id, completed, notes);
@@ -136,7 +154,7 @@ const Daily10TasksPage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">必ず毎日やる10のこと</h1>
+        <h1 className="text-3xl font-bold mb-2">必ず毎日やる12のこと</h1>
         <p className="text-gray-600">毎日の習慣を継続して、目標を達成しましょう</p>
       </div>
 
