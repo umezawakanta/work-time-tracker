@@ -42,7 +42,7 @@ class ServerErrorLogger {
 
   public logError(error: ErrorLog) {
     this.errorQueue.push(error);
-    
+
     // バッチサイズに達したら即座にフラッシュ
     if (this.errorQueue.length >= this.batchSize) {
       this.flushErrors();
@@ -76,23 +76,26 @@ class ServerErrorLogger {
       const mongoLib = require('../../api/_lib/mongo');
       await mongoLib.connectMongoDirect();
       const mongoose = await mongoLib.getMongoose();
-      
+
       // エラーログコレクション
-      const ErrorLog = mongoose.model('ErrorLog', new mongoose.Schema({
-        timestamp: { type: Date, default: Date.now },
-        level: { type: String, enum: ['error', 'warn', 'info', 'debug'], required: true },
-        message: { type: String, required: true },
-        stack: String,
-        userId: String,
-        endpoint: String,
-        method: String,
-        statusCode: Number,
-        userAgent: String,
-        ip: String,
-        sessionId: String,
-        tags: [String],
-        metadata: mongoose.Schema.Types.Mixed,
-      }));
+      const ErrorLog = mongoose.model(
+        'ErrorLog',
+        new mongoose.Schema({
+          timestamp: { type: Date, default: Date.now },
+          level: { type: String, enum: ['error', 'warn', 'info', 'debug'], required: true },
+          message: { type: String, required: true },
+          stack: String,
+          userId: String,
+          endpoint: String,
+          method: String,
+          statusCode: Number,
+          userAgent: String,
+          ip: String,
+          sessionId: String,
+          tags: [String],
+          metadata: mongoose.Schema.Types.Mixed,
+        })
+      );
 
       // バッチ挿入
       await ErrorLog.insertMany(errors);
@@ -106,10 +109,10 @@ class ServerErrorLogger {
 // Expressミドルウェア
 export const serverErrorLogger = (req: Request, res: Response, next: NextFunction) => {
   const logger = ServerErrorLogger.getInstance();
-  
+
   // レスポンス終了時のエラーログ
   const originalSend = res.send;
-  res.send = function(data) {
+  res.send = function (data) {
     // エラーレスポンスの場合
     if (res.statusCode >= 400) {
       const errorLog: ErrorLog = {
@@ -127,12 +130,12 @@ export const serverErrorLogger = (req: Request, res: Response, next: NextFunctio
           query: req.query,
           body: req.body,
           headers: req.headers,
-        }
+        },
       };
-      
+
       logger.logError(errorLog);
     }
-    
+
     return originalSend.call(this, data);
   };
 
@@ -142,7 +145,7 @@ export const serverErrorLogger = (req: Request, res: Response, next: NextFunctio
 // エラーハンドリングミドルウェア
 export const errorHandler = (error: Error, req: Request, res: Response, next: NextFunction) => {
   const logger = ServerErrorLogger.getInstance();
-  
+
   const errorLog: ErrorLog = {
     timestamp: new Date(),
     level: 'error',
@@ -159,15 +162,15 @@ export const errorHandler = (error: Error, req: Request, res: Response, next: Ne
       query: req.query,
       body: req.body,
       headers: req.headers,
-    }
+    },
   };
-  
+
   logger.logError(errorLog);
-  
+
   res.status(500).json({
     success: false,
     message: 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+    error: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong',
   });
 };
 

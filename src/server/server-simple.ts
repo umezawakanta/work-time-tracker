@@ -414,14 +414,15 @@ app.get('/api/admin/server-errors', async (req, res) => {
         ip: '192.168.1.100',
         sessionId: 'session_456',
         tags: ['database', 'timeout'],
-        metadata: { query: { limit: '10' } }
+        metadata: { query: { limit: '10' } },
       },
       {
         id: 'error_2',
         timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
         level: 'warn',
         message: 'Rate limit exceeded',
-        stack: 'Error: Rate limit exceeded\n    at rateLimiter (/app/src/middleware/rateLimit.js:23:8)',
+        stack:
+          'Error: Rate limit exceeded\n    at rateLimiter (/app/src/middleware/rateLimit.js:23:8)',
         userId: 'user_456',
         endpoint: '/api/auth/login',
         method: 'POST',
@@ -430,8 +431,8 @@ app.get('/api/admin/server-errors', async (req, res) => {
         ip: '192.168.1.101',
         sessionId: 'session_789',
         tags: ['rate-limit', 'auth'],
-        metadata: { attempts: 5 }
-      }
+        metadata: { attempts: 5 },
+      },
     ];
 
     const stats = {
@@ -442,8 +443,8 @@ app.get('/api/admin/server-errors', async (req, res) => {
       recentErrors: mockErrors.slice(0, 2),
       topErrors: [
         { message: 'Database connection timeout', count: 1 },
-        { message: 'Rate limit exceeded', count: 1 }
-      ]
+        { message: 'Rate limit exceeded', count: 1 },
+      ],
     };
 
     res.json({ success: true, errors: mockErrors, stats });
