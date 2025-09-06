@@ -1,8 +1,9 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { loadVercelData, saveVercelDataImmediately } from '../_lib/vercel-storage';
 
-// データストア（実際の実装ではデータベースを使用）
-const assetStore = new Map<string, AssetRecord[]>();
-const debtStore = new Map<string, DebtRecord[]>();
+// データストア（ファイルから読み込み）
+const assetStore = loadVercelData<AssetRecord>('assets');
+const debtStore = loadVercelData<DebtRecord>('debts');
 
 // 実際のデータベースからデータを取得する関数
 const fetchUserData = async (userIdStr: string) => {

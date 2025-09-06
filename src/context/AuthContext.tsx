@@ -156,6 +156,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         console.log('🔒 Token invalid locally');
         setIsAuthenticated(false);
         setUser(null);
+        setSessionExpired(true);
         return false;
       }
 
@@ -168,6 +169,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!isTrustedHost) {
         console.log('🧪 Dev host detected - skipping server auth check');
         setIsAuthenticated(true);
+        setSessionExpired(false);
         // 開発環境でもユーザー情報を取得
         if (isMounted) {
           await fetchUser();
@@ -184,9 +186,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
           tokenManager.clearTokens();
           setIsAuthenticated(false);
           setUser(null);
+          setSessionExpired(true);
           return false;
         }
         console.log('✅ Server auth check passed');
+        setIsAuthenticated(true);
+        setSessionExpired(false);
         return true;
       } catch (serverError) {
         console.log(
@@ -196,6 +201,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // サーバーエラーの場合でも、ローカルトークンが有効なら認証状態を維持
         // ただし、認証状態を明示的に設定する
         setIsAuthenticated(true);
+        setSessionExpired(false);
         return true;
       }
     } catch (error) {
@@ -206,12 +212,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const isTokenValid = tokenManager.isAuthenticated();
       if (isTokenValid) {
         console.log('⚠️ Server unreachable but token valid - maintaining auth state');
+        setIsAuthenticated(true);
+        setSessionExpired(false);
         return true; // ローカルトークンが有効なら認証状態を維持
       }
 
       tokenManager.clearTokens();
       setIsAuthenticated(false);
       setUser(null);
+      setSessionExpired(true);
       return false;
     }
   }, []);

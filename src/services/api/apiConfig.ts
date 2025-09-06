@@ -269,16 +269,27 @@ api.interceptors.response.use(
       const url = String(error.config?.url || '');
       const isAuthEndpoint = /\/auth\//.test(url);
       if (!isAuthEndpoint) {
-        // 最小導線: 未ログインならログインページへ誘導（1ステップ）
+        // 本番環境での確実なリダイレクト処理
         try {
           if (typeof window !== 'undefined') {
             const path = window.location.pathname + window.location.search;
             const onLoginPage = window.location.pathname.startsWith('/login');
+            const isProduction = window.location.hostname === 'work-time-tracker-five.vercel.app';
+
             if (!onLoginPage) {
               try {
                 sessionStorage.setItem('post_login_redirect', path);
+                // セッション期限切れイベントを発火
+                window.dispatchEvent(new CustomEvent('auth:token-expired'));
               } catch {}
-              window.location.assign('/login');
+
+              // 本番環境では即座にリダイレクト
+              if (isProduction) {
+                console.log('🚨 Production: Redirecting to login due to auth error');
+                window.location.replace('/login');
+              } else {
+                window.location.assign('/login');
+              }
             }
           }
         } catch {}

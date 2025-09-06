@@ -1,7 +1,8 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { loadVercelData, saveVercelDataImmediately } from '../../_lib/vercel-storage';
 
-// データストア（実際の実装ではデータベースを使用）
-const bankAccountsStore = new Map<string, any[]>();
+// データストア（ファイルから読み込み）
+const bankAccountsStore = loadVercelData<any>('bank-accounts');
 
 interface BankAccount {
   _id: string;
@@ -96,6 +97,9 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       // 既存の口座データとマージ
       const updatedAccounts = [...existingAccounts, ...newAccounts];
       bankAccountsStore.set(userId, updatedAccounts);
+
+      // データを即座に保存
+      saveVercelDataImmediately(bankAccountsStore, 'bank-accounts');
 
       res.status(200).json({
         success: true,

@@ -1,4 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { loadVercelData, saveVercelDataImmediately } from '../../_lib/vercel-storage';
 
 interface DailyTask {
   id: string;
@@ -18,9 +19,9 @@ interface TaskCompletion {
   notes?: string;
 }
 
-// メモリ内ストア（実際の実装ではデータベースを使用）
-const taskStore = new Map<string, DailyTask[]>();
-const completionStore = new Map<string, TaskCompletion[]>();
+// データストア（ファイルから読み込み）
+const taskStore = loadVercelData<DailyTask>('daily-tasks');
+const completionStore = loadVercelData<TaskCompletion>('task-completions');
 
 // デフォルトタスク定義（初期化用）
 const DEFAULT_TASKS: DailyTask[] = [
@@ -300,6 +301,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
 
       userTasks[taskIndex] = updatedTask;
       taskStore.set(userId, userTasks);
+
+      // データを即座に保存
+      saveVercelDataImmediately(taskStore, 'daily-tasks');
 
       res.status(200).json({
         success: true,

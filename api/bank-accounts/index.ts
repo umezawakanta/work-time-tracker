@@ -1,4 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { loadVercelData, saveVercelDataImmediately } from '../_lib/vercel-storage';
 
 // 銀行口座の型定義
 interface BankAccount {
@@ -17,8 +18,8 @@ interface BankAccount {
   updatedAt: string;
 }
 
-// メモリ内ストア（実際の実装ではデータベースを使用）
-const bankAccountsStore = new Map<string, BankAccount[]>();
+// データストア（ファイルから読み込み）
+const bankAccountsStore = loadVercelData<BankAccount>('bank-accounts');
 
 // 実際のデータベースから銀行口座データを取得する関数
 const fetchBankAccountsFromDB = async (userId: string): Promise<BankAccount[]> => {
@@ -125,6 +126,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const userAccounts = bankAccountsStore.get(userId as string) || [];
       userAccounts.push(newAccount);
       bankAccountsStore.set(userId as string, userAccounts);
+
+      // データを即座に保存
+      saveVercelDataImmediately(bankAccountsStore, 'bank-accounts');
 
       return res.status(201).json({
         success: true,

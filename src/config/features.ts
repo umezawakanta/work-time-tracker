@@ -778,7 +778,8 @@ export const featuresRegistry: Feature[] = [
     name: '📊 資産負債レポート',
     path: '/asset-liability-report',
     category: 'サブスクリプション・請求',
-    description: '資産と負債の詳細レポート・財務指標・トレンド分析・操作手順ガイド完備',
+    description:
+      '資産と負債の詳細レポート・財務指標・トレンド分析・操作手順ガイド完備・データ永続化対応',
     status: 'complete',
     requiresRealAPI: true,
     priority: 'P0',
@@ -789,7 +790,8 @@ export const featuresRegistry: Feature[] = [
     name: '🎯 必ず毎日やる20のこと',
     path: '/daily-10-tasks',
     category: '生産性',
-    description: '毎日実行すべき20のタスクを管理・追跡・進捗可視化・詳細操作ガイド完備',
+    description:
+      '毎日実行すべき20のタスクを管理・追跡・進捗可視化・詳細操作ガイド完備・データ永続化対応',
     status: 'complete',
     requiresRealAPI: true,
     priority: 'P0',
@@ -833,7 +835,8 @@ export const featuresRegistry: Feature[] = [
     name: '🏦 銀行口座管理',
     path: '/bank-accounts',
     category: '生産性',
-    description: 'メイン銀行口座の登録・管理・設定・自動取得機能・操作手順ガイド完備',
+    description:
+      'メイン銀行口座の登録・管理・設定・CSVインポート機能・操作手順ガイド完備・データ永続化対応',
     status: 'complete',
     requiresRealAPI: true,
     priority: 'P0',
