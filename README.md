@@ -48,6 +48,16 @@ Vercel 環境では `VITE_ENABLE_REACT_GUARD` を未設定のまま運用して�
 VITE_API_BASE_URL=http://localhost:3001/api
 VITE_GEMINI_API_KEY=your-gemini-key-optional
 VITE_OPENAI_API_KEY=your-openai-key-optional
+
+# メール送信設定（パスワードリセット用）
+EMAIL_SERVICE=gmail
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+
+# アプリケーション設定
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+MONGODB_URI=mongodb://localhost:27017/work-time-tracker
+JWT_SECRET=your-jwt-secret
 VITE_ANTHROPIC_API_KEY=your-anthropic-key
 VITE_ENABLE_ANALYTICS=false
 VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX # 任意（本番のみ推奨）

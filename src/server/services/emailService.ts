@@ -547,6 +547,113 @@ ${
   }
 
   /**
+   * パスワードリセットメール送信
+   */
+  async sendPasswordResetEmail(email: string, resetUrl: string): Promise<boolean> {
+    if (!this.isReady()) {
+      console.error('❌ Email service not configured');
+      return false;
+    }
+
+    try {
+      const template = this.createPasswordResetTemplate(resetUrl);
+      
+      const mailOptions = {
+        from: `"Work Time Tracker" <${this.getEmailConfig()?.user}>`,
+        to: email,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+      };
+
+      await this.transporter!.sendMail(mailOptions);
+      console.log(`✅ Password reset email sent to ${email}`);
+      return true;
+    } catch (error) {
+      console.error('❌ Failed to send password reset email:', error);
+      return false;
+    }
+  }
+
+  /**
+   * パスワードリセットメールテンプレート作成
+   */
+  private createPasswordResetTemplate(resetUrl: string): EmailTemplate {
+    return {
+      subject: 'パスワードリセットのご案内 - Work Time Tracker',
+      html: `
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>パスワードリセット</title>
+          <style>
+            body { font-family: 'Hiragino Sans', 'ヒラギノ角ゴシック', 'Yu Gothic', 'メイリオ', sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
+            .button { display: inline-block; background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+            .button:hover { background: #0056b3; }
+            .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+            .warning { background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🔐 パスワードリセット</h1>
+              <p>Work Time Tracker</p>
+            </div>
+            <div class="content">
+              <h2>パスワードリセットのご案内</h2>
+              <p>パスワードリセットのリクエストを受け付けました。</p>
+              <p>以下のボタンをクリックして、新しいパスワードを設定してください。</p>
+              
+              <div style="text-align: center;">
+                <a href="${resetUrl}" class="button">パスワードをリセット</a>
+              </div>
+              
+              <div class="warning">
+                <strong>⚠️ 重要な注意事項：</strong>
+                <ul>
+                  <li>このリンクは24時間で期限切れになります</li>
+                  <li>リンクは一度しか使用できません</li>
+                  <li>このリクエストをしていない場合は、このメールを無視してください</li>
+                </ul>
+              </div>
+              
+              <p>ボタンがクリックできない場合は、以下のURLをコピーしてブラウザのアドレスバーに貼り付けてください：</p>
+              <p style="word-break: break-all; background: #e9ecef; padding: 10px; border-radius: 3px; font-family: monospace;">${resetUrl}</p>
+            </div>
+            <div class="footer">
+              <p>このメールは自動送信されています。返信はできません。</p>
+              <p>© 2025 Work Time Tracker. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+      text: `
+パスワードリセットのご案内 - Work Time Tracker
+
+パスワードリセットのリクエストを受け付けました。
+
+以下のURLをクリックして、新しいパスワードを設定してください：
+${resetUrl}
+
+重要な注意事項：
+- このリンクは24時間で期限切れになります
+- リンクは一度しか使用できません
+- このリクエストをしていない場合は、このメールを無視してください
+
+このメールは自動送信されています。返信はできません。
+© 2025 Work Time Tracker. All rights reserved.
+      `.trim(),
+    };
+  }
+
+  /**
    * メールサービスの状態確認
    */
   isReady(): boolean {
