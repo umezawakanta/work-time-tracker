@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend,
   TimeScale,
+  Filler,
   ChartOptions,
   ChartData,
 } from 'chart.js';
@@ -28,7 +29,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  TimeScale
+  TimeScale,
+  Filler
 );
 
 interface DataPoint {

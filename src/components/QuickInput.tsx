@@ -108,6 +108,7 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
             account: accountName,
             value: numericValue,
             date: currentDate,
+            description: accountName, // 口座名を説明として使用
             category,
             targetSettings,
           })

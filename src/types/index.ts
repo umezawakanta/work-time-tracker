@@ -26,6 +26,7 @@ export interface AssetEntry {
   date: string; // 日付 - ISO文字列形式
   value: number; // 金額
   account: string; // 口座名・資産名
+  description: string; // 説明（APIで必須）
   category?: string; // 資産カテゴリ
   targetSettings?: TargetSettings; // 目標設定
 
