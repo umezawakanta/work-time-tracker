@@ -1,6 +1,6 @@
 # サブスクリプション 運用手順書
 
-最終更新: 2025-09-05
+最終更新: 2025-09-06
 
 ## STRIPE_DEFAULT_PRICE_ID の取得方法
 
@@ -54,8 +54,23 @@ curl -s -X POST \
 curl -s https://work-time-tracker-five.vercel.app/api/subscription/status | jq
 ```
 
+- ポータル起動
+```bash
+curl -s -X POST https://work-time-tracker-five.vercel.app/api/subscription/portal | jq
+```
+
+- 期末解約の設定
+```bash
+curl -s -X POST \
+  -H "Content-Type: application/json" \
+  https://work-time-tracker-five.vercel.app/api/subscription/cancel \
+  -d '{"atPeriodEnd": true}' | jq
+```
+
 ## 注意事項
 - Live/Test の切替を必ず確認（Dashboard 右上のモード）
 - 通貨・請求間隔（monthly/yearly）が要件と一致していること
 - 複数プラン運用時は、画面から `planId`（= Price ID）を明示的に渡す運用を推奨
 - 価格や製品を更新した場合は、該当 Price ID を再確認のうえ環境変数も更新
+ - CORS: Previewドメイン（`https://work-time-tracker-five-*.vercel.app`）からのアクセスも許可済み
+ - 認証: APIはJWT前提。未ログイン時は401となるため、先にログインしてから実行
