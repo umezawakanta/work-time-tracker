@@ -668,7 +668,8 @@ export const featuresRegistry: Feature[] = [
     description: '決済/課金処理（バックエンド連携）',
     status: 'planning',
     requiresRealAPI: true,
-    priority: 'P1',
+    priority: 'P2',
+    targetRelease: '2025-09-15',
   },
   {
     id: 'subscription-upgrade',
@@ -688,7 +689,8 @@ export const featuresRegistry: Feature[] = [
     description: '過去の請求書と支払い履歴',
     status: 'integration_testing',
     requiresRealAPI: true,
-    targetRelease: '2025-09-09',
+    priority: 'P1',
+    targetRelease: '2025-09-12',
   },
   {
     id: 'subscription-management',
@@ -698,7 +700,7 @@ export const featuresRegistry: Feature[] = [
     description: 'プラン管理・アップグレード・請求設定',
     status: 'complete',
     requiresRealAPI: true,
-    priority: 'P1',
+    priority: 'P0',
     targetRelease: '2025-09-10',
   },
   {
@@ -709,6 +711,8 @@ export const featuresRegistry: Feature[] = [
     description: '資産と負債の詳細レポート',
     status: 'in_progress',
     requiresRealAPI: true,
+    priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   // プロジェクト管理
   {
@@ -719,6 +723,8 @@ export const featuresRegistry: Feature[] = [
     description: 'サイト改善プランの管理',
     status: 'in_progress',
     requiresRealAPI: false,
+    priority: 'P2',
+    targetRelease: '2025-09-18',
   },
   // 規約
   {
@@ -730,6 +736,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P1',
+    targetRelease: '2025-09-14',
   },
   // ヘッダー領域のUI機能（完了まで非表示）
   {
@@ -740,7 +747,8 @@ export const featuresRegistry: Feature[] = [
     description: '紹介リンク共有機能',
     status: 'planning',
     requiresRealAPI: false,
-    priority: 'P1',
+    priority: 'P2',
+    targetRelease: '2025-09-25',
   },
   {
     id: 'startup-guide',
@@ -751,6 +759,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-22',
   },
   {
     id: 'language-switcher',
@@ -760,7 +769,8 @@ export const featuresRegistry: Feature[] = [
     description: '多言語対応UI',
     status: 'planning',
     requiresRealAPI: false,
-    priority: 'P2',
+    priority: 'P3',
+    targetRelease: '2025-09-30',
   },
   {
     id: 'dark-mode',
@@ -770,7 +780,8 @@ export const featuresRegistry: Feature[] = [
     description: 'テーマ切替',
     status: 'planning',
     requiresRealAPI: false,
-    priority: 'P2',
+    priority: 'P3',
+    targetRelease: '2025-09-28',
   },
   {
     id: 'notifications',
@@ -781,6 +792,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: true,
     priority: 'P2',
+    targetRelease: '2025-09-16',
   },
   {
     id: 'settings-core',
@@ -791,6 +803,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P1',
+    targetRelease: '2025-09-13',
   },
   {
     id: 'vercel-link',
@@ -801,6 +814,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P3',
+    targetRelease: '2025-09-26',
   },
   {
     id: 'version-info',
@@ -811,6 +825,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-24',
   },
   {
     id: 'newsletter-signup',
@@ -821,6 +836,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-21',
   },
   {
     id: 'home-greeting',
@@ -831,6 +847,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-19',
   },
   {
     id: 'planning-suggestion',
@@ -841,6 +858,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-17',
   },
   {
     id: 'level-badge',
@@ -1600,7 +1618,8 @@ export const featuresRegistry: Feature[] = [
     description: 'フロントエンドの自動/手動報告',
     status: 'complete',
     requiresRealAPI: true,
-    priority: 'P1',
+    priority: 'P0',
+    targetRelease: '2025-09-06',
   },
   {
     id: 'server-error-reporting',

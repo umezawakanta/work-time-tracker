@@ -15,6 +15,7 @@ import {
   getCanonicalUrl,
 } from '@/services/share/generateDevProgressShareText';
 import { setArtifactApproval, isArtifactApproved } from '@/services/dev/featureStatusEngine';
+import { Calendar, AlertTriangle, Clock } from 'lucide-react';
 
 const statusLabel: Record<FeatureStatus, string> = {
   planning: '計画中',
@@ -50,6 +51,26 @@ const statusBadgeVariant: Record<FeatureStatus, 'default' | 'secondary' | 'outli
   in_progress: 'secondary',
   testing: 'secondary',
   docs: 'outline',
+};
+
+// リリース予定日の色分けロジック
+const getReleaseDateStatus = (targetRelease?: string, status?: FeatureStatus) => {
+  if (!targetRelease) return { status: 'none', color: 'text-gray-500', bgColor: 'bg-gray-50' };
+  
+  const releaseDate = new Date(targetRelease);
+  const today = new Date();
+  const oneWeekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+  
+  const isOverdue = releaseDate < today && status !== 'complete';
+  const isThisWeek = releaseDate >= today && releaseDate <= oneWeekFromNow && status !== 'complete';
+  
+  if (isOverdue) {
+    return { status: 'overdue', color: 'text-red-600', bgColor: 'bg-red-50', icon: AlertTriangle };
+  } else if (isThisWeek) {
+    return { status: 'thisWeek', color: 'text-yellow-600', bgColor: 'bg-yellow-50', icon: Clock };
+  } else {
+    return { status: 'normal', color: 'text-gray-600', bgColor: 'bg-gray-50', icon: Calendar };
+  }
 };
 
 export default function FeaturesStatusPage(): React.JSX.Element {
@@ -275,6 +296,7 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                     <th className="p-2">優先度</th>
                     <th className="p-2">機能</th>
                     <th className="p-2">ステータス</th>
+                    <th className="p-2">リリース予定</th>
                     <th className="p-2">カテゴリ</th>
                     <th className="p-2 hidden md:table-cell">path</th>
                     <th className="p-2">API</th>
@@ -285,8 +307,10 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                   {prioritizedList.map((f) => {
                     const isComplete = f.status === 'complete';
                     const canNavigate = isComplete || Boolean(user?.isAdmin);
+                    const releaseStatus = getReleaseDateStatus((f as any).targetRelease, f.status);
+                    const IconComponent = releaseStatus.icon;
                     return (
-                      <tr key={f.id} className="border-t">
+                      <tr key={f.id} className={`border-t ${releaseStatus.bgColor}`}>
                         <td className="p-2">
                           <Badge variant="outline">{(f as any).priority || 'P3'}</Badge>
                         </td>
@@ -299,6 +323,18 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                           <Badge variant={statusBadgeVariant[f.status]}>
                             {statusLabel[f.status]}
                           </Badge>
+                        </td>
+                        <td className="p-2">
+                          {(f as any).targetRelease ? (
+                            <div className="flex items-center gap-1">
+                              <IconComponent className={`h-3 w-3 ${releaseStatus.color}`} />
+                              <span className={`text-xs ${releaseStatus.color}`}>
+                                {(f as any).targetRelease}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-gray-400">未設定</span>
+                          )}
                         </td>
                         <td className="p-2">{f.category}</td>
                         <td className="p-2 hidden md:table-cell text-slate-500">{f.path}</td>
@@ -341,14 +377,16 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                   {features.map((f) => {
                     const isComplete = f.status === 'complete';
                     const canNavigate = isComplete || Boolean(user?.isAdmin);
+                    const releaseStatus = getReleaseDateStatus((f as any).targetRelease, f.status);
+                    const IconComponent = releaseStatus.icon;
                     return (
                       <div
                         key={f.id}
-                        className={`p-4 rounded-lg border ${isComplete ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200'}`}
+                        className={`p-4 rounded-lg border ${isComplete ? 'bg-green-50 border-green-200' : releaseStatus.bgColor + ' border-slate-200'}`}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <h3 className="font-semibold">{f.name}</h3>
                               <Badge variant={statusBadgeVariant[f.status]}>
                                 {statusLabel[f.status]}
@@ -357,6 +395,14 @@ export default function FeaturesStatusPage(): React.JSX.Element {
                                 <Badge variant="outline">{(f as any).priority}</Badge>
                               )}
                               {f.requiresRealAPI && <Badge variant="outline">実API必須</Badge>}
+                              {(f as any).targetRelease && (
+                                <div className="flex items-center gap-1">
+                                  <IconComponent className={`h-3 w-3 ${releaseStatus.color}`} />
+                                  <span className={`text-xs ${releaseStatus.color}`}>
+                                    {(f as any).targetRelease}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                             {derived?.suggested && (
                               <p className="text-[11px] text-slate-500 mt-1">
