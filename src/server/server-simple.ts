@@ -4256,6 +4256,243 @@ app.patch('/api/daily-victory/today', async (req, res) => {
   }
 });
 
+// Daily 10 Tasks API endpoints
+// Mock data for daily tasks
+const DEFAULT_TASKS = [
+  { id: '1', name: '直近3ヶ月の収入と支出をすべて把握する', category: 'finance', priority: 'high' },
+  { id: '2', name: '現在の資産と負債をすべて把握する', category: 'finance', priority: 'high' },
+  {
+    id: '3',
+    name: '現在から3ヶ月後までの予定をすべて把握する',
+    category: 'planning',
+    priority: 'high',
+  },
+  {
+    id: '4',
+    name: '先月と今月の固定費の支払いと支払日をすべて把握',
+    category: 'finance',
+    priority: 'high',
+  },
+  { id: '5', name: '直近3ヶ月の利息の支払いをすべて把握', category: 'finance', priority: 'high' },
+  { id: '6', name: '直近3ヶ月の光熱費の支払いをすべて把握', category: 'finance', priority: 'high' },
+  { id: '7', name: 'ギターの練習', category: 'hobby', priority: 'medium' },
+  { id: '8', name: '洗い物', category: 'household', priority: 'medium' },
+  { id: '9', name: '自炊', category: 'household', priority: 'medium' },
+  { id: '10', name: '風呂', category: 'household', priority: 'medium' },
+  { id: '11', name: '読書', category: 'personal', priority: 'medium' },
+  { id: '12', name: 'このサイトの開発を進める', category: 'work', priority: 'high' },
+  { id: '13', name: '新聞を捨てる', category: 'household', priority: 'low' },
+  { id: '14', name: 'チラシを捨てる', category: 'household', priority: 'low' },
+  { id: '15', name: '冷蔵庫の中身を確認', category: 'household', priority: 'low' },
+  { id: '16', name: '床掃除', category: 'household', priority: 'low' },
+  { id: '17', name: '洗濯', category: 'household', priority: 'medium' },
+  { id: '18', name: '洗濯物を干す', category: 'household', priority: 'medium' },
+  { id: '19', name: '洗濯物をたたむ', category: 'household', priority: 'medium' },
+  { id: '20', name: '押入れの整理', category: 'household', priority: 'low' },
+];
+
+// In-memory store for progress
+const progressStore = new Map<string, any>();
+
+// GET /api/daily10/tasks - Get all tasks
+app.get('/api/daily10/tasks', (req: Request, res: Response) => {
+  try {
+    res.json({
+      success: true,
+      data: DEFAULT_TASKS,
+    });
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch tasks',
+    });
+  }
+});
+
+// GET /api/daily10/progress - Get progress for a specific date or date range
+app.get('/api/daily10/progress', (req: Request, res: Response) => {
+  try {
+    const { date, startDate, endDate } = req.query;
+
+    if (date) {
+      // Get progress for specific date
+      const progress = progressStore.get(date as string) || {
+        date: date,
+        tasks: DEFAULT_TASKS.map((task) => ({
+          taskId: task.id,
+          completed: false,
+          completedAt: null,
+        })),
+        completionRate: 0,
+        streak: 0,
+      };
+      res.json({
+        success: true,
+        data: progress,
+      });
+    } else if (startDate && endDate) {
+      // Get progress for date range
+      const progressData = [];
+      const start = new Date(startDate as string);
+      const end = new Date(endDate as string);
+
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const dateStr = d.toISOString().split('T')[0];
+        const progress = progressStore.get(dateStr) || {
+          date: dateStr,
+          tasks: DEFAULT_TASKS.map((task) => ({
+            taskId: task.id,
+            completed: false,
+            completedAt: null,
+          })),
+          completionRate: 0,
+          streak: 0,
+        };
+        progressData.push(progress);
+      }
+
+      res.json({
+        success: true,
+        data: progressData,
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'Date or date range is required',
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching progress:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch progress',
+    });
+  }
+});
+
+// POST /api/daily10/progress - Update progress for a specific date
+app.post('/api/daily10/progress', (req: Request, res: Response) => {
+  try {
+    const { date, taskId, completed } = req.body;
+
+    if (!date || !taskId || typeof completed !== 'boolean') {
+      return res.status(400).json({
+        success: false,
+        message: 'Date, taskId, and completed status are required',
+      });
+    }
+
+    const existingProgress = progressStore.get(date) || {
+      date,
+      tasks: DEFAULT_TASKS.map((task) => ({
+        taskId: task.id,
+        completed: false,
+        completedAt: null,
+      })),
+      completionRate: 0,
+      streak: 0,
+    };
+
+    // Update the specific task
+    const taskIndex = existingProgress.tasks.findIndex((t) => t.taskId === taskId);
+    if (taskIndex !== -1) {
+      existingProgress.tasks[taskIndex].completed = completed;
+      existingProgress.tasks[taskIndex].completedAt = completed ? new Date().toISOString() : null;
+    }
+
+    // Calculate completion rate
+    const completedTasks = existingProgress.tasks.filter((t) => t.completed).length;
+    existingProgress.completionRate = (completedTasks / DEFAULT_TASKS.length) * 100;
+
+    // Calculate streak (simplified - in real app, this would be more complex)
+    existingProgress.streak =
+      completedTasks === DEFAULT_TASKS.length ? (existingProgress.streak || 0) + 1 : 0;
+
+    progressStore.set(date, existingProgress);
+
+    res.json({
+      success: true,
+      data: existingProgress,
+    });
+  } catch (error) {
+    console.error('Error updating progress:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update progress',
+    });
+  }
+});
+
+// GET /api/daily10/stats - Get statistics
+app.get('/api/daily10/stats', (req: Request, res: Response) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    // Calculate overall stats
+    const allProgress = Array.from(progressStore.values());
+    const totalDays = allProgress.length;
+    const totalTasks = DEFAULT_TASKS.length;
+    const totalCompletedTasks = allProgress.reduce(
+      (sum, progress) => sum + progress.tasks.filter((t) => t.completed).length,
+      0
+    );
+
+    // Calculate weekly stats
+    const weeklyProgress = allProgress.filter((p) => p.date >= weekAgo);
+    const weeklyCompletedTasks = weeklyProgress.reduce(
+      (sum, progress) => sum + progress.tasks.filter((t) => t.completed).length,
+      0
+    );
+
+    // Calculate monthly stats
+    const monthlyProgress = allProgress.filter((p) => p.date >= monthAgo);
+    const monthlyCompletedTasks = monthlyProgress.reduce(
+      (sum, progress) => sum + progress.tasks.filter((t) => t.completed).length,
+      0
+    );
+
+    res.json({
+      success: true,
+      data: {
+        overall: {
+          totalDays,
+          totalTasks,
+          totalCompletedTasks,
+          averageCompletionRate:
+            totalDays > 0 ? (totalCompletedTasks / (totalDays * totalTasks)) * 100 : 0,
+        },
+        weekly: {
+          totalDays: weeklyProgress.length,
+          totalTasks: weeklyProgress.length * totalTasks,
+          totalCompletedTasks: weeklyCompletedTasks,
+          averageCompletionRate:
+            weeklyProgress.length > 0
+              ? (weeklyCompletedTasks / (weeklyProgress.length * totalTasks)) * 100
+              : 0,
+        },
+        monthly: {
+          totalDays: monthlyProgress.length,
+          totalTasks: monthlyProgress.length * totalTasks,
+          totalCompletedTasks: monthlyCompletedTasks,
+          averageCompletionRate:
+            monthlyProgress.length > 0
+              ? (monthlyCompletedTasks / (monthlyProgress.length * totalTasks)) * 100
+              : 0,
+        },
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching stats:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch stats',
+    });
+  }
+});
+
 // 404 Error handler - must be after all known routes; allow future mocks via pattern
 app.use((req: Request, res: Response): void => {
   console.log(`❌ 404 - Route not found: ${req.method} ${req.url}`);
