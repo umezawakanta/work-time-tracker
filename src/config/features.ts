@@ -786,10 +786,10 @@ export const featuresRegistry: Feature[] = [
   },
   {
     id: 'daily-10-tasks',
-    name: '🎯 必ず毎日やる16のこと',
+    name: '🎯 必ず毎日やる20のこと',
     path: '/daily-10-tasks',
     category: '生産性',
-    description: '毎日実行すべき16のタスクを管理・追跡',
+    description: '毎日実行すべき20のタスクを管理・追跡',
     status: 'complete',
     requiresRealAPI: true,
     priority: 'P1',

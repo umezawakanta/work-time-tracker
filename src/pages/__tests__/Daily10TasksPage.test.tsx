@@ -100,6 +100,46 @@ const mockTasks = [
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
   },
+  {
+    id: 'task_17',
+    name: '洗濯',
+    description: '衣類の洗濯と清潔維持',
+    category: 'personal' as const,
+    isActive: true,
+    order: 17,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'task_18',
+    name: '洗濯物を干す',
+    description: '洗濯物の乾燥と整理',
+    category: 'personal' as const,
+    isActive: true,
+    order: 18,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'task_19',
+    name: '洗濯物をたたむ',
+    description: '乾いた洗濯物の整理と収納',
+    category: 'personal' as const,
+    isActive: true,
+    order: 19,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'task_20',
+    name: '押入れの整理',
+    description: '押入れの整理整頓と収納管理',
+    category: 'personal' as const,
+    isActive: true,
+    order: 20,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
 ];
 
 const mockProgress = {
@@ -189,7 +229,7 @@ describe('Daily10TasksPage', () => {
     );
 
     expect(screen.getByText('今日の進捗')).toBeInTheDocument();
-    expect(screen.getByText('1/8')).toBeInTheDocument();
+    expect(screen.getByText('1/12')).toBeInTheDocument();
     expect(screen.getByText('50% 完了')).toBeInTheDocument();
     expect(screen.getByText('連続実行')).toBeInTheDocument();
     expect(screen.getByText('5日')).toBeInTheDocument();
@@ -210,6 +250,10 @@ describe('Daily10TasksPage', () => {
     expect(screen.getByText('チラシを捨てる')).toBeInTheDocument();
     expect(screen.getByText('冷蔵庫の中身を確認')).toBeInTheDocument();
     expect(screen.getByText('床掃除')).toBeInTheDocument();
+    expect(screen.getByText('洗濯')).toBeInTheDocument();
+    expect(screen.getByText('洗濯物を干す')).toBeInTheDocument();
+    expect(screen.getByText('洗濯物をたたむ')).toBeInTheDocument();
+    expect(screen.getByText('押入れの整理')).toBeInTheDocument();
   });
 
   test('should handle task completion toggle', async () => {

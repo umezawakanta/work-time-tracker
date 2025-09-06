@@ -14,7 +14,7 @@ describe('/api/daily10/tasks', () => {
       expect(res._getStatusCode()).toBe(200);
       const data = JSON.parse(res._getData());
       expect(data.success).toBe(true);
-      expect(data.data).toHaveLength(16);
+      expect(data.data).toHaveLength(20);
       expect(data.data[0]).toHaveProperty('id');
       expect(data.data[0]).toHaveProperty('name');
       expect(data.data[0]).toHaveProperty('category');
@@ -68,6 +68,10 @@ describe('/api/daily10/tasks', () => {
       expect(taskNames).toContain('チラシを捨てる');
       expect(taskNames).toContain('冷蔵庫の中身を確認');
       expect(taskNames).toContain('床掃除');
+      expect(taskNames).toContain('洗濯');
+      expect(taskNames).toContain('洗濯物を干す');
+      expect(taskNames).toContain('洗濯物をたたむ');
+      expect(taskNames).toContain('押入れの整理');
     });
   });
 
