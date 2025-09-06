@@ -1117,36 +1117,8 @@ app.get('/api/worktime', (req, res) => {
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
-  // ストアが空の場合はモックデータを返す
-  if (all.length === 0) {
-    const mockWorkTimeData = [
-      {
-        id: 'wt_1',
-        date: '2024-01-20',
-        startTime: '09:00',
-        endTime: '18:00',
-        breakTime: 60,
-        totalHours: 8,
-        description: '通常勤務',
-        createdAt: '2024-01-20T09:00:00.000Z',
-        updatedAt: '2024-01-20T18:00:00.000Z',
-      },
-      {
-        id: 'wt_2',
-        date: '2024-01-19',
-        startTime: '09:30',
-        endTime: '17:30',
-        breakTime: 60,
-        totalHours: 7,
-        description: '通常勤務',
-        createdAt: '2024-01-19T09:30:00.000Z',
-        updatedAt: '2024-01-19T17:30:00.000Z',
-      },
-    ];
-    res.json(mockWorkTimeData);
-  } else {
-    res.json(all);
-  }
+  // 実際のデータを返す（空の場合は空配列）
+  res.json(all);
 });
 
 app.post('/api/worktime', (req, res) => {
@@ -1194,32 +1166,8 @@ app.get('/api/asset', (req, res) => {
     .flat()
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  // ストアが空の場合はモックデータを返す
-  if (all.length === 0) {
-    const mockAssetData = [
-      {
-        _id: 'asset_1',
-        date: '2024-01-01',
-        value: 1000000,
-        description: '銀行預金',
-        account: 'Bank Savings',
-        createdAt: '2024-01-01T00:00:00.000Z',
-        updatedAt: '2024-01-01T00:00:00.000Z',
-      },
-      {
-        _id: 'asset_2',
-        date: '2024-01-15',
-        value: 500000,
-        description: '投資信託',
-        account: 'Investment Fund',
-        createdAt: '2024-01-15T00:00:00.000Z',
-        updatedAt: '2024-01-15T00:00:00.000Z',
-      },
-    ];
-    res.json(mockAssetData);
-  } else {
-    res.json(all);
-  }
+  // 実際のデータを返す（空の場合は空配列）
+  res.json(all);
 });
 
 app.post('/api/asset', (req, res) => {
@@ -1258,6 +1206,160 @@ app.post('/api/asset', (req, res) => {
   }
 });
 
+// 財務指標計算関数
+const calculateAssetGrowthRate = (assets: AssetRecord[]): number => {
+  if (assets.length < 2) return 0;
+
+  const sortedAssets = assets.sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+  const firstValue = sortedAssets[0].value;
+  const lastValue = sortedAssets[sortedAssets.length - 1].value;
+
+  return firstValue > 0 ? ((lastValue - firstValue) / firstValue) * 100 : 0;
+};
+
+const calculateMonthlyNetWorthChange = (assets: AssetRecord[], debts: DebtRecord[]): number => {
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+
+  const currentMonthAssets = assets.filter((asset) => {
+    const date = new Date(asset.date);
+    return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+  });
+
+  const currentMonthDebts = debts.filter((debt) => {
+    const date = new Date(debt.date);
+    return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+  });
+
+  const currentNetWorth =
+    currentMonthAssets.reduce((sum, asset) => sum + asset.value, 0) -
+    currentMonthDebts.reduce((sum, debt) => sum + debt.value, 0);
+
+  return currentNetWorth;
+};
+
+const calculateEmergencyFundRatio = (assets: AssetRecord[], debts: DebtRecord[]): number => {
+  const cashAssets = assets.filter(
+    (asset) =>
+      asset.account.toLowerCase().includes('cash') ||
+      asset.account.toLowerCase().includes('bank') ||
+      asset.account.toLowerCase().includes('savings')
+  );
+
+  const cashTotal = cashAssets.reduce((sum, asset) => sum + asset.value, 0);
+  const totalDebts = debts.reduce((sum, debt) => sum + debt.value, 0);
+  const monthlyExpenses = totalDebts / 12;
+
+  return monthlyExpenses > 0 ? cashTotal / (monthlyExpenses * 3) : 0;
+};
+
+const calculateInvestmentAllocation = (assets: AssetRecord[]): Record<string, number> => {
+  const allocation: Record<string, number> = {};
+
+  assets.forEach((asset) => {
+    const category = asset.account.split(' ')[0] || 'other';
+    allocation[category] = (allocation[category] || 0) + asset.value;
+  });
+
+  return allocation;
+};
+
+const calculateLiquidityRatio = (assets: AssetRecord[]): number => {
+  const totalAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
+  const cashAssets = assets.filter(
+    (asset) =>
+      asset.account.toLowerCase().includes('cash') ||
+      asset.account.toLowerCase().includes('bank') ||
+      asset.account.toLowerCase().includes('savings')
+  );
+  const cashTotal = cashAssets.reduce((sum, asset) => sum + asset.value, 0);
+
+  return totalAssets > 0 ? cashTotal / totalAssets : 0;
+};
+
+const generateTrendsFromData = (assets: AssetRecord[], debts: DebtRecord[]) => {
+  const monthlyData: Record<string, { assets: number; debts: number }> = {};
+  const yearlyData: Record<string, { assets: number; debts: number }> = {};
+
+  // 資産データの処理
+  assets.forEach((asset) => {
+    const date = new Date(asset.date);
+    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const yearKey = String(date.getFullYear());
+
+    if (!monthlyData[monthKey]) {
+      monthlyData[monthKey] = { assets: 0, debts: 0 };
+    }
+    monthlyData[monthKey].assets += asset.value;
+
+    if (!yearlyData[yearKey]) {
+      yearlyData[yearKey] = { assets: 0, debts: 0 };
+    }
+    yearlyData[yearKey].assets += asset.value;
+  });
+
+  // 負債データの処理
+  debts.forEach((debt) => {
+    const date = new Date(debt.date);
+    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const yearKey = String(date.getFullYear());
+
+    if (!monthlyData[monthKey]) {
+      monthlyData[monthKey] = { assets: 0, debts: 0 };
+    }
+    monthlyData[monthKey].debts += debt.value;
+
+    if (!yearlyData[yearKey]) {
+      yearlyData[yearKey] = { assets: 0, debts: 0 };
+    }
+    yearlyData[yearKey].debts += debt.value;
+  });
+
+  // 月次トレンドの生成
+  const monthly = Object.entries(monthlyData)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, data]) => ({
+      month,
+      assets: data.assets,
+      debts: data.debts,
+      netWorth: data.assets - data.debts,
+    }));
+
+  // 年次トレンドの生成
+  const yearly = Object.entries(yearlyData)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([year, data]) => ({
+      year,
+      assets: data.assets,
+      debts: data.debts,
+      netWorth: data.assets - data.debts,
+    }));
+
+  return { monthly, yearly };
+};
+
+const generateCategoriesFromData = (assets: AssetRecord[], debts: DebtRecord[]) => {
+  const assetCategories: Record<string, number> = {};
+  const debtCategories: Record<string, number> = {};
+
+  assets.forEach((asset) => {
+    const category = asset.account.split(' ')[0] || 'other';
+    assetCategories[category] = (assetCategories[category] || 0) + asset.value;
+  });
+
+  debts.forEach((debt) => {
+    const category = debt.account.split(' ')[0] || 'other';
+    debtCategories[category] = (debtCategories[category] || 0) + debt.value;
+  });
+
+  return {
+    assets: assetCategories,
+    debts: debtCategories,
+  };
+};
+
 // Asset-Liability Report API endpoints
 // =============================
 app.get('/api/asset-liability-report', (req, res) => {
@@ -1273,43 +1375,7 @@ app.get('/api/asset-liability-report', (req, res) => {
 
   const userIdStr = String(userId);
 
-  // デフォルトデータの初期化
-  if (!assetStore.has(userIdStr)) {
-    assetStore.set(userIdStr, [
-      {
-        _id: 'asset_1',
-        date: '2024-01-01',
-        value: 1000000,
-        description: '銀行預金',
-        account: 'Bank Savings',
-        createdAt: '2024-01-01T00:00:00.000Z',
-        updatedAt: '2024-01-01T00:00:00.000Z',
-      },
-      {
-        _id: 'asset_2',
-        date: '2024-01-15',
-        value: 500000,
-        description: '投資信託',
-        account: 'Investment Fund',
-        createdAt: '2024-01-15T00:00:00.000Z',
-        updatedAt: '2024-01-15T00:00:00.000Z',
-      },
-    ]);
-  }
-
-  if (!debtStore.has(userIdStr)) {
-    debtStore.set(userIdStr, [
-      {
-        _id: 'debt_1',
-        date: '2024-01-01',
-        value: 300000,
-        description: '住宅ローン',
-        account: 'Mortgage',
-        createdAt: '2024-01-01T00:00:00.000Z',
-        updatedAt: '2024-01-01T00:00:00.000Z',
-      },
-    ]);
-  }
+  // 実際のデータを取得（初期化は行わない）
 
   const assets = assetStore.get(userIdStr) || [];
   const debts = debtStore.get(userIdStr) || [];
@@ -1320,42 +1386,32 @@ app.get('/api/asset-liability-report', (req, res) => {
   const netWorth = totalAssets - totalDebts;
   const debtToAssetRatio = totalAssets > 0 ? totalDebts / totalAssets : 0;
 
+  // 実際のデータから財務指標を計算
+  const assetGrowthRate = calculateAssetGrowthRate(assets);
+  const monthlyNetWorthChange = calculateMonthlyNetWorthChange(assets, debts);
+  const emergencyFundRatio = calculateEmergencyFundRatio(assets, debts);
+  const projectedNetWorth = netWorth * (1 + assetGrowthRate / 100);
+  const investmentAllocation = calculateInvestmentAllocation(assets);
+  const liquidityRatio = calculateLiquidityRatio(assets);
+
   const metrics = {
     totalAssets,
     totalDebts,
     netWorth,
     debtToAssetRatio,
-    assetGrowthRate: 5.2,
-    monthlyNetWorthChange: 50000,
-    emergencyFundRatio: 0.8,
-    projectedNetWorth: netWorth * 1.05,
-    investmentAllocation: {
-      Bank: 1000000,
-      Investment: 500000,
-    },
-    liquidityRatio: 0.6,
+    assetGrowthRate,
+    monthlyNetWorthChange,
+    emergencyFundRatio,
+    projectedNetWorth,
+    investmentAllocation,
+    liquidityRatio,
   };
 
-  // トレンドデータを生成
-  const trends = {
-    monthly: [
-      { month: '2024-01', assets: 1000000, debts: 300000, netWorth: 700000 },
-      { month: '2024-02', assets: 1050000, debts: 295000, netWorth: 755000 },
-      { month: '2024-03', assets: 1100000, debts: 290000, netWorth: 810000 },
-    ],
-    yearly: [{ year: '2024', assets: 1100000, debts: 290000, netWorth: 810000 }],
-  };
+  // 実際のデータからトレンドデータを生成
+  const trends = generateTrendsFromData(assets, debts);
 
-  // カテゴリ別集計
-  const categories = {
-    assets: {
-      Bank: 1000000,
-      Investment: 500000,
-    },
-    debts: {
-      Mortgage: 300000,
-    },
-  };
+  // 実際のデータからカテゴリ別集計を生成
+  const categories = generateCategoriesFromData(assets, debts);
 
   const reportData = {
     assets,

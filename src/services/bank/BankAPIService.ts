@@ -52,38 +52,30 @@ export class BankAPIService {
   }
 
   /**
-   * デモ用の銀行口座データを生成
+   * 実際の銀行APIから口座データを取得
    */
-  public generateDemoData(userId: string): BankAccountBalance[] {
-    return [
-      {
-        accountId: 'demo_1',
-        accountName: 'メイン口座',
-        bankName: '三菱UFJ銀行',
-        balance: 1500000,
-        currency: 'JPY',
-        lastUpdated: new Date().toISOString(),
-        accountType: 'checking',
-      },
-      {
-        accountId: 'demo_2',
-        accountName: '貯蓄口座',
-        bankName: '三菱UFJ銀行',
-        balance: 3000000,
-        currency: 'JPY',
-        lastUpdated: new Date().toISOString(),
-        accountType: 'savings',
-      },
-      {
-        accountId: 'demo_3',
-        accountName: '投資口座',
-        bankName: 'SBI証券',
-        balance: 2500000,
-        currency: 'JPY',
-        lastUpdated: new Date().toISOString(),
-        accountType: 'investment',
-      },
-    ];
+  public async fetchRealBankData(userId: string): Promise<BankAccountBalance[]> {
+    try {
+      // 実際の銀行APIエンドポイントに接続
+      const response = await fetch(`${this.config.apiUrl}/accounts/${userId}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Bank API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.accounts || [];
+    } catch (error) {
+      console.error('Error fetching real bank data:', error);
+      // エラー時は空の配列を返す
+      return [];
+    }
   }
 
   /**
@@ -91,29 +83,16 @@ export class BankAPIService {
    */
   public async getAccountBalances(userId: string): Promise<BankAccountBalance[]> {
     if (!this.isEnabled) {
-      throw new Error('銀行APIが設定されていません');
+      // APIが無効な場合は空の配列を返す
+      return [];
     }
 
     try {
-      const response = await fetch(`${this.config.baseUrl}/accounts/balances`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${this.config.apiKey}`,
-          'Content-Type': 'application/json',
-          'X-User-ID': userId,
-        },
-        signal: AbortSignal.timeout(this.config.timeout),
-      });
-
-      if (!response.ok) {
-        throw new Error(`銀行APIエラー: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data.accounts || [];
+      return await this.fetchRealBankData(userId);
     } catch (error) {
       console.error('銀行API残高取得エラー:', error);
-      throw error;
+      // エラー時は空の配列を返す
+      return [];
     }
   }
 
@@ -167,9 +146,9 @@ export class BankAPIService {
     lastSync: string;
   }> {
     if (!this.isEnabled) {
-      // APIが無効の場合はデモデータを返す
-      console.warn('銀行APIが無効のため、デモデータを使用します');
-      const balances = this.generateDemoData(userId);
+      // APIが無効の場合は空のデータを返す
+      console.warn('銀行APIが無効のため、空のデータを返します');
+      const balances: BankAccountBalance[] = [];
       const lastSync = new Date().toISOString();
 
       // ローカルストレージに同期情報を保存
@@ -178,7 +157,7 @@ export class BankAPIService {
         JSON.stringify({
           lastSync,
           accountCount: balances.length,
-          isDemo: true,
+          isDemo: false,
         })
       );
 
@@ -208,8 +187,8 @@ export class BankAPIService {
       };
     } catch (error) {
       console.error('口座データ同期エラー:', error);
-      // エラー時はデモデータを返す
-      const balances = this.generateDemoData(userId);
+      // エラー時は空のデータを返す
+      const balances: BankAccountBalance[] = [];
       const lastSync = new Date().toISOString();
 
       localStorage.setItem(
@@ -217,7 +196,7 @@ export class BankAPIService {
         JSON.stringify({
           lastSync,
           accountCount: balances.length,
-          isDemo: true,
+          isDemo: false,
         })
       );
 

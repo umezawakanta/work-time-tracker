@@ -535,6 +535,11 @@ const Daily10TasksPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('tasks');
 
   // 本番環境ではデバッグログを削除
+  if (process.env.NODE_ENV === 'production') {
+    console.log = () => {};
+    console.warn = () => {};
+    console.error = () => {};
+  }
 
   // 進捗の可視化データを計算
   const progressData = useMemo(() => {
@@ -822,21 +827,7 @@ const Daily10TasksPage: React.FC = () => {
         </div>
       </div>
 
-      {/* デバッグ情報 */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <h3 className="text-lg font-semibold text-yellow-800 mb-3">🐛 デバッグ情報</h3>
-          <div className="text-sm text-yellow-700 space-y-2">
-            <div>タスク数: {tasks.length}</div>
-            <div>ローディング中: {isLoading ? 'はい' : 'いいえ'}</div>
-            <div>エラー: {error || 'なし'}</div>
-            <div>最初のタスクのサブタスク数: {tasks[0]?.subtasks?.length || 0}</div>
-            <Button onClick={() => window.location.reload()} size="sm" className="mt-2">
-              ページを再読み込み
-            </Button>
-          </div>
-        </div>
-      )}
+      {/* デバッグ情報は本番環境では非表示 */}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* 進捗サマリー */}

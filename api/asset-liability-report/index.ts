@@ -4,43 +4,27 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 const assetStore = new Map<string, AssetRecord[]>();
 const debtStore = new Map<string, DebtRecord[]>();
 
-// デフォルトデータの初期化
-const initializeDefaultData = (userIdStr: string) => {
-  if (!assetStore.has(userIdStr)) {
-    assetStore.set(userIdStr, [
-      {
-        _id: 'asset_1',
-        date: '2024-01-01',
-        value: 1000000,
-        description: '銀行預金',
-        account: 'Bank Savings',
-        createdAt: '2024-01-01T00:00:00.000Z',
-        updatedAt: '2024-01-01T00:00:00.000Z',
-      },
-      {
-        _id: 'asset_2',
-        date: '2024-01-15',
-        value: 500000,
-        description: '投資信託',
-        account: 'Investment Fund',
-        createdAt: '2024-01-15T00:00:00.000Z',
-        updatedAt: '2024-01-15T00:00:00.000Z',
-      },
-    ]);
-  }
+// 実際のデータベースからデータを取得する関数
+const fetchUserData = async (userIdStr: string) => {
+  try {
+    // 資産データを取得
+    const assetResponse = await fetch(
+      `${process.env.API_BASE_URL || 'http://localhost:3000'}/api/asset?userId=${userIdStr}`
+    );
+    const assetData = await assetResponse.json();
+    const assets = assetData.success ? assetData.data : [];
 
-  if (!debtStore.has(userIdStr)) {
-    debtStore.set(userIdStr, [
-      {
-        _id: 'debt_1',
-        date: '2024-01-01',
-        value: 300000,
-        description: '住宅ローン',
-        account: 'Mortgage',
-        createdAt: '2024-01-01T00:00:00.000Z',
-        updatedAt: '2024-01-01T00:00:00.000Z',
-      },
-    ]);
+    // 負債データを取得
+    const debtResponse = await fetch(
+      `${process.env.API_BASE_URL || 'http://localhost:3000'}/api/debt?userId=${userIdStr}`
+    );
+    const debtData = await debtResponse.json();
+    const debts = debtData.success ? debtData.data : [];
+
+    return { assets, debts };
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    return { assets: [], debts: [] };
   }
 };
 
@@ -296,16 +280,10 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       const userIdStrStr = String(userIdStr);
 
       if (action === 'summary') {
-        // レポートサマリーを取得 - 実際のデータストアから取得
+        // レポートサマリーを取得 - 実際のデータベースから取得
         try {
-          // デフォルトデータを初期化
-          initializeDefaultData(userIdStrStr);
-
-          // 資産データを直接取得（内部ストアから）
-          const assets: AssetRecord[] = assetStore.get(userIdStrStr) || [];
-
-          // 負債データを直接取得（内部ストアから）
-          const debts: DebtRecord[] = debtStore.get(userIdStrStr) || [];
+          // 実際のデータベースからデータを取得
+          const { assets, debts } = await fetchUserData(userIdStrStr);
 
           const metrics = calculateFinancialMetrics(assets, debts);
           const trends = generateTrends(assets, debts);
@@ -326,10 +304,9 @@ async function handler(req: VercelRequest, res: VercelResponse) {
           return;
         } catch (error) {
           console.error('Error fetching asset/debt data:', error);
-          // フォールバック: デフォルトデータでレスポンス
-          initializeDefaultData(userIdStr);
-          const emptyAssets: AssetRecord[] = assetStore.get(userIdStr) || [];
-          const emptyDebts: DebtRecord[] = debtStore.get(userIdStr) || [];
+          // エラー時は空のデータでレスポンス
+          const emptyAssets: AssetRecord[] = [];
+          const emptyDebts: DebtRecord[] = [];
 
           const metrics = calculateFinancialMetrics(emptyAssets, emptyDebts);
           const trends = generateTrends(emptyAssets, emptyDebts);
@@ -352,11 +329,9 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       if (action === 'metrics') {
-        // 財務指標のみを取得 - 実際のデータストアから取得
+        // 財務指標のみを取得 - 実際のデータベースから取得
         try {
-          initializeDefaultData(userIdStr);
-          const assets: AssetRecord[] = assetStore.get(userIdStr) || [];
-          const debts: DebtRecord[] = debtStore.get(userIdStr) || [];
+          const { assets, debts } = await fetchUserData(userIdStrStr);
 
           const metrics = calculateFinancialMetrics(assets, debts);
 
@@ -367,9 +342,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
           return;
         } catch (error) {
           console.error('Error fetching metrics data:', error);
-          initializeDefaultData(userIdStr);
-          const emptyAssets: AssetRecord[] = assetStore.get(userIdStr) || [];
-          const emptyDebts: DebtRecord[] = debtStore.get(userIdStr) || [];
+          const emptyAssets: AssetRecord[] = [];
+          const emptyDebts: DebtRecord[] = [];
           const metrics = calculateFinancialMetrics(emptyAssets, emptyDebts);
 
           res.status(200).json({
@@ -381,11 +355,9 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       if (action === 'trends') {
-        // トレンドデータのみを取得 - 実際のデータストアから取得
+        // トレンドデータのみを取得 - 実際のデータベースから取得
         try {
-          initializeDefaultData(userIdStr);
-          const assets: AssetRecord[] = assetStore.get(userIdStr) || [];
-          const debts: DebtRecord[] = debtStore.get(userIdStr) || [];
+          const { assets, debts } = await fetchUserData(userIdStrStr);
 
           const trends = generateTrends(assets, debts);
 
@@ -396,9 +368,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
           return;
         } catch (error) {
           console.error('Error fetching trends data:', error);
-          initializeDefaultData(userIdStr);
-          const emptyAssets: AssetRecord[] = assetStore.get(userIdStr) || [];
-          const emptyDebts: DebtRecord[] = debtStore.get(userIdStr) || [];
+          const emptyAssets: AssetRecord[] = [];
+          const emptyDebts: DebtRecord[] = [];
           const trends = generateTrends(emptyAssets, emptyDebts);
 
           res.status(200).json({
@@ -409,11 +380,9 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         }
       }
 
-      // デフォルトはサマリーを返す - 実際のデータストアから取得
+      // デフォルトはサマリーを返す - 実際のデータベースから取得
       try {
-        initializeDefaultData(userIdStr);
-        const assets: AssetRecord[] = assetStore.get(userIdStr) || [];
-        const debts: DebtRecord[] = debtStore.get(userIdStr) || [];
+        const { assets, debts } = await fetchUserData(userIdStrStr);
 
         const metrics = calculateFinancialMetrics(assets, debts);
         const trends = generateTrends(assets, debts);
@@ -434,9 +403,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         return;
       } catch (error) {
         console.error('Error fetching default report data:', error);
-        initializeDefaultData(userIdStr);
-        const emptyAssets: AssetRecord[] = assetStore.get(userIdStr) || [];
-        const emptyDebts: DebtRecord[] = debtStore.get(userIdStr) || [];
+        const emptyAssets: AssetRecord[] = [];
+        const emptyDebts: DebtRecord[] = [];
 
         const metrics = calculateFinancialMetrics(emptyAssets, emptyDebts);
         const trends = generateTrends(emptyAssets, emptyDebts);
