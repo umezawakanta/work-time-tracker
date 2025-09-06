@@ -702,6 +702,9 @@ const AdminDashboard: React.FC = () => {
           {isFeatureAccessible('/admin/bugs').allowed && (
             <TabsTrigger value="bugs">不具合</TabsTrigger>
           )}
+          {isFeatureAccessible('/admin/features').allowed && (
+            <TabsTrigger value="features">機能一覧</TabsTrigger>
+          )}
           {isFeatureAccessible('/admin/settings').allowed && (
             <TabsTrigger value="settings">設定</TabsTrigger>
           )}
@@ -1145,6 +1148,24 @@ const AdminDashboard: React.FC = () => {
                 <iframe
                   title="bugs-frame"
                   src="/bugs"
+                  className="w-full min-h-[70vh] border rounded"
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {isFeatureAccessible('/admin/features').allowed && (
+          <TabsContent value="features" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>機能一覧と開発状況</CardTitle>
+                <CardDescription>完成定義に基づく進捗とアクセス制御</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <iframe
+                  title="features-frame"
+                  src="/features"
                   className="w-full min-h-[70vh] border rounded"
                 />
               </CardContent>
