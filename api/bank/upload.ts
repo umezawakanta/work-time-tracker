@@ -61,7 +61,7 @@ const BANK_FORMATS = {
 // 取引内容からカテゴリを自動判定
 const categorizeTransaction = (description: string): string => {
   const desc = description.toLowerCase();
-  
+
   if (desc.includes('給与') || desc.includes('給料')) return 'salary';
   if (desc.includes('ボーナス') || desc.includes('賞与')) return 'bonus';
   if (desc.includes('振込') && desc.includes('受取')) return 'transfer_in';
@@ -74,9 +74,11 @@ const categorizeTransaction = (description: string): string => {
   if (desc.includes('ATM') || desc.includes('手数料')) return 'fees';
   if (desc.includes('振込') && desc.includes('送金')) return 'transfer_out';
   if (desc.includes('買い物') || desc.includes('ショッピング')) return 'shopping';
-  if (desc.includes('食費') || desc.includes('スーパー') || desc.includes('コンビニ')) return 'food';
-  if (desc.includes('交通費') || desc.includes('電車') || desc.includes('バス')) return 'transportation';
-  
+  if (desc.includes('食費') || desc.includes('スーパー') || desc.includes('コンビニ'))
+    return 'food';
+  if (desc.includes('交通費') || desc.includes('電車') || desc.includes('バス'))
+    return 'transportation';
+
   return 'other';
 };
 
@@ -87,7 +89,7 @@ const normalizeDate = (dateStr: string): string => {
     /(\d{4})-(\d{1,2})-(\d{1,2})/,
     /(\d{4})(\d{2})(\d{2})/,
   ];
-  
+
   for (const format of formats) {
     const match = dateStr.match(format);
     if (match) {
@@ -95,7 +97,7 @@ const normalizeDate = (dateStr: string): string => {
       return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     }
   }
-  
+
   return dateStr;
 };
 
@@ -109,49 +111,50 @@ const normalizeAmount = (amountStr: string): number => {
 // 銀行名の自動判定
 const detectBankName = (csvText: string): string => {
   const text = csvText.toLowerCase();
-  
+
   if (text.includes('三菱') || text.includes('mufg')) return 'mufg';
   if (text.includes('三井住友') || text.includes('smbc')) return 'smbc';
   if (text.includes('みずほ') || text.includes('mizuho')) return 'mizuho';
   if (text.includes('楽天') || text.includes('rakuten')) return 'rakuten';
-  
+
   return 'default';
 };
 
 // CSVファイルの解析
 const parseBankCSV = (csvText: string, bankName?: string): ParsedBankData => {
   const lines = csvText.split('\n').filter((line) => line.trim());
-  
+
   if (lines.length < 2) {
     throw new Error('有効なCSVデータが見つかりません');
   }
-  
+
   const detectedBank = bankName || detectBankName(csvText);
-  const bankFormat = BANK_FORMATS[detectedBank as keyof typeof BANK_FORMATS] || BANK_FORMATS.default;
-  
+  const bankFormat =
+    BANK_FORMATS[detectedBank as keyof typeof BANK_FORMATS] || BANK_FORMATS.default;
+
   const transactions: BankTransaction[] = [];
   let totalIncome = 0;
   let totalExpense = 0;
   let minDate = '';
   let maxDate = '';
-  
+
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
-    
+
     const columns = line.split(',').map((col) => {
       const cleaned = col.trim();
       return cleaned.startsWith('"') && cleaned.endsWith('"') ? cleaned.slice(1, -1) : cleaned;
     });
-    
+
     if (columns.length < 4) continue;
-    
+
     try {
       const date = normalizeDate(columns[0]);
       const description = columns[1];
       const amount = normalizeAmount(columns[bankFormat.amountColumn]);
       const balance = normalizeAmount(columns[bankFormat.balanceColumn]);
-      
+
       const transaction: BankTransaction = {
         date,
         description,
@@ -161,26 +164,26 @@ const parseBankCSV = (csvText: string, bankName?: string): ParsedBankData => {
         bankName: bankFormat.name,
         accountType: 'checking',
       };
-      
+
       transactions.push(transaction);
-      
+
       if (amount > 0) {
         totalIncome += amount;
       } else {
         totalExpense += Math.abs(amount);
       }
-      
+
       if (!minDate || date < minDate) minDate = date;
       if (!maxDate || date > maxDate) maxDate = date;
     } catch (err) {
       console.warn('Failed to parse line:', line, err);
     }
   }
-  
+
   if (transactions.length === 0) {
     throw new Error('有効な取引データが見つかりませんでした');
   }
-  
+
   return {
     transactions,
     summary: {
@@ -203,23 +206,23 @@ const parseBankCSV = (csvText: string, bankName?: string): ParsedBankData => {
 // データの検証
 const validateBankData = (data: ParsedBankData): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
-  
+
   if (data.transactions.length === 0) {
     errors.push('取引データがありません');
   }
-  
+
   if (data.summary.dateRange.start === '' || data.summary.dateRange.end === '') {
     errors.push('有効な日付範囲がありません');
   }
-  
+
   const hasInvalidAmounts = data.transactions.some(
     (t) => Math.abs(t.amount) > 10000000 || Math.abs(t.balance) > 100000000
   );
-  
+
   if (hasInvalidAmounts) {
     errors.push('異常な金額が検出されました');
   }
-  
+
   return {
     isValid: errors.length === 0,
     errors,
@@ -230,7 +233,7 @@ const validateBankData = (data: ParsedBankData): { isValid: boolean; errors: str
 const generateDataSummary = (data: ParsedBankData): string => {
   const { summary, bankInfo } = data;
   const { totalIncome, totalExpense, netAmount, transactionCount, dateRange } = summary;
-  
+
   return `
 銀行: ${bankInfo.name}
 期間: ${dateRange.start} ～ ${dateRange.end}
@@ -280,7 +283,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // CSVデータを解析
     const parsedData = parseBankCSV(csvData, bankName);
-    
+
     // データの検証
     const validation = validateBankData(parsedData);
     if (!validation.isValid) {

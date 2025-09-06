@@ -1166,9 +1166,9 @@ app.post('/api/worktime', (req, res) => {
 // Asset API endpoints
 // =============================
 app.get('/api/asset', (req, res) => {
-  const all = Array.from(assetStore.values()).flat().sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  const all = Array.from(assetStore.values())
+    .flat()
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // ストアが空の場合はモックデータを返す
   if (all.length === 0) {

@@ -38,7 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'GET') {
       // 資産データを取得
       const assets = assetStore.get(userId as string) || [];
-      
+
       return res.status(200).json({
         success: true,
         data: assets,

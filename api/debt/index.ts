@@ -38,7 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'GET') {
       // 負債データを取得
       const debts = debtStore.get(userId as string) || [];
-      
+
       return res.status(200).json({
         success: true,
         data: debts,
