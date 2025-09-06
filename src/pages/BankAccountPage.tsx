@@ -16,7 +16,7 @@ const BankAccountPage: React.FC = () => {
     isAuthenticated,
     loading,
     userExists: !!user,
-    userId: user?.id
+    userId: user?.id,
   });
 
   // ローディング中の場合
@@ -48,9 +48,7 @@ const BankAccountPage: React.FC = () => {
               <p>user: {user ? 'exists' : 'null'}</p>
               <p>loading: {loading ? 'true' : 'false'}</p>
             </div>
-            <Button onClick={() => navigate('/login')}>
-              ログインページに移動
-            </Button>
+            <Button onClick={() => navigate('/login')}>ログインページに移動</Button>
           </CardContent>
         </Card>
       </div>
