@@ -30,6 +30,7 @@ import {
   Sun,
   Folders,
   Archive,
+  ExternalLink,
 } from 'lucide-react';
 import { useDaily10Tasks } from '@/hooks/useDaily10Tasks';
 import { DailyTask, TaskProgress } from '@/types/daily10';
@@ -76,6 +77,34 @@ const categoryColors = {
   work: 'bg-indigo-100 text-indigo-800',
 };
 
+// タスクに対応するページのリンクを生成
+const getTaskLink = (taskId: string) => {
+  const taskLinks: { [key: string]: { href: string; label: string; icon: string } } = {
+    '1': { href: '/asset-liability-report', label: '資産負債レポート', icon: '📊' },
+    '2': { href: '/asset-liability-report', label: '資産負債レポート', icon: '📊' },
+    '3': { href: '/calendar', label: 'カレンダー', icon: '📅' },
+    '4': { href: '/subscriptions', label: 'サブスクリプション管理', icon: '💳' },
+    '5': { href: '/debt', label: '負債管理', icon: '💸' },
+    '6': { href: '/utilities', label: '光熱費管理', icon: '⚡' },
+    '7': { href: '/guitar-practice', label: 'ギター練習記録', icon: '🎸' },
+    '8': { href: '/household', label: '家事管理', icon: '🍽️' },
+    '9': { href: '/cooking', label: '料理管理', icon: '👨‍🍳' },
+    '10': { href: '/personal-care', label: '個人ケア', icon: '🛁' },
+    '11': { href: '/reading', label: '読書記録', icon: '📚' },
+    '12': { href: '/development', label: '開発進捗', icon: '💻' },
+    '13': { href: '/household', label: '家事管理', icon: '📰' },
+    '14': { href: '/household', label: '家事管理', icon: '📄' },
+    '15': { href: '/cooking', label: '料理管理', icon: '❄️' },
+    '16': { href: '/household', label: '家事管理', icon: '🧹' },
+    '17': { href: '/household', label: '家事管理', icon: '👕' },
+    '18': { href: '/household', label: '家事管理', icon: '☀️' },
+    '19': { href: '/household', label: '家事管理', icon: '👔' },
+    '20': { href: '/household', label: '家事管理', icon: '📦' },
+  };
+
+  return taskLinks[taskId] || null;
+};
+
 interface TaskItemProps {
   task: DailyTask;
   progress?: TaskProgress;
@@ -106,6 +135,9 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
   const completedSubtasks = progress?.subtasks?.filter((st) => st.completed).length || 0;
   const totalSubtasks = task.subtasks?.length || 0;
   const subtaskProgress = totalSubtasks > 0 ? (completedSubtasks / totalSubtasks) * 100 : 0;
+
+  // リンク情報を一度だけ取得
+  const taskLink = getTaskLink(task.id);
 
   // タスク固有のメッセージを生成
   const getTaskMessage = () => {
@@ -164,6 +196,24 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
             <div className="mb-3 p-2 bg-gray-50 rounded-md">
               <p className="text-sm text-gray-700">{getTaskMessage()}</p>
             </div>
+
+            {/* タスク対応ページへのリンク */}
+            {taskLink && (
+              <div className="mb-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    window.open(taskLink.href, '_blank');
+                  }}
+                >
+                  <span className="mr-2">{taskLink.icon}</span>
+                  {taskLink.label}ページを開く
+                  <ExternalLink className="ml-2 h-3 w-3" />
+                </Button>
+              </div>
+            )}
 
             {/* サブタスク進捗バー */}
             {task.subtasks && task.subtasks.length > 0 && (
