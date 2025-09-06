@@ -57,7 +57,7 @@ const handleForgotPassword = async (req, res) => {
 
   try {
     // MongoDB接続とユーザー検索
-    const mongoLib = (await import('../_lib/mongo.js')) as any;
+    const mongoLib = await import('../_lib/mongo.js');
     await mongoLib.connectMongoDirect();
     const mongoose = await mongoLib.getMongoose();
 
@@ -82,7 +82,7 @@ const handleForgotPassword = async (req, res) => {
     const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       // セキュリティのため、ユーザーが存在しない場合も成功レスポンスを返す
-      const successResponse: PasswordResetResponse = {
+      const successResponse = {
         success: true,
         message: 'パスワードリセットメールの送信を受け付けました',
         email: normalizedEmail,
@@ -118,7 +118,7 @@ const handleForgotPassword = async (req, res) => {
       // メール送信に失敗しても処理は続行
     }
 
-    const successResponse: PasswordResetResponse = {
+    const successResponse = {
       success: true,
       message: 'パスワードリセットメールを送信しました',
       email: normalizedEmail,
@@ -158,7 +158,7 @@ const handleResetPassword = async (req, res) => {
 
   try {
     // MongoDB接続
-    const mongoLib = (await import('../_lib/mongo.js')) as any;
+    const mongoLib = await import('../_lib/mongo.js');
     await mongoLib.connectMongoDirect();
     const mongoose = await mongoLib.getMongoose();
 
@@ -200,7 +200,7 @@ const handleResetPassword = async (req, res) => {
       passwordResetExpires: undefined,
     });
 
-    const successResponse: PasswordResetResponse = {
+    const successResponse = {
       success: true,
       message: 'パスワードが正常にリセットされました',
     };
