@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import BankAccountManager from '@/components/BankAccountManager';
 import { BankCSVUploader } from '@/components/BankCSVUploader';
+import BankAccountForm from '@/components/BankAccountForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building2, ArrowLeft, Upload, FileText } from 'lucide-react';
+import { Building2, ArrowLeft, Upload, FileText, Plus, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,6 +13,7 @@ const BankAccountPage: React.FC = () => {
   const { user, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('manage');
+  const [showAddForm, setShowAddForm] = useState(false);
 
   // デバッグ情報を表示
   console.log('BankAccountPage - Auth state:', {
@@ -99,32 +101,72 @@ const BankAccountPage: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-blue-800">
                   <Building2 className="h-5 w-5" />
-                  銀行口座管理の使い方
+                  銀行口座管理完全ガイド
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm">
                   <div>
                     <h4 className="font-semibold text-blue-900 mb-3">🏦 口座の登録方法</h4>
                     <ol className="list-decimal list-inside space-y-2 text-blue-700">
-                      <li>「新しい口座を追加」ボタンをクリック</li>
-                      <li>銀行名、口座種別、口座名を入力</li>
-                      <li>「メイン口座に設定」で主要な口座を指定</li>
-                      <li>「データ同期」ボタンで残高を自動取得</li>
+                      <li><strong>手動登録</strong><br/>「新しい口座を追加」ボタンで個別登録</li>
+                      <li><strong>CSVインポート</strong><br/>三井住友銀行のCSVファイルをアップロード</li>
+                      <li><strong>複数口座対応</strong><br/>メイン口座以外も複数登録可能</li>
+                      <li><strong>メイン口座設定</strong><br/>主要な口座を1つ指定</li>
                     </ol>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-blue-900 mb-3">🔄 自動同期機能</h4>
+                    <h4 className="font-semibold text-blue-900 mb-3">🔄 データ管理機能</h4>
                     <ol className="list-decimal list-inside space-y-2 text-blue-700">
-                      <li>「データ同期」で最新の残高を取得</li>
-                      <li>「自動同期を有効化」で定期的な更新を設定</li>
-                      <li>「毎日20のこと」で資産確認タスクが自動完了</li>
-                      <li>資産負債レポートに自動反映</li>
+                      <li><strong>残高更新</strong><br/>「データ同期」で最新の残高を取得</li>
+                      <li><strong>自動同期</strong><br/>定期的な更新を設定可能</li>
+                      <li><strong>データ永続化</strong><br/>ページ再読み込みでもデータ保持</li>
+                      <li><strong>セキュリティ</strong><br/>暗号化された安全な保存</li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-blue-900 mb-3">💡 毎日の使い方</h4>
+                    <ol className="list-decimal list-inside space-y-2 text-blue-700">
+                      <li><strong>朝の確認</strong><br/>「毎日20のこと」で資産確認タスクを完了</li>
+                      <li><strong>残高更新</strong><br/>銀行口座の残高を最新に更新</li>
+                      <li><strong>レポート確認</strong><br/>資産負債レポートで全体を把握</li>
+                      <li><strong>目標管理</strong><br/>設定した目標に対する進捗を確認</li>
                     </ol>
                   </div>
                 </div>
+                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <h5 className="font-semibold text-yellow-800 mb-2">⚠️ 重要な注意事項</h5>
+                  <ul className="text-yellow-700 text-sm space-y-1">
+                    <li>• メイン口座は1つのみ設定可能です（他の口座は通常口座として登録）</li>
+                    <li>• CSVファイルは三井住友銀行の形式に対応しています</li>
+                    <li>• データは自動的に保存され、セッション切れでも保持されます</li>
+                    <li>• 個人情報は暗号化されて保存され、第三者と共有されることはありません</li>
+                  </ul>
+                </div>
               </CardContent>
             </Card>
+
+            {/* 口座追加ボタン */}
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-gray-900">登録済み口座一覧</h3>
+              <Button onClick={() => setShowAddForm(true)} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                新しい口座を追加
+              </Button>
+            </div>
+
+            {/* 口座追加フォーム */}
+            {showAddForm && (
+              <BankAccountForm
+                onAccountAdded={(account) => {
+                  setShowAddForm(false);
+                  // 口座一覧を更新するためにページをリロード
+                  window.location.reload();
+                }}
+                onCancel={() => setShowAddForm(false)}
+                existingMainAccount={false} // TODO: 既存のメイン口座をチェック
+              />
+            )}
 
             {/* 銀行口座管理コンポーネント */}
             <BankAccountManager userId={user.id} />

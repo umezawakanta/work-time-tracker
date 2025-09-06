@@ -705,6 +705,52 @@ const Daily10TasksPage: React.FC = () => {
 
       {/* 詳細な使い方ガイド */}
       <div className="mb-6 space-y-4">
+        {/* 毎日の実施手順ガイド */}
+        <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-purple-800 mb-3 flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            毎日の実施手順（完全版）
+          </h3>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm text-purple-700">
+            <div>
+              <h4 className="font-semibold mb-3 text-purple-900">🌅 朝のルーティン（30分）</h4>
+              <ol className="list-decimal list-inside space-y-2">
+                <li><strong>起床後すぐ</strong><br/>このページを開いて今日のタスクを確認</li>
+                <li><strong>資産確認タスク</strong><br/>「直近3ヶ月の収入と支出をすべて把握する」を実行</li>
+                <li><strong>銀行口座更新</strong><br/>銀行口座管理ページで残高を最新に更新</li>
+                <li><strong>計画確認</strong><br/>「現在から3ヶ月後までの予定をすべて把握する」を実行</li>
+              </ol>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-3 text-purple-900">🌆 夕方のルーティン（20分）</h4>
+              <ol className="list-decimal list-inside space-y-2">
+                <li><strong>家事タスク</strong><br/>洗い物、自炊、風呂、洗濯などの家事を完了</li>
+                <li><strong>整理整頓</strong><br/>新聞を捨てる、チラシを捨てる、冷蔵庫の中身を確認</li>
+                <li><strong>清掃作業</strong><br/>床掃除、押入れの整理を実行</li>
+                <li><strong>進捗確認</strong><br/>完了したタスクのチェックボックスをクリック</li>
+              </ol>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-3 text-purple-900">🌙 夜のルーティン（10分）</h4>
+              <ol className="list-decimal list-inside space-y-2">
+                <li><strong>個人活動</strong><br/>ギターの練習、読書、このサイトの開発</li>
+                <li><strong>最終確認</strong><br/>未完了のタスクがないか確認</li>
+                <li><strong>明日の準備</strong><br/>明日取り組むタスクを決める</li>
+                <li><strong>振り返り</strong><br/>今日の成果を確認して満足感を得る</li>
+              </ol>
+            </div>
+          </div>
+          <div className="mt-4 p-3 bg-white rounded-lg border border-purple-200">
+            <h5 className="font-semibold text-purple-900 mb-2">💡 成功のコツ</h5>
+            <ul className="text-purple-700 text-sm space-y-1">
+              <li>• 毎日同じ時間に実行して習慣化する</li>
+              <li>• 1つのタスクが5分以内で完了するよう設計されている</li>
+              <li>• サブタスクを順番に実行することで確実に進捗できる</li>
+              <li>• 自動連携機能により手動入力の手間を削減</li>
+            </ul>
+          </div>
+        </div>
+
         {/* 基本操作ガイド */}
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
