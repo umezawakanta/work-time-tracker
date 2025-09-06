@@ -171,20 +171,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       console.log('📡 Starting server auth check...');
-      const timeoutPromise = new Promise<boolean>((_, reject) => {
-        setTimeout(() => reject(new Error('Auth check timeout')), 4000);
-      });
-      const isValidOnServer = await Promise.race([checkAuth(), timeoutPromise]);
-      console.log('📡 Server auth check result:', { isValidOnServer });
-      if (!isValidOnServer) {
-        console.log('❌ Server auth check failed');
-        tokenManager.clearTokens();
-        setIsAuthenticated(false);
-        setUser(null);
-        return false;
+      try {
+        const isValidOnServer = await checkAuth();
+        console.log('📡 Server auth check result:', { isValidOnServer });
+        if (!isValidOnServer) {
+          console.log('❌ Server auth check failed');
+          tokenManager.clearTokens();
+          setIsAuthenticated(false);
+          setUser(null);
+          return false;
+        }
+        console.log('✅ Server auth check passed');
+        return true;
+      } catch (serverError) {
+        console.log('⚠️ Server auth check failed, but maintaining auth state for valid token');
+        // サーバーエラーの場合でも、ローカルトークンが有効なら認証状態を維持
+        return true;
       }
-      console.log('✅ Server auth check passed');
-      return true;
     } catch (error) {
       console.log('❌ Auth check error:', error);
       logger.error('Auth', 'Auth check failed', error);
@@ -368,11 +371,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
             }
           } catch (error) {
             console.error('❌ サーバー認証確認失敗:', error);
-            // トークンが無効の場合はクリア
-            tokenManager.clearTokens();
+            // サーバーエラーの場合は一時的に認証状態を維持
             if (isMounted) {
-              setUser(null);
-              setIsAuthenticated(false);
+              setIsAuthenticated(true);
+              // ユーザー情報は取得できないが、トークンが有効なら認証状態を維持
+              console.log('⚠️ Server error but maintaining auth state');
             }
           }
         } else {

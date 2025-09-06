@@ -75,7 +75,14 @@ const PrivateRoute: React.FC = () => {
 
   // 認証されていない場合はログインページへリダイレクト
   if (!isAuthenticated) {
-    console.log('PrivateRoute: Not authenticated, redirecting to login');
+    console.log('PrivateRoute: Not authenticated, redirecting to login', {
+      isAuthenticated,
+      loading,
+      sessionExpired,
+      user: user ? { id: user.id || user._id, name: user.name, email: user.email } : null,
+      location: location.pathname,
+      timestamp: new Date().toISOString(),
+    });
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

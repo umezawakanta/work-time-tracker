@@ -196,9 +196,9 @@ export const checkAuth = async (): Promise<boolean> => {
 
     console.log('🔄 Checking auth with server...');
 
-    // 開発環境では短いタイムアウトでサーバーチェック
+    // 本番環境では適切なタイムアウトでサーバーチェック
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3秒タイムアウト
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒タイムアウト
 
     try {
       const response = await api.get('/auth/check', {
@@ -220,31 +220,27 @@ export const checkAuth = async (): Promise<boolean> => {
       code: err.code,
     });
 
-    // 開発環境でのタイムアウトやネットワークエラーの場合は認証状態を維持
-    const isDev = process.env.NODE_ENV === 'development';
-
+    // タイムアウトやネットワークエラーの場合は認証状態を維持
     if (
       err.name === 'AbortError' ||
       err.code === 'ECONNREFUSED' ||
       err.code === 'NETWORK_ERROR' ||
       !err.response
     ) {
-      // 開発環境でもトークンがある場合は実際の認証状態を確認
-      if (isDev && tokenManager.isAuthenticated()) {
-        console.log('⚠️ Network error but token exists - maintaining auth state (dev mode)');
-        return true; // トークンがある場合のみ認証状態を維持
-      }
-      console.log('⚠️ Network error - auth state depends on token existence');
-      return false;
+      console.log('⚠️ Network error - maintaining auth state for valid token');
+      return tokenManager.isAuthenticated(); // ローカルトークンが有効なら認証状態を維持
     }
 
     // サーバーが明示的に認証エラーを返した場合のみクリア
     if (err.response?.status === 401 || err.response?.status === 403) {
       console.log('🔒 Server rejected auth - clearing tokens');
       tokenManager.clearTokens();
+      return false;
     }
 
-    return false;
+    // その他のサーバーエラーの場合は認証状態を維持
+    console.log('⚠️ Server error - maintaining auth state');
+    return tokenManager.isAuthenticated();
   }
 };
 
