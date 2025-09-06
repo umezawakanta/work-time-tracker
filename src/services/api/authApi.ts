@@ -328,7 +328,10 @@ export const fetchUserData = async (): Promise<User> => {
 // パスワードリセット関連の機能
 export const requestPasswordReset = async (email: string): Promise<{ message: string }> => {
   try {
-    const response = await api.post<{ message: string }>('/auth/password-reset', { email });
+    const response = await api.post<{ message: string }>('/auth/password-reset', { 
+      action: 'forgot',
+      email 
+    });
     return response.data;
   } catch (error) {
     console.error('Password reset request error:', error);
@@ -351,9 +354,11 @@ export const resetPassword = async (
   newPassword: string
 ): Promise<{ message: string }> => {
   try {
-    const response = await api.post<{ message: string }>('/auth/password-reset/confirm', {
+    const response = await api.post<{ message: string }>('/auth/password-reset', {
+      action: 'reset',
       token,
       password: newPassword,
+      confirmPassword: newPassword,
     });
     return response.data;
   } catch (error) {

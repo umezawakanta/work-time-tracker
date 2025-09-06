@@ -79,8 +79,8 @@ export default function ForgotPassword() {
   if (isSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-        <Card className="w-full max-w-md shadow-lg">
-          <CardHeader className="text-center">
+        <Card className="w-full max-w-md shadow-lg bg-white border border-gray-200">
+          <CardHeader className="text-center bg-white">
             <div className="mx-auto mb-4 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
@@ -90,7 +90,7 @@ export default function ForgotPassword() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 bg-white">
             <Alert className="border-green-200 bg-green-50">
               <Mail className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-700">
@@ -135,8 +135,8 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="text-center">
+      <Card className="w-full max-w-md shadow-lg bg-white border border-gray-200">
+        <CardHeader className="text-center bg-white">
           <CardTitle className="text-2xl font-bold text-gray-900">
             パスワードをお忘れですか？
           </CardTitle>
@@ -146,7 +146,7 @@ export default function ForgotPassword() {
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 bg-white">
             {error && (
               <Alert className="border-red-200 bg-red-50">
                 <AlertCircle className="h-4 w-4 text-red-600" />
@@ -187,7 +187,7 @@ export default function ForgotPassword() {
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-3">
+          <CardFooter className="flex flex-col space-y-3 bg-white">
             <Button
               type="submit"
               className="w-full"
