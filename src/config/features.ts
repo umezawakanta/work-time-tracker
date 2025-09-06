@@ -784,6 +784,17 @@ export const featuresRegistry: Feature[] = [
     priority: 'P2',
     targetRelease: '2025-01-20',
   },
+  {
+    id: 'daily-10-tasks',
+    name: '🎯 必ず毎日やる10のこと',
+    path: '/daily-10-tasks',
+    category: '生産性',
+    description: '毎日実行すべき10のタスクを管理・追跡',
+    status: 'complete',
+    requiresRealAPI: true,
+    priority: 'P1',
+    targetRelease: '2025-01-25',
+  },
   // プロジェクト管理
   {
     id: 'improvement-plan',

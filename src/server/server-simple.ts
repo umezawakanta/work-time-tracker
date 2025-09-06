@@ -223,8 +223,38 @@ type DebtRecord = {
   updatedAt: string;
 };
 
+type AssetRecord = {
+  _id: string;
+  date: string; // ISO
+  value: number;
+  description: string;
+  account: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 const debtStore: Map<string, DebtRecord> = new Map();
 const createDebtId = () => 'debt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+
+// Asset store and ID generator
+const assetStore: Map<string, AssetRecord> = new Map();
+const createAssetId = () => 'asset_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+
+// Work Time store and ID generator
+type WorkTimeRecord = {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  breakTime: number;
+  totalHours: number;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+const workTimeStore: Map<string, WorkTimeRecord> = new Map();
+const createWorkTimeId = () => 'wt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
 
 app.get('/api/debt', (_req, res) => {
   const all = Array.from(debtStore.values()).sort(
@@ -1045,6 +1075,148 @@ app.put('/api/auth/profile', authenticate, async (req: Request, res: Response) =
   } catch (error) {
     console.error('Profile update error:', error);
     res.status(500).json({ error: 'プロフィールの更新に失敗しました' });
+  }
+});
+
+// =============================
+// Work Time API endpoints
+// =============================
+app.get('/api/worktime', (req, res) => {
+  const all = Array.from(workTimeStore.values()).sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  // ストアが空の場合はモックデータを返す
+  if (all.length === 0) {
+    const mockWorkTimeData = [
+      {
+        id: 'wt_1',
+        date: '2024-01-20',
+        startTime: '09:00',
+        endTime: '18:00',
+        breakTime: 60,
+        totalHours: 8,
+        description: '通常勤務',
+        createdAt: '2024-01-20T09:00:00.000Z',
+        updatedAt: '2024-01-20T18:00:00.000Z',
+      },
+      {
+        id: 'wt_2',
+        date: '2024-01-19',
+        startTime: '09:30',
+        endTime: '17:30',
+        breakTime: 60,
+        totalHours: 7,
+        description: '通常勤務',
+        createdAt: '2024-01-19T09:30:00.000Z',
+        updatedAt: '2024-01-19T17:30:00.000Z',
+      },
+    ];
+    res.json(mockWorkTimeData);
+  } else {
+    res.json(all);
+  }
+});
+
+app.post('/api/worktime', (req, res) => {
+  try {
+    const { date, startTime, endTime, breakTime, description } = req.body;
+
+    if (!date || !startTime || !endTime) {
+      return res.status(400).json({ error: '日付、開始時間、終了時間は必須です' });
+    }
+
+    const id = createWorkTimeId();
+    const now = new Date().toISOString();
+
+    // 勤務時間計算
+    const start = new Date(`${date}T${startTime}:00`);
+    const end = new Date(`${date}T${endTime}:00`);
+    const totalMinutes = (end.getTime() - start.getTime()) / (1000 * 60) - (breakTime || 0);
+    const totalHours = Math.round((totalMinutes / 60) * 100) / 100;
+
+    const workTimeEntry: WorkTimeRecord = {
+      id,
+      date,
+      startTime,
+      endTime,
+      breakTime: breakTime || 0,
+      totalHours,
+      description: description || '',
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    workTimeStore.set(id, workTimeEntry);
+    res.status(201).json(workTimeEntry);
+  } catch (error) {
+    console.error('Work time creation error:', error);
+    res.status(500).json({ error: '勤務時間の記録に失敗しました' });
+  }
+});
+
+// =============================
+// Asset API endpoints
+// =============================
+app.get('/api/asset', (req, res) => {
+  const all = Array.from(assetStore.values()).sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  // ストアが空の場合はモックデータを返す
+  if (all.length === 0) {
+    const mockAssetData = [
+      {
+        _id: 'asset_1',
+        date: '2024-01-01',
+        value: 1000000,
+        description: '銀行預金',
+        account: 'Bank Savings',
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
+      },
+      {
+        _id: 'asset_2',
+        date: '2024-01-15',
+        value: 500000,
+        description: '投資信託',
+        account: 'Investment Fund',
+        createdAt: '2024-01-15T00:00:00.000Z',
+        updatedAt: '2024-01-15T00:00:00.000Z',
+      },
+    ];
+    res.json(mockAssetData);
+  } else {
+    res.json(all);
+  }
+});
+
+app.post('/api/asset', (req, res) => {
+  try {
+    const { date, value, description, account } = req.body;
+
+    if (!date || value == null || !description || !account) {
+      return res.status(400).json({ error: '日付、金額、説明、口座名は必須です' });
+    }
+
+    const id = createAssetId();
+    const now = new Date().toISOString();
+
+    const assetEntry: AssetRecord = {
+      _id: id,
+      date: String(date),
+      value: Number(value),
+      description: String(description),
+      account: String(account),
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    assetStore.set(id, assetEntry);
+    res.status(201).json(assetEntry);
+  } catch (error) {
+    console.error('Asset creation error:', error);
+    res.status(500).json({ error: '資産の記録に失敗しました' });
   }
 });
 

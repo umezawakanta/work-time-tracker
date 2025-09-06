@@ -208,6 +208,11 @@ const AssetLiabilityReportPage = lazy(() =>
   import('@/pages/AssetLiabilityReportPage').then((m) => ({ default: m.default }))
 );
 
+// 🎯 Daily Tasks
+const Daily10TasksPage = lazy(() =>
+  import('@/pages/Daily10TasksPage').then((m) => ({ default: m.default }))
+);
+
 // 🏆 Development & Gamification
 const DevelopmentBadgeShowcasePage = lazy(() =>
   import('@/pages/DevelopmentBadgeShowcasePage').then((module) => ({
@@ -1384,6 +1389,16 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <AssetLiabilityReportPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/daily-10-tasks"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <Daily10TasksPage />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }
