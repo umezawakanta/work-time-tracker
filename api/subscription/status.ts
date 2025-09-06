@@ -1,4 +1,4 @@
-// CommonJS-friendly subscription status endpoint (mock → real gateway連携は将来拡張)
+// CommonJS-friendly subscription status endpoint
 interface VercelRequest {
   method?: string;
   headers: any;
