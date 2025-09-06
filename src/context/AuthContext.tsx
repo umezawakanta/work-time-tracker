@@ -168,6 +168,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!isTrustedHost) {
         console.log('🧪 Dev host detected - skipping server auth check');
         setIsAuthenticated(true);
+        // 開発環境でもユーザー情報を取得
+        if (isMounted) {
+          await fetchUser();
+        }
         return true;
       }
 
@@ -401,20 +405,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
               }
             }
           } else {
-            // 開発環境でも認証が必要
-            console.log('🔒 開発環境 - 認証が必要です');
+            // 開発環境では認証状態を維持
+            console.log('🧪 開発環境 - 認証状態を維持');
+            if (isMounted) {
+              setIsAuthenticated(true);
+              // 開発環境でもユーザー情報を取得
+              await fetchUser();
+            }
+          }
+        } else {
+          console.log('🔒 トークン無効');
+          // 開発環境では認証状態を維持
+          const host = typeof window !== 'undefined' ? window.location.hostname : '';
+          const isTrustedHost =
+            host === 'work-time-tracker-five.vercel.app' ||
+            /^work-time-tracker-5d9q-.*\.vercel\.app$/.test(host);
+
+          if (!isTrustedHost) {
+            console.log('🧪 開発環境 - トークン無効でも認証状態を維持');
+            if (isMounted) {
+              setIsAuthenticated(true);
+              // 開発環境でもユーザー情報を取得
+              await fetchUser();
+            }
+          } else {
+            // 本番環境では認証クリア
+            tokenManager.clearTokens();
             if (isMounted) {
               setIsAuthenticated(false);
               setUser(null);
             }
+            console.log('🔒 Auth cleared - user needs to login');
           }
-        } else {
-          console.log('🔒 トークン無効 - 認証クリア');
-          // トークンが無効な場合はクリア
-          tokenManager.clearTokens();
-          setIsAuthenticated(false);
-          setUser(null);
-          console.log('🔒 Auth cleared - user needs to login');
         }
       } catch (error) {
         console.log('❌ 認証初期化エラー:', error);
