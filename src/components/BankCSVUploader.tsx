@@ -331,8 +331,38 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
     setUploadProgress(0);
 
     try {
-      const text = await file.text();
-      console.log('ファイル読み込み完了:', text.length, '文字');
+      // 文字エンコーディングを指定してファイルを読み込み
+      const arrayBuffer = await file.arrayBuffer();
+
+      // 複数のエンコーディングを試す
+      const encodings = ['shift_jis', 'utf-8', 'euc-jp', 'iso-2022-jp'];
+      let text = '';
+      let usedEncoding = '';
+
+      for (const encoding of encodings) {
+        try {
+          const decoder = new TextDecoder(encoding);
+          text = decoder.decode(arrayBuffer);
+
+          // 日本語文字が含まれているかチェック
+          if (text.includes('年月日') || text.includes('残高') || text.includes('お引出し')) {
+            usedEncoding = encoding;
+            console.log(`使用エンコーディング: ${encoding}`);
+            break;
+          }
+        } catch (error) {
+          console.log(`エンコーディング ${encoding} でエラー:`, error);
+        }
+      }
+
+      if (!text) {
+        // デフォルトでUTF-8を試す
+        const decoder = new TextDecoder('utf-8');
+        text = decoder.decode(arrayBuffer);
+        usedEncoding = 'utf-8';
+      }
+
+      console.log('ファイル読み込み完了:', text.length, '文字, エンコーディング:', usedEncoding);
       console.log('ファイル内容（最初の500文字）:', text.substring(0, 500));
       setUploadProgress(25);
 
