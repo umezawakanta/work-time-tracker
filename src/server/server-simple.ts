@@ -414,15 +414,79 @@ app.post('/api/auth/password-reset', async (req, res) => {
           .json({ success: false, message: 'メールアドレスの形式が正しくありません' });
       }
 
-      // モック実装（開発環境用）
       console.log('[PASSWORD-RESET] Forgot password requested for:', email);
 
-      // 成功レスポンス（セキュリティのため、存在しないメールでも成功を返す）
-      res.json({
-        success: true,
-        message: 'パスワードリセットメールを送信しました',
-        email: email,
-      });
+      // 本番環境では実際のデータベースでユーザーを検索し、メールを送信
+      const host = req.get('host') || '';
+      const isProduction = host.includes('vercel.app');
+
+      if (isProduction) {
+        try {
+          // MongoDB接続
+          const mongoose = await import('mongoose');
+          await mongoose.default.connect(
+            process.env.MONGODB_URI || 'mongodb://localhost:27017/work-time-tracker'
+          );
+
+          const User = mongoose.default.model(
+            'User',
+            new mongoose.Schema({
+              email: { type: String, required: true, unique: true },
+              password: { type: String, required: true },
+              name: { type: String, required: true },
+              role: { type: String, default: 'user' },
+              isEmailVerified: { type: Boolean, default: false },
+              passwordResetToken: String,
+              passwordResetExpires: Date,
+            })
+          );
+
+          // ユーザーが存在するかチェック
+          const user = await User.findOne({ email: email.toLowerCase() });
+          if (!user) {
+            // セキュリティのため、ユーザーが存在しない場合も成功レスポンスを返す
+            return res.json({
+              success: true,
+              message: 'パスワードリセットメールを送信しました',
+              email: email,
+            });
+          }
+
+          // パスワードリセットトークンを生成
+          const crypto = await import('crypto');
+          const resetToken = crypto.default.randomBytes(32).toString('hex');
+          const resetExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24時間
+
+          // ユーザーのリセットトークンを更新
+          await User.findByIdAndUpdate(user._id, {
+            passwordResetToken: resetToken,
+            passwordResetExpires: resetExpires,
+          });
+
+          // メール送信（実際の実装ではNodemailerなどを使用）
+          console.log('[PASSWORD-RESET] Reset token generated:', resetToken);
+          console.log(
+            '[PASSWORD-RESET] Reset URL:',
+            `https://work-time-tracker-five.vercel.app/reset-password?token=${resetToken}`
+          );
+
+          res.json({
+            success: true,
+            message: 'パスワードリセットメールを送信しました',
+            email: email,
+          });
+        } catch (dbError) {
+          console.error('[PASSWORD-RESET] Database error:', dbError);
+          res.status(500).json({ success: false, message: 'データベースエラーが発生しました' });
+        }
+      } else {
+        // 開発環境では常に成功として返す
+        res.json({
+          success: true,
+          message: 'パスワードリセットメールを送信しました',
+          email: email,
+        });
+      }
     } else if (action === 'reset') {
       // パスワードリセット処理
       if (!token || !password || !confirmPassword) {
@@ -439,13 +503,74 @@ app.post('/api/auth/password-reset', async (req, res) => {
           .json({ success: false, message: 'パスワードは8文字以上である必要があります' });
       }
 
-      // モック実装（開発環境用）
       console.log('[PASSWORD-RESET] Password reset requested for token:', token);
 
-      res.json({
-        success: true,
-        message: 'パスワードが正常にリセットされました',
-      });
+      // 本番環境では実際のデータベースでパスワードをリセット
+      const host = req.get('host') || '';
+      const isProduction = host.includes('vercel.app');
+
+      if (isProduction) {
+        try {
+          // MongoDB接続
+          const mongoose = await import('mongoose');
+          await mongoose.default.connect(
+            process.env.MONGODB_URI || 'mongodb://localhost:27017/work-time-tracker'
+          );
+
+          const User = mongoose.default.model(
+            'User',
+            new mongoose.Schema({
+              email: { type: String, required: true, unique: true },
+              password: { type: String, required: true },
+              name: { type: String, required: true },
+              role: { type: String, default: 'user' },
+              isEmailVerified: { type: Boolean, default: false },
+              passwordResetToken: String,
+              passwordResetExpires: Date,
+            })
+          );
+
+          // トークンでユーザーを検索
+          const user = await User.findOne({
+            passwordResetToken: token,
+            passwordResetExpires: { $gt: new Date() },
+          });
+
+          if (!user) {
+            return res.status(400).json({
+              success: false,
+              message: '無効または期限切れのトークンです',
+            });
+          }
+
+          // パスワードをハッシュ化
+          const bcrypt = await import('bcrypt');
+          const hashedPassword = await (bcrypt as any).default.hash(password, 12);
+
+          // ユーザーのパスワードを更新し、リセットトークンをクリア
+          await User.findByIdAndUpdate(user._id, {
+            password: hashedPassword,
+            passwordResetToken: undefined,
+            passwordResetExpires: undefined,
+          });
+
+          console.log('[PASSWORD-RESET] Password reset successful for user:', user.email);
+
+          res.json({
+            success: true,
+            message: 'パスワードが正常にリセットされました',
+          });
+        } catch (dbError) {
+          console.error('[PASSWORD-RESET] Database error:', dbError);
+          res.status(500).json({ success: false, message: 'データベースエラーが発生しました' });
+        }
+      } else {
+        // 開発環境では常に成功として返す
+        res.json({
+          success: true,
+          message: 'パスワードが正常にリセットされました',
+        });
+      }
     } else {
       res.status(400).json({ success: false, message: '無効なアクションです' });
     }
@@ -464,14 +589,64 @@ app.post('/api/auth/password-reset/verify', async (req, res) => {
       return res.status(400).json({ success: false, message: 'トークンは必須です' });
     }
 
-    // モック実装（開発環境用）
     console.log('[PASSWORD-RESET] Token verification requested for:', token);
 
-    // 開発環境では常に有効として返す
-    res.json({
-      success: true,
-      valid: true,
-    });
+    // 本番環境では実際のデータベースでトークンを検証
+    const host = req.get('host') || '';
+    const isProduction = host.includes('vercel.app');
+
+    if (isProduction) {
+      try {
+        // MongoDB接続
+        const mongoose = await import('mongoose');
+        await mongoose.default.connect(
+          process.env.MONGODB_URI || 'mongodb://localhost:27017/work-time-tracker'
+        );
+
+        const User = mongoose.default.model(
+          'User',
+          new mongoose.Schema({
+            email: { type: String, required: true, unique: true },
+            password: { type: String, required: true },
+            name: { type: String, required: true },
+            role: { type: String, default: 'user' },
+            isEmailVerified: { type: Boolean, default: false },
+            passwordResetToken: String,
+            passwordResetExpires: Date,
+          })
+        );
+
+        // トークンでユーザーを検索
+        const user = await User.findOne({
+          passwordResetToken: token,
+          passwordResetExpires: { $gt: new Date() },
+        });
+
+        if (!user) {
+          console.log('[PASSWORD-RESET] Invalid or expired token');
+          return res.json({
+            success: true,
+            valid: false,
+            message: '無効または期限切れのトークンです',
+          });
+        }
+
+        console.log('[PASSWORD-RESET] Token is valid for user:', user.email);
+        res.json({
+          success: true,
+          valid: true,
+        });
+      } catch (dbError) {
+        console.error('[PASSWORD-RESET] Database error:', dbError);
+        res.status(500).json({ success: false, message: 'データベースエラーが発生しました' });
+      }
+    } else {
+      // 開発環境では常に有効として返す
+      res.json({
+        success: true,
+        valid: true,
+      });
+    }
   } catch (error) {
     console.error('Token verification error:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -493,13 +668,74 @@ app.post('/api/auth/password-reset/confirm', async (req, res) => {
         .json({ success: false, message: 'パスワードは8文字以上である必要があります' });
     }
 
-    // モック実装（開発環境用）
     console.log('[PASSWORD-RESET] Password reset confirmation for token:', token);
 
-    res.json({
-      success: true,
-      message: 'パスワードが正常にリセットされました',
-    });
+    // 本番環境では実際のデータベースでパスワードをリセット
+    const host = req.get('host') || '';
+    const isProduction = host.includes('vercel.app');
+
+    if (isProduction) {
+      try {
+        // MongoDB接続
+        const mongoose = await import('mongoose');
+        await mongoose.default.connect(
+          process.env.MONGODB_URI || 'mongodb://localhost:27017/work-time-tracker'
+        );
+
+        const User = mongoose.default.model(
+          'User',
+          new mongoose.Schema({
+            email: { type: String, required: true, unique: true },
+            password: { type: String, required: true },
+            name: { type: String, required: true },
+            role: { type: String, default: 'user' },
+            isEmailVerified: { type: Boolean, default: false },
+            passwordResetToken: String,
+            passwordResetExpires: Date,
+          })
+        );
+
+        // トークンでユーザーを検索
+        const user = await User.findOne({
+          passwordResetToken: token,
+          passwordResetExpires: { $gt: new Date() },
+        });
+
+        if (!user) {
+          return res.status(400).json({
+            success: false,
+            message: '無効または期限切れのトークンです',
+          });
+        }
+
+        // パスワードをハッシュ化
+        const bcrypt = await import('bcrypt');
+        const hashedPassword = await (bcrypt as any).default.hash(password, 12);
+
+        // ユーザーのパスワードを更新し、リセットトークンをクリア
+        await User.findByIdAndUpdate(user._id, {
+          password: hashedPassword,
+          passwordResetToken: undefined,
+          passwordResetExpires: undefined,
+        });
+
+        console.log('[PASSWORD-RESET] Password reset successful for user:', user.email);
+
+        res.json({
+          success: true,
+          message: 'パスワードが正常にリセットされました',
+        });
+      } catch (dbError) {
+        console.error('[PASSWORD-RESET] Database error:', dbError);
+        res.status(500).json({ success: false, message: 'データベースエラーが発生しました' });
+      }
+    } else {
+      // 開発環境では常に成功として返す
+      res.json({
+        success: true,
+        message: 'パスワードが正常にリセットされました',
+      });
+    }
   } catch (error) {
     console.error('Password reset confirmation error:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
