@@ -791,10 +791,10 @@ export const featuresRegistry: Feature[] = [
     path: '/improvement-plan',
     category: 'プロジェクト管理',
     description: 'サイト改善プランの管理',
-    status: 'in_progress',
+    status: 'complete',
     requiresRealAPI: false,
     priority: 'P2',
-    targetRelease: '2025-09-18',
+    targetRelease: '2025-09-07',
   },
   // 規約
   {
@@ -972,6 +972,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'hero-subtitle',
@@ -982,6 +983,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'hero-benefit-1',
@@ -992,6 +994,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'hero-benefit-2',
@@ -1002,6 +1005,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'hero-benefit-3',
@@ -1012,6 +1016,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'testimonials',
@@ -1022,6 +1027,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'weekly-report-preview',
@@ -1032,6 +1038,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'focus-timer-quick',
@@ -1042,6 +1049,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'stats-today',
@@ -1052,6 +1060,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'stats-streak',
@@ -1062,6 +1071,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'stats-xp',
@@ -1072,6 +1082,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'stats-badges',
@@ -1082,6 +1093,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'community',
@@ -1092,6 +1104,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'quick-add-todo',
@@ -1102,6 +1115,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P3',
+    targetRelease: '2025-09-30',
   },
   {
     id: 'app-brand-title',
@@ -1112,6 +1126,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'app-brand-subtitle',
@@ -1122,6 +1137,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'daily-nudge',
@@ -1132,6 +1148,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'nps-inline',
@@ -1142,6 +1159,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'share-dev-progress',
@@ -1163,6 +1181,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'header-page-title',
@@ -1173,6 +1192,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'breadcrumbs',
@@ -1183,6 +1203,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'footer-security-banner',
@@ -1193,6 +1214,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'system-status',
@@ -1203,6 +1225,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'security-policy',
@@ -1213,6 +1236,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'terms',
@@ -1234,6 +1258,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'header-user-info',
@@ -1255,6 +1280,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'quick-actions-section',
@@ -1265,6 +1291,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'ai-enhancements-card',
@@ -1275,6 +1302,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'ai-gamification-core',
@@ -1285,6 +1313,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P3',
+    targetRelease: '2025-09-30',
   },
   {
     id: 'bottom-cta-heading',
@@ -1295,6 +1324,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'bottom-tagline',
@@ -1305,6 +1335,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'learning-streak',
@@ -1315,6 +1346,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'wbs-creator',
@@ -1501,6 +1533,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'pricing',
@@ -1522,6 +1555,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'privacy',
@@ -1532,6 +1566,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'onboarding',
@@ -1542,6 +1577,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'iq-test',
@@ -1552,6 +1588,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'mbti-test',
@@ -1562,6 +1599,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'firebase-login',
@@ -1572,6 +1610,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'forgot-password',
@@ -1604,6 +1643,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'kpi-naming-rules',
@@ -1614,6 +1654,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'analytics-dashboard-feature',
@@ -1624,6 +1665,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'testing-dashboard',
@@ -1634,6 +1676,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'sns-share',
@@ -1644,6 +1687,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P3',
+    targetRelease: '2025-09-30',
   },
   {
     id: 'bug-list',
@@ -1665,6 +1709,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   // モバイル対応・開発向け/運用向け機能
   {
@@ -1676,6 +1721,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'mobile-responsive-core',
@@ -1686,6 +1732,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'client-error-reporting',
@@ -1718,6 +1765,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'dev-logging-console',
@@ -1728,6 +1776,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P3',
+    targetRelease: '2025-09-30',
   },
   {
     id: 'sse-health-monitor',
@@ -1738,6 +1787,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'rate-limiting',
@@ -1748,6 +1798,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'cors-config',
@@ -1758,6 +1809,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'error-recovery-service',
@@ -1768,6 +1820,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
 ];
 
@@ -1782,6 +1835,7 @@ const ALLOWLIST_PATHS: string[] = [
   '/privacy',
   '/terms',
   '/profile',
+  '/improvement-plan',
   '/changelog',
   '/how-it-works',
   '/invite',

@@ -317,6 +317,12 @@ const DocsViewerPage = lazy(() =>
 const TermsPage = lazy(() => import('@/pages/TermsPage').then((m) => ({ default: m.default })));
 const BugListPage = lazy(() => import('@/pages/BugList').then((m) => ({ default: m.default })));
 const BugFormPage = lazy(() => import('@/pages/BugForm').then((m) => ({ default: m.default })));
+const ImprovementPlanPage = lazy(() =>
+  import('@/pages/ImprovementPlanPage').then((m) => ({ default: m.default }))
+);
+const ImprovementPlanDetail = lazy(() =>
+  import('@/pages/ImprovementPlanDetail').then((m) => ({ default: m.default }))
+);
 
 // 🎯 Personal Development & Life Management
 const AbstinenceManager = lazy(() =>
@@ -351,9 +357,6 @@ const DiaryPage = lazy(() => import('@/pages/DiaryPage').then((m) => ({ default:
 
 // 📋 Project & Task Management
 // const WBSPage = lazy(() => import('./pages/WBSPage'));
-const ImprovementPlanDetail = lazy(() =>
-  import('@/pages/ImprovementPlanDetail').then((m) => ({ default: m.default }))
-);
 const ImprovementImplementation = lazy(() =>
   import('@/pages/ImprovementImplementation').then((m) => ({ default: m.default }))
 );
@@ -607,6 +610,26 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <TermsPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/improvement-plan"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <ImprovementPlanPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/improvement-plan/detail"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <ImprovementPlanDetail />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }
