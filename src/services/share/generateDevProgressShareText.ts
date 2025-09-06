@@ -154,19 +154,28 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
   if (inProgressFeatures.length > 0) {
     lines.push('🚀 開発中機能');
 
-    // P1優先度の機能を優先して表示
+    // 期待される機能を最優先に、その後優先度順で表示
+    const expectedFeatures = ['terms-of-service', 'terms', 'profile'];
     const priorityOrder: Record<'P0' | 'P1' | 'P2' | 'P3', number> = { P0: 1, P1: 0, P2: 2, P3: 3 };
     const sortedInProgress = inProgressFeatures.sort((a, b) => {
-      const pa = priorityOrder[(a.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
-      const pb = priorityOrder[(b.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
-      if (pa !== pb) return pa - pb;
-
-      // 同じ優先度の場合は、期待される機能を優先
-      const expectedFeatures = ['terms-of-service', 'terms', 'profile'];
+      // 期待される機能を最優先
       const aExpected = expectedFeatures.includes(a.id);
       const bExpected = expectedFeatures.includes(b.id);
       if (aExpected && !bExpected) return -1;
       if (!aExpected && bExpected) return 1;
+
+      // 期待される機能同士の場合は優先度順
+      if (aExpected && bExpected) {
+        const pa = priorityOrder[(a.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
+        const pb = priorityOrder[(b.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
+        if (pa !== pb) return pa - pb;
+        return a.name.localeCompare(b.name);
+      }
+
+      // 期待されない機能同士の場合は優先度順
+      const pa = priorityOrder[(a.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
+      const pb = priorityOrder[(b.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
+      if (pa !== pb) return pa - pb;
 
       // 期待されない機能の中で、P2優先度の場合は特定の機能を除外
       const excludedFeatures = [
@@ -175,6 +184,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
         'startup-guide',
         'newsletter-signup',
         'version-info',
+        'hero-headline',
       ];
       if (excludedFeatures.includes(a.id) && !excludedFeatures.includes(b.id)) return 1;
       if (!excludedFeatures.includes(a.id) && excludedFeatures.includes(b.id)) return -1;

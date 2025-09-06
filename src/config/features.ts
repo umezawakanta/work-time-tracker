@@ -43,6 +43,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-25',
   },
   {
     id: 'sitemap',
@@ -53,6 +54,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-26',
   },
   {
     id: 'dashboard',
@@ -62,6 +64,7 @@ export const featuresRegistry: Feature[] = [
     description: 'プロジェクト・タスク統合ビュー',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-09-30',
   },
   {
     id: 'tasks',
@@ -71,6 +74,7 @@ export const featuresRegistry: Feature[] = [
     description: '統合タスク管理',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-01',
   },
   {
     id: 'calendar',
@@ -79,6 +83,7 @@ export const featuresRegistry: Feature[] = [
     category: '仕事',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-02',
   },
   {
     id: 'work-pattern-settings',
@@ -88,6 +93,7 @@ export const featuresRegistry: Feature[] = [
     description: '勤務時間・休憩・残業設定',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-03',
   },
   {
     id: 'worktime-entry',
@@ -96,6 +102,7 @@ export const featuresRegistry: Feature[] = [
     category: '勤怠',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-04',
   },
   {
     id: 'worktime-form',
@@ -105,6 +112,7 @@ export const featuresRegistry: Feature[] = [
     description: '詳細な勤怠情報入力フォーム',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-05',
   },
   {
     id: 'realtime-clock',
@@ -113,6 +121,7 @@ export const featuresRegistry: Feature[] = [
     category: '勤怠',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-06',
   },
   {
     id: 'monthly-timesheet',
@@ -121,6 +130,7 @@ export const featuresRegistry: Feature[] = [
     category: '勤怠',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-07',
   },
   {
     id: 'daily-work-visualization',
@@ -130,6 +140,7 @@ export const featuresRegistry: Feature[] = [
     description: '当日の勤務/休憩/残業を可視化',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-08',
   },
   {
     id: 'reports',
@@ -138,6 +149,7 @@ export const featuresRegistry: Feature[] = [
     category: '勤怠',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-09',
   },
   {
     id: 'work-time',
@@ -147,6 +159,7 @@ export const featuresRegistry: Feature[] = [
     description: '勤怠の概要/エントリへのハブ',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-10',
   },
   {
     id: 'work-time-reports',
@@ -156,6 +169,7 @@ export const featuresRegistry: Feature[] = [
     description: 'ホームからのレポートショートカット',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-11',
   },
   {
     id: 'approval-workflow',
@@ -165,6 +179,7 @@ export const featuresRegistry: Feature[] = [
     description: '勤怠データの承認申請・承認',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-12',
   },
   {
     id: 'ai-assistant',
@@ -173,6 +188,7 @@ export const featuresRegistry: Feature[] = [
     category: 'AI',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-13',
   },
   {
     id: 'adhd-integrated-life',
@@ -182,6 +198,7 @@ export const featuresRegistry: Feature[] = [
     description: 'ADHD/ASD特化型生活支援システム',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-14',
   },
   {
     id: 'adhd-integrated-life-page',
@@ -191,6 +208,7 @@ export const featuresRegistry: Feature[] = [
     description: 'ADHD/ASD特化型生活支援ページ',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-15',
   },
   {
     id: 'assessments',
@@ -199,6 +217,7 @@ export const featuresRegistry: Feature[] = [
     category: '診断',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-16',
   },
   {
     id: 'adhd-cognitive-assessment',
@@ -208,6 +227,7 @@ export const featuresRegistry: Feature[] = [
     description: 'WEIS準拠の科学的認知機能測定',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-17',
   },
   {
     id: 'learning',
@@ -216,6 +236,7 @@ export const featuresRegistry: Feature[] = [
     category: '学習',
     status: 'planned',
     requiresRealAPI: false,
+    targetRelease: '2025-10-18',
   },
   {
     id: 'analytics',
@@ -224,6 +245,7 @@ export const featuresRegistry: Feature[] = [
     category: '分析',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-19',
   },
   {
     id: 'quadrant-dashboard',
@@ -233,6 +255,7 @@ export const featuresRegistry: Feature[] = [
     description: 'AI駆動タスク分類・生産性分析',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-10-20',
   },
   {
     id: 'accessibility-audit',
@@ -242,6 +265,7 @@ export const featuresRegistry: Feature[] = [
     description: 'WCAG 2.1 準拠監査と改善提案',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-10-21',
   },
   {
     id: 'advanced-performance-monitoring',
@@ -251,6 +275,7 @@ export const featuresRegistry: Feature[] = [
     description: 'Lighthouse 監視とリアルタイム性能分析',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-10-22',
   },
   {
     id: 'quality-dashboard',
@@ -259,6 +284,7 @@ export const featuresRegistry: Feature[] = [
     category: '品質',
     status: 'planned',
     requiresRealAPI: false,
+    targetRelease: '2025-10-23',
   },
   {
     id: 'production-optimization',
@@ -268,6 +294,7 @@ export const featuresRegistry: Feature[] = [
     description: 'CDN・キャッシュ戦略・監視最適化',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-10-24',
   },
   {
     id: 'mobile-optimization',
@@ -277,6 +304,7 @@ export const featuresRegistry: Feature[] = [
     description: 'PWA/タッチ操作/通知最適化',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-10-25',
   },
   {
     id: 'error-dashboard',
@@ -286,6 +314,7 @@ export const featuresRegistry: Feature[] = [
     description: 'エラー監視・アラート',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-10-26',
   },
   {
     id: 'coverage-report',
@@ -295,6 +324,7 @@ export const featuresRegistry: Feature[] = [
     description: 'テストカバレッジの可視化',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-10-27',
   },
   {
     id: 'dev-status',
@@ -304,6 +334,7 @@ export const featuresRegistry: Feature[] = [
     description: '未実装・モック・WIPの自動検出',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-10-28',
   },
   {
     id: 'settings',
@@ -312,6 +343,7 @@ export const featuresRegistry: Feature[] = [
     category: 'コア',
     status: 'in_progress',
     requiresRealAPI: true,
+    targetRelease: '2025-10-29',
   },
   // 機能一覧（開発状況） - 管理者のみ閲覧可能
   {
@@ -322,6 +354,7 @@ export const featuresRegistry: Feature[] = [
     description: '機能別の完成状況とアクセス制御',
     status: 'planning',
     requiresRealAPI: false,
+    targetRelease: '2025-10-30',
   },
   {
     id: 'impulse-countermeasures',
@@ -333,6 +366,7 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: false,
     priority: 'P3',
     disabled: true,
+    targetRelease: '2025-11-01',
   },
   {
     id: 'procrastination-guard',
@@ -343,6 +377,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: false,
     disabled: true,
+    targetRelease: '2025-11-02',
   },
   {
     id: 'admin',
@@ -352,6 +387,7 @@ export const featuresRegistry: Feature[] = [
     description: '管理・運用メトリクス/設定',
     status: 'system_testing',
     requiresRealAPI: true,
+    targetRelease: '2025-11-03',
   },
   // 管理者ダッシュボード細分化（未完了は非表示）
   {
@@ -381,6 +417,7 @@ export const featuresRegistry: Feature[] = [
     category: '運用',
     status: 'planning',
     requiresRealAPI: false,
+    targetRelease: '2025-11-04',
   },
   {
     id: 'admin-analytics',
@@ -429,6 +466,7 @@ export const featuresRegistry: Feature[] = [
     category: '運用',
     status: 'planning',
     requiresRealAPI: false,
+    targetRelease: '2025-11-05',
   },
   {
     id: 'admin-assessments',
@@ -437,6 +475,7 @@ export const featuresRegistry: Feature[] = [
     category: '運用',
     status: 'planning',
     requiresRealAPI: true,
+    targetRelease: '2025-11-06',
   },
   {
     id: 'admin-learning',
@@ -445,6 +484,7 @@ export const featuresRegistry: Feature[] = [
     category: '運用',
     status: 'planning',
     requiresRealAPI: true,
+    targetRelease: '2025-11-07',
   },
   // 管理ヘッダー操作の背景機能
   {
@@ -456,6 +496,7 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: false,
     priority: 'P2',
     disabled: true,
+    targetRelease: '2025-11-08',
   },
   {
     id: 'admin-approve-next',
@@ -466,6 +507,7 @@ export const featuresRegistry: Feature[] = [
     disabled: true,
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-11-09',
   },
   {
     id: 'admin-export-report',
@@ -475,6 +517,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P3',
+    targetRelease: '2025-11-10',
   },
   {
     id: 'admin-last-updated',
@@ -485,6 +528,7 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: false,
     priority: 'P3',
     disabled: true,
+    targetRelease: '2025-11-11',
   },
   {
     id: 'admin-title',
@@ -495,6 +539,7 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: false,
     priority: 'P3',
     disabled: true,
+    targetRelease: '2025-11-12',
   },
   // 管理ダッシュボード ヘッダーの期間切替（未完了は非表示）
   {
@@ -506,6 +551,7 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: false,
     priority: 'P3',
     disabled: true,
+    targetRelease: '2025-11-13',
   },
   {
     id: 'admin-window-30d',
@@ -516,6 +562,7 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: false,
     priority: 'P3',
     disabled: true,
+    targetRelease: '2025-11-14',
   },
   {
     id: 'admin-window-90d',
@@ -526,6 +573,7 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: false,
     priority: 'P3',
     disabled: true,
+    targetRelease: '2025-11-15',
   },
   // 個人・ライフスタイル
   {
@@ -536,6 +584,7 @@ export const featuresRegistry: Feature[] = [
     description: '読書記録と本の管理',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-16',
   },
   {
     id: 'sleep-tracker',
@@ -545,6 +594,7 @@ export const featuresRegistry: Feature[] = [
     description: '睡眠パターンの記録と分析',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-17',
   },
   {
     id: 'quit-smoking',
@@ -554,6 +604,7 @@ export const featuresRegistry: Feature[] = [
     description: 'AIコーチ・衝動対処・節約可視化',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-18',
   },
   {
     id: 'impulse-tracker',
@@ -563,6 +614,7 @@ export const featuresRegistry: Feature[] = [
     description: 'ADHD衝動性の記録と管理',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-19',
   },
   {
     id: 'guitar-practice',
@@ -572,6 +624,7 @@ export const featuresRegistry: Feature[] = [
     description: 'ギター練習の記録と進捗管理',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-20',
   },
   {
     id: 'asset-calendar',
@@ -581,6 +634,7 @@ export const featuresRegistry: Feature[] = [
     description: '資産管理とイベント計画',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-21',
   },
   // 開発・ゲーミフィケーション
   {
@@ -591,6 +645,7 @@ export const featuresRegistry: Feature[] = [
     description: '開発実績とバッジの確認',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-22',
   },
   {
     id: 'ai-gamification',
@@ -600,6 +655,7 @@ export const featuresRegistry: Feature[] = [
     description: 'AI強化ゲーミフィケーション機能',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-23',
   },
   {
     id: 'gamification',
@@ -609,6 +665,7 @@ export const featuresRegistry: Feature[] = [
     description: 'ベース機能/ホームCTA用',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-24',
   },
   // 選挙・政治
   {
@@ -619,6 +676,7 @@ export const featuresRegistry: Feature[] = [
     description: '選挙候補者一覧と情報',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-25',
   },
   {
     id: 'candidate-registration',
@@ -628,6 +686,7 @@ export const featuresRegistry: Feature[] = [
     description: '新しい候補者の登録',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-26',
   },
   {
     id: 'district',
@@ -637,6 +696,7 @@ export const featuresRegistry: Feature[] = [
     description: '地区別の詳細情報',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-27',
   },
   {
     id: 'twitter',
@@ -646,6 +706,7 @@ export const featuresRegistry: Feature[] = [
     description: 'Twitter統合機能',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-28',
   },
   {
     id: 'political-trends',
@@ -655,6 +716,7 @@ export const featuresRegistry: Feature[] = [
     description: '政治動向とトレンド分析',
     status: 'in_progress',
     requiresRealAPI: false,
+    targetRelease: '2025-11-29',
   },
   // サブスクリプション・請求
   {
@@ -1161,6 +1223,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P1',
+    targetRelease: '2025-09-15',
   },
   {
     id: 'contact',
@@ -1281,6 +1344,7 @@ export const featuresRegistry: Feature[] = [
     status: 'in_progress',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   // 認証・アカウント
   {
