@@ -4333,7 +4333,7 @@ app.get('/api/daily10/progress', (req: Request, res: Response) => {
       });
     } else if (startDate && endDate) {
       // Get progress for date range
-      const progressData = [];
+      const progressData: any[] = [];
       const start = new Date(startDate as string);
       const end = new Date(endDate as string);
 

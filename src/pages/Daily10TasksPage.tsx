@@ -35,41 +35,45 @@ import { useDaily10Tasks } from '@/hooks/useDaily10Tasks';
 import { DailyTask, TaskProgress } from '@/types/daily10';
 
 const categoryIcons = {
-  financial: DollarSign,
+  finance: DollarSign,
   planning: CalendarIcon,
   personal: Home,
-  health: Target,
+  hobby: Music,
+  household: Utensils,
+  work: Code,
 };
 
 // 個別タスク用のアイコンマッピング
 const taskIcons: { [key: string]: React.ComponentType<any> } = {
-  task_1: DollarSign,
-  task_2: DollarSign,
-  task_3: CalendarIcon,
-  task_4: DollarSign,
-  task_5: DollarSign,
-  task_6: DollarSign,
-  task_7: Music,
-  task_8: Utensils,
-  task_9: Utensils,
-  task_10: Droplets,
-  task_11: BookOpen,
-  task_12: Code,
-  task_13: Newspaper,
-  task_14: FileText,
-  task_15: Refrigerator,
-  task_16: Sparkles,
-  task_17: Shirt,
-  task_18: Sun,
-  task_19: Folders,
-  task_20: Archive,
+  '1': DollarSign,
+  '2': DollarSign,
+  '3': CalendarIcon,
+  '4': DollarSign,
+  '5': DollarSign,
+  '6': DollarSign,
+  '7': Music,
+  '8': Utensils,
+  '9': Utensils,
+  '10': Droplets,
+  '11': BookOpen,
+  '12': Code,
+  '13': Newspaper,
+  '14': FileText,
+  '15': Refrigerator,
+  '16': Sparkles,
+  '17': Shirt,
+  '18': Sun,
+  '19': Folders,
+  '20': Archive,
 };
 
 const categoryColors = {
-  financial: 'bg-green-100 text-green-800',
+  finance: 'bg-green-100 text-green-800',
   planning: 'bg-blue-100 text-blue-800',
   personal: 'bg-purple-100 text-purple-800',
-  health: 'bg-red-100 text-red-800',
+  hobby: 'bg-yellow-100 text-yellow-800',
+  household: 'bg-orange-100 text-orange-800',
+  work: 'bg-indigo-100 text-indigo-800',
 };
 
 interface TaskItemProps {
@@ -81,7 +85,7 @@ interface TaskItemProps {
 const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
   const [notes, setNotes] = useState(progress?.notes || '');
   const [showNotes, setShowNotes] = useState(false);
-  const IconComponent = taskIcons[task.id] || categoryIcons[task.category];
+  const IconComponent = taskIcons[task.id] || categoryIcons[task.category] || Circle;
 
   const handleToggle = (completed: boolean) => {
     onUpdate(task.id, completed, notes);
