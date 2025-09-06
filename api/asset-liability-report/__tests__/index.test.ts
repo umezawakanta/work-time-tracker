@@ -1,10 +1,10 @@
 import { createMocks } from 'node-mocks-http';
 import handler from '../index';
 
-// Type assertion to fix VercelRequest compatibility
+// Type assertion to fix VercelRequest/Response compatibility
 const createVercelMocks = (options: any) => {
   const { req, res } = createMocks(options);
-  return { req: req as any, res };
+  return { req: req as any, res: res as any };
 };
 
 describe('/api/asset-liability-report', () => {
