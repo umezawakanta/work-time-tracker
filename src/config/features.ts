@@ -368,9 +368,10 @@ export const featuresRegistry: Feature[] = [
     name: '管理 ユーザー',
     path: '/admin/users',
     category: '運用',
-    status: 'system_testing',
+    status: 'complete',
     requiresRealAPI: true,
-    priority: 'P1',
+    priority: 'P0',
+    targetRelease: '2025-09-06',
   },
   {
     id: 'admin-actions',
