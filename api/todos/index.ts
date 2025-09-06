@@ -1,16 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-interface NextApiRequest {
-  method?: string;
-  body?: any;
-  query?: any;
-  get?: (header: string) => string | undefined;
-}
-
-interface NextApiResponse {
-  status: (code: number) => NextApiResponse;
-  json: (data: any) => void;
-  setHeader: (name: string, value: string | string[]) => void;
-}
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
 interface TodoDocument {
   id: string;
@@ -65,27 +53,29 @@ const mockTodos: TodoDocument[] = [
   },
 ];
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // CORS設定
+  const origin = req.headers.origin as string | undefined;
+  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
+  const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
+  const allow = origin && (allowedOrigins.includes(origin) || isPreview) ? origin : '*';
+
+  res.setHeader('Access-Control-Allow-Origin', allow);
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Cache-Control', 'no-store');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method === 'GET') {
     try {
-      // 本番環境では実際のデータベースから取得
-      const host = req.get('host') || '';
-      const isProduction = host.includes('vercel.app');
-
-      if (isProduction) {
-        // 本番環境では実際のデータベースから取得
-        // 現在はモックデータを返す
-        res.status(200).json({
-          success: true,
-          data: mockTodos,
-        });
-      } else {
-        // 開発環境ではモックデータを返す
-        res.status(200).json({
-          success: true,
-          data: mockTodos,
-        });
-      }
+      res.status(200).json({
+        success: true,
+        data: mockTodos,
+      });
     } catch (error) {
       console.error('Todos fetch error:', error);
       res.status(500).json({
@@ -120,26 +110,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         updatedAt: new Date().toISOString(),
       };
 
-      // 本番環境では実際のデータベースに保存
-      const host = req.get('host') || '';
-      const isProduction = host.includes('vercel.app');
-
-      if (isProduction) {
-        // 本番環境では実際のデータベースに保存
-        // 現在はモックデータを返す
-        mockTodos.push(newTodo);
-        res.status(201).json({
-          success: true,
-          data: newTodo,
-        });
-      } else {
-        // 開発環境ではモックデータを返す
-        mockTodos.push(newTodo);
-        res.status(201).json({
-          success: true,
-          data: newTodo,
-        });
-      }
+      mockTodos.push(newTodo);
+      res.status(201).json({
+        success: true,
+        data: newTodo,
+      });
     } catch (error) {
       console.error('Todo creation error:', error);
       res.status(500).json({
@@ -148,7 +123,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
   } else {
-    res.setHeader('Allow', ['GET', 'POST']);
     res.status(405).json({
       success: false,
       message: 'Method not allowed',

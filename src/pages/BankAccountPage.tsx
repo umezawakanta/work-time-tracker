@@ -109,6 +109,31 @@ const BankAccountPage: React.FC = () => {
           </CardContent>
         </Card>
 
+        {/* デモデータの説明 */}
+        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-green-800">
+              <Building2 className="h-5 w-5" />
+              デモデータについて
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm text-green-700">
+              <p className="mb-2">
+                <strong>現在はデモデータを表示しています：</strong>
+              </p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>三井住友銀行 メイン口座: 1,500,000円</li>
+                <li>三井住友銀行 貯蓄口座: 3,000,000円</li>
+                <li>SBI証券 投資口座: 2,500,000円</li>
+              </ul>
+              <p className="mt-3 text-xs text-green-600">
+                ※ 実際の銀行API連携時は、これらのデータが実際の口座残高に置き換わります
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* メインコンテンツ */}
         <BankAccountManager
           userId={user.id}

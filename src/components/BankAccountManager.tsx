@@ -89,6 +89,11 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
   useEffect(() => {
     fetchAccounts();
     checkLastSyncTime();
+
+    // 初期化時にデモデータを表示
+    const demoBalances = bankAPIService.generateDemoData(userId);
+    setApiBalances(demoBalances);
+    setLastSyncTime(new Date().toISOString());
   }, [userId]);
 
   // 最後の同期時刻を確認
@@ -99,11 +104,6 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
 
   // 銀行APIから口座データを同期
   const syncBankData = async () => {
-    if (!bankAPIService.isAPIAvailable()) {
-      toast.error('銀行APIが設定されていません。管理者にお問い合わせください。');
-      return;
-    }
-
     setIsSyncing(true);
     try {
       const syncResult = await bankAPIService.syncAccountData(userId);
@@ -516,6 +516,52 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
           ))
         )}
       </div>
+
+      {/* デモデータの表示 */}
+      {apiBalances.length > 0 && (
+        <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-green-800">
+              <Building2 className="h-5 w-5" />
+              同期された口座データ
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {apiBalances.map((balance) => (
+                <div
+                  key={balance.accountId}
+                  className="flex items-center justify-between p-3 bg-white rounded-lg border border-green-200"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-green-100 rounded-full">
+                      <Building2 className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-green-900">
+                        {balance.bankName} {balance.accountName}
+                      </h4>
+                      <p className="text-sm text-green-700">{balance.accountType}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-semibold text-green-900">
+                      ¥{balance.balance.toLocaleString()}
+                    </p>
+                    <p className="text-xs text-green-600">
+                      {new Date(balance.lastUpdated).toLocaleString('ja-JP')}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              <p className="text-xs text-green-600 mt-2">
+                ※
+                現在はデモデータを表示しています。実際の銀行API連携時は、これらのデータが実際の口座残高に置き換わります。
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* 使用方法の説明 */}
       <Card>
