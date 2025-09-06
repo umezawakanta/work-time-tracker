@@ -36,7 +36,6 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
     'documenting',
     'review',
     'release_pending',
-    'complete', // 直近のリリース済み機能も含める
   ]);
 
   const hasValidYmd = (value: unknown): value is string => {
@@ -94,7 +93,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
     const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
     if (status === 'complete') {
       completedFeatures.push(f);
-    } else {
+    } else if (inProgressSet.has(status) && hasValidYmd(f.targetRelease)) {
       inProgressFeatures.push(f);
     }
   }

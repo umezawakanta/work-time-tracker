@@ -389,6 +389,7 @@ export const featuresRegistry: Feature[] = [
     category: '運用',
     status: 'system_testing',
     requiresRealAPI: true,
+    priority: 'P0',
   },
   {
     id: 'admin-errors',
@@ -397,6 +398,7 @@ export const featuresRegistry: Feature[] = [
     category: '運用',
     status: 'system_testing',
     requiresRealAPI: false,
+    priority: 'P0',
   },
   {
     id: 'admin-features',
