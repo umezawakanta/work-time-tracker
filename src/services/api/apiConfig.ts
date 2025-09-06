@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ErrorHandler } from '@/lib/errorHandler';
 import { logger } from '../../utils/logger';
 import { fetchTokenFromDB } from './tokenService';
 import { getEnv, getBooleanEnv, isDev, isProd } from '../../utils/env';
@@ -220,6 +221,11 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    // Auto-report request setup errors
+    try {
+      const eh = ErrorHandler.getInstance();
+      eh.handleApiError(error, String(error.config?.url || ''));
+    } catch {}
     logger.error('API', 'Request error', error);
     return Promise.reject(error);
   }
@@ -248,6 +254,11 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
+    // Auto-report API errors (axios)
+    try {
+      const eh = ErrorHandler.getInstance();
+      eh.handleApiError(error, String(error.config?.url || ''));
+    } catch {}
     // 認証エラーの場合はトークンキャッシュをクリア（ただし認証系エンドポイントではリダイレクトしない）
     if (error.response?.status === 401 || error.response?.status === 403) {
       console.warn('Authentication error detected, clearing token cache');
