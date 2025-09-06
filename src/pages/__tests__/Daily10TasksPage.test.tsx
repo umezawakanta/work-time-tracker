@@ -60,6 +60,46 @@ const mockTasks = [
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
   },
+  {
+    id: 'task_13',
+    name: '新聞を捨てる',
+    description: '古い新聞の整理と廃棄',
+    category: 'personal' as const,
+    isActive: true,
+    order: 13,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'task_14',
+    name: 'チラシを捨てる',
+    description: '不要なチラシの整理と廃棄',
+    category: 'personal' as const,
+    isActive: true,
+    order: 14,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'task_15',
+    name: '冷蔵庫の中身を確認',
+    description: '食材の在庫確認と賞味期限チェック',
+    category: 'personal' as const,
+    isActive: true,
+    order: 15,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'task_16',
+    name: '床掃除',
+    description: '日常的な床の清掃とメンテナンス',
+    category: 'personal' as const,
+    isActive: true,
+    order: 16,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
 ];
 
 const mockProgress = {
@@ -149,7 +189,7 @@ describe('Daily10TasksPage', () => {
     );
 
     expect(screen.getByText('今日の進捗')).toBeInTheDocument();
-    expect(screen.getByText('1/4')).toBeInTheDocument();
+    expect(screen.getByText('1/8')).toBeInTheDocument();
     expect(screen.getByText('50% 完了')).toBeInTheDocument();
     expect(screen.getByText('連続実行')).toBeInTheDocument();
     expect(screen.getByText('5日')).toBeInTheDocument();
@@ -166,6 +206,10 @@ describe('Daily10TasksPage', () => {
     expect(screen.getByText('ギターの練習')).toBeInTheDocument();
     expect(screen.getByText('読書')).toBeInTheDocument();
     expect(screen.getByText('このサイトの開発を進める')).toBeInTheDocument();
+    expect(screen.getByText('新聞を捨てる')).toBeInTheDocument();
+    expect(screen.getByText('チラシを捨てる')).toBeInTheDocument();
+    expect(screen.getByText('冷蔵庫の中身を確認')).toBeInTheDocument();
+    expect(screen.getByText('床掃除')).toBeInTheDocument();
   });
 
   test('should handle task completion toggle', async () => {

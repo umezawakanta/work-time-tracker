@@ -22,6 +22,10 @@ import {
   Droplets,
   BookOpen,
   Code,
+  Newspaper,
+  FileText,
+  Refrigerator,
+  Broom,
 } from 'lucide-react';
 import { useDaily10Tasks } from '@/hooks/useDaily10Tasks';
 import { DailyTask, TaskProgress } from '@/types/daily10';
@@ -47,6 +51,10 @@ const taskIcons: { [key: string]: React.ComponentType<any> } = {
   task_10: Droplets,
   task_11: BookOpen,
   task_12: Code,
+  task_13: Newspaper,
+  task_14: FileText,
+  task_15: Refrigerator,
+  task_16: Broom,
 };
 
 const categoryColors = {
@@ -154,7 +162,7 @@ const Daily10TasksPage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">必ず毎日やる12のこと</h1>
+        <h1 className="text-3xl font-bold mb-2">必ず毎日やる16のこと</h1>
         <p className="text-gray-600">毎日の習慣を継続して、目標を達成しましょう</p>
       </div>
 
