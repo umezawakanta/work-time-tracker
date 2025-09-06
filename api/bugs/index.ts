@@ -66,37 +66,42 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         return;
       }
 
-      // Upsert with dedup on fingerprint
-      const now = new Date();
-      const updated = await Bug.findOneAndUpdate(
-        { fingerprint },
-        {
-          $setOnInsert: {
-            title,
-            featureId,
-            severity,
-            status,
-            createdBy,
-            source,
-            fingerprint,
-            occurrences: 0,
-          },
-          $set: {
-            lastOccurredAt: now,
-            severity,
-            status,
-            source,
-          },
-          $inc: { occurrences: 1 },
-        },
-        { new: true, upsert: true }
-      );
+      // Check if bug exists
+      const existingBug = await Bug.findOne({ fingerprint });
       
-      // Update description separately if provided
-      if (description) {
-        await Bug.findByIdAndUpdate(updated._id, { $set: { description } });
+      if (existingBug) {
+        // Update existing bug
+        const updated = await Bug.findByIdAndUpdate(
+          existingBug._id,
+          {
+            $set: {
+              lastOccurredAt: new Date(),
+              severity,
+              status,
+              source,
+              ...(description && { description }),
+            },
+            $inc: { occurrences: 1 },
+          },
+          { new: true }
+        );
+        res.status(200).json({ success: true, data: updated });
+      } else {
+        // Create new bug
+        const newBug = await Bug.create({
+          title,
+          description,
+          featureId,
+          severity,
+          status,
+          createdBy,
+          source,
+          fingerprint,
+          occurrences: 1,
+          lastOccurredAt: new Date(),
+        });
+        res.status(201).json({ success: true, data: newBug });
       }
-      res.status(201).json({ success: true, data: updated });
       return;
     } catch (error: any) {
       res
