@@ -33,6 +33,8 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { useDaily10Tasks } from '@/hooks/useDaily10Tasks';
+import { useBankAccounts } from '@/hooks/useBankAccounts';
+import { useAuth } from '@/hooks/useAuth';
 import { DailyTask, TaskProgress } from '@/types/daily10';
 
 const categoryIcons = {
@@ -81,7 +83,7 @@ const categoryColors = {
 const getTaskLink = (taskId: string) => {
   const taskLinks: { [key: string]: { href: string; label: string; icon: string } } = {
     '1': { href: '/asset-liability-report', label: '資産負債レポート', icon: '📊' },
-    '2': { href: '/asset-liability-report', label: '資産負債レポート', icon: '📊' },
+    '2': { href: '/bank-accounts', label: '銀行口座管理', icon: '🏦' },
     '3': { href: '/calendar', label: 'カレンダー', icon: '📅' },
     '4': { href: '/subscriptions', label: 'サブスクリプション管理', icon: '💳' },
     '5': { href: '/debt', label: '負債管理', icon: '💸' },
@@ -109,9 +111,11 @@ interface TaskItemProps {
   task: DailyTask;
   progress?: TaskProgress;
   onUpdate: (taskId: string, completed: boolean, notes?: string, subtaskId?: string) => void;
+  mainAccount?: any;
+  bankLoading?: boolean;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate, mainAccount, bankLoading }) => {
   const [notes, setNotes] = useState(progress?.notes || '');
   const [showNotes, setShowNotes] = useState(false);
   const [showSubtasks, setShowSubtasks] = useState(false);
@@ -144,6 +148,15 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
   const getTaskMessage = () => {
     if (progress?.completed) {
       return '✅ 完了しました！お疲れ様でした。';
+    }
+
+    // メイン銀行口座の情報を含むメッセージ
+    if (task.id === '2') {
+      if (mainAccount) {
+        return `🏦 メイン銀行口座「${mainAccount.bankName} ${mainAccount.accountName}」の入出金履歴を確認しよう！${mainAccount.lastBalance ? ` 現在の残高: ${mainAccount.lastBalance.toLocaleString()}円` : ''}`;
+      } else if (!bankLoading) {
+        return '🏦 メイン銀行口座を登録してから、入出金履歴を確認しよう！銀行口座管理ページで登録できます。';
+      }
     }
 
     const taskMessages: { [key: string]: string } = {
@@ -368,6 +381,8 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
 
 const Daily10TasksPage: React.FC = () => {
   const { tasks, progress, stats, isLoading, error, updateProgress } = useDaily10Tasks();
+  const { user } = useAuth();
+  const { mainAccount, isLoading: bankLoading } = useBankAccounts(user?.id || '');
   const [activeTab, setActiveTab] = useState('tasks');
 
   // デバッグ用：タスクデータの内容を確認
@@ -587,6 +602,8 @@ const Daily10TasksPage: React.FC = () => {
                 task={task}
                 progress={progress?.tasks[task.id]}
                 onUpdate={updateProgress}
+                mainAccount={mainAccount}
+                bankLoading={bankLoading}
               />
             ))}
           </div>

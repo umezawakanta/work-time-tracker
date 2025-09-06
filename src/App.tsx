@@ -219,6 +219,11 @@ const BankImportPage = lazy(() =>
   import('@/pages/BankImportPage').then((m) => ({ default: m.default }))
 );
 
+// 🏦 Bank Account Management
+const BankAccountPage = lazy(() =>
+  import('@/pages/BankAccountPage').then((m) => ({ default: m.default }))
+);
+
 // 🏆 Development & Gamification
 const DevelopmentBadgeShowcasePage = lazy(() =>
   import('@/pages/DevelopmentBadgeShowcasePage').then((module) => ({
@@ -1415,6 +1420,16 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <BankImportPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/bank-accounts"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <BankAccountPage />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }
