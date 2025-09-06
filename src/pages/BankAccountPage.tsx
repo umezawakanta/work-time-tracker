@@ -7,17 +7,50 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 const BankAccountPage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
 
-  if (!user) {
+  // デバッグ情報を表示
+  console.log('BankAccountPage - Auth state:', {
+    user,
+    isAuthenticated,
+    loading,
+    userExists: !!user,
+    userId: user?.id
+  });
+
+  // ローディング中の場合
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <Card>
+          <CardContent className="text-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-500">認証状態を確認中...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // 認証されていない場合
+  if (!isAuthenticated || !user) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Card>
           <CardContent className="text-center py-12">
             <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">ログインが必要です</h3>
-            <p className="text-gray-500">銀行口座を管理するにはログインしてください</p>
+            <p className="text-gray-500 mb-4">銀行口座を管理するにはログインしてください</p>
+            <div className="text-sm text-gray-400 mb-4">
+              <p>デバッグ情報:</p>
+              <p>isAuthenticated: {isAuthenticated ? 'true' : 'false'}</p>
+              <p>user: {user ? 'exists' : 'null'}</p>
+              <p>loading: {loading ? 'true' : 'false'}</p>
+            </div>
+            <Button onClick={() => navigate('/login')}>
+              ログインページに移動
+            </Button>
           </CardContent>
         </Card>
       </div>

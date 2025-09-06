@@ -404,7 +404,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
             // 開発環境では認証状態を設定
             if (isMounted) {
               setIsAuthenticated(true);
-              console.log('🧪 Dev environment - setting auth state');
+              // 開発環境用のダミーユーザーを作成
+              const devUser: User = {
+                id: 'dev-user-123',
+                _id: 'dev-user-123',
+                name: '開発ユーザー',
+                email: 'dev@example.com',
+                username: 'dev-user',
+                isAdmin: false,
+                displayName: '開発ユーザー',
+                loginCount: 1,
+                subscriptionStatus: 'none',
+                hasActiveSubscription: false,
+                isPremium: false,
+                trialActivated: false,
+                lastLoginAt: new Date().toISOString(),
+              };
+              setUser(devUser);
+              console.log('🧪 Dev environment - setting auth state with dummy user:', devUser);
             }
           }
         } else {
