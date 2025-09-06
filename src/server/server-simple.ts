@@ -558,7 +558,10 @@ app.post('/api/auth/password-reset', async (req, res) => {
           }
 
           // パスワードをハッシュ化
-          const bcrypt = await import('bcrypt');
+          const bcrypt = await import('bcrypt').catch(() => null);
+          if (!bcrypt) {
+            throw new Error('bcrypt module not available');
+          }
           const hashedPassword = await (bcrypt as any).default.hash(password, 12);
 
           // ユーザーのパスワードを更新し、リセットトークンをクリア
@@ -731,9 +734,9 @@ app.get('/api/debug/password-reset-tokens', async (req, res) => {
         email: user.email,
         token: user.passwordResetToken?.substring(0, 10) + '...',
         expires: user.passwordResetExpires,
-        isExpired: user.passwordResetExpires < new Date(),
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
+        isExpired: user.passwordResetExpires ? user.passwordResetExpires < new Date() : true,
+        createdAt: (user as any).createdAt,
+        updatedAt: (user as any).updatedAt,
       })),
     });
   } catch (error) {
@@ -798,7 +801,10 @@ app.post('/api/auth/password-reset/confirm', async (req, res) => {
         }
 
         // パスワードをハッシュ化
-        const bcrypt = await import('bcrypt');
+        const bcrypt = await import('bcrypt').catch(() => null);
+        if (!bcrypt) {
+          throw new Error('bcrypt module not available');
+        }
         const hashedPassword = await (bcrypt as any).default.hash(password, 12);
 
         // ユーザーのパスワードを更新し、リセットトークンをクリア
