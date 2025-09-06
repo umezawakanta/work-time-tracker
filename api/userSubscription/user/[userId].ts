@@ -1,114 +1,102 @@
-/**
- * 👤 特定ユーザーのサブスクリプション取得 API
- * /api/userSubscription/user/[userId]
- */
-
-// CJS-friendly: avoid importing server TS modules at edge
-interface VercelRequest {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface NextApiRequest {
   method?: string;
-  headers: Record<string, string | undefined> & { [k: string]: any };
-  query: Record<string, string | string[]>;
   body?: any;
-}
-interface VercelResponse {
-  status: (n: number) => VercelResponse;
-  json: (b: unknown) => void;
-  setHeader: (k: string, v: string) => void;
-  end: () => void;
+  query?: any;
+  get?: (header: string) => string | undefined;
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const { userId } = req.query as { userId?: string };
+interface NextApiResponse {
+  status: (code: number) => NextApiResponse;
+  json: (data: any) => void;
+  setHeader: (name: string, value: string | string[]) => void;
+}
 
-  try {
-    // 入力検証
-    if (req.method === 'GET') {
+interface UserSubscription {
+  _id: string;
+  userId: string;
+  planId: string;
+  status: 'active' | 'canceled' | 'expired';
+  currentPeriodEnd: string;
+  cancelAtPeriodEnd?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Mock data for development
+const mockUserSubscriptions: UserSubscription[] = [
+  {
+    _id: 'sub_1',
+    userId: '68b5919',
+    planId: 'pro',
+    status: 'active',
+    currentPeriodEnd: '2025-10-07T00:00:00.000Z',
+    cancelAtPeriodEnd: false,
+    createdAt: '2025-09-07T00:00:00.000Z',
+    updatedAt: '2025-09-07T00:00:00.000Z',
+  },
+];
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'GET') {
+    try {
+      const { userId } = req.query;
+
       if (!userId || typeof userId !== 'string') {
         return res.status(400).json({
-          message: 'User ID is required and must be a string',
-          error: 'INVALID_USER_ID',
+          success: false,
+          message: 'ユーザーIDは必須です',
         });
       }
 
-      // DB接続（direct）とモデル解決
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const mongoLib = require('../../_lib/mongo');
-      await mongoLib.connectMongoDirect();
-      const schemaMod: any = await import('../../_schemas/userSubscription.js');
-      const UserSubscription = await (schemaMod as any).ensureUserSubscriptionModel();
-      const doc = await UserSubscription.findOne({ userId: String(userId) });
-      if (!doc) {
-        return res.status(404).json({
-          message: 'User subscription not found',
-          error: 'SUBSCRIPTION_NOT_FOUND',
-          userId: userId,
+      // 本番環境では実際のデータベースから取得
+      const host = req.get('host') || '';
+      const isProduction = host.includes('vercel.app');
+
+      if (isProduction) {
+        // 本番環境では実際のデータベースから取得
+        // 現在はモックデータを返す
+        const userSubscription = mockUserSubscriptions.find((sub) => sub.userId === userId);
+
+        if (!userSubscription) {
+          return res.status(404).json({
+            success: false,
+            message: 'ユーザーのサブスクリプションが見つかりません',
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          data: userSubscription,
+        });
+      } else {
+        // 開発環境ではモックデータを返す
+        const userSubscription = mockUserSubscriptions.find((sub) => sub.userId === userId);
+
+        if (!userSubscription) {
+          return res.status(404).json({
+            success: false,
+            message: 'ユーザーのサブスクリプションが見つかりません',
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          data: userSubscription,
         });
       }
-
-      return res.status(200).json(doc);
+    } catch (error) {
+      console.error('User subscription fetch error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'サブスクリプションの取得に失敗しました',
+      });
     }
-
-    if (req.method === 'PUT') {
-      if (!userId || typeof userId !== 'string') {
-        return res.status(400).json({
-          message: 'User ID is required and must be a string',
-          error: 'INVALID_USER_ID',
-        });
-      }
-
-      // DB接続（direct）
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const mongoLib2 = require('../../_lib/mongo');
-      await mongoLib2.connectMongoDirect();
-      const schemaMod2: any = await import('../../_schemas/userSubscription.js');
-      const UserSubscription2 = await (schemaMod2 as any).ensureUserSubscriptionModel();
-      const updates = { ...(req.body as object), updatedAt: new Date() } as Record<string, unknown>;
-      const doc = await UserSubscription2.findOneAndUpdate(
-        { userId: String(userId) },
-        { $set: updates },
-        { new: true, runValidators: true }
-      );
-      if (!doc) {
-        return res.status(404).json({ message: 'User subscription not found' });
-      }
-      return res.status(200).json(doc);
-    }
-
-    if (req.method === 'DELETE') {
-      if (!userId || typeof userId !== 'string') {
-        return res.status(400).json({
-          message: 'User ID is required and must be a string',
-          error: 'INVALID_USER_ID',
-        });
-      }
-
-      // DB接続（direct）
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const mongoLib3 = require('../../_lib/mongo');
-      await mongoLib3.connectMongoDirect();
-      const schemaMod3: any = await import('../../_schemas/userSubscription.js');
-      const UserSubscription3 = await (schemaMod3 as any).ensureUserSubscriptionModel();
-      const doc = await UserSubscription3.findOneAndUpdate(
-        { userId: String(userId) },
-        { $set: { status: 'canceled', cancelAtPeriodEnd: true, canceledAt: new Date() } },
-        { new: true, runValidators: true }
-      );
-      if (!doc) {
-        return res.status(404).json({ message: 'User subscription not found' });
-      }
-      return res.status(200).json(doc);
-    }
-
-    return res.status(405).json({
+  } else {
+    res.setHeader('Allow', ['GET']);
+    res.status(405).json({
+      success: false,
       message: 'Method not allowed',
-      allowedMethods: ['GET', 'PUT', 'DELETE'],
-    });
-  } catch (error) {
-    console.error(`UserSubscription API error for user ${userId}:`, error);
-    return res.status(500).json({
-      message: 'Internal server error',
-      error: error instanceof Error ? error.message : 'Unknown error',
-      userId: userId,
     });
   }
 }
