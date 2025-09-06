@@ -22,6 +22,22 @@ export type FeatureArtifacts = Partial<Record<ArtifactId, FeatureArtifactLink>>;
 
 // Central listing: map feature id -> artifacts
 export const featureArtifactsRegistry: Record<string, FeatureArtifacts> = {
+  'docs-viewer': {
+    requirements: { title: '要件定義書', href: '/docs/features/docs/requirements' },
+    basic_design: { title: '基本設計書', href: '/docs/features/docs/basic-design' },
+    detailed_design: { title: '詳細設計書', href: '/docs/features/docs/detailed-design' },
+    source_code: { title: 'ソースコード', href: '/docs' },
+    unit_test_spec: { title: '単体試験仕様書', href: '/docs/features/docs/unit-test-spec' },
+    unit_tests: { title: 'ユニットテストコード', href: '/docs/features/docs/unit-tests' },
+    integration_test_spec: {
+      title: '結合試験仕様書',
+      href: '/docs/features/docs/integration-test-spec',
+    },
+    system_test_spec: { title: '総合試験仕様書', href: '/docs/features/docs/system-test-spec' },
+    operation_manual: { title: '操作手順書', href: '/docs/features/docs/operation-manual' },
+    runbook: { title: '運用手順書', href: '/docs/features/docs/runbook' },
+    faq: { title: 'FAQ', href: '/docs/features/docs/faq' },
+  },
   sitemap: {
     requirements: { title: '要件定義書', href: '/docs/features/sitemap/requirements' },
     basic_design: { title: '基本設計書', href: '/docs/features/sitemap/basic-design' },

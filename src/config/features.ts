@@ -1530,10 +1530,10 @@ export const featuresRegistry: Feature[] = [
     path: '/docs',
     category: '品質',
     description: 'Markdownドキュメントビューア',
-    status: 'in_progress',
+    status: 'complete',
     requiresRealAPI: false,
     priority: 'P2',
-    targetRelease: '2025-09-20',
+    targetRelease: '2025-01-20',
   },
   {
     id: 'pricing',
