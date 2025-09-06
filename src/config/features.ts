@@ -1516,10 +1516,10 @@ export const featuresRegistry: Feature[] = [
     path: '/reset-password',
     category: 'ユーザー・設定',
     description: 'パスワード再設定画面',
-    status: 'planning',
+    status: 'complete',
     requiresRealAPI: true,
-    priority: 'P1',
-    targetRelease: '2025-09-05',
+    priority: 'P0',
+    targetRelease: '2025-09-06',
   },
   {
     id: 'notification-settings',
