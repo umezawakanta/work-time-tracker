@@ -115,6 +115,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
   const [notes, setNotes] = useState(progress?.notes || '');
   const [showNotes, setShowNotes] = useState(false);
   const [showSubtasks, setShowSubtasks] = useState(false);
+  const [showStepsStates, setShowStepsStates] = useState<Record<string, boolean>>({});
   const IconComponent = taskIcons[task.id] || categoryIcons[task.category] || Circle;
 
   const handleToggle = (completed: boolean) => {
@@ -238,6 +239,19 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
               </Button>
             </div>
 
+            {/* サブタスクの使い方説明 */}
+            {task.subtasks && task.subtasks.length > 0 && !showSubtasks && (
+              <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="text-sm font-medium text-blue-800 mb-2">📋 サブタスクの使い方</h4>
+                <ol className="text-xs text-blue-700 space-y-1 list-decimal list-inside">
+                  <li>「サブタスクを表示」ボタンをクリックしてサブタスク一覧を表示</li>
+                  <li>各サブタスクの「手順を表示」ボタンで具体的な手順を確認</li>
+                  <li>完了したサブタスクのチェックボックスをクリックして進捗を更新</li>
+                  <li>すべてのサブタスクが完了すると、メインタスクも自動完了</li>
+                </ol>
+              </div>
+            )}
+
             {/* サブタスク一覧 */}
             {showSubtasks && task.subtasks && task.subtasks.length > 0 && (
               <div className="mt-3 space-y-3 border-t pt-3">
@@ -246,7 +260,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
                   const subtaskProgress = progress?.subtasks?.find(
                     (st) => st.subtaskId === subtask.id
                   );
-                  const [showSteps, setShowSteps] = useState(false);
+                  const showSteps = showStepsStates[subtask.id] || false;
+                  const setShowSteps = (value: boolean) => {
+                    setShowStepsStates((prev) => ({ ...prev, [subtask.id]: value }));
+                  };
 
                   return (
                     <div key={subtask.id} className="border rounded-lg p-3 bg-gray-50">
@@ -428,6 +445,29 @@ const Daily10TasksPage: React.FC = () => {
               <h3 className="text-sm font-medium text-blue-900 mb-1">今日のメッセージ</h3>
               <p className="text-sm text-blue-800">{getMotivationalMessage()}</p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 使い方ガイド */}
+      <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+        <h3 className="text-lg font-semibold text-green-800 mb-3">📚 使い方ガイド</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-green-700">
+          <div>
+            <h4 className="font-medium mb-2">🔍 サブタスクの確認方法</h4>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>各タスクの「サブタスクを表示」ボタンをクリック</li>
+              <li>「手順を表示」ボタンで具体的な手順を確認</li>
+              <li>各サブタスクは5分以内で完了可能</li>
+            </ol>
+          </div>
+          <div>
+            <h4 className="font-medium mb-2">✅ 進捗の更新方法</h4>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>完了したサブタスクのチェックボックスをクリック</li>
+              <li>すべてのサブタスクが完了するとメインタスクも自動完了</li>
+              <li>資産管理ページでの入力は自動的に反映されます</li>
+            </ol>
           </div>
         </div>
       </div>
