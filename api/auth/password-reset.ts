@@ -85,7 +85,7 @@ const handleForgotPassword = async (req: VercelRequest, res: VercelResponse): Pr
 
   try {
     // MongoDB接続とユーザー検索
-    const mongoLib = require('../_lib/mongo');
+    const mongoLib = (await import('../_lib/mongo.js')) as any;
     await mongoLib.connectMongoDirect();
     const mongoose = await mongoLib.getMongoose();
 
@@ -134,7 +134,7 @@ const handleForgotPassword = async (req: VercelRequest, res: VercelResponse): Pr
       const emailService = await import('../../src/server/services/emailService.js');
       const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://work-time-tracker-five.vercel.app'}/reset-password?token=${resetToken}`;
 
-      const emailSent = await emailService.default.sendPasswordResetEmail(
+      const emailSent = await emailService.emailService.sendPasswordResetEmail(
         normalizedEmail,
         resetUrl
       );
@@ -186,7 +186,7 @@ const handleResetPassword = async (req: VercelRequest, res: VercelResponse): Pro
 
   try {
     // MongoDB接続
-    const mongoLib = require('../_lib/mongo');
+    const mongoLib = (await import('../_lib/mongo.js')) as any;
     await mongoLib.connectMongoDirect();
     const mongoose = await mongoLib.getMongoose();
 
