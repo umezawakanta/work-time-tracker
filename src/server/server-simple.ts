@@ -5269,13 +5269,13 @@ app.get('/api/bank-accounts', (req: Request, res: Response) => {
 
 app.post('/api/bank-accounts', (req: Request, res: Response) => {
   const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
-  const { 
-    bankName, 
-    accountType, 
-    accountNumber, 
-    branchName, 
-    accountName, 
-    isMain = false 
+  const {
+    bankName,
+    accountType,
+    accountNumber,
+    branchName,
+    accountName,
+    isMain = false,
   } = req.body;
 
   if (!bankName || !accountType || !accountNumber || !accountName) {
@@ -5288,12 +5288,13 @@ app.post('/api/bank-accounts', (req: Request, res: Response) => {
   // メイン口座の重複チェック
   if (isMain) {
     const existingAccounts = bankAccountsStore.get(userId) || [];
-    const hasMainAccount = existingAccounts.some(account => account.isMain && account.isActive);
-    
+    const hasMainAccount = existingAccounts.some((account) => account.isMain && account.isActive);
+
     if (hasMainAccount) {
       return res.status(400).json({
         success: false,
-        message: 'メイン口座は既に登録されています。既存のメイン口座を無効にしてから登録してください。',
+        message:
+          'メイン口座は既に登録されています。既存のメイン口座を無効にしてから登録してください。',
       });
     }
   }
@@ -5326,15 +5327,15 @@ app.get('/api/bank-accounts/:id', (req: Request, res: Response) => {
   const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
   const { id } = req.params;
   const accounts = bankAccountsStore.get(userId) || [];
-  const account = accounts.find(acc => acc._id === id);
-  
+  const account = accounts.find((acc) => acc._id === id);
+
   if (!account) {
     return res.status(404).json({
       success: false,
       message: '銀行口座が見つかりません',
     });
   }
-  
+
   res.json({ success: true, data: account });
 });
 
@@ -5342,24 +5343,24 @@ app.put('/api/bank-accounts/:id', (req: Request, res: Response) => {
   const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
   const { id } = req.params;
   const accounts = bankAccountsStore.get(userId) || [];
-  const accountIndex = accounts.findIndex(acc => acc._id === id);
-  
+  const accountIndex = accounts.findIndex((acc) => acc._id === id);
+
   if (accountIndex === -1) {
     return res.status(404).json({
       success: false,
       message: '銀行口座が見つかりません',
     });
   }
-  
+
   const updatedAccount = {
     ...accounts[accountIndex],
     ...req.body,
     updatedAt: new Date().toISOString(),
   };
-  
+
   accounts[accountIndex] = updatedAccount;
   bankAccountsStore.set(userId, accounts);
-  
+
   res.json({ success: true, data: updatedAccount });
 });
 
@@ -5367,18 +5368,18 @@ app.delete('/api/bank-accounts/:id', (req: Request, res: Response) => {
   const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
   const { id } = req.params;
   const accounts = bankAccountsStore.get(userId) || [];
-  const accountIndex = accounts.findIndex(acc => acc._id === id);
-  
+  const accountIndex = accounts.findIndex((acc) => acc._id === id);
+
   if (accountIndex === -1) {
     return res.status(404).json({
       success: false,
       message: '銀行口座が見つかりません',
     });
   }
-  
+
   accounts.splice(accountIndex, 1);
   bankAccountsStore.set(userId, accounts);
-  
+
   res.json({ success: true, message: '銀行口座が削除されました' });
 });
 
