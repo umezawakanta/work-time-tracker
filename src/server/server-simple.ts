@@ -5615,17 +5615,17 @@ app.post('/api/bank-accounts/import', (req: Request, res: Response) => {
     // 既存の口座データを取得
     const existingAccounts = bankAccountsStore.get(userId) || [];
 
-    // メイン口座の重複チェック
-    const hasMainAccount = existingAccounts.some((account) => account.isMain);
-    const newMainAccount = accounts.find((account) => account.isMain);
+    // メイン口座の重複チェック（フロントエンドで制御するため無効化）
+    // const hasMainAccount = existingAccounts.some((account) => account.isMain);
+    // const newMainAccount = accounts.find((account) => account.isMain);
 
-    if (hasMainAccount && newMainAccount) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'メイン口座は既に設定されています。既存のメイン口座を削除してから再度お試しください。',
-      });
-    }
+    // if (hasMainAccount && newMainAccount) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message:
+    //       'メイン口座は既に設定されています。既存のメイン口座を削除してから再度お試しください。',
+    //   });
+    // }
 
     // 新しい口座データを作成
     const newAccounts = accounts.map((account: any) => {

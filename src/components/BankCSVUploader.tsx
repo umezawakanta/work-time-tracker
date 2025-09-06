@@ -416,17 +416,33 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
           });
 
           if (deleteResponse.ok) {
-            const existingAccounts = await deleteResponse.json();
+            const response = await deleteResponse.json();
+            console.log('既存口座APIレスポンス:', response);
+
+            // レスポンスが配列かどうかチェック
+            const existingAccounts = Array.isArray(response) ? response : response.accounts || [];
             const mainAccounts = existingAccounts.filter((account: any) => account.isMain);
+
+            console.log(`既存のメイン口座: ${mainAccounts.length} 件`);
 
             // 既存のメイン口座を削除
             for (const account of mainAccounts) {
-              await fetch(`/api/bank-accounts/${account._id}`, {
-                method: 'DELETE',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              });
+              try {
+                const deleteResult = await fetch(`/api/bank-accounts/${account._id}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                });
+
+                if (deleteResult.ok) {
+                  console.log(`メイン口座削除成功: ${account._id}`);
+                } else {
+                  console.warn(`メイン口座削除失敗: ${account._id}`);
+                }
+              } catch (deleteError) {
+                console.warn(`メイン口座削除エラー: ${account._id}`, deleteError);
+              }
             }
 
             console.log(`既存のメイン口座 ${mainAccounts.length} 件を削除しました`);
