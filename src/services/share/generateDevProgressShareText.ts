@@ -107,21 +107,30 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
   if (completedFeatures.length > 0) {
     lines.push('🎉 リリース済み機能');
 
-    // P1優先度の機能を優先して表示
+    // 期待される機能を最優先に、その後優先度順で表示
+    const expectedFeatures = ['terms', 'terms-of-service', 'profile', 'improvement-plan'];
     const priorityOrder: Record<'P0' | 'P1' | 'P2' | 'P3', number> = { P0: 1, P1: 0, P2: 2, P3: 3 };
     const sortedCompleted = completedFeatures.sort((a, b) => {
-      const pa = priorityOrder[(a.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
-      const pb = priorityOrder[(b.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
-      if (pa !== pb) return pa - pb;
-
-      // 同じ優先度の場合は、期待される機能を優先
-      const expectedFeatures = ['terms', 'profile', 'improvement-plan'];
+      // 期待される機能を最優先
       const aExpected = expectedFeatures.includes(a.id);
       const bExpected = expectedFeatures.includes(b.id);
       if (aExpected && !bExpected) return -1;
       if (!aExpected && bExpected) return 1;
 
-      // どちらも期待される機能またはどちらも期待されない機能の場合はリリース日順（新しい順）
+      // 期待される機能同士の場合は、期待される機能の順序で表示
+      if (aExpected && bExpected) {
+        const aIndex = expectedFeatures.indexOf(a.id);
+        const bIndex = expectedFeatures.indexOf(b.id);
+        if (aIndex !== bIndex) return aIndex - bIndex;
+        return a.name.localeCompare(b.name);
+      }
+
+      // 期待されない機能同士の場合は優先度順
+      const pa = priorityOrder[(a.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
+      const pb = priorityOrder[(b.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
+      if (pa !== pb) return pa - pb;
+
+      // 同じ優先度の場合はリリース日順（新しい順）
       const dateA = a.targetRelease ? new Date(a.targetRelease) : new Date(0);
       const dateB = b.targetRelease ? new Date(b.targetRelease) : new Date(0);
       return dateB.getTime() - dateA.getTime();
