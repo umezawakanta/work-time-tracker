@@ -15,6 +15,13 @@ import {
   refreshToken as refreshTokenController,
 } from './controllers/authController.js';
 import { serverErrorLogger, errorHandler } from '../middleware/serverErrorLogger.js';
+import {
+  parseBankCSV,
+  validateBankData,
+  generateDataSummary,
+  BankTransaction,
+  ParsedBankData,
+} from '../utils/bankDataParser.js';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
@@ -4594,6 +4601,251 @@ const DEFAULT_TASKS = [
 
 // In-memory store for progress (now includes subtask progress)
 const progressStore = new Map<string, any>();
+
+// In-memory store for bank data
+const bankDataStore = new Map<string, ParsedBankData>();
+
+// POST /api/bank/upload - Upload and parse bank CSV data
+app.post('/api/bank/upload', (req: Request, res: Response) => {
+  try {
+    const { csvData, bankName, userId } = req.body;
+
+    if (!csvData) {
+      return res.status(400).json({
+        success: false,
+        message: 'CSVデータが必要です',
+      });
+    }
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'ユーザーIDが必要です',
+      });
+    }
+
+    // CSVデータを解析
+    const parsedData = parseBankCSV(csvData, bankName);
+
+    // データの検証
+    const validation = validateBankData(parsedData);
+    if (!validation.isValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'データの検証に失敗しました',
+        errors: validation.errors,
+      });
+    }
+
+    // データをストアに保存
+    const dataId = `bank_${userId}_${Date.now()}`;
+    bankDataStore.set(dataId, parsedData);
+
+    // 要約を生成
+    const summary = generateDataSummary(parsedData);
+
+    res.json({
+      success: true,
+      data: {
+        id: dataId,
+        summary: parsedData.summary,
+        bankInfo: parsedData.bankInfo,
+        transactionCount: parsedData.transactions.length,
+        dateRange: parsedData.summary.dateRange,
+        textSummary: summary,
+      },
+    });
+  } catch (error) {
+    console.error('Error processing bank data:', error);
+    res.status(500).json({
+      success: false,
+      message: '銀行データの処理中にエラーが発生しました',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+// GET /api/bank/data/:id - Get parsed bank data
+app.get('/api/bank/data/:id', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'ユーザーIDが必要です',
+      });
+    }
+
+    const data = bankDataStore.get(id);
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: 'データが見つかりません',
+      });
+    }
+
+    // ユーザーIDの確認（簡易的なセキュリティチェック）
+    if (!id.startsWith(`bank_${userId}_`)) {
+      return res.status(403).json({
+        success: false,
+        message: 'アクセス権限がありません',
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        id,
+        transactions: data.transactions,
+        summary: data.summary,
+        bankInfo: data.bankInfo,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching bank data:', error);
+    res.status(500).json({
+      success: false,
+      message: 'データの取得中にエラーが発生しました',
+    });
+  }
+});
+
+// POST /api/bank/import-to-assets - Import bank data to asset system
+app.post('/api/bank/import-to-assets', (req: Request, res: Response) => {
+  try {
+    const { dataId, userId, accountName } = req.body;
+
+    if (!dataId || !userId || !accountName) {
+      return res.status(400).json({
+        success: false,
+        message: 'データID、ユーザーID、口座名が必要です',
+      });
+    }
+
+    const bankData = bankDataStore.get(dataId);
+    if (!bankData) {
+      return res.status(404).json({
+        success: false,
+        message: '銀行データが見つかりません',
+      });
+    }
+
+    // ユーザーIDの確認
+    if (!dataId.startsWith(`bank_${userId}_`)) {
+      return res.status(403).json({
+        success: false,
+        message: 'アクセス権限がありません',
+      });
+    }
+
+    // 最新の残高を取得
+    const latestTransaction = bankData.transactions.reduce((latest, current) =>
+      current.date > latest.date ? current : latest
+    );
+
+    // 資産エントリとして追加
+    const assetEntry = {
+      account: accountName,
+      value: latestTransaction.balance,
+      date: latestTransaction.date,
+      description: `${bankData.bankInfo.name} - 最新残高`,
+      category: 'bank',
+    };
+
+    // 資産ストアに追加（実際の実装では適切なストアを使用）
+    const assetId = createAssetId();
+    const newAsset = {
+      _id: assetId,
+      ...assetEntry,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // 資産ストアに保存（実際の実装では適切なストアを使用）
+    if (!assetStore.has(userId)) {
+      assetStore.set(userId, []);
+    }
+    assetStore.get(userId)?.push(newAsset);
+
+    // 収入データの自動完了も試行
+    try {
+      const incomeAutoCompleteResponse = await fetch(
+        `http://localhost:${PORT}/api/daily10/auto-complete`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            taskId: '1', // 直近3ヶ月の収入と支出をすべて把握する
+            subtaskId: '1-10', // 資産管理ページに入力する
+            action: 'asset_data_entered',
+            data: {
+              hasIncomeData: bankData.summary.totalIncome > 0,
+              hasExpenseData: bankData.summary.totalExpense > 0,
+              transactionCount: bankData.transactions.length,
+              bankName: bankData.bankInfo.name,
+            },
+          }),
+        }
+      );
+
+      if (incomeAutoCompleteResponse.ok) {
+        console.log('Daily Tasks auto-complete successful for income data import');
+      }
+    } catch (error) {
+      console.warn('Daily Tasks income auto-complete failed:', error);
+    }
+
+    // Daily Tasksの自動完了を試行
+    try {
+      // 銀行残高の更新として自動完了
+      const autoCompleteResponse = await fetch(
+        `http://localhost:${PORT}/api/daily10/auto-complete`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            taskId: '2', // 現在の資産と負債をすべて把握する
+            subtaskId: '2-1', // 銀行預金残高を確認する
+            action: 'bank_balance_entered',
+            data: {
+              amount: latestTransaction.balance,
+              account: accountName,
+              bankName: bankData.bankInfo.name,
+            },
+          }),
+        }
+      );
+
+      if (autoCompleteResponse.ok) {
+        console.log('Daily Tasks auto-complete successful for bank data import');
+      }
+    } catch (error) {
+      console.warn('Daily Tasks auto-complete failed:', error);
+    }
+
+    res.json({
+      success: true,
+      data: {
+        assetId,
+        importedBalance: latestTransaction.balance,
+        transactionCount: bankData.transactions.length,
+        message: '銀行データが資産管理システムに正常に取り込まれました',
+      },
+    });
+  } catch (error) {
+    console.error('Error importing bank data:', error);
+    res.status(500).json({
+      success: false,
+      message: 'データの取り込み中にエラーが発生しました',
+    });
+  }
+});
 
 // GET /api/daily10/tasks - Get all tasks
 app.get('/api/daily10/tasks', (req: Request, res: Response) => {

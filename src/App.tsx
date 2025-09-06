@@ -214,6 +214,11 @@ const Daily10TasksPage = lazy(() =>
   import('@/pages/Daily10TasksPage').then((m) => ({ default: m.default }))
 );
 
+// 🏦 Bank Data Import
+const BankImportPage = lazy(() =>
+  import('@/pages/BankImportPage').then((m) => ({ default: m.default }))
+);
+
 // 🏆 Development & Gamification
 const DevelopmentBadgeShowcasePage = lazy(() =>
   import('@/pages/DevelopmentBadgeShowcasePage').then((module) => ({
@@ -1400,6 +1405,16 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <Daily10TasksPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/bank-import"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <BankImportPage />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }

@@ -38,6 +38,7 @@ import {
   BookOpen,
   Crown,
   CheckCircle2,
+  Upload,
 } from 'lucide-react';
 
 interface SystemStatus {
@@ -122,6 +123,14 @@ export const UnifiedSystemNavigation: React.FC<UnifiedSystemNavigationProps> = (
       icon: <CheckCircle2 className="w-4 h-4" />,
       status: 'active',
       description: '毎日必ずやる20のタスク',
+      category: 'productivity',
+    },
+    {
+      name: '銀行データ取り込み',
+      path: '/bank-import',
+      icon: <Upload className="w-4 h-4" />,
+      status: 'active',
+      description: '銀行CSVデータの自動取り込み',
       category: 'productivity',
     },
     {
