@@ -254,7 +254,8 @@ const AdminDashboard: React.FC = () => {
   const fetchMetrics = async () => {
     try {
       setIsLoading(true);
-      const { data } = await api.get('admin/metrics');
+      const response = await api.get('admin/metrics');
+      const data = response.data;
       const payload = (data && (data.data || data)) as any;
       setMetrics(normalizeMetrics(payload.metrics || payload));
       setPriorityActions(payload.priorityActions || []);
@@ -272,9 +273,10 @@ const AdminDashboard: React.FC = () => {
     try {
       setIsAnalyticsLoading(true);
       const range = windowArg === '90d' ? '30d' : windowArg;
-      const { data: adminSummary } = await api.get('admin/analytics/summary', {
+      const response = await api.get('admin/analytics/summary', {
         params: { range },
       });
+      const adminSummary = response.data;
       const admin = (adminSummary && (adminSummary.data || adminSummary)) as any;
       const normalized: AnalyticsSummary = {
         totalUsers: Number(admin.totalUsers) || 0,
@@ -507,7 +509,8 @@ const AdminDashboard: React.FC = () => {
   const fetchLiveMetrics = async () => {
     try {
       setIsLiveLoading(true);
-      const { data } = await api.get('analytics/live-metrics');
+      const response = await api.get('admin/live-metrics');
+      const data = response.data;
       const payload = (data && (data.data || data)) as Partial<LiveMetrics> | null;
       const normalized: LiveMetrics = {
         activeUsers: Number(payload?.activeUsers ?? 0),

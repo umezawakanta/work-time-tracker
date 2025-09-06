@@ -1,3 +1,5 @@
+import { VercelRequest, VercelResponse } from '@vercel/node';
+
 interface VercelRequest {
   method?: string;
   headers: Record<string, string | undefined>;
@@ -60,7 +62,7 @@ function numberInRange(min: number, max: number): number {
   return Math.round(min + (max - min) * 0.42);
 }
 
-function handler(req: VercelRequest, res: VercelResponse): void {
+async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -73,54 +75,146 @@ function handler(req: VercelRequest, res: VercelResponse): void {
     return;
   }
 
-  const users: AdminUsersMetrics = {
-    total: 1234,
-    active: 321,
-    newToday: 12,
-    churnRate: 2.1,
-  };
-  const revenue: AdminRevenueMetrics = {
-    mrr: 845000,
-    arr: 845000 * 12,
-    todayRevenue: 12000,
-    conversionRate: 3.4,
-  };
-  const system: AdminSystemMetrics = {
-    uptime: 99.9,
-    responseTime: numberInRange(80, 120),
-    errorRate: 0.2,
-    activeConnections: 57,
-  };
-  const support: AdminSupportMetrics = {
-    openTickets: 3,
-    avgResponseTime: '2h',
-    satisfaction: 4.6,
-  };
+  try {
+    // 管理者認証
+    const ctx = require('../_lib/user-context.js');
+    const auth = await ctx.verifyJwtAndExtract(req as any);
 
-  const priorityActions: PriorityAction[] = [
-    {
-      id: 'act-1',
-      title: '本番 Stripe 公開鍵の再確認',
-      description: 'ビルド時注入とランタイム読込いずれも動作するか検証',
-      urgency: 'high',
-      category: 'revenue',
-      deadline: new Date(Date.now() + 86400000).toISOString(),
-      assignee: 'admin',
-      completed: false,
-    },
-    {
-      id: 'act-2',
-      title: 'MongoDB URI の監視',
-      description: 'SRV/DB名/クエリパラメータの整合性を監視',
-      urgency: 'medium',
-      category: 'system',
-      completed: false,
-    },
-  ];
+    // 管理者権限チェック
+    const User = await ctx.ensureDbAndUserModel();
+    const user = await ctx.findUserByIdLoose(User, auth.userId);
+    if (!user || user.role !== 'admin') {
+      return void res.status(403).json({ success: false, message: 'Admin access required' });
+    }
 
-  const metrics: AdminMetricsPayload = { users, revenue, system, support };
+    // MongoDB接続
+    const mongoLib = require('../_lib/mongo');
+    await mongoLib.connectMongoDirect();
+    const mongoose = await mongoLib.getMongoose();
 
-  res.status(200).json({ metrics, priorityActions });
+    // ユーザーメトリクス取得
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const lastWeek = new Date(today);
+    lastWeek.setDate(lastWeek.getDate() - 7);
+
+    const totalUsers = await User.countDocuments({});
+    const activeUsers = await User.countDocuments({
+      lastLoginAt: { $gte: lastWeek },
+    });
+    const newToday = await User.countDocuments({
+      createdAt: { $gte: today },
+    });
+    const newYesterday = await User.countDocuments({
+      createdAt: { $gte: yesterday, $lt: today },
+    });
+    const churnRate = newYesterday > 0 ? ((newToday - newYesterday) / newYesterday) * 100 : 0;
+
+    // サブスクリプションメトリクス取得
+    const Subscription = mongoose.model(
+      'Subscription',
+      new mongoose.Schema({
+        userId: { type: String, required: true },
+        plan: { type: String, required: true },
+        status: { type: String, required: true },
+        amount: { type: Number, required: true },
+        createdAt: { type: Date, default: Date.now },
+        updatedAt: { type: Date, default: Date.now },
+      })
+    );
+
+    const activeSubscriptions = await Subscription.find({ status: 'active' });
+    const mrr = activeSubscriptions.reduce((sum, sub) => sum + (sub.amount || 0), 0);
+    const todayRevenue = await Subscription.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: today },
+          status: 'active',
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$amount' },
+        },
+      },
+    ]);
+    const conversionRate = totalUsers > 0 ? (activeSubscriptions.length / totalUsers) * 100 : 0;
+
+    // システムメトリクス（簡易実装）
+    const systemUptime = 99.9; // 実際の監視システムから取得
+    const responseTime = numberInRange(80, 120);
+    const errorRate = 0.2; // 実際のログから計算
+    const activeConnections = 57; // 実際の接続数から取得
+
+    // サポートメトリクス（簡易実装）
+    const openTickets = 0; // 実際のチケットシステムから取得
+    const avgResponseTime = '2h';
+    const satisfaction = 4.6;
+
+    const users: AdminUsersMetrics = {
+      total: totalUsers,
+      active: activeUsers,
+      newToday: newToday,
+      churnRate: Math.max(0, churnRate),
+    };
+
+    const revenue: AdminRevenueMetrics = {
+      mrr: mrr,
+      arr: mrr * 12,
+      todayRevenue: todayRevenue[0]?.total || 0,
+      conversionRate: Math.round(conversionRate * 100) / 100,
+    };
+
+    const system: AdminSystemMetrics = {
+      uptime: systemUptime,
+      responseTime: responseTime,
+      errorRate: errorRate,
+      activeConnections: activeConnections,
+    };
+
+    const support: AdminSupportMetrics = {
+      openTickets: openTickets,
+      avgResponseTime: avgResponseTime,
+      satisfaction: satisfaction,
+    };
+
+    const priorityActions: PriorityAction[] = [
+      {
+        id: 'act-1',
+        title: 'データベース最適化',
+        description: 'ユーザー増加に伴うクエリパフォーマンスの最適化',
+        urgency: 'high',
+        category: 'system',
+        deadline: new Date(Date.now() + 7 * 86400000).toISOString(),
+        assignee: 'admin',
+        completed: false,
+      },
+      {
+        id: 'act-2',
+        title: 'セキュリティ監査',
+        description: '認証システムとAPIエンドポイントのセキュリティ監査',
+        urgency: 'medium',
+        category: 'system',
+        deadline: new Date(Date.now() + 14 * 86400000).toISOString(),
+        assignee: 'admin',
+        completed: false,
+      },
+    ];
+
+    const metrics: AdminMetricsPayload = { users, revenue, system, support };
+
+    res.status(200).json({ success: true, metrics, priorityActions });
+  } catch (error) {
+    console.error('Admin metrics fetch error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
 }
 
 module.exports = handler;

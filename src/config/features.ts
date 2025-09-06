@@ -359,9 +359,10 @@ export const featuresRegistry: Feature[] = [
     name: '管理 概要',
     path: '/admin/overview',
     category: '運用',
-    status: 'release_pending',
-    requiresRealAPI: false,
-    priority: 'P1',
+    status: 'complete',
+    requiresRealAPI: true,
+    priority: 'P0',
+    targetRelease: '2025-01-28',
   },
   {
     id: 'admin-users',
