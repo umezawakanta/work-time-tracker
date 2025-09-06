@@ -50,6 +50,7 @@ const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
     const accountMap = new Map<string, AccountStatus>();
 
     entries.forEach((entry) => {
+      if (!entry || !entry.date || !entry.account || entry.value == null) return; // Skip undefined or invalid entries
       const isUpdated = new Date(entry.date).toISOString().split('T')[0] === today;
       const currentStatus = accountMap.get(entry.account);
 
@@ -83,8 +84,8 @@ const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
     return Array.from(accountMap.values());
   };
 
-  const assetStatuses = groupAndDeduplicate(assetEntries, 'asset');
-  const debtStatuses = groupAndDeduplicate(debtEntries, 'debt');
+  const assetStatuses = groupAndDeduplicate(assetEntries || [], 'asset');
+  const debtStatuses = groupAndDeduplicate(debtEntries || [], 'debt');
 
   const needsUpdate =
     assetStatuses.some((status) => !status.isUpdated) ||
