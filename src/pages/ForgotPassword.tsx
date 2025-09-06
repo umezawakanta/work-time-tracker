@@ -116,13 +116,13 @@ export default function ForgotPassword() {
                 setEmail('');
               }}
               variant="outline"
-              className="w-full"
+              className="w-full text-gray-700 border-gray-300 hover:bg-gray-50"
             >
               別のメールアドレスで試す
             </Button>
 
             <Link to="/login" className="w-full">
-              <Button variant="ghost" className="w-full">
+              <Button variant="ghost" className="w-full text-gray-600 hover:text-gray-800 hover:bg-gray-100">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 ログインページに戻る
               </Button>
@@ -190,7 +190,7 @@ export default function ForgotPassword() {
           <CardFooter className="flex flex-col space-y-3 bg-white">
             <Button
               type="submit"
-              className="w-full"
+              className="w-full text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:text-gray-200"
               disabled={isSubmitting || !email.trim() || !validateEmail(email)}
             >
               {isSubmitting ? (
@@ -207,7 +207,7 @@ export default function ForgotPassword() {
             </Button>
 
             <Link to="/login" className="w-full">
-              <Button variant="ghost" className="w-full">
+              <Button variant="ghost" className="w-full text-gray-600 hover:text-gray-800 hover:bg-gray-100">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 ログインページに戻る
               </Button>

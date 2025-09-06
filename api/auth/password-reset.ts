@@ -1,4 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { connectMongoDirect, getMongoose } from '../_lib/mongo';
+import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
 // Request/Response型定義
 interface ForgotPasswordRequest {
@@ -83,9 +86,8 @@ const handleForgotPassword = async (req: VercelRequest, res: VercelResponse): Pr
 
   try {
     // MongoDB接続とユーザー検索
-    const mongoLib = require('../_lib/mongo');
-    await mongoLib.connectMongoDirect();
-    const mongoose = await mongoLib.getMongoose();
+    await connectMongoDirect();
+    const mongoose = await getMongoose();
 
     if (!mongoose) {
       throw new Error('MongoDB connection failed');
@@ -118,7 +120,6 @@ const handleForgotPassword = async (req: VercelRequest, res: VercelResponse): Pr
     }
 
     // パスワードリセットトークンを生成
-    const crypto = require('crypto');
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24時間後
 
@@ -130,10 +131,13 @@ const handleForgotPassword = async (req: VercelRequest, res: VercelResponse): Pr
 
     // メール送信（Vercel環境では環境変数が設定されていない場合はスキップ）
     try {
-      const emailService = require('../../src/server/services/emailService.js');
+      const emailService = await import('../../src/server/services/emailService.js');
       const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://work-time-tracker-five.vercel.app'}/reset-password?token=${resetToken}`;
 
-      const emailSent = await emailService.sendPasswordResetEmail(normalizedEmail, resetUrl);
+      const emailSent = await emailService.default.sendPasswordResetEmail(
+        normalizedEmail,
+        resetUrl
+      );
       if (!emailSent) {
         console.warn('[PASSWORD-RESET] Failed to send email, but continuing with success response');
       }
@@ -182,9 +186,8 @@ const handleResetPassword = async (req: VercelRequest, res: VercelResponse): Pro
 
   try {
     // MongoDB接続
-    const mongoLib = require('../_lib/mongo');
-    await mongoLib.connectMongoDirect();
-    const mongoose = await mongoLib.getMongoose();
+    await connectMongoDirect();
+    const mongoose = await getMongoose();
 
     if (!mongoose) {
       throw new Error('MongoDB connection failed');
@@ -215,7 +218,6 @@ const handleResetPassword = async (req: VercelRequest, res: VercelResponse): Pro
     }
 
     // パスワードをハッシュ化
-    const bcrypt = require('bcryptjs');
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // ユーザーのパスワードを更新し、リセットトークンをクリア
