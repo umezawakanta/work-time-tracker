@@ -133,80 +133,34 @@ export default function AssetLiabilityReportPage() {
   // このデモでは常にfalseだが、実際には認証状態から取得
   const [isPremium, setIsPremium] = useState(false);
 
-  // デモ用の目標データ (追加)
-  const [goals, setGoals] = useState<FinancialGoal[]>([
-    {
-      id: 'goal1',
-      title: '緊急資金の構築',
-      type: 'asset',
-      startValue: 200000,
-      currentValue: 350000,
-      targetValue: 600000,
-      startDate: '2023-01-01',
-      targetDate: '2023-12-31',
-      period: 'monthly',
-      autoUpdate: true,
-      history: [
-        { date: '2023-01-01', value: 200000 },
-        { date: '2023-02-01', value: 250000 },
-        { date: '2023-03-01', value: 275000 },
-        { date: '2023-04-01', value: 300000 },
-        { date: '2023-05-01', value: 325000 },
-        { date: '2023-06-01', value: 350000 },
-      ],
-    },
-    {
-      id: 'goal2',
-      title: '住宅ローンの返済',
-      type: 'debt',
-      startValue: 25000000,
-      currentValue: 24000000,
-      targetValue: 0,
-      startDate: '2023-01-01',
-      targetDate: '2033-01-01',
-      period: 'monthly',
-      autoUpdate: true,
-      history: [
-        { date: '2023-01-01', value: 25000000 },
-        { date: '2023-02-01', value: 24800000 },
-        { date: '2023-03-01', value: 24600000 },
-        { date: '2023-04-01', value: 24400000 },
-        { date: '2023-05-01', value: 24200000 },
-        { date: '2023-06-01', value: 24000000 },
-      ],
-    },
-    {
-      id: 'goal3',
-      title: '純資産1000万円達成',
-      type: 'networth',
-      startValue: 5000000,
-      currentValue: 6500000,
-      targetValue: 10000000,
-      startDate: '2023-01-01',
-      targetDate: '2025-01-01',
-      period: 'quarterly',
-      autoUpdate: false,
-      history: [
-        { date: '2023-01-01', value: 5000000 },
-        { date: '2023-04-01', value: 5500000 },
-        { date: '2023-07-01', value: 6000000 },
-        { date: '2023-10-01', value: 6500000 },
-      ],
-    },
-  ]);
+  // 目標データは実際のデータベースから取得
+  const [goals, setGoals] = useState<FinancialGoal[]>([]);
 
   // 長期トレンド分析用のデータ (追加)
   const [longTermData, setLongTermData] = useState<LongTermDataPoint[]>([]);
 
-  // 月次データの自動生成 (デモ用)
-  const generateMonthlySnapshots = () => {
+  // 月次データの自動生成
+  const generateMonthlySnapshots = async () => {
     setIsLoading(true);
-    // 実際のAPIコールが必要だが、このデモではタイマーで模擬
-    setTimeout(() => {
-      toast.success('月次スナップショットが生成されました！');
-      setShowMonthlySnapshots(true);
+    try {
+      // 実際のAPIコールで月次スナップショットを生成
+      const response = await fetch(
+        `/api/asset-liability-report?action=monthly-snapshots&userId=${user?.id || 'default-user'}`
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success('月次スナップショットが生成されました！');
+        setShowMonthlySnapshots(true);
+      } else {
+        toast.error('月次スナップショットの生成に失敗しました');
+      }
+    } catch (error) {
+      console.error('Error generating monthly snapshots:', error);
+      toast.error('月次スナップショットの生成中にエラーが発生しました');
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   // プレミアムアップグレード処理
@@ -226,21 +180,29 @@ export default function AssetLiabilityReportPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // データ読み込みの遅延をシミュレート
-        setTimeout(() => {
-          setIsLoading(false);
+        setIsLoading(true);
 
-          // 長期トレンドデータを生成（デモ用）
+        // 実際のデータベースからデータを取得
+        const response = await fetch(
+          `/api/asset-liability-report?action=summary&userId=${user?.id || 'default-user'}`
+        );
+        const data = await response.json();
+
+        if (data.success) {
+          // 長期トレンドデータを実際のデータから生成
           generateLongTermData();
-        }, 800);
+        } else {
+          setError('データの読み込みに失敗しました。もう一度お試しください。');
+        }
       } catch (err) {
         console.error('Failed to load report data:', err);
         setError('データの読み込みに失敗しました。もう一度お試しください。');
+      } finally {
         setIsLoading(false);
       }
     };
     loadData();
-  }, []);
+  }, [user?.id]);
 
   // 長期トレンドデータの生成（実際のデータから計算）
   const generateLongTermData = () => {

@@ -530,15 +530,7 @@ const Daily10TasksPage: React.FC = () => {
   const { mainAccount, isLoading: bankLoading } = useBankAccounts(user?.id || '');
   const [activeTab, setActiveTab] = useState('tasks');
 
-  // タスクデータの検証（本番環境では非表示）
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Tasks data:', tasks);
-    console.log('First task subtasks:', tasks[0]?.subtasks);
-    console.log('First task subtasks length:', tasks[0]?.subtasks?.length);
-    console.log('Tasks length:', tasks.length);
-    console.log('Is loading:', isLoading);
-    console.log('Error:', error);
-  }
+  // 本番環境ではデバッグログを削除
 
   // タスク状況に応じたメッセージを生成
   const getMotivationalMessage = () => {

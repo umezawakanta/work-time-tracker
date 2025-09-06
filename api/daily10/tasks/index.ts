@@ -11,7 +11,18 @@ interface DailyTask {
   updatedAt: string;
 }
 
-// 固定の10個のタスク定義
+interface TaskCompletion {
+  taskId: string;
+  userId: string;
+  completedAt: string;
+  notes?: string;
+}
+
+// メモリ内ストア（実際の実装ではデータベースを使用）
+const taskStore = new Map<string, DailyTask[]>();
+const completionStore = new Map<string, TaskCompletion[]>();
+
+// デフォルトタスク定義（初期化用）
 const DEFAULT_TASKS: DailyTask[] = [
   {
     id: 'task_1',
@@ -233,11 +244,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
   }
 
   try {
+    const userId = (req.query.userId as string) || 'default-user';
+
     if (req.method === 'GET') {
       // タスク一覧を取得
+      let userTasks = taskStore.get(userId);
+
+      // 初回アクセスの場合はデフォルトタスクを初期化
+      if (!userTasks) {
+        userTasks = [...DEFAULT_TASKS];
+        taskStore.set(userId, userTasks);
+      }
+
       res.status(200).json({
         success: true,
-        data: DEFAULT_TASKS,
+        data: userTasks,
       });
       return;
     }
@@ -254,8 +275,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
         return;
       }
 
-      // タスクの更新（実際の実装ではデータベースを更新）
-      const taskIndex = DEFAULT_TASKS.findIndex((task) => task.id === id);
+      // ユーザーのタスクを取得
+      let userTasks = taskStore.get(userId);
+      if (!userTasks) {
+        userTasks = [...DEFAULT_TASKS];
+        taskStore.set(userId, userTasks);
+      }
+
+      // タスクの更新
+      const taskIndex = userTasks.findIndex((task) => task.id === id);
       if (taskIndex === -1) {
         res.status(404).json({
           success: false,
@@ -265,14 +293,47 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
       }
 
       const updatedTask = {
-        ...DEFAULT_TASKS[taskIndex],
+        ...userTasks[taskIndex],
         ...updates,
         updatedAt: new Date().toISOString(),
       };
 
+      userTasks[taskIndex] = updatedTask;
+      taskStore.set(userId, userTasks);
+
       res.status(200).json({
         success: true,
         data: updatedTask,
+      });
+      return;
+    }
+
+    if (req.method === 'POST') {
+      const { taskId, completedAt, notes } = req.body;
+
+      if (!taskId) {
+        res.status(400).json({
+          success: false,
+          message: 'Task ID is required',
+        });
+        return;
+      }
+
+      // タスク完了を記録
+      const completion: TaskCompletion = {
+        taskId,
+        userId,
+        completedAt: completedAt || new Date().toISOString(),
+        notes,
+      };
+
+      const userCompletions = completionStore.get(userId) || [];
+      userCompletions.push(completion);
+      completionStore.set(userId, userCompletions);
+
+      res.status(201).json({
+        success: true,
+        data: completion,
       });
       return;
     }

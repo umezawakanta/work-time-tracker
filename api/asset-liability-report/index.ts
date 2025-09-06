@@ -250,48 +250,180 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
       }
 
       if (action === 'summary') {
-        // レポートサマリーを取得
-        // 実際の実装では、データベースから資産・負債データを取得
-        const mockAssets: AssetRecord[] = [
-          {
-            _id: 'asset_1',
-            date: '2024-01-01',
-            value: 1000000,
-            description: '銀行預金',
-            account: 'Bank Savings',
-            createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
-          },
-          {
-            _id: 'asset_2',
-            date: '2024-01-15',
-            value: 500000,
-            description: '投資信託',
-            account: 'Investment Fund',
-            createdAt: '2024-01-15T00:00:00.000Z',
-            updatedAt: '2024-01-15T00:00:00.000Z',
-          },
-        ];
+        // レポートサマリーを取得 - 実際のデータストアから取得
+        try {
+          // 資産データを取得
+          const assetResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/asset?userId=${userId}`
+          );
+          const assetData = await assetResponse.json();
+          const assets: AssetRecord[] = assetData.success ? assetData.data : [];
 
-        const mockDebts: DebtRecord[] = [
-          {
-            _id: 'debt_1',
-            date: '2024-01-01',
-            value: 300000,
-            description: '住宅ローン',
-            account: 'Mortgage',
-            createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
-          },
-        ];
+          // 負債データを取得
+          const debtResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/debt?userId=${userId}`
+          );
+          const debtData = await debtResponse.json();
+          const debts: DebtRecord[] = debtData.success ? debtData.data : [];
 
-        const metrics = calculateFinancialMetrics(mockAssets, mockDebts);
-        const trends = generateTrends(mockAssets, mockDebts);
-        const categories = generateCategories(mockAssets, mockDebts);
+          const metrics = calculateFinancialMetrics(assets, debts);
+          const trends = generateTrends(assets, debts);
+          const categories = generateCategories(assets, debts);
+
+          const reportData: ReportData = {
+            assets,
+            debts,
+            metrics,
+            trends,
+            categories,
+          };
+
+          res.status(200).json({
+            success: true,
+            data: reportData,
+          });
+          return;
+        } catch (error) {
+          console.error('Error fetching asset/debt data:', error);
+          // フォールバック: 空のデータでレスポンス
+          const emptyAssets: AssetRecord[] = [];
+          const emptyDebts: DebtRecord[] = [];
+
+          const metrics = calculateFinancialMetrics(emptyAssets, emptyDebts);
+          const trends = generateTrends(emptyAssets, emptyDebts);
+          const categories = generateCategories(emptyAssets, emptyDebts);
+
+          const reportData: ReportData = {
+            assets: emptyAssets,
+            debts: emptyDebts,
+            metrics,
+            trends,
+            categories,
+          };
+
+          res.status(200).json({
+            success: true,
+            data: reportData,
+          });
+          return;
+        }
+      }
+
+      if (action === 'metrics') {
+        // 財務指標のみを取得 - 実際のデータストアから取得
+        try {
+          const assetResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/asset?userId=${userId}`
+          );
+          const assetData = await assetResponse.json();
+          const assets: AssetRecord[] = assetData.success ? assetData.data : [];
+
+          const debtResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/debt?userId=${userId}`
+          );
+          const debtData = await debtResponse.json();
+          const debts: DebtRecord[] = debtData.success ? debtData.data : [];
+
+          const metrics = calculateFinancialMetrics(assets, debts);
+
+          res.status(200).json({
+            success: true,
+            data: metrics,
+          });
+          return;
+        } catch (error) {
+          console.error('Error fetching metrics data:', error);
+          const emptyAssets: AssetRecord[] = [];
+          const emptyDebts: DebtRecord[] = [];
+          const metrics = calculateFinancialMetrics(emptyAssets, emptyDebts);
+
+          res.status(200).json({
+            success: true,
+            data: metrics,
+          });
+          return;
+        }
+      }
+
+      if (action === 'trends') {
+        // トレンドデータのみを取得 - 実際のデータストアから取得
+        try {
+          const assetResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/asset?userId=${userId}`
+          );
+          const assetData = await assetResponse.json();
+          const assets: AssetRecord[] = assetData.success ? assetData.data : [];
+
+          const debtResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/debt?userId=${userId}`
+          );
+          const debtData = await debtResponse.json();
+          const debts: DebtRecord[] = debtData.success ? debtData.data : [];
+
+          const trends = generateTrends(assets, debts);
+
+          res.status(200).json({
+            success: true,
+            data: trends,
+          });
+          return;
+        } catch (error) {
+          console.error('Error fetching trends data:', error);
+          const emptyAssets: AssetRecord[] = [];
+          const emptyDebts: DebtRecord[] = [];
+          const trends = generateTrends(emptyAssets, emptyDebts);
+
+          res.status(200).json({
+            success: true,
+            data: trends,
+          });
+          return;
+        }
+      }
+
+      // デフォルトはサマリーを返す - 実際のデータストアから取得
+      try {
+        const assetResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/asset?userId=${userId}`
+        );
+        const assetData = await assetResponse.json();
+        const assets: AssetRecord[] = assetData.success ? assetData.data : [];
+
+        const debtResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/debt?userId=${userId}`
+        );
+        const debtData = await debtResponse.json();
+        const debts: DebtRecord[] = debtData.success ? debtData.data : [];
+
+        const metrics = calculateFinancialMetrics(assets, debts);
+        const trends = generateTrends(assets, debts);
+        const categories = generateCategories(assets, debts);
 
         const reportData: ReportData = {
-          assets: mockAssets,
-          debts: mockDebts,
+          assets,
+          debts,
+          metrics,
+          trends,
+          categories,
+        };
+
+        res.status(200).json({
+          success: true,
+          data: reportData,
+        });
+        return;
+      } catch (error) {
+        console.error('Error fetching default report data:', error);
+        const emptyAssets: AssetRecord[] = [];
+        const emptyDebts: DebtRecord[] = [];
+
+        const metrics = calculateFinancialMetrics(emptyAssets, emptyDebts);
+        const trends = generateTrends(emptyAssets, emptyDebts);
+        const categories = generateCategories(emptyAssets, emptyDebts);
+
+        const reportData: ReportData = {
+          assets: emptyAssets,
+          debts: emptyDebts,
           metrics,
           trends,
           categories,
@@ -303,56 +435,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
         });
         return;
       }
-
-      if (action === 'metrics') {
-        // 財務指標のみを取得
-        const mockAssets: AssetRecord[] = [];
-        const mockDebts: DebtRecord[] = [];
-
-        const metrics = calculateFinancialMetrics(mockAssets, mockDebts);
-
-        res.status(200).json({
-          success: true,
-          data: metrics,
-        });
-        return;
-      }
-
-      if (action === 'trends') {
-        // トレンドデータのみを取得
-        const mockAssets: AssetRecord[] = [];
-        const mockDebts: DebtRecord[] = [];
-
-        const trends = generateTrends(mockAssets, mockDebts);
-
-        res.status(200).json({
-          success: true,
-          data: trends,
-        });
-        return;
-      }
-
-      // デフォルトはサマリーを返す
-      const mockAssets: AssetRecord[] = [];
-      const mockDebts: DebtRecord[] = [];
-
-      const metrics = calculateFinancialMetrics(mockAssets, mockDebts);
-      const trends = generateTrends(mockAssets, mockDebts);
-      const categories = generateCategories(mockAssets, mockDebts);
-
-      const reportData: ReportData = {
-        assets: mockAssets,
-        debts: mockDebts,
-        metrics,
-        trends,
-        categories,
-      };
-
-      res.status(200).json({
-        success: true,
-        data: reportData,
-      });
-      return;
     }
 
     res.status(405).json({

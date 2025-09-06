@@ -3,24 +3,31 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Building2, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Star, 
-  StarOff, 
+import {
+  Building2,
+  Plus,
+  Edit,
+  Trash2,
+  Star,
+  StarOff,
   CheckCircle,
   AlertCircle,
   CreditCard,
   PiggyBank,
   Clock,
-  Wallet
+  Wallet,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { bankAPIService, BankAccountBalance } from '@/services/bank/BankAPIService';
 
 interface BankAccount {
   _id: string;
@@ -48,6 +55,9 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [apiBalances, setApiBalances] = useState<BankAccountBalance[]>([]);
+  const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     bankName: '',
     accountType: 'checking' as const,
@@ -62,7 +72,7 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
     try {
       const response = await fetch(`/api/bank-accounts?userId=${userId}`);
       const data = await response.json();
-      
+
       if (data.success) {
         setAccounts(data.data);
       } else {
@@ -78,7 +88,65 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
 
   useEffect(() => {
     fetchAccounts();
+    checkLastSyncTime();
   }, [userId]);
+
+  // 最後の同期時刻を確認
+  const checkLastSyncTime = () => {
+    const lastSync = bankAPIService.getLastSyncTime(userId);
+    setLastSyncTime(lastSync);
+  };
+
+  // 銀行APIから口座データを同期
+  const syncBankData = async () => {
+    if (!bankAPIService.isAPIAvailable()) {
+      toast.error('銀行APIが設定されていません。管理者にお問い合わせください。');
+      return;
+    }
+
+    setIsSyncing(true);
+    try {
+      const syncResult = await bankAPIService.syncAccountData(userId);
+      setApiBalances(syncResult.balances);
+      setLastSyncTime(syncResult.lastSync);
+
+      // 既存の口座に残高情報を更新
+      const updatedAccounts = accounts.map((account) => {
+        const apiBalance = syncResult.balances.find(
+          (balance) =>
+            balance.accountName === account.accountName && balance.bankName === account.bankName
+        );
+
+        if (apiBalance) {
+          return {
+            ...account,
+            lastBalance: apiBalance.balance,
+            lastUpdated: apiBalance.lastUpdated,
+          };
+        }
+        return account;
+      });
+
+      setAccounts(updatedAccounts);
+      toast.success(`${syncResult.balances.length}件の口座データを同期しました`);
+    } catch (error) {
+      console.error('銀行データ同期エラー:', error);
+      toast.error('銀行データの同期に失敗しました');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // 自動同期の有効化/無効化
+  const toggleAutoSync = (enabled: boolean) => {
+    if (enabled) {
+      bankAPIService.enableAutoSync(userId, 60); // 60分間隔
+      toast.success('自動同期を有効にしました（60分間隔）');
+    } else {
+      bankAPIService.disableAutoSync(userId);
+      toast.success('自動同期を無効にしました');
+    }
+  };
 
   // フォームをリセット
   const resetForm = () => {
@@ -97,19 +165,19 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
   // 銀行口座を追加・更新
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.bankName || !formData.accountNumber || !formData.accountName) {
       toast.error('必須項目を入力してください');
       return;
     }
 
     try {
-      const url = editingId 
+      const url = editingId
         ? `/api/bank-accounts/${editingId}?userId=${userId}`
         : `/api/bank-accounts?userId=${userId}`;
-      
+
       const method = editingId ? 'PUT' : 'POST';
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -119,7 +187,7 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         toast.success(editingId ? '銀行口座を更新しました' : '銀行口座を追加しました');
         resetForm();
@@ -144,7 +212,7 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         toast.success('銀行口座を削除しました');
         fetchAccounts();
@@ -175,22 +243,32 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
   // 口座種別のアイコンを取得
   const getAccountTypeIcon = (type: string) => {
     switch (type) {
-      case 'checking': return <Wallet className="h-4 w-4" />;
-      case 'savings': return <PiggyBank className="h-4 w-4" />;
-      case 'time_deposit': return <Clock className="h-4 w-4" />;
-      case 'credit_card': return <CreditCard className="h-4 w-4" />;
-      default: return <Building2 className="h-4 w-4" />;
+      case 'checking':
+        return <Wallet className="h-4 w-4" />;
+      case 'savings':
+        return <PiggyBank className="h-4 w-4" />;
+      case 'time_deposit':
+        return <Clock className="h-4 w-4" />;
+      case 'credit_card':
+        return <CreditCard className="h-4 w-4" />;
+      default:
+        return <Building2 className="h-4 w-4" />;
     }
   };
 
   // 口座種別のラベルを取得
   const getAccountTypeLabel = (type: string) => {
     switch (type) {
-      case 'checking': return '普通預金';
-      case 'savings': return '貯蓄預金';
-      case 'time_deposit': return '定期預金';
-      case 'credit_card': return 'クレジットカード';
-      default: return type;
+      case 'checking':
+        return '普通預金';
+      case 'savings':
+        return '貯蓄預金';
+      case 'time_deposit':
+        return '定期預金';
+      case 'credit_card':
+        return 'クレジットカード';
+      default:
+        return type;
     }
   };
 
@@ -214,29 +292,47 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
         <div>
           <h2 className="text-2xl font-bold">銀行口座管理</h2>
           <p className="text-gray-600">メイン銀行口座を登録・管理できます</p>
+          {lastSyncTime && (
+            <p className="text-sm text-gray-500">
+              最終同期: {new Date(lastSyncTime).toLocaleString()}
+            </p>
+          )}
         </div>
-        <Button
-          onClick={() => {
-            resetForm();
-            setIsAdding(true);
-          }}
-          className="flex items-center gap-2"
-        >
-          <Plus className="h-4 w-4" />
-          口座を追加
-        </Button>
+        <div className="flex items-center gap-2">
+          {bankAPIService.isAPIAvailable() && (
+            <Button
+              onClick={syncBankData}
+              disabled={isSyncing}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              {isSyncing ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              ) : (
+                <Clock className="h-4 w-4" />
+              )}
+              {isSyncing ? '同期中...' : 'データ同期'}
+            </Button>
+          )}
+          <Button
+            onClick={() => {
+              resetForm();
+              setIsAdding(true);
+            }}
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            口座を追加
+          </Button>
+        </div>
       </div>
 
       {/* 追加・編集フォーム */}
       {isAdding && (
         <Card>
           <CardHeader>
-            <CardTitle>
-              {editingId ? '銀行口座を編集' : '新しい銀行口座を追加'}
-            </CardTitle>
-            <CardDescription>
-              銀行口座の情報を入力してください
-            </CardDescription>
+            <CardTitle>{editingId ? '銀行口座を編集' : '新しい銀行口座を追加'}</CardTitle>
+            <CardDescription>銀行口座の情報を入力してください</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -324,9 +420,7 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
               )}
 
               <div className="flex gap-2">
-                <Button type="submit">
-                  {editingId ? '更新' : '追加'}
-                </Button>
+                <Button type="submit">{editingId ? '更新' : '追加'}</Button>
                 <Button type="button" variant="outline" onClick={resetForm}>
                   キャンセル
                 </Button>
@@ -387,19 +481,22 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
                         {account.branchName && <p>支店名: {account.branchName}</p>}
                         <p>口座名: {account.accountName}</p>
                         {account.lastBalance !== undefined && (
-                          <p className="font-medium">
-                            最新残高: {account.lastBalance.toLocaleString()}円
-                          </p>
+                          <div className="space-y-1">
+                            <p className="font-medium text-green-600">
+                              最新残高: ¥{account.lastBalance.toLocaleString()}
+                            </p>
+                            {account.lastUpdated && (
+                              <p className="text-xs text-gray-500">
+                                更新: {new Date(account.lastUpdated).toLocaleString()}
+                              </p>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => startEdit(account)}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => startEdit(account)}>
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button

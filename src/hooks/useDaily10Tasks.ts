@@ -16,13 +16,10 @@ export const useDaily10Tasks = () => {
   // タスク一覧を取得
   const fetchTasks = useCallback(async () => {
     try {
-      console.log('🔄 Fetching tasks from API...');
       const tasksData = await daily10Api.fetchTasks();
-      console.log('✅ Tasks fetched successfully:', tasksData);
-      console.log('📊 First task subtasks:', tasksData[0]?.subtasks);
       setTasks(tasksData);
     } catch (err) {
-      console.error('❌ Failed to fetch tasks:', err);
+      console.error('Failed to fetch tasks:', err);
       setError('タスクの取得に失敗しました');
     }
   }, []);
