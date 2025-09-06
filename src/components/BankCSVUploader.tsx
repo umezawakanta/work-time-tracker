@@ -86,11 +86,18 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
     console.log('ヘッダー:', headers);
 
     // 三井住友銀行のCSVフォーマットかチェック
-    const isSMBCFormat =
-      (headers.includes('年月日') || headers.includes('日付')) &&
-      (headers.includes('お引出し') || headers.includes('引出し') || headers.includes('出金')) &&
-      (headers.includes('お預入れ') || headers.includes('預入れ') || headers.includes('入金')) &&
-      (headers.includes('残高') || headers.includes('残高額'));
+    const hasDateField = headers.some(
+      (h) => h.includes('年月日') || h.includes('日付') || h.includes('日時')
+    );
+    const hasWithdrawalField = headers.some(
+      (h) => h.includes('引出') || h.includes('出金') || h.includes('支払')
+    );
+    const hasDepositField = headers.some(
+      (h) => h.includes('預入') || h.includes('入金') || h.includes('受取')
+    );
+    const hasBalanceField = headers.some((h) => h.includes('残高') || h.includes('残額'));
+
+    const isSMBCFormat = hasDateField && hasBalanceField;
 
     console.log('SMBCフォーマットか:', isSMBCFormat);
 
@@ -128,26 +135,33 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
       const rowErrors: string[] = [];
 
       // 三井住友銀行のCSVフォーマットかチェック
-      const isSMBCFormat = row['年月日'] !== undefined || row['日付'] !== undefined;
-      console.log(
-        'SMBCフォーマットか:',
-        isSMBCFormat,
-        '年月日:',
-        row['年月日'],
-        '日付:',
-        row['日付']
+      const hasDateField = Object.keys(row).some(
+        (key) => key.includes('年月日') || key.includes('日付') || key.includes('日時')
       );
+      const hasBalanceField = Object.keys(row).some(
+        (key) => key.includes('残高') || key.includes('残額')
+      );
+      const isSMBCFormat = hasDateField && hasBalanceField;
+
+      console.log('SMBCフォーマットか:', isSMBCFormat, '利用可能なフィールド:', Object.keys(row));
 
       if (isSMBCFormat) {
         // 三井住友銀行のCSVフォーマットの場合
-        const dateField = row['年月日'] || row['日付'];
-        const balanceField = row['残高'] || row['残高額'];
+        const dateField = Object.keys(row).find(
+          (key) => key.includes('年月日') || key.includes('日付') || key.includes('日時')
+        );
+        const balanceField = Object.keys(row).find(
+          (key) => key.includes('残高') || key.includes('残額')
+        );
 
-        if (!dateField) rowErrors.push('年月日が入力されていません');
-        if (!balanceField) rowErrors.push('残高が入力されていません');
+        const dateValue = dateField ? row[dateField] : '';
+        const balanceValue = balanceField ? row[balanceField] : '';
+
+        if (!dateValue) rowErrors.push('年月日が入力されていません');
+        if (!balanceValue) rowErrors.push('残高が入力されていません');
 
         // 残高の数値チェック
-        if (balanceField && isNaN(Number(balanceField))) {
+        if (balanceValue && isNaN(Number(balanceValue))) {
           rowErrors.push('残高は数値で入力してください');
         }
 
@@ -155,8 +169,8 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
           errors.push(`行${row.rowNumber}: ${rowErrors.join(', ')}`);
         } else {
           // 三井住友銀行のCSVから口座情報を抽出
-          const latestBalance = Number(balanceField);
-          const transactionDate = dateField;
+          const latestBalance = Number(balanceValue);
+          const transactionDate = dateValue;
 
           valid.push({
             bankName: '三井住友銀行',
@@ -254,13 +268,22 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
       setUploadProgress(25);
 
       const parsedData = parseSMBCBankCSV(text);
+      console.log('解析されたデータの行数:', parsedData.length);
       setUploadProgress(50);
 
       const { valid, errors } = validateData(parsedData);
       setUploadProgress(75);
 
+      console.log('検証結果:', { validCount: valid.length, errorCount: errors.length });
+      console.log('有効なデータ:', valid);
+      console.log('エラー:', errors);
+
       if (valid.length === 0) {
-        throw new Error('有効なデータがありません');
+        const errorMessage =
+          errors.length > 0
+            ? `データの検証に失敗しました: ${errors.join(', ')}`
+            : '有効なデータがありません';
+        throw new Error(errorMessage);
       }
 
       // サーバーにデータを送信
