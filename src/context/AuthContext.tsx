@@ -401,27 +401,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
               }
             }
           } else {
-            // 開発環境では認証状態を設定
+            // 開発環境でも認証が必要
+            console.log('🔒 開発環境 - 認証が必要です');
             if (isMounted) {
-              setIsAuthenticated(true);
-              // 開発環境用のダミーユーザーを作成
-              const devUser: User = {
-                id: 'dev-user-123',
-                _id: 'dev-user-123',
-                name: '開発ユーザー',
-                email: 'dev@example.com',
-                username: 'dev-user',
-                isAdmin: false,
-                displayName: '開発ユーザー',
-                loginCount: 1,
-                subscriptionStatus: 'none',
-                hasActiveSubscription: false,
-                isPremium: false,
-                trialActivated: false,
-                lastLoginAt: new Date().toISOString(),
-              };
-              setUser(devUser);
-              console.log('🧪 Dev environment - setting auth state with dummy user:', devUser);
+              setIsAuthenticated(false);
+              setUser(null);
             }
           }
         } else {
