@@ -66,22 +66,41 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
 
   // 三井住友銀行のCSVフォーマットを解析
   const parseSMBCBankCSV = (csvText: string): any[] => {
+    console.log('CSV解析開始:', csvText.substring(0, 200) + '...');
+
     const lines = csvText.split('\n').filter((line) => line.trim());
-    const headers = lines[0].split(',').map((h) => h.trim());
+    console.log('行数:', lines.length);
+
+    if (lines.length === 0) {
+      console.log('CSVファイルが空です');
+      return [];
+    }
+
+    // 区切り文字を自動検出（カンマまたはタブ）
+    const firstLine = lines[0];
+    const isTabDelimited = firstLine.includes('\t') && !firstLine.includes(',');
+    const delimiter = isTabDelimited ? '\t' : ',';
+    console.log('区切り文字:', delimiter);
+
+    const headers = firstLine.split(delimiter).map((h) => h.trim());
+    console.log('ヘッダー:', headers);
 
     // 三井住友銀行のCSVフォーマットかチェック
     const isSMBCFormat =
-      headers.includes('年月日') &&
-      headers.includes('お引出し') &&
-      headers.includes('お預入れ') &&
-      headers.includes('残高');
+      (headers.includes('年月日') || headers.includes('日付')) &&
+      (headers.includes('お引出し') || headers.includes('引出し') || headers.includes('出金')) &&
+      (headers.includes('お預入れ') || headers.includes('預入れ') || headers.includes('入金')) &&
+      (headers.includes('残高') || headers.includes('残高額'));
+
+    console.log('SMBCフォーマットか:', isSMBCFormat);
 
     if (!isSMBCFormat) {
+      console.log('通常のフォーマットで解析');
       return parseCSV(csvText); // 通常のフォーマットで解析
     }
 
-    return lines.slice(1).map((line, index) => {
-      const values = line.split(',').map((v) => v.trim());
+    const parsedData = lines.slice(1).map((line, index) => {
+      const values = line.split(delimiter).map((v) => v.trim());
       const row: any = {};
 
       headers.forEach((header, i) => {
@@ -93,26 +112,42 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
         rowNumber: index + 2,
       };
     });
+
+    console.log('解析されたデータ:', parsedData.slice(0, 3)); // 最初の3行を表示
+    return parsedData;
   };
 
   // データの検証
   const validateData = (data: any[]): { valid: any[]; errors: string[] } => {
+    console.log('データ検証開始:', data.length, '行');
     const valid: any[] = [];
     const errors: string[] = [];
 
     data.forEach((row, index) => {
+      console.log(`行${index + 1}の検証:`, row);
       const rowErrors: string[] = [];
 
       // 三井住友銀行のCSVフォーマットかチェック
-      const isSMBCFormat = row['年月日'] !== undefined;
+      const isSMBCFormat = row['年月日'] !== undefined || row['日付'] !== undefined;
+      console.log(
+        'SMBCフォーマットか:',
+        isSMBCFormat,
+        '年月日:',
+        row['年月日'],
+        '日付:',
+        row['日付']
+      );
 
       if (isSMBCFormat) {
         // 三井住友銀行のCSVフォーマットの場合
-        if (!row['年月日']) rowErrors.push('年月日が入力されていません');
-        if (!row['残高']) rowErrors.push('残高が入力されていません');
+        const dateField = row['年月日'] || row['日付'];
+        const balanceField = row['残高'] || row['残高額'];
+
+        if (!dateField) rowErrors.push('年月日が入力されていません');
+        if (!balanceField) rowErrors.push('残高が入力されていません');
 
         // 残高の数値チェック
-        if (row['残高'] && isNaN(Number(row['残高']))) {
+        if (balanceField && isNaN(Number(balanceField))) {
           rowErrors.push('残高は数値で入力してください');
         }
 
@@ -120,8 +155,8 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
           errors.push(`行${row.rowNumber}: ${rowErrors.join(', ')}`);
         } else {
           // 三井住友銀行のCSVから口座情報を抽出
-          const latestBalance = Number(row['残高']);
-          const transactionDate = row['年月日'];
+          const latestBalance = Number(balanceField);
+          const transactionDate = dateField;
 
           valid.push({
             bankName: '三井住友銀行',
@@ -132,9 +167,15 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
             lastBalance: latestBalance,
             isMain: true,
             transactionDate: transactionDate,
-            withdrawal: row['お引出し'] ? Number(row['お引出し']) : 0,
-            deposit: row['お預入れ'] ? Number(row['お預入れ']) : 0,
-            transactionDetails: row['お取り扱い'] || '',
+            withdrawal:
+              row['お引出し'] || row['引出し'] || row['出金']
+                ? Number(row['お引出し'] || row['引出し'] || row['出金'])
+                : 0,
+            deposit:
+              row['お預入れ'] || row['預入れ'] || row['入金']
+                ? Number(row['お預入れ'] || row['預入れ'] || row['入金'])
+                : 0,
+            transactionDetails: row['お取り扱い'] || row['取引内容'] || '',
             memo: row['メモ'] || '',
             label: row['ラベル'] || '',
           });
@@ -175,6 +216,7 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
       }
     });
 
+    console.log('検証結果:', { valid: valid.length, errors: errors.length });
     return { valid, errors };
   };
 
