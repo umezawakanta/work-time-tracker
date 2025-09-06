@@ -64,7 +64,11 @@
       "destination": "/docs/$1.md"
     },
     {
-      "source": "/((?!api|docs).*)",
+      "source": "/legal/commercial-transactions",
+      "destination": "/legal/commercial-transactions.html"
+    },
+    {
+      "source": "/((?!api|docs|legal).*)",
       "destination": "/index.html"
     }
   ],
