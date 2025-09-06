@@ -87,6 +87,10 @@ const handleForgotPassword = async (req: VercelRequest, res: VercelResponse): Pr
     await mongoLib.connectMongoDirect();
     const mongoose = await mongoLib.getMongoose();
     
+    if (!mongoose) {
+      throw new Error('MongoDB connection failed');
+    }
+    
     const User = mongoose.model('User', new mongoose.Schema({
       email: { type: String, required: true, unique: true },
       password: { type: String, required: true },
@@ -121,13 +125,18 @@ const handleForgotPassword = async (req: VercelRequest, res: VercelResponse): Pr
       passwordResetExpires: resetExpires,
     });
 
-    // メール送信（実際のメール送信は実装済みのemailServiceを使用）
-    const emailService = require('../../src/server/services/emailService.js');
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://work-time-tracker-five.vercel.app'}/reset-password?token=${resetToken}`;
-    
-    const emailSent = await emailService.sendPasswordResetEmail(normalizedEmail, resetUrl);
-    if (!emailSent) {
-      console.warn('[PASSWORD-RESET] Failed to send email, but continuing with success response');
+    // メール送信（Vercel環境では環境変数が設定されていない場合はスキップ）
+    try {
+      const emailService = require('../../src/server/services/emailService.js');
+      const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://work-time-tracker-five.vercel.app'}/reset-password?token=${resetToken}`;
+      
+      const emailSent = await emailService.sendPasswordResetEmail(normalizedEmail, resetUrl);
+      if (!emailSent) {
+        console.warn('[PASSWORD-RESET] Failed to send email, but continuing with success response');
+      }
+    } catch (emailError) {
+      console.warn('[PASSWORD-RESET] Email service not available:', emailError);
+      // メール送信に失敗しても処理は続行
     }
 
     const successResponse: PasswordResetResponse = {
@@ -138,7 +147,8 @@ const handleForgotPassword = async (req: VercelRequest, res: VercelResponse): Pr
 
     res.status(200).json(successResponse);
   } catch (error) {
-    console.error('[PASSWORD-RESET] Error:', error);
+    console.error('[PASSWORD-RESET] Forgot password error:', error);
+    console.error('[PASSWORD-RESET] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     sendErrorResponse(res, 500, 'Internal server error', 'サーバーエラーが発生しました');
   }
 };
@@ -169,6 +179,10 @@ const handleResetPassword = async (req: VercelRequest, res: VercelResponse): Pro
     const mongoLib = require('../_lib/mongo');
     await mongoLib.connectMongoDirect();
     const mongoose = await mongoLib.getMongoose();
+    
+    if (!mongoose) {
+      throw new Error('MongoDB connection failed');
+    }
     
     const User = mongoose.model('User', new mongoose.Schema({
       email: { type: String, required: true, unique: true },
@@ -209,7 +223,8 @@ const handleResetPassword = async (req: VercelRequest, res: VercelResponse): Pro
 
     res.status(200).json(successResponse);
   } catch (error) {
-    console.error('[PASSWORD-RESET] Error:', error);
+    console.error('[PASSWORD-RESET] Reset password error:', error);
+    console.error('[PASSWORD-RESET] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     sendErrorResponse(res, 500, 'Internal server error', 'サーバーエラーが発生しました');
   }
 };
@@ -260,7 +275,8 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
         break;
     }
   } catch (error) {
-    console.error('[PASSWORD-RESET] Error:', error);
+    console.error('[PASSWORD-RESET] Handler error:', error);
+    console.error('[PASSWORD-RESET] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
 
     sendErrorResponse(
       res,
