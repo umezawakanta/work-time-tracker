@@ -93,7 +93,9 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
         h.includes('日時') ||
         h.includes('日') ||
         h === '年月日' ||
-        h === '日付'
+        h === '日付' ||
+        h.includes('2025') || // 年が含まれている場合
+        h.includes('2024')
     );
     const hasWithdrawalField = headers.some(
       (h) =>
@@ -102,7 +104,8 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
         h.includes('支払') ||
         h.includes('お引出') ||
         h === 'お引出し' ||
-        h === '引出し'
+        h === '引出し' ||
+        h.includes('カード') // カード関連の取引
     );
     const hasDepositField = headers.some(
       (h) =>
@@ -111,15 +114,29 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
         h.includes('受取') ||
         h.includes('お預入') ||
         h === 'お預入れ' ||
-        h === '預入れ'
+        h === '預入れ' ||
+        h.includes('振込') // 振込関連
     );
     const hasBalanceField = headers.some(
-      (h) => h.includes('残高') || h.includes('残額') || h.includes('残') || h === '残高'
+      (h) =>
+        h.includes('残高') ||
+        h.includes('残額') ||
+        h.includes('残') ||
+        h === '残高' ||
+        h.includes('円') // 金額が含まれている場合
     );
 
     // より柔軟な検出条件
     const isSMBCFormat = hasDateField && (hasBalanceField || hasWithdrawalField || hasDepositField);
 
+    // デバッグ用：すべてのヘッダーをチェック
+    console.log('ヘッダー詳細チェック:');
+    headers.forEach((header, index) => {
+      console.log(`  ${index}: "${header}"`);
+    });
+
+    console.log('=== CSV解析デバッグ情報 ===');
+    console.log('ヘッダー:', headers);
     console.log('SMBCフォーマットか:', isSMBCFormat);
     console.log('検出結果:', {
       hasDateField,
@@ -127,6 +144,7 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
       hasDepositField,
       hasBalanceField,
     });
+    console.log('========================');
 
     if (!isSMBCFormat) {
       console.log('通常のフォーマットで解析');
