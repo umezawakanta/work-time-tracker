@@ -1,95 +1,95 @@
 const nodemailer = require('nodemailer');
 
 class EmailService {
-    constructor() {
-        this.transporter = null;
-        this.initializeTransporter();
+  constructor() {
+    this.transporter = null;
+    this.initializeTransporter();
+  }
+
+  initializeTransporter() {
+    try {
+      // 環境変数の確認
+      console.log('Email service environment check:', {
+        VERCEL: process.env.VERCEL,
+        SMTP_HOST: process.env.SMTP_HOST ? 'Set' : 'Not set',
+        SMTP_USER: process.env.SMTP_USER ? 'Set' : 'Not set',
+        SMTP_PASS: process.env.SMTP_PASS ? 'Set' : 'Not set',
+        GMAIL_USER: process.env.GMAIL_USER ? 'Set' : 'Not set',
+        GMAIL_APP_PASSWORD: process.env.GMAIL_APP_PASSWORD ? 'Set' : 'Not set',
+      });
+
+      // Vercel環境でのメール設定
+      if (process.env.VERCEL) {
+        // Vercel環境では環境変数から設定を取得
+        if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+          this.transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: parseInt(process.env.SMTP_PORT) || 587,
+            secure: process.env.SMTP_SECURE === 'true',
+            auth: {
+              user: process.env.SMTP_USER,
+              pass: process.env.SMTP_PASS,
+            },
+          });
+          console.log('✅ Email service initialized for Vercel production');
+        } else if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+          // Gmail設定も試す
+          this.transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: process.env.GMAIL_USER,
+              pass: process.env.GMAIL_APP_PASSWORD,
+            },
+          });
+          console.log('✅ Email service initialized for Vercel with Gmail');
+        } else {
+          console.log('⚠️ Email service not configured - missing email environment variables');
+        }
+      } else {
+        // 開発環境ではGmailを使用
+        if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+          this.transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: process.env.GMAIL_USER,
+              pass: process.env.GMAIL_APP_PASSWORD,
+            },
+          });
+          console.log('✅ Email service initialized for development');
+        } else {
+          console.log('⚠️ Email service not configured - missing Gmail environment variables');
+        }
+      }
+    } catch (error) {
+      console.error('❌ Email service initialization failed:', error);
+    }
+  }
+
+  async sendPasswordResetEmail(email, resetUrl) {
+    if (!this.transporter) {
+      console.warn('Email service not available - skipping email send');
+      return false;
     }
 
-    initializeTransporter() {
-        try {
-            // 環境変数の確認
-            console.log('Email service environment check:', {
-                VERCEL: process.env.VERCEL,
-                SMTP_HOST: process.env.SMTP_HOST ? 'Set' : 'Not set',
-                SMTP_USER: process.env.SMTP_USER ? 'Set' : 'Not set',
-                SMTP_PASS: process.env.SMTP_PASS ? 'Set' : 'Not set',
-                GMAIL_USER: process.env.GMAIL_USER ? 'Set' : 'Not set',
-                GMAIL_APP_PASSWORD: process.env.GMAIL_APP_PASSWORD ? 'Set' : 'Not set',
-            });
+    try {
+      const mailOptions = {
+        from: process.env.SMTP_FROM || process.env.GMAIL_USER || 'noreply@work-time-tracker.com',
+        to: email,
+        subject: 'パスワードリセット - Work Time Tracker',
+        html: this.createPasswordResetTemplate(resetUrl),
+      };
 
-            // Vercel環境でのメール設定
-            if (process.env.VERCEL) {
-                // Vercel環境では環境変数から設定を取得
-                if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-                    this.transporter = nodemailer.createTransporter({
-                        host: process.env.SMTP_HOST,
-                        port: parseInt(process.env.SMTP_PORT) || 587,
-                        secure: process.env.SMTP_SECURE === 'true',
-                        auth: {
-                            user: process.env.SMTP_USER,
-                            pass: process.env.SMTP_PASS,
-                        },
-                    });
-                    console.log('✅ Email service initialized for Vercel production');
-                } else if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
-                    // Gmail設定も試す
-                    this.transporter = nodemailer.createTransporter({
-                        service: 'gmail',
-                        auth: {
-                            user: process.env.GMAIL_USER,
-                            pass: process.env.GMAIL_APP_PASSWORD,
-                        },
-                    });
-                    console.log('✅ Email service initialized for Vercel with Gmail');
-                } else {
-                    console.log('⚠️ Email service not configured - missing email environment variables');
-                }
-            } else {
-                // 開発環境ではGmailを使用
-                if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
-                    this.transporter = nodemailer.createTransporter({
-                        service: 'gmail',
-                        auth: {
-                            user: process.env.GMAIL_USER,
-                            pass: process.env.GMAIL_APP_PASSWORD,
-                        },
-                    });
-                    console.log('✅ Email service initialized for development');
-                } else {
-                    console.log('⚠️ Email service not configured - missing Gmail environment variables');
-                }
-            }
-        } catch (error) {
-            console.error('❌ Email service initialization failed:', error);
-        }
+      const result = await this.transporter.sendMail(mailOptions);
+      console.log('✅ Password reset email sent successfully:', result.messageId);
+      return true;
+    } catch (error) {
+      console.error('❌ Failed to send password reset email:', error);
+      return false;
     }
+  }
 
-    async sendPasswordResetEmail(email, resetUrl) {
-        if (!this.transporter) {
-            console.warn('Email service not available - skipping email send');
-            return false;
-        }
-
-        try {
-            const mailOptions = {
-                from: process.env.SMTP_FROM || process.env.GMAIL_USER || 'noreply@work-time-tracker.com',
-                to: email,
-                subject: 'パスワードリセット - Work Time Tracker',
-                html: this.createPasswordResetTemplate(resetUrl),
-            };
-
-            const result = await this.transporter.sendMail(mailOptions);
-            console.log('✅ Password reset email sent successfully:', result.messageId);
-            return true;
-        } catch (error) {
-            console.error('❌ Failed to send password reset email:', error);
-            return false;
-        }
-    }
-
-    createPasswordResetTemplate(resetUrl) {
-        return `
+  createPasswordResetTemplate(resetUrl) {
+    return `
       <!DOCTYPE html>
       <html>
       <head>
@@ -195,7 +195,7 @@ class EmailService {
       </body>
       </html>
     `;
-    }
+  }
 }
 
 // シングルトンインスタンス
