@@ -64,6 +64,37 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
     });
   };
 
+  // 三井住友銀行のCSVフォーマットを解析
+  const parseSMBCBankCSV = (csvText: string): any[] => {
+    const lines = csvText.split('\n').filter((line) => line.trim());
+    const headers = lines[0].split(',').map((h) => h.trim());
+
+    // 三井住友銀行のCSVフォーマットかチェック
+    const isSMBCFormat =
+      headers.includes('年月日') &&
+      headers.includes('お引出し') &&
+      headers.includes('お預入れ') &&
+      headers.includes('残高');
+
+    if (!isSMBCFormat) {
+      return parseCSV(csvText); // 通常のフォーマットで解析
+    }
+
+    return lines.slice(1).map((line, index) => {
+      const values = line.split(',').map((v) => v.trim());
+      const row: any = {};
+
+      headers.forEach((header, i) => {
+        row[header] = values[i] || '';
+      });
+
+      return {
+        ...row,
+        rowNumber: index + 2,
+      };
+    });
+  };
+
   // データの検証
   const validateData = (data: any[]): { valid: any[]; errors: string[] } => {
     const valid: any[] = [];
@@ -72,37 +103,75 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
     data.forEach((row, index) => {
       const rowErrors: string[] = [];
 
-      // 必須フィールドのチェック
-      if (!row['銀行名']) rowErrors.push('銀行名が入力されていません');
-      if (!row['口座種別']) rowErrors.push('口座種別が入力されていません');
-      if (!row['口座番号']) rowErrors.push('口座番号が入力されていません');
-      if (!row['口座名']) rowErrors.push('口座名が入力されていません');
+      // 三井住友銀行のCSVフォーマットかチェック
+      const isSMBCFormat = row['年月日'] !== undefined;
 
-      // 残高の数値チェック
-      if (row['残高'] && isNaN(Number(row['残高']))) {
-        rowErrors.push('残高は数値で入力してください');
-      }
+      if (isSMBCFormat) {
+        // 三井住友銀行のCSVフォーマットの場合
+        if (!row['年月日']) rowErrors.push('年月日が入力されていません');
+        if (!row['残高']) rowErrors.push('残高が入力されていません');
 
-      // メイン口座の真偽値チェック
-      if (
-        row['メイン口座'] &&
-        !['true', 'false', '1', '0', 'yes', 'no'].includes(row['メイン口座'].toLowerCase())
-      ) {
-        rowErrors.push('メイン口座は true/false で入力してください');
-      }
+        // 残高の数値チェック
+        if (row['残高'] && isNaN(Number(row['残高']))) {
+          rowErrors.push('残高は数値で入力してください');
+        }
 
-      if (rowErrors.length > 0) {
-        errors.push(`行${row.rowNumber}: ${rowErrors.join(', ')}`);
+        if (rowErrors.length > 0) {
+          errors.push(`行${row.rowNumber}: ${rowErrors.join(', ')}`);
+        } else {
+          // 三井住友銀行のCSVから口座情報を抽出
+          const latestBalance = Number(row['残高']);
+          const transactionDate = row['年月日'];
+
+          valid.push({
+            bankName: '三井住友銀行',
+            accountType: 'checking',
+            accountNumber: 'SMBC_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+            branchName: '本店',
+            accountName: 'メイン口座',
+            lastBalance: latestBalance,
+            isMain: true,
+            transactionDate: transactionDate,
+            withdrawal: row['お引出し'] ? Number(row['お引出し']) : 0,
+            deposit: row['お預入れ'] ? Number(row['お預入れ']) : 0,
+            transactionDetails: row['お取り扱い'] || '',
+            memo: row['メモ'] || '',
+            label: row['ラベル'] || '',
+          });
+        }
       } else {
-        valid.push({
-          bankName: row['銀行名'],
-          accountType: mapAccountType(row['口座種別']),
-          accountNumber: row['口座番号'],
-          branchName: row['支店名'] || '',
-          accountName: row['口座名'],
-          lastBalance: row['残高'] ? Number(row['残高']) : 0,
-          isMain: ['true', '1', 'yes'].includes(row['メイン口座']?.toLowerCase() || 'false'),
-        });
+        // 通常のフォーマットの場合
+        if (!row['銀行名']) rowErrors.push('銀行名が入力されていません');
+        if (!row['口座種別']) rowErrors.push('口座種別が入力されていません');
+        if (!row['口座番号']) rowErrors.push('口座番号が入力されていません');
+        if (!row['口座名']) rowErrors.push('口座名が入力されていません');
+
+        // 残高の数値チェック
+        if (row['残高'] && isNaN(Number(row['残高']))) {
+          rowErrors.push('残高は数値で入力してください');
+        }
+
+        // メイン口座の真偽値チェック
+        if (
+          row['メイン口座'] &&
+          !['true', 'false', '1', '0', 'yes', 'no'].includes(row['メイン口座'].toLowerCase())
+        ) {
+          rowErrors.push('メイン口座は true/false で入力してください');
+        }
+
+        if (rowErrors.length > 0) {
+          errors.push(`行${row.rowNumber}: ${rowErrors.join(', ')}`);
+        } else {
+          valid.push({
+            bankName: row['銀行名'],
+            accountType: mapAccountType(row['口座種別']),
+            accountNumber: row['口座番号'],
+            branchName: row['支店名'] || '',
+            accountName: row['口座名'],
+            lastBalance: row['残高'] ? Number(row['残高']) : 0,
+            isMain: ['true', '1', 'yes'].includes(row['メイン口座']?.toLowerCase() || 'false'),
+          });
+        }
       }
     });
 
@@ -142,7 +211,7 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
       const text = await file.text();
       setUploadProgress(25);
 
-      const parsedData = parseCSV(text);
+      const parsedData = parseSMBCBankCSV(text);
       setUploadProgress(50);
 
       const { valid, errors } = validateData(parsedData);
@@ -299,7 +368,101 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
           </div>
         )}
 
-        {/* 使用方法の説明 */}
+        {/* 三井住友銀行の詳細手順 */}
+        <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            三井住友銀行のCSVフォーマット対応
+          </h3>
+          <div className="p-3 bg-white rounded-lg border border-blue-200 mb-4">
+            <h4 className="font-semibold text-blue-900 mb-2">✅ 対応済みフォーマット</h4>
+            <p className="text-sm text-blue-700 mb-2">
+              三井住友銀行のCSVファイル（年月日、お引出し、お預入れ、お取り扱い、残高、メモ、ラベル）をそのままアップロードできます。
+            </p>
+            <div className="text-xs text-blue-600">
+              <p>
+                <strong>自動処理:</strong> 最新の残高を自動取得し、メイン口座として登録
+              </p>
+              <p>
+                <strong>取引履歴:</strong> 入出金履歴も同時に保存されます
+              </p>
+            </div>
+          </div>
+          <div className="space-y-4 text-sm text-blue-800">
+            <div className="p-3 bg-white rounded-lg border border-blue-200">
+              <h4 className="font-semibold text-blue-900 mb-2">
+                📱 スマートフォンアプリ「SMBCダイレクト」の場合
+              </h4>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>「SMBCダイレクト」アプリを開く</li>
+                <li>ログイン後、メイン画面の「明細・入出金履歴」をタップ</li>
+                <li>対象の口座を選択</li>
+                <li>「明細ダウンロード」または「CSVダウンロード」をタップ</li>
+                <li>期間を選択（例：直近3ヶ月）</li>
+                <li>「ダウンロード」をタップしてCSVファイルを保存</li>
+              </ol>
+            </div>
+
+            <div className="p-3 bg-white rounded-lg border border-blue-200">
+              <h4 className="font-semibold text-blue-900 mb-2">💻 パソコン（Web版）の場合</h4>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>三井住友銀行のWebサイトにアクセス</li>
+                <li>「SMBCダイレクト」にログイン</li>
+                <li>「明細・入出金履歴」をクリック</li>
+                <li>対象の口座を選択</li>
+                <li>「明細ダウンロード」をクリック</li>
+                <li>CSV形式を選択し、期間を指定</li>
+                <li>「ダウンロード」をクリックしてCSVファイルを保存</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        {/* 本サイトでのアップロード手順 */}
+        <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-green-900 mb-4 flex items-center gap-2">
+            <Upload className="h-5 w-5" />
+            本サイトでのアップロード手順
+          </h3>
+          <div className="space-y-4 text-sm text-green-800">
+            <div className="p-3 bg-white rounded-lg border border-green-200">
+              <h4 className="font-semibold text-green-900 mb-2">
+                📋 ステップ1: 三井住友銀行のCSVダウンロード
+              </h4>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>三井住友銀行のアプリまたはWebサイトからCSVファイルをダウンロード</li>
+                <li>ファイル形式: 年月日、お引出し、お預入れ、お取り扱い、残高、メモ、ラベル</li>
+                <li>期間: 直近3ヶ月程度のデータを推奨</li>
+              </ol>
+            </div>
+
+            <div className="p-3 bg-white rounded-lg border border-green-200">
+              <h4 className="font-semibold text-green-900 mb-2">✏️ ステップ2: CSVファイルの確認</h4>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>ダウンロードしたCSVファイルをそのまま使用可能</li>
+                <li>編集は不要 - 三井住友銀行のフォーマットを自動認識</li>
+                <li>最新の残高が自動的にメイン口座として登録されます</li>
+                <li>取引履歴も同時に保存されます</li>
+              </ol>
+            </div>
+
+            <div className="p-3 bg-white rounded-lg border border-green-200">
+              <h4 className="font-semibold text-green-900 mb-2">
+                📤 ステップ3: ファイルのアップロード
+              </h4>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>編集したCSVファイルを保存</li>
+                <li>下のアップロードエリアにファイルをドラッグ&ドロップ</li>
+                <li>または「ファイルを選択」ボタンをクリックしてファイルを選択</li>
+                <li>アップロードが完了すると自動的にデータが検証されます</li>
+                <li>エラーがある場合は修正して再アップロード</li>
+                <li>成功すると「口座管理」タブに自動的に切り替わります</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        {/* CSVファイルの形式説明 */}
         <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
           <h3 className="text-sm font-semibold text-gray-900 mb-2">📝 CSVファイルの形式</h3>
           <div className="text-sm text-gray-700 space-y-1">
@@ -315,6 +478,39 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
             <p>
               <strong>メイン口座:</strong> true/false または 1/0
             </p>
+          </div>
+        </div>
+
+        {/* よくある質問 */}
+        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <h3 className="text-sm font-semibold text-yellow-900 mb-2">❓ よくある質問</h3>
+          <div className="text-sm text-yellow-800 space-y-2">
+            <div>
+              <h4 className="font-semibold text-yellow-900">
+                Q: 三井住友銀行のCSVファイルがダウンロードできません
+              </h4>
+              <p>
+                A:
+                アプリのバージョンが最新か確認してください。また、Web版では「明細ダウンロード」機能が利用可能か確認してください。
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-yellow-900">
+                Q: アップロード時にエラーが発生します
+              </h4>
+              <p>
+                A:
+                CSVファイルの形式を確認してください。カンマ区切りで、必須項目がすべて入力されているか確認してください。
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-yellow-900">
+                Q: 複数の口座を一度に登録できますか？
+              </h4>
+              <p>
+                A: はい、CSVファイルに複数の行を追加することで、複数の口座を一度に登録できます。
+              </p>
+            </div>
           </div>
         </div>
       </CardContent>
