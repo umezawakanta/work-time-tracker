@@ -2373,6 +2373,134 @@ app.get('/api/admin/live-metrics', async (req, res) => {
   }
 });
 
+// =============================
+// Admin features (feature list management)
+// =============================
+app.get('/api/admin/features', async (req, res) => {
+  try {
+    // Import the features registry
+    const featuresModule = await import('../../src/config/features.js');
+    const featuresRegistry = featuresModule.featuresRegistry;
+
+    // Calculate completion rates and other metrics
+    const adminFeatures = featuresRegistry.map((feature: any) => {
+      const statusOrder = [
+        'planning',
+        'designing',
+        'developing',
+        'unit_testing',
+        'integration_testing',
+        'system_testing',
+        'documenting',
+        'review',
+        'release_pending',
+        'complete',
+      ];
+      const currentIndex = statusOrder.indexOf(feature.status);
+      const completionRate =
+        currentIndex >= 0 ? Math.round((currentIndex / (statusOrder.length - 1)) * 100) : 0;
+
+      // Release status calculation
+      const today = new Date();
+      const oneWeekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+      let releaseStatus = 'normal';
+      if (feature.targetRelease) {
+        const releaseDate = new Date(feature.targetRelease);
+        if (releaseDate < today && feature.status !== 'complete') {
+          releaseStatus = 'overdue';
+        } else if (
+          releaseDate >= today &&
+          releaseDate <= oneWeekFromNow &&
+          feature.status !== 'complete'
+        ) {
+          releaseStatus = 'thisWeek';
+        }
+      }
+
+      return {
+        id: feature.id,
+        name: feature.name,
+        path: feature.path,
+        category: feature.category,
+        description: feature.description,
+        status: feature.status,
+        requiresRealAPI: feature.requiresRealAPI || false,
+        priority: feature.priority || 'P3',
+        disabled: feature.disabled || false,
+        targetRelease: feature.targetRelease,
+        createdAt: feature.createdAt || new Date().toISOString(),
+        updatedAt: feature.updatedAt || new Date().toISOString(),
+        completionRate,
+        dependencies: feature.dependencies || [],
+        blockers: feature.blockers || [],
+        assignee: feature.assignee || 'unassigned',
+        estimatedHours: feature.estimatedHours || 0,
+        actualHours: feature.actualHours || 0,
+        lastActivity: feature.lastActivity || new Date().toISOString(),
+        testCoverage: feature.testCoverage || 0,
+        documentationStatus: feature.documentationStatus || 'none',
+        deploymentStatus: feature.deploymentStatus || 'not_deployed',
+        userFeedback: feature.userFeedback || {
+          rating: 0,
+          count: 0,
+          lastUpdated: new Date().toISOString(),
+        },
+        releaseStatus,
+      };
+    });
+
+    // Calculate summary statistics
+    const summary = {
+      total: adminFeatures.length,
+      byStatus: adminFeatures.reduce((acc: any, feature: any) => {
+        acc[feature.status] = (acc[feature.status] || 0) + 1;
+        return acc;
+      }, {}),
+      byCategory: adminFeatures.reduce((acc: any, feature: any) => {
+        acc[feature.category] = (acc[feature.category] || 0) + 1;
+        return acc;
+      }, {}),
+      byPriority: adminFeatures.reduce((acc: any, feature: any) => {
+        acc[feature.priority] = (acc[feature.priority] || 0) + 1;
+        return acc;
+      }, {}),
+      completionRate: Math.round(
+        adminFeatures.reduce((sum: number, feature: any) => sum + feature.completionRate, 0) /
+          adminFeatures.length
+      ),
+      overdueCount: adminFeatures.filter((feature: any) => {
+        if (!feature.targetRelease) return false;
+        const releaseDate = new Date(feature.targetRelease);
+        return releaseDate < new Date() && feature.status !== 'complete';
+      }).length,
+      thisWeekCount: adminFeatures.filter((feature: any) => {
+        if (!feature.targetRelease) return false;
+        const releaseDate = new Date(feature.targetRelease);
+        const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        return (
+          releaseDate >= new Date() &&
+          releaseDate <= oneWeekFromNow &&
+          feature.status !== 'complete'
+        );
+      }).length,
+    };
+
+    return res.json({
+      success: true,
+      features: adminFeatures,
+      summary,
+      lastUpdated: new Date().toISOString(),
+    });
+  } catch (e) {
+    console.error('❌ Error in /api/admin/features:', e);
+    return res.json({
+      success: false,
+      message: 'Internal Server Error',
+      error: e instanceof Error ? e.message : 'Unknown error',
+    });
+  }
+});
+
 app.get('/api/admin/users', async (req, res) => {
   try {
     const { User } = await import('./models/User.js');
@@ -3042,6 +3170,7 @@ console.log('   GET  /api/admin/metrics/users/summary'); // 追加
 console.log('   GET  /api/admin/metrics/assessments/summary'); // 追加
 console.log('   GET  /api/admin/metrics/learning/summary'); // 追加
 console.log('   GET  /api/admin/live-metrics'); // 追加
+console.log('   GET  /api/admin/features'); // 追加
 console.log('   POST /api/user/assessments/iq'); // 追加
 console.log('   POST /api/user/assessments/mbti'); // 追加
 console.log('   POST /api/user/learning/progress'); // 追加
