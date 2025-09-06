@@ -1,3 +1,26 @@
+// Minimal bugs list API returning empty array to unblock UI
+interface VercelRequest {
+  method?: string;
+  headers: any;
+}
+interface VercelResponse {
+  status: (n: number) => VercelResponse;
+  json: (b: unknown) => void;
+  setHeader: (k: string, v: string) => void;
+  end: () => void;
+}
+
+module.exports = async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Cache-Control', 'no-store');
+  if (req.method === 'OPTIONS') return void res.status(200).end();
+  if (req.method !== 'GET')
+    return void res.status(405).json({ success: false, message: 'Method Not Allowed' });
+  res.status(200).json({ success: true, data: [] });
+};
+
 // CommonJS compatible bugs API with direct Mongo connect and lazy model
 interface VercelRequest {
   method?: string;
