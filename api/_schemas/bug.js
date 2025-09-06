@@ -27,6 +27,10 @@ async function ensureBugModel() {
                     required: true,
                 },
                 createdBy: { type: String },
+                source: { type: String, enum: ['client', 'server', 'manual'], default: 'manual', index: true },
+                fingerprint: { type: String, index: true },
+                occurrences: { type: Number, default: 1 },
+                lastOccurredAt: { type: Date },
             },
             { timestamps: true }
         )

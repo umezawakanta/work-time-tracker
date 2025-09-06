@@ -1,32 +1,10 @@
-// Minimal bugs list API returning empty array to unblock UI
-interface VercelRequest {
-  method?: string;
-  headers: any;
-}
-interface VercelResponse {
-  status: (n: number) => VercelResponse;
-  json: (b: unknown) => void;
-  setHeader: (k: string, v: string) => void;
-  end: () => void;
-}
-
-module.exports = async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Cache-Control', 'no-store');
-  if (req.method === 'OPTIONS') return void res.status(200).end();
-  if (req.method !== 'GET')
-    return void res.status(405).json({ success: false, message: 'Method Not Allowed' });
-  res.status(200).json({ success: true, data: [] });
-};
-
 // CommonJS compatible bugs API with direct Mongo connect and lazy model
 interface VercelRequest {
   method?: string;
   headers: any;
   query?: any;
   body?: any;
+  url?: string;
 }
 interface VercelResponse {
   status: (n: number) => VercelResponse;
@@ -64,14 +42,58 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === 'POST') {
     try {
-      const { title, description, featureId, severity, status, createdBy } = (req.body ||
-        {}) as any;
-      if (!title || !featureId) {
-        res.status(400).json({ success: false, message: 'title と featureId は必須です' });
+      const raw = (req.body || {}) as any;
+      const title = String(raw.title || '').slice(0, 500);
+      const featureId = raw.featureId ? String(raw.featureId) : 'unknown';
+      const description = raw.description ? String(raw.description) : undefined;
+      const source = ['client', 'server', 'manual'].includes(String(raw.source))
+        ? String(raw.source)
+        : 'manual';
+      const severity = ['low', 'medium', 'high', 'critical'].includes(String(raw.severity))
+        ? String(raw.severity)
+        : 'medium';
+      const status = ['open', 'in_progress', 'resolved', 'closed'].includes(String(raw.status))
+        ? String(raw.status)
+        : 'open';
+      const createdBy = raw.createdBy ? String(raw.createdBy) : undefined;
+      const fingerprint = String(
+        raw.fingerprint ||
+          `${title}|${featureId}|${source}|${(raw.endpoint || raw.component || '').slice(0, 120)}`
+      ).slice(0, 512);
+
+      if (!title) {
+        res.status(400).json({ success: false, message: 'title は必須です' });
         return;
       }
-      const bug = await Bug.create({ title, description, featureId, severity, status, createdBy });
-      res.status(201).json({ success: true, data: bug });
+
+      // Upsert with dedup on fingerprint
+      const now = new Date();
+      const updated = await Bug.findOneAndUpdate(
+        { fingerprint },
+        {
+          $setOnInsert: {
+            title,
+            description,
+            featureId,
+            severity,
+            status,
+            createdBy,
+            source,
+            fingerprint,
+            occurrences: 0,
+          },
+          $set: {
+            lastOccurredAt: now,
+            description,
+            severity,
+            status,
+            source,
+          },
+          $inc: { occurrences: 1 },
+        },
+        { new: true, upsert: true }
+      );
+      res.status(201).json({ success: true, data: updated });
       return;
     } catch (error: any) {
       res
@@ -85,9 +107,9 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const { featureId, status } = (req.query || {}) as { featureId?: string; status?: string };
       const filter: any = {};
-      if (featureId) filter.featureId = featureId;
-      if (status) filter.status = status;
-      const bugs = await Bug.find(filter).sort({ createdAt: -1 }).lean();
+      if (featureId && featureId !== 'all') filter.featureId = featureId;
+      if (status && status !== 'all') filter.status = status;
+      const bugs = await Bug.find(filter).sort({ lastOccurredAt: -1, createdAt: -1 }).lean();
       res.status(200).json({ success: true, data: bugs });
       return;
     } catch (error: any) {

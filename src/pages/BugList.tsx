@@ -19,6 +19,8 @@ interface BugItem {
   severity: 'low' | 'medium' | 'high' | 'critical';
   status: 'open' | 'in_progress' | 'resolved' | 'closed';
   createdAt: string;
+  lastOccurredAt?: string;
+  occurrences?: number;
 }
 
 export default function BugListPage(): React.JSX.Element {
@@ -123,8 +125,14 @@ export default function BugListPage(): React.JSX.Element {
                         機能: {b.featureId} / 重要度: {b.severity} / 状態: {b.status}
                       </p>
                     </div>
-                    <div className="text-xs text-slate-500">
-                      {new Date(b.createdAt).toLocaleString()}
+                    <div className="text-xs text-slate-500 text-right">
+                      <div>報告: {new Date(b.createdAt).toLocaleString()}</div>
+                      {b.lastOccurredAt && (
+                        <div>最終発生: {new Date(b.lastOccurredAt).toLocaleString()}</div>
+                      )}
+                      {typeof b.occurrences === 'number' && b.occurrences > 1 && (
+                        <div>発生回数: {b.occurrences}</div>
+                      )}
                     </div>
                   </div>
                   {b.description && (

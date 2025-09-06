@@ -699,6 +699,9 @@ const AdminDashboard: React.FC = () => {
           {isFeatureAccessible('/admin/errors').allowed && (
             <TabsTrigger value="errors">エラー監視</TabsTrigger>
           )}
+          {isFeatureAccessible('/admin/bugs').allowed && (
+            <TabsTrigger value="bugs">不具合</TabsTrigger>
+          )}
           {isFeatureAccessible('/admin/settings').allowed && (
             <TabsTrigger value="settings">設定</TabsTrigger>
           )}
@@ -1126,6 +1129,24 @@ const AdminDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <ErrorMonitoringDashboard />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {isFeatureAccessible('/admin/bugs').allowed && (
+          <TabsContent value="bugs" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>不具合一覧</CardTitle>
+                <CardDescription>自動収集/手動登録された不具合を参照</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <iframe
+                  title="bugs-frame"
+                  src="/bugs"
+                  className="w-full min-h-[70vh] border rounded"
+                />
               </CardContent>
             </Card>
           </TabsContent>

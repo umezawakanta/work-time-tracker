@@ -397,6 +397,15 @@ export const featuresRegistry: Feature[] = [
     requiresRealAPI: false,
   },
   {
+    id: 'admin-bugs',
+    name: '管理 不具合',
+    path: '/admin/bugs',
+    category: '運用',
+    status: 'system_testing',
+    requiresRealAPI: true,
+    priority: 'P1',
+  },
+  {
     id: 'admin-settings',
     name: '管理 設定',
     path: '/admin/settings',

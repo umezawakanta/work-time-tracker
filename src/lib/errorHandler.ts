@@ -84,6 +84,31 @@ export class ErrorHandler {
 
       // エラーエリミネーター進捗の更新
       this.updateBadgeProgress();
+
+      // サーバへ自動送信（best-effort; 非同期・サイレンス）
+      try {
+        const payload: any = {
+          title: errorReport.message,
+          description: (errorReport.stack || errorReport.component || '').slice(0, 2000),
+          featureId: 'bug-list',
+          severity: errorReport.severity,
+          source: 'client',
+          endpoint: (errorReport as any).endpoint,
+          component: errorReport.component,
+          fingerprint:
+            `${errorReport.type}|${errorReport.message}|${errorReport.component || ''}`.slice(
+              0,
+              512
+            ),
+        };
+        // Avoid blocking UI
+        void fetch('/api/bugs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          credentials: 'include',
+        }).catch(() => {});
+      } catch {}
     } catch (loggingError) {
       console.error('Failed to log error:', loggingError);
     }
