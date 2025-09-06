@@ -87,19 +87,46 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
 
     // 三井住友銀行のCSVフォーマットかチェック
     const hasDateField = headers.some(
-      (h) => h.includes('年月日') || h.includes('日付') || h.includes('日時')
+      (h) =>
+        h.includes('年月日') ||
+        h.includes('日付') ||
+        h.includes('日時') ||
+        h.includes('日') ||
+        h === '年月日' ||
+        h === '日付'
     );
     const hasWithdrawalField = headers.some(
-      (h) => h.includes('引出') || h.includes('出金') || h.includes('支払')
+      (h) =>
+        h.includes('引出') ||
+        h.includes('出金') ||
+        h.includes('支払') ||
+        h.includes('お引出') ||
+        h === 'お引出し' ||
+        h === '引出し'
     );
     const hasDepositField = headers.some(
-      (h) => h.includes('預入') || h.includes('入金') || h.includes('受取')
+      (h) =>
+        h.includes('預入') ||
+        h.includes('入金') ||
+        h.includes('受取') ||
+        h.includes('お預入') ||
+        h === 'お預入れ' ||
+        h === '預入れ'
     );
-    const hasBalanceField = headers.some((h) => h.includes('残高') || h.includes('残額'));
+    const hasBalanceField = headers.some(
+      (h) => h.includes('残高') || h.includes('残額') || h.includes('残') || h === '残高'
+    );
 
-    const isSMBCFormat = hasDateField && hasBalanceField;
+    // より柔軟な検出条件
+    const isSMBCFormat = hasDateField && (hasBalanceField || hasWithdrawalField || hasDepositField);
 
     console.log('SMBCフォーマットか:', isSMBCFormat);
+    console.log('検出結果:', {
+      hasDateField,
+      hasWithdrawalField,
+      hasDepositField,
+      hasBalanceField,
+    });
 
     if (!isSMBCFormat) {
       console.log('通常のフォーマットで解析');
