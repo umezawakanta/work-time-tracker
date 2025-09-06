@@ -12,7 +12,7 @@ async function ensureBugModel() {
         new m.Schema(
             {
                 title: { type: String, required: true, trim: true },
-                description: { type: String },
+                description: { type: String, default: '' },
                 featureId: { type: String, required: true, index: true },
                 severity: {
                     type: String,
