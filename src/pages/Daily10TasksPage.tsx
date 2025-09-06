@@ -426,7 +426,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
             {showSubtasks && task.subtasks && task.subtasks.length > 0 && (
               <div className="mt-3 space-y-3 border-t pt-3">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">サブタスク (各5分以内)</h4>
-                {task.subtasks.map((subtask) => {
+                {task.subtasks && Array.isArray(task.subtasks) ? task.subtasks.map((subtask) => {
                   const subtaskProgress = progress?.subtasks?.find(
                     (st) => st.subtaskId === subtask.id
                   );
@@ -472,11 +472,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
                           {showSteps && (
                             <div className="mt-2 ml-2">
                               <ol className="list-decimal list-inside space-y-1 text-xs text-gray-600">
-                                {subtask.steps.map((step, index) => (
+                                {subtask.steps && Array.isArray(subtask.steps) ? subtask.steps.map((step, index) => (
                                   <li key={index} className="leading-relaxed">
                                     {step}
                                   </li>
-                                ))}
+                                )) : null}
                               </ol>
                             </div>
                           )}
@@ -494,7 +494,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                       )}
                     </div>
                   );
-                })}
+                }) : null}
               </div>
             )}
 
@@ -872,16 +872,22 @@ const Daily10TasksPage: React.FC = () => {
 
         <TabsContent value="tasks" className="mt-6">
           <div className="space-y-4">
-            {tasks.map((task) => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                progress={progress?.tasks[task.id]}
-                onUpdate={updateProgress}
-                mainAccount={mainAccount}
-                bankLoading={bankLoading}
-              />
-            ))}
+            {tasks && tasks.length > 0 ? (
+              tasks.map((task) => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  progress={progress?.tasks[task.id]}
+                  onUpdate={updateProgress}
+                  mainAccount={mainAccount}
+                  bankLoading={bankLoading}
+                />
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                {isLoading ? 'タスクを読み込み中...' : 'タスクが見つかりません'}
+              </div>
+            )}
           </div>
         </TabsContent>
 
@@ -894,15 +900,21 @@ const Daily10TasksPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {stats?.weeklyStats.map((week) => (
-                    <div key={week.week} className="flex justify-between items-center">
-                      <span className="text-sm">{week.week}</span>
-                      <div className="flex items-center space-x-2">
-                        <Progress value={week.completionRate} className="w-20" />
-                        <span className="text-sm font-medium">{week.completionRate}%</span>
+                  {stats?.weeklyStats && stats.weeklyStats.length > 0 ? (
+                    stats.weeklyStats.map((week) => (
+                      <div key={week.week} className="flex justify-between items-center">
+                        <span className="text-sm">{week.week}</span>
+                        <div className="flex items-center space-x-2">
+                          <Progress value={week.completionRate} className="w-20" />
+                          <span className="text-sm font-medium">{week.completionRate}%</span>
+                        </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-gray-500 text-sm">
+                      週別データがありません
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -914,15 +926,21 @@ const Daily10TasksPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {stats?.monthlyStats.map((month) => (
-                    <div key={month.month} className="flex justify-between items-center">
-                      <span className="text-sm">{month.month}</span>
-                      <div className="flex items-center space-x-2">
-                        <Progress value={month.completionRate} className="w-20" />
-                        <span className="text-sm font-medium">{month.completionRate}%</span>
+                  {stats?.monthlyStats && stats.monthlyStats.length > 0 ? (
+                    stats.monthlyStats.map((month) => (
+                      <div key={month.month} className="flex justify-between items-center">
+                        <span className="text-sm">{month.month}</span>
+                        <div className="flex items-center space-x-2">
+                          <Progress value={month.completionRate} className="w-20" />
+                          <span className="text-sm font-medium">{month.completionRate}%</span>
+                        </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-gray-500 text-sm">
+                      月別データがありません
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
