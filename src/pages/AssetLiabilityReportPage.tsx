@@ -19,6 +19,8 @@ import { GoalTracking } from '@/components/goals/GoalTracking'; // 追加: 目�
 import { LongTermTrend } from '@/components/trends/LongTermTrend'; // 追加: 長期トレンド可視化コンポーネント
 import { useReportData } from '@/hooks/useReportData';
 import { useBalanceUpdate } from '@/hooks/useBalanceUpdate';
+import { useBankAccounts } from '@/hooks/useBankAccounts';
+import { useAuth } from '@/hooks/useAuth';
 import { combineData } from '@/utils/combineData';
 import { calculateFinancialMetrics } from '@/utils/financialMetrics';
 import { shareReport } from '@/utils/shareReport';
@@ -45,6 +47,7 @@ import {
   Camera,
   Filter,
   Target, // 追加: 目標のアイコン
+  Building2, // 追加: 銀行のアイコン
 } from 'lucide-react';
 import {
   Card,
@@ -87,8 +90,12 @@ import { CombinedDataPoint, LongTermDataPoint } from '@/types';
 import { FinancialGoal } from '@/types'; // 追加: 目標の型定義
 
 export default function AssetLiabilityReportPage() {
+  const { user } = useAuth();
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
   const debtEntries = useSelector((state: RootState) => state.debt.entries);
+  
+  // 銀行口座情報を取得
+  const { accounts, mainAccount, isLoading: bankLoading, error: bankError, refetch: refetchBankAccounts } = useBankAccounts(user?.id || 'default-user');
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
   const [editingDebt, setEditingDebt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -659,6 +666,157 @@ export default function AssetLiabilityReportPage() {
           debtEntries={debtEntries}
           onAddNew={() => setIsQuickAddOpen(true)}
         />
+      </div>
+
+      {/* 銀行口座情報セクション */}
+      <div className="mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Building2 className="h-5 w-5" />
+              銀行口座情報
+            </CardTitle>
+            <CardDescription>
+              登録された銀行口座の情報と「毎日20のこと」との連携状況
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {bankLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                <span>銀行口座情報を読み込み中...</span>
+              </div>
+            ) : bankError ? (
+              <div className="text-center py-8 text-red-600">
+                <AlertTriangle className="h-8 w-8 mx-auto mb-2" />
+                <p>銀行口座情報の取得に失敗しました</p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={refetchBankAccounts}
+                  className="mt-2"
+                >
+                  再試行
+                </Button>
+              </div>
+            ) : accounts.length === 0 ? (
+              <div className="text-center py-8">
+                <Building2 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-semibold mb-2">銀行口座が登録されていません</h3>
+                <p className="text-gray-600 mb-4">
+                  メイン銀行口座を登録して、「毎日20のこと」を効率的に進めましょう
+                </p>
+                <Button 
+                  onClick={() => window.open('/bank-accounts', '_blank')}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  銀行口座を登録する
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* メイン口座 */}
+                {mainAccount ? (
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold text-blue-900 flex items-center gap-2">
+                          <Crown className="h-4 w-4" />
+                          メイン口座
+                        </h4>
+                        <p className="text-blue-700">
+                          {mainAccount.bankName} {mainAccount.accountName}
+                        </p>
+                        <p className="text-sm text-blue-600">
+                          {mainAccount.accountType === 'checking' ? '普通預金' : 
+                           mainAccount.accountType === 'savings' ? '貯蓄預金' :
+                           mainAccount.accountType === 'time_deposit' ? '定期預金' : 'クレジットカード'}
+                        </p>
+                        {mainAccount.lastBalance && (
+                          <p className="text-lg font-bold text-blue-900 mt-1">
+                            残高: {mainAccount.lastBalance.toLocaleString()}円
+                          </p>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <Badge variant="secondary" className="mb-2">
+                          メイン口座
+                        </Badge>
+                        <p className="text-sm text-blue-600">
+                          最終更新: {mainAccount.lastUpdated ? 
+                            new Date(mainAccount.lastUpdated).toLocaleDateString('ja-JP') : 
+                            '未更新'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                      <div>
+                        <h4 className="font-semibold text-yellow-800">メイン口座が設定されていません</h4>
+                        <p className="text-yellow-700 text-sm">
+                          メイン口座を設定すると、「毎日20のこと」で効率的に管理できます
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 全口座一覧 */}
+                {accounts.length > 1 && (
+                  <div>
+                    <h4 className="font-semibold mb-3">登録済み口座一覧</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {accounts.map((account) => (
+                        <div 
+                          key={account._id}
+                          className={`p-3 border rounded-lg ${
+                            account.isMain ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-medium">{account.bankName} {account.accountName}</p>
+                              <p className="text-sm text-gray-600">
+                                {account.accountType === 'checking' ? '普通預金' : 
+                                 account.accountType === 'savings' ? '貯蓄預金' :
+                                 account.accountType === 'time_deposit' ? '定期預金' : 'クレジットカード'}
+                              </p>
+                              {account.lastBalance && (
+                                <p className="text-sm font-semibold">
+                                  残高: {account.lastBalance.toLocaleString()}円
+                                </p>
+                              )}
+                            </div>
+                            {account.isMain && (
+                              <Badge variant="secondary">メイン</Badge>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 連携情報 */}
+                <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <h4 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                    <Target className="h-4 w-4" />
+                    「毎日20のこと」との連携
+                  </h4>
+                  <ul className="text-sm text-green-700 space-y-1">
+                    <li>• 銀行データ取り込み機能で入出金履歴を自動取得</li>
+                    <li>• 資産管理ページで残高を手動入力</li>
+                    <li>• メイン口座の情報が「毎日20のこと」に自動反映</li>
+                    <li>• 収入・支出の把握が効率的になります</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* サマリーカード */}

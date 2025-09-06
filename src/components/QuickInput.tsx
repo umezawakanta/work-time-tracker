@@ -5,6 +5,8 @@ import { useDispatch } from 'react-redux';
 import { addAssetEntry } from '@/store/assetSlice';
 import { addDebtEntry } from '@/store/debtSlice';
 import { daily10Api } from '@/services/api/daily10Api';
+import { useBankAccounts } from '@/hooks/useBankAccounts';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -18,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { PlusCircle, Clock, Calendar } from 'lucide-react';
+import { PlusCircle, Clock, Calendar, Building2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { AppDispatch } from '@/store'; // AppDispatchをインポート
 
@@ -59,6 +61,8 @@ interface QuickInputProps {
 export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalanceDate }) => {
   // 型付きディスパッチを使用
   const dispatch = useDispatch<AppDispatch>();
+  const { user } = useAuth();
+  const { accounts, mainAccount, isLoading: bankLoading } = useBankAccounts(user?.id || 'default-user');
   const [entryType, setEntryType] = useState<'asset' | 'debt'>('asset');
   const [accountName, setAccountName] = useState('');
   const [category, setCategory] = useState(entryType === 'asset' ? 'cash' : 'mortgage');
@@ -75,6 +79,51 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
   const handleTypeChange = (value: string) => {
     setEntryType(value as 'asset' | 'debt');
     setCategory(value === 'asset' ? 'cash' : 'mortgage');
+  };
+
+  // 銀行口座からの自動入力処理
+  const handleBankAccountImport = async (account: any) => {
+    if (!account.lastBalance) {
+      toast.error('この口座には残高情報がありません');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const currentDate = new Date().toISOString();
+      const accountName = `${account.bankName} ${account.accountName}`;
+      
+      // 資産エントリーを追加
+      dispatch(addAssetEntry({
+        account: accountName,
+        category: 'bank',
+        value: account.lastBalance,
+        date: currentDate,
+        description: accountName,
+        targetValue: account.lastBalance,
+        targetDate: currentDate,
+        autoUpdate: false,
+        updateFrequency: 'monthly',
+      }));
+
+      // 毎日20のことの自動完了を試行
+      try {
+        await daily10Api.autoCompleteSubtask('2-1', 'bank_balance_entered');
+        console.log('✅ 銀行口座残高の自動完了を実行しました');
+      } catch (error) {
+        console.log('⚠️ 自動完了の実行に失敗しました:', error);
+      }
+
+      toast.success(`${accountName}の残高を追加しました`);
+      updateLastBalanceDate();
+      onClose?.();
+    } catch (error) {
+      console.error('銀行口座のインポートに失敗:', error);
+      toast.error('銀行口座のインポートに失敗しました');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // データ登録処理
@@ -194,6 +243,59 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
               <TabsTrigger value="asset">資産の追加</TabsTrigger>
               <TabsTrigger value="debt">負債の追加</TabsTrigger>
             </TabsList>
+
+            {/* 銀行口座からの自動入力セクション */}
+            {entryType === 'asset' && accounts.length > 0 && (
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h3 className="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                  <Building2 className="h-4 w-4" />
+                  銀行口座からの自動入力
+                </h3>
+                <p className="text-sm text-blue-700 mb-3">
+                  登録済みの銀行口座の残高を資産に自動追加できます
+                </p>
+                <div className="space-y-2">
+                  {accounts.map((account) => (
+                    <div 
+                      key={account._id}
+                      className="flex items-center justify-between p-3 bg-white border border-blue-200 rounded-lg"
+                    >
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">
+                          {account.bankName} {account.accountName}
+                          {account.isMain && (
+                            <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                              メイン
+                            </span>
+                          )}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {account.accountType === 'checking' ? '普通預金' : 
+                           account.accountType === 'savings' ? '貯蓄預金' :
+                           account.accountType === 'time_deposit' ? '定期預金' : 'クレジットカード'}
+                        </p>
+                        {account.lastBalance ? (
+                          <p className="text-sm font-semibold text-green-600">
+                            残高: {account.lastBalance.toLocaleString()}円
+                          </p>
+                        ) : (
+                          <p className="text-sm text-gray-500">残高情報なし</p>
+                        )}
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => handleBankAccountImport(account)}
+                        disabled={!account.lastBalance || isSubmitting}
+                        className="ml-3"
+                      >
+                        {isSubmitting ? '追加中...' : '追加'}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
