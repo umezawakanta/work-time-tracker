@@ -420,6 +420,11 @@ app.post('/api/auth/password-reset', async (req, res) => {
       const host = req.get('host') || '';
       const isProduction = host.includes('vercel.app');
 
+      console.log('[PASSWORD-RESET] Environment check for forgot password:', {
+        host,
+        isProduction,
+      });
+
       if (isProduction) {
         try {
           // MongoDB接続
@@ -457,11 +462,20 @@ app.post('/api/auth/password-reset', async (req, res) => {
           const resetToken = crypto.default.randomBytes(32).toString('hex');
           const resetExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24時間
 
+          console.log('[PASSWORD-RESET] Generated token for user:', {
+            userId: user._id,
+            email: user.email,
+            token: resetToken.substring(0, 10) + '...',
+            expires: resetExpires,
+          });
+
           // ユーザーのリセットトークンを更新
           await User.findByIdAndUpdate(user._id, {
             passwordResetToken: resetToken,
             passwordResetExpires: resetExpires,
           });
+
+          console.log('[PASSWORD-RESET] Token saved to database successfully');
 
           // メール送信（実際の実装ではNodemailerなどを使用）
           console.log('[PASSWORD-RESET] Reset token generated:', resetToken);
@@ -595,13 +609,21 @@ app.post('/api/auth/password-reset/verify', async (req, res) => {
     const host = req.get('host') || '';
     const isProduction = host.includes('vercel.app');
 
+    console.log('[PASSWORD-RESET] Environment check:', {
+      host,
+      isProduction,
+      token: token.substring(0, 10) + '...',
+    });
+
     if (isProduction) {
       try {
+        console.log('[PASSWORD-RESET] Connecting to MongoDB...');
         // MongoDB接続
         const mongoose = await import('mongoose');
         await mongoose.default.connect(
           process.env.MONGODB_URI || 'mongodb://localhost:27017/work-time-tracker'
         );
+        console.log('[PASSWORD-RESET] MongoDB connected successfully');
 
         const User = mongoose.default.model(
           'User',
@@ -616,10 +638,19 @@ app.post('/api/auth/password-reset/verify', async (req, res) => {
           })
         );
 
+        console.log('[PASSWORD-RESET] Searching for user with token...');
         // トークンでユーザーを検索
         const user = await User.findOne({
           passwordResetToken: token,
           passwordResetExpires: { $gt: new Date() },
+        });
+
+        console.log('[PASSWORD-RESET] User search result:', {
+          found: !!user,
+          userId: user?._id,
+          email: user?.email,
+          tokenExpires: user?.passwordResetExpires,
+          currentTime: new Date(),
         });
 
         if (!user) {
@@ -642,6 +673,7 @@ app.post('/api/auth/password-reset/verify', async (req, res) => {
       }
     } else {
       // 開発環境では常に有効として返す
+      console.log('[PASSWORD-RESET] Development mode - token always valid');
       res.json({
         success: true,
         valid: true,
@@ -650,6 +682,63 @@ app.post('/api/auth/password-reset/verify', async (req, res) => {
   } catch (error) {
     console.error('Token verification error:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+
+// Debug endpoint to check password reset tokens
+app.get('/api/debug/password-reset-tokens', async (req, res) => {
+  try {
+    const host = req.get('host') || '';
+    const isProduction = host.includes('vercel.app');
+
+    if (!isProduction) {
+      return res.status(403).json({ error: 'This endpoint is only available in production' });
+    }
+
+    console.log('[DEBUG] Checking password reset tokens...');
+
+    // MongoDB接続
+    const mongoose = await import('mongoose');
+    await mongoose.default.connect(
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/work-time-tracker'
+    );
+
+    const User = mongoose.default.model(
+      'User',
+      new mongoose.Schema({
+        email: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
+        name: { type: String, required: true },
+        role: { type: String, default: 'user' },
+        isEmailVerified: { type: Boolean, default: false },
+        passwordResetToken: String,
+        passwordResetExpires: Date,
+      })
+    );
+
+    // パスワードリセットトークンを持つユーザーを検索
+    const usersWithTokens = await User.find({
+      passwordResetToken: { $exists: true, $ne: null },
+      passwordResetExpires: { $exists: true, $ne: null },
+    }).select('email passwordResetToken passwordResetExpires createdAt updatedAt');
+
+    console.log('[DEBUG] Found users with reset tokens:', usersWithTokens.length);
+
+    res.json({
+      success: true,
+      count: usersWithTokens.length,
+      tokens: usersWithTokens.map((user) => ({
+        email: user.email,
+        token: user.passwordResetToken?.substring(0, 10) + '...',
+        expires: user.passwordResetExpires,
+        isExpired: user.passwordResetExpires < new Date(),
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      })),
+    });
+  } catch (error) {
+    console.error('[DEBUG] Error checking tokens:', error);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
