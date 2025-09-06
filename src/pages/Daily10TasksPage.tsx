@@ -229,9 +229,13 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
 
             {/* サブタスク表示ボタン */}
             <div className="flex items-center space-x-2 mb-2">
+              {/* デバッグ情報 */}
+              {process.env.NODE_ENV === 'development' && (
+                <div className="text-xs text-gray-500">Subtasks: {task.subtasks?.length || 0}</div>
+              )}
               {task.subtasks && task.subtasks.length > 0 && (
                 <Button variant="outline" size="sm" onClick={() => setShowSubtasks(!showSubtasks)}>
-                  {showSubtasks ? 'サブタスクを隠す' : 'サブタスクを表示'}
+                  {showSubtasks ? 'サブタスクを隠す' : 'サブタスクを表示'} ({task.subtasks.length})
                 </Button>
               )}
               <Button variant="outline" size="sm" onClick={() => setShowNotes(!showNotes)}>
@@ -249,6 +253,18 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
                   <li>完了したサブタスクのチェックボックスをクリックして進捗を更新</li>
                   <li>すべてのサブタスクが完了すると、メインタスクも自動完了</li>
                 </ol>
+              </div>
+            )}
+
+            {/* サブタスクがない場合の説明 */}
+            {(!task.subtasks || task.subtasks.length === 0) && (
+              <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <h4 className="text-sm font-medium text-yellow-800 mb-2">
+                  ⚠️ サブタスクがありません
+                </h4>
+                <p className="text-xs text-yellow-700">
+                  このタスクにはサブタスクが定義されていません。タスクを直接チェックして完了してください。
+                </p>
               </div>
             )}
 
@@ -353,6 +369,13 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
 const Daily10TasksPage: React.FC = () => {
   const { tasks, progress, stats, isLoading, error, updateProgress } = useDaily10Tasks();
   const [activeTab, setActiveTab] = useState('tasks');
+
+  // デバッグ用：タスクデータの内容を確認
+  console.log('Tasks data:', tasks);
+  console.log('First task subtasks:', tasks[0]?.subtasks);
+  console.log('Tasks length:', tasks.length);
+  console.log('Is loading:', isLoading);
+  console.log('Error:', error);
 
   // タスク状況に応じたメッセージを生成
   const getMotivationalMessage = () => {
@@ -471,6 +494,22 @@ const Daily10TasksPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* デバッグ情報 */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-yellow-800 mb-3">🐛 デバッグ情報</h3>
+          <div className="text-sm text-yellow-700 space-y-2">
+            <div>タスク数: {tasks.length}</div>
+            <div>ローディング中: {isLoading ? 'はい' : 'いいえ'}</div>
+            <div>エラー: {error || 'なし'}</div>
+            <div>最初のタスクのサブタスク数: {tasks[0]?.subtasks?.length || 0}</div>
+            <Button onClick={() => window.location.reload()} size="sm" className="mt-2">
+              ページを再読み込み
+            </Button>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* 進捗サマリー */}
