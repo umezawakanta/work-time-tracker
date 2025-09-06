@@ -627,6 +627,81 @@ export default function SubscriptionUpgradePage() {
                 </Button>
               </div>
             )}
+
+            {/* 決済ゲートウェイの状態 */}
+            {gatewayStatus && (
+              <div className="mt-4 rounded-md border p-3">
+                <div className="text-sm text-gray-600">決済ゲートウェイの状態</div>
+                <div className="mt-1 text-sm">
+                  <div>
+                    ステータス: <Badge>{gatewayStatus.status || '—'}</Badge>
+                  </div>
+                  <div className="mt-1">プラン(Price ID): {gatewayStatus.plan || '—'}</div>
+                  <div className="mt-1">
+                    次回更新日:{' '}
+                    {gatewayStatus.renewAt
+                      ? new Date(gatewayStatus.renewAt).toLocaleDateString('ja-JP')
+                      : '—'}
+                  </div>
+                  {gatewayStatus.card && (
+                    <div className="mt-1">
+                      カード: {gatewayStatus.card.brand} •••• {gatewayStatus.card.last4}
+                    </div>
+                  )}
+                  {gatewayStatus.atPeriodEnd && (
+                    <div className="mt-1 text-orange-700">次回で解約予定（ゲートウェイ）</div>
+                  )}
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        setIsProcessing(true);
+                        // ゲートウェイの状態でローカル購読を同期
+                        await userSubscriptionApi.updateUserSubscription(user.id, {
+                          planId: gatewayStatus.plan || currentSubscription.planId,
+                          status: (gatewayStatus.status as any) || currentSubscription.status,
+                          cancelAtPeriodEnd: Boolean(gatewayStatus.atPeriodEnd),
+                          ...(gatewayStatus.renewAt
+                            ? { currentPeriodEnd: new Date(gatewayStatus.renewAt) }
+                            : {}),
+                        });
+                        const refreshed = await userSubscriptionApi.getUserSubscription(user.id);
+                        setCurrentSubscription(refreshed.data);
+                        toast.success('ゲートウェイの状態で同期しました');
+                      } catch (e) {
+                        console.error(e);
+                        toast.error('同期に失敗しました');
+                      } finally {
+                        setIsProcessing(false);
+                      }
+                    }}
+                    disabled={isProcessing}
+                  >
+                    ゲートウェイと同期
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        setIsProcessing(true);
+                        const gw = await subscriptionGatewayApi.getSubscriptionStatus();
+                        setGatewayStatus(gw);
+                        toast.success('ゲートウェイの状態を更新しました');
+                      } catch {
+                        toast.error('ゲートウェイ状態の取得に失敗しました');
+                      } finally {
+                        setIsProcessing(false);
+                      }
+                    }}
+                    disabled={isProcessing}
+                  >
+                    ゲートウェイ状態を再取得
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
