@@ -5240,6 +5240,148 @@ app.get('/api/daily10/stats', (req: Request, res: Response) => {
   }
 });
 
+// 銀行口座の型定義
+type BankAccount = {
+  _id: string;
+  userId: string;
+  bankName: string;
+  accountType: 'checking' | 'savings' | 'time_deposit' | 'credit_card';
+  accountNumber: string;
+  branchName?: string;
+  accountName: string;
+  isMain: boolean;
+  isActive: boolean;
+  lastBalance?: number;
+  lastUpdated?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// メモリ内ストア（実際の実装ではデータベースを使用）
+const bankAccountsStore = new Map<string, BankAccount[]>();
+
+// 銀行口座管理API
+app.get('/api/bank-accounts', (req: Request, res: Response) => {
+  const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+  const accounts = bankAccountsStore.get(userId) || [];
+  res.json({ success: true, data: accounts });
+});
+
+app.post('/api/bank-accounts', (req: Request, res: Response) => {
+  const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+  const { 
+    bankName, 
+    accountType, 
+    accountNumber, 
+    branchName, 
+    accountName, 
+    isMain = false 
+  } = req.body;
+
+  if (!bankName || !accountType || !accountNumber || !accountName) {
+    return res.status(400).json({
+      success: false,
+      message: '銀行名、口座種別、口座番号、口座名は必須です',
+    });
+  }
+
+  // メイン口座の重複チェック
+  if (isMain) {
+    const existingAccounts = bankAccountsStore.get(userId) || [];
+    const hasMainAccount = existingAccounts.some(account => account.isMain && account.isActive);
+    
+    if (hasMainAccount) {
+      return res.status(400).json({
+        success: false,
+        message: 'メイン口座は既に登録されています。既存のメイン口座を無効にしてから登録してください。',
+      });
+    }
+  }
+
+  const newAccount: BankAccount = {
+    _id: `bank_account_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    userId,
+    bankName,
+    accountType,
+    accountNumber,
+    branchName,
+    accountName,
+    isMain,
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  const userAccounts = bankAccountsStore.get(userId) || [];
+  userAccounts.push(newAccount);
+  bankAccountsStore.set(userId, userAccounts);
+
+  res.status(201).json({
+    success: true,
+    data: newAccount,
+  });
+});
+
+app.get('/api/bank-accounts/:id', (req: Request, res: Response) => {
+  const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+  const { id } = req.params;
+  const accounts = bankAccountsStore.get(userId) || [];
+  const account = accounts.find(acc => acc._id === id);
+  
+  if (!account) {
+    return res.status(404).json({
+      success: false,
+      message: '銀行口座が見つかりません',
+    });
+  }
+  
+  res.json({ success: true, data: account });
+});
+
+app.put('/api/bank-accounts/:id', (req: Request, res: Response) => {
+  const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+  const { id } = req.params;
+  const accounts = bankAccountsStore.get(userId) || [];
+  const accountIndex = accounts.findIndex(acc => acc._id === id);
+  
+  if (accountIndex === -1) {
+    return res.status(404).json({
+      success: false,
+      message: '銀行口座が見つかりません',
+    });
+  }
+  
+  const updatedAccount = {
+    ...accounts[accountIndex],
+    ...req.body,
+    updatedAt: new Date().toISOString(),
+  };
+  
+  accounts[accountIndex] = updatedAccount;
+  bankAccountsStore.set(userId, accounts);
+  
+  res.json({ success: true, data: updatedAccount });
+});
+
+app.delete('/api/bank-accounts/:id', (req: Request, res: Response) => {
+  const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+  const { id } = req.params;
+  const accounts = bankAccountsStore.get(userId) || [];
+  const accountIndex = accounts.findIndex(acc => acc._id === id);
+  
+  if (accountIndex === -1) {
+    return res.status(404).json({
+      success: false,
+      message: '銀行口座が見つかりません',
+    });
+  }
+  
+  accounts.splice(accountIndex, 1);
+  bankAccountsStore.set(userId, accounts);
+  
+  res.json({ success: true, message: '銀行口座が削除されました' });
+});
+
 // 404 Error handler - must be after all known routes; allow future mocks via pattern
 app.use((req: Request, res: Response): void => {
   console.log(`❌ 404 - Route not found: ${req.method} ${req.url}`);
