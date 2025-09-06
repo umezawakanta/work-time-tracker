@@ -78,7 +78,7 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
   };
 
   // データ登録処理
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!accountName || !value) {
@@ -116,39 +116,43 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
         );
 
         // Daily Tasksの自動完了を試行
-        try {
-          if (category === 'cash') {
-            // 現金残高の更新
-            await daily10Api.autoCompleteSubtask('1', '1-5', 'cash_balance_updated', {
-              amount: numericValue,
-              account: accountName,
-            });
-            toast.success(
-              '現金残高の記録が完了しました！「毎日20のこと」のサブタスクも自動完了しました。'
-            );
-          } else if (category === 'investment') {
-            // 投資口座の残高
-            await daily10Api.autoCompleteSubtask('2', '2-2', 'investment_balance_entered', {
-              amount: numericValue,
-              account: accountName,
-            });
-            toast.success(
-              '投資口座の記録が完了しました！「毎日20のこと」のサブタスクも自動完了しました。'
-            );
-          } else if (category === 'cash' || accountName.toLowerCase().includes('銀行')) {
-            // 銀行預金残高
-            await daily10Api.autoCompleteSubtask('2', '2-1', 'bank_balance_entered', {
-              amount: numericValue,
-              account: accountName,
-            });
-            toast.success(
-              '銀行口座の記録が完了しました！「毎日20のこと」のサブタスクも自動完了しました。'
-            );
+        const handleAutoComplete = async () => {
+          try {
+            if (category === 'cash') {
+              // 現金残高の更新
+              await daily10Api.autoCompleteSubtask('1', '1-5', 'cash_balance_updated', {
+                amount: numericValue,
+                account: accountName,
+              });
+              toast.success(
+                '現金残高の記録が完了しました！「毎日20のこと」のサブタスクも自動完了しました。'
+              );
+            } else if (category === 'investment') {
+              // 投資口座の残高
+              await daily10Api.autoCompleteSubtask('2', '2-2', 'investment_balance_entered', {
+                amount: numericValue,
+                account: accountName,
+              });
+              toast.success(
+                '投資口座の記録が完了しました！「毎日20のこと」のサブタスクも自動完了しました。'
+              );
+            } else if (category === 'cash' || accountName.toLowerCase().includes('銀行')) {
+              // 銀行預金残高
+              await daily10Api.autoCompleteSubtask('2', '2-1', 'bank_balance_entered', {
+                amount: numericValue,
+                account: accountName,
+              });
+              toast.success(
+                '銀行口座の記録が完了しました！「毎日20のこと」のサブタスクも自動完了しました。'
+              );
+            }
+          } catch (error) {
+            console.warn('Daily Tasks auto-complete failed:', error);
+            // エラーが発生してもメインの処理は続行
           }
-        } catch (error) {
-          console.warn('Daily Tasks auto-complete failed:', error);
-          // エラーが発生してもメインの処理は続行
-        }
+        };
+
+        await handleAutoComplete();
       } else {
         dispatch(
           addDebtEntry({
