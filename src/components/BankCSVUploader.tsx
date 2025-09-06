@@ -183,6 +183,26 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
       });
 
       console.log('解析されたデータ:', parsedData.slice(0, 3)); // 最初の3行を表示
+
+      // 三井住友銀行のCSVの場合、最新の残高のみを取得
+      if (isSMBCFormat || forceSMBCFormat) {
+        // 日付でソートして最新のデータを取得
+        const sortedData = parsedData.sort((a, b) => {
+          const dateA = new Date(
+            a[Object.keys(a).find((key) => key.includes('年月日') || key.includes('日付')) || '']
+          );
+          const dateB = new Date(
+            b[Object.keys(b).find((key) => key.includes('年月日') || key.includes('日付')) || '']
+          );
+          return dateB.getTime() - dateA.getTime(); // 降順（最新が先頭）
+        });
+
+        // 最新の1件のみを返す
+        const latestData = sortedData[0];
+        console.log('最新のデータ（メイン口座用）:', latestData);
+        return [latestData];
+      }
+
       return parsedData;
     } catch (error) {
       console.error('CSV解析エラー:', error);
@@ -383,6 +403,37 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
             ? `データの検証に失敗しました: ${errors.join(', ')}`
             : '有効なデータがありません';
         throw new Error(errorMessage);
+      }
+
+      // 既存のメイン口座を削除
+      if (valid.length > 0 && valid[0].isMain) {
+        try {
+          const deleteResponse = await fetch('/api/bank-accounts', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (deleteResponse.ok) {
+            const existingAccounts = await deleteResponse.json();
+            const mainAccounts = existingAccounts.filter((account: any) => account.isMain);
+
+            // 既存のメイン口座を削除
+            for (const account of mainAccounts) {
+              await fetch(`/api/bank-accounts/${account._id}`, {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              });
+            }
+
+            console.log(`既存のメイン口座 ${mainAccounts.length} 件を削除しました`);
+          }
+        } catch (error) {
+          console.warn('既存のメイン口座削除でエラー:', error);
+        }
       }
 
       // サーバーにデータを送信
