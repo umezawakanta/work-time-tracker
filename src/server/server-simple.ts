@@ -244,7 +244,7 @@ const debtStore: Map<string, DebtRecord> = new Map();
 const createDebtId = () => 'debt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
 
 // Asset store and ID generator
-const assetStore: Map<string, AssetRecord> = new Map();
+const assetStore: Map<string, AssetRecord[]> = new Map();
 const createAssetId = () => 'asset_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
 
 // Work Time store and ID generator
@@ -1166,7 +1166,7 @@ app.post('/api/worktime', (req, res) => {
 // Asset API endpoints
 // =============================
 app.get('/api/asset', (req, res) => {
-  const all = Array.from(assetStore.values()).sort(
+  const all = Array.from(assetStore.values()).flat().sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
@@ -1219,7 +1219,14 @@ app.post('/api/asset', (req, res) => {
       updatedAt: now,
     };
 
-    assetStore.set(id, assetEntry);
+    // ユーザーIDを取得（実際の実装では認証から取得）
+    const userId = 'default-user';
+    if (!assetStore.has(userId)) {
+      assetStore.set(userId, []);
+    }
+    const userAssets = assetStore.get(userId) || [];
+    userAssets.push(assetEntry);
+    assetStore.set(userId, userAssets);
     res.status(201).json(assetEntry);
   } catch (error) {
     console.error('Asset creation error:', error);
@@ -4713,7 +4720,7 @@ app.get('/api/bank/data/:id', (req: Request, res: Response) => {
 });
 
 // POST /api/bank/import-to-assets - Import bank data to asset system
-app.post('/api/bank/import-to-assets', (req: Request, res: Response) => {
+app.post('/api/bank/import-to-assets', async (req: Request, res: Response) => {
   try {
     const { dataId, userId, accountName } = req.body;
 
@@ -4767,7 +4774,9 @@ app.post('/api/bank/import-to-assets', (req: Request, res: Response) => {
     if (!assetStore.has(userId)) {
       assetStore.set(userId, []);
     }
-    assetStore.get(userId)?.push(newAsset);
+    const userAssets = assetStore.get(userId) || [];
+    userAssets.push(newAsset);
+    assetStore.set(userId, userAssets);
 
     // 収入データの自動完了も試行
     try {

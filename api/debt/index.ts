@@ -1,54 +1,91 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectDB } from '../../src/server/config/database';
-import { DebtEntry } from '../../src/server/models/DebtEntry';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
-  // CORS
+// 負債データの型定義
+interface DebtRecord {
+  _id: string;
+  date: string;
+  value: number;
+  description: string;
+  account: string;
+  category: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// メモリ内ストア（実際の実装ではデータベースを使用）
+const debtStore = new Map<string, DebtRecord[]>();
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // CORS設定
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
-  // Connect DB (fail fast if unavailable)
   try {
-    await connectDB();
-  } catch (e) {
-    console.warn('Debt API: DB not available');
-    res.status(503).json({ success: false, error: 'Service unavailable (DB connection failed)' });
-    return;
-  }
+    const { userId } = req.query;
 
-  if (req.method === 'GET') {
-    try {
-      const debts = await DebtEntry.find().sort({ date: -1 });
-      res.status(200).json(debts);
-    } catch (error) {
-      console.error('Debt GET error:', error);
-      res.status(500).json({ success: false, error: 'Internal server error' });
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'User ID is required',
+      });
     }
-    return;
-  }
 
-  if (req.method === 'POST') {
-    try {
-      const { date, value, description, account } = req.body || {};
-      if (!date || value == null || !description || !account) {
-        res.status(400).json({ success: false, error: 'Missing required fields' });
-        return;
+    if (req.method === 'GET') {
+      // 負債データを取得
+      const debts = debtStore.get(userId as string) || [];
+      
+      return res.status(200).json({
+        success: true,
+        data: debts,
+      });
+    }
+
+    if (req.method === 'POST') {
+      // 新しい負債データを追加
+      const { account, value, date, description, category } = req.body;
+
+      if (!account || value === undefined || !date) {
+        return res.status(400).json({
+          success: false,
+          message: '日付、金額、口座名は必須です',
+        });
       }
 
-      const created = await DebtEntry.create({ date, value, description, account });
-      res.status(201).json({ message: '負債情報が正常に記録されました', debt: created });
-    } catch (error) {
-      console.error('Debt POST error:', error);
-      res.status(500).json({ success: false, error: 'Internal server error' });
-    }
-    return;
-  }
+      const newDebt: DebtRecord = {
+        _id: `debt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        account,
+        value: parseFloat(value),
+        date,
+        description: description || '',
+        category: category || 'mortgage',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
 
-  res.status(405).json({ success: false, error: 'Method not allowed' });
+      const userDebts = debtStore.get(userId as string) || [];
+      userDebts.push(newDebt);
+      debtStore.set(userId as string, userDebts);
+
+      return res.status(201).json({
+        success: true,
+        data: newDebt,
+      });
+    }
+
+    return res.status(405).json({
+      success: false,
+      message: 'Method not allowed',
+    });
+  } catch (error) {
+    console.error('Debt API error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
 }
