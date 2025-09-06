@@ -27,7 +27,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // データベース接続に失敗した場合は空の配列を返す
         return res.status(200).json([]);
       }
-      const userId = (req.query.userId as string) || (req.headers['x-user-id'] as string) || 'default-user';
+      const userId =
+        (req.query.userId as string) || (req.headers['x-user-id'] as string) || 'default-user';
       const query = userId ? { userId } : {};
       const docs = await WorkTimeEntry.find(query).sort({ date: -1, createdAt: -1 }).limit(500);
       return res.status(200).json(docs);
