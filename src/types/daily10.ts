@@ -23,6 +23,7 @@ export interface TaskProgress {
   taskId: string;
   completed: boolean;
   completedAt?: string;
+  notes?: string;
   subtasks: SubtaskProgress[];
 }
 

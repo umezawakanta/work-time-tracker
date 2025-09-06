@@ -104,7 +104,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
   };
 
   const completedSubtasks = progress?.subtasks?.filter((st) => st.completed).length || 0;
-  const totalSubtasks = task.subtasks.length;
+  const totalSubtasks = task.subtasks?.length || 0;
   const subtaskProgress = totalSubtasks > 0 ? (completedSubtasks / totalSubtasks) * 100 : 0;
 
   return (
@@ -121,32 +121,38 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
               <IconComponent className="h-4 w-4" />
               <h3 className="font-medium">{task.name}</h3>
               <Badge className={categoryColors[task.category]}>{task.category}</Badge>
-              <Badge variant="outline" className="text-xs">
-                {completedSubtasks}/{totalSubtasks} サブタスク
-              </Badge>
+              {task.subtasks && task.subtasks.length > 0 && (
+                <Badge variant="outline" className="text-xs">
+                  {completedSubtasks}/{totalSubtasks} サブタスク
+                </Badge>
+              )}
             </div>
 
             {/* サブタスク進捗バー */}
-            <div className="mb-3">
-              <div className="flex justify-between text-xs text-gray-600 mb-1">
-                <span>サブタスク進捗</span>
-                <span>{Math.round(subtaskProgress)}%</span>
+            {task.subtasks && task.subtasks.length > 0 && (
+              <div className="mb-3">
+                <div className="flex justify-between text-xs text-gray-600 mb-1">
+                  <span>サブタスク進捗</span>
+                  <span>{Math.round(subtaskProgress)}%</span>
+                </div>
+                <Progress value={subtaskProgress} className="h-2" />
               </div>
-              <Progress value={subtaskProgress} className="h-2" />
-            </div>
+            )}
 
             {/* サブタスク表示ボタン */}
             <div className="flex items-center space-x-2 mb-2">
-              <Button variant="outline" size="sm" onClick={() => setShowSubtasks(!showSubtasks)}>
-                {showSubtasks ? 'サブタスクを隠す' : 'サブタスクを表示'}
-              </Button>
+              {task.subtasks && task.subtasks.length > 0 && (
+                <Button variant="outline" size="sm" onClick={() => setShowSubtasks(!showSubtasks)}>
+                  {showSubtasks ? 'サブタスクを隠す' : 'サブタスクを表示'}
+                </Button>
+              )}
               <Button variant="outline" size="sm" onClick={() => setShowNotes(!showNotes)}>
                 メモ
               </Button>
             </div>
 
             {/* サブタスク一覧 */}
-            {showSubtasks && (
+            {showSubtasks && task.subtasks && task.subtasks.length > 0 && (
               <div className="mt-3 space-y-2 border-t pt-3">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">サブタスク (各5分以内)</h4>
                 {task.subtasks.map((subtask) => {
