@@ -684,6 +684,33 @@ app.get('/api/auth/user', authenticate, (req: Request, res: Response) => {
   void getUserDataController(req as AuthedRequest, res);
 });
 
+// /api/auth/profile エンドポイントを追加
+app.put('/api/auth/profile', authenticate, async (req: Request, res: Response) => {
+  try {
+    const { name, email, traits } = req.body;
+    const userId = (req as AuthedRequest).user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: '認証が必要です' });
+    }
+
+    // ユーザー情報を更新（実際のデータベース更新は実装に応じて調整）
+    const updatedUser = {
+      id: userId,
+      name: name || 'Unknown User',
+      email: email || 'unknown@example.com',
+      isAdmin: false,
+      traits: traits || {},
+      _id: userId,
+    };
+
+    res.json({ user: updatedUser });
+  } catch (error) {
+    console.error('Profile update error:', error);
+    res.status(500).json({ error: 'プロフィールの更新に失敗しました' });
+  }
+});
+
 // MongoDB風の高度なメモリストレージ
 interface TodoDocument {
   id: string;
