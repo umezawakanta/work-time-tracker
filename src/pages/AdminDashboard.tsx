@@ -37,6 +37,7 @@ import { ErrorMonitoringDashboard } from '@/components/development/ErrorMonitori
 import { api } from '@/services/api/apiConfig';
 import SocialShareButton from '@/components/ui/SocialShareButton';
 import AdminUsersPage from '@/pages/AdminUsersPage';
+import { AdminFeaturesList } from '@/components/admin/AdminFeaturesList';
 import { isFeatureAccessible } from '@/config/features';
 import { useDerivedFeatureStatuses } from '@/hooks/useDerivedFeatureStatuses';
 import {
@@ -1160,19 +1161,7 @@ const AdminDashboard: React.FC = () => {
 
         {isFeatureAccessible('/admin/features').allowed && (
           <TabsContent value="features" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>機能一覧と開発状況</CardTitle>
-                <CardDescription>完成定義に基づく進捗とアクセス制御</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <iframe
-                  title="features-frame"
-                  src="/features"
-                  className="w-full min-h-[70vh] border rounded"
-                />
-              </CardContent>
-            </Card>
+            <AdminFeaturesList />
           </TabsContent>
         )}
 

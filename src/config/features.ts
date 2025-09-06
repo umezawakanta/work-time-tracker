@@ -403,9 +403,10 @@ export const featuresRegistry: Feature[] = [
     name: '管理 機能一覧',
     path: '/admin/features',
     category: '運用',
-    status: 'system_testing',
-    requiresRealAPI: false,
-    priority: 'P1',
+    status: 'complete',
+    requiresRealAPI: true,
+    priority: 'P0',
+    targetRelease: '2025-01-28',
   },
   {
     id: 'admin-bugs',
