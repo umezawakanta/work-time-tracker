@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -547,7 +547,7 @@ const Daily10TasksPage: React.FC = () => {
     const completed = progress.tasks.filter((task) => task.completed).length;
     const total = tasks.length;
     const percentage = Math.round((completed / total) * 100);
-    const streak = stats?.streak || 0;
+    const streak = stats?.currentStreak || 0;
     const todayCompleted = progress.tasks.filter(
       (task) =>
         task.completed &&
