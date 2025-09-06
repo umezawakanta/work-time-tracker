@@ -126,13 +126,19 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
         })
       );
 
-      // 毎日20のことの自動完了を試行
-      try {
-        await daily10Api.autoCompleteSubtask('2-1', 'bank_balance_entered');
-        console.log('✅ 銀行口座残高の自動完了を実行しました');
-      } catch (error) {
-        console.log('⚠️ 自動完了の実行に失敗しました:', error);
-      }
+      // 毎日20のことの自動完了を試行（非同期で実行、エラーが発生してもメイン処理は続行）
+      (async () => {
+        try {
+          await daily10Api.autoCompleteSubtask('2', '2-1', 'bank_balance_entered', {
+            accountName: accountName,
+            balance: balance,
+            bankName: account.bankName,
+          });
+          console.log('✅ 銀行口座残高の自動完了を実行しました');
+        } catch (error) {
+          console.log('⚠️ 自動完了の実行に失敗しました（メイン処理は継続）:', error);
+        }
+      })();
 
       toast.success(`${accountName}の残高を追加しました`);
       updateLastBalanceDate();
