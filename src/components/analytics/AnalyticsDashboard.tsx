@@ -376,7 +376,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
                     <Pie
-                      data={Object.entries(analytics.deviceBreakdown).map(
+                      data={Object.entries(analytics.deviceBreakdown || {}).map(
                         ([device, percentage]) => ({
                           name: device,
                           value: percentage,
@@ -389,7 +389,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                       dataKey="value"
                       label={({ name, value }) => `${name}: ${value}%`}
                     >
-                      {Object.entries(analytics.deviceBreakdown).map(([device], index) => (
+                      {Object.entries(analytics.deviceBreakdown || {}).map(([device], index) => (
                         <Cell
                           key={`cell-${index}`}
                           fill={deviceColors[device as keyof typeof deviceColors]}
@@ -408,7 +408,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {Object.entries(analytics.deviceBreakdown).map(([device, percentage]) => (
+                  {Object.entries(analytics.deviceBreakdown || {}).map(([device, percentage]) => (
                     <div key={device} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         {device === 'desktop' && <Monitor className="h-4 w-4" />}
@@ -437,18 +437,20 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={Object.entries(analytics.trafficSources).map(([source, percentage]) => ({
-                      name: source,
-                      value: percentage,
-                      fill: trafficColors[source as keyof typeof trafficColors],
-                    }))}
+                    data={Object.entries(analytics.trafficSources || {}).map(
+                      ([source, percentage]) => ({
+                        name: source,
+                        value: percentage,
+                        fill: trafficColors[source as keyof typeof trafficColors],
+                      })
+                    )}
                     cx="50%"
                     cy="50%"
                     outerRadius={100}
                     dataKey="value"
                     label={({ name, value }) => `${name}: ${value}%`}
                   >
-                    {Object.entries(analytics.trafficSources).map(([source], index) => (
+                    {Object.entries(analytics.trafficSources || {}).map(([source], index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={trafficColors[source as keyof typeof trafficColors]}
