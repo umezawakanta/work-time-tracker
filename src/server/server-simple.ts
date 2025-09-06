@@ -359,6 +359,102 @@ app.delete('/api/sleep-records/:id', (req, res) => {
   res.json({ success: true });
 });
 
+// =============================
+// Bugs (dev server, mirrors Vercel API)
+// =============================
+type BugDoc = {
+  _id: string;
+  title: string;
+  description?: string;
+  featureId: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  status: 'open' | 'in_progress' | 'resolved' | 'closed';
+  source?: 'client' | 'server' | 'manual';
+  fingerprint?: string;
+  occurrences?: number;
+  lastOccurredAt?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+const bugStore: Map<string, BugDoc> = new Map();
+const bugIndexByFingerprint: Map<string, string> = new Map();
+const createBugId = () => 'bug_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+
+app.get('/api/bugs', (req, res) => {
+  const featureId = typeof req.query.featureId === 'string' ? req.query.featureId : undefined;
+  const status = typeof req.query.status === 'string' ? req.query.status : undefined;
+  let list = Array.from(bugStore.values());
+  if (featureId && featureId !== 'all') list = list.filter((b) => b.featureId === featureId);
+  if (status && status !== 'all') list = list.filter((b) => b.status === status);
+  list.sort((a, b) =>
+    (b.lastOccurredAt || b.createdAt).localeCompare(a.lastOccurredAt || a.createdAt)
+  );
+  res.json({ success: true, data: list });
+});
+
+app.post('/api/bugs', (req, res) => {
+  try {
+    const body = req.body || {};
+    const title = String(body.title || '').slice(0, 500);
+    if (!title) return res.status(400).json({ success: false, message: 'title は必須です' });
+    const featureId = body.featureId ? String(body.featureId) : 'unknown';
+    const description = body.description ? String(body.description) : undefined;
+    const source = ['client', 'server', 'manual'].includes(String(body.source))
+      ? (body.source as any)
+      : 'manual';
+    const severity = ['low', 'medium', 'high', 'critical'].includes(String(body.severity))
+      ? (body.severity as any)
+      : 'medium';
+    const status = ['open', 'in_progress', 'resolved', 'closed'].includes(String(body.status))
+      ? (body.status as any)
+      : 'open';
+    const fingerprint = String(
+      body.fingerprint || `${title}|${featureId}|${source}|${(body.endpoint || '').slice(0, 120)}`
+    ).slice(0, 512);
+    const now = new Date().toISOString();
+
+    // dedupe upsert by fingerprint
+    const existingId = bugIndexByFingerprint.get(fingerprint);
+    if (existingId && bugStore.has(existingId)) {
+      const prev = bugStore.get(existingId)!;
+      const next: BugDoc = {
+        ...prev,
+        description,
+        severity,
+        status,
+        source,
+        lastOccurredAt: now,
+        occurrences: (prev.occurrences || 0) + 1,
+        updatedAt: now,
+      };
+      bugStore.set(existingId, next);
+      return res.status(201).json({ success: true, data: next });
+    }
+
+    const id = createBugId();
+    const doc: BugDoc = {
+      _id: id,
+      title,
+      description,
+      featureId,
+      severity,
+      status,
+      source,
+      fingerprint,
+      occurrences: 1,
+      lastOccurredAt: now,
+      createdAt: now,
+      updatedAt: now,
+    };
+    bugStore.set(id, doc);
+    bugIndexByFingerprint.set(fingerprint, id);
+    res.status(201).json({ success: true, data: doc });
+  } catch (e) {
+    res.status(500).json({ success: false, message: 'Failed to ingest bug' });
+  }
+});
+
 // WBS endpoints not implemented yet
 app.post('/api/wbs', (_req, res) =>
   res.status(501).json({ success: false, message: 'Not implemented' })
