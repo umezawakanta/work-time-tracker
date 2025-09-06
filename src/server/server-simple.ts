@@ -694,16 +694,22 @@ app.put('/api/auth/profile', authenticate, async (req: Request, res: Response) =
       return res.status(401).json({ error: '認証が必要です' });
     }
 
+    // バリデーション
+    if (!name || !email) {
+      return res.status(400).json({ error: '名前とメールアドレスは必須です' });
+    }
+
     // ユーザー情報を更新（実際のデータベース更新は実装に応じて調整）
     const updatedUser = {
       id: userId,
-      name: name || 'Unknown User',
-      email: email || 'unknown@example.com',
+      name: name,
+      email: email,
       isAdmin: false,
       traits: traits || {},
       _id: userId,
     };
 
+    console.log('Profile updated:', { userId, name, email });
     res.json({ user: updatedUser });
   } catch (error) {
     console.error('Profile update error:', error);

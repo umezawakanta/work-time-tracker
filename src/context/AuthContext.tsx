@@ -293,12 +293,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // プロフィール更新
   const updateProfile = useCallback(async (data: { name: string; email: string }) => {
     try {
+      console.log('AuthContext updateProfile called with:', data);
       const updatedUser = await updateUserProfile(data);
+      console.log('AuthContext received updated user:', updatedUser);
       setUser(updatedUser);
-      toast.success('プロフィールを更新しました');
+      // トースト通知は呼び出し元で管理
     } catch (error) {
       logger.error('Auth', 'Profile update failed', error);
-      toast.error('プロフィールの更新に失敗しました');
       throw error;
     }
   }, []);

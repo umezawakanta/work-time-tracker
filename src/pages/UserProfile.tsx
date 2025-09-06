@@ -176,11 +176,12 @@ export default function UserProfile() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submission:', { formName, formEmail });
     setIsLoading(true);
     try {
       await updateProfile({ name: formName, email: formEmail });
+      console.log('Profile updated successfully');
       toast.success('プロフィールが更新されました');
-      await fetchUser(); // プロフィール更新後に最新のユーザー情報を取得
     } catch (error) {
       console.error('Profile update error:', error);
       toast.error('プロフィールの更新に失敗しました');
