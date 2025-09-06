@@ -4598,6 +4598,10 @@ const progressStore = new Map<string, any>();
 // GET /api/daily10/tasks - Get all tasks
 app.get('/api/daily10/tasks', (req: Request, res: Response) => {
   try {
+    console.log('📋 DEFAULT_TASKS length:', DEFAULT_TASKS.length);
+    console.log('📋 First task subtasks:', DEFAULT_TASKS[0]?.subtasks?.length);
+    console.log('📋 First task structure:', JSON.stringify(DEFAULT_TASKS[0], null, 2));
+
     res.json({
       success: true,
       data: DEFAULT_TASKS,
