@@ -95,7 +95,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
 
   for (const f of candidates) {
     const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
-    if (status === 'complete' && hasValidYmd(f.targetRelease)) {
+    if (status === 'complete') {
       completedFeatures.push(f);
     } else if (inProgressSet.has(status) && hasValidYmd(f.targetRelease)) {
       inProgressFeatures.push(f);
@@ -108,8 +108,8 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
 
     // リリース日順でソート（最新順）
     const sortedCompleted = completedFeatures.sort((a, b) => {
-      const dateA = new Date(a.targetRelease as string);
-      const dateB = new Date(b.targetRelease as string);
+      const dateA = a.targetRelease ? new Date(a.targetRelease) : new Date(0);
+      const dateB = b.targetRelease ? new Date(b.targetRelease) : new Date(0);
       return dateB.getTime() - dateA.getTime(); // 降順（新しい順）
     });
 
@@ -117,10 +117,15 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
     for (const f of recentCompleted) {
       const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
       const progress = getFeatureProgressPercent(status);
-      const ymd = f.targetRelease as string;
-      const [y, m, d] = ymd.split('-');
-      const dateStr = `${y}/${m}/${d}`;
-      lines.push(`🎉 ${f.name}：${progress}%（リリース日: ${dateStr}）`);
+
+      if (hasValidYmd(f.targetRelease)) {
+        const ymd = f.targetRelease as string;
+        const [y, m, d] = ymd.split('-');
+        const dateStr = `${y}/${m}/${d}`;
+        lines.push(`🎉 ${f.name}：${progress}%（リリース日: ${dateStr}）`);
+      } else {
+        lines.push(`🎉 ${f.name}：${progress}%（リリース済み）`);
+      }
     }
 
     // 他にもリリース済み機能がある場合は省略表示
