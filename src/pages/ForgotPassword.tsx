@@ -122,7 +122,10 @@ export default function ForgotPassword() {
             </Button>
 
             <Link to="/login" className="w-full">
-              <Button variant="ghost" className="w-full text-gray-600 hover:text-gray-800 hover:bg-gray-100">
+              <Button
+                variant="ghost"
+                className="w-full text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+              >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 ログインページに戻る
               </Button>
@@ -207,7 +210,10 @@ export default function ForgotPassword() {
             </Button>
 
             <Link to="/login" className="w-full">
-              <Button variant="ghost" className="w-full text-gray-600 hover:text-gray-800 hover:bg-gray-100">
+              <Button
+                variant="ghost"
+                className="w-full text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+              >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 ログインページに戻る
               </Button>

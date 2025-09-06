@@ -1,5 +1,4 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectMongoDirect, getMongoose } from '../_lib/mongo';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 
@@ -86,8 +85,9 @@ const handleForgotPassword = async (req: VercelRequest, res: VercelResponse): Pr
 
   try {
     // MongoDB接続とユーザー検索
-    await connectMongoDirect();
-    const mongoose = await getMongoose();
+    const mongoLib = require('../_lib/mongo');
+    await mongoLib.connectMongoDirect();
+    const mongoose = await mongoLib.getMongoose();
 
     if (!mongoose) {
       throw new Error('MongoDB connection failed');
@@ -186,8 +186,9 @@ const handleResetPassword = async (req: VercelRequest, res: VercelResponse): Pro
 
   try {
     // MongoDB接続
-    await connectMongoDirect();
-    const mongoose = await getMongoose();
+    const mongoLib = require('../_lib/mongo');
+    await mongoLib.connectMongoDirect();
+    const mongoose = await mongoLib.getMongoose();
 
     if (!mongoose) {
       throw new Error('MongoDB connection failed');
