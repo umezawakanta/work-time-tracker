@@ -109,28 +109,76 @@ const BankAccountPage: React.FC = () => {
                   <div>
                     <h4 className="font-semibold text-blue-900 mb-3">🏦 口座の登録方法</h4>
                     <ol className="list-decimal list-inside space-y-2 text-blue-700">
-                      <li><strong>手動登録</strong><br/>「新しい口座を追加」ボタンで個別登録</li>
-                      <li><strong>CSVインポート</strong><br/>三井住友銀行のCSVファイルをアップロード</li>
-                      <li><strong>複数口座対応</strong><br/>メイン口座以外も複数登録可能</li>
-                      <li><strong>メイン口座設定</strong><br/>主要な口座を1つ指定</li>
+                      <li>
+                        <strong>手動登録</strong>
+                        <br />
+                        「新しい口座を追加」ボタンで個別登録
+                      </li>
+                      <li>
+                        <strong>CSVインポート</strong>
+                        <br />
+                        三井住友銀行のCSVファイルをアップロード
+                      </li>
+                      <li>
+                        <strong>複数口座対応</strong>
+                        <br />
+                        メイン口座以外も複数登録可能
+                      </li>
+                      <li>
+                        <strong>メイン口座設定</strong>
+                        <br />
+                        主要な口座を1つ指定
+                      </li>
                     </ol>
                   </div>
                   <div>
                     <h4 className="font-semibold text-blue-900 mb-3">🔄 データ管理機能</h4>
                     <ol className="list-decimal list-inside space-y-2 text-blue-700">
-                      <li><strong>残高更新</strong><br/>「データ同期」で最新の残高を取得</li>
-                      <li><strong>自動同期</strong><br/>定期的な更新を設定可能</li>
-                      <li><strong>データ永続化</strong><br/>ページ再読み込みでもデータ保持</li>
-                      <li><strong>セキュリティ</strong><br/>暗号化された安全な保存</li>
+                      <li>
+                        <strong>残高更新</strong>
+                        <br />
+                        「データ同期」で最新の残高を取得
+                      </li>
+                      <li>
+                        <strong>自動同期</strong>
+                        <br />
+                        定期的な更新を設定可能
+                      </li>
+                      <li>
+                        <strong>データ永続化</strong>
+                        <br />
+                        ページ再読み込みでもデータ保持
+                      </li>
+                      <li>
+                        <strong>セキュリティ</strong>
+                        <br />
+                        暗号化された安全な保存
+                      </li>
                     </ol>
                   </div>
                   <div>
                     <h4 className="font-semibold text-blue-900 mb-3">💡 毎日の使い方</h4>
                     <ol className="list-decimal list-inside space-y-2 text-blue-700">
-                      <li><strong>朝の確認</strong><br/>「毎日20のこと」で資産確認タスクを完了</li>
-                      <li><strong>残高更新</strong><br/>銀行口座の残高を最新に更新</li>
-                      <li><strong>レポート確認</strong><br/>資産負債レポートで全体を把握</li>
-                      <li><strong>目標管理</strong><br/>設定した目標に対する進捗を確認</li>
+                      <li>
+                        <strong>朝の確認</strong>
+                        <br />
+                        「毎日20のこと」で資産確認タスクを完了
+                      </li>
+                      <li>
+                        <strong>残高更新</strong>
+                        <br />
+                        銀行口座の残高を最新に更新
+                      </li>
+                      <li>
+                        <strong>レポート確認</strong>
+                        <br />
+                        資産負債レポートで全体を把握
+                      </li>
+                      <li>
+                        <strong>目標管理</strong>
+                        <br />
+                        設定した目標に対する進捗を確認
+                      </li>
                     </ol>
                   </div>
                 </div>

@@ -3,7 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Building2, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -80,7 +86,7 @@ const BankAccountForm: React.FC<BankAccountFormProps> = ({
   };
 
   const handleInputChange = (field: keyof BankAccountFormData, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -93,9 +99,7 @@ const BankAccountForm: React.FC<BankAccountFormProps> = ({
           <Building2 className="h-5 w-5" />
           新しい銀行口座を登録
         </CardTitle>
-        <CardDescription>
-          手動で銀行口座の情報を入力して登録します
-        </CardDescription>
+        <CardDescription>手動で銀行口座の情報を入力して登録します</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">

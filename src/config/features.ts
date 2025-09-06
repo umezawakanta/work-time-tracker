@@ -836,7 +836,7 @@ export const featuresRegistry: Feature[] = [
     path: '/bank-accounts',
     category: '生産性',
     description:
-      'メイン銀行口座の登録・管理・設定・CSVインポート機能・操作手順ガイド完備・データ永続化対応',
+      '複数銀行口座の登録・管理・設定・CSVインポート機能・操作手順ガイド完備・データ永続化対応・メイン口座以外も登録可能',
     status: 'complete',
     requiresRealAPI: true,
     priority: 'P0',
