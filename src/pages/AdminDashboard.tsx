@@ -34,6 +34,7 @@ import {
 import { toast } from 'react-hot-toast';
 import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';
 import { ErrorMonitoringDashboard } from '@/components/development/ErrorMonitoringDashboard';
+import { AdminBugsList } from '@/components/admin/AdminBugsList';
 import { api } from '@/services/api/apiConfig';
 import SocialShareButton from '@/components/ui/SocialShareButton';
 import AdminUsersPage from '@/pages/AdminUsersPage';
@@ -1258,19 +1259,7 @@ const AdminDashboard: React.FC = () => {
 
         {isFeatureAccessible('/admin/bugs').allowed && (
           <TabsContent value="bugs" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>不具合一覧</CardTitle>
-                <CardDescription>自動収集/手動登録された不具合を参照</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <iframe
-                  title="bugs-frame"
-                  src="/bugs"
-                  className="w-full min-h-[70vh] border rounded"
-                />
-              </CardContent>
-            </Card>
+            <AdminBugsList />
           </TabsContent>
         )}
 

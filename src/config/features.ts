@@ -417,10 +417,10 @@ export const featuresRegistry: Feature[] = [
     name: '管理 不具合',
     path: '/admin/bugs',
     category: '運用',
-    status: 'system_testing',
+    status: 'complete',
     requiresRealAPI: true,
     priority: 'P1',
-    targetRelease: '2025-09-15',
+    targetRelease: '2025-09-06',
   },
   {
     id: 'admin-settings',
