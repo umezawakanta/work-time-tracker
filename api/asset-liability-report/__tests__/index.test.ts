@@ -1,10 +1,16 @@
 import { createMocks } from 'node-mocks-http';
 import handler from '../index';
 
+// Type assertion to fix VercelRequest compatibility
+const createVercelMocks = (options: any) => {
+  const { req, res } = createMocks(options);
+  return { req: req as any, res };
+};
+
 describe('/api/asset-liability-report', () => {
   describe('GET /api/asset-liability-report?action=summary', () => {
     test('should return report summary successfully', async () => {
-      const { req, res } = createMocks({
+      const { req, res } = createVercelMocks({
         method: 'GET',
         query: { action: 'summary', userId: 'test-user-123' },
         headers: { origin: 'http://localhost:3000' },
@@ -23,7 +29,7 @@ describe('/api/asset-liability-report', () => {
     });
 
     test('should return 401 when userId is missing', async () => {
-      const { req, res } = createMocks({
+      const { req, res } = createVercelMocks({
         method: 'GET',
         query: { action: 'summary' },
         headers: { origin: 'http://localhost:3000' },
@@ -40,7 +46,7 @@ describe('/api/asset-liability-report', () => {
 
   describe('GET /api/asset-liability-report?action=metrics', () => {
     test('should return financial metrics successfully', async () => {
-      const { req, res } = createMocks({
+      const { req, res } = createVercelMocks({
         method: 'GET',
         query: { action: 'metrics', userId: 'test-user-123' },
         headers: { origin: 'http://localhost:3000' },
@@ -60,7 +66,7 @@ describe('/api/asset-liability-report', () => {
 
   describe('GET /api/asset-liability-report?action=trends', () => {
     test('should return trend data successfully', async () => {
-      const { req, res } = createMocks({
+      const { req, res } = createVercelMocks({
         method: 'GET',
         query: { action: 'trends', userId: 'test-user-123' },
         headers: { origin: 'http://localhost:3000' },
@@ -78,7 +84,7 @@ describe('/api/asset-liability-report', () => {
 
   describe('CORS handling', () => {
     test('should set CORS headers for allowed origins', async () => {
-      const { req, res } = createMocks({
+      const { req, res } = createVercelMocks({
         method: 'GET',
         query: { action: 'summary', userId: 'test-user-123' },
         headers: { origin: 'https://work-time-tracker-five.vercel.app' },
@@ -92,7 +98,7 @@ describe('/api/asset-liability-report', () => {
     });
 
     test('should handle OPTIONS request', async () => {
-      const { req, res } = createMocks({
+      const { req, res } = createVercelMocks({
         method: 'OPTIONS',
         headers: { origin: 'http://localhost:3000' },
       });
@@ -105,7 +111,7 @@ describe('/api/asset-liability-report', () => {
 
   describe('Error handling', () => {
     test('should return 405 for unsupported methods', async () => {
-      const { req, res } = createMocks({
+      const { req, res } = createVercelMocks({
         method: 'POST',
         headers: { origin: 'http://localhost:3000' },
       });
