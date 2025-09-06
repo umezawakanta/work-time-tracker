@@ -328,9 +328,9 @@ export const fetchUserData = async (): Promise<User> => {
 // パスワードリセット関連の機能
 export const requestPasswordReset = async (email: string): Promise<{ message: string }> => {
   try {
-    const response = await api.post<{ message: string }>('/auth/password-reset', { 
+    const response = await api.post<{ message: string }>('/auth/password-reset', {
       action: 'forgot',
-      email 
+      email,
     });
     return response.data;
   } catch (error) {
