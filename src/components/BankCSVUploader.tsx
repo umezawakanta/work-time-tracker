@@ -326,11 +326,14 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
       return;
     }
 
+    console.log('ファイルアップロード開始:', file.name, file.size, 'bytes');
     setIsUploading(true);
     setUploadProgress(0);
 
     try {
       const text = await file.text();
+      console.log('ファイル読み込み完了:', text.length, '文字');
+      console.log('ファイル内容（最初の500文字）:', text.substring(0, 500));
       setUploadProgress(25);
 
       const parsedData = parseSMBCBankCSV(text);
