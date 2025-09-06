@@ -115,7 +115,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
       if (pa !== pb) return pa - pb;
 
       // 同じ優先度の場合は、期待される機能を優先
-      const expectedFeatures = ['settings-core', 'terms-of-service', 'terms'];
+      const expectedFeatures = ['terms', 'profile', 'improvement-plan'];
       const aExpected = expectedFeatures.includes(a.id);
       const bExpected = expectedFeatures.includes(b.id);
       if (aExpected && !bExpected) return -1;
@@ -155,7 +155,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
     lines.push('🚀 開発中機能');
 
     // 期待される機能を最優先に、その後優先度順で表示
-    const expectedFeatures = ['profile', 'improvement-plan', 'pricing'];
+    const expectedFeatures = ['pricing', 'docs-viewer', 'asset-liability-report'];
     const priorityOrder: Record<'P0' | 'P1' | 'P2' | 'P3', number> = { P0: 1, P1: 0, P2: 2, P3: 3 };
     const sortedInProgress = inProgressFeatures.sort((a, b) => {
       // 期待される機能を最優先
