@@ -55,13 +55,14 @@ export const useDaily10Tasks = () => {
 
   // 進捗を更新
   const updateProgress = useCallback(
-    async (taskId: string, completed: boolean, notes?: string) => {
+    async (taskId: string, completed: boolean, notes?: string, subtaskId?: string) => {
       if (!user?.id) return;
 
       try {
         const updatedProgress = await daily10Api.updateProgress(user.id, {
           date: currentDate,
           taskId,
+          subtaskId,
           completed,
           notes,
         });

@@ -1,31 +1,36 @@
+export interface Subtask {
+  id: string;
+  name: string;
+  estimatedMinutes: number;
+}
+
+export interface SubtaskProgress {
+  subtaskId: string;
+  completed: boolean;
+  completedAt?: string;
+  estimatedMinutes: number;
+}
+
 export interface DailyTask {
   id: string;
   name: string;
-  description: string;
-  category: 'financial' | 'planning' | 'personal' | 'health';
-  isActive: boolean;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
+  category: 'finance' | 'planning' | 'personal' | 'hobby' | 'household' | 'work';
+  priority: 'low' | 'medium' | 'high';
+  subtasks: Subtask[];
 }
 
 export interface TaskProgress {
+  taskId: string;
   completed: boolean;
   completedAt?: string;
-  notes?: string;
+  subtasks: SubtaskProgress[];
 }
 
 export interface DailyProgress {
-  id: string;
-  userId: string;
   date: string; // YYYY-MM-DD
-  tasks: {
-    [taskId: string]: TaskProgress;
-  };
+  tasks: TaskProgress[];
   completionRate: number; // 0-100
   streak: number; // 連続実行日数
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface DailyStats {
@@ -70,6 +75,7 @@ export interface Daily10State {
 export interface UpdateProgressRequest {
   date: string;
   taskId: string;
+  subtaskId?: string;
   completed: boolean;
   notes?: string;
 }

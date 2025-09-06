@@ -79,16 +79,21 @@ const categoryColors = {
 interface TaskItemProps {
   task: DailyTask;
   progress?: TaskProgress;
-  onUpdate: (taskId: string, completed: boolean, notes?: string) => void;
+  onUpdate: (taskId: string, completed: boolean, notes?: string, subtaskId?: string) => void;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
   const [notes, setNotes] = useState(progress?.notes || '');
   const [showNotes, setShowNotes] = useState(false);
+  const [showSubtasks, setShowSubtasks] = useState(false);
   const IconComponent = taskIcons[task.id] || categoryIcons[task.category] || Circle;
 
   const handleToggle = (completed: boolean) => {
     onUpdate(task.id, completed, notes);
+  };
+
+  const handleSubtaskToggle = (subtaskId: string, completed: boolean) => {
+    onUpdate(task.id, completed, notes, subtaskId);
   };
 
   const handleNotesChange = (newNotes: string) => {
@@ -97,6 +102,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
       onUpdate(task.id, true, newNotes);
     }
   };
+
+  const completedSubtasks = progress?.subtasks?.filter((st) => st.completed).length || 0;
+  const totalSubtasks = task.subtasks.length;
+  const subtaskProgress = totalSubtasks > 0 ? (completedSubtasks / totalSubtasks) * 100 : 0;
 
   return (
     <Card className="mb-4">
@@ -112,27 +121,76 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
               <IconComponent className="h-4 w-4" />
               <h3 className="font-medium">{task.name}</h3>
               <Badge className={categoryColors[task.category]}>{task.category}</Badge>
+              <Badge variant="outline" className="text-xs">
+                {completedSubtasks}/{totalSubtasks} サブタスク
+              </Badge>
             </div>
-            <p className="text-sm text-gray-600 mb-2">{task.description}</p>
+
+            {/* サブタスク進捗バー */}
+            <div className="mb-3">
+              <div className="flex justify-between text-xs text-gray-600 mb-1">
+                <span>サブタスク進捗</span>
+                <span>{Math.round(subtaskProgress)}%</span>
+              </div>
+              <Progress value={subtaskProgress} className="h-2" />
+            </div>
+
+            {/* サブタスク表示ボタン */}
+            <div className="flex items-center space-x-2 mb-2">
+              <Button variant="outline" size="sm" onClick={() => setShowSubtasks(!showSubtasks)}>
+                {showSubtasks ? 'サブタスクを隠す' : 'サブタスクを表示'}
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setShowNotes(!showNotes)}>
+                メモ
+              </Button>
+            </div>
+
+            {/* サブタスク一覧 */}
+            {showSubtasks && (
+              <div className="mt-3 space-y-2 border-t pt-3">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">サブタスク (各5分以内)</h4>
+                {task.subtasks.map((subtask) => {
+                  const subtaskProgress = progress?.subtasks?.find(
+                    (st) => st.subtaskId === subtask.id
+                  );
+                  return (
+                    <div key={subtask.id} className="flex items-center space-x-2 text-sm">
+                      <Checkbox
+                        checked={subtaskProgress?.completed || false}
+                        onCheckedChange={(checked) =>
+                          handleSubtaskToggle(subtask.id, checked as boolean)
+                        }
+                        className="h-4 w-4"
+                      />
+                      <span
+                        className={`flex-1 ${subtaskProgress?.completed ? 'line-through text-gray-500' : ''}`}
+                      >
+                        {subtask.name}
+                      </span>
+                      <Badge variant="secondary" className="text-xs">
+                        {subtask.estimatedMinutes}分
+                      </Badge>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
             {progress?.completed && progress.completedAt && (
               <p className="text-xs text-green-600 mb-2">
                 完了: {new Date(progress.completedAt).toLocaleTimeString('ja-JP')}
               </p>
             )}
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" onClick={() => setShowNotes(!showNotes)}>
-                メモ
-              </Button>
-              {showNotes && (
-                <Textarea
-                  value={notes}
-                  onChange={(e) => handleNotesChange(e.target.value)}
-                  placeholder="メモを入力..."
-                  className="mt-2"
-                  rows={2}
-                />
-              )}
-            </div>
+
+            {showNotes && (
+              <Textarea
+                value={notes}
+                onChange={(e) => handleNotesChange(e.target.value)}
+                placeholder="メモを入力..."
+                className="mt-2"
+                rows={2}
+              />
+            )}
           </div>
         </div>
       </CardContent>
@@ -175,7 +233,10 @@ const Daily10TasksPage: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">必ず毎日やる20のこと</h1>
-        <p className="text-gray-600">毎日の習慣を継続して、目標を達成しましょう</p>
+        <p className="text-gray-600 mb-2">毎日の習慣を継続して、目標を達成しましょう</p>
+        <p className="text-sm text-gray-500">
+          各タスクは5分以内で完了できるサブタスクに分割されています
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

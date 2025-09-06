@@ -4256,42 +4256,252 @@ app.patch('/api/daily-victory/today', async (req, res) => {
   }
 });
 
-// Daily 10 Tasks API endpoints
-// Mock data for daily tasks
+// Daily 20 Tasks API endpoints with subtasks
+// Mock data for daily tasks with subtasks (each subtask should be completable within 5 minutes)
 const DEFAULT_TASKS = [
-  { id: '1', name: '直近3ヶ月の収入と支出をすべて把握する', category: 'finance', priority: 'high' },
-  { id: '2', name: '現在の資産と負債をすべて把握する', category: 'finance', priority: 'high' },
+  {
+    id: '1',
+    name: '直近3ヶ月の収入と支出をすべて把握する',
+    category: 'finance',
+    priority: 'high',
+    subtasks: [
+      { id: '1-1', name: '銀行口座の入出金履歴を確認する', estimatedMinutes: 3 },
+      { id: '1-2', name: 'クレジットカードの利用履歴を確認する', estimatedMinutes: 2 },
+      { id: '1-3', name: '現金での支出を記録する', estimatedMinutes: 2 },
+      { id: '1-4', name: '収入と支出の合計を計算する', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '2',
+    name: '現在の資産と負債をすべて把握する',
+    category: 'finance',
+    priority: 'high',
+    subtasks: [
+      { id: '2-1', name: '銀行預金残高を確認する', estimatedMinutes: 2 },
+      { id: '2-2', name: '投資口座の残高を確認する', estimatedMinutes: 2 },
+      { id: '2-3', name: '借入金の残高を確認する', estimatedMinutes: 2 },
+      { id: '2-4', name: '資産と負債の差額を計算する', estimatedMinutes: 1 },
+    ],
+  },
   {
     id: '3',
     name: '現在から3ヶ月後までの予定をすべて把握する',
     category: 'planning',
     priority: 'high',
+    subtasks: [
+      { id: '3-1', name: 'カレンダーアプリで今月の予定を確認する', estimatedMinutes: 2 },
+      { id: '3-2', name: '来月の予定を確認する', estimatedMinutes: 2 },
+      { id: '3-3', name: '再来月の予定を確認する', estimatedMinutes: 2 },
+      { id: '3-4', name: '重要な予定をメモにまとめる', estimatedMinutes: 1 },
+    ],
   },
   {
     id: '4',
     name: '先月と今月の固定費の支払いと支払日をすべて把握',
     category: 'finance',
     priority: 'high',
+    subtasks: [
+      { id: '4-1', name: '家賃・光熱費の支払い状況を確認する', estimatedMinutes: 2 },
+      { id: '4-2', name: '通信費・保険料の支払い状況を確認する', estimatedMinutes: 2 },
+      { id: '4-3', name: 'その他の固定費を確認する', estimatedMinutes: 2 },
+      { id: '4-4', name: '支払い予定日をカレンダーに記録する', estimatedMinutes: 1 },
+    ],
   },
-  { id: '5', name: '直近3ヶ月の利息の支払いをすべて把握', category: 'finance', priority: 'high' },
-  { id: '6', name: '直近3ヶ月の光熱費の支払いをすべて把握', category: 'finance', priority: 'high' },
-  { id: '7', name: 'ギターの練習', category: 'hobby', priority: 'medium' },
-  { id: '8', name: '洗い物', category: 'household', priority: 'medium' },
-  { id: '9', name: '自炊', category: 'household', priority: 'medium' },
-  { id: '10', name: '風呂', category: 'household', priority: 'medium' },
-  { id: '11', name: '読書', category: 'personal', priority: 'medium' },
-  { id: '12', name: 'このサイトの開発を進める', category: 'work', priority: 'high' },
-  { id: '13', name: '新聞を捨てる', category: 'household', priority: 'low' },
-  { id: '14', name: 'チラシを捨てる', category: 'household', priority: 'low' },
-  { id: '15', name: '冷蔵庫の中身を確認', category: 'household', priority: 'low' },
-  { id: '16', name: '床掃除', category: 'household', priority: 'low' },
-  { id: '17', name: '洗濯', category: 'household', priority: 'medium' },
-  { id: '18', name: '洗濯物を干す', category: 'household', priority: 'medium' },
-  { id: '19', name: '洗濯物をたたむ', category: 'household', priority: 'medium' },
-  { id: '20', name: '押入れの整理', category: 'household', priority: 'low' },
+  {
+    id: '5',
+    name: '直近3ヶ月の利息の支払いをすべて把握',
+    category: 'finance',
+    priority: 'high',
+    subtasks: [
+      { id: '5-1', name: 'クレジットカードの利息を確認する', estimatedMinutes: 2 },
+      { id: '5-2', name: 'ローン・借入金の利息を確認する', estimatedMinutes: 2 },
+      { id: '5-3', name: '利息の合計額を計算する', estimatedMinutes: 1 },
+      { id: '5-4', name: '利息削減の対策を検討する', estimatedMinutes: 2 },
+    ],
+  },
+  {
+    id: '6',
+    name: '直近3ヶ月の光熱費の支払いをすべて把握',
+    category: 'finance',
+    priority: 'high',
+    subtasks: [
+      { id: '6-1', name: '電気代の支払い履歴を確認する', estimatedMinutes: 2 },
+      { id: '6-2', name: 'ガス代の支払い履歴を確認する', estimatedMinutes: 2 },
+      { id: '6-3', name: '水道代の支払い履歴を確認する', estimatedMinutes: 2 },
+      { id: '6-4', name: '光熱費の合計と推移を分析する', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '7',
+    name: 'ギターの練習',
+    category: 'hobby',
+    priority: 'medium',
+    subtasks: [
+      { id: '7-1', name: 'ギターを準備する', estimatedMinutes: 1 },
+      { id: '7-2', name: '基本練習（スケール・コード）を行う', estimatedMinutes: 3 },
+      { id: '7-3', name: '曲の練習を行う', estimatedMinutes: 2 },
+      { id: '7-4', name: 'ギターを片付ける', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '8',
+    name: '洗い物',
+    category: 'household',
+    priority: 'medium',
+    subtasks: [
+      { id: '8-1', name: '食器をシンクに集める', estimatedMinutes: 1 },
+      { id: '8-2', name: '食器を洗う', estimatedMinutes: 3 },
+      { id: '8-3', name: '食器を水切りかごに置く', estimatedMinutes: 1 },
+      { id: '8-4', name: 'シンク周りを拭く', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '9',
+    name: '自炊',
+    category: 'household',
+    priority: 'medium',
+    subtasks: [
+      { id: '9-1', name: '冷蔵庫の中身を確認する', estimatedMinutes: 1 },
+      { id: '9-2', name: '料理のメニューを決める', estimatedMinutes: 1 },
+      { id: '9-3', name: '材料を準備する', estimatedMinutes: 2 },
+      { id: '9-4', name: '簡単な料理を作る', estimatedMinutes: 3 },
+    ],
+  },
+  {
+    id: '10',
+    name: '風呂',
+    category: 'household',
+    priority: 'medium',
+    subtasks: [
+      { id: '10-1', name: '風呂場を準備する', estimatedMinutes: 1 },
+      { id: '10-2', name: '入浴する', estimatedMinutes: 3 },
+      { id: '10-3', name: '体を拭く', estimatedMinutes: 1 },
+      { id: '10-4', name: '風呂場を片付ける', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '11',
+    name: '読書',
+    category: 'personal',
+    priority: 'medium',
+    subtasks: [
+      { id: '11-1', name: '読む本を選ぶ', estimatedMinutes: 1 },
+      { id: '11-2', name: '読書環境を整える', estimatedMinutes: 1 },
+      { id: '11-3', name: '集中して読書する', estimatedMinutes: 3 },
+      { id: '11-4', name: '読んだ内容をメモする', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '12',
+    name: 'このサイトの開発を進める',
+    category: 'work',
+    priority: 'high',
+    subtasks: [
+      { id: '12-1', name: '今日の開発タスクを確認する', estimatedMinutes: 1 },
+      { id: '12-2', name: 'コードを書く・修正する', estimatedMinutes: 3 },
+      { id: '12-3', name: '動作確認・テストを行う', estimatedMinutes: 2 },
+      { id: '12-4', name: '進捗を記録する', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '13',
+    name: '新聞を捨てる',
+    category: 'household',
+    priority: 'low',
+    subtasks: [
+      { id: '13-1', name: '古い新聞を集める', estimatedMinutes: 1 },
+      { id: '13-2', name: '新聞を束ねる', estimatedMinutes: 1 },
+      { id: '13-3', name: 'ゴミ出し場所に持っていく', estimatedMinutes: 2 },
+      { id: '13-4', name: '新聞置き場を整理する', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '14',
+    name: 'チラシを捨てる',
+    category: 'household',
+    priority: 'low',
+    subtasks: [
+      { id: '14-1', name: '不要なチラシを集める', estimatedMinutes: 1 },
+      { id: '14-2', name: 'チラシを分別する', estimatedMinutes: 1 },
+      { id: '14-3', name: 'リサイクル可能なものとゴミに分ける', estimatedMinutes: 1 },
+      { id: '14-4', name: 'それぞれ適切な場所に捨てる', estimatedMinutes: 2 },
+    ],
+  },
+  {
+    id: '15',
+    name: '冷蔵庫の中身を確認',
+    category: 'household',
+    priority: 'low',
+    subtasks: [
+      { id: '15-1', name: '冷蔵庫を開ける', estimatedMinutes: 1 },
+      { id: '15-2', name: '中身を確認する', estimatedMinutes: 2 },
+      { id: '15-3', name: '期限切れのものを取り出す', estimatedMinutes: 1 },
+      { id: '15-4', name: '必要なものをメモする', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '16',
+    name: '床掃除',
+    category: 'household',
+    priority: 'low',
+    subtasks: [
+      { id: '16-1', name: '掃除機を準備する', estimatedMinutes: 1 },
+      { id: '16-2', name: '床を掃除機で掃除する', estimatedMinutes: 3 },
+      { id: '16-3', name: '掃除機を片付ける', estimatedMinutes: 1 },
+      { id: '16-4', name: '床の状態を確認する', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '17',
+    name: '洗濯',
+    category: 'household',
+    priority: 'medium',
+    subtasks: [
+      { id: '17-1', name: '洗濯物を集める', estimatedMinutes: 1 },
+      { id: '17-2', name: '洗濯物を洗濯機に入れる', estimatedMinutes: 2 },
+      { id: '17-3', name: '洗剤を入れて洗濯を開始する', estimatedMinutes: 1 },
+      { id: '17-4', name: '洗濯の完了を確認する', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '18',
+    name: '洗濯物を干す',
+    category: 'household',
+    priority: 'medium',
+    subtasks: [
+      { id: '18-1', name: '洗濯物を取り出す', estimatedMinutes: 1 },
+      { id: '18-2', name: '洗濯物を干す場所を準備する', estimatedMinutes: 1 },
+      { id: '18-3', name: '洗濯物を干す', estimatedMinutes: 2 },
+      { id: '18-4', name: '干し終わったことを確認する', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '19',
+    name: '洗濯物をたたむ',
+    category: 'household',
+    priority: 'medium',
+    subtasks: [
+      { id: '19-1', name: '乾いた洗濯物を集める', estimatedMinutes: 1 },
+      { id: '19-2', name: '洗濯物をたたむ', estimatedMinutes: 3 },
+      { id: '19-3', name: 'たたんだ洗濯物を仕舞う', estimatedMinutes: 1 },
+      { id: '19-4', name: '洗濯物の整理を完了する', estimatedMinutes: 1 },
+    ],
+  },
+  {
+    id: '20',
+    name: '押入れの整理',
+    category: 'household',
+    priority: 'low',
+    subtasks: [
+      { id: '20-1', name: '押入れを開ける', estimatedMinutes: 1 },
+      { id: '20-2', name: '中身を確認する', estimatedMinutes: 2 },
+      { id: '20-3', name: '不要なものを取り出す', estimatedMinutes: 2 },
+      { id: '20-4', name: '残りのものを整理する', estimatedMinutes: 2 },
+    ],
+  },
 ];
 
-// In-memory store for progress
+// In-memory store for progress (now includes subtask progress)
 const progressStore = new Map<string, any>();
 
 // GET /api/daily10/tasks - Get all tasks
@@ -4323,6 +4533,12 @@ app.get('/api/daily10/progress', (req: Request, res: Response) => {
           taskId: task.id,
           completed: false,
           completedAt: null,
+          subtasks: task.subtasks.map((subtask) => ({
+            subtaskId: subtask.id,
+            completed: false,
+            completedAt: null,
+            estimatedMinutes: subtask.estimatedMinutes,
+          })),
         })),
         completionRate: 0,
         streak: 0,
@@ -4345,6 +4561,12 @@ app.get('/api/daily10/progress', (req: Request, res: Response) => {
             taskId: task.id,
             completed: false,
             completedAt: null,
+            subtasks: task.subtasks.map((subtask) => ({
+              subtaskId: subtask.id,
+              completed: false,
+              completedAt: null,
+              estimatedMinutes: subtask.estimatedMinutes,
+            })),
           })),
           completionRate: 0,
           streak: 0,
@@ -4374,7 +4596,7 @@ app.get('/api/daily10/progress', (req: Request, res: Response) => {
 // POST /api/daily10/progress - Update progress for a specific date
 app.post('/api/daily10/progress', (req: Request, res: Response) => {
   try {
-    const { date, taskId, completed } = req.body;
+    const { date, taskId, subtaskId, completed } = req.body;
 
     if (!date || !taskId || typeof completed !== 'boolean') {
       return res.status(400).json({
@@ -4389,19 +4611,59 @@ app.post('/api/daily10/progress', (req: Request, res: Response) => {
         taskId: task.id,
         completed: false,
         completedAt: null,
+        subtasks: task.subtasks.map((subtask) => ({
+          subtaskId: subtask.id,
+          completed: false,
+          completedAt: null,
+          estimatedMinutes: subtask.estimatedMinutes,
+        })),
       })),
       completionRate: 0,
       streak: 0,
     };
 
-    // Update the specific task
+    // Find the task
     const taskIndex = existingProgress.tasks.findIndex((t) => t.taskId === taskId);
-    if (taskIndex !== -1) {
-      existingProgress.tasks[taskIndex].completed = completed;
-      existingProgress.tasks[taskIndex].completedAt = completed ? new Date().toISOString() : null;
+    if (taskIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: 'Task not found',
+      });
     }
 
-    // Calculate completion rate
+    if (subtaskId) {
+      // Update specific subtask
+      const subtaskIndex = existingProgress.tasks[taskIndex].subtasks.findIndex(
+        (st) => st.subtaskId === subtaskId
+      );
+      if (subtaskIndex !== -1) {
+        existingProgress.tasks[taskIndex].subtasks[subtaskIndex].completed = completed;
+        existingProgress.tasks[taskIndex].subtasks[subtaskIndex].completedAt = completed
+          ? new Date().toISOString()
+          : null;
+      }
+
+      // Check if all subtasks are completed to mark main task as completed
+      const allSubtasksCompleted = existingProgress.tasks[taskIndex].subtasks.every(
+        (st) => st.completed
+      );
+      existingProgress.tasks[taskIndex].completed = allSubtasksCompleted;
+      existingProgress.tasks[taskIndex].completedAt = allSubtasksCompleted
+        ? new Date().toISOString()
+        : null;
+    } else {
+      // Update main task (mark all subtasks as completed/not completed)
+      existingProgress.tasks[taskIndex].completed = completed;
+      existingProgress.tasks[taskIndex].completedAt = completed ? new Date().toISOString() : null;
+
+      // Update all subtasks to match main task status
+      existingProgress.tasks[taskIndex].subtasks.forEach((subtask) => {
+        subtask.completed = completed;
+        subtask.completedAt = completed ? new Date().toISOString() : null;
+      });
+    }
+
+    // Calculate completion rate based on main tasks
     const completedTasks = existingProgress.tasks.filter((t) => t.completed).length;
     existingProgress.completionRate = (completedTasks / DEFAULT_TASKS.length) * 100;
 
