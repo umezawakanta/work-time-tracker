@@ -73,7 +73,6 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         {
           $setOnInsert: {
             title,
-            description,
             featureId,
             severity,
             status,
@@ -92,6 +91,11 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         },
         { new: true, upsert: true }
       );
+      
+      // Update description separately if provided
+      if (description) {
+        await Bug.findByIdAndUpdate(updated._id, { $set: { description } });
+      }
       res.status(201).json({ success: true, data: updated });
       return;
     } catch (error: any) {
