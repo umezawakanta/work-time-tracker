@@ -1,24 +1,33 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { cors } from '../../lib/cors';
 import { connectDB } from '../../src/server/config/database';
 import { WorkTimeEntry } from '../../src/server/models/WorkTimeEntry';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  await cors(req, res);
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  // CORS設定
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
   try {
     let dbConnected = true;
     try {
       await connectDB();
-    } catch {
+    } catch (error) {
+      console.log('Database connection failed, using fallback:', error);
       dbConnected = false;
     }
 
     const method = req.method || 'GET';
     if (method === 'GET') {
-      if (!dbConnected) return res.status(200).json([]);
-      const userId = (req.query.userId as string) || (req.headers['x-user-id'] as string) || '';
+      if (!dbConnected) {
+        // データベース接続に失敗した場合は空の配列を返す
+        return res.status(200).json([]);
+      }
+      const userId = (req.query.userId as string) || (req.headers['x-user-id'] as string) || 'default-user';
       const query = userId ? { userId } : {};
       const docs = await WorkTimeEntry.find(query).sort({ date: -1, createdAt: -1 }).limit(500);
       return res.status(200).json(docs);
@@ -28,7 +37,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!dbConnected) return res.status(503).json({ success: false, error: 'DB unavailable' });
       const { projectName, startTime, endTime, description, duration, date, userId } =
         req.body || {};
-      if (!projectName || !startTime || !endTime || !duration || !date || !userId) {
+      const finalUserId = userId || 'default-user';
+      if (!projectName || !startTime || !endTime || !duration || !date) {
         return res.status(400).json({ success: false, error: 'Missing fields' });
       }
       const created = await WorkTimeEntry.create({
@@ -38,7 +48,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         description,
         duration,
         date: new Date(date),
-        userId,
+        userId: finalUserId,
       });
       return res.status(201).json({ message: '作業時間が作成されました', workTime: created });
     }

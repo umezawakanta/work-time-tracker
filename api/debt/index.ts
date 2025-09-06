@@ -26,14 +26,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { userId } = req.query;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: 'User ID is required',
-      });
-    }
+    // デフォルトユーザーIDを使用（開発環境用）
+    const userId = (req.query.userId as string) || 'default-user';
 
     if (req.method === 'GET') {
       // 負債データを取得

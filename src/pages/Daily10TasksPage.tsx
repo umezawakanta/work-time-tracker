@@ -261,7 +261,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 )}
                 {task.id === '4' && (
                   <div>
-                    <p className="font-medium mb-1">💳 先月と今月の固定費の支払いと支払日をすべて把握</p>
+                    <p className="font-medium mb-1">
+                      💳 先月と今月の固定費の支払いと支払日をすべて把握
+                    </p>
                     <ol className="list-decimal list-inside space-y-1 ml-2">
                       <li>家賃、光熱費、通信費、保険料等の固定費をリストアップ</li>
                       <li>各支払いの支払日を確認</li>
@@ -622,11 +624,23 @@ const Daily10TasksPage: React.FC = () => {
             <div className="flex-1">
               <h3 className="text-sm font-medium text-green-900 mb-2">🚀 クイックスタートガイド</h3>
               <div className="text-sm text-green-800 space-y-1">
-                <p><strong>1. まず最初に：</strong>「直近3ヶ月の収入と支出をすべて把握する」から始めましょう</p>
-                <p><strong>2. サブタスクを確認：</strong>「サブタスクを表示」ボタンで10個のステップを確認</p>
-                <p><strong>3. 手順を確認：</strong>各サブタスクの「手順を表示」で具体的なやり方を見る</p>
-                <p><strong>4. 実行：</strong>5分以内で完了できるように取り組む</p>
-                <p><strong>5. チェック：</strong>完了したらチェックボックスをクリック</p>
+                <p>
+                  <strong>1. まず最初に：</strong>
+                  「直近3ヶ月の収入と支出をすべて把握する」から始めましょう
+                </p>
+                <p>
+                  <strong>2. サブタスクを確認：</strong>
+                  「サブタスクを表示」ボタンで10個のステップを確認
+                </p>
+                <p>
+                  <strong>3. 手順を確認：</strong>各サブタスクの「手順を表示」で具体的なやり方を見る
+                </p>
+                <p>
+                  <strong>4. 実行：</strong>5分以内で完了できるように取り組む
+                </p>
+                <p>
+                  <strong>5. チェック：</strong>完了したらチェックボックスをクリック
+                </p>
               </div>
             </div>
           </div>
@@ -658,20 +672,38 @@ const Daily10TasksPage: React.FC = () => {
             <div>
               <h4 className="font-semibold mb-2 text-blue-900">📋 タスクの進め方</h4>
               <ol className="list-decimal list-inside space-y-2">
-                <li><strong>タスクを選択</strong> - 下のリストから取り組みたいタスクを選ぶ</li>
-                <li><strong>サブタスクを確認</strong> - 「サブタスクを表示」ボタンをクリック</li>
-                <li><strong>手順を確認</strong> - 「手順を表示」ボタンで具体的な手順を見る</li>
-                <li><strong>実行</strong> - 手順に従って5分以内でタスクを完了</li>
-                <li><strong>チェック</strong> - 完了したサブタスクのチェックボックスをクリック</li>
+                <li>
+                  <strong>タスクを選択</strong> - 下のリストから取り組みたいタスクを選ぶ
+                </li>
+                <li>
+                  <strong>サブタスクを確認</strong> - 「サブタスクを表示」ボタンをクリック
+                </li>
+                <li>
+                  <strong>手順を確認</strong> - 「手順を表示」ボタンで具体的な手順を見る
+                </li>
+                <li>
+                  <strong>実行</strong> - 手順に従って5分以内でタスクを完了
+                </li>
+                <li>
+                  <strong>チェック</strong> - 完了したサブタスクのチェックボックスをクリック
+                </li>
               </ol>
             </div>
             <div>
               <h4 className="font-semibold mb-2 text-blue-900">✅ 進捗の管理</h4>
               <ol className="list-decimal list-inside space-y-2">
-                <li><strong>サブタスク完了</strong> - 各サブタスクのチェックボックスをクリック</li>
-                <li><strong>メインタスク完了</strong> - 全サブタスク完了で自動的に完了</li>
-                <li><strong>自動連携</strong> - 資産管理ページでの入力は自動反映</li>
-                <li><strong>進捗確認</strong> - 上部の進捗バーで全体の進捗を確認</li>
+                <li>
+                  <strong>サブタスク完了</strong> - 各サブタスクのチェックボックスをクリック
+                </li>
+                <li>
+                  <strong>メインタスク完了</strong> - 全サブタスク完了で自動的に完了
+                </li>
+                <li>
+                  <strong>自動連携</strong> - 資産管理ページでの入力は自動反映
+                </li>
+                <li>
+                  <strong>進捗確認</strong> - 上部の進捗バーで全体の進捗を確認
+                </li>
               </ol>
             </div>
           </div>
@@ -685,7 +717,9 @@ const Daily10TasksPage: React.FC = () => {
           </h3>
           <div className="space-y-4 text-sm text-green-700">
             <div className="p-3 bg-white rounded-lg border border-green-200">
-              <h4 className="font-semibold text-green-900 mb-2">💰 直近3ヶ月の収入と支出をすべて把握する</h4>
+              <h4 className="font-semibold text-green-900 mb-2">
+                💰 直近3ヶ月の収入と支出をすべて把握する
+              </h4>
               <p className="mb-2">このタスクは10個のサブタスクに分かれています：</p>
               <ol className="list-decimal list-inside space-y-1 ml-4">
                 <li>財布の中の現金残高を確認（5分）</li>
@@ -701,7 +735,9 @@ const Daily10TasksPage: React.FC = () => {
               </ol>
             </div>
             <div className="p-3 bg-white rounded-lg border border-green-200">
-              <h4 className="font-semibold text-green-900 mb-2">🏦 現在の資産と負債をすべて把握する</h4>
+              <h4 className="font-semibold text-green-900 mb-2">
+                🏦 現在の資産と負債をすべて把握する
+              </h4>
               <p className="mb-2">このタスクは銀行口座管理と連携しています：</p>
               <ul className="list-disc list-inside space-y-1 ml-4">
                 <li>メイン銀行口座を登録（銀行口座管理ページ）</li>
@@ -722,19 +758,30 @@ const Daily10TasksPage: React.FC = () => {
           <div className="space-y-3 text-sm text-yellow-700">
             <div>
               <h4 className="font-semibold text-yellow-900">Q: サブタスクが表示されません</h4>
-              <p>A: 「サブタスクを表示」ボタンをクリックしてください。一部のタスクにはサブタスクが定義されていない場合があります。</p>
+              <p>
+                A:
+                「サブタスクを表示」ボタンをクリックしてください。一部のタスクにはサブタスクが定義されていない場合があります。
+              </p>
             </div>
             <div>
               <h4 className="font-semibold text-yellow-900">Q: 手順が分からない</h4>
-              <p>A: 各サブタスクの「手順を表示」ボタンをクリックすると、具体的な手順が表示されます。</p>
+              <p>
+                A: 各サブタスクの「手順を表示」ボタンをクリックすると、具体的な手順が表示されます。
+              </p>
             </div>
             <div>
               <h4 className="font-semibold text-yellow-900">Q: 進捗が保存されません</h4>
-              <p>A: ブラウザの更新ボタンを押すか、ページを再読み込みしてください。進捗は自動的に保存されます。</p>
+              <p>
+                A:
+                ブラウザの更新ボタンを押すか、ページを再読み込みしてください。進捗は自動的に保存されます。
+              </p>
             </div>
             <div>
               <h4 className="font-semibold text-yellow-900">Q: 銀行口座の情報が表示されません</h4>
-              <p>A: 銀行口座管理ページでメイン銀行口座を登録してください。登録後、このページで口座情報が表示されます。</p>
+              <p>
+                A:
+                銀行口座管理ページでメイン銀行口座を登録してください。登録後、このページで口座情報が表示されます。
+              </p>
             </div>
           </div>
         </div>
