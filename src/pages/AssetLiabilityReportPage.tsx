@@ -242,47 +242,63 @@ export default function AssetLiabilityReportPage() {
     loadData();
   }, []);
 
-  // 長期トレンドデータの生成（デモ用）
+  // 長期トレンドデータの生成（実際のデータから計算）
   const generateLongTermData = () => {
     const data: LongTermDataPoint[] = [];
-    const startDate = new Date();
-    startDate.setFullYear(startDate.getFullYear() - 5); // 5年前からのデータ
-
-    // 月次データを生成
-    for (let i = 0; i <= 60; i++) {
-      const date = new Date(startDate);
-      date.setMonth(date.getMonth() + i);
-
-      // 資産は徐々に増加、変動あり
-      const baseAssets = 5000000 + i * 100000;
-      const assets = baseAssets * (0.95 + Math.random() * 0.1);
-
-      // 負債は徐々に減少
-      const baseDebts = 3000000 - i * 30000;
-      const debts = Math.max(0, baseDebts * (0.97 + Math.random() * 0.06));
-
-      // 純資産
-      const netWorth = assets - debts;
-
-      // カテゴリ別の資産を追加
-      const categories = {
-        '現金・預金': assets * 0.2,
-        投資: assets * 0.35,
-        不動産: assets * 0.3,
-        '年金・保険': assets * 0.1,
-        その他: assets * 0.05,
-      };
-
-      // データポイント
-      data.push({
-        date: date.toISOString().split('T')[0],
-        assets,
-        debts,
-        netWorth,
-        savingsRate: 20 + Math.random() * 10,
-        categories: categories,
-      });
+    
+    // 実際の資産・負債データから長期トレンドを生成
+    if (assetEntries.length === 0 && debtEntries.length === 0) {
+      setLongTermData([]);
+      return;
     }
+
+    // データを月別に集計
+    const monthlyData = new Map<string, { assets: number; debts: number; categories: Record<string, number> }>();
+    
+    // 資産データの集計
+    assetEntries.forEach(entry => {
+      if (!entry || !entry.date) return;
+      
+      const monthKey = entry.date.substring(0, 7); // YYYY-MM形式
+      const existing = monthlyData.get(monthKey) || { assets: 0, debts: 0, categories: {} };
+      
+      existing.assets += entry.value || 0;
+      existing.categories[entry.category] = (existing.categories[entry.category] || 0) + (entry.value || 0);
+      
+      monthlyData.set(monthKey, existing);
+    });
+    
+    // 負債データの集計
+    debtEntries.forEach(entry => {
+      if (!entry || !entry.date) return;
+      
+      const monthKey = entry.date.substring(0, 7);
+      const existing = monthlyData.get(monthKey) || { assets: 0, debts: 0, categories: {} };
+      
+      existing.debts += entry.value || 0;
+      
+      monthlyData.set(monthKey, existing);
+    });
+    
+    // データポイントを生成
+    const sortedMonths = Array.from(monthlyData.keys()).sort();
+    
+    sortedMonths.forEach(monthKey => {
+      const monthData = monthlyData.get(monthKey);
+      if (!monthData) return;
+      
+      const netWorth = monthData.assets - monthData.debts;
+      const savingsRate = monthData.assets > 0 ? ((monthData.assets - (monthData.debts || 0)) / monthData.assets) * 100 : 0;
+      
+      data.push({
+        date: `${monthKey}-01`,
+        assets: monthData.assets,
+        debts: monthData.debts,
+        netWorth,
+        savingsRate: Math.max(0, savingsRate),
+        categories: monthData.categories,
+      });
+    });
 
     setLongTermData(data);
   };

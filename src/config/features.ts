@@ -781,8 +781,8 @@ export const featuresRegistry: Feature[] = [
     description: '資産と負債の詳細レポート',
     status: 'complete',
     requiresRealAPI: true,
-    priority: 'P2',
-    targetRelease: '2025-01-20',
+    priority: 'P0',
+    targetRelease: '2025-01-25',
   },
   {
     id: 'daily-10-tasks',
@@ -792,7 +792,7 @@ export const featuresRegistry: Feature[] = [
     description: '毎日実行すべき20のタスクを管理・追跡',
     status: 'complete',
     requiresRealAPI: true,
-    priority: 'P1',
+    priority: 'P0',
     targetRelease: '2025-01-25',
   },
   {
@@ -836,7 +836,7 @@ export const featuresRegistry: Feature[] = [
     description: 'メイン銀行口座の登録・管理・設定',
     status: 'complete',
     requiresRealAPI: true,
-    priority: 'P1',
+    priority: 'P0',
     targetRelease: '2025-01-25',
   },
   {
