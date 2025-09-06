@@ -779,10 +779,10 @@ export const featuresRegistry: Feature[] = [
     path: '/asset-liability-report',
     category: 'サブスクリプション・請求',
     description: '資産と負債の詳細レポート',
-    status: 'in_progress',
+    status: 'complete',
     requiresRealAPI: true,
     priority: 'P2',
-    targetRelease: '2025-09-20',
+    targetRelease: '2025-01-20',
   },
   // プロジェクト管理
   {

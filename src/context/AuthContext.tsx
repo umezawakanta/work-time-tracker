@@ -167,6 +167,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (!isTrustedHost) {
         console.log('🧪 Dev host detected - skipping server auth check');
+        setIsAuthenticated(true);
         return true;
       }
 
@@ -184,8 +185,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         console.log('✅ Server auth check passed');
         return true;
       } catch (serverError) {
-        console.log('⚠️ Server auth check failed, but maintaining auth state for valid token');
+        console.log(
+          '⚠️ Server auth check failed, but maintaining auth state for valid token',
+          serverError
+        );
         // サーバーエラーの場合でも、ローカルトークンが有効なら認証状態を維持
+        // ただし、認証状態を明示的に設定する
+        setIsAuthenticated(true);
         return true;
       }
     } catch (error) {
@@ -360,22 +366,45 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (isTokenValid) {
           console.log('✅ トークン有効 - サーバー認証確認中...');
 
-          // 実際のサーバー認証確認
-          try {
-            const userData = await fetchUserData();
-            if (isMounted) {
-              setUser(userData);
-              setIsAuthenticated(true);
-              updateActivity();
-              console.log('✅ サーバー認証確認完了:', userData.email);
+          // 本番環境では認証チェックを実行
+          const host = typeof window !== 'undefined' ? window.location.hostname : '';
+          const isTrustedHost =
+            host === 'work-time-tracker-five.vercel.app' ||
+            /^work-time-tracker-5d9q-.*\.vercel\.app$/.test(host);
+
+          if (isTrustedHost) {
+            // 本番環境では認証チェックを実行
+            try {
+              const isValidOnServer = await checkAuthStatus();
+              if (isValidOnServer) {
+                const userData = await fetchUserData();
+                if (isMounted) {
+                  setUser(userData);
+                  setIsAuthenticated(true);
+                  updateActivity();
+                  console.log('✅ サーバー認証確認完了:', userData.email);
+                }
+              } else {
+                console.log('❌ サーバー認証失敗 - 認証クリア');
+                if (isMounted) {
+                  tokenManager.clearTokens();
+                  setIsAuthenticated(false);
+                  setUser(null);
+                }
+              }
+            } catch (error) {
+              console.error('❌ サーバー認証確認失敗:', error);
+              // サーバーエラーの場合は一時的に認証状態を維持
+              if (isMounted) {
+                setIsAuthenticated(true);
+                console.log('⚠️ Server error but maintaining auth state');
+              }
             }
-          } catch (error) {
-            console.error('❌ サーバー認証確認失敗:', error);
-            // サーバーエラーの場合は一時的に認証状態を維持
+          } else {
+            // 開発環境では認証状態を設定
             if (isMounted) {
               setIsAuthenticated(true);
-              // ユーザー情報は取得できないが、トークンが有効なら認証状態を維持
-              console.log('⚠️ Server error but maintaining auth state');
+              console.log('🧪 Dev environment - setting auth state');
             }
           }
         } else {
