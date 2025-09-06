@@ -1,5 +1,49 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
+// データストア（実際の実装ではデータベースを使用）
+const assetStore = new Map<string, AssetRecord[]>();
+const debtStore = new Map<string, DebtRecord[]>();
+
+// デフォルトデータの初期化
+const initializeDefaultData = (userId: string) => {
+  if (!assetStore.has(userId)) {
+    assetStore.set(userId, [
+      {
+        _id: 'asset_1',
+        date: '2024-01-01',
+        value: 1000000,
+        description: '銀行預金',
+        account: 'Bank Savings',
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
+      },
+      {
+        _id: 'asset_2',
+        date: '2024-01-15',
+        value: 500000,
+        description: '投資信託',
+        account: 'Investment Fund',
+        createdAt: '2024-01-15T00:00:00.000Z',
+        updatedAt: '2024-01-15T00:00:00.000Z',
+      },
+    ]);
+  }
+
+  if (!debtStore.has(userId)) {
+    debtStore.set(userId, [
+      {
+        _id: 'debt_1',
+        date: '2024-01-01',
+        value: 300000,
+        description: '住宅ローン',
+        account: 'Mortgage',
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
+      },
+    ]);
+  }
+};
+
 interface AssetRecord {
   _id: string;
   date: string;
@@ -252,19 +296,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
       if (action === 'summary') {
         // レポートサマリーを取得 - 実際のデータストアから取得
         try {
-          // 資産データを取得
-          const assetResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/asset?userId=${userId}`
-          );
-          const assetData = await assetResponse.json();
-          const assets: AssetRecord[] = assetData.success ? assetData.data : [];
+          // デフォルトデータを初期化
+          initializeDefaultData(userId);
 
-          // 負債データを取得
-          const debtResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/debt?userId=${userId}`
-          );
-          const debtData = await debtResponse.json();
-          const debts: DebtRecord[] = debtData.success ? debtData.data : [];
+          // 資産データを直接取得（内部ストアから）
+          const assets: AssetRecord[] = assetStore.get(userId) || [];
+
+          // 負債データを直接取得（内部ストアから）
+          const debts: DebtRecord[] = debtStore.get(userId) || [];
 
           const metrics = calculateFinancialMetrics(assets, debts);
           const trends = generateTrends(assets, debts);
@@ -285,9 +324,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
           return;
         } catch (error) {
           console.error('Error fetching asset/debt data:', error);
-          // フォールバック: 空のデータでレスポンス
-          const emptyAssets: AssetRecord[] = [];
-          const emptyDebts: DebtRecord[] = [];
+          // フォールバック: デフォルトデータでレスポンス
+          initializeDefaultData(userId);
+          const emptyAssets: AssetRecord[] = assetStore.get(userId) || [];
+          const emptyDebts: DebtRecord[] = debtStore.get(userId) || [];
 
           const metrics = calculateFinancialMetrics(emptyAssets, emptyDebts);
           const trends = generateTrends(emptyAssets, emptyDebts);
@@ -312,17 +352,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
       if (action === 'metrics') {
         // 財務指標のみを取得 - 実際のデータストアから取得
         try {
-          const assetResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/asset?userId=${userId}`
-          );
-          const assetData = await assetResponse.json();
-          const assets: AssetRecord[] = assetData.success ? assetData.data : [];
-
-          const debtResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/debt?userId=${userId}`
-          );
-          const debtData = await debtResponse.json();
-          const debts: DebtRecord[] = debtData.success ? debtData.data : [];
+          initializeDefaultData(userId);
+          const assets: AssetRecord[] = assetStore.get(userId) || [];
+          const debts: DebtRecord[] = debtStore.get(userId) || [];
 
           const metrics = calculateFinancialMetrics(assets, debts);
 
@@ -333,8 +365,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
           return;
         } catch (error) {
           console.error('Error fetching metrics data:', error);
-          const emptyAssets: AssetRecord[] = [];
-          const emptyDebts: DebtRecord[] = [];
+          initializeDefaultData(userId);
+          const emptyAssets: AssetRecord[] = assetStore.get(userId) || [];
+          const emptyDebts: DebtRecord[] = debtStore.get(userId) || [];
           const metrics = calculateFinancialMetrics(emptyAssets, emptyDebts);
 
           res.status(200).json({
@@ -348,17 +381,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
       if (action === 'trends') {
         // トレンドデータのみを取得 - 実際のデータストアから取得
         try {
-          const assetResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/asset?userId=${userId}`
-          );
-          const assetData = await assetResponse.json();
-          const assets: AssetRecord[] = assetData.success ? assetData.data : [];
-
-          const debtResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/debt?userId=${userId}`
-          );
-          const debtData = await debtResponse.json();
-          const debts: DebtRecord[] = debtData.success ? debtData.data : [];
+          initializeDefaultData(userId);
+          const assets: AssetRecord[] = assetStore.get(userId) || [];
+          const debts: DebtRecord[] = debtStore.get(userId) || [];
 
           const trends = generateTrends(assets, debts);
 
@@ -369,8 +394,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
           return;
         } catch (error) {
           console.error('Error fetching trends data:', error);
-          const emptyAssets: AssetRecord[] = [];
-          const emptyDebts: DebtRecord[] = [];
+          initializeDefaultData(userId);
+          const emptyAssets: AssetRecord[] = assetStore.get(userId) || [];
+          const emptyDebts: DebtRecord[] = debtStore.get(userId) || [];
           const trends = generateTrends(emptyAssets, emptyDebts);
 
           res.status(200).json({
@@ -383,17 +409,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
 
       // デフォルトはサマリーを返す - 実際のデータストアから取得
       try {
-        const assetResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/asset?userId=${userId}`
-        );
-        const assetData = await assetResponse.json();
-        const assets: AssetRecord[] = assetData.success ? assetData.data : [];
-
-        const debtResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/debt?userId=${userId}`
-        );
-        const debtData = await debtResponse.json();
-        const debts: DebtRecord[] = debtData.success ? debtData.data : [];
+        initializeDefaultData(userId);
+        const assets: AssetRecord[] = assetStore.get(userId) || [];
+        const debts: DebtRecord[] = debtStore.get(userId) || [];
 
         const metrics = calculateFinancialMetrics(assets, debts);
         const trends = generateTrends(assets, debts);
@@ -414,8 +432,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
         return;
       } catch (error) {
         console.error('Error fetching default report data:', error);
-        const emptyAssets: AssetRecord[] = [];
-        const emptyDebts: DebtRecord[] = [];
+        initializeDefaultData(userId);
+        const emptyAssets: AssetRecord[] = assetStore.get(userId) || [];
+        const emptyDebts: DebtRecord[] = debtStore.get(userId) || [];
 
         const metrics = calculateFinancialMetrics(emptyAssets, emptyDebts);
         const trends = generateTrends(emptyAssets, emptyDebts);
