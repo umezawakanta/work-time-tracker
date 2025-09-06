@@ -61,6 +61,7 @@ export const ErrorMonitoringDashboard: React.FC = () => {
   const [isPerformingDiagnosis, setIsPerformingDiagnosis] = useState(false);
   const [autoRecoveryEnabled, setAutoRecoveryEnabled] = useState(true);
   const [realtimeUpdateInterval, setRealtimeUpdateInterval] = useState<NodeJS.Timeout | null>(null);
+  const [isGeneratingTestError, setIsGeneratingTestError] = useState(false);
 
   useEffect(() => {
     updateMetrics();
@@ -147,6 +148,39 @@ export const ErrorMonitoringDashboard: React.FC = () => {
         es.close();
       };
     } catch {}
+  };
+
+  const generateTestError = async () => {
+    setIsGeneratingTestError(true);
+    try {
+      const response = await fetchWithAuth('/api/admin/generate-test-error', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast({
+          title: 'テストエラー生成完了',
+          description: `${result.errors.length}件のテストエラーを生成しました`,
+        });
+        // メトリクスを更新
+        updateMetrics();
+      } else {
+        throw new Error('Failed to generate test error');
+      }
+    } catch (error) {
+      console.error('Test error generation failed:', error);
+      toast({
+        title: 'エラー',
+        description: 'テストエラーの生成に失敗しました',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsGeneratingTestError(false);
+    }
   };
 
   const performManualRecovery = async (errorType: string) => {
@@ -261,6 +295,14 @@ export const ErrorMonitoringDashboard: React.FC = () => {
           >
             <Zap className="h-4 w-4 mr-2" />
             自動復旧 {autoRecoveryEnabled ? 'ON' : 'OFF'}
+          </Button>
+          <Button onClick={generateTestError} disabled={isGeneratingTestError} variant="outline">
+            {isGeneratingTestError ? (
+              <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <AlertTriangle className="h-4 w-4 mr-2" />
+            )}
+            テストエラー生成
           </Button>
         </div>
       </div>

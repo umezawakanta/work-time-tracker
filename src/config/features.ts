@@ -397,10 +397,10 @@ export const featuresRegistry: Feature[] = [
     name: '管理 エラー監視',
     path: '/admin/errors',
     category: '運用',
-    status: 'system_testing',
-    requiresRealAPI: false,
+    status: 'complete',
+    requiresRealAPI: true,
     priority: 'P0',
-    targetRelease: '2025-09-10',
+    targetRelease: '2025-09-06',
   },
   {
     id: 'admin-features',

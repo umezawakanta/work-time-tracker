@@ -1138,6 +1138,19 @@ const AdminDashboard: React.FC = () => {
                 <ErrorMonitoringDashboard />
               </CardContent>
             </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>サーバエラーレポート</CardTitle>
+                <CardDescription>詳細なエラーログと分析</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <iframe
+                  title="server-errors-frame"
+                  src="/_bg/server-error-reporting"
+                  className="w-full min-h-[70vh] border rounded"
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
         )}
 
