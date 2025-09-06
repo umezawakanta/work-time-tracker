@@ -314,6 +314,7 @@ const FeaturesStatusPage = lazy(() =>
 const DocsViewerPage = lazy(() =>
   import('@/pages/DocsViewer').then((m) => ({ default: m.default }))
 );
+const TermsPage = lazy(() => import('@/pages/TermsPage').then((m) => ({ default: m.default })));
 const BugListPage = lazy(() => import('@/pages/BugList').then((m) => ({ default: m.default })));
 const BugFormPage = lazy(() => import('@/pages/BugForm').then((m) => ({ default: m.default })));
 
@@ -596,6 +597,16 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <DocsViewerPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/terms"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <TermsPage />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }
