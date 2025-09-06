@@ -99,21 +99,50 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
     }
   }
 
-  // 完了済み機能の表示
+  // 完了済み機能の表示（直近の3件程度に制限）
   if (completedFeatures.length > 0) {
     lines.push('🎉 リリース済み機能');
-    for (const f of completedFeatures) {
+
+    // リリース日順でソート（最新順）
+    const sortedCompleted = completedFeatures.sort((a, b) => {
+      const dateA = new Date(a.targetRelease as string);
+      const dateB = new Date(b.targetRelease as string);
+      return dateB.getTime() - dateA.getTime(); // 降順（新しい順）
+    });
+
+    const recentCompleted = sortedCompleted.slice(0, 3); // 直近の3件のみ表示
+    for (const f of recentCompleted) {
       const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
       const progress = getFeatureProgressPercent(status);
-      lines.push(`🎉 ${f.name}：${progress}%（リリース済み）`);
+      const ymd = f.targetRelease as string;
+      const [y, m, d] = ymd.split('-');
+      const dateStr = `${y}/${m}/${d}`;
+      lines.push(`🎉 ${f.name}：${progress}%（リリース日: ${dateStr}）`);
+    }
+
+    // 他にもリリース済み機能がある場合は省略表示
+    if (completedFeatures.length > 3) {
+      const remainingCount = completedFeatures.length - 3;
+      lines.push(`…ほか${remainingCount}件のリリース済み機能`);
     }
     lines.push('');
   }
 
-  // 進行中機能の表示
+  // 進行中機能の表示（優先度の高い3件程度に制限）
   if (inProgressFeatures.length > 0) {
     lines.push('🚀 開発中機能');
-    for (const f of inProgressFeatures) {
+
+    // 優先度順でソート（P0 > P1 > P2 > P3）
+    const priorityOrder: Record<'P0' | 'P1' | 'P2' | 'P3', number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
+    const sortedInProgress = inProgressFeatures.sort((a, b) => {
+      const pa = priorityOrder[(a.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
+      const pb = priorityOrder[(b.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
+      if (pa !== pb) return pa - pb;
+      return a.name.localeCompare(b.name);
+    });
+
+    const topInProgress = sortedInProgress.slice(0, 3); // 優先度の高い3件のみ表示
+    for (const f of topInProgress) {
       const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
       const progress = getFeatureProgressPercent(status);
       const ymd = f.targetRelease as string; // filtered above to be valid
@@ -128,6 +157,12 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
               ? '🔗'
               : '✅';
       lines.push(`${emoji} ${f.name}：${progress}%（リリース予定日: ${dateStr}）`);
+    }
+
+    // 他にも開発中機能がある場合は省略表示
+    if (inProgressFeatures.length > 3) {
+      const remainingCount = inProgressFeatures.length - 3;
+      lines.push(`…ほか${remainingCount}件の開発中機能`);
     }
   }
 
