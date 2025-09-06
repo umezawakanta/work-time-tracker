@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 
-// Request/Response型定義
+// Request/Response type definitions
 
 // バリデーション関数
 const validateEmail = (email) => {
