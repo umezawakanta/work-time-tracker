@@ -2509,9 +2509,12 @@ app.get('/api/admin/analytics', async (req, res) => {
     const { range = '7d' } = req.query as { range?: string };
 
     // MongoDB接続
-    const { connectMongoDirect, getMongoose } = await import('../api/_lib/mongo.js');
-    await connectMongoDirect();
-    const mongoose = await getMongoose();
+    const { default: mongoose } = await import('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(
+        process.env.MONGODB_URI || 'mongodb://localhost:27017/workTimeTracker'
+      );
+    }
 
     // 時間範囲の計算
     const now = new Date();
@@ -2624,7 +2627,7 @@ app.get('/api/admin/analytics', async (req, res) => {
     }
 
     // リテンション分析（簡易実装）
-    const retentionData = [];
+    const retentionData: Array<{ startDate: string; size: number; d1Rate: number }> = [];
     for (let i = 0; i < 7; i++) {
       const cohortDate = new Date(now.getTime() - (i + 7) * 24 * 60 * 60 * 1000);
       const cohortStart = new Date(cohortDate);
