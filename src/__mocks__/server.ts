@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 // モックデータ
 const mockDocuments = [
@@ -58,81 +58,70 @@ const mockCategories = {
 // モックハンドラー
 const handlers = [
   // ドキュメント一覧取得
-  rest.get('/api/docs', (req, res, ctx) => {
-    const action = req.url.searchParams.get('action');
+  http.get('/api/docs', ({ request }) => {
+    const url = new URL(request.url);
+    const action = url.searchParams.get('action');
 
     if (action === 'list') {
-      return res(
-        ctx.json({
-          success: true,
-          data: mockDocuments,
-          total: mockDocuments.length,
-        })
-      );
-    }
-
-    if (action === 'categories') {
-      return res(
-        ctx.json({
-          success: true,
-          data: mockCategories,
-        })
-      );
-    }
-
-    if (action === 'content') {
-      const id = req.url.searchParams.get('id');
-      const document = mockDocuments.find((doc) => doc.id === id);
-
-      if (!document) {
-        return res(
-          ctx.status(404),
-          ctx.json({
-            success: false,
-            message: 'ドキュメントが見つかりません',
-          })
-        );
-      }
-
-      return res(
-        ctx.json({
-          success: true,
-          data: {
-            content: `# ${document.title}\n\nThis is the content of ${document.title}.\n\n## Description\n\n${document.description}`,
-            metadata: document,
-          },
-        })
-      );
-    }
-
-    // デフォルトはドキュメント一覧を返す
-    return res(
-      ctx.json({
+      return HttpResponse.json({
         success: true,
         data: mockDocuments,
         total: mockDocuments.length,
-      })
-    );
+      });
+    }
+
+    if (action === 'categories') {
+      return HttpResponse.json({
+        success: true,
+        data: mockCategories,
+      });
+    }
+
+    if (action === 'content') {
+      const id = url.searchParams.get('id');
+      const document = mockDocuments.find((doc) => doc.id === id);
+
+      if (!document) {
+        return HttpResponse.json(
+          {
+            success: false,
+            message: 'ドキュメントが見つかりません',
+          },
+          { status: 404 }
+        );
+      }
+
+      return HttpResponse.json({
+        success: true,
+        data: {
+          content: `# ${document.title}\n\nThis is the content of ${document.title}.\n\n## Description\n\n${document.description}`,
+          metadata: document,
+        },
+      });
+    }
+
+    // デフォルトはドキュメント一覧を返す
+    return HttpResponse.json({
+      success: true,
+      data: mockDocuments,
+      total: mockDocuments.length,
+    });
   }),
 
   // ヘルスチェック
-  rest.get('/api/health', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        status: 'OK',
-        message: 'Simple server running',
-      })
-    );
+  http.get('/api/health', () => {
+    return HttpResponse.json({
+      status: 'OK',
+      message: 'Simple server running',
+    });
   }),
 
   // データベースステータス
-  rest.get('/api/db/status', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        status: 'connected',
-        message: 'Database is connected',
-      })
-    );
+  http.get('/api/db/status', () => {
+    return HttpResponse.json({
+      status: 'connected',
+      message: 'Database is connected',
+    });
   }),
 ];
 
