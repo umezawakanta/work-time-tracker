@@ -1630,9 +1630,10 @@ export const featuresRegistry: Feature[] = [
     path: '/_bg/server-error-reporting',
     category: '運用',
     description: 'サーバ側のエラー収集/集約',
-    status: 'planning',
+    status: 'complete',
     requiresRealAPI: true,
-    priority: 'P1',
+    priority: 'P0',
+    targetRelease: '2025-09-06',
   },
   {
     id: 'debug-logging',

@@ -41,6 +41,9 @@ import ProcrastinationGuard from '@/components/productivity/ProcrastinationGuard
 const AdminDashboard = lazy(() =>
   import('@/pages/AdminDashboard').then((m) => ({ default: m.default }))
 );
+const ServerErrorReportingPage = lazy(() =>
+  import('@/pages/ServerErrorReportingPage').then((m) => ({ default: m.default }))
+);
 const AIAssistantPage = lazy(() =>
   import('@/pages/AIAssistant').then((m) => ({ default: m.default }))
 );
@@ -611,6 +614,16 @@ const App: React.FC = () => {
                                 path="/_bg/logout"
                                 element={
                                   <Navigate to="/docs/features/logout/detailed-design" replace />
+                                }
+                              />
+                              <Route
+                                path="/_bg/server-error-reporting"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <ServerErrorReportingPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
                                 }
                               />
                               <Route

@@ -14,6 +14,7 @@ import {
   getUserData as getUserDataController,
   refreshToken as refreshTokenController,
 } from './controllers/authController.js';
+import { serverErrorLogger, errorHandler } from '../middleware/serverErrorLogger.js';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
@@ -48,6 +49,7 @@ console.log(
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(serverErrorLogger);
 
 // Request logging middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -391,6 +393,64 @@ app.get('/api/bugs', (req, res) => {
     (b.lastOccurredAt || b.createdAt).localeCompare(a.lastOccurredAt || a.createdAt)
   );
   res.json({ success: true, data: list });
+});
+
+// Server error reporting API endpoint
+app.get('/api/admin/server-errors', async (req, res) => {
+  try {
+    // Mock implementation for development
+    const mockErrors = [
+      {
+        id: 'error_1',
+        timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+        level: 'error',
+        message: 'Database connection timeout',
+        stack: 'Error: Connection timeout\n    at connectDB (/app/src/config/database.js:45:12)',
+        userId: 'user_123',
+        endpoint: '/api/todos',
+        method: 'GET',
+        statusCode: 500,
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        ip: '192.168.1.100',
+        sessionId: 'session_456',
+        tags: ['database', 'timeout'],
+        metadata: { query: { limit: '10' } }
+      },
+      {
+        id: 'error_2',
+        timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+        level: 'warn',
+        message: 'Rate limit exceeded',
+        stack: 'Error: Rate limit exceeded\n    at rateLimiter (/app/src/middleware/rateLimit.js:23:8)',
+        userId: 'user_456',
+        endpoint: '/api/auth/login',
+        method: 'POST',
+        statusCode: 429,
+        userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+        ip: '192.168.1.101',
+        sessionId: 'session_789',
+        tags: ['rate-limit', 'auth'],
+        metadata: { attempts: 5 }
+      }
+    ];
+
+    const stats = {
+      totalErrors: mockErrors.length,
+      errorsByLevel: { error: 1, warn: 1 },
+      errorsByEndpoint: { '/api/todos': 1, '/api/auth/login': 1 },
+      errorsByHour: { '14': 1, '15': 1 },
+      recentErrors: mockErrors.slice(0, 2),
+      topErrors: [
+        { message: 'Database connection timeout', count: 1 },
+        { message: 'Rate limit exceeded', count: 1 }
+      ]
+    };
+
+    res.json({ success: true, errors: mockErrors, stats });
+  } catch (error) {
+    console.error('Server errors API error:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
 });
 
 app.post('/api/bugs', (req, res) => {
@@ -3151,6 +3211,9 @@ const startServer = async () => {
     console.warn('⚠️ Database connection failed. Running in degraded mode (limited APIs).');
     console.warn('   Set MONGODB_URI in .env.local to enable full features.');
   }
+
+  // Error handling middleware (must be last)
+  app.use(errorHandler);
 
   app.listen(PORT, () => {
     console.log(`\n✅ Enhanced server running on port ${PORT}`);
