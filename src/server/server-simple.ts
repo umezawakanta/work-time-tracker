@@ -7,6 +7,7 @@ import { Book } from './models/Book.js';
 import { TodoModel } from './models/Todo.js';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import { saveData, loadData, startAutoSave, saveDataImmediately } from './storage.js';
 import {
   login as loginController,
   register as registerController,
@@ -241,11 +242,12 @@ type AssetRecord = {
   updatedAt: string;
 };
 
-const debtStore: Map<string, DebtRecord[]> = new Map();
+// データストア（ファイルから読み込み）
+const debtStore: Map<string, DebtRecord[]> = loadData<DebtRecord>('debts');
 const createDebtId = () => 'debt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
 
 // Asset store and ID generator
-const assetStore: Map<string, AssetRecord[]> = new Map();
+const assetStore: Map<string, AssetRecord[]> = loadData<AssetRecord>('assets');
 const createAssetId = () => 'asset_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
 
 // Work Time store and ID generator
@@ -1200,6 +1202,10 @@ app.post('/api/asset', (req, res) => {
     const userAssets = assetStore.get(userId) || [];
     userAssets.push(assetEntry);
     assetStore.set(userId, userAssets);
+
+    // データを即座に保存
+    saveDataImmediately(assetStore, 'assets');
+
     res.status(201).json(assetEntry);
   } catch (error) {
     console.error('Asset creation error:', error);
@@ -5490,8 +5496,8 @@ type BankAccount = {
   updatedAt: string;
 };
 
-// メモリ内ストア（実際の実装ではデータベースを使用）
-const bankAccountsStore = new Map<string, BankAccount[]>();
+// データストア（ファイルから読み込み）
+const bankAccountsStore = loadData<BankAccount>('bank-accounts');
 
 // 銀行口座管理API
 app.get('/api/bank-accounts', (req: Request, res: Response) => {
@@ -5549,6 +5555,9 @@ app.post('/api/bank-accounts', (req: Request, res: Response) => {
   const userAccounts = bankAccountsStore.get(userId) || [];
   userAccounts.push(newAccount);
   bankAccountsStore.set(userId, userAccounts);
+
+  // データを即座に保存
+  saveDataImmediately(bankAccountsStore, 'bank-accounts');
 
   res.status(201).json({
     success: true,
@@ -5672,6 +5681,9 @@ app.post('/api/bank-accounts/import', (req: Request, res: Response) => {
     const updatedAccounts = [...existingAccounts, ...newAccounts];
     bankAccountsStore.set(userId, updatedAccounts);
 
+    // データを即座に保存
+    saveDataImmediately(bankAccountsStore, 'bank-accounts');
+
     res.status(200).json({
       success: true,
       message: `${newAccounts.length}件の口座データをインポートしました`,
@@ -5729,6 +5741,11 @@ const startServer = async () => {
 
   // Error handling middleware (must be last)
   app.use(errorHandler);
+
+  // 自動保存を開始
+  startAutoSave(assetStore, 'assets', 30000); // 30秒間隔
+  startAutoSave(debtStore, 'debts', 30000); // 30秒間隔
+  startAutoSave(bankAccountsStore, 'bank-accounts', 30000); // 30秒間隔
 
   app.listen(PORT, () => {
     console.log(`\n✅ Enhanced server running on port ${PORT}`);

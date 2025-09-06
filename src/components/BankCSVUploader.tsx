@@ -409,7 +409,7 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
       if (valid.length > 0 && valid[0].isMain) {
         try {
           console.log('既存のメイン口座を削除中...');
-          
+
           const deleteResponse = await fetch('/api/bank-accounts', {
             method: 'GET',
             headers: {
@@ -452,12 +452,12 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
 
             // すべての削除処理が完了するまで待機
             const deleteResults = await Promise.all(deletePromises);
-            const successCount = deleteResults.filter(result => result).length;
-            
+            const successCount = deleteResults.filter((result) => result).length;
+
             console.log(`既存のメイン口座 ${successCount}/${mainAccounts.length} 件を削除しました`);
-            
+
             // 削除が完了するまで少し待機
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise((resolve) => setTimeout(resolve, 500));
           }
         } catch (error) {
           console.warn('既存のメイン口座削除でエラー:', error);
