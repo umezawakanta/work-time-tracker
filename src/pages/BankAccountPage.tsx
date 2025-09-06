@@ -77,6 +77,38 @@ const BankAccountPage: React.FC = () => {
           </div>
         </div>
 
+        {/* 操作手順ガイド */}
+        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-800">
+              <Building2 className="h-5 w-5" />
+              銀行口座管理の使い方
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+              <div>
+                <h4 className="font-semibold text-blue-900 mb-3">🏦 口座の登録方法</h4>
+                <ol className="list-decimal list-inside space-y-2 text-blue-700">
+                  <li>「新しい口座を追加」ボタンをクリック</li>
+                  <li>銀行名、口座種別、口座名を入力</li>
+                  <li>「メイン口座に設定」で主要な口座を指定</li>
+                  <li>「データ同期」ボタンで残高を自動取得（デモデータ）</li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="font-semibold text-blue-900 mb-3">🔄 自動同期機能</h4>
+                <ol className="list-decimal list-inside space-y-2 text-blue-700">
+                  <li>「データ同期」で最新の残高を取得</li>
+                  <li>「自動同期を有効化」で定期的な更新を設定</li>
+                  <li>「毎日20のこと」で資産確認タスクが自動完了</li>
+                  <li>資産負債レポートに自動反映</li>
+                </ol>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* メインコンテンツ */}
         <BankAccountManager
           userId={user.id}

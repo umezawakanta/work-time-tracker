@@ -647,6 +647,38 @@ export default function AssetLiabilityReportPage() {
         </div>
       </div>
 
+      {/* 操作手順ガイド */}
+      <Card className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-green-800">
+            <BarChart2 className="h-5 w-5" />
+            資産負債レポートの使い方
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+            <div>
+              <h4 className="font-semibold text-green-900 mb-3">📊 データの入力方法</h4>
+              <ol className="list-decimal list-inside space-y-2 text-green-700">
+                <li>「資産・負債を追加」ボタンで新しいエントリを追加</li>
+                <li>銀行口座管理ページで口座を登録すると自動反映</li>
+                <li>「毎日20のこと」で資産確認タスクを完了すると自動更新</li>
+                <li>手動で残高を更新する場合は「残高更新」ボタンを使用</li>
+              </ol>
+            </div>
+            <div>
+              <h4 className="font-semibold text-green-900 mb-3">📈 レポートの見方</h4>
+              <ol className="list-decimal list-inside space-y-2 text-green-700">
+                <li>「概要」タブで現在の資産・負債状況を確認</li>
+                <li>「トレンド」タブで時系列での変化を分析</li>
+                <li>「詳細」タブでカテゴリ別の内訳を確認</li>
+                <li>「目標」タブで将来の目標設定と進捗管理</li>
+              </ol>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* 財務ヒント */}
       {showTips && (
         <Card className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">

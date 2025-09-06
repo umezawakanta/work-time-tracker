@@ -673,6 +673,9 @@ const Daily10TasksPage: React.FC = () => {
                 <p>
                   <strong>5. チェック：</strong>完了したらチェックボックスをクリック
                 </p>
+                <p>
+                  <strong>6. 自動連携：</strong>銀行口座管理や資産管理ページでの入力は自動反映
+                </p>
               </div>
             </div>
           </div>
