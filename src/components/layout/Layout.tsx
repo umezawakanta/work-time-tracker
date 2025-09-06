@@ -1273,24 +1273,38 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
 
                 {/* ユーザー情報とログアウト（ヘッダー右） */}
                 <div className="flex items-center gap-3">
-                  {getFeatureByPath('/_bg/header-user-info')?.status === 'complete' && (
-                    <>
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                        <User className="h-4 w-4 text-white" />
+                  {getFeatureByPath('/_bg/header-user-info')?.status === 'complete' && user && (
+                    <div className="flex items-center gap-3 group">
+                      {/* ユーザーアバターと情報 */}
+                      <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg p-2 transition-colors">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-sm">
+                          <User className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="hidden sm:block min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            {user?.displayName ||
+                              user?.username ||
+                              user?.name ||
+                              user?.email?.split('@')[0] ||
+                              'ユーザー'}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {user?.email || ''}
+                          </p>
+                        </div>
                       </div>
-                      <div className="hidden sm:block min-w-0">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          {user?.displayName ||
-                            user?.username ||
-                            user?.name ||
-                            user?.email ||
-                            'ユーザー'}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                          {user?.email || ''}
-                        </p>
+                      
+                      {/* ユーザーメニュー */}
+                      <div className="relative">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        >
+                          <Settings className="h-4 w-4" />
+                        </Button>
                       </div>
-                    </>
+                    </div>
                   )}
                   <Button
                     onClick={handleLogout}

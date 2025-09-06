@@ -1170,9 +1170,10 @@ export const featuresRegistry: Feature[] = [
     path: '/_bg/header-user-info',
     category: 'コア',
     description: 'ヘッダー右の表示名/メールの表示',
-    status: 'planning',
-    requiresRealAPI: false,
-    priority: 'P1',
+    status: 'complete',
+    requiresRealAPI: true,
+    priority: 'P0',
+    targetRelease: '2025-09-06',
   },
   {
     id: 'how-it-works',
