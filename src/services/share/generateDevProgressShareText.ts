@@ -164,11 +164,11 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
       if (aExpected && !bExpected) return -1;
       if (!aExpected && bExpected) return 1;
 
-      // 期待される機能同士の場合は優先度順
+      // 期待される機能同士の場合は、期待される機能の順序で表示
       if (aExpected && bExpected) {
-        const pa = priorityOrder[(a.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
-        const pb = priorityOrder[(b.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
-        if (pa !== pb) return pa - pb;
+        const aIndex = expectedFeatures.indexOf(a.id);
+        const bIndex = expectedFeatures.indexOf(b.id);
+        if (aIndex !== bIndex) return aIndex - bIndex;
         return a.name.localeCompare(b.name);
       }
 
@@ -192,7 +192,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
       return a.name.localeCompare(b.name);
     });
 
-    const topInProgress = sortedInProgress.slice(0, 3); // 優先度の高い3件のみ表示
+    const topInProgress = sortedInProgress.slice(0, 3); // 期待される機能を優先して3件表示
     for (const f of topInProgress) {
       const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
       const progress = getFeatureProgressPercent(status);
@@ -221,7 +221,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
     // 他にも開発中機能がある場合は省略表示
     if (inProgressFeatures.length > 3) {
       const remainingCount = inProgressFeatures.length - 3;
-      lines.push(`…ほか${remainingCount}件の開発中機能`);
+      lines.push(`…ほか${remainingCount}件の進捗`);
     }
   }
 
@@ -291,9 +291,15 @@ function summarizeForTwitterIntent(
 export function openShare(text: string, url: string): void {
   if (typeof window === 'undefined') return;
   // Always use Twitter Web Intent to ensure text+URL appear (native share may drop text)
-  const MAX_URL = 1800; // stay well under typical URL limits
-  const safeText = summarizeForTwitterIntent(text, url, MAX_URL);
-  const intent = buildTwitterIntentUrl(safeText, url);
+  const MAX_URL = 2000; // 文字数制限を緩和して期待される機能を確実に表示
+
+  // textに既にURLが含まれている場合は、URL部分を除去してから処理
+  const urlPattern = /https?:\/\/[^\s]+/g;
+  const textWithoutUrl = text.replace(urlPattern, '').trim();
+  const extractedUrl = text.match(urlPattern)?.[0] || url;
+
+  const safeText = summarizeForTwitterIntent(textWithoutUrl, extractedUrl, MAX_URL);
+  const intent = buildTwitterIntentUrl(safeText, extractedUrl);
   window.open(intent, '_blank');
 }
 
