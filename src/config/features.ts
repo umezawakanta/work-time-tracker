@@ -1511,6 +1511,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-25',
   },
   {
     id: 'changelog',

@@ -60,8 +60,8 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
   // 共有機能そのものや無効化中の機能は除外
   candidates = candidates.filter((f) => f.id !== 'share-dev-progress' && !(f as any).disabled);
 
-  // 共有要件: 着手中かつリリース予定日が設定済み(YYYY-MM-DD)
-  candidates = candidates.filter((f) => hasValidYmd(f.targetRelease));
+  // 共有要件: 着手中（リリース予定日は任意）
+  // candidates = candidates.filter((f) => hasValidYmd(f.targetRelease));
 
   // 完了済み機能を最初に表示、その後優先度順→名前順
   const priorityOrder: Record<'P0' | 'P1' | 'P2' | 'P3', number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
@@ -115,7 +115,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
       if (pa !== pb) return pa - pb;
 
       // 同じ優先度の場合は、期待される機能を優先
-      const expectedFeatures = ['subscription', 'admin-bugs', 'settings-core'];
+      const expectedFeatures = ['settings-core', 'terms-of-service', 'terms'];
       const aExpected = expectedFeatures.includes(a.id);
       const bExpected = expectedFeatures.includes(b.id);
       if (aExpected && !bExpected) return -1;
@@ -155,7 +155,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
     lines.push('🚀 開発中機能');
 
     // 期待される機能を最優先に、その後優先度順で表示
-    const expectedFeatures = ['terms-of-service', 'terms', 'profile'];
+    const expectedFeatures = ['profile', 'improvement-plan', 'pricing'];
     const priorityOrder: Record<'P0' | 'P1' | 'P2' | 'P3', number> = { P0: 1, P1: 0, P2: 2, P3: 3 };
     const sortedInProgress = inProgressFeatures.sort((a, b) => {
       // 期待される機能を最優先
@@ -179,7 +179,6 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
 
       // 期待されない機能の中で、P2優先度の場合は特定の機能を除外
       const excludedFeatures = [
-        'improvement-plan',
         'asset-liability-report',
         'startup-guide',
         'newsletter-signup',
