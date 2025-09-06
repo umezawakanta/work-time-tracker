@@ -217,6 +217,139 @@ const TaskItem: React.FC<TaskItemProps> = ({
               <p className="text-sm text-gray-700">{getTaskMessage()}</p>
             </div>
 
+            {/* 詳細な手順説明 */}
+            <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <h4 className="text-sm font-semibold text-blue-900 mb-2 flex items-center gap-1">
+                <Target className="h-4 w-4" />
+                このタスクの進め方
+              </h4>
+              <div className="text-xs text-blue-800 space-y-1">
+                {task.id === '1' && (
+                  <div>
+                    <p className="font-medium mb-1">💰 直近3ヶ月の収入と支出をすべて把握する</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>「サブタスクを表示」をクリックして10個のサブタスクを確認</li>
+                      <li>各サブタスクの「手順を表示」で具体的な手順を確認</li>
+                      <li>財布の現金、銀行残高、投資残高を順番に確認</li>
+                      <li>資産管理ページで入力（自動で「毎日20のこと」に反映）</li>
+                      <li>給与明細、ボーナス、副業収入を確認</li>
+                      <li>固定費・変動費の支出を確認</li>
+                    </ol>
+                  </div>
+                )}
+                {task.id === '2' && (
+                  <div>
+                    <p className="font-medium mb-1">🏦 現在の資産と負債をすべて把握する</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>銀行口座管理ページでメイン口座を登録</li>
+                      <li>銀行データ取り込み機能でCSVファイルをアップロード</li>
+                      <li>資産負債レポートページで全体を確認</li>
+                      <li>投資口座、クレジットカード残高も確認</li>
+                    </ol>
+                  </div>
+                )}
+                {task.id === '3' && (
+                  <div>
+                    <p className="font-medium mb-1">📅 現在から3ヶ月後までの予定をすべて把握する</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>カレンダーアプリを開く（Googleカレンダー、Outlook等）</li>
+                      <li>3ヶ月先までスケジュールを確認</li>
+                      <li>重要な予定をメモに記録</li>
+                      <li>定期的な予定（会議、支払い日等）を確認</li>
+                    </ol>
+                  </div>
+                )}
+                {task.id === '4' && (
+                  <div>
+                    <p className="font-medium mb-1">💳 先月と今月の固定費の支払いと支払日をすべて把握</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>家賃、光熱費、通信費、保険料等の固定費をリストアップ</li>
+                      <li>各支払いの支払日を確認</li>
+                      <li>支払い状況（完了/未完了）をチェック</li>
+                      <li>今月の支払い予定を確認</li>
+                    </ol>
+                  </div>
+                )}
+                {task.id === '5' && (
+                  <div>
+                    <p className="font-medium mb-1">💸 直近3ヶ月の利息の支払いをすべて把握</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>クレジットカードの利息支払いを確認</li>
+                      <li>ローン（住宅ローン、カーローン等）の利息を確認</li>
+                      <li>借入金の利息支払いを確認</li>
+                      <li>支払い総額と支払い日を記録</li>
+                    </ol>
+                  </div>
+                )}
+                {task.id === '6' && (
+                  <div>
+                    <p className="font-medium mb-1">⚡ 直近3ヶ月の光熱費の支払いをすべて把握</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>電気代の請求書を確認</li>
+                      <li>ガス代の請求書を確認</li>
+                      <li>水道代の請求書を確認</li>
+                      <li>使用量の変化をチェック</li>
+                    </ol>
+                  </div>
+                )}
+                {task.id === '7' && (
+                  <div>
+                    <p className="font-medium mb-1">🎸 ギターの練習</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>ギターを手に取る</li>
+                      <li>基本練習（コード、スケール等）を5分間</li>
+                      <li>好きな曲を1曲練習</li>
+                      <li>練習内容を記録（任意）</li>
+                    </ol>
+                  </div>
+                )}
+                {task.id === '8' && (
+                  <div>
+                    <p className="font-medium mb-1">🍽️ 洗い物</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>シンクの食器を確認</li>
+                      <li>食器用洗剤を準備</li>
+                      <li>食器を洗って乾かす</li>
+                      <li>キッチンを清潔に保つ</li>
+                    </ol>
+                  </div>
+                )}
+                {task.id === '9' && (
+                  <div>
+                    <p className="font-medium mb-1">👨‍🍳 自炊</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>冷蔵庫の中身を確認</li>
+                      <li>今日のメニューを決める</li>
+                      <li>食材を準備して調理</li>
+                      <li>食事を楽しむ</li>
+                    </ol>
+                  </div>
+                )}
+                {task.id === '10' && (
+                  <div>
+                    <p className="font-medium mb-1">🛁 風呂</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>お風呂の準備をする</li>
+                      <li>入浴して体を洗う</li>
+                      <li>リラックスして疲れを癒す</li>
+                      <li>清潔な体で一日を終える</li>
+                    </ol>
+                  </div>
+                )}
+                {!['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'].includes(task.id) && (
+                  <div>
+                    <p className="font-medium mb-1">📝 このタスクの進め方</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>「サブタスクを表示」をクリックして詳細を確認</li>
+                      <li>各サブタスクの「手順を表示」で具体的な手順を確認</li>
+                      <li>5分以内で完了できるように取り組む</li>
+                      <li>完了したらチェックボックスをクリック</li>
+                    </ol>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* タスク対応ページへのリンク */}
             {taskLink && (
               <div className="mb-3">
@@ -480,8 +613,27 @@ const Daily10TasksPage: React.FC = () => {
           各タスクは5分以内で完了できるサブタスクに分割されています
         </p>
 
+        {/* クイックスタートガイド */}
+        <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg">
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0">
+              <Target className="h-5 w-5 text-green-600 mt-0.5" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-green-900 mb-2">🚀 クイックスタートガイド</h3>
+              <div className="text-sm text-green-800 space-y-1">
+                <p><strong>1. まず最初に：</strong>「直近3ヶ月の収入と支出をすべて把握する」から始めましょう</p>
+                <p><strong>2. サブタスクを確認：</strong>「サブタスクを表示」ボタンで10個のステップを確認</p>
+                <p><strong>3. 手順を確認：</strong>各サブタスクの「手順を表示」で具体的なやり方を見る</p>
+                <p><strong>4. 実行：</strong>5分以内で完了できるように取り組む</p>
+                <p><strong>5. チェック：</strong>完了したらチェックボックスをクリック</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* 動的メッセージ表示 */}
-        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+        <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
           <div className="flex items-start space-x-3">
             <div className="flex-shrink-0">
               <Target className="h-5 w-5 text-blue-600 mt-0.5" />
@@ -494,25 +646,96 @@ const Daily10TasksPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 使い方ガイド */}
-      <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-        <h3 className="text-lg font-semibold text-green-800 mb-3">📚 使い方ガイド</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-green-700">
-          <div>
-            <h4 className="font-medium mb-2">🔍 サブタスクの確認方法</h4>
-            <ol className="list-decimal list-inside space-y-1">
-              <li>各タスクの「サブタスクを表示」ボタンをクリック</li>
-              <li>「手順を表示」ボタンで具体的な手順を確認</li>
-              <li>各サブタスクは5分以内で完了可能</li>
-            </ol>
+      {/* 詳細な使い方ガイド */}
+      <div className="mb-6 space-y-4">
+        {/* 基本操作ガイド */}
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            基本操作ガイド
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-blue-700">
+            <div>
+              <h4 className="font-semibold mb-2 text-blue-900">📋 タスクの進め方</h4>
+              <ol className="list-decimal list-inside space-y-2">
+                <li><strong>タスクを選択</strong> - 下のリストから取り組みたいタスクを選ぶ</li>
+                <li><strong>サブタスクを確認</strong> - 「サブタスクを表示」ボタンをクリック</li>
+                <li><strong>手順を確認</strong> - 「手順を表示」ボタンで具体的な手順を見る</li>
+                <li><strong>実行</strong> - 手順に従って5分以内でタスクを完了</li>
+                <li><strong>チェック</strong> - 完了したサブタスクのチェックボックスをクリック</li>
+              </ol>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-2 text-blue-900">✅ 進捗の管理</h4>
+              <ol className="list-decimal list-inside space-y-2">
+                <li><strong>サブタスク完了</strong> - 各サブタスクのチェックボックスをクリック</li>
+                <li><strong>メインタスク完了</strong> - 全サブタスク完了で自動的に完了</li>
+                <li><strong>自動連携</strong> - 資産管理ページでの入力は自動反映</li>
+                <li><strong>進捗確認</strong> - 上部の進捗バーで全体の進捗を確認</li>
+              </ol>
+            </div>
           </div>
-          <div>
-            <h4 className="font-medium mb-2">✅ 進捗の更新方法</h4>
-            <ol className="list-decimal list-inside space-y-1">
-              <li>完了したサブタスクのチェックボックスをクリック</li>
-              <li>すべてのサブタスクが完了するとメインタスクも自動完了</li>
-              <li>資産管理ページでの入力は自動的に反映されます</li>
-            </ol>
+        </div>
+
+        {/* 重要なタスクの詳細説明 */}
+        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-green-800 mb-3 flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            重要なタスクの詳細説明
+          </h3>
+          <div className="space-y-4 text-sm text-green-700">
+            <div className="p-3 bg-white rounded-lg border border-green-200">
+              <h4 className="font-semibold text-green-900 mb-2">💰 直近3ヶ月の収入と支出をすべて把握する</h4>
+              <p className="mb-2">このタスクは10個のサブタスクに分かれています：</p>
+              <ol className="list-decimal list-inside space-y-1 ml-4">
+                <li>財布の中の現金残高を確認（5分）</li>
+                <li>銀行口座の残高を確認（5分）</li>
+                <li>投資口座の残高を確認（5分）</li>
+                <li>クレジットカードの未払い残高を確認（5分）</li>
+                <li>資産管理ページに入力（5分）</li>
+                <li>給与明細を確認（5分）</li>
+                <li>ボーナス支給を確認（5分）</li>
+                <li>副業収入を確認（5分）</li>
+                <li>固定費の支払いを確認（5分）</li>
+                <li>変動費の支出を確認（5分）</li>
+              </ol>
+            </div>
+            <div className="p-3 bg-white rounded-lg border border-green-200">
+              <h4 className="font-semibold text-green-900 mb-2">🏦 現在の資産と負債をすべて把握する</h4>
+              <p className="mb-2">このタスクは銀行口座管理と連携しています：</p>
+              <ul className="list-disc list-inside space-y-1 ml-4">
+                <li>メイン銀行口座を登録（銀行口座管理ページ）</li>
+                <li>銀行データ取り込み機能を使用</li>
+                <li>資産負債レポートページで確認</li>
+                <li>自動的に「毎日20のこと」に反映</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* よくある質問 */}
+        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-yellow-800 mb-3 flex items-center gap-2">
+            <Circle className="h-5 w-5" />
+            よくある質問
+          </h3>
+          <div className="space-y-3 text-sm text-yellow-700">
+            <div>
+              <h4 className="font-semibold text-yellow-900">Q: サブタスクが表示されません</h4>
+              <p>A: 「サブタスクを表示」ボタンをクリックしてください。一部のタスクにはサブタスクが定義されていない場合があります。</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-yellow-900">Q: 手順が分からない</h4>
+              <p>A: 各サブタスクの「手順を表示」ボタンをクリックすると、具体的な手順が表示されます。</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-yellow-900">Q: 進捗が保存されません</h4>
+              <p>A: ブラウザの更新ボタンを押すか、ページを再読み込みしてください。進捗は自動的に保存されます。</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-yellow-900">Q: 銀行口座の情報が表示されません</h4>
+              <p>A: 銀行口座管理ページでメイン銀行口座を登録してください。登録後、このページで口座情報が表示されます。</p>
+            </div>
           </div>
         </div>
       </div>
