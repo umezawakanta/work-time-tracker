@@ -46,16 +46,21 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
     });
 
     // タスク完了率の計算
-    const Todo = mongoose.model(
-      'Todo',
-      new mongoose.Schema({
-        userId: { type: String, required: true },
-        title: { type: String, required: true },
-        completed: { type: Boolean, default: false },
-        createdAt: { type: Date, default: Date.now },
-        updatedAt: { type: Date, default: Date.now },
-      })
-    );
+    let Todo;
+    try {
+      Todo = mongoose.model('Todo');
+    } catch (error) {
+      Todo = mongoose.model(
+        'Todo',
+        new mongoose.Schema({
+          userId: { type: String, required: true },
+          title: { type: String, required: true },
+          completed: { type: Boolean, default: false },
+          createdAt: { type: Date, default: Date.now },
+          updatedAt: { type: Date, default: Date.now },
+        })
+      );
+    }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);

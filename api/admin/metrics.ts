@@ -113,17 +113,22 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
     const churnRate = newYesterday > 0 ? ((newToday - newYesterday) / newYesterday) * 100 : 0;
 
     // サブスクリプションメトリクス取得
-    const Subscription = mongoose.model(
-      'Subscription',
-      new mongoose.Schema({
-        userId: { type: String, required: true },
-        plan: { type: String, required: true },
-        status: { type: String, required: true },
-        amount: { type: Number, required: true },
-        createdAt: { type: Date, default: Date.now },
-        updatedAt: { type: Date, default: Date.now },
-      })
-    );
+    let Subscription;
+    try {
+      Subscription = mongoose.model('Subscription');
+    } catch (error) {
+      Subscription = mongoose.model(
+        'Subscription',
+        new mongoose.Schema({
+          userId: { type: String, required: true },
+          plan: { type: String, required: true },
+          status: { type: String, required: true },
+          amount: { type: Number, required: true },
+          createdAt: { type: Date, default: Date.now },
+          updatedAt: { type: Date, default: Date.now },
+        })
+      );
+    }
 
     const activeSubscriptions = await Subscription.find({ status: 'active' });
     const mrr = activeSubscriptions.reduce((sum, sub) => sum + (sub.amount || 0), 0);

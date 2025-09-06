@@ -77,28 +77,12 @@ class ServerErrorLogger {
       await mongoLib.connectMongoDirect();
       const mongoose = await mongoLib.getMongoose();
 
-      // エラーログコレクション
-      const ErrorLog = mongoose.model(
-        'ErrorLog',
-        new mongoose.Schema({
-          timestamp: { type: Date, default: Date.now },
-          level: { type: String, enum: ['error', 'warn', 'info', 'debug'], required: true },
-          message: { type: String, required: true },
-          stack: String,
-          userId: String,
-          endpoint: String,
-          method: String,
-          statusCode: Number,
-          userAgent: String,
-          ip: String,
-          sessionId: String,
-          tags: [String],
-          metadata: mongoose.Schema.Types.Mixed,
-        })
-      );
+      // 共通スキーマを使用
+      const { getErrorLogModel } = require('../../api/_schemas/errorLog');
+      const ErrorLogModel = getErrorLogModel();
 
       // バッチ挿入
-      await ErrorLog.insertMany(errors);
+      await ErrorLogModel.insertMany(errors);
     } catch (error) {
       console.error('Database save error:', error);
       throw error;
