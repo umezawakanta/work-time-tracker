@@ -532,6 +532,38 @@ const Daily10TasksPage: React.FC = () => {
 
   // 本番環境ではデバッグログを削除
 
+  // 進捗の可視化データを計算
+  const progressData = useMemo(() => {
+    if (!progress?.tasks || tasks.length === 0) {
+      return {
+        completed: 0,
+        total: 0,
+        percentage: 0,
+        streak: 0,
+        todayCompleted: 0,
+      };
+    }
+
+    const completed = progress.tasks.filter((task) => task.completed).length;
+    const total = tasks.length;
+    const percentage = Math.round((completed / total) * 100);
+    const streak = stats?.streak || 0;
+    const todayCompleted = progress.tasks.filter(
+      (task) =>
+        task.completed &&
+        task.completedAt &&
+        new Date(task.completedAt).toDateString() === new Date().toDateString()
+    ).length;
+
+    return {
+      completed,
+      total,
+      percentage,
+      streak,
+      todayCompleted,
+    };
+  }, [progress, tasks, stats]);
+
   // タスク状況に応じたメッセージを生成
   const getMotivationalMessage = () => {
     if (!progress?.tasks || tasks.length === 0) {
@@ -598,11 +630,9 @@ const Daily10TasksPage: React.FC = () => {
     );
   }
 
-  const completedTasks = progress?.tasks
-    ? Object.values(progress.tasks).filter((p) => p.completed).length
-    : 0;
-  const totalTasks = tasks.length;
-  const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  const completedTasks = progressData.completed;
+  const totalTasks = progressData.total;
+  const completionRate = progressData.percentage;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -817,6 +847,11 @@ const Daily10TasksPage: React.FC = () => {
               </div>
               <Progress value={completionRate} className="mb-2" />
               <p className="text-sm text-gray-600">{completionRate}% 完了</p>
+              {progressData.todayCompleted > 0 && (
+                <p className="text-xs text-green-600 mt-1">
+                  今日完了: {progressData.todayCompleted}件
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

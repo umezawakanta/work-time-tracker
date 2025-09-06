@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '@/store';
+import { addAssetEntry } from '@/store/assetSlice';
+import { addDebtEntry } from '@/store/debtSlice';
 import { BalanceUpdateModal } from '@/components/BalanceUpdateModel';
 import { AssetLiabilityTrendChart } from '@/components/chart/AssetLiabilityTrendChart';
 import { AssetTrendChart } from '@/components/chart/AssetTrendChart';
@@ -90,6 +92,7 @@ import { CombinedDataPoint, LongTermDataPoint } from '@/types';
 import { FinancialGoal } from '@/types'; // 追加: 目標の型定義
 
 export default function AssetLiabilityReportPage() {
+  const dispatch = useDispatch<AppDispatch>();
   const { user } = useAuth();
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
   const debtEntries = useSelector((state: RootState) => state.debt.entries);
@@ -189,6 +192,20 @@ export default function AssetLiabilityReportPage() {
         const data = await response.json();
 
         if (data.success) {
+          // 取得したデータを状態に保存
+          if (data.data) {
+            // 資産・負債データをReduxストアに保存
+            if (data.data.assets) {
+              data.data.assets.forEach((asset: any) => {
+                dispatch(addAssetEntry(asset));
+              });
+            }
+            if (data.data.debts) {
+              data.data.debts.forEach((debt: any) => {
+                dispatch(addDebtEntry(debt));
+              });
+            }
+          }
           // 長期トレンドデータを実際のデータから生成
           generateLongTermData();
         } else {

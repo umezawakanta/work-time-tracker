@@ -293,27 +293,29 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
           <h2 className="text-2xl font-bold">銀行口座管理</h2>
           <p className="text-gray-600">メイン銀行口座を登録・管理できます</p>
           {lastSyncTime && (
-            <p className="text-sm text-gray-500">
-              最終同期: {new Date(lastSyncTime).toLocaleString()}
-            </p>
+            <div className="text-sm text-gray-500">
+              <p>最終同期: {new Date(lastSyncTime).toLocaleString()}</p>
+              {localStorage.getItem(`bank_sync_${userId}`) &&
+                JSON.parse(localStorage.getItem(`bank_sync_${userId}`) || '{}').isDemo && (
+                  <p className="text-orange-600">※ デモデータを表示中</p>
+                )}
+            </div>
           )}
         </div>
         <div className="flex items-center gap-2">
-          {bankAPIService.isAPIAvailable() && (
-            <Button
-              onClick={syncBankData}
-              disabled={isSyncing}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              {isSyncing ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-              ) : (
-                <Clock className="h-4 w-4" />
-              )}
-              {isSyncing ? '同期中...' : 'データ同期'}
-            </Button>
-          )}
+          <Button
+            onClick={syncBankData}
+            disabled={isSyncing}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            {isSyncing ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+            ) : (
+              <Clock className="h-4 w-4" />
+            )}
+            {isSyncing ? '同期中...' : 'データ同期'}
+          </Button>
           <Button
             onClick={() => {
               resetForm();

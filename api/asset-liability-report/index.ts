@@ -264,7 +264,7 @@ function generateCategories(assets: AssetRecord[], debts: DebtRecord[]) {
   };
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
+async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   // CORS設定
   const origin = req.headers.origin as string | undefined;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
@@ -468,3 +468,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     });
   }
 }
+
+export default handler;
