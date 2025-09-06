@@ -36,6 +36,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
     'documenting',
     'review',
     'release_pending',
+    'complete', // 直近のリリース済み機能も含める
   ]);
 
   const hasValidYmd = (value: unknown): value is string => {
@@ -58,9 +59,17 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
   // 共有要件: 着手中かつリリース予定日が設定済み(YYYY-MM-DD)
   candidates = candidates.filter((f) => hasValidYmd(f.targetRelease));
 
-  // 優先度順→名前順
+  // 完了済み機能を最初に表示、その後優先度順→名前順
   const priorityOrder: Record<'P0' | 'P1' | 'P2' | 'P3', number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
   candidates.sort((a, b) => {
+    const statusA = (map?.[a.id] ?? normalizeToNewStatus(a.status)) as FeatureStatus;
+    const statusB = (map?.[b.id] ?? normalizeToNewStatus(b.status)) as FeatureStatus;
+
+    // 完了済み機能を最初に表示
+    if (statusA === 'complete' && statusB !== 'complete') return -1;
+    if (statusA !== 'complete' && statusB === 'complete') return 1;
+
+    // 同じステータスグループ内では優先度順→名前順
     const pa = priorityOrder[(a.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
     const pb = priorityOrder[(b.priority ?? 'P3') as 'P0' | 'P1' | 'P2' | 'P3'];
     if (pa !== pb) return pa - pb;
@@ -76,21 +85,50 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
     lines.push('');
   }
   lines.push('');
+
+  // 完了済み機能と進行中機能を分けて表示
+  const completedFeatures: typeof candidates = [];
+  const inProgressFeatures: typeof candidates = [];
+
   for (const f of candidates) {
     const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
-    const progress = getFeatureProgressPercent(status);
-    const ymd = f.targetRelease as string; // filtered above to be valid
-    const [y, m, d] = ymd.split('-');
-    const dateStr = `${y}/${m}/${d}`;
-    const emoji =
-      status === 'release_pending'
-        ? '🚀'
-        : status === 'system_testing'
-          ? '🧪'
-          : status === 'integration_testing'
-            ? '🔗'
-            : '✅';
-    lines.push(`${emoji} ${f.name}：${progress}%（リリース予定日: ${dateStr}）`);
+    if (status === 'complete') {
+      completedFeatures.push(f);
+    } else {
+      inProgressFeatures.push(f);
+    }
+  }
+
+  // 完了済み機能の表示
+  if (completedFeatures.length > 0) {
+    lines.push('🎉 リリース済み機能');
+    for (const f of completedFeatures) {
+      const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
+      const progress = getFeatureProgressPercent(status);
+      lines.push(`🎉 ${f.name}：${progress}%（リリース済み）`);
+    }
+    lines.push('');
+  }
+
+  // 進行中機能の表示
+  if (inProgressFeatures.length > 0) {
+    lines.push('🚀 開発中機能');
+    for (const f of inProgressFeatures) {
+      const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
+      const progress = getFeatureProgressPercent(status);
+      const ymd = f.targetRelease as string; // filtered above to be valid
+      const [y, m, d] = ymd.split('-');
+      const dateStr = `${y}/${m}/${d}`;
+      const emoji =
+        status === 'release_pending'
+          ? '🚀'
+          : status === 'system_testing'
+            ? '🧪'
+            : status === 'integration_testing'
+              ? '🔗'
+              : '✅';
+      lines.push(`${emoji} ${f.name}：${progress}%（リリース予定日: ${dateStr}）`);
+    }
   }
 
   const body = lines.join('\n');
