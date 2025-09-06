@@ -17,6 +17,15 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'react-hot-toast';
 import { promoteToAdmin, changePassword } from '@/services/api/authApi';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Crown,
   User as UserIcon,
@@ -29,6 +38,16 @@ import {
   Globe,
   LogOut,
   AlertCircle,
+  Settings,
+  Bell,
+  Palette,
+  Languages,
+  CreditCard,
+  Target,
+  Calendar,
+  Mail,
+  Phone,
+  MapPin,
 } from 'lucide-react';
 
 interface LoginSession {
@@ -80,6 +99,36 @@ export default function UserProfile() {
   });
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [sessions, setSessions] = useState<LoginSession[]>(mockSessions);
+
+  // プロフィール設定用の状態
+  const [profileSettings, setProfileSettings] = useState({
+    displayName: user?.name || '',
+    bio: '',
+    location: '',
+    website: '',
+    phone: '',
+    language: 'ja',
+    timezone: 'Asia/Tokyo',
+    currency: 'JPY',
+  });
+
+  // 通知設定用の状態
+  const [notificationSettings, setNotificationSettings] = useState({
+    emailNotifications: true,
+    pushNotifications: true,
+    marketingEmails: false,
+    securityAlerts: true,
+    weeklyDigest: true,
+    taskReminders: true,
+  });
+
+  // テーマ設定用の状態
+  const [themeSettings, setThemeSettings] = useState({
+    theme: 'system',
+    accentColor: 'blue',
+    fontSize: 'medium',
+    reducedMotion: false,
+  });
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -257,10 +306,18 @@ export default function UserProfile() {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <UserIcon className="h-4 w-4" />
               プロフィール
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              設定
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="flex items-center gap-2">
+              <Bell className="h-4 w-4" />
+              通知
             </TabsTrigger>
             <TabsTrigger value="security" className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
@@ -349,6 +406,239 @@ export default function UserProfile() {
                   )}
                 </CardFooter>
               </form>
+            </Card>
+          </TabsContent>
+
+          {/* 設定タブ */}
+          <TabsContent value="settings">
+            <div className="space-y-6">
+              {/* 基本設定 */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="h-5 w-5" />
+                    基本設定
+                  </CardTitle>
+                  <CardDescription>アプリケーションの基本設定を管理します</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="language">言語</Label>
+                      <Select
+                        value={profileSettings.language}
+                        onValueChange={(value) =>
+                          setProfileSettings((prev) => ({ ...prev, language: value }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ja">日本語</SelectItem>
+                          <SelectItem value="en">English</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="timezone">タイムゾーン</Label>
+                      <Select
+                        value={profileSettings.timezone}
+                        onValueChange={(value) =>
+                          setProfileSettings((prev) => ({ ...prev, timezone: value }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Asia/Tokyo">Asia/Tokyo</SelectItem>
+                          <SelectItem value="UTC">UTC</SelectItem>
+                          <SelectItem value="America/New_York">America/New_York</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="currency">通貨</Label>
+                      <Select
+                        value={profileSettings.currency}
+                        onValueChange={(value) =>
+                          setProfileSettings((prev) => ({ ...prev, currency: value }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="JPY">JPY (日本円)</SelectItem>
+                          <SelectItem value="USD">USD (米ドル)</SelectItem>
+                          <SelectItem value="EUR">EUR (ユーロ)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* テーマ設定 */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Palette className="h-5 w-5" />
+                    テーマ設定
+                  </CardTitle>
+                  <CardDescription>アプリケーションの外観をカスタマイズします</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="theme">テーマ</Label>
+                    <Select
+                      value={themeSettings.theme}
+                      onValueChange={(value) =>
+                        setThemeSettings((prev) => ({ ...prev, theme: value }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">ライト</SelectItem>
+                        <SelectItem value="dark">ダーク</SelectItem>
+                        <SelectItem value="system">システム設定に従う</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="accentColor">アクセントカラー</Label>
+                    <Select
+                      value={themeSettings.accentColor}
+                      onValueChange={(value) =>
+                        setThemeSettings((prev) => ({ ...prev, accentColor: value }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="blue">ブルー</SelectItem>
+                        <SelectItem value="green">グリーン</SelectItem>
+                        <SelectItem value="purple">パープル</SelectItem>
+                        <SelectItem value="red">レッド</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="reducedMotion">アニメーションを減らす</Label>
+                      <p className="text-sm text-muted-foreground">アクセシビリティの向上のため</p>
+                    </div>
+                    <Switch
+                      id="reducedMotion"
+                      checked={themeSettings.reducedMotion}
+                      onCheckedChange={(checked) =>
+                        setThemeSettings((prev) => ({ ...prev, reducedMotion: checked }))
+                      }
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* 通知タブ */}
+          <TabsContent value="notifications">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Bell className="h-5 w-5" />
+                  通知設定
+                </CardTitle>
+                <CardDescription>受信したい通知の種類を選択してください</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="emailNotifications">メール通知</Label>
+                      <p className="text-sm text-muted-foreground">重要な更新をメールで受け取る</p>
+                    </div>
+                    <Switch
+                      id="emailNotifications"
+                      checked={notificationSettings.emailNotifications}
+                      onCheckedChange={(checked) =>
+                        setNotificationSettings((prev) => ({
+                          ...prev,
+                          emailNotifications: checked,
+                        }))
+                      }
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="pushNotifications">プッシュ通知</Label>
+                      <p className="text-sm text-muted-foreground">
+                        ブラウザでプッシュ通知を受け取る
+                      </p>
+                    </div>
+                    <Switch
+                      id="pushNotifications"
+                      checked={notificationSettings.pushNotifications}
+                      onCheckedChange={(checked) =>
+                        setNotificationSettings((prev) => ({ ...prev, pushNotifications: checked }))
+                      }
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="securityAlerts">セキュリティアラート</Label>
+                      <p className="text-sm text-muted-foreground">
+                        ログインやパスワード変更などの通知
+                      </p>
+                    </div>
+                    <Switch
+                      id="securityAlerts"
+                      checked={notificationSettings.securityAlerts}
+                      onCheckedChange={(checked) =>
+                        setNotificationSettings((prev) => ({ ...prev, securityAlerts: checked }))
+                      }
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="weeklyDigest">週次ダイジェスト</Label>
+                      <p className="text-sm text-muted-foreground">
+                        週間の活動サマリーをメールで受け取る
+                      </p>
+                    </div>
+                    <Switch
+                      id="weeklyDigest"
+                      checked={notificationSettings.weeklyDigest}
+                      onCheckedChange={(checked) =>
+                        setNotificationSettings((prev) => ({ ...prev, weeklyDigest: checked }))
+                      }
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="taskReminders">タスクリマインダー</Label>
+                      <p className="text-sm text-muted-foreground">
+                        タスクの期限やリマインダー通知
+                      </p>
+                    </div>
+                    <Switch
+                      id="taskReminders"
+                      checked={notificationSettings.taskReminders}
+                      onCheckedChange={(checked) =>
+                        setNotificationSettings((prev) => ({ ...prev, taskReminders: checked }))
+                      }
+                    />
+                  </div>
+                </div>
+              </CardContent>
             </Card>
           </TabsContent>
 

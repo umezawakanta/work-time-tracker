@@ -1341,10 +1341,10 @@ export const featuresRegistry: Feature[] = [
     path: '/profile',
     category: 'ユーザー・設定',
     description: 'ユーザープロフィール設定',
-    status: 'planning',
+    status: 'complete',
     requiresRealAPI: false,
     priority: 'P2',
-    targetRelease: '2025-09-20',
+    targetRelease: '2025-09-07',
   },
   // 認証・アカウント
   {
@@ -1781,6 +1781,7 @@ const ALLOWLIST_PATHS: string[] = [
   '/register',
   '/privacy',
   '/terms',
+  '/profile',
   '/changelog',
   '/how-it-works',
   '/invite',

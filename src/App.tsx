@@ -154,7 +154,7 @@ const WorkTimeEntryForm = lazy(() =>
 const WorkTimeReports = lazy(() =>
   import('@/pages/WorkTimeReports').then((m) => ({ default: m.default }))
 );
-// const UserProfile = lazy(() => import('./pages/UserProfile'));
+const UserProfile = lazy(() => import('./pages/UserProfile'));
 
 // 🔐 Authentication Pages
 const Login = lazy(() => import('@/pages/Login').then((m) => ({ default: m.default })));
@@ -1367,7 +1367,13 @@ const App: React.FC = () => {
                               />
                               <Route
                                 path="/profile"
-                                element={<Navigate to="/settings?tab=account" replace />}
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <UserProfile />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
                               />
 
                               {/* 🏆 Development & Gamification */}
