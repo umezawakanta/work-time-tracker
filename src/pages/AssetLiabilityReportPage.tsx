@@ -288,31 +288,39 @@ export default function AssetLiabilityReportPage() {
   } = useBalanceUpdate(updateLastBalanceDate);
 
   const combinedData = combineData(
-    assetEntries.map((entry) => ({
-      ...entry,
-      id: entry.account,
-    })),
-    debtEntries.map((entry) => ({
-      ...entry,
-      id: entry.account,
-    }))
+    assetEntries
+      .filter((entry) => entry && entry.account) // undefinedやaccountがないエントリを除外
+      .map((entry) => ({
+        ...entry,
+        id: entry.account,
+      })),
+    debtEntries
+      .filter((entry) => entry && entry.account) // undefinedやaccountがないエントリを除外
+      .map((entry) => ({
+        ...entry,
+        id: entry.account,
+      }))
   );
 
   // AssetLiabilityTrendChart 用のデータを生成
   const chartData = useMemo(() => {
-    const assetChartData = assetEntries.map((entry) => ({
-      date: new Date(entry.date),
-      account: entry.account,
-      value: entry.value,
-      type: 'asset' as const,
-    }));
+    const assetChartData = assetEntries
+      .filter((entry) => entry && entry.account)
+      .map((entry) => ({
+        date: new Date(entry.date),
+        account: entry.account,
+        value: entry.value,
+        type: 'asset' as const,
+      }));
 
-    const debtChartData = debtEntries.map((entry) => ({
-      date: new Date(entry.date),
-      account: entry.account,
-      value: entry.value,
-      type: 'debt' as const,
-    }));
+    const debtChartData = debtEntries
+      .filter((entry) => entry && entry.account)
+      .map((entry) => ({
+        date: new Date(entry.date),
+        account: entry.account,
+        value: entry.value,
+        type: 'debt' as const,
+      }));
 
     return [...assetChartData, ...debtChartData];
   }, [assetEntries, debtEntries]);
@@ -347,14 +355,18 @@ export default function AssetLiabilityReportPage() {
   } = useMemo(
     () =>
       calculateFinancialMetrics(
-        assetEntries.map((entry) => ({
-          ...entry,
-          id: entry.account,
-        })),
-        debtEntries.map((entry) => ({
-          ...entry,
-          id: entry.account,
-        }))
+        assetEntries
+          .filter((entry) => entry && entry.account)
+          .map((entry) => ({
+            ...entry,
+            id: entry.account,
+          })),
+        debtEntries
+          .filter((entry) => entry && entry.account)
+          .map((entry) => ({
+            ...entry,
+            id: entry.account,
+          }))
       ),
     [assetEntries, debtEntries]
   );
@@ -458,21 +470,23 @@ export default function AssetLiabilityReportPage() {
       その他: 0,
     };
 
-    assetEntries.forEach((entry) => {
-      // 実際のアプリではカテゴリ情報もエントリに含まれるが、デモでは簡易的に振り分け
-      const name = entry.account.toLowerCase();
-      if (name.includes('銀行') || name.includes('現金') || name.includes('預金')) {
-        categories['現金・預金'] += entry.value;
-      } else if (name.includes('株') || name.includes('投資') || name.includes('fund')) {
-        categories['投資'] += entry.value;
-      } else if (name.includes('不動産') || name.includes('マンション') || name.includes('house')) {
-        categories['不動産'] += entry.value;
-      } else if (name.includes('年金') || name.includes('保険') || name.includes('insurance')) {
-        categories['年金・保険'] += entry.value;
-      } else {
-        categories['その他'] += entry.value;
-      }
-    });
+    assetEntries
+      .filter((entry) => entry && entry.account)
+      .forEach((entry) => {
+        // 実際のアプリではカテゴリ情報もエントリに含まれるが、デモでは簡易的に振り分け
+        const name = entry.account.toLowerCase();
+        if (name.includes('銀行') || name.includes('現金') || name.includes('預金')) {
+          categories['現金・預金'] += entry.value;
+        } else if (name.includes('株') || name.includes('投資') || name.includes('fund')) {
+          categories['投資'] += entry.value;
+        } else if (name.includes('不動産') || name.includes('マンション') || name.includes('house')) {
+          categories['不動産'] += entry.value;
+        } else if (name.includes('年金') || name.includes('保険') || name.includes('insurance')) {
+          categories['年金・保険'] += entry.value;
+        } else {
+          categories['その他'] += entry.value;
+        }
+      });
 
     return Object.entries(categories).map(([name, value]) => ({
       name,
