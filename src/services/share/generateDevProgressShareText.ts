@@ -169,7 +169,13 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
       if (!aExpected && bExpected) return 1;
 
       // 期待されない機能の中で、P2優先度の場合は特定の機能を除外
-      const excludedFeatures = ['improvement-plan', 'asset-liability-report', 'startup-guide'];
+      const excludedFeatures = [
+        'improvement-plan',
+        'asset-liability-report',
+        'startup-guide',
+        'newsletter-signup',
+        'version-info',
+      ];
       if (excludedFeatures.includes(a.id) && !excludedFeatures.includes(b.id)) return 1;
       if (!excludedFeatures.includes(a.id) && excludedFeatures.includes(b.id)) return -1;
 
@@ -210,7 +216,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
   }
 
   const body = lines.join('\n');
-  return `開発状況アップデート\n------------------\n${body}`;
+  return `開発状況アップデート\n------------------\n${body}\n\nhttps://work-time-tracker-five.vercel.app`;
 }
 
 function buildTwitterIntentUrl(text: string, url: string): string {
