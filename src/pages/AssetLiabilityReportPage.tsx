@@ -710,7 +710,7 @@ export default function AssetLiabilityReportPage() {
                   メイン銀行口座を登録して、「毎日20のこと」を効率的に進めましょう
                 </p>
                 <Button
-                  onClick={() => window.open('/bank-accounts', '_blank')}
+                  onClick={() => (window.location.href = '/bank-accounts')}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   銀行口座を登録する

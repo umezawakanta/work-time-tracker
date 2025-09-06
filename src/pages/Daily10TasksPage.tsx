@@ -360,7 +360,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
                   size="sm"
                   className="w-full"
                   onClick={() => {
-                    window.open(taskLink.href, '_blank');
+                    if (taskLink.href === '/bank-accounts') {
+                      window.location.href = taskLink.href;
+                    } else {
+                      window.open(taskLink.href, '_blank');
+                    }
                   }}
                 >
                   <span className="mr-2">{taskLink.icon}</span>
