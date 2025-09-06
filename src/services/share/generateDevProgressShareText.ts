@@ -108,7 +108,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
     lines.push('🎉 リリース済み機能');
 
     // 期待される機能を最優先に、その後優先度順で表示
-    const expectedFeatures = ['terms', 'terms-of-service', 'profile', 'improvement-plan'];
+    const expectedFeatures = ['terms', 'profile', 'improvement-plan'];
     const priorityOrder: Record<'P0' | 'P1' | 'P2' | 'P3', number> = { P0: 1, P1: 0, P2: 2, P3: 3 };
     const sortedCompleted = completedFeatures.sort((a, b) => {
       // 期待される機能を最優先
@@ -136,7 +136,11 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
       return dateB.getTime() - dateA.getTime();
     });
 
-    const recentCompleted = sortedCompleted.slice(0, 3); // 直近の3件のみ表示
+    // 除外する機能をフィルタリング
+    const excludedFeatures = ['terms-of-service'];
+    const filteredCompleted = sortedCompleted.filter((f) => !excludedFeatures.includes(f.id));
+
+    const recentCompleted = filteredCompleted.slice(0, 3); // 直近の3件のみ表示
     for (const f of recentCompleted) {
       const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
       const progress = getFeatureProgressPercent(status);
