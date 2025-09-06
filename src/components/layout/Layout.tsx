@@ -10,6 +10,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { AccessibilityProvider } from '@/components/accessibility/AccessibilityProvider';
 import StatusBanners from '@/components/layout/StatusBanners';
 import FeatureAccessGuard from '@/components/layout/FeatureAccessGuard';
@@ -68,6 +75,7 @@ import {
   Star,
   Smartphone,
   LogOut,
+  Palette,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -1293,16 +1301,46 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                           </p>
                         </div>
                       </div>
-                      
+
                       {/* ユーザーメニュー */}
                       <div className="relative">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
-                        >
-                          <Settings className="h-4 w-4" />
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+                              title="設定"
+                            >
+                              <Settings className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuItem onClick={() => navigate('/settings')}>
+                              <Settings className="mr-2 h-4 w-4" />
+                              設定
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigate('/settings?tab=appearance')}>
+                              <Palette className="mr-2 h-4 w-4" />
+                              外観
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => navigate('/settings?tab=notifications')}
+                            >
+                              <Bell className="mr-2 h-4 w-4" />
+                              通知
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigate('/settings?tab=privacy')}>
+                              <Shield className="mr-2 h-4 w-4" />
+                              プライバシー
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => navigate('/settings?tab=account')}>
+                              <User className="mr-2 h-4 w-4" />
+                              アカウント
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
                   )}

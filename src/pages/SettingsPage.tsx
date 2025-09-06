@@ -221,6 +221,18 @@ const SettingsPage: React.FC = () => {
   const { isPremium, features: premiumFeatures, expiresAt } = usePremiumFeatures();
 
   const [activeTab, setActiveTab] = useState('general');
+
+  // URLパラメータからタブを設定
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tab = urlParams.get('tab');
+    if (
+      tab &&
+      ['general', 'notifications', 'privacy', 'appearance', 'ai', 'account'].includes(tab)
+    ) {
+      setActiveTab(tab);
+    }
+  }, []);
   const [notifications, setNotifications] = useState({
     email: true,
     push: true,

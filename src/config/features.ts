@@ -808,10 +808,10 @@ export const featuresRegistry: Feature[] = [
     path: '/settings',
     category: 'コア',
     description: 'グローバル設定',
-    status: 'planning',
+    status: 'complete',
     requiresRealAPI: false,
     priority: 'P1',
-    targetRelease: '2025-09-13',
+    targetRelease: '2025-09-06',
   },
   {
     id: 'vercel-link',
