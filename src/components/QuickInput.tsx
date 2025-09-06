@@ -62,7 +62,11 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
   // 型付きディスパッチを使用
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useAuth();
-  const { accounts, mainAccount, isLoading: bankLoading } = useBankAccounts(user?.id || 'default-user');
+  const {
+    accounts,
+    mainAccount,
+    isLoading: bankLoading,
+  } = useBankAccounts(user?.id || 'default-user');
   const [entryType, setEntryType] = useState<'asset' | 'debt'>('asset');
   const [accountName, setAccountName] = useState('');
   const [category, setCategory] = useState(entryType === 'asset' ? 'cash' : 'mortgage');
@@ -93,19 +97,21 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
     try {
       const currentDate = new Date().toISOString();
       const accountName = `${account.bankName} ${account.accountName}`;
-      
+
       // 資産エントリーを追加
-      dispatch(addAssetEntry({
-        account: accountName,
-        category: 'bank',
-        value: account.lastBalance,
-        date: currentDate,
-        description: accountName,
-        targetValue: account.lastBalance,
-        targetDate: currentDate,
-        autoUpdate: false,
-        updateFrequency: 'monthly',
-      }));
+      dispatch(
+        addAssetEntry({
+          account: accountName,
+          category: 'bank',
+          value: account.lastBalance,
+          date: currentDate,
+          description: accountName,
+          targetValue: account.lastBalance,
+          targetDate: currentDate,
+          autoUpdate: false,
+          updateFrequency: 'monthly',
+        })
+      );
 
       // 毎日20のことの自動完了を試行
       try {
@@ -256,7 +262,7 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
                 </p>
                 <div className="space-y-2">
                   {accounts.map((account) => (
-                    <div 
+                    <div
                       key={account._id}
                       className="flex items-center justify-between p-3 bg-white border border-blue-200 rounded-lg"
                     >
@@ -270,9 +276,13 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
                           )}
                         </p>
                         <p className="text-xs text-gray-600">
-                          {account.accountType === 'checking' ? '普通預金' : 
-                           account.accountType === 'savings' ? '貯蓄預金' :
-                           account.accountType === 'time_deposit' ? '定期預金' : 'クレジットカード'}
+                          {account.accountType === 'checking'
+                            ? '普通預金'
+                            : account.accountType === 'savings'
+                              ? '貯蓄預金'
+                              : account.accountType === 'time_deposit'
+                                ? '定期預金'
+                                : 'クレジットカード'}
                         </p>
                         {account.lastBalance ? (
                           <p className="text-sm font-semibold text-green-600">

@@ -93,9 +93,15 @@ export default function AssetLiabilityReportPage() {
   const { user } = useAuth();
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
   const debtEntries = useSelector((state: RootState) => state.debt.entries);
-  
+
   // 銀行口座情報を取得
-  const { accounts, mainAccount, isLoading: bankLoading, error: bankError, refetch: refetchBankAccounts } = useBankAccounts(user?.id || 'default-user');
+  const {
+    accounts,
+    mainAccount,
+    isLoading: bankLoading,
+    error: bankError,
+    refetch: refetchBankAccounts,
+  } = useBankAccounts(user?.id || 'default-user');
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
   const [editingDebt, setEditingDebt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -690,12 +696,7 @@ export default function AssetLiabilityReportPage() {
               <div className="text-center py-8 text-red-600">
                 <AlertTriangle className="h-8 w-8 mx-auto mb-2" />
                 <p>銀行口座情報の取得に失敗しました</p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={refetchBankAccounts}
-                  className="mt-2"
-                >
+                <Button variant="outline" size="sm" onClick={refetchBankAccounts} className="mt-2">
                   再試行
                 </Button>
               </div>
@@ -706,7 +707,7 @@ export default function AssetLiabilityReportPage() {
                 <p className="text-gray-600 mb-4">
                   メイン銀行口座を登録して、「毎日20のこと」を効率的に進めましょう
                 </p>
-                <Button 
+                <Button
                   onClick={() => window.open('/bank-accounts', '_blank')}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
@@ -728,9 +729,13 @@ export default function AssetLiabilityReportPage() {
                           {mainAccount.bankName} {mainAccount.accountName}
                         </p>
                         <p className="text-sm text-blue-600">
-                          {mainAccount.accountType === 'checking' ? '普通預金' : 
-                           mainAccount.accountType === 'savings' ? '貯蓄預金' :
-                           mainAccount.accountType === 'time_deposit' ? '定期預金' : 'クレジットカード'}
+                          {mainAccount.accountType === 'checking'
+                            ? '普通預金'
+                            : mainAccount.accountType === 'savings'
+                              ? '貯蓄預金'
+                              : mainAccount.accountType === 'time_deposit'
+                                ? '定期預金'
+                                : 'クレジットカード'}
                         </p>
                         {mainAccount.lastBalance && (
                           <p className="text-lg font-bold text-blue-900 mt-1">
@@ -743,9 +748,10 @@ export default function AssetLiabilityReportPage() {
                           メイン口座
                         </Badge>
                         <p className="text-sm text-blue-600">
-                          最終更新: {mainAccount.lastUpdated ? 
-                            new Date(mainAccount.lastUpdated).toLocaleDateString('ja-JP') : 
-                            '未更新'}
+                          最終更新:{' '}
+                          {mainAccount.lastUpdated
+                            ? new Date(mainAccount.lastUpdated).toLocaleDateString('ja-JP')
+                            : '未更新'}
                         </p>
                       </div>
                     </div>
@@ -755,7 +761,9 @@ export default function AssetLiabilityReportPage() {
                     <div className="flex items-center gap-2">
                       <AlertTriangle className="h-5 w-5 text-yellow-600" />
                       <div>
-                        <h4 className="font-semibold text-yellow-800">メイン口座が設定されていません</h4>
+                        <h4 className="font-semibold text-yellow-800">
+                          メイン口座が設定されていません
+                        </h4>
                         <p className="text-yellow-700 text-sm">
                           メイン口座を設定すると、「毎日20のこと」で効率的に管理できます
                         </p>
@@ -770,19 +778,27 @@ export default function AssetLiabilityReportPage() {
                     <h4 className="font-semibold mb-3">登録済み口座一覧</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {accounts.map((account) => (
-                        <div 
+                        <div
                           key={account._id}
                           className={`p-3 border rounded-lg ${
-                            account.isMain ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'
+                            account.isMain
+                              ? 'bg-blue-50 border-blue-200'
+                              : 'bg-gray-50 border-gray-200'
                           }`}
                         >
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="font-medium">{account.bankName} {account.accountName}</p>
+                              <p className="font-medium">
+                                {account.bankName} {account.accountName}
+                              </p>
                               <p className="text-sm text-gray-600">
-                                {account.accountType === 'checking' ? '普通預金' : 
-                                 account.accountType === 'savings' ? '貯蓄預金' :
-                                 account.accountType === 'time_deposit' ? '定期預金' : 'クレジットカード'}
+                                {account.accountType === 'checking'
+                                  ? '普通預金'
+                                  : account.accountType === 'savings'
+                                    ? '貯蓄預金'
+                                    : account.accountType === 'time_deposit'
+                                      ? '定期預金'
+                                      : 'クレジットカード'}
                               </p>
                               {account.lastBalance && (
                                 <p className="text-sm font-semibold">
@@ -790,9 +806,7 @@ export default function AssetLiabilityReportPage() {
                                 </p>
                               )}
                             </div>
-                            {account.isMain && (
-                              <Badge variant="secondary">メイン</Badge>
-                            )}
+                            {account.isMain && <Badge variant="secondary">メイン</Badge>}
                           </div>
                         </div>
                       ))}
