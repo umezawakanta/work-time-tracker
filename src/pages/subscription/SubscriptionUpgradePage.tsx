@@ -252,7 +252,7 @@ export default function SubscriptionUpgradePage() {
 
       // 現在のサブスクリプションがある場合は更新、なければ新規作成
       if (currentSubscription) {
-        await userSubscriptionApi.updateUserSubscription(user._id, {
+        await userSubscriptionApi.updateUserSubscription(user.id, {
           planId,
           status: 'active',
           currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30日後
@@ -577,7 +577,7 @@ export default function SubscriptionUpgradePage() {
                         });
                       } else {
                         // 再開はポータルで可能。暫定ではユーザ購読のフラグを戻す
-                        await userSubscriptionApi.updateUserSubscription(user._id, {
+                        await userSubscriptionApi.updateUserSubscription(user.id, {
                           cancelAtPeriodEnd: false,
                         });
                       }
