@@ -245,7 +245,7 @@ export default function AssetLiabilityReportPage() {
   // 長期トレンドデータの生成（実際のデータから計算）
   const generateLongTermData = () => {
     const data: LongTermDataPoint[] = [];
-    
+
     // 実際の資産・負債データから長期トレンドを生成
     if (assetEntries.length === 0 && debtEntries.length === 0) {
       setLongTermData([]);
@@ -253,43 +253,50 @@ export default function AssetLiabilityReportPage() {
     }
 
     // データを月別に集計
-    const monthlyData = new Map<string, { assets: number; debts: number; categories: Record<string, number> }>();
-    
+    const monthlyData = new Map<
+      string,
+      { assets: number; debts: number; categories: Record<string, number> }
+    >();
+
     // 資産データの集計
-    assetEntries.forEach(entry => {
+    assetEntries.forEach((entry) => {
       if (!entry || !entry.date) return;
-      
+
       const monthKey = entry.date.substring(0, 7); // YYYY-MM形式
       const existing = monthlyData.get(monthKey) || { assets: 0, debts: 0, categories: {} };
-      
+
       existing.assets += entry.value || 0;
-      existing.categories[entry.category] = (existing.categories[entry.category] || 0) + (entry.value || 0);
-      
+      existing.categories[entry.category] =
+        (existing.categories[entry.category] || 0) + (entry.value || 0);
+
       monthlyData.set(monthKey, existing);
     });
-    
+
     // 負債データの集計
-    debtEntries.forEach(entry => {
+    debtEntries.forEach((entry) => {
       if (!entry || !entry.date) return;
-      
+
       const monthKey = entry.date.substring(0, 7);
       const existing = monthlyData.get(monthKey) || { assets: 0, debts: 0, categories: {} };
-      
+
       existing.debts += entry.value || 0;
-      
+
       monthlyData.set(monthKey, existing);
     });
-    
+
     // データポイントを生成
     const sortedMonths = Array.from(monthlyData.keys()).sort();
-    
-    sortedMonths.forEach(monthKey => {
+
+    sortedMonths.forEach((monthKey) => {
       const monthData = monthlyData.get(monthKey);
       if (!monthData) return;
-      
+
       const netWorth = monthData.assets - monthData.debts;
-      const savingsRate = monthData.assets > 0 ? ((monthData.assets - (monthData.debts || 0)) / monthData.assets) * 100 : 0;
-      
+      const savingsRate =
+        monthData.assets > 0
+          ? ((monthData.assets - (monthData.debts || 0)) / monthData.assets) * 100
+          : 0;
+
       data.push({
         date: `${monthKey}-01`,
         assets: monthData.assets,
