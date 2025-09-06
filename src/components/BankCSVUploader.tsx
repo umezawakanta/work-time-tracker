@@ -129,6 +129,12 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
     // より柔軟な検出条件
     const isSMBCFormat = hasDateField && (hasBalanceField || hasWithdrawalField || hasDepositField);
 
+    // デバッグ用：強制的にSMBCフォーマットとして扱う（テスト用）
+    const forceSMBCFormat =
+      headers.length > 0 &&
+      headers.some((h) => h.includes('年月日') || h.includes('日付') || h.includes('残高'));
+    console.log('強制SMBCフォーマット:', forceSMBCFormat);
+
     // デバッグ用：すべてのヘッダーをチェック
     console.log('ヘッダー詳細チェック:');
     headers.forEach((header, index) => {
@@ -146,9 +152,18 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
     });
     console.log('========================');
 
-    if (!isSMBCFormat) {
+    // アラートでも表示（デバッグ用）
+    if (headers.length > 0) {
+      alert(`CSV解析結果:\nヘッダー: ${headers.join(', ')}\nSMBCフォーマット: ${isSMBCFormat}`);
+    }
+
+    if (!isSMBCFormat && !forceSMBCFormat) {
       console.log('通常のフォーマットで解析');
       return parseCSV(csvText); // 通常のフォーマットで解析
+    }
+
+    if (forceSMBCFormat) {
+      console.log('強制的にSMBCフォーマットとして解析');
     }
 
     const parsedData = lines.slice(1).map((line, index) => {
