@@ -12,7 +12,19 @@ function getFeatureProgressPercent(status: FeatureStatus): number {
   return Math.round(((idx + 1) / NEW_STATUS_ORDER.length) * 100);
 }
 
-export function generateDevProgressShareText(opts?: ShareProgressOptions): string {
+async function fetchOpenBugCount(): Promise<number> {
+  try {
+    const res = await fetch('/api/bugs');
+    const json = await res.json();
+    const list = Array.isArray(json?.data) ? json.data : [];
+    // open/in_progress を未解決としてカウント
+    return list.filter((b: any) => b?.status === 'open' || b?.status === 'in_progress').length;
+  } catch {
+    return 0;
+  }
+}
+
+export async function generateDevProgressShareText(opts?: ShareProgressOptions): Promise<string> {
   const map = opts?.statuses ?? null;
   const providedIds = opts?.featureIds ?? null;
   const inProgressSet = new Set<FeatureStatus>([
@@ -56,8 +68,13 @@ export function generateDevProgressShareText(opts?: ShareProgressOptions): strin
   });
 
   // 行生成
+  const openBugs = await fetchOpenBugCount();
   const lines: string[] = [];
   lines.push(`本日の進捗（${new Date().toLocaleDateString('ja-JP')}）`);
+  if (openBugs > 0) {
+    lines.push(`🐛 未解決の不具合: ${openBugs}件`);
+    lines.push('');
+  }
   lines.push('');
   for (const f of candidates) {
     const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;

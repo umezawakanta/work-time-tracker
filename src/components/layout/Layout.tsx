@@ -1189,9 +1189,9 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                     size="sm"
                     className="ml-2"
                     data-testid="share-dev-progress-header-btn"
-                    onClick={() => {
+                    onClick={async () => {
                       try {
-                        const shareText = generateDevProgressShareText();
+                        const shareText = await generateDevProgressShareText();
                         const url = getCanonicalUrl();
                         openShare(shareText, url);
                       } catch {}

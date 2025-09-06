@@ -1269,9 +1269,9 @@ const Home: React.FC = () => {
                   <Button
                     variant="outline"
                     data-testid="share-dev-progress-home-btn"
-                    onClick={() => {
+                    onClick={async () => {
                       try {
-                        const shareText = generateDevProgressShareText();
+                        const shareText = await generateDevProgressShareText();
                         const url = getCanonicalUrl();
                         openShare(shareText, url);
                       } catch {}

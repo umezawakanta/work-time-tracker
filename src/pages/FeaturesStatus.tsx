@@ -186,9 +186,9 @@ export default function FeaturesStatusPage(): React.JSX.Element {
             variant="outline"
             size="sm"
             data-testid="share-dev-progress-features-btn"
-            onClick={() => {
+            onClick={async () => {
               try {
-                const shareText = generateDevProgressShareText({
+                const shareText = await generateDevProgressShareText({
                   // statuses を渡すだけで、着手中の全機能を動的抽出
                   statuses: derived?.effective ?? null,
                 });
