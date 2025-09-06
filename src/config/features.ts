@@ -1699,11 +1699,14 @@ export function isFeatureAccessible(pathname: string): {
   if ((feature as any).disabled) {
     return { allowed: false, reason: '無効化された機能です', feature };
   }
-  // 実運用に向けた試験段階（結合/総合/リリース待ち）はアクセス許可
-  const allowDuringTesting = ['integration_testing', 'system_testing', 'release_pending'].includes(
-    feature.status as string
-  );
-  if (!(feature.status === 'planning' || allowDuringTesting)) {
+  // アクセス許可: 完成 or 試験段階（結合/総合/リリース待ち）
+  const allowedStatuses = new Set<FeatureStatus>([
+    'complete',
+    'integration_testing',
+    'system_testing',
+    'release_pending',
+  ]);
+  if (!allowedStatuses.has(feature.status)) {
     return { allowed: false, reason: '未完成の機能です', feature };
   }
   if (feature.requiresRealAPI && USE_MOCK_DATA) {
