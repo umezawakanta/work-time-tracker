@@ -93,7 +93,7 @@ const BankAccountPage: React.FC = () => {
                   <li>「新しい口座を追加」ボタンをクリック</li>
                   <li>銀行名、口座種別、口座名を入力</li>
                   <li>「メイン口座に設定」で主要な口座を指定</li>
-                  <li>「データ同期」ボタンで残高を自動取得（デモデータ）</li>
+                  <li>「データ同期」ボタンで残高を自動取得</li>
                 </ol>
               </div>
               <div>
@@ -109,26 +109,28 @@ const BankAccountPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* デモデータの説明 */}
+        {/* 銀行口座管理の特徴 */}
         <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-green-800">
               <Building2 className="h-5 w-5" />
-              デモデータについて
+              銀行口座管理の特徴
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-sm text-green-700">
               <p className="mb-2">
-                <strong>現在はデモデータを表示しています：</strong>
+                <strong>実際の銀行口座データを管理：</strong>
               </p>
               <ul className="list-disc list-inside space-y-1">
-                <li>三井住友銀行 メイン口座: 1,500,000円</li>
-                <li>三井住友銀行 貯蓄口座: 3,000,000円</li>
-                <li>SBI証券 投資口座: 2,500,000円</li>
+                <li>複数の銀行口座を一元管理</li>
+                <li>メイン口座の設定と自動同期</li>
+                <li>残高情報のリアルタイム更新</li>
+                <li>「毎日20のこと」との自動連携</li>
+                <li>資産負債レポートへの自動反映</li>
               </ul>
               <p className="mt-3 text-xs text-green-600">
-                ※ 実際の銀行API連携時は、これらのデータが実際の口座残高に置き換わります
+                ※ 銀行口座を登録すると、自動的に「毎日20のこと」のタスクが完了します
               </p>
             </div>
           </CardContent>

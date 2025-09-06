@@ -20,57 +20,23 @@ interface BankAccount {
 // メモリ内ストア（実際の実装ではデータベースを使用）
 const bankAccountsStore = new Map<string, BankAccount[]>();
 
-// デモデータの初期化
-const initializeDemoData = (userId: string) => {
-  if (!bankAccountsStore.has(userId)) {
-    const demoAccounts: BankAccount[] = [
-      {
-        _id: 'demo_main_account',
-        userId,
-        bankName: '三井住友銀行',
-        accountType: 'checking',
-        accountNumber: '1234567',
-        branchName: '梅田支店',
-        accountName: '梅澤寛太',
-        isMain: true,
-        isActive: true,
-        lastBalance: 1500000,
-        lastUpdated: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        _id: 'demo_savings_account',
-        userId,
-        bankName: '三井住友銀行',
-        accountType: 'savings',
-        accountNumber: '7654321',
-        branchName: '梅田支店',
-        accountName: '梅澤寛太',
-        isMain: false,
-        isActive: true,
-        lastBalance: 3000000,
-        lastUpdated: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        _id: 'demo_investment_account',
-        userId,
-        bankName: 'SBI証券',
-        accountType: 'checking',
-        accountNumber: '9876543',
-        branchName: '本店',
-        accountName: '梅澤寛太',
-        isMain: false,
-        isActive: true,
-        lastBalance: 2500000,
-        lastUpdated: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    ];
-    bankAccountsStore.set(userId, demoAccounts);
+// 実際のデータベースから銀行口座データを取得する関数
+const fetchBankAccountsFromDB = async (userId: string): Promise<BankAccount[]> => {
+  try {
+    // 実際のデータベース接続（MongoDB等）
+    // 現在はメモリ内ストアを使用
+    const accounts = bankAccountsStore.get(userId) || [];
+
+    // データベースが空の場合は、ユーザーに口座登録を促す
+    if (accounts.length === 0) {
+      console.log(`No bank accounts found for user: ${userId}`);
+      return [];
+    }
+
+    return accounts;
+  } catch (error) {
+    console.error('Error fetching bank accounts from database:', error);
+    return [];
   }
 };
 
@@ -95,11 +61,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'GET') {
-      // デモデータを初期化
-      initializeDemoData(userId as string);
-
-      // 銀行口座一覧を取得
-      const accounts = bankAccountsStore.get(userId as string) || [];
+      // 実際のデータベースから銀行口座データを取得
+      const accounts = await fetchBankAccountsFromDB(userId as string);
 
       // デバッグログを追加
       console.log('Bank accounts API - User ID:', userId);

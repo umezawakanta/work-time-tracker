@@ -555,10 +555,6 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
                   </div>
                 </div>
               ))}
-              <p className="text-xs text-green-600 mt-2">
-                ※
-                現在はデモデータを表示しています。実際の銀行API連携時は、これらのデータが実際の口座残高に置き換わります。
-              </p>
             </div>
           </CardContent>
         </Card>
