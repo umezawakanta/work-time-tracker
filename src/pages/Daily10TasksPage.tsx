@@ -115,7 +115,13 @@ interface TaskItemProps {
   bankLoading?: boolean;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate, mainAccount, bankLoading }) => {
+const TaskItem: React.FC<TaskItemProps> = ({
+  task,
+  progress,
+  onUpdate,
+  mainAccount,
+  bankLoading,
+}) => {
   const [notes, setNotes] = useState(progress?.notes || '');
   const [showNotes, setShowNotes] = useState(false);
   const [showSubtasks, setShowSubtasks] = useState(false);

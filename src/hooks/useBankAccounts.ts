@@ -25,10 +25,10 @@ export const useBankAccounts = (userId: string) => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await fetch(`/api/bank-accounts?userId=${userId}`);
       const data = await response.json();
-      
+
       if (data.success) {
         setAccounts(data.data);
       } else {
@@ -48,7 +48,7 @@ export const useBankAccounts = (userId: string) => {
     }
   }, [userId]);
 
-  const mainAccount = accounts.find(account => account.isMain && account.isActive);
+  const mainAccount = accounts.find((account) => account.isMain && account.isActive);
 
   return {
     accounts,

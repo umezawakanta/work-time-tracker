@@ -16,12 +16,8 @@ const BankAccountPage: React.FC = () => {
         <Card>
           <CardContent className="text-center py-12">
             <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              ログインが必要です
-            </h3>
-            <p className="text-gray-500">
-              銀行口座を管理するにはログインしてください
-            </p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">ログインが必要です</h3>
+            <p className="text-gray-500">銀行口座を管理するにはログインしてください</p>
           </CardContent>
         </Card>
       </div>
@@ -51,8 +47,8 @@ const BankAccountPage: React.FC = () => {
         </div>
 
         {/* メインコンテンツ */}
-        <BankAccountManager 
-          userId={user.id} 
+        <BankAccountManager
+          userId={user.id}
           onAccountChange={() => {
             // 口座変更時のコールバック（必要に応じて実装）
             console.log('Bank account changed');
@@ -70,7 +66,9 @@ const BankAccountPage: React.FC = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
-                <h4 className="font-semibold text-blue-600">メイン銀行口座の入出金履歴を確認する</h4>
+                <h4 className="font-semibold text-blue-600">
+                  メイン銀行口座の入出金履歴を確認する
+                </h4>
                 <ul className="space-y-2 text-sm text-gray-600">
                   <li>• 登録したメイン口座の情報が表示されます</li>
                   <li>• 銀行データ取り込み機能で履歴を自動取得</li>
