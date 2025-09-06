@@ -44,6 +44,9 @@ const AdminDashboard = lazy(() =>
 const ServerErrorReportingPage = lazy(() =>
   import('@/pages/ServerErrorReportingPage').then((m) => ({ default: m.default }))
 );
+const ResetPassword = lazy(() =>
+  import('@/pages/ResetPassword').then((m) => ({ default: m.default }))
+);
 const AIAssistantPage = lazy(() =>
   import('@/pages/AIAssistant').then((m) => ({ default: m.default }))
 );

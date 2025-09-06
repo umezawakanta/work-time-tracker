@@ -81,14 +81,63 @@ const handleForgotPassword = async (req: VercelRequest, res: VercelResponse): Pr
   const normalizedEmail = email.trim().toLowerCase();
   console.log('[PASSWORD-RESET] Forgot password requested for:', normalizedEmail);
 
-  const successResponse: PasswordResetResponse = {
-    success: true,
-    message: 'パスワードリセットメールの送信を受け付けました',
-    email: normalizedEmail,
-  };
+  try {
+    // MongoDB接続とユーザー検索
+    const mongoLib = require('../_lib/mongo');
+    await mongoLib.connectMongoDirect();
+    const mongoose = await mongoLib.getMongoose();
+    
+    const User = mongoose.model('User', new mongoose.Schema({
+      email: { type: String, required: true, unique: true },
+      password: { type: String, required: true },
+      name: { type: String, required: true },
+      role: { type: String, default: 'user' },
+      isEmailVerified: { type: Boolean, default: false },
+      passwordResetToken: String,
+      passwordResetExpires: Date,
+    }));
 
-  // 実際の送信処理はバックエンド/キューに委譲する前提で 202 を返す
-  res.status(202).json(successResponse);
+    // ユーザーが存在するかチェック
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      // セキュリティのため、ユーザーが存在しない場合も成功レスポンスを返す
+      const successResponse: PasswordResetResponse = {
+        success: true,
+        message: 'パスワードリセットメールの送信を受け付けました',
+        email: normalizedEmail,
+      };
+      res.status(200).json(successResponse);
+      return;
+    }
+
+    // パスワードリセットトークンを生成
+    const crypto = require('crypto');
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24時間後
+
+    // ユーザーにトークンを保存
+    await User.findByIdAndUpdate(user._id, {
+      passwordResetToken: resetToken,
+      passwordResetExpires: resetExpires,
+    });
+
+    // メール送信（実際のメール送信は実装済みのemailServiceを使用）
+    const emailService = require('../../src/services/emailService.js');
+    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://work-time-tracker-five.vercel.app'}/reset-password?token=${resetToken}`;
+    
+    await emailService.sendPasswordResetEmail(normalizedEmail, resetUrl);
+
+    const successResponse: PasswordResetResponse = {
+      success: true,
+      message: 'パスワードリセットメールを送信しました',
+      email: normalizedEmail,
+    };
+
+    res.status(200).json(successResponse);
+  } catch (error) {
+    console.error('[PASSWORD-RESET] Error:', error);
+    sendErrorResponse(res, 500, 'Internal server error', 'サーバーエラーが発生しました');
+  }
 };
 
 // パスワードリセット処理
@@ -105,16 +154,61 @@ const handleResetPassword = async (req: VercelRequest, res: VercelResponse): Pro
     return;
   }
 
-  if (password.length < 3) {
-    sendErrorResponse(res, 400, 'Password too short', 'パスワードは3文字以上である必要があります');
+  if (password.length < 8) {
+    sendErrorResponse(res, 400, 'Password too short', 'パスワードは8文字以上である必要があります');
     return;
   }
 
   console.log('[PASSWORD-RESET] Password reset requested for token:', token);
 
-  // 実装未完了のため明示的に未実装を返す（モック返却を廃止）
-  sendErrorResponse(res, 501, 'Not implemented', 'パスワードリセットは現在未実装です');
-  return;
+  try {
+    // MongoDB接続
+    const mongoLib = require('../_lib/mongo');
+    await mongoLib.connectMongoDirect();
+    const mongoose = await mongoLib.getMongoose();
+    
+    const User = mongoose.model('User', new mongoose.Schema({
+      email: { type: String, required: true, unique: true },
+      password: { type: String, required: true },
+      name: { type: String, required: true },
+      role: { type: String, default: 'user' },
+      isEmailVerified: { type: Boolean, default: false },
+      passwordResetToken: String,
+      passwordResetExpires: Date,
+    }));
+
+    // トークンでユーザーを検索
+    const user = await User.findOne({
+      passwordResetToken: token,
+      passwordResetExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      sendErrorResponse(res, 400, 'Invalid or expired token', '無効または期限切れのトークンです');
+      return;
+    }
+
+    // パスワードをハッシュ化
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // ユーザーのパスワードを更新し、リセットトークンをクリア
+    await User.findByIdAndUpdate(user._id, {
+      password: hashedPassword,
+      passwordResetToken: undefined,
+      passwordResetExpires: undefined,
+    });
+
+    const successResponse: PasswordResetResponse = {
+      success: true,
+      message: 'パスワードが正常にリセットされました',
+    };
+
+    res.status(200).json(successResponse);
+  } catch (error) {
+    console.error('[PASSWORD-RESET] Error:', error);
+    sendErrorResponse(res, 500, 'Internal server error', 'サーバーエラーが発生しました');
+  }
 };
 
 async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {

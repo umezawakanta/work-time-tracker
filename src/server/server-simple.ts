@@ -395,6 +395,111 @@ app.get('/api/bugs', (req, res) => {
   res.json({ success: true, data: list });
 });
 
+// Password reset API endpoint
+app.post('/api/auth/password-reset', async (req, res) => {
+  try {
+    const { action, email, token, password, confirmPassword } = req.body;
+
+    if (action === 'forgot') {
+      // パスワード忘れ処理
+      if (!email) {
+        return res.status(400).json({ success: false, message: 'メールアドレスは必須です' });
+      }
+
+      // メール形式チェック
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ success: false, message: 'メールアドレスの形式が正しくありません' });
+      }
+
+      // モック実装（開発環境用）
+      console.log('[PASSWORD-RESET] Forgot password requested for:', email);
+      
+      // 成功レスポンス（セキュリティのため、存在しないメールでも成功を返す）
+      res.json({
+        success: true,
+        message: 'パスワードリセットメールを送信しました',
+        email: email
+      });
+    } else if (action === 'reset') {
+      // パスワードリセット処理
+      if (!token || !password || !confirmPassword) {
+        return res.status(400).json({ success: false, message: 'すべてのフィールドは必須です' });
+      }
+
+      if (password !== confirmPassword) {
+        return res.status(400).json({ success: false, message: 'パスワードが一致しません' });
+      }
+
+      if (password.length < 8) {
+        return res.status(400).json({ success: false, message: 'パスワードは8文字以上である必要があります' });
+      }
+
+      // モック実装（開発環境用）
+      console.log('[PASSWORD-RESET] Password reset requested for token:', token);
+      
+      res.json({
+        success: true,
+        message: 'パスワードが正常にリセットされました'
+      });
+    } else {
+      res.status(400).json({ success: false, message: '無効なアクションです' });
+    }
+  } catch (error) {
+    console.error('Password reset API error:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+
+// Password reset token verification endpoint
+app.post('/api/auth/password-reset/verify', async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ success: false, message: 'トークンは必須です' });
+    }
+
+    // モック実装（開発環境用）
+    console.log('[PASSWORD-RESET] Token verification requested for:', token);
+    
+    // 開発環境では常に有効として返す
+    res.json({
+      success: true,
+      valid: true
+    });
+  } catch (error) {
+    console.error('Token verification error:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+
+// Password reset confirmation endpoint
+app.post('/api/auth/password-reset/confirm', async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({ success: false, message: 'トークンとパスワードは必須です' });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ success: false, message: 'パスワードは8文字以上である必要があります' });
+    }
+
+    // モック実装（開発環境用）
+    console.log('[PASSWORD-RESET] Password reset confirmation for token:', token);
+    
+    res.json({
+      success: true,
+      message: 'パスワードが正常にリセットされました'
+    });
+  } catch (error) {
+    console.error('Password reset confirmation error:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+
 // Server error reporting API endpoint
 app.get('/api/admin/server-errors', async (req, res) => {
   try {

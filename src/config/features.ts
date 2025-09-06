@@ -1505,10 +1505,10 @@ export const featuresRegistry: Feature[] = [
     path: '/forgot-password',
     category: 'ユーザー・設定',
     description: 'パスワードリセットメール送信',
-    status: 'planning',
+    status: 'complete',
     requiresRealAPI: true,
-    priority: 'P1',
-    targetRelease: '2025-09-04',
+    priority: 'P0',
+    targetRelease: '2025-09-06',
   },
   {
     id: 'reset-password',
