@@ -101,17 +101,19 @@ const handleForgotPassword = async (req, res) => {
       passwordResetExpires: resetExpires,
     });
 
-    // メール送信（Vercel環境では環境変数が設定されていない場合はスキップ）
+    // メール送信
     try {
-      const emailService = await import('../../src/server/services/emailService.js');
+      const { emailService } = require('../_lib/emailService.js');
       const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://work-time-tracker-five.vercel.app'}/reset-password?token=${resetToken}`;
 
-      const emailSent = await emailService.emailService.sendPasswordResetEmail(
+      const emailSent = await emailService.sendPasswordResetEmail(
         normalizedEmail,
         resetUrl
       );
       if (!emailSent) {
         console.warn('[PASSWORD-RESET] Failed to send email, but continuing with success response');
+      } else {
+        console.log('[PASSWORD-RESET] Password reset email sent successfully to:', normalizedEmail);
       }
     } catch (emailError) {
       console.warn('[PASSWORD-RESET] Email service not available:', emailError);

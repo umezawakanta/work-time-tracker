@@ -1,18 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
-interface VercelRequest {
-  method?: string;
-  headers: Record<string, string | undefined>;
-  query?: Record<string, unknown>;
-}
-
-interface VercelResponse {
-  status: (code: number) => VercelResponse;
-  json: (body: unknown) => void;
-  setHeader: (name: string, value: string) => void;
-  end: () => void;
-}
-
 interface AdminUsersMetrics {
   total: number;
   active: number;
