@@ -45,7 +45,7 @@ module.exports = {
     '^.+\\.(js|jsx|mjs)$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(firebase|@firebase|@google-cloud|recharts|@grpc|google-gax|react-markdown|remark-gfm|remark-math|rehype-katex|unified|unist-util|micromark|mdast|hast|rehype|remark)/)',
+    'node_modules/(?!(firebase|@firebase|@google-cloud|recharts|@grpc|google-gax|react-markdown|remark-gfm|remark-math|rehype-katex|unified|unist-util|micromark|mdast|hast|rehype|remark|devlop|hast-util-to-jsx-runtime)/)',
   ],
   globals: {
     'import.meta': {
