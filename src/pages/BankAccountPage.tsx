@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import BankAccountManager from '@/components/BankAccountManager';
 import { BankCSVUploader } from '@/components/BankCSVUploader';
+import { TransactionCSVUploader } from '@/components/TransactionCSVUploader';
 import BankAccountForm from '@/components/BankAccountForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building2, ArrowLeft, Upload, FileText, Plus, List } from 'lucide-react';
+import { Building2, ArrowLeft, Upload, FileText, Plus, List, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
@@ -84,14 +85,18 @@ const BankAccountPage: React.FC = () => {
 
         {/* タブナビゲーション */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="manage" className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />
               口座管理
             </TabsTrigger>
             <TabsTrigger value="import" className="flex items-center gap-2">
               <Upload className="h-4 w-4" />
-              CSVインポート
+              口座CSVインポート
+            </TabsTrigger>
+            <TabsTrigger value="transactions" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              取引明細CSVインポート
             </TabsTrigger>
           </TabsList>
 
@@ -260,6 +265,117 @@ const BankAccountPage: React.FC = () => {
                 if (result.success) {
                   // 成功時は口座管理タブに切り替え
                   setActiveTab('manage');
+                }
+              }}
+            />
+          </TabsContent>
+
+          <TabsContent value="transactions" className="space-y-6">
+            {/* 取引明細CSVインポートガイド */}
+            <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-purple-800">
+                  <TrendingUp className="h-5 w-5" />
+                  取引明細CSVインポート
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm">
+                  <div>
+                    <h4 className="font-semibold text-purple-900 mb-3">📊 取引明細の管理</h4>
+                    <ol className="list-decimal list-inside space-y-2 text-purple-700">
+                      <li>
+                        <strong>日々の収支把握</strong>
+                        <br />
+                        毎日の収入・支出を詳細に記録
+                      </li>
+                      <li>
+                        <strong>カテゴリ別分析</strong>
+                        <br />
+                        食費、交通費、住居費などで分類
+                      </li>
+                      <li>
+                        <strong>月次・年次レポート</strong>
+                        <br />
+                        支出パターンの分析と改善
+                      </li>
+                      <li>
+                        <strong>予算管理</strong>
+                        <br />
+                        設定した予算に対する進捗確認
+                      </li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-purple-900 mb-3">🏦 対応銀行</h4>
+                    <ol className="list-decimal list-inside space-y-2 text-purple-700">
+                      <li>
+                        <strong>三井住友銀行</strong>
+                        <br />
+                        取引明細CSVを直接アップロード
+                      </li>
+                      <li>
+                        <strong>その他の銀行</strong>
+                        <br />
+                        汎用CSV形式で対応
+                      </li>
+                      <li>
+                        <strong>手動入力</strong>
+                        <br />
+                        個別に取引を追加可能
+                      </li>
+                      <li>
+                        <strong>自動分類</strong>
+                        <br />
+                        取引内容から自動でカテゴリを判定
+                      </li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-purple-900 mb-3">💡 毎日の使い方</h4>
+                    <ol className="list-decimal list-inside space-y-2 text-purple-700">
+                      <li>
+                        <strong>朝の確認</strong>
+                        <br />
+                        前日の取引を確認・記録
+                      </li>
+                      <li>
+                        <strong>支出の記録</strong>
+                        <br />
+                        その日の支出をリアルタイムで記録
+                      </li>
+                      <li>
+                        <strong>週次振り返り</strong>
+                        <br />
+                        週末に支出パターンを確認
+                      </li>
+                      <li>
+                        <strong>月次分析</strong>
+                        <br />
+                        月末に予算と実績を比較
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <h5 className="font-semibold text-yellow-800 mb-2">⚠️ 重要な注意事項</h5>
+                  <ul className="text-yellow-700 text-sm space-y-1">
+                    <li>• 三井住友銀行のCSVは取引明細形式に対応しています</li>
+                    <li>• 金額は正の値（収入）、負の値（支出）で区別されます</li>
+                    <li>• カテゴリは取引内容から自動判定されますが、手動で変更可能です</li>
+                    <li>• データは暗号化されて保存され、セキュリティが確保されています</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 取引明細CSVアップロードコンポーネント */}
+            <TransactionCSVUploader
+              userId={user.id}
+              onUploadComplete={(result) => {
+                if (result.success) {
+                  // 成功時の処理
+                  console.log('取引明細のインポートが完了しました:', result);
                 }
               }}
             />
