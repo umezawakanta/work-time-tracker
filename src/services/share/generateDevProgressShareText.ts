@@ -48,9 +48,13 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
   if (providedIds) {
     candidates = candidates.filter((f) => providedIds.includes(f.id));
   } else if (map) {
-    candidates = candidates.filter((f) => inProgressSet.has(map[f.id] as FeatureStatus));
+    // mapが提供されている場合は、完了済み機能も含める
+    const allStatusSet = new Set([...inProgressSet, 'complete']);
+    candidates = candidates.filter((f) => allStatusSet.has(map[f.id] as FeatureStatus));
   } else {
-    candidates = candidates.filter((f) => inProgressSet.has(normalizeToNewStatus(f.status)));
+    // mapが提供されていない場合は、完了済み機能も含める
+    const allStatusSet = new Set([...inProgressSet, 'complete']);
+    candidates = candidates.filter((f) => allStatusSet.has(normalizeToNewStatus(f.status)));
   }
   // 共有機能そのものや無効化中の機能は除外
   candidates = candidates.filter((f) => f.id !== 'share-dev-progress' && !(f as any).disabled);
