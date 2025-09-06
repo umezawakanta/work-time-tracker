@@ -687,10 +687,10 @@ export const featuresRegistry: Feature[] = [
     path: '/billing-history',
     category: 'サブスクリプション・請求',
     description: '過去の請求書と支払い履歴',
-    status: 'integration_testing',
+    status: 'complete',
     requiresRealAPI: true,
-    priority: 'P1',
-    targetRelease: '2025-09-12',
+    priority: 'P0',
+    targetRelease: '2025-09-06',
   },
   {
     id: 'subscription-management',
@@ -869,6 +869,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-23',
   },
   {
     id: 'hero-disclaimer',
@@ -879,6 +880,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-20',
   },
   {
     id: 'hero-headline',
@@ -889,6 +891,7 @@ export const featuresRegistry: Feature[] = [
     status: 'planning',
     requiresRealAPI: false,
     priority: 'P2',
+    targetRelease: '2025-09-18',
   },
   {
     id: 'hero-kicker',

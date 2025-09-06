@@ -56,14 +56,14 @@ const statusBadgeVariant: Record<FeatureStatus, 'default' | 'secondary' | 'outli
 // リリース予定日の色分けロジック
 const getReleaseDateStatus = (targetRelease?: string, status?: FeatureStatus) => {
   if (!targetRelease) return { status: 'none', color: 'text-gray-500', bgColor: 'bg-gray-50' };
-  
+
   const releaseDate = new Date(targetRelease);
   const today = new Date();
   const oneWeekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-  
+
   const isOverdue = releaseDate < today && status !== 'complete';
   const isThisWeek = releaseDate >= today && releaseDate <= oneWeekFromNow && status !== 'complete';
-  
+
   if (isOverdue) {
     return { status: 'overdue', color: 'text-red-600', bgColor: 'bg-red-50', icon: AlertTriangle };
   } else if (isThisWeek) {
