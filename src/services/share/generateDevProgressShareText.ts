@@ -168,6 +168,11 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
       if (aExpected && !bExpected) return -1;
       if (!aExpected && bExpected) return 1;
 
+      // 期待されない機能の中で、P2優先度の場合は特定の機能を除外
+      const excludedFeatures = ['improvement-plan', 'asset-liability-report', 'startup-guide'];
+      if (excludedFeatures.includes(a.id) && !excludedFeatures.includes(b.id)) return 1;
+      if (!excludedFeatures.includes(a.id) && excludedFeatures.includes(b.id)) return -1;
+
       return a.name.localeCompare(b.name);
     });
 
