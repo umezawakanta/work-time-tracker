@@ -61,13 +61,24 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   }
 
   try {
+    console.log('[admin/features] Starting request');
+
     // 管理者認証
     const ctx = await import('../_lib/user-context.js');
+    console.log('[admin/features] Context loaded');
+
     const auth = await ctx.verifyJwtAndExtract(req as any);
+    console.log('[admin/features] Auth verified:', { userId: auth?.userId });
 
     // 管理者権限チェック
     const User = await ctx.ensureDbAndUserModel();
+    console.log('[admin/features] User model ensured');
+
     const user = await ctx.findUserByIdLoose(User, auth.userId);
+    console.log('[admin/features] User found:', {
+      user: user ? { id: user._id, role: user.role } : null,
+    });
+
     if (!user || user.role !== 'admin') {
       return void res.status(403).json({ success: false, message: 'Admin access required' });
     }

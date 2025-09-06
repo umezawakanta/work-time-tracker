@@ -21,21 +21,36 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   }
 
   try {
+    console.log('[admin/live-metrics] Starting request');
+
     // 管理者認証
     const ctx = require('../_lib/user-context.js');
+    console.log('[admin/live-metrics] Context loaded');
+
     const auth = await ctx.verifyJwtAndExtract(req as any);
+    console.log('[admin/live-metrics] Auth verified:', { userId: auth?.userId });
 
     // 管理者権限チェック
     const User = await ctx.ensureDbAndUserModel();
+    console.log('[admin/live-metrics] User model ensured');
+
     const user = await ctx.findUserByIdLoose(User, auth.userId);
+    console.log('[admin/live-metrics] User found:', {
+      user: user ? { id: user._id, role: user.role } : null,
+    });
+
     if (!user || user.role !== 'admin') {
       return void res.status(403).json({ success: false, message: 'Admin access required' });
     }
 
     // MongoDB接続
+    console.log('[admin/live-metrics] Connecting to MongoDB');
     const mongoLib = require('../_lib/mongo');
     await mongoLib.connectMongoDirect();
+    console.log('[admin/live-metrics] MongoDB connected');
+
     const mongoose = await mongoLib.getMongoose();
+    console.log('[admin/live-metrics] Mongoose obtained');
 
     // 今日のアクティブユーザー数（過去24時間）
     const last24Hours = new Date();
