@@ -91,7 +91,7 @@ export async function generateDevProgressShareText(opts?: ShareProgressOptions):
 
   for (const f of candidates) {
     const status = (map?.[f.id] ?? normalizeToNewStatus(f.status)) as FeatureStatus;
-    if (status === 'complete') {
+    if (status === 'complete' && hasValidYmd(f.targetRelease)) {
       completedFeatures.push(f);
     } else if (inProgressSet.has(status) && hasValidYmd(f.targetRelease)) {
       inProgressFeatures.push(f);

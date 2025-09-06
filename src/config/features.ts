@@ -390,6 +390,7 @@ export const featuresRegistry: Feature[] = [
     status: 'system_testing',
     requiresRealAPI: true,
     priority: 'P0',
+    targetRelease: '2025-09-10',
   },
   {
     id: 'admin-errors',
@@ -399,6 +400,7 @@ export const featuresRegistry: Feature[] = [
     status: 'system_testing',
     requiresRealAPI: false,
     priority: 'P0',
+    targetRelease: '2025-09-10',
   },
   {
     id: 'admin-features',
@@ -418,6 +420,7 @@ export const featuresRegistry: Feature[] = [
     status: 'system_testing',
     requiresRealAPI: true,
     priority: 'P1',
+    targetRelease: '2025-09-15',
   },
   {
     id: 'admin-settings',
