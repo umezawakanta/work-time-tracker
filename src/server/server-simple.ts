@@ -2272,6 +2272,107 @@ app.get('/api/admin/metrics', async (req, res) => {
   }
 });
 
+// =============================
+// Admin live metrics (real-time data)
+// =============================
+app.get('/api/admin/live-metrics', async (req, res) => {
+  try {
+    const { User } = await import('./models/User.js');
+    const { TodoModel } = await import('./models/Todo.js');
+
+    const now = new Date();
+    const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    // Active users (last 24 hours)
+    const activeUsers = await User.countDocuments({
+      lastLoginAt: { $gte: last24h },
+    }).catch(() => 0);
+
+    // Today's tasks
+    const todaysTasks = await TodoModel.countDocuments({
+      createdAt: { $gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()) },
+    }).catch(() => 0);
+
+    // Completion rate (last 7 days)
+    const completedTasks = await TodoModel.countDocuments({
+      completed: true,
+      updatedAt: { $gte: last7d },
+    }).catch(() => 0);
+
+    const totalTasks = await TodoModel.countDocuments({
+      createdAt: { $gte: last7d },
+    }).catch(() => 0);
+
+    const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+    // Weekly trend (tasks this week vs last week)
+    const thisWeekStart = new Date(now.getTime() - now.getDay() * 24 * 60 * 60 * 1000);
+    thisWeekStart.setHours(0, 0, 0, 0);
+    const lastWeekStart = new Date(thisWeekStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    const thisWeekTasks = await TodoModel.countDocuments({
+      createdAt: { $gte: thisWeekStart },
+    }).catch(() => 0);
+
+    const lastWeekTasks = await TodoModel.countDocuments({
+      createdAt: { $gte: lastWeekStart, $lt: thisWeekStart },
+    }).catch(() => 0);
+
+    const weeklyTrend =
+      lastWeekTasks > 0 ? Math.round(((thisWeekTasks - lastWeekTasks) / lastWeekTasks) * 100) : 0;
+
+    // Average task time (mock data for now)
+    const avgTaskTime = 25; // minutes
+
+    // Hourly activity (last 24 hours)
+    const hourlyActivity: { hour: string; tasks: number; users: number }[] = [];
+    for (let i = 0; i < 24; i++) {
+      const hourStart = new Date(now.getTime() - (23 - i) * 60 * 60 * 1000);
+      const hourEnd = new Date(hourStart.getTime() + 60 * 60 * 1000);
+
+      const hourTasks = await TodoModel.countDocuments({
+        createdAt: { $gte: hourStart, $lt: hourEnd },
+      }).catch(() => 0);
+
+      const hourUsers = await User.countDocuments({
+        lastLoginAt: { $gte: hourStart, $lt: hourEnd },
+      }).catch(() => 0);
+
+      hourlyActivity.push({
+        hour: hourStart.getHours().toString().padStart(2, '0') + ':00',
+        tasks: hourTasks,
+        users: hourUsers,
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: {
+        activeUsers,
+        completionRate,
+        avgTaskTime,
+        todaysTasks,
+        weeklyTrend,
+        hourlyActivity,
+      },
+    });
+  } catch (e) {
+    console.error('❌ Error in /api/admin/live-metrics:', e);
+    return res.json({
+      success: true,
+      data: {
+        activeUsers: 0,
+        completionRate: 0,
+        avgTaskTime: 0,
+        todaysTasks: 0,
+        weeklyTrend: 0,
+        hourlyActivity: [],
+      },
+    });
+  }
+});
+
 app.get('/api/admin/users', async (req, res) => {
   try {
     const { User } = await import('./models/User.js');
@@ -2940,6 +3041,7 @@ console.log('   GET  /api/notifications/status'); // 追加
 console.log('   GET  /api/admin/metrics/users/summary'); // 追加
 console.log('   GET  /api/admin/metrics/assessments/summary'); // 追加
 console.log('   GET  /api/admin/metrics/learning/summary'); // 追加
+console.log('   GET  /api/admin/live-metrics'); // 追加
 console.log('   POST /api/user/assessments/iq'); // 追加
 console.log('   POST /api/user/assessments/mbti'); // 追加
 console.log('   POST /api/user/learning/progress'); // 追加
