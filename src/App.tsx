@@ -165,9 +165,6 @@ const FirebaseLogin = lazy(() =>
 const ForgotPassword = lazy(() =>
   import('@/pages/ForgotPassword').then((m) => ({ default: m.default }))
 );
-const ResetPassword = lazy(() =>
-  import('@/pages/ResetPassword').then((m) => ({ default: m.default }))
-);
 
 // 🗳️ Election & Political
 const ElectionCandidatesPage = lazy(() =>

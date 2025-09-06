@@ -409,17 +409,19 @@ app.post('/api/auth/password-reset', async (req, res) => {
       // メール形式チェック
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        return res.status(400).json({ success: false, message: 'メールアドレスの形式が正しくありません' });
+        return res
+          .status(400)
+          .json({ success: false, message: 'メールアドレスの形式が正しくありません' });
       }
 
       // モック実装（開発環境用）
       console.log('[PASSWORD-RESET] Forgot password requested for:', email);
-      
+
       // 成功レスポンス（セキュリティのため、存在しないメールでも成功を返す）
       res.json({
         success: true,
         message: 'パスワードリセットメールを送信しました',
-        email: email
+        email: email,
       });
     } else if (action === 'reset') {
       // パスワードリセット処理
@@ -432,15 +434,17 @@ app.post('/api/auth/password-reset', async (req, res) => {
       }
 
       if (password.length < 8) {
-        return res.status(400).json({ success: false, message: 'パスワードは8文字以上である必要があります' });
+        return res
+          .status(400)
+          .json({ success: false, message: 'パスワードは8文字以上である必要があります' });
       }
 
       // モック実装（開発環境用）
       console.log('[PASSWORD-RESET] Password reset requested for token:', token);
-      
+
       res.json({
         success: true,
-        message: 'パスワードが正常にリセットされました'
+        message: 'パスワードが正常にリセットされました',
       });
     } else {
       res.status(400).json({ success: false, message: '無効なアクションです' });
@@ -462,11 +466,11 @@ app.post('/api/auth/password-reset/verify', async (req, res) => {
 
     // モック実装（開発環境用）
     console.log('[PASSWORD-RESET] Token verification requested for:', token);
-    
+
     // 開発環境では常に有効として返す
     res.json({
       success: true,
-      valid: true
+      valid: true,
     });
   } catch (error) {
     console.error('Token verification error:', error);
@@ -484,15 +488,17 @@ app.post('/api/auth/password-reset/confirm', async (req, res) => {
     }
 
     if (password.length < 8) {
-      return res.status(400).json({ success: false, message: 'パスワードは8文字以上である必要があります' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'パスワードは8文字以上である必要があります' });
     }
 
     // モック実装（開発環境用）
     console.log('[PASSWORD-RESET] Password reset confirmation for token:', token);
-    
+
     res.json({
       success: true,
-      message: 'パスワードが正常にリセットされました'
+      message: 'パスワードが正常にリセットされました',
     });
   } catch (error) {
     console.error('Password reset confirmation error:', error);
