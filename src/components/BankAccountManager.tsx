@@ -90,10 +90,8 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
     fetchAccounts();
     checkLastSyncTime();
 
-    // 初期化時にデモデータを表示
-    const demoBalances = bankAPIService.generateDemoData(userId);
-    setApiBalances(demoBalances);
-    setLastSyncTime(new Date().toISOString());
+    // 初期化時に銀行口座データを同期
+    syncBankData();
   }, [userId]);
 
   // 最後の同期時刻を確認
@@ -106,29 +104,32 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
   const syncBankData = async () => {
     setIsSyncing(true);
     try {
-      const syncResult = await bankAPIService.syncAccountData(userId);
-      setApiBalances(syncResult.balances);
-      setLastSyncTime(syncResult.lastSync);
+      // 銀行口座APIからデータを取得
+      const response = await fetch(`/api/bank-accounts?userId=${userId}`);
+      const data = await response.json();
 
-      // 既存の口座に残高情報を更新
-      const updatedAccounts = accounts.map((account) => {
-        const apiBalance = syncResult.balances.find(
-          (balance) =>
-            balance.accountName === account.accountName && balance.bankName === account.bankName
-        );
+      if (data.success && data.data) {
+        // 取得した口座データを表示用に変換
+        const bankBalances = data.data
+          .filter((account: any) => account.isActive && account.lastBalance)
+          .map((account: any) => ({
+            accountId: account._id,
+            accountName: account.accountName,
+            bankName: account.bankName,
+            balance: account.lastBalance,
+            currency: 'JPY',
+            lastUpdated: account.lastUpdated,
+            accountType: account.accountType,
+          }));
 
-        if (apiBalance) {
-          return {
-            ...account,
-            lastBalance: apiBalance.balance,
-            lastUpdated: apiBalance.lastUpdated,
-          };
-        }
-        return account;
-      });
+        setApiBalances(bankBalances);
+        setLastSyncTime(new Date().toISOString());
+        setAccounts(data.data);
 
-      setAccounts(updatedAccounts);
-      toast.success(`${syncResult.balances.length}件の口座データを同期しました`);
+        toast.success(`${bankBalances.length}件の口座データを同期しました`);
+      } else {
+        throw new Error('Failed to fetch bank data');
+      }
     } catch (error) {
       console.error('銀行データ同期エラー:', error);
       toast.error('銀行データの同期に失敗しました');

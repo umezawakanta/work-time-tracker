@@ -21,6 +21,33 @@ const fetchUserData = async (userIdStr: string) => {
     const debtData = await debtResponse.json();
     const debts = debtData.success ? debtData.data : [];
 
+    // 銀行口座データを取得して資産に追加
+    try {
+      const bankResponse = await fetch(
+        `${process.env.API_BASE_URL || 'http://localhost:3000'}/api/bank-accounts?userId=${userIdStr}`
+      );
+      const bankData = await bankResponse.json();
+
+      if (bankData.success && bankData.data) {
+        // 銀行口座の残高を資産として追加
+        const bankAssets: AssetRecord[] = bankData.data
+          .filter((account: any) => account.isActive && account.lastBalance)
+          .map((account: any) => ({
+            _id: `bank_${account._id}`,
+            date: account.lastUpdated || new Date().toISOString(),
+            value: account.lastBalance,
+            description: `${account.bankName} ${account.accountName}`,
+            account: account.accountType,
+            createdAt: account.createdAt,
+            updatedAt: account.updatedAt,
+          }));
+
+        assets.push(...bankAssets);
+      }
+    } catch (bankError) {
+      console.error('Error fetching bank data:', bankError);
+    }
+
     return { assets, debts };
   } catch (error) {
     console.error('Error fetching user data:', error);

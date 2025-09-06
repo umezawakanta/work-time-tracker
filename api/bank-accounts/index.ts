@@ -20,6 +20,60 @@ interface BankAccount {
 // メモリ内ストア（実際の実装ではデータベースを使用）
 const bankAccountsStore = new Map<string, BankAccount[]>();
 
+// デモデータの初期化
+const initializeDemoData = (userId: string) => {
+  if (!bankAccountsStore.has(userId)) {
+    const demoAccounts: BankAccount[] = [
+      {
+        _id: 'demo_main_account',
+        userId,
+        bankName: '三井住友銀行',
+        accountType: 'checking',
+        accountNumber: '1234567',
+        branchName: '梅田支店',
+        accountName: '梅澤寛太',
+        isMain: true,
+        isActive: true,
+        lastBalance: 1500000,
+        lastUpdated: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        _id: 'demo_savings_account',
+        userId,
+        bankName: '三井住友銀行',
+        accountType: 'savings',
+        accountNumber: '7654321',
+        branchName: '梅田支店',
+        accountName: '梅澤寛太',
+        isMain: false,
+        isActive: true,
+        lastBalance: 3000000,
+        lastUpdated: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        _id: 'demo_investment_account',
+        userId,
+        bankName: 'SBI証券',
+        accountType: 'checking',
+        accountNumber: '9876543',
+        branchName: '本店',
+        accountName: '梅澤寛太',
+        isMain: false,
+        isActive: true,
+        lastBalance: 2500000,
+        lastUpdated: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+    bankAccountsStore.set(userId, demoAccounts);
+  }
+};
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -41,9 +95,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'GET') {
+      // デモデータを初期化
+      initializeDemoData(userId as string);
+
       // 銀行口座一覧を取得
       const accounts = bankAccountsStore.get(userId as string) || [];
-      
+
       return res.status(200).json({
         success: true,
         data: accounts,
@@ -52,13 +109,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (req.method === 'POST') {
       // 新しい銀行口座を追加
-      const { 
-        bankName, 
-        accountType, 
-        accountNumber, 
-        branchName, 
-        accountName, 
-        isMain = false 
+      const {
+        bankName,
+        accountType,
+        accountNumber,
+        branchName,
+        accountName,
+        isMain = false,
       } = req.body;
 
       if (!bankName || !accountType || !accountNumber || !accountName) {
@@ -71,12 +128,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // メイン口座の重複チェック
       if (isMain) {
         const existingAccounts = bankAccountsStore.get(userId as string) || [];
-        const hasMainAccount = existingAccounts.some(account => account.isMain && account.isActive);
-        
+        const hasMainAccount = existingAccounts.some(
+          (account) => account.isMain && account.isActive
+        );
+
         if (hasMainAccount) {
           return res.status(400).json({
             success: false,
-            message: 'メイン口座は既に登録されています。既存のメイン口座を無効にしてから登録してください。',
+            message:
+              'メイン口座は既に登録されています。既存のメイン口座を無効にしてから登録してください。',
           });
         }
       }
