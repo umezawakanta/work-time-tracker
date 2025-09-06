@@ -4265,10 +4265,101 @@ const DEFAULT_TASKS = [
     category: 'finance',
     priority: 'high',
     subtasks: [
-      { id: '1-1', name: '銀行口座の入出金履歴を確認する', estimatedMinutes: 3 },
-      { id: '1-2', name: 'クレジットカードの利用履歴を確認する', estimatedMinutes: 2 },
-      { id: '1-3', name: '現金での支出を記録する', estimatedMinutes: 2 },
-      { id: '1-4', name: '収入と支出の合計を計算する', estimatedMinutes: 1 },
+      {
+        id: '1-1',
+        name: 'メイン銀行口座の入出金履歴を確認する',
+        estimatedMinutes: 3,
+        steps: [
+          '銀行のオンラインバンキングにログインする',
+          '過去3ヶ月の入出金履歴を表示する',
+          '給与振込、ボーナス等の収入を確認する',
+          '固定費（家賃、光熱費等）の支出を確認する',
+        ],
+      },
+      {
+        id: '1-2',
+        name: 'サブ銀行口座の入出金履歴を確認する',
+        estimatedMinutes: 2,
+        steps: [
+          'サブ口座のオンラインバンキングにログインする',
+          '過去3ヶ月の入出金履歴を表示する',
+          '臨時収入や臨時支出を確認する',
+        ],
+      },
+      {
+        id: '1-3',
+        name: 'メインクレジットカードの利用履歴を確認する',
+        estimatedMinutes: 3,
+        steps: [
+          'クレジットカード会社のサイトにログインする',
+          '過去3ヶ月の利用明細をダウンロードする',
+          'カテゴリ別に支出を分類する（食費、交通費、娯楽費等）',
+        ],
+      },
+      {
+        id: '1-4',
+        name: 'サブクレジットカードの利用履歴を確認する',
+        estimatedMinutes: 2,
+        steps: ['サブカードの利用明細を確認する', 'メインカードに含まれない支出を特定する'],
+      },
+      {
+        id: '1-5',
+        name: '現金での支出を記録する',
+        estimatedMinutes: 3,
+        steps: [
+          '財布の中の現金残高を確認する',
+          '過去3ヶ月の現金支出を思い出して記録する',
+          'ATM手数料や現金での買い物を記録する',
+        ],
+      },
+      {
+        id: '1-6',
+        name: '電子マネー・QR決済の利用履歴を確認する',
+        estimatedMinutes: 2,
+        steps: [
+          'Suica、PASMO等の交通系電子マネー履歴を確認する',
+          'PayPay、LINE Pay等のQR決済履歴を確認する',
+          'その他の電子マネー利用履歴を確認する',
+        ],
+      },
+      {
+        id: '1-7',
+        name: '収入の合計を計算する',
+        estimatedMinutes: 2,
+        steps: [
+          '給与収入の合計を計算する',
+          'ボーナスや臨時収入を加算する',
+          'その他の収入（副業、投資等）を加算する',
+        ],
+      },
+      {
+        id: '1-8',
+        name: '支出の合計を計算する',
+        estimatedMinutes: 3,
+        steps: [
+          '固定費の合計を計算する',
+          '変動費の合計を計算する',
+          '現金・電子マネー支出を加算する',
+          '全体の支出合計を算出する',
+        ],
+      },
+      {
+        id: '1-9',
+        name: '収支バランスを分析する',
+        estimatedMinutes: 2,
+        steps: ['収入と支出の差額を計算する', '月平均の収支を算出する', '改善点を特定する'],
+      },
+      {
+        id: '1-10',
+        name: '資産管理ページに入力する',
+        estimatedMinutes: 3,
+        steps: [
+          '資産負債レポートページを開く',
+          '収入データを入力する',
+          '支出データを入力する',
+          '現金残高を入力する',
+        ],
+      },
     ],
   },
   {
@@ -4685,6 +4776,135 @@ app.post('/api/daily10/progress', (req: Request, res: Response) => {
     });
   }
 });
+
+// POST /api/daily10/auto-complete - Auto complete subtask based on external action
+app.post('/api/daily10/auto-complete', (req: Request, res: Response) => {
+  try {
+    const { taskId, subtaskId, action, data } = req.body;
+
+    if (!taskId || !subtaskId || !action) {
+      return res.status(400).json({
+        success: false,
+        message: 'taskId, subtaskId, and action are required',
+      });
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const existingProgress = progressStore.get(today) || {
+      date: today,
+      tasks: DEFAULT_TASKS.map((task) => ({
+        taskId: task.id,
+        completed: false,
+        completedAt: null,
+        subtasks: task.subtasks.map((subtask) => ({
+          subtaskId: subtask.id,
+          completed: false,
+          completedAt: null,
+          estimatedMinutes: subtask.estimatedMinutes,
+        })),
+      })),
+      completionRate: 0,
+      streak: 0,
+    };
+
+    // Find the task and subtask
+    const taskIndex = existingProgress.tasks.findIndex((t) => t.taskId === taskId);
+    if (taskIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: 'Task not found',
+      });
+    }
+
+    const subtaskIndex = existingProgress.tasks[taskIndex].subtasks.findIndex(
+      (st) => st.subtaskId === subtaskId
+    );
+    if (subtaskIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: 'Subtask not found',
+      });
+    }
+
+    // Auto complete the subtask based on action
+    const shouldComplete = checkAutoCompleteCondition(taskId, subtaskId, action, data);
+
+    if (shouldComplete) {
+      existingProgress.tasks[taskIndex].subtasks[subtaskIndex].completed = true;
+      existingProgress.tasks[taskIndex].subtasks[subtaskIndex].completedAt =
+        new Date().toISOString();
+
+      // Check if all subtasks are completed
+      const allSubtasksCompleted = existingProgress.tasks[taskIndex].subtasks.every(
+        (st) => st.completed
+      );
+      if (allSubtasksCompleted) {
+        existingProgress.tasks[taskIndex].completed = true;
+        existingProgress.tasks[taskIndex].completedAt = new Date().toISOString();
+      }
+
+      // Recalculate completion rate
+      const completedTasks = existingProgress.tasks.filter((t) => t.completed).length;
+      existingProgress.completionRate = (completedTasks / DEFAULT_TASKS.length) * 100;
+      existingProgress.streak =
+        completedTasks === DEFAULT_TASKS.length ? (existingProgress.streak || 0) + 1 : 0;
+
+      progressStore.set(today, existingProgress);
+
+      res.json({
+        success: true,
+        data: existingProgress,
+        message: 'Subtask auto-completed successfully',
+      });
+    } else {
+      res.json({
+        success: true,
+        data: existingProgress,
+        message: 'Auto-complete condition not met',
+      });
+    }
+  } catch (error) {
+    console.error('Error auto-completing subtask:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to auto-complete subtask',
+    });
+  }
+});
+
+// Helper function to check auto-complete conditions
+const checkAutoCompleteCondition = (
+  taskId: string,
+  subtaskId: string,
+  action: string,
+  data: any
+): boolean => {
+  // Task 1: 直近3ヶ月の収入と支出をすべて把握する
+  if (taskId === '1') {
+    switch (subtaskId) {
+      case '1-5': // 現金での支出を記録する
+        return action === 'cash_balance_updated' && data?.amount !== undefined;
+      case '1-10': // 資産管理ページに入力する
+        return action === 'asset_data_entered' && data?.hasIncomeData && data?.hasExpenseData;
+      default:
+        return false;
+    }
+  }
+
+  // Task 2: 現在の資産と負債をすべて把握する
+  if (taskId === '2') {
+    switch (subtaskId) {
+      case '2-1': // 銀行預金残高を確認する
+        return action === 'bank_balance_entered' && data?.amount !== undefined;
+      case '2-2': // 投資口座の残高を確認する
+        return action === 'investment_balance_entered' && data?.amount !== undefined;
+      default:
+        return false;
+    }
+  }
+
+  return false;
+};
 
 // GET /api/daily10/stats - Get statistics
 app.get('/api/daily10/stats', (req: Request, res: Response) => {

@@ -37,6 +37,7 @@ import {
   Trophy,
   BookOpen,
   Crown,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface SystemStatus {
@@ -113,6 +114,14 @@ export const UnifiedSystemNavigation: React.FC<UnifiedSystemNavigationProps> = (
       icon: <CheckSquare className="w-4 h-4" />,
       status: 'active',
       description: '標準ToDo管理',
+      category: 'productivity',
+    },
+    {
+      name: '毎日20のこと',
+      path: '/daily-10-tasks',
+      icon: <CheckCircle2 className="w-4 h-4" />,
+      status: 'active',
+      description: '毎日必ずやる20のタスク',
       category: 'productivity',
     },
     {

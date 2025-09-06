@@ -37,6 +37,7 @@ import { PomodoroProvider } from './context/PomodoroContext';
 import { InternationalizationProvider } from './hooks/useInternationalization';
 import { useAuth } from './hooks/useAuth';
 import ProcrastinationGuard from '@/components/productivity/ProcrastinationGuard';
+import { FloatingActionButton } from '@/components/FloatingActionButton';
 // Admin dashboard (lazy)
 const AdminDashboard = lazy(() =>
   import('@/pages/AdminDashboard').then((m) => ({ default: m.default }))
@@ -1562,6 +1563,7 @@ const AppWithProviders: React.FC = () => {
     <>
       <App />
       <ProcrastinationGuard />
+      <FloatingActionButton />
       <Toaster
         position="top-right"
         toastOptions={{

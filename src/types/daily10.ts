@@ -2,6 +2,7 @@ export interface Subtask {
   id: string;
   name: string;
   estimatedMinutes: number;
+  steps?: string[];
 }
 
 export interface SubtaskProgress {

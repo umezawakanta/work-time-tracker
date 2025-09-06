@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addAssetEntry } from '@/store/assetSlice';
 import { addDebtEntry } from '@/store/debtSlice';
+import { daily10Api } from '@/services/api/daily10Api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -113,6 +114,41 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
             targetSettings,
           })
         );
+
+        // Daily Tasksの自動完了を試行
+        try {
+          if (category === 'cash') {
+            // 現金残高の更新
+            await daily10Api.autoCompleteSubtask('1', '1-5', 'cash_balance_updated', {
+              amount: numericValue,
+              account: accountName,
+            });
+            toast.success(
+              '現金残高の記録が完了しました！「毎日20のこと」のサブタスクも自動完了しました。'
+            );
+          } else if (category === 'investment') {
+            // 投資口座の残高
+            await daily10Api.autoCompleteSubtask('2', '2-2', 'investment_balance_entered', {
+              amount: numericValue,
+              account: accountName,
+            });
+            toast.success(
+              '投資口座の記録が完了しました！「毎日20のこと」のサブタスクも自動完了しました。'
+            );
+          } else if (category === 'cash' || accountName.toLowerCase().includes('銀行')) {
+            // 銀行預金残高
+            await daily10Api.autoCompleteSubtask('2', '2-1', 'bank_balance_entered', {
+              amount: numericValue,
+              account: accountName,
+            });
+            toast.success(
+              '銀行口座の記録が完了しました！「毎日20のこと」のサブタスクも自動完了しました。'
+            );
+          }
+        } catch (error) {
+          console.warn('Daily Tasks auto-complete failed:', error);
+          // エラーが発生してもメインの処理は続行
+        }
       } else {
         dispatch(
           addDebtEntry({

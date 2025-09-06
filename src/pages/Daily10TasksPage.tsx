@@ -240,29 +240,71 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, progress, onUpdate }) => {
 
             {/* サブタスク一覧 */}
             {showSubtasks && task.subtasks && task.subtasks.length > 0 && (
-              <div className="mt-3 space-y-2 border-t pt-3">
+              <div className="mt-3 space-y-3 border-t pt-3">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">サブタスク (各5分以内)</h4>
                 {task.subtasks.map((subtask) => {
                   const subtaskProgress = progress?.subtasks?.find(
                     (st) => st.subtaskId === subtask.id
                   );
+                  const [showSteps, setShowSteps] = useState(false);
+
                   return (
-                    <div key={subtask.id} className="flex items-center space-x-2 text-sm">
-                      <Checkbox
-                        checked={subtaskProgress?.completed || false}
-                        onCheckedChange={(checked) =>
-                          handleSubtaskToggle(subtask.id, checked as boolean)
-                        }
-                        className="h-4 w-4"
-                      />
-                      <span
-                        className={`flex-1 ${subtaskProgress?.completed ? 'line-through text-gray-500' : ''}`}
-                      >
-                        {subtask.name}
-                      </span>
-                      <Badge variant="secondary" className="text-xs">
-                        {subtask.estimatedMinutes}分
-                      </Badge>
+                    <div key={subtask.id} className="border rounded-lg p-3 bg-gray-50">
+                      <div className="flex items-center space-x-2 text-sm mb-2">
+                        <Checkbox
+                          checked={subtaskProgress?.completed || false}
+                          onCheckedChange={(checked) =>
+                            handleSubtaskToggle(subtask.id, checked as boolean)
+                          }
+                          className="h-4 w-4"
+                        />
+                        <span
+                          className={`flex-1 font-medium ${subtaskProgress?.completed ? 'line-through text-gray-500' : ''}`}
+                        >
+                          {subtask.name}
+                        </span>
+                        <Badge variant="secondary" className="text-xs">
+                          {subtask.estimatedMinutes}分
+                        </Badge>
+                      </div>
+
+                      {/* 手順表示ボタン */}
+                      {subtask.steps && subtask.steps.length > 0 && (
+                        <div className="ml-6">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowSteps(!showSteps)}
+                            className="text-xs h-6 px-2"
+                          >
+                            {showSteps ? '手順を隠す' : '手順を表示'} ({subtask.steps.length}
+                            ステップ)
+                          </Button>
+
+                          {/* 手順一覧 */}
+                          {showSteps && (
+                            <div className="mt-2 ml-2">
+                              <ol className="list-decimal list-inside space-y-1 text-xs text-gray-600">
+                                {subtask.steps.map((step, index) => (
+                                  <li key={index} className="leading-relaxed">
+                                    {step}
+                                  </li>
+                                ))}
+                              </ol>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* 完了時刻表示 */}
+                      {subtaskProgress?.completed && subtaskProgress.completedAt && (
+                        <div className="ml-6 mt-1">
+                          <span className="text-xs text-green-600">
+                            完了:{' '}
+                            {new Date(subtaskProgress.completedAt).toLocaleTimeString('ja-JP')}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   );
                 })}

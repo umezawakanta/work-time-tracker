@@ -328,6 +328,16 @@ const Home: React.FC = () => {
   // Quick actions configuration
   const quickActions: QuickAction[] = [
     {
+      id: 'daily-10-tasks',
+      title: '毎日20のこと',
+      description: '毎日必ずやる20のタスクを管理',
+      icon: <CheckCircle className="w-6 h-6" />,
+      path: '/daily-10-tasks',
+      color: 'text-green-600',
+      gradient: 'from-green-500 to-emerald-600',
+      featured: true,
+    },
+    {
       id: 'todos',
       title: 'タスク管理',
       description: 'やることを整理して効率的に進めよう',

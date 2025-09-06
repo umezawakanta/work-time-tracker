@@ -73,4 +73,20 @@ export const daily10Api = {
     }>(`/daily10/stats?userId=${userId}&type=monthly`);
     return response.data.data;
   },
+
+  // サブタスクを自動完了
+  async autoCompleteSubtask(
+    taskId: string,
+    subtaskId: string,
+    action: string,
+    data: any
+  ): Promise<DailyProgress> {
+    const response = await api.post<UpdateProgressResponse>('/daily10/auto-complete', {
+      taskId,
+      subtaskId,
+      action,
+      data,
+    });
+    return response.data.data;
+  },
 };
