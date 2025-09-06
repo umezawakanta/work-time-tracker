@@ -479,7 +479,11 @@ export default function AssetLiabilityReportPage() {
           categories['現金・預金'] += entry.value;
         } else if (name.includes('株') || name.includes('投資') || name.includes('fund')) {
           categories['投資'] += entry.value;
-        } else if (name.includes('不動産') || name.includes('マンション') || name.includes('house')) {
+        } else if (
+          name.includes('不動産') ||
+          name.includes('マンション') ||
+          name.includes('house')
+        ) {
           categories['不動産'] += entry.value;
         } else if (name.includes('年金') || name.includes('保険') || name.includes('insurance')) {
           categories['年金・保険'] += entry.value;
