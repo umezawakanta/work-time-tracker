@@ -66,122 +66,128 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
 
   // 三井住友銀行のCSVフォーマットを解析
   const parseSMBCBankCSV = (csvText: string): any[] => {
-    console.log('CSV解析開始:', csvText.substring(0, 200) + '...');
+    try {
+      console.log('CSV解析開始:', csvText.substring(0, 200) + '...');
 
-    const lines = csvText.split('\n').filter((line) => line.trim());
-    console.log('行数:', lines.length);
+      const lines = csvText.split('\n').filter((line) => line.trim());
+      console.log('行数:', lines.length);
 
-    if (lines.length === 0) {
-      console.log('CSVファイルが空です');
-      return [];
-    }
+      if (lines.length === 0) {
+        console.log('CSVファイルが空です');
+        return [];
+      }
 
-    // 区切り文字を自動検出（カンマまたはタブ）
-    const firstLine = lines[0];
-    const isTabDelimited = firstLine.includes('\t') && !firstLine.includes(',');
-    const delimiter = isTabDelimited ? '\t' : ',';
-    console.log('区切り文字:', delimiter);
+      // 区切り文字を自動検出（カンマまたはタブ）
+      const firstLine = lines[0];
+      const isTabDelimited = firstLine.includes('\t') && !firstLine.includes(',');
+      const delimiter = isTabDelimited ? '\t' : ',';
+      console.log('区切り文字:', delimiter);
 
-    const headers = firstLine.split(delimiter).map((h) => h.trim());
-    console.log('ヘッダー:', headers);
+      const headers = firstLine.split(delimiter).map((h) => h.trim());
+      console.log('ヘッダー:', headers);
 
-    // 三井住友銀行のCSVフォーマットかチェック
-    const hasDateField = headers.some(
-      (h) =>
-        h.includes('年月日') ||
-        h.includes('日付') ||
-        h.includes('日時') ||
-        h.includes('日') ||
-        h === '年月日' ||
-        h === '日付' ||
-        h.includes('2025') || // 年が含まれている場合
-        h.includes('2024')
-    );
-    const hasWithdrawalField = headers.some(
-      (h) =>
-        h.includes('引出') ||
-        h.includes('出金') ||
-        h.includes('支払') ||
-        h.includes('お引出') ||
-        h === 'お引出し' ||
-        h === '引出し' ||
-        h.includes('カード') // カード関連の取引
-    );
-    const hasDepositField = headers.some(
-      (h) =>
-        h.includes('預入') ||
-        h.includes('入金') ||
-        h.includes('受取') ||
-        h.includes('お預入') ||
-        h === 'お預入れ' ||
-        h === '預入れ' ||
-        h.includes('振込') // 振込関連
-    );
-    const hasBalanceField = headers.some(
-      (h) =>
-        h.includes('残高') ||
-        h.includes('残額') ||
-        h.includes('残') ||
-        h === '残高' ||
-        h.includes('円') // 金額が含まれている場合
-    );
+      // 三井住友銀行のCSVフォーマットかチェック
+      const hasDateField = headers.some(
+        (h) =>
+          h.includes('年月日') ||
+          h.includes('日付') ||
+          h.includes('日時') ||
+          h.includes('日') ||
+          h === '年月日' ||
+          h === '日付' ||
+          h.includes('2025') || // 年が含まれている場合
+          h.includes('2024')
+      );
+      const hasWithdrawalField = headers.some(
+        (h) =>
+          h.includes('引出') ||
+          h.includes('出金') ||
+          h.includes('支払') ||
+          h.includes('お引出') ||
+          h === 'お引出し' ||
+          h === '引出し' ||
+          h.includes('カード') // カード関連の取引
+      );
+      const hasDepositField = headers.some(
+        (h) =>
+          h.includes('預入') ||
+          h.includes('入金') ||
+          h.includes('受取') ||
+          h.includes('お預入') ||
+          h === 'お預入れ' ||
+          h === '預入れ' ||
+          h.includes('振込') // 振込関連
+      );
+      const hasBalanceField = headers.some(
+        (h) =>
+          h.includes('残高') ||
+          h.includes('残額') ||
+          h.includes('残') ||
+          h === '残高' ||
+          h.includes('円') // 金額が含まれている場合
+      );
 
-    // より柔軟な検出条件
-    const isSMBCFormat = hasDateField && (hasBalanceField || hasWithdrawalField || hasDepositField);
+      // より柔軟な検出条件
+      const isSMBCFormat =
+        hasDateField && (hasBalanceField || hasWithdrawalField || hasDepositField);
 
-    // デバッグ用：強制的にSMBCフォーマットとして扱う（テスト用）
-    const forceSMBCFormat =
-      headers.length > 0 &&
-      headers.some((h) => h.includes('年月日') || h.includes('日付') || h.includes('残高'));
-    console.log('強制SMBCフォーマット:', forceSMBCFormat);
+      // デバッグ用：強制的にSMBCフォーマットとして扱う（テスト用）
+      const forceSMBCFormat =
+        headers.length > 0 &&
+        headers.some((h) => h.includes('年月日') || h.includes('日付') || h.includes('残高'));
+      console.log('強制SMBCフォーマット:', forceSMBCFormat);
 
-    // デバッグ用：すべてのヘッダーをチェック
-    console.log('ヘッダー詳細チェック:');
-    headers.forEach((header, index) => {
-      console.log(`  ${index}: "${header}"`);
-    });
-
-    console.log('=== CSV解析デバッグ情報 ===');
-    console.log('ヘッダー:', headers);
-    console.log('SMBCフォーマットか:', isSMBCFormat);
-    console.log('検出結果:', {
-      hasDateField,
-      hasWithdrawalField,
-      hasDepositField,
-      hasBalanceField,
-    });
-    console.log('========================');
-
-    // アラートでも表示（デバッグ用）
-    if (headers.length > 0) {
-      alert(`CSV解析結果:\nヘッダー: ${headers.join(', ')}\nSMBCフォーマット: ${isSMBCFormat}`);
-    }
-
-    if (!isSMBCFormat && !forceSMBCFormat) {
-      console.log('通常のフォーマットで解析');
-      return parseCSV(csvText); // 通常のフォーマットで解析
-    }
-
-    if (forceSMBCFormat) {
-      console.log('強制的にSMBCフォーマットとして解析');
-    }
-
-    const parsedData = lines.slice(1).map((line, index) => {
-      const values = line.split(delimiter).map((v) => v.trim());
-      const row: any = {};
-
-      headers.forEach((header, i) => {
-        row[header] = values[i] || '';
+      // デバッグ用：すべてのヘッダーをチェック
+      console.log('ヘッダー詳細チェック:');
+      headers.forEach((header, index) => {
+        console.log(`  ${index}: "${header}"`);
       });
 
-      return {
-        ...row,
-        rowNumber: index + 2,
-      };
-    });
+      console.log('=== CSV解析デバッグ情報 ===');
+      console.log('ヘッダー:', headers);
+      console.log('SMBCフォーマットか:', isSMBCFormat);
+      console.log('検出結果:', {
+        hasDateField,
+        hasWithdrawalField,
+        hasDepositField,
+        hasBalanceField,
+      });
+      console.log('========================');
 
-    console.log('解析されたデータ:', parsedData.slice(0, 3)); // 最初の3行を表示
-    return parsedData;
+      // アラートでも表示（デバッグ用）
+      if (headers.length > 0) {
+        alert(`CSV解析結果:\nヘッダー: ${headers.join(', ')}\nSMBCフォーマット: ${isSMBCFormat}`);
+      }
+
+      if (!isSMBCFormat && !forceSMBCFormat) {
+        console.log('通常のフォーマットで解析');
+        return parseCSV(csvText); // 通常のフォーマットで解析
+      }
+
+      if (forceSMBCFormat) {
+        console.log('強制的にSMBCフォーマットとして解析');
+      }
+
+      const parsedData = lines.slice(1).map((line, index) => {
+        const values = line.split(delimiter).map((v) => v.trim());
+        const row: any = {};
+
+        headers.forEach((header, i) => {
+          row[header] = values[i] || '';
+        });
+
+        return {
+          ...row,
+          rowNumber: index + 2,
+        };
+      });
+
+      console.log('解析されたデータ:', parsedData.slice(0, 3)); // 最初の3行を表示
+      return parsedData;
+    } catch (error) {
+      console.error('CSV解析エラー:', error);
+      return [];
+    }
   };
 
   // データの検証
