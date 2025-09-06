@@ -1541,10 +1541,10 @@ export const featuresRegistry: Feature[] = [
     path: '/pricing',
     category: 'サブスクリプション・請求',
     description: 'プランと価格の案内',
-    status: 'planning',
+    status: 'complete',
     requiresRealAPI: false,
     priority: 'P2',
-    targetRelease: '2025-09-25',
+    targetRelease: '2025-09-07',
   },
   {
     id: 'changelog',
