@@ -5594,6 +5594,80 @@ app.delete('/api/bank-accounts/:id', (req: Request, res: Response) => {
   res.json({ success: true, message: '銀行口座が削除されました' });
 });
 
+// ID生成関数
+const createBankAccountId = () =>
+  'bank_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+
+// 銀行口座CSVインポートAPI
+app.post('/api/bank-accounts/import', (req: Request, res: Response) => {
+  const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
+  const { accounts } = req.body;
+
+  if (!accounts || !Array.isArray(accounts) || accounts.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'Accounts data is required',
+    });
+  }
+
+  try {
+    // 既存の口座データを取得
+    const existingAccounts = bankAccountsStore.get(userId) || [];
+
+    // メイン口座の重複チェック
+    const hasMainAccount = existingAccounts.some((account) => account.isMain);
+    const newMainAccount = accounts.find((account) => account.isMain);
+
+    if (hasMainAccount && newMainAccount) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'メイン口座は既に設定されています。既存のメイン口座を削除してから再度お試しください。',
+      });
+    }
+
+    // 新しい口座データを作成
+    const newAccounts = accounts.map((account: any) => {
+      const now = new Date().toISOString();
+      return {
+        _id: createBankAccountId(),
+        userId,
+        bankName: account.bankName,
+        accountType: account.accountType,
+        accountNumber: account.accountNumber,
+        branchName: account.branchName || '',
+        accountName: account.accountName,
+        isMain: account.isMain || false,
+        isActive: true,
+        lastBalance: account.lastBalance || 0,
+        lastUpdated: now,
+        createdAt: now,
+        updatedAt: now,
+      };
+    });
+
+    // 既存の口座データとマージ
+    const updatedAccounts = [...existingAccounts, ...newAccounts];
+    bankAccountsStore.set(userId, updatedAccounts);
+
+    res.status(200).json({
+      success: true,
+      message: `${newAccounts.length}件の口座データをインポートしました`,
+      data: {
+        importedCount: newAccounts.length,
+        totalCount: updatedAccounts.length,
+        accounts: newAccounts,
+      },
+    });
+  } catch (error) {
+    console.error('Bank accounts import error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'サーバーエラーが発生しました',
+    });
+  }
+});
+
 // 404 Error handler - must be after all known routes; allow future mocks via pattern
 app.use((req: Request, res: Response): void => {
   console.log(`❌ 404 - Route not found: ${req.method} ${req.url}`);

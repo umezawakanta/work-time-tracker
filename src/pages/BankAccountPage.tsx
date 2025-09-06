@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import BankAccountManager from '@/components/BankAccountManager';
+import { BankCSVUploader } from '@/components/BankCSVUploader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building2, ArrowLeft } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Building2, ArrowLeft, Upload, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 const BankAccountPage: React.FC = () => {
   const { user, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('manage');
 
   // デバッグ情報を表示
   console.log('BankAccountPage - Auth state:', {
@@ -77,37 +80,101 @@ const BankAccountPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 操作手順ガイド */}
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-blue-800">
-              <Building2 className="h-5 w-5" />
-              銀行口座管理の使い方
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-              <div>
-                <h4 className="font-semibold text-blue-900 mb-3">🏦 口座の登録方法</h4>
-                <ol className="list-decimal list-inside space-y-2 text-blue-700">
-                  <li>「新しい口座を追加」ボタンをクリック</li>
-                  <li>銀行名、口座種別、口座名を入力</li>
-                  <li>「メイン口座に設定」で主要な口座を指定</li>
-                  <li>「データ同期」ボタンで残高を自動取得</li>
-                </ol>
-              </div>
-              <div>
-                <h4 className="font-semibold text-blue-900 mb-3">🔄 自動同期機能</h4>
-                <ol className="list-decimal list-inside space-y-2 text-blue-700">
-                  <li>「データ同期」で最新の残高を取得</li>
-                  <li>「自動同期を有効化」で定期的な更新を設定</li>
-                  <li>「毎日20のこと」で資産確認タスクが自動完了</li>
-                  <li>資産負債レポートに自動反映</li>
-                </ol>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* タブナビゲーション */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="manage" className="flex items-center gap-2">
+              <Building2 className="h-4 w-4" />
+              口座管理
+            </TabsTrigger>
+            <TabsTrigger value="import" className="flex items-center gap-2">
+              <Upload className="h-4 w-4" />
+              CSVインポート
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="manage" className="space-y-6">
+            {/* 操作手順ガイド */}
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-blue-800">
+                  <Building2 className="h-5 w-5" />
+                  銀行口座管理の使い方
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                  <div>
+                    <h4 className="font-semibold text-blue-900 mb-3">🏦 口座の登録方法</h4>
+                    <ol className="list-decimal list-inside space-y-2 text-blue-700">
+                      <li>「新しい口座を追加」ボタンをクリック</li>
+                      <li>銀行名、口座種別、口座名を入力</li>
+                      <li>「メイン口座に設定」で主要な口座を指定</li>
+                      <li>「データ同期」ボタンで残高を自動取得</li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-blue-900 mb-3">🔄 自動同期機能</h4>
+                    <ol className="list-decimal list-inside space-y-2 text-blue-700">
+                      <li>「データ同期」で最新の残高を取得</li>
+                      <li>「自動同期を有効化」で定期的な更新を設定</li>
+                      <li>「毎日20のこと」で資産確認タスクが自動完了</li>
+                      <li>資産負債レポートに自動反映</li>
+                    </ol>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 銀行口座管理コンポーネント */}
+            <BankAccountManager userId={user.id} />
+          </TabsContent>
+
+          <TabsContent value="import" className="space-y-6">
+            {/* CSVインポートガイド */}
+            <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-green-800">
+                  <FileText className="h-5 w-5" />
+                  CSVファイルで一括インポート
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                  <div>
+                    <h4 className="font-semibold text-green-900 mb-3">📋 CSVファイルの準備</h4>
+                    <ol className="list-decimal list-inside space-y-2 text-green-700">
+                      <li>「テンプレートをダウンロード」でCSV形式を取得</li>
+                      <li>銀行名、口座種別、口座番号、口座名を入力</li>
+                      <li>残高、メイン口座設定も可能</li>
+                      <li>複数の口座を一度に登録可能</li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-green-900 mb-3">🚀 インポート手順</h4>
+                    <ol className="list-decimal list-inside space-y-2 text-green-700">
+                      <li>CSVファイルをドラッグ&ドロップまたは選択</li>
+                      <li>データの検証が自動実行される</li>
+                      <li>エラーがあれば修正して再アップロード</li>
+                      <li>成功すると口座一覧に反映される</li>
+                    </ol>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* CSVアップロードコンポーネント */}
+            <BankCSVUploader
+              userId={user.id}
+              onUploadComplete={(result) => {
+                if (result.success) {
+                  // 成功時は口座管理タブに切り替え
+                  setActiveTab('manage');
+                }
+              }}
+            />
+          </TabsContent>
+        </Tabs>
 
         {/* 銀行口座管理の特徴 */}
         <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">

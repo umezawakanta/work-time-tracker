@@ -35,8 +35,8 @@ export class BankAPIService {
 
   constructor(config?: Partial<BankAPIConfig>) {
     this.config = {
-      apiKey: process.env.NEXT_PUBLIC_BANK_API_KEY || 'demo-api-key',
-      baseUrl: process.env.NEXT_PUBLIC_BANK_API_URL || 'https://api.bank-demo.com',
+      apiKey: import.meta.env.VITE_PUBLIC_BANK_API_KEY || 'demo-api-key',
+      baseUrl: import.meta.env.VITE_PUBLIC_BANK_API_URL || 'https://api.bank-demo.com',
       timeout: 30000,
       ...config,
     };
@@ -74,44 +74,9 @@ export class BankAPIService {
       return data.accounts || [];
     } catch (error) {
       console.error('Error fetching real bank data:', error);
-      // エラー時はデモデータを返す
-      return this.generateDemoData(userId);
+      // エラー時は空の配列を返す（デモデータは返さない）
+      return [];
     }
-  }
-
-  /**
-   * デモ用の銀行口座データを生成
-   */
-  public generateDemoData(userId: string): BankAccountBalance[] {
-    return [
-      {
-        accountId: 'demo_1',
-        accountName: 'メイン口座',
-        bankName: '三井住友銀行',
-        balance: 1500000,
-        currency: 'JPY',
-        lastUpdated: new Date().toISOString(),
-        accountType: 'checking',
-      },
-      {
-        accountId: 'demo_2',
-        accountName: '貯蓄口座',
-        bankName: '三井住友銀行',
-        balance: 3000000,
-        currency: 'JPY',
-        lastUpdated: new Date().toISOString(),
-        accountType: 'savings',
-      },
-      {
-        accountId: 'demo_3',
-        accountName: '投資口座',
-        bankName: 'SBI証券',
-        balance: 2500000,
-        currency: 'JPY',
-        lastUpdated: new Date().toISOString(),
-        accountType: 'investment',
-      },
-    ];
   }
 
   /**
@@ -253,7 +218,7 @@ export class BankAPIService {
     }
 
     // 既存の自動同期を停止
-    this.disableAutoSync();
+    this.disableAutoSync(userId);
 
     const intervalId = setInterval(
       async () => {

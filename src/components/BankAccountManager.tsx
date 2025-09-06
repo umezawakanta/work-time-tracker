@@ -89,9 +89,6 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
   useEffect(() => {
     fetchAccounts();
     checkLastSyncTime();
-
-    // 初期化時に銀行口座データを同期
-    syncBankData();
   }, [userId]);
 
   // 最後の同期時刻を確認
@@ -126,7 +123,11 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
         setLastSyncTime(new Date().toISOString());
         setAccounts(data.data);
 
-        toast.success(`${bankBalances.length}件の口座データを同期しました`);
+        if (bankBalances.length > 0) {
+          toast.success(`${bankBalances.length}件の口座データを同期しました`);
+        } else {
+          toast.info('登録された銀行口座がありません。新しい口座を追加してください。');
+        }
       } else {
         throw new Error('Failed to fetch bank data');
       }

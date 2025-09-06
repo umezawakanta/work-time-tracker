@@ -92,15 +92,7 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
 
   // 銀行口座からの自動入力処理
   const handleBankAccountImport = async (account: any) => {
-    // デモデータの場合は強制的に残高を設定
-    let balance = account.lastBalance;
-    if (!balance && account.bankName === '三井住友銀行') {
-      balance = account.isMain ? 1500000 : 3000000;
-    } else if (!balance && account.bankName === 'SBI証券') {
-      balance = 2500000;
-    }
-
-    if (!balance) {
+    if (!account.lastBalance) {
       toast.error('この口座には残高情報がありません');
       return;
     }
@@ -116,13 +108,15 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
         addAssetEntry({
           account: accountName,
           category: 'bank',
-          value: balance,
+          value: account.lastBalance,
           date: currentDate,
           description: accountName,
-          targetValue: balance,
-          targetDate: currentDate,
-          autoUpdate: false,
-          updateFrequency: 'monthly',
+          targetSettings: {
+            autoUpdate: false,
+            updateFrequency: 'monthly',
+            targetValue: account.lastBalance,
+            targetDate: currentDate,
+          },
         })
       );
 
@@ -131,7 +125,7 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
         try {
           await daily10Api.autoCompleteSubtask('2', '2-1', 'bank_balance_entered', {
             accountName: accountName,
-            balance: balance,
+            balance: account.lastBalance,
             bankName: account.bankName,
           });
           console.log('✅ 銀行口座残高の自動完了を実行しました');
@@ -303,41 +297,19 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
                                 ? '定期預金'
                                 : 'クレジットカード'}
                         </p>
-                        {(() => {
-                          // デモデータの場合は強制的に残高を表示
-                          let balance = account.lastBalance;
-                          if (!balance && account.bankName === '三井住友銀行') {
-                            balance = account.isMain ? 1500000 : 3000000;
-                          } else if (!balance && account.bankName === 'SBI証券') {
-                            balance = 2500000;
-                          }
-
-                          return balance ? (
-                            <p className="text-sm font-semibold text-green-600">
-                              残高: {balance.toLocaleString()}円
-                            </p>
-                          ) : (
-                            <div className="text-sm text-gray-500">
-                              <p>残高情報なし</p>
-                              <p className="text-xs text-blue-600">デモデータを読み込み中...</p>
-                            </div>
-                          );
-                        })()}
+                        {account.lastBalance ? (
+                          <p className="text-sm font-semibold text-green-600">
+                            残高: {account.lastBalance.toLocaleString()}円
+                          </p>
+                        ) : (
+                          <p className="text-sm text-gray-500">残高情報なし</p>
+                        )}
                       </div>
                       <Button
                         type="button"
                         size="sm"
                         onClick={() => handleBankAccountImport(account)}
-                        disabled={(() => {
-                          // デモデータの場合は強制的に有効化
-                          let balance = account.lastBalance;
-                          if (!balance && account.bankName === '三井住友銀行') {
-                            balance = account.isMain ? 1500000 : 3000000;
-                          } else if (!balance && account.bankName === 'SBI証券') {
-                            balance = 2500000;
-                          }
-                          return !balance || isSubmitting;
-                        })()}
+                        disabled={!account.lastBalance || isSubmitting}
                         className="ml-3"
                       >
                         {isSubmitting ? '追加中...' : '追加'}
