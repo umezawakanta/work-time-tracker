@@ -101,6 +101,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // 銀行口座一覧を取得
       const accounts = bankAccountsStore.get(userId as string) || [];
 
+      // デバッグログを追加
+      console.log('Bank accounts API - User ID:', userId);
+      console.log('Bank accounts API - Accounts:', accounts);
+
       return res.status(200).json({
         success: true,
         data: accounts,
