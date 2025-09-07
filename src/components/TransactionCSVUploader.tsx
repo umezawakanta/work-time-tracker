@@ -98,6 +98,7 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
   // 三井住友銀行の取引明細CSVを解析
   const parseSMBCTransactionCSV = (csvText: string): CSVTransactionData[] => {
     const lines = csvText.split('\n').filter((line) => line.trim());
+    console.log('SMBC CSV - Total lines:', lines.length);
 
     // ヘッダー行を検出
     let headerIndex = 0;
@@ -119,7 +120,17 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
       if (!line) continue;
 
       const values = line.split(',').map((v) => v.trim());
-      if (values.length < headers.length) continue;
+      console.log(`SMBC CSV - Line ${i}:`, values);
+
+      if (values.length < headers.length) {
+        console.log(
+          `SMBC CSV - Line ${i} has insufficient columns:`,
+          values.length,
+          'expected:',
+          headers.length
+        );
+        continue;
+      }
 
       try {
         // 日付の解析
@@ -159,6 +170,10 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
           }
         }
 
+        console.log(
+          `SMBC CSV - Parsed: date=${date}, description=${description}, amount=${amount}`
+        );
+
         if (date && amount !== 0) {
           // 日付の形式を統一
           const dateObj = new Date(date);
@@ -189,19 +204,31 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
             category: category,
             accountName: 'メイン口座',
           });
+          console.log(`SMBC CSV - Added transaction:`, transactions[transactions.length - 1]);
+        } else {
+          console.log(`SMBC CSV - Skipped line ${i}: date=${date}, amount=${amount}`);
         }
       } catch (error) {
         console.error('Error parsing line:', line, error);
       }
     }
 
+    console.log('SMBC CSV - Total transactions found:', transactions.length);
     return transactions;
   };
 
   // 汎用CSVを解析
   const parseGenericCSV = (csvText: string): CSVTransactionData[] => {
     const lines = csvText.split('\n').filter((line) => line.trim());
+    console.log('Generic CSV - Total lines:', lines.length);
+
+    if (lines.length < 2) {
+      console.log('Generic CSV - Not enough lines');
+      return [];
+    }
+
     const headers = lines[0].split(',').map((h) => h.trim());
+    console.log('Generic CSV - Headers:', headers);
 
     const transactions: CSVTransactionData[] = [];
 
@@ -210,26 +237,47 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
       if (!line) continue;
 
       const values = line.split(',').map((v) => v.trim());
-      if (values.length < 5) continue;
+      console.log(`Generic CSV - Line ${i}:`, values);
+
+      // より柔軟な列数のチェック
+      if (values.length < 3) {
+        console.log(`Generic CSV - Line ${i} has too few columns:`, values.length);
+        continue;
+      }
 
       try {
-        const [date, description, amountStr, category, accountName] = values;
-        const amount = parseFloat(amountStr) || 0;
+        // 列数に応じて柔軟に処理
+        const date = values[0];
+        const description = values[1] || '';
+        const amountStr = values[2] || '0';
+        const category = values[3] || 'その他';
+        const accountName = values[4] || 'メイン口座';
+
+        const amount = parseFloat(amountStr.replace(/[^\d.-]/g, '')) || 0;
+        console.log(
+          `Generic CSV - Parsed: date=${date}, description=${description}, amount=${amount}`
+        );
 
         if (date && description && amount !== 0) {
           transactions.push({
             date: date,
             description: description,
             amount: amount,
-            category: category || 'その他',
-            accountName: accountName || 'メイン口座',
+            category: category,
+            accountName: accountName,
           });
+          console.log(`Generic CSV - Added transaction:`, transactions[transactions.length - 1]);
+        } else {
+          console.log(
+            `Generic CSV - Skipped line ${i}: date=${date}, description=${description}, amount=${amount}`
+          );
         }
       } catch (error) {
         console.error('Error parsing line:', line, error);
       }
     }
 
+    console.log('Generic CSV - Total transactions found:', transactions.length);
     return transactions;
   };
 
@@ -284,13 +332,28 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
       // ファイルの読み込み
       const text = await file.text();
       console.log('File content preview:', text.substring(0, 500));
+      console.log('File lines:', text.split('\n').length);
 
       // CSVの解析
       const transactions = parseCSV(text);
       console.log('Parsed transactions:', transactions);
+      console.log('Transaction count:', transactions.length);
 
       if (transactions.length === 0) {
-        throw new Error('有効なデータがありません');
+        // より詳細なエラーメッセージを提供
+        const lines = text.split('\n').filter((line) => line.trim());
+        console.log('CSV lines:', lines);
+        console.log('First few lines:', lines.slice(0, 5));
+
+        if (lines.length === 0) {
+          throw new Error('CSVファイルが空です');
+        } else if (lines.length === 1) {
+          throw new Error('CSVファイルにヘッダーのみで、データ行がありません');
+        } else {
+          throw new Error(
+            `CSVファイルに${lines.length}行ありますが、有効な取引データが見つかりませんでした。ファイル形式を確認してください。`
+          );
+        }
       }
 
       // データの検証
