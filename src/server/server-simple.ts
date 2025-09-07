@@ -6230,9 +6230,17 @@ const startServer = async () => {
       const assets = await financialService.getAssets(userId as string);
       const bankAssets = assets.filter((asset) => asset._id && asset._id.startsWith('bank_'));
 
-      console.log('Debug - All assets:', assets.length);
-      console.log('Debug - Bank assets:', bankAssets.length);
-      console.log('Debug - Bank assets details:', bankAssets);
+      console.log('=== DEBUG ASSETS ===');
+      console.log('User ID:', userId);
+      console.log('All assets count:', assets.length);
+      console.log('Bank assets count:', bankAssets.length);
+      console.log('All assets:', JSON.stringify(assets, null, 2));
+      console.log('Bank assets:', JSON.stringify(bankAssets, null, 2));
+
+      // 銀行口座データも取得
+      const bankAccounts = await financialService.getBankAccounts(userId as string);
+      console.log('Bank accounts count:', bankAccounts.length);
+      console.log('Bank accounts:', JSON.stringify(bankAccounts, null, 2));
 
       res.json({
         success: true,
@@ -6240,17 +6248,20 @@ const startServer = async () => {
         bankAssets: bankAssets.length,
         bankAssetsDetails: bankAssets,
         allAssets: assets,
+        bankAccounts: bankAccounts,
+        bankAccountsCount: bankAccounts.length,
       });
     } catch (error) {
       console.error('Error fetching debug data:', error);
       res.status(500).json({
         success: false,
         message: 'デバッグデータの取得に失敗しました',
+        error: error.message,
       });
     }
   });
 
-  // 重複する銀行口座データをクリーンアップするエンドポイント
+  // 強力なクリーンアップ機能：全銀行口座データを削除して再構築
   app.post('/api/cleanup-duplicate-bank-accounts', async (req, res) => {
     const { userId } = req.body;
 
@@ -6260,64 +6271,79 @@ const startServer = async () => {
 
     try {
       const financialService = FinancialDataService.getInstance();
-      // 資産データから銀行口座データを取得
+
+      console.log('=== CLEANUP START ===');
+      console.log('User ID:', userId);
+
+      // 1. 現在の資産データを取得
       const assets = await financialService.getAssets(userId);
       const bankAssets = assets.filter((asset) => asset._id && asset._id.startsWith('bank_'));
+      console.log(`Found ${bankAssets.length} bank account entries`);
 
-      console.log(`Found ${bankAssets.length} bank account entries for user ${userId}`);
+      // 2. 銀行口座データを取得
+      const bankAccounts = await financialService.getBankAccounts(userId);
+      console.log(`Found ${bankAccounts.length} bank accounts`);
 
-      // 重複を除去（最新のデータのみ保持）
-      const uniqueBankAssets = bankAssets.reduce((acc: any[], current: any) => {
-        const existing = acc.find(
-          (item) => item.account === current.account && item.value === current.value
-        );
+      // 3. 全銀行口座資産データを削除
+      let deletedCount = 0;
+      for (const asset of bankAssets) {
+        try {
+          console.log(`Deleting asset: ${asset._id}`);
+          await financialService.deleteAsset(asset._id);
+          deletedCount++;
+        } catch (error) {
+          console.error(`Failed to delete asset ${asset._id}:`, error);
+        }
+      }
 
-        if (!existing) {
-          acc.push(current);
-        } else {
-          // より新しい日付のデータを保持
-          if (
-            new Date(current.updatedAt || current.createdAt) >
-            new Date(existing.updatedAt || existing.createdAt)
-          ) {
-            const index = acc.findIndex((item) => item._id === existing._id);
-            acc[index] = current;
+      // 4. 銀行口座データから新しい資産エントリを作成
+      let createdCount = 0;
+      for (const account of bankAccounts) {
+        if (account.lastBalance !== undefined && account.lastBalance !== null) {
+          try {
+            const accountName = `${account.bankName} ${account.branchName ? `${account.branchName} ` : ''}${account.accountName}`;
+            const bankAssetEntry = {
+              userId: userId,
+              date: new Date().toISOString().split('T')[0],
+              value: account.lastBalance,
+              description: accountName,
+              account: accountName,
+              category: '現金・預金',
+            } as any;
+
+            console.log(`Creating asset for account: ${accountName} (${account.lastBalance})`);
+            await financialService.createAsset(bankAssetEntry);
+            createdCount++;
+          } catch (error) {
+            console.error(`Failed to create asset for account ${account._id}:`, error);
           }
         }
-
-        return acc;
-      }, []);
-
-      // 古い銀行口座データを削除
-      for (const asset of bankAssets) {
-        console.log(`Deleting asset: ${asset._id}`);
-        await financialService.deleteAsset(asset._id);
       }
 
-      // 最新のデータを再追加
-      for (const asset of uniqueBankAssets) {
-        console.log(`Recreating asset: ${asset._id}`);
-        await financialService.createAsset(asset);
-      }
-
-      // クリーンアップ後の確認
+      // 5. クリーンアップ後の確認
       const afterCleanup = await financialService.getAssets(userId);
       const afterBankAssets = afterCleanup.filter(
         (asset) => asset._id && asset._id.startsWith('bank_')
       );
-      console.log(`After cleanup - Bank assets: ${afterBankAssets.length}`);
+
+      console.log('=== CLEANUP COMPLETE ===');
+      console.log(`Deleted: ${deletedCount} assets`);
+      console.log(`Created: ${createdCount} assets`);
+      console.log(`Final bank assets: ${afterBankAssets.length}`);
 
       res.json({
         success: true,
-        message: `重複する銀行口座データをクリーンアップしました。${bankAssets.length}件から${uniqueBankAssets.length}件に整理しました。`,
-        removed: bankAssets.length - uniqueBankAssets.length,
-        kept: uniqueBankAssets.length,
+        message: `銀行口座データをクリーンアップしました。削除: ${deletedCount}件, 作成: ${createdCount}件`,
+        deleted: deletedCount,
+        created: createdCount,
+        finalCount: afterBankAssets.length,
       });
     } catch (error) {
       console.error('Error cleaning up duplicate bank accounts:', error);
       res.status(500).json({
         success: false,
         message: 'クリーンアップ中にエラーが発生しました',
+        error: error.message,
       });
     }
   });

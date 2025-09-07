@@ -167,8 +167,20 @@ export default function AssetLiabilityReportPage() {
 
   // 取引明細から資産データを生成・更新（全口座対応）
   useEffect(() => {
+    console.log('=== BANK ACCOUNTS EFFECT ===');
+    console.log('Accounts:', accounts);
+    console.log('Accounts length:', accounts?.length);
+    console.log('Current asset entries:', assetEntries.length);
+
     if (accounts && accounts.length > 0) {
       accounts.forEach((account) => {
+        console.log('Processing account:', {
+          id: account._id,
+          bankName: account.bankName,
+          accountName: account.accountName,
+          lastBalance: account.lastBalance,
+        });
+
         if (account.lastBalance !== undefined && account.lastBalance !== null) {
           // 既存の銀行口座資産エントリをチェック
           const existingIndex = assetEntries.findIndex(
@@ -197,6 +209,8 @@ export default function AssetLiabilityReportPage() {
                   },
                 })
               );
+            } else {
+              console.log('Bank account entry already up to date:', accountName);
             }
           } else {
             // 新しいエントリを追加
@@ -218,8 +232,12 @@ export default function AssetLiabilityReportPage() {
             };
             dispatch(addAssetEntry(bankAssetEntry));
           }
+        } else {
+          console.log('Account has no balance, skipping:', account.accountName);
         }
       });
+    } else {
+      console.log('No accounts found or accounts not loaded yet');
     }
   }, [accounts, dispatch, user?.id]);
 
@@ -803,6 +821,45 @@ export default function AssetLiabilityReportPage() {
               </TooltipTrigger>
               <TooltipContent>
                 <p>デバッグ情報を表示</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* 銀行口座データ同期 */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/cleanup-duplicate-bank-accounts', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ userId: user?.id || 'default-user' }),
+                      });
+                      const result = await response.json();
+                      if (result.success) {
+                        toast.success(result.message);
+                        // ページを再読み込みしてデータを更新
+                        window.location.reload();
+                      } else {
+                        toast.error(result.message);
+                      }
+                    } catch (error) {
+                      console.error('Failed to sync bank account data:', error);
+                      toast.error('銀行口座データの同期に失敗しました');
+                    }
+                  }}
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>銀行口座データを同期</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
