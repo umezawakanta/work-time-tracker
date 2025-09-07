@@ -287,27 +287,44 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
         // 入金・出金フィールドを探して取引金額を計算
         let incomeAmount = 0;
         let expenseAmount = 0;
+        let balanceAmount = 0;
 
         for (let j = 0; j < headers.length; j++) {
           const header = headers[j].toLowerCase();
+          console.log(`Jibun Bank CSV - Header ${j}: "${header}" = "${values[j]}"`);
+
           if (header.includes('入金')) {
             const incomeStr = values[j].replace(/[^\d.-]/g, '');
             incomeAmount = parseFloat(incomeStr) || 0;
+            console.log(`Jibun Bank CSV - Found income column: "${values[j]}" -> ${incomeAmount}`);
           } else if (header.includes('出金')) {
             const expenseStr = values[j].replace(/[^\d.-]/g, '');
             expenseAmount = parseFloat(expenseStr) || 0;
+            console.log(
+              `Jibun Bank CSV - Found expense column: "${values[j]}" -> ${expenseAmount}`
+            );
+          } else if (header.includes('残高')) {
+            const balanceStr = values[j].replace(/[^\d.-]/g, '');
+            balanceAmount = parseFloat(balanceStr) || 0;
+            console.log(
+              `Jibun Bank CSV - Found balance column: "${values[j]}" -> ${balanceAmount}`
+            );
           }
         }
 
         // 取引金額を計算（入金があれば正の値、出金があれば負の値）
         if (incomeAmount > 0) {
           amount = incomeAmount;
+          console.log(`Jibun Bank CSV - Using income amount: ${amount}`);
         } else if (expenseAmount > 0) {
           amount = -expenseAmount;
+          console.log(`Jibun Bank CSV - Using expense amount: ${amount}`);
+        } else {
+          console.log(`Jibun Bank CSV - No valid income/expense found, amount remains 0`);
         }
 
         console.log(
-          `Jibun Bank CSV - Amount calculation: income=${incomeAmount}, expense=${expenseAmount}, final=${amount}`
+          `Jibun Bank CSV - Amount calculation: income=${incomeAmount}, expense=${expenseAmount}, balance=${balanceAmount}, final=${amount}`
         );
 
         // 取引内容フィールドを探す
