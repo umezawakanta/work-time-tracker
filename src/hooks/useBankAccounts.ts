@@ -34,8 +34,14 @@ export const useBankAccounts = (userId: string) => {
       } else {
         setError(data.message || '銀行口座の取得に失敗しました');
       }
-    } catch (err) {
-      setError('銀行口座の取得中にエラーが発生しました');
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.status === 404
+          ? 'APIエンドポイントが見つかりません。デプロイを確認してください。'
+          : err?.response?.status === 500
+            ? 'サーバーエラーが発生しました。しばらく待ってから再試行してください。'
+            : err?.message || '銀行口座の取得中にエラーが発生しました';
+      setError(errorMessage);
       console.error('Error fetching bank accounts:', err);
     } finally {
       setIsLoading(false);

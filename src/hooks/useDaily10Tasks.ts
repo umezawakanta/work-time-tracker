@@ -18,9 +18,15 @@ export const useDaily10Tasks = () => {
     try {
       const tasksData = await daily10Api.fetchTasks();
       setTasks(tasksData);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to fetch tasks:', err);
-      setError('タスクの取得に失敗しました');
+      const errorMessage =
+        err?.response?.status === 404
+          ? 'APIエンドポイントが見つかりません。デプロイを確認してください。'
+          : err?.response?.status === 500
+            ? 'サーバーエラーが発生しました。しばらく待ってから再試行してください。'
+            : err?.message || 'タスクの取得に失敗しました';
+      setError(errorMessage);
     }
   }, []);
 
@@ -32,9 +38,15 @@ export const useDaily10Tasks = () => {
       try {
         const progressData = await daily10Api.fetchProgress(user.id, date);
         setProgress(progressData);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to fetch progress:', err);
-        setError('進捗の取得に失敗しました');
+        const errorMessage =
+          err?.response?.status === 404
+            ? 'APIエンドポイントが見つかりません。デプロイを確認してください。'
+            : err?.response?.status === 500
+              ? 'サーバーエラーが発生しました。しばらく待ってから再試行してください。'
+              : err?.message || '進捗の取得に失敗しました';
+        setError(errorMessage);
       }
     },
     [user?.id]
@@ -47,9 +59,15 @@ export const useDaily10Tasks = () => {
     try {
       const statsData = await daily10Api.fetchStats(user.id);
       setStats(statsData);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to fetch stats:', err);
-      setError('統計データの取得に失敗しました');
+      const errorMessage =
+        err?.response?.status === 404
+          ? 'APIエンドポイントが見つかりません。デプロイを確認してください。'
+          : err?.response?.status === 500
+            ? 'サーバーエラーが発生しました。しばらく待ってから再試行してください。'
+            : err?.message || '統計データの取得に失敗しました';
+      setError(errorMessage);
     }
   }, [user?.id]);
 

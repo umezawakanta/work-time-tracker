@@ -209,11 +209,17 @@ export default function AssetLiabilityReportPage() {
           // 長期トレンドデータを実際のデータから生成
           generateLongTermData();
         } else {
-          setError('データの読み込みに失敗しました。もう一度お試しください。');
+          setError(`データの読み込みに失敗しました: ${data.message || '不明なエラー'}`);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to load report data:', err);
-        setError('データの読み込みに失敗しました。もう一度お試しください。');
+        const errorMessage =
+          err?.response?.status === 404
+            ? 'APIエンドポイントが見つかりません。デプロイを確認してください。'
+            : err?.response?.status === 500
+              ? 'サーバーエラーが発生しました。しばらく待ってから再試行してください。'
+              : err?.message || 'データの読み込みに失敗しました。もう一度お試しください。';
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -736,10 +742,13 @@ export default function AssetLiabilityReportPage() {
           <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
             <h5 className="font-semibold text-yellow-800 mb-2">⚠️ 重要な注意事項</h5>
             <ul className="text-yellow-700 text-sm space-y-1">
-              <li>• 銀行口座のCSVファイルは三井住友銀行の形式に対応しています</li>
+              <li>
+                • 銀行口座のCSVファイルは三井住友銀行・横浜銀行・じぶん銀行の形式に対応しています
+              </li>
               <li>• データは自動的に保存され、ページを再読み込みしても保持されます</li>
               <li>• セッションが切れた場合は自動的にログイン画面にリダイレクトされます</li>
               <li>• 個人情報は暗号化されて保存され、第三者と共有されることはありません</li>
+              <li>• 取引明細データは自動的に資産負債レポートに統合されます</li>
             </ul>
           </div>
         </CardContent>

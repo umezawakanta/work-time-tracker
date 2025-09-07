@@ -737,7 +737,7 @@ const Daily10TasksPage: React.FC = () => {
                   <strong>銀行口座確認（10分）</strong>
                   <br />
                   銀行口座管理ページで残高を最新に更新
-                  <br />→ 三井住友銀行・横浜銀行のCSVインポート
+                  <br />→ 三井住友銀行・横浜銀行・じぶん銀行のCSVインポート
                 </li>
                 <li>
                   <strong>取引明細確認（10分）</strong>

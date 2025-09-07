@@ -333,6 +333,11 @@ const BankAccountPage: React.FC = () => {
                         取引明細CSVを直接アップロード（取引日形式）
                       </li>
                       <li>
+                        <strong>じぶん銀行</strong>
+                        <br />
+                        取引明細CSVを直接アップロード（じぶん銀行形式）
+                      </li>
+                      <li>
                         <strong>その他の銀行</strong>
                         <br />
                         汎用CSV形式で対応（日付,内容,金額,カテゴリ,口座名）
