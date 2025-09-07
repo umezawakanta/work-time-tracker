@@ -810,7 +810,7 @@ export default function AssetLiabilityReportPage() {
                   onClick={async () => {
                     try {
                       const response = await fetch(
-                        `http://localhost:3001/api/debug/assets?userId=${user?.id || 'default-user'}`
+                        `/api/debug/assets?userId=${user?.id || 'default-user'}`
                       );
                       const result = await response.json();
                       if (result.success) {
@@ -845,16 +845,13 @@ export default function AssetLiabilityReportPage() {
                   size="icon"
                   onClick={async () => {
                     try {
-                      const response = await fetch(
-                        'http://localhost:3001/api/cleanup-duplicate-bank-accounts',
-                        {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify({ userId: user?.id || 'default-user' }),
-                        }
-                      );
+                      const response = await fetch('/api/cleanup-duplicate-bank-accounts', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ userId: user?.id || 'default-user' }),
+                      });
                       const result = await response.json();
                       if (result.success) {
                         toast.success(result.message);
@@ -890,16 +887,13 @@ export default function AssetLiabilityReportPage() {
                       confirm('全資産データをクリーンアップしますか？この操作は元に戻せません。')
                     ) {
                       try {
-                        const response = await fetch(
-                          'http://localhost:3001/api/cleanup-all-assets',
-                          {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ userId: user?.id || 'default-user' }),
-                          }
-                        );
+                        const response = await fetch('/api/cleanup-all-assets', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({ userId: user?.id || 'default-user' }),
+                        });
                         const result = await response.json();
                         if (result.success) {
                           toast.success(result.message);
@@ -934,16 +928,13 @@ export default function AssetLiabilityReportPage() {
                   onClick={async () => {
                     if (confirm('重複する銀行口座データをクリーンアップしますか？')) {
                       try {
-                        const response = await fetch(
-                          'http://localhost:3001/api/cleanup-duplicate-bank-accounts',
-                          {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ userId: user?.id || 'default-user' }),
-                          }
-                        );
+                        const response = await fetch('/api/cleanup-duplicate-bank-accounts', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({ userId: user?.id || 'default-user' }),
+                        });
                         const result = await response.json();
                         if (result.success) {
                           toast.success(result.message);
