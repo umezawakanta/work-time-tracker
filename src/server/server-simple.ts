@@ -5694,7 +5694,9 @@ app.post('/api/bank-accounts', async (req: Request, res: Response) => {
     }
 
     // データベースに銀行口座データを作成
+    const id = createBankAccountId();
     const newAccount = await financialService.createBankAccount({
+      _id: id,
       userId,
       bankName,
       accountType,
