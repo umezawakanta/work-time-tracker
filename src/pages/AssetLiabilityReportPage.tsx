@@ -146,6 +146,22 @@ export default function AssetLiabilityReportPage() {
   // 長期トレンド分析用のデータ (追加)
   const [longTermData, setLongTermData] = useState<LongTermDataPoint[]>([]);
 
+  // 口座情報の定期更新
+  useEffect(() => {
+    if (user?.id) {
+      // 初回読み込み時は既にuseBankAccountsで実行される
+      // 定期的に口座残高を更新（5分間隔）
+      const interval = setInterval(
+        () => {
+          refetchBankAccounts();
+        },
+        5 * 60 * 1000
+      ); // 5分
+
+      return () => clearInterval(interval);
+    }
+  }, [user?.id, refetchBankAccounts]);
+
   // 月次データの自動生成
   const generateMonthlySnapshots = async () => {
     setIsLoading(true);
@@ -610,6 +626,40 @@ export default function AssetLiabilityReportPage() {
         </div>
 
         <div className="flex items-center space-x-3">
+          {/* 残高更新 */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/bank-accounts/update-balances', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ userId: user?.id || 'default-user' }),
+                      });
+                      if (response.ok) {
+                        // 口座情報を再取得
+                        refetchBankAccounts();
+                      }
+                    } catch (error) {
+                      console.error('Failed to update balances:', error);
+                    }
+                  }}
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>口座残高を更新</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           {/* クイック追加 */}
           <TooltipProvider>
             <Tooltip>
