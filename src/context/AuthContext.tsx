@@ -308,6 +308,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error: any) {
       logger.error('Auth', 'Failed to fetch user data', error);
 
+      // ネットワークエラーやサーバーエラーの場合は認証状態を維持
+      if (
+        error?.code === 'ECONNREFUSED' ||
+        error?.code === 'NETWORK_ERROR' ||
+        error?.message?.includes('timeout') ||
+        !error?.response
+      ) {
+        console.log('⚠️ Network error in fetchUser, maintaining auth state');
+        return;
+      }
+
       // 認証エラー（401/403）の場合は認証状態をリセット
       if (error?.response?.status === 401 || error?.response?.status === 403) {
         console.log('🔒 Authentication error in fetchUser, clearing auth state');
@@ -322,7 +333,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           window.location.replace('/login');
         }
       } else {
-        setUser(null);
+        console.log('⚠️ Other error in fetchUser, maintaining auth state');
+        // その他のエラーの場合は認証状態を維持
       }
     }
   }, [user]);
@@ -366,6 +378,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
           if (isTrustedHost && !user) {
             await fetchUser();
+          } else if (!isTrustedHost && !user) {
+            // 開発環境ではダミーユーザー情報を設定
+            const dummyUser = {
+              id: 'dev-user',
+              _id: 'dev-user',
+              username: '開発ユーザー',
+              email: 'dev@example.com',
+              name: '開発ユーザー',
+              isAdmin: true,
+              lastLoginAt: new Date(),
+            } as User;
+            setUser(dummyUser);
+            console.log('🧪 開発環境 - ダミーユーザー情報を設定（refreshAuth）');
           }
           setIsAuthenticated(true);
           console.log('✅ Auth refresh successful');
@@ -499,9 +524,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.log('🧪 開発環境 - 認証状態を維持');
             if (isMounted) {
               setIsAuthenticated(true);
-              // 開発環境ではユーザー情報を取得（管理者トーストは制御済み）
+              // 開発環境ではダミーユーザー情報を設定
               if (!user) {
-                await fetchUser();
+                const dummyUser = {
+                  id: 'dev-user',
+                  _id: 'dev-user',
+                  username: '開発ユーザー',
+                  email: 'dev@example.com',
+                  name: '開発ユーザー',
+                  isAdmin: true,
+                  lastLoginAt: new Date(),
+                } as User;
+                setUser(dummyUser);
+                console.log('🧪 開発環境 - ダミーユーザー情報を設定');
               }
             }
           }
@@ -517,9 +552,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.log('🧪 開発環境 - トークン無効でも認証状態を維持');
             if (isMounted) {
               setIsAuthenticated(true);
-              // 開発環境ではユーザー情報を取得（管理者トーストは制御済み）
+              // 開発環境ではダミーユーザー情報を設定
               if (!user) {
-                await fetchUser();
+                const dummyUser = {
+                  id: 'dev-user',
+                  _id: 'dev-user',
+                  username: '開発ユーザー',
+                  email: 'dev@example.com',
+                  name: '開発ユーザー',
+                  isAdmin: true,
+                  lastLoginAt: new Date(),
+                } as User;
+                setUser(dummyUser);
+                console.log('🧪 開発環境 - ダミーユーザー情報を設定');
               }
             }
           } else {

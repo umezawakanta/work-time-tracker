@@ -184,6 +184,26 @@ export default function Login() {
       console.log('🔄 Setting authenticated state...');
       setIsAuthenticated(true);
 
+      // 開発環境ではダミーユーザー情報を設定
+      const host = typeof window !== 'undefined' ? window.location.hostname : '';
+      const isTrustedHost =
+        host === 'work-time-tracker-five.vercel.app' ||
+        /^work-time-tracker-5d9q-.*\.vercel\.app$/.test(host);
+
+      if (!isTrustedHost && !user) {
+        const dummyUser = {
+          id: 'dev-user',
+          _id: 'dev-user',
+          username: '開発ユーザー',
+          email: 'dev@example.com',
+          name: '開発ユーザー',
+          isAdmin: true,
+          lastLoginAt: new Date(),
+        };
+        setUser(dummyUser);
+        console.log('🧪 開発環境 - ダミーユーザー情報を設定（ログイン後）');
+      }
+
       // refreshAuthは呼ばない（すでにユーザー情報とトークンは設定済み）
       console.log('✅ Login complete - user and tokens set');
 
