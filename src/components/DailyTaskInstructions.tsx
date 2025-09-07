@@ -31,28 +31,41 @@ interface DailyTaskInstructionsProps {
 }
 
 const taskInstructions: {
-  [key: string]: { steps: string[]; links: { label: string; url: string; description: string }[] };
+  [key: string]: { 
+    steps: (string | { text: string; link?: { label: string; url: string; description: string } })[];
+    links: { label: string; url: string; description: string }[];
+  };
 } = {
   '1': {
     steps: [
       '財布を開いて現金を数える',
       '硬貨と紙幣を分けて計算する',
-      '資産負債レポートページで現金残高を入力する',
+      {
+        text: '資産負債レポートページで現金残高を入力する',
+        link: {
+          label: '資産負債レポート',
+          url: '/asset-liability-report',
+          description: '現金残高を入力・管理'
+        }
+      },
       '前日との差額を確認する',
     ],
-    links: [
-      {
-        label: '資産負債レポート',
-        url: '/asset-liability-report',
-        description: '現金残高を入力・管理',
-      },
-    ],
+    links: [],
   },
   '2': {
     steps: [
       '銀行口座管理ページでメイン口座を確認する',
-      'オンラインバンキングで残高をチェックする',
-      '入出金履歴を確認する',
+      {
+        text: '銀行のオンラインバンキングにログインする',
+        link: {
+          label: '三井住友銀行オンラインバンキング',
+          url: 'https://www.smbc.co.jp/kojin/',
+          description: '三井住友銀行大塚支店普通預金口座の9月分の入出金履歴をダウンロード'
+        }
+      },
+      '過去3ヶ月の入出金履歴を表示する',
+      '給与振込、ボーナス等の収入を確認する',
+      '固定費（家賃、光熱費等）の支出を確認する',
       '資産負債レポートに反映させる',
     ],
     links: [
@@ -60,11 +73,6 @@ const taskInstructions: {
         label: '銀行口座管理',
         url: '/bank-accounts',
         description: '口座情報の管理・CSVインポート',
-      },
-      {
-        label: '三井住友銀行オンラインバンキング',
-        url: 'https://www.smbc.co.jp/kojin/',
-        description: '三井住友銀行大塚支店普通預金口座の9月分の入出金履歴をダウンロード',
       },
       {
         label: '横浜銀行オンラインバンキング',
@@ -95,19 +103,33 @@ const taskInstructions: {
   },
   '3': {
     steps: [
-      'カレンダーアプリを開く',
+      {
+        text: 'カレンダーアプリを開く',
+        link: {
+          label: 'カレンダー',
+          url: '/calendar',
+          description: '予定の管理・確認'
+        }
+      },
       '今日の予定を確認する',
       '明日以降の重要な予定をチェックする',
       '必要に応じて予定を追加・修正する',
     ],
-    links: [{ label: 'カレンダー', url: '/calendar', description: '予定の管理・確認' }],
+    links: [],
   },
   '4': {
     steps: [
       'サブスクリプション管理ページを開く',
       '固定費の支払い状況を確認する',
       '未払いがないかチェックする',
-      '必要に応じて支払いを実行する',
+      {
+        text: '必要に応じて支払いを実行する',
+        link: {
+          label: '三井住友銀行オンラインバンキング',
+          url: 'https://www.smbc.co.jp/kojin/',
+          description: '固定費の支払い実行'
+        }
+      },
     ],
     links: [
       {
@@ -115,34 +137,39 @@ const taskInstructions: {
         url: '/subscriptions',
         description: '固定費・サブスクの管理',
       },
-      {
-        label: '三井住友銀行オンラインバンキング',
-        url: 'https://www.smbc.co.jp/kojin/',
-        description: '固定費の支払い実行',
-      },
     ],
   },
   '5': {
     steps: [
-      '負債管理ページを開く',
+      {
+        text: '負債管理ページを開く',
+        link: {
+          label: '負債管理',
+          url: '/debt',
+          description: '借金・ローン・クレジットカードの管理'
+        }
+      },
       '利息の支払い状況を確認する',
       '返済計画をチェックする',
       '必要に応じて返済を実行する',
     ],
-    links: [
-      { label: '負債管理', url: '/debt', description: '借金・ローン・クレジットカードの管理' },
-    ],
+    links: [],
   },
   '6': {
     steps: [
-      '光熱費管理ページを開く',
+      {
+        text: '光熱費管理ページを開く',
+        link: {
+          label: '光熱費管理',
+          url: '/utilities',
+          description: '電気・ガス・水道の使用量管理'
+        }
+      },
       '電気・ガス・水道の使用量を確認する',
       '前月との比較を行う',
       '節約のポイントを確認する',
     ],
-    links: [
-      { label: '光熱費管理', url: '/utilities', description: '電気・ガス・水道の使用量管理' },
-    ],
+    links: [],
   },
   '7': {
     steps: [
@@ -260,33 +287,59 @@ export const DailyTaskInstructions: React.FC<DailyTaskInstructionsProps> = ({
             <h4 className="font-semibold text-gray-900 mb-2">📋 実行手順</h4>
             <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
               {instructions.steps.map((step, index) => (
-                <li key={index}>{step}</li>
+                <li key={index}>
+                  {typeof step === 'string' ? (
+                    step
+                  ) : (
+                    <span>
+                      {step.text.split(step.link?.label || '').map((part, partIndex, array) => (
+                        <span key={partIndex}>
+                          {part}
+                          {partIndex < array.length - 1 && step.link && (
+                            <a
+                              href={step.link.url}
+                              target={step.link.url.startsWith('http') ? '_blank' : '_self'}
+                              rel={step.link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors text-sm font-medium ml-1"
+                              title={step.link.description}
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              {step.link.label}
+                            </a>
+                          )}
+                        </span>
+                      ))}
+                    </span>
+                  )}
+                </li>
               ))}
             </ol>
           </div>
 
           {/* 関連リンク */}
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-2">🔗 関連ページ・外部サイト</h4>
-            <div className="space-y-2">
-              {instructions.links.map((link, index) => (
-                <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                  <ExternalLink className="h-4 w-4 text-gray-500" />
-                  <div className="flex-1">
-                    <a
-                      href={link.url}
-                      target={link.url.startsWith('http') ? '_blank' : '_self'}
-                      rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-                      className="text-blue-600 hover:text-blue-800 underline font-medium"
-                    >
-                      {link.label}
-                    </a>
-                    <p className="text-xs text-gray-600 mt-1">{link.description}</p>
+          {instructions.links.length > 0 && (
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-2">🔗 関連ページ・外部サイト</h4>
+              <div className="space-y-2">
+                {instructions.links.map((link, index) => (
+                  <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                    <ExternalLink className="h-4 w-4 text-gray-500" />
+                    <div className="flex-1">
+                      <a
+                        href={link.url}
+                        target={link.url.startsWith('http') ? '_blank' : '_self'}
+                        rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                        className="text-blue-600 hover:text-blue-800 underline font-medium"
+                      >
+                        {link.label}
+                      </a>
+                      <p className="text-xs text-gray-600 mt-1">{link.description}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>

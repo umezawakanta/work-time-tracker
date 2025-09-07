@@ -186,8 +186,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           console.log('✅ Dev server auth check passed');
           setIsAuthenticated(true);
           setSessionExpired(false);
-          // 開発環境でもユーザー情報を取得
-          if (isMounted) {
+          // 開発環境でもユーザー情報を取得（初回のみ）
+          if (isMounted && !user) {
             await fetchUser();
           }
           return true;
@@ -253,48 +253,65 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
-  // ユーザー情報の取得
+  // 管理者トースト表示フラグ
+  const adminToastShown = useRef(false);
+  // fetchUserのデバウンス用タイマー
+  const fetchUserTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // ユーザー情報の取得（デバウンス付き）
   const fetchUser = useCallback(async () => {
-    try {
-      if (!tokenManager.isAuthenticated()) {
-        setUser(null);
-        return;
-      }
-
-      const userData = await fetchUserData();
-      setUser(userData);
-
-      // 管理者の場合は成功メッセージ表示
-      if (userData.isAdmin) {
-        logger.info('Auth', 'Admin user logged in', { userId: userData.id });
-        toast.success('🔥 管理者としてログインしました', {
-          duration: 3000,
-          style: {
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            fontWeight: 'bold',
-          },
-        });
-      }
-    } catch (error: any) {
-      logger.error('Auth', 'Failed to fetch user data', error);
-
-      // 認証エラー（401/403）の場合は認証状態をリセット
-      if (error?.response?.status === 401 || error?.response?.status === 403) {
-        console.log('🔒 Authentication error in fetchUser, clearing auth state');
-        tokenManager.clearTokens();
-        setIsAuthenticated(false);
-        setUser(null);
-        setSessionExpired(true);
-
-        // ログイン画面にリダイレクト
-        if (typeof window !== 'undefined') {
-          window.location.replace('/login');
-        }
-      } else {
-        setUser(null);
-      }
+    // 既存のタイマーをクリア
+    if (fetchUserTimeout.current) {
+      clearTimeout(fetchUserTimeout.current);
     }
+
+    // 100ms後に実行（デバウンス）
+    fetchUserTimeout.current = setTimeout(async () => {
+      try {
+        if (!tokenManager.isAuthenticated()) {
+          setUser(null);
+          adminToastShown.current = false; // ログアウト時にフラグをリセット
+          return;
+        }
+
+        const userData = await fetchUserData();
+        const previousUser = user;
+        setUser(userData);
+
+        // 管理者の場合は初回ログイン時のみ成功メッセージ表示
+        if (userData.isAdmin && !adminToastShown.current) {
+          adminToastShown.current = true;
+          logger.info('Auth', 'Admin user logged in', { userId: userData.id });
+          toast.success('🔥 管理者としてログインしました', {
+            duration: 3000,
+            style: {
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              fontWeight: 'bold',
+            },
+          });
+        }
+      } catch (error: any) {
+        logger.error('Auth', 'Failed to fetch user data', error);
+
+        // 認証エラー（401/403）の場合は認証状態をリセット
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+          console.log('🔒 Authentication error in fetchUser, clearing auth state');
+          tokenManager.clearTokens();
+          setIsAuthenticated(false);
+          setUser(null);
+          setSessionExpired(true);
+          adminToastShown.current = false; // エラー時にフラグをリセット
+
+          // ログイン画面にリダイレクト
+          if (typeof window !== 'undefined') {
+            window.location.replace('/login');
+          }
+        } else {
+          setUser(null);
+        }
+      }
+    }, 100); // 100msのデバウンス
   }, []);
 
   // 認証の更新
@@ -328,7 +345,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (isValid) {
         try {
-          await fetchUser();
+          if (!user) {
+            await fetchUser();
+          }
           setIsAuthenticated(true);
           console.log('✅ Auth refresh successful');
         } catch (userError) {
@@ -461,8 +480,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.log('🧪 開発環境 - 認証状態を維持');
             if (isMounted) {
               setIsAuthenticated(true);
-              // 開発環境でもユーザー情報を取得
-              await fetchUser();
+              // 開発環境でもユーザー情報を取得（初回のみ）
+              if (!user) {
+                await fetchUser();
+              }
             }
           }
         } else {
@@ -477,8 +498,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.log('🧪 開発環境 - トークン無効でも認証状態を維持');
             if (isMounted) {
               setIsAuthenticated(true);
-              // 開発環境でもユーザー情報を取得
-              await fetchUser();
+              // 開発環境でもユーザー情報を取得（初回のみ）
+              if (!user) {
+                await fetchUser();
+              }
             }
           } else {
             // 本番環境では認証クリア
@@ -572,6 +595,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
+      // タイマーをクリア
+      if (fetchUserTimeout.current) {
+        clearTimeout(fetchUserTimeout.current);
+      }
     };
   }, []);
 
