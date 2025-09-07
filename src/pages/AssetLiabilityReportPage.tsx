@@ -174,7 +174,7 @@ export default function AssetLiabilityReportPage() {
         date: new Date().toISOString().split('T')[0],
         value: mainAccount.lastBalance,
         description: `${mainAccount.bankName} ${mainAccount.accountName}`,
-        account: mainAccount.bankName,
+        account: `${mainAccount.bankName} ${mainAccount.accountName}`, // チャート表示用に完全な口座名を使用
         category: '現金・預金',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -192,6 +192,7 @@ export default function AssetLiabilityReportPage() {
             id: `bank_${mainAccount._id}`,
             entry: {
               value: mainAccount.lastBalance,
+              account: `${mainAccount.bankName} ${mainAccount.accountName}`,
             },
           })
         );
@@ -403,8 +404,39 @@ export default function AssetLiabilityReportPage() {
         type: 'debt' as const,
       }));
 
-    return [...assetChartData, ...debtChartData];
-  }, [assetEntries, debtEntries]);
+    // 銀行口座データも追加（mainAccountから、assetEntriesに含まれていない場合のみ）
+    const bankChartData =
+      mainAccount && mainAccount.lastBalance
+        ? [
+            {
+              date: new Date(),
+              account: `${mainAccount.bankName} ${mainAccount.accountName}`,
+              value: mainAccount.lastBalance,
+              type: 'asset' as const,
+            },
+          ]
+        : [];
+
+    // 重複を避けるため、assetEntriesに銀行口座データが含まれているかチェック
+    const hasBankData = assetEntries.some(
+      (entry) => entry && entry._id && entry._id.startsWith('bank_')
+    );
+
+    const result = [...assetChartData, ...debtChartData, ...(hasBankData ? [] : bankChartData)];
+
+    // デバッグ用ログ
+    console.log('Chart Data Debug:', {
+      assetEntries: assetEntries.length,
+      debtEntries: debtEntries.length,
+      mainAccount: mainAccount ? `${mainAccount.bankName} ${mainAccount.accountName}` : 'none',
+      hasBankData,
+      chartDataLength: result.length,
+      assetChartData: assetChartData.length,
+      bankChartData: bankChartData.length,
+    });
+
+    return result;
+  }, [assetEntries, debtEntries, mainAccount]);
 
   // viewDateRange を使って combinedData をフィルタ
   const filteredCombinedData = useMemo(() => {

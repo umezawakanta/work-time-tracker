@@ -150,7 +150,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
     const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || transaction.category === categoryFilter;
     const matchesDate = dateFilter === 'all' || isWithinDateRange(transaction.date, dateFilter);
-    const matchesAccount = accountFilter === 'all' || transaction.accountId === accountFilter;
+    const matchesAccount = accountFilter && transaction.accountId === accountFilter;
 
     return matchesSearch && matchesCategory && matchesDate && matchesAccount;
   });
@@ -369,10 +369,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
 
             <Select value={accountFilter} onValueChange={setAccountFilter}>
               <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="口座で絞り込み" />
+                <SelectValue placeholder="口座を選択" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">すべての口座</SelectItem>
                 {Array.isArray(bankAccounts) &&
                   bankAccounts.map((account) => (
                     <SelectItem key={account._id} value={account._id}>
@@ -390,8 +389,16 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
           </div>
 
           {/* 口座別の取引明細表示 */}
-          {Object.keys(transactionsByAccount).length === 0 ? (
-            <div className="text-center py-8 text-gray-500">取引明細がありません</div>
+          {!accountFilter ? (
+            <div className="text-center py-8 text-gray-500">
+              <Building2 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+              <p className="text-lg font-semibold mb-2">口座を選択してください</p>
+              <p className="text-gray-600">
+                上記のフィルターから口座を選択すると、取引明細が表示されます
+              </p>
+            </div>
+          ) : Object.keys(transactionsByAccount).length === 0 ? (
+            <div className="text-center py-8 text-gray-500">選択した口座に取引明細がありません</div>
           ) : (
             Object.entries(transactionsByAccount).map(([accountId, accountTransactions]) => {
               const account = Array.isArray(bankAccounts)
