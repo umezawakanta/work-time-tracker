@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
 import { addAssetEntry, updateAssetEntry } from '@/store/assetSlice';
@@ -166,6 +166,9 @@ export default function AssetLiabilityReportPage() {
   }, [user?.id, refetchBankAccounts]);
 
   // 取引明細から資産データを生成・更新（全口座対応）
+  // 無限ループを防ぐため、useRefで処理済みフラグを管理
+  const processedAccountsRef = useRef<Set<string>>(new Set());
+
   useEffect(() => {
     console.log('=== BANK ACCOUNTS EFFECT ===');
     console.log('Accounts:', accounts);
@@ -182,6 +185,14 @@ export default function AssetLiabilityReportPage() {
 
       // 銀行口座データから新しい資産エントリを作成（重複チェック付き）
       accounts.forEach((account) => {
+        const bankAssetId = `bank_${account._id}`;
+
+        // 既に処理済みのアカウントはスキップ
+        if (processedAccountsRef.current.has(bankAssetId)) {
+          console.log('Account already processed, skipping:', account.accountName);
+          return;
+        }
+
         console.log('Processing account:', {
           id: account._id,
           bankName: account.bankName,
@@ -191,7 +202,6 @@ export default function AssetLiabilityReportPage() {
 
         if (account.lastBalance !== undefined && account.lastBalance !== null) {
           const accountName = `${account.bankName} ${account.branchName ? `${account.branchName} ` : ''}${account.accountName}`;
-          const bankAssetId = `bank_${account._id}`;
 
           // 既存のエントリをチェック
           const existingEntry = bankAssetEntries.find((entry) => entry._id === bankAssetId);
@@ -215,8 +225,13 @@ export default function AssetLiabilityReportPage() {
               updatedAt: new Date(),
             };
             dispatch(addAssetEntry(bankAssetEntry));
+
+            // 処理済みフラグを設定
+            processedAccountsRef.current.add(bankAssetId);
           } else {
             console.log('Bank account entry already exists, skipping:', accountName);
+            // 既存でも処理済みフラグを設定
+            processedAccountsRef.current.add(bankAssetId);
           }
         } else {
           console.log('Account has no balance, skipping:', account.accountName);
