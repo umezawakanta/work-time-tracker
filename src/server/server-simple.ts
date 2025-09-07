@@ -4196,6 +4196,17 @@ app.post('/api/transactions/import', async (req: Request, res: Response) => {
 
     // CSVの並び順を保持（一番上が最新の明細）
     // インデックスを使って順序を保持し、後でソートに使用
+    // メイン口座を取得
+    const mainAccount = await financialService.getBankAccounts(userId);
+    const mainAccountId = mainAccount.find((acc) => acc.isMain)?._id || mainAccount[0]?._id;
+
+    if (!mainAccountId) {
+      return res.status(400).json({
+        success: false,
+        error: 'メイン口座が見つかりません。まず口座を登録してください。',
+      });
+    }
+
     const newTransactions = csvTransactions.map((tx, index) => {
       const id = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       return {
@@ -4206,7 +4217,7 @@ app.post('/api/transactions/import', async (req: Request, res: Response) => {
         category: tx.category,
         type: tx.type || (tx.amount >= 0 ? 'income' : 'expense'),
         balance: 0, // 残高は計算で求める
-        accountId: 'main_account',
+        accountId: mainAccountId, // 実際のメイン口座のIDを使用
         userId: userId,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -4291,6 +4302,9 @@ app.post('/api/bank-accounts/update-balances', async (req: Request, res: Respons
     // データベースから口座残高を更新
     const { FinancialDataService } = await import('../database/services/FinancialDataService');
     const financialService = FinancialDataService.getInstance();
+
+    // 既存の取引明細のaccountIdを修正
+    await financialService.fixTransactionAccountIds(userId);
 
     // 取引明細から口座残高を更新
     await financialService.updateAccountBalancesFromTransactions(userId);

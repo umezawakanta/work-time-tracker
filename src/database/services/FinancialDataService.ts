@@ -288,4 +288,26 @@ export class FinancialDataService {
 
     return latestTransaction ? latestTransaction.amount : null;
   }
+
+  // 既存の取引明細のaccountIdを修正（'main_account'を実際の口座IDに変更）
+  async fixTransactionAccountIds(userId: string): Promise<void> {
+    await this.ensureConnection();
+
+    // ユーザーのメイン口座を取得
+    const accounts = await BankAccount.find({ userId, isActive: true });
+    const mainAccount = accounts.find((acc) => acc.isMain) || accounts[0];
+
+    if (!mainAccount) {
+      console.warn('No bank account found for user:', userId);
+      return;
+    }
+
+    // 'main_account'というaccountIdを持つ取引明細を実際の口座IDに更新
+    const result = await Transaction.updateMany(
+      { userId, accountId: 'main_account' },
+      { accountId: mainAccount._id }
+    );
+
+    console.log(`Updated ${result.modifiedCount} transactions with correct account ID`);
+  }
 }
