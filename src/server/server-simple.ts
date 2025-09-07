@@ -5906,6 +5906,7 @@ const startServer = async () => {
   // startAutoSave(transactionStore, 'transactions', 5 * 60 * 1000); // データベース使用のため無効化
 
   // 取引明細インポートAPI（より具体的なルートを先に定義）
+  console.log('🔧 Registering POST /api/transactions/import route');
   app.post('/api/transactions/import', async (req: Request, res: Response) => {
     try {
       const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
