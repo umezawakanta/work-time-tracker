@@ -4245,6 +4245,33 @@ app.post('/api/transactions/import', async (req: Request, res: Response) => {
   }
 });
 
+// 取引明細API
+console.log('🔧 Registering GET /api/transactions route');
+app.get('/api/transactions', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+    const { startDate, endDate, category } = req.query;
+
+    // データベースから取引明細データを取得
+    const { FinancialDataService } = await import('../database/services/FinancialDataService');
+    const financialService = FinancialDataService.getInstance();
+
+    const start = startDate ? new Date(startDate as string) : undefined;
+    const end = endDate ? new Date(endDate as string) : undefined;
+    let transactions = await financialService.getTransactions(userId, undefined, start, end);
+
+    // カテゴリフィルタリング
+    if (category) {
+      transactions = transactions.filter((tx) => tx.category === category);
+    }
+
+    res.json({ success: true, transactions, total: transactions.length });
+  } catch (error) {
+    console.error('Error fetching transactions:', error);
+    res.status(500).json({ success: false, error: '取引明細の取得に失敗しました' });
+  }
+});
+
 console.log('\n🗺️  Registered Routes:');
 console.log('   GET  /api/health');
 console.log('   GET  /api/debug');
@@ -4292,6 +4319,7 @@ console.log('   POST /api/user/assessments/iq'); // 追加
 console.log('   POST /api/user/assessments/mbti'); // 追加
 console.log('   POST /api/user/learning/progress'); // 追加
 console.log('   POST /api/transactions/import'); // 追加
+console.log('   GET  /api/transactions'); // 追加
 
 // ========================================
 // Notification API Endpoints
@@ -5971,32 +5999,6 @@ const startServer = async () => {
   // startAutoSave(debtStore, 'debts', 5 * 60 * 1000); // データベース使用のため無効化
   // startAutoSave(bankAccountsStore, 'bank-accounts', 5 * 60 * 1000); // データベース使用のため無効化
   // startAutoSave(transactionStore, 'transactions', 5 * 60 * 1000); // データベース使用のため無効化
-
-  // 取引明細API
-  app.get('/api/transactions', async (req: Request, res: Response) => {
-    try {
-      const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
-      const { startDate, endDate, category } = req.query;
-
-      // データベースから取引明細データを取得
-      const { FinancialDataService } = await import('../database/services/FinancialDataService');
-      const financialService = FinancialDataService.getInstance();
-
-      const start = startDate ? new Date(startDate as string) : undefined;
-      const end = endDate ? new Date(endDate as string) : undefined;
-      let transactions = await financialService.getTransactions(userId, undefined, start, end);
-
-      // カテゴリフィルタリング
-      if (category) {
-        transactions = transactions.filter((tx) => tx.category === category);
-      }
-
-      res.json({ success: true, transactions, total: transactions.length });
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-      res.status(500).json({ success: false, error: '取引明細の取得に失敗しました' });
-    }
-  });
 
   app.post('/api/transactions/create', async (req: Request, res: Response) => {
     try {

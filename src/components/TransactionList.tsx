@@ -104,16 +104,42 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
   // カテゴリの一覧を取得
   const categories = Array.from(new Set(transactions.map((t) => t.category)));
 
-  // 収支の計算
-  const totalIncome = filteredTransactions
-    .filter((t) => t.amount > 0)
-    .reduce((sum, t) => sum + t.amount, 0);
+  // 収支の計算（残高の差分から計算）
+  const calculateIncomeExpense = () => {
+    if (filteredTransactions.length === 0) {
+      return { totalIncome: 0, totalExpense: 0, netAmount: 0 };
+    }
 
-  const totalExpense = filteredTransactions
-    .filter((t) => t.amount < 0)
-    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    // 日付順にソート
+    const sortedTransactions = [...filteredTransactions].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
 
-  const netAmount = totalIncome - totalExpense;
+    let totalIncome = 0;
+    let totalExpense = 0;
+    let previousBalance = 0;
+
+    for (let i = 0; i < sortedTransactions.length; i++) {
+      const currentBalance = sortedTransactions[i].amount;
+      const difference = currentBalance - previousBalance;
+
+      if (difference > 0) {
+        totalIncome += difference;
+      } else if (difference < 0) {
+        totalExpense += Math.abs(difference);
+      }
+
+      previousBalance = currentBalance;
+    }
+
+    return {
+      totalIncome,
+      totalExpense,
+      netAmount: totalIncome - totalExpense,
+    };
+  };
+
+  const { totalIncome, totalExpense, netAmount } = calculateIncomeExpense();
 
   // 取引明細の削除
   const handleDelete = async (transactionId: string) => {
@@ -304,13 +330,37 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
-                        <span
-                          className={`font-semibold ${
-                            transaction.amount > 0 ? 'text-green-600' : 'text-red-600'
-                          }`}
-                        >
-                          {transaction.amount > 0 ? '+' : ''}¥{transaction.amount.toLocaleString()}
-                        </span>
+                        {(() => {
+                          // 前回の残高からの差分を計算
+                          const sortedTransactions = [...filteredTransactions].sort(
+                            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+                          );
+                          const currentIndex = sortedTransactions.findIndex(
+                            (t) => t._id === transaction._id
+                          );
+                          const previousBalance =
+                            currentIndex > 0 ? sortedTransactions[currentIndex - 1].amount : 0;
+                          const difference = transaction.amount - previousBalance;
+
+                          return (
+                            <div className="text-right">
+                              <div className="text-sm text-gray-500">
+                                残高: ¥{transaction.amount.toLocaleString()}
+                              </div>
+                              <div
+                                className={`font-semibold ${
+                                  difference > 0
+                                    ? 'text-green-600'
+                                    : difference < 0
+                                      ? 'text-red-600'
+                                      : 'text-gray-600'
+                                }`}
+                              >
+                                {difference > 0 ? '+' : ''}¥{difference.toLocaleString()}
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex items-center justify-center gap-2">
