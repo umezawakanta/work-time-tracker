@@ -49,31 +49,33 @@ export const AssetList: React.FC<AssetListProps> = ({ assetEntries, onBalanceUpd
       <CardContent>
         {assetEntries.length > 0 ? (
           <div>
-            {assetEntries.map((entry) => (
-              <div key={entry._id} className="flex items-center justify-between py-2 border-b">
-                <div>
-                  <p className="font-semibold">{entry.account}</p>
-                  <p className="text-sm text-gray-500">{formatDate(entry.date)}</p>
-                  <p className="text-sm">価値: {entry.value.toLocaleString()}円</p>
+            {assetEntries
+              .filter((entry) => entry && entry._id && entry.account)
+              .map((entry) => (
+                <div key={entry._id} className="flex items-center justify-between py-2 border-b">
+                  <div>
+                    <p className="font-semibold">{entry.account}</p>
+                    <p className="text-sm text-gray-500">{formatDate(entry.date)}</p>
+                    <p className="text-sm">価値: {entry.value.toLocaleString()}円</p>
+                  </div>
+                  <div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onBalanceUpdate(entry._id || '', true)}
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteAsset(entry._id || '')}
+                    >
+                      <Trash2Icon className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onBalanceUpdate(entry._id || '', true)}
-                  >
-                    <PencilIcon className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDeleteAsset(entry._id || '')}
-                  >
-                    <Trash2Icon className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         ) : (
           <p>資産情報がありません。</p>

@@ -49,32 +49,34 @@ export const DebtList: React.FC<DebtListProps> = ({ debtEntries, onBalanceUpdate
       <CardContent>
         {debtEntries.length > 0 ? (
           <div>
-            {debtEntries.map((entry) => (
-              <div key={entry._id} className="flex items-center justify-between py-2 border-b">
-                <div>
-                  <p className="font-semibold">{entry.account}</p>
-                  <p className="text-sm text-gray-500">{formatDate(entry.date)}</p>
-                  <p className="text-sm">金額: {entry.value.toLocaleString()}円</p>
-                  <p className="text-sm">説明: {entry.description}</p>
+            {debtEntries
+              .filter((entry) => entry && entry._id && entry.account)
+              .map((entry) => (
+                <div key={entry._id} className="flex items-center justify-between py-2 border-b">
+                  <div>
+                    <p className="font-semibold">{entry.account}</p>
+                    <p className="text-sm text-gray-500">{formatDate(entry.date)}</p>
+                    <p className="text-sm">金額: {entry.value.toLocaleString()}円</p>
+                    <p className="text-sm">説明: {entry.description}</p>
+                  </div>
+                  <div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onBalanceUpdate(entry._id || '', false)}
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteDebt(entry._id || '')}
+                    >
+                      <Trash2Icon className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onBalanceUpdate(entry._id || '', false)}
-                  >
-                    <PencilIcon className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDeleteDebt(entry._id || '')}
-                  >
-                    <Trash2Icon className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         ) : (
           <p>負債情報がありません。</p>
