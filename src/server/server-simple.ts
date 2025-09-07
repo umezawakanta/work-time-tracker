@@ -5905,6 +5905,70 @@ const startServer = async () => {
   // startAutoSave(bankAccountsStore, 'bank-accounts', 5 * 60 * 1000); // データベース使用のため無効化
   // startAutoSave(transactionStore, 'transactions', 5 * 60 * 1000); // データベース使用のため無効化
 
+  // 取引明細インポートAPI（より具体的なルートを先に定義）
+  app.post('/api/transactions/import', async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
+      const { transactions: csvTransactions } = req.body;
+
+      if (!csvTransactions || !Array.isArray(csvTransactions)) {
+        return res.status(400).json({ success: false, message: 'Transactions array is required' });
+      }
+
+      // データベースから既存の取引を取得
+      const { FinancialDataService } = await import('../database/services/FinancialDataService');
+      const financialService = FinancialDataService.getInstance();
+      const existingTransactions = await financialService.getTransactions(userId);
+
+      const newTransactions = csvTransactions.map((tx) => {
+        const id = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        return {
+          _id: id,
+          date: tx.date,
+          description: tx.description,
+          amount: tx.amount,
+          category: tx.category,
+          accountId: 'main_account',
+          userId: userId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      });
+
+      // 重複を除去
+      const uniqueTransactions = newTransactions.filter(
+        (newTx) =>
+          !existingTransactions.some(
+            (existingTx) =>
+              existingTx.date === newTx.date &&
+              existingTx.amount === newTx.amount &&
+              existingTx.description === newTx.description
+          )
+      );
+
+      // データベースに新しい取引を追加
+      const createdTransactions: any[] = [];
+      for (const tx of uniqueTransactions) {
+        const createdTx = await financialService.createTransaction(tx as any);
+        createdTransactions.push(createdTx);
+      }
+
+      res.json({
+        success: true,
+        message: `${createdTransactions.length}件の取引明細をインポートしました`,
+        importedCount: createdTransactions.length,
+        errors: [],
+        transactions: createdTransactions,
+      });
+    } catch (error) {
+      console.error('Transaction import error:', error);
+      res.status(500).json({
+        success: false,
+        error: '取引明細のインポートに失敗しました',
+      });
+    }
+  });
+
   // 取引明細API
   app.get('/api/transactions', async (req: Request, res: Response) => {
     try {
@@ -5931,7 +5995,7 @@ const startServer = async () => {
     }
   });
 
-  app.post('/api/transactions', async (req: Request, res: Response) => {
+  app.post('/api/transactions/create', async (req: Request, res: Response) => {
     try {
       const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
       const transaction = req.body.transaction;
@@ -6019,69 +6083,6 @@ const startServer = async () => {
     // saveDataImmediately(transactionStore, 'transactions');
 
     res.json({ success: true, message: '取引明細を削除しました' });
-  });
-
-  app.post('/api/transactions/import', async (req: Request, res: Response) => {
-    try {
-      const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
-      const { transactions: csvTransactions } = req.body;
-
-      if (!csvTransactions || !Array.isArray(csvTransactions)) {
-        return res.status(400).json({ success: false, message: 'Transactions array is required' });
-      }
-
-      // データベースから既存の取引を取得
-      const { FinancialDataService } = await import('../database/services/FinancialDataService');
-      const financialService = FinancialDataService.getInstance();
-      const existingTransactions = await financialService.getTransactions(userId);
-
-      const newTransactions = csvTransactions.map((tx) => {
-        const id = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        return {
-          _id: id,
-          date: tx.date,
-          description: tx.description,
-          amount: tx.amount,
-          category: tx.category,
-          accountId: 'main_account',
-          userId: userId,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-      });
-
-      // 重複を除去
-      const uniqueTransactions = newTransactions.filter(
-        (newTx) =>
-          !existingTransactions.some(
-            (existingTx) =>
-              existingTx.date === newTx.date &&
-              existingTx.amount === newTx.amount &&
-              existingTx.description === newTx.description
-          )
-      );
-
-      // データベースに新しい取引を追加
-      const createdTransactions: any[] = [];
-      for (const tx of uniqueTransactions) {
-        const createdTx = await financialService.createTransaction(tx as any);
-        createdTransactions.push(createdTx);
-      }
-
-      res.json({
-        success: true,
-        message: `${createdTransactions.length}件の取引明細をインポートしました`,
-        importedCount: createdTransactions.length,
-        errors: [],
-        transactions: createdTransactions,
-      });
-    } catch (error) {
-      console.error('Transaction import error:', error);
-      res.status(500).json({
-        success: false,
-        error: '取引明細のインポートに失敗しました',
-      });
-    }
   });
 
   app.listen(PORT, () => {

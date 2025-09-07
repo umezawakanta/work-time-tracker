@@ -84,15 +84,18 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
     switch (range) {
       case 'today':
         return transactionDate.toDateString() === now.toDateString();
-      case 'week':
+      case 'week': {
         const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         return transactionDate >= weekAgo;
-      case 'month':
+      }
+      case 'month': {
         const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         return transactionDate >= monthAgo;
-      case 'year':
+      }
+      case 'year': {
         const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
         return transactionDate >= yearAgo;
+      }
       default:
         return true;
     }
