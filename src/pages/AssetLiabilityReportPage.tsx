@@ -167,41 +167,42 @@ export default function AssetLiabilityReportPage() {
   // 取引明細から資産データを生成・更新
   useEffect(() => {
     if (mainAccount && mainAccount.lastBalance) {
-      // 取引明細から取得した残高を資産データとして追加
-      const bankAssetEntry = {
-        _id: `bank_${mainAccount._id}`,
-        userId: user?.id || 'default-user',
-        date: new Date().toISOString().split('T')[0],
-        value: mainAccount.lastBalance,
-        description: `${mainAccount.bankName} ${mainAccount.accountName}`,
-        account: `${mainAccount.bankName} ${mainAccount.accountName}`, // チャート表示用に完全な口座名を使用
-        category: '現金・預金',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      // 既存の銀行口座資産エントリを更新または追加
+      // 既存の銀行口座資産エントリをチェック
       const existingIndex = assetEntries.findIndex(
-        (entry) => entry._id === `bank_${mainAccount._id}`
+        (entry) => entry && entry._id === `bank_${mainAccount._id}`
       );
 
       if (existingIndex >= 0) {
-        // 既存のエントリを更新
-        dispatch(
-          updateAssetEntry({
-            id: `bank_${mainAccount._id}`,
-            entry: {
-              value: mainAccount.lastBalance,
-              account: `${mainAccount.bankName} ${mainAccount.accountName}`,
-            },
-          })
-        );
+        // 既存のエントリを更新（値が変更されている場合のみ）
+        const existingEntry = assetEntries[existingIndex];
+        if (existingEntry.value !== mainAccount.lastBalance) {
+          dispatch(
+            updateAssetEntry({
+              id: `bank_${mainAccount._id}`,
+              entry: {
+                value: mainAccount.lastBalance,
+                account: `${mainAccount.bankName} ${mainAccount.accountName}`,
+              },
+            })
+          );
+        }
       } else {
         // 新しいエントリを追加
+        const bankAssetEntry = {
+          _id: `bank_${mainAccount._id}`,
+          userId: user?.id || 'default-user',
+          date: new Date().toISOString().split('T')[0],
+          value: mainAccount.lastBalance,
+          description: `${mainAccount.bankName} ${mainAccount.accountName}`,
+          account: `${mainAccount.bankName} ${mainAccount.accountName}`,
+          category: '現金・預金',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
         dispatch(addAssetEntry(bankAssetEntry));
       }
     }
-  }, [mainAccount, dispatch, user?.id]);
+  }, [mainAccount, dispatch, user?.id, assetEntries]);
 
   // 月次データの自動生成
   const generateMonthlySnapshots = async () => {
@@ -404,9 +405,14 @@ export default function AssetLiabilityReportPage() {
         type: 'debt' as const,
       }));
 
-    // 銀行口座データも追加（mainAccountから、assetEntriesに含まれていない場合のみ）
+    // 銀行口座データがassetEntriesに含まれているかチェック
+    const hasBankData = assetEntries.some(
+      (entry) => entry && entry._id && entry._id.startsWith('bank_')
+    );
+
+    // 銀行口座データがassetEntriesに含まれていない場合のみ追加
     const bankChartData =
-      mainAccount && mainAccount.lastBalance
+      !hasBankData && mainAccount && mainAccount.lastBalance
         ? [
             {
               date: new Date(),
@@ -417,12 +423,7 @@ export default function AssetLiabilityReportPage() {
           ]
         : [];
 
-    // 重複を避けるため、assetEntriesに銀行口座データが含まれているかチェック
-    const hasBankData = assetEntries.some(
-      (entry) => entry && entry._id && entry._id.startsWith('bank_')
-    );
-
-    const result = [...assetChartData, ...debtChartData, ...(hasBankData ? [] : bankChartData)];
+    const result = [...assetChartData, ...debtChartData, ...bankChartData];
 
     // デバッグ用ログ
     console.log('Chart Data Debug:', {
@@ -433,6 +434,9 @@ export default function AssetLiabilityReportPage() {
       chartDataLength: result.length,
       assetChartData: assetChartData.length,
       bankChartData: bankChartData.length,
+      assetEntriesWithBank: assetEntries.filter(
+        (entry) => entry && entry._id && entry._id.startsWith('bank_')
+      ).length,
     });
 
     return result;
