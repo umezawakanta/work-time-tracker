@@ -86,6 +86,11 @@ const taskInstructions: {
         url: 'https://www.paypay-card.jp/',
         description: 'PayPayカードの利用明細をダウンロード',
       },
+      {
+        label: 'auPayオンラインサービス',
+        url: 'https://aupay.wallet.auone.jp/',
+        description: 'auPayカードの利用明細をダウンロード',
+      },
     ],
   },
   '3': {

@@ -437,6 +437,19 @@ const BankAccountPage: React.FC = () => {
                         でカードの利用明細をダウンロードして登録
                       </li>
                       <li>
+                        <strong>auPayカード</strong>
+                        <br />
+                        <a
+                          href="https://aupay.wallet.auone.jp/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                          auPayオンラインサービス
+                        </a>
+                        でカードの利用明細をダウンロードして登録
+                      </li>
+                      <li>
                         <strong>その他の銀行</strong>
                         <br />
                         汎用CSV形式で対応（日付,内容,金額,カテゴリ,口座名）
