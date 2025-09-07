@@ -188,16 +188,12 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
     let totalIncome = 0;
     let totalExpense = 0;
 
-    // 残高の順序で計算（新しい明細から古い明細へ）
-    for (let i = 0; i < sortedTransactions.length - 1; i++) {
-      const currentBalance = sortedTransactions[i].amount;
-      const nextBalance = sortedTransactions[i + 1].amount;
-      const difference = currentBalance - nextBalance; // 現在の残高 - 次の残高
-
-      if (difference > 0) {
-        totalIncome += difference; // 残高が増加 = 収入
-      } else if (difference < 0) {
-        totalExpense += Math.abs(difference); // 残高が減少 = 支出
+    // 各取引の金額を直接計算
+    for (const transaction of sortedTransactions) {
+      if (transaction.amount > 0) {
+        totalIncome += transaction.amount; // 正の値 = 収入
+      } else if (transaction.amount < 0) {
+        totalExpense += Math.abs(transaction.amount); // 負の値 = 支出
       }
     }
 
@@ -478,46 +474,23 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right">
-                              {(() => {
-                                // 口座内での残高の差分を計算（CSVの並び順：上から下へ古くなる）
-                                const currentIndex = (
-                                  accountTransactions as Transaction[]
-                                ).findIndex((t) => t._id === transaction._id);
-
-                                let difference = 0;
-                                if (
-                                  currentIndex <
-                                  (accountTransactions as Transaction[]).length - 1
-                                ) {
-                                  // 次の明細（古い明細）との差分を計算
-                                  const nextBalance = (accountTransactions as Transaction[])[
-                                    currentIndex + 1
-                                  ].amount;
-                                  difference = transaction.amount - nextBalance;
-                                } else {
-                                  // 最後の明細（最も古い）の場合は0
-                                  difference = 0;
-                                }
-
-                                return (
-                                  <div className="text-right">
-                                    <div className="text-sm text-gray-500">
-                                      取引金額: ¥{transaction.amount.toLocaleString()}
-                                    </div>
-                                    <div
-                                      className={`font-semibold ${
-                                        difference > 0
-                                          ? 'text-green-600'
-                                          : difference < 0
-                                            ? 'text-red-600'
-                                            : 'text-gray-600'
-                                      }`}
-                                    >
-                                      {difference > 0 ? '+' : ''}¥{difference.toLocaleString()}
-                                    </div>
-                                  </div>
-                                );
-                              })()}
+                              <div className="text-right">
+                                <div className="text-sm text-gray-500">
+                                  取引金額: ¥{transaction.amount.toLocaleString()}
+                                </div>
+                                <div
+                                  className={`font-semibold ${
+                                    transaction.amount > 0
+                                      ? 'text-green-600'
+                                      : transaction.amount < 0
+                                        ? 'text-red-600'
+                                        : 'text-gray-600'
+                                  }`}
+                                >
+                                  {transaction.amount > 0 ? '+' : ''}¥
+                                  {transaction.amount.toLocaleString()}
+                                </div>
+                              </div>
                             </TableCell>
                             <TableCell className="text-center">
                               <div className="flex items-center justify-center gap-2">
