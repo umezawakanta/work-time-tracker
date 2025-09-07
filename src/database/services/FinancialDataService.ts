@@ -58,6 +58,12 @@ export class FinancialDataService {
     return !!result;
   }
 
+  async deleteAllAssets(userId: string): Promise<{ deletedCount: number }> {
+    await this.ensureConnection();
+    const result = await AssetRecord.deleteMany({ userId });
+    return { deletedCount: result.deletedCount || 0 };
+  }
+
   // 負債データの操作
   async getDebts(userId: string): Promise<IDebtRecord[]> {
     await this.ensureConnection();

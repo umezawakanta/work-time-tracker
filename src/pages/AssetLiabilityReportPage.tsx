@@ -166,81 +166,91 @@ export default function AssetLiabilityReportPage() {
   }, [user?.id, refetchBankAccounts]);
 
   // 取引明細から資産データを生成・更新（全口座対応）
-  // 無限ループを防ぐため、useRefで処理済みフラグを管理
-  const processedAccountsRef = useRef<Set<string>>(new Set());
+  // 緊急対応：無限ループを完全に停止するため無効化
+  // const processedAccountsRef = useRef<Set<string>>(new Set());
+  // const [isBankDataProcessed, setIsBankDataProcessed] = useState(false);
 
-  useEffect(() => {
-    console.log('=== BANK ACCOUNTS EFFECT ===');
-    console.log('Accounts:', accounts);
-    console.log('Accounts length:', accounts?.length);
-    console.log('Current asset entries:', assetEntries.length);
+  // useEffect(() => {
+  //   // 既に処理済みの場合はスキップ
+  //   if (isBankDataProcessed) {
+  //     console.log('Bank data already processed, skipping...');
+  //     return;
+  //   }
 
-    if (accounts && accounts.length > 0) {
-      // 既存の銀行口座資産エントリをチェック
-      const bankAssetEntries = assetEntries.filter(
-        (entry) => entry && entry._id && entry._id.startsWith('bank_')
-      );
+  //   console.log('=== BANK ACCOUNTS EFFECT ===');
+  //   console.log('Accounts:', accounts);
+  //   console.log('Accounts length:', accounts?.length);
+  //   console.log('Current asset entries:', assetEntries.length);
 
-      console.log(`Found ${bankAssetEntries.length} existing bank asset entries`);
+  //   if (accounts && accounts.length > 0) {
+  //     // 既存の銀行口座資産エントリをチェック
+  //     const bankAssetEntries = assetEntries.filter(
+  //       (entry) => entry && entry._id && entry._id.startsWith('bank_')
+  //     );
 
-      // 銀行口座データから新しい資産エントリを作成（重複チェック付き）
-      accounts.forEach((account) => {
-        const bankAssetId = `bank_${account._id}`;
+  //     console.log(`Found ${bankAssetEntries.length} existing bank asset entries`);
 
-        // 既に処理済みのアカウントはスキップ
-        if (processedAccountsRef.current.has(bankAssetId)) {
-          console.log('Account already processed, skipping:', account.accountName);
-          return;
-        }
+  //     // 銀行口座データから新しい資産エントリを作成（重複チェック付き）
+  //     accounts.forEach((account) => {
+  //       const bankAssetId = `bank_${account._id}`;
 
-        console.log('Processing account:', {
-          id: account._id,
-          bankName: account.bankName,
-          accountName: account.accountName,
-          lastBalance: account.lastBalance,
-        });
+  //       // 既に処理済みのアカウントはスキップ
+  //       if (processedAccountsRef.current.has(bankAssetId)) {
+  //         console.log('Account already processed, skipping:', account.accountName);
+  //         return;
+  //       }
 
-        if (account.lastBalance !== undefined && account.lastBalance !== null) {
-          const accountName = `${account.bankName} ${account.branchName ? `${account.branchName} ` : ''}${account.accountName}`;
+  //       console.log('Processing account:', {
+  //         id: account._id,
+  //         bankName: account.bankName,
+  //         accountName: account.accountName,
+  //         lastBalance: account.lastBalance,
+  //       });
 
-          // 既存のエントリをチェック
-          const existingEntry = bankAssetEntries.find((entry) => entry._id === bankAssetId);
+  //       if (account.lastBalance !== undefined && account.lastBalance !== null) {
+  //         const accountName = `${account.bankName} ${account.branchName ? `${account.branchName} ` : ''}${account.accountName}`;
 
-          if (!existingEntry) {
-            console.log('Adding new bank account entry:', {
-              id: bankAssetId,
-              account: accountName,
-              value: account.lastBalance,
-            });
+  //         // 既存のエントリをチェック
+  //         const existingEntry = bankAssetEntries.find((entry) => entry._id === bankAssetId);
 
-            const bankAssetEntry = {
-              _id: bankAssetId,
-              userId: user?.id || 'default-user',
-              date: new Date().toISOString().split('T')[0],
-              value: account.lastBalance,
-              description: accountName,
-              account: accountName,
-              category: '現金・預金',
-              createdAt: new Date(),
-              updatedAt: new Date(),
-            };
-            dispatch(addAssetEntry(bankAssetEntry));
+  //         if (!existingEntry) {
+  //           console.log('Adding new bank account entry:', {
+  //             id: bankAssetId,
+  //             account: accountName,
+  //             value: account.lastBalance,
+  //           });
 
-            // 処理済みフラグを設定
-            processedAccountsRef.current.add(bankAssetId);
-          } else {
-            console.log('Bank account entry already exists, skipping:', accountName);
-            // 既存でも処理済みフラグを設定
-            processedAccountsRef.current.add(bankAssetId);
-          }
-        } else {
-          console.log('Account has no balance, skipping:', account.accountName);
-        }
-      });
-    } else {
-      console.log('No accounts found or accounts not loaded yet');
-    }
-  }, [accounts, dispatch, user?.id]);
+  //           const bankAssetEntry = {
+  //             _id: bankAssetId,
+  //             userId: user?.id || 'default-user',
+  //             date: new Date().toISOString().split('T')[0],
+  //             value: account.lastBalance,
+  //             description: accountName,
+  //             account: accountName,
+  //             category: '現金・預金',
+  //             createdAt: new Date(),
+  //             updatedAt: new Date(),
+  //           };
+  //           dispatch(addAssetEntry(bankAssetEntry));
+
+  //           // 処理済みフラグを設定
+  //           processedAccountsRef.current.add(bankAssetId);
+  //         } else {
+  //           console.log('Bank account entry already exists, skipping:', accountName);
+  //           // 既存でも処理済みフラグを設定
+  //           processedAccountsRef.current.add(bankAssetId);
+  //         }
+  //       } else {
+  //         console.log('Account has no balance, skipping:', account.accountName);
+  //       }
+  //     });
+
+  //     // 処理完了フラグを設定
+  //     setIsBankDataProcessed(true);
+  //   } else {
+  //     console.log('No accounts found or accounts not loaded yet');
+  //   }
+  // }, [accounts, dispatch, user?.id, isBankDataProcessed]);
 
   // デバッグ用：assetEntriesの内容をログ出力
   useEffect(() => {

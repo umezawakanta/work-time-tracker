@@ -4428,7 +4428,7 @@ app.get('/api/debug/assets', async (req, res) => {
   }
 });
 
-// 全資産データをクリーンアップする機能
+// 全資産データをクリーンアップする機能（高速版）
 app.post('/api/cleanup-all-assets', async (req, res) => {
   const { userId } = req.body;
 
@@ -4439,22 +4439,30 @@ app.post('/api/cleanup-all-assets', async (req, res) => {
   try {
     const financialService = FinancialDataService.getInstance();
 
-    console.log('=== FULL CLEANUP START ===');
+    console.log('=== FULL CLEANUP START (FAST VERSION) ===');
     console.log('User ID:', userId);
 
     // 1. 現在の全資産データを取得
     const assets = await financialService.getAssets(userId);
     console.log(`Found ${assets.length} total assets`);
 
-    // 2. 全資産データを削除
+    // 2. 高速削除：MongoDBのdeleteManyを使用
     let deletedCount = 0;
-    for (const asset of assets) {
-      try {
-        console.log(`Deleting asset: ${asset._id} - ${asset.account} (${asset.value}円)`);
-        await financialService.deleteAsset(asset._id);
-        deletedCount++;
-      } catch (error) {
-        console.error(`Failed to delete asset ${asset._id}:`, error);
+    try {
+      // ユーザーの全資産を一括削除
+      const deleteResult = await financialService.deleteAllAssets(userId);
+      deletedCount = deleteResult.deletedCount || assets.length;
+      console.log(`Bulk deleted ${deletedCount} assets`);
+    } catch (error) {
+      console.error('Bulk delete failed, falling back to individual deletion:', error);
+      // フォールバック：個別削除
+      for (const asset of assets) {
+        try {
+          await financialService.deleteAsset(asset._id);
+          deletedCount++;
+        } catch (deleteError) {
+          console.error(`Failed to delete asset ${asset._id}:`, deleteError);
+        }
       }
     }
 
