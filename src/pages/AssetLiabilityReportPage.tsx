@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
-import { addAssetEntry } from '@/store/assetSlice';
+import { addAssetEntry, updateAssetEntry } from '@/store/assetSlice';
 import { addDebtEntry } from '@/store/debtSlice';
 import { BalanceUpdateModal } from '@/components/BalanceUpdateModel';
 import { AssetLiabilityTrendChart } from '@/components/chart/AssetLiabilityTrendChart';
@@ -163,6 +163,44 @@ export default function AssetLiabilityReportPage() {
       return () => clearInterval(interval);
     }
   }, [user?.id, refetchBankAccounts]);
+
+  // 取引明細から資産データを生成・更新
+  useEffect(() => {
+    if (mainAccount && mainAccount.lastBalance) {
+      // 取引明細から取得した残高を資産データとして追加
+      const bankAssetEntry = {
+        _id: `bank_${mainAccount._id}`,
+        userId: user?.id || 'default-user',
+        date: new Date().toISOString().split('T')[0],
+        value: mainAccount.lastBalance,
+        description: `${mainAccount.bankName} ${mainAccount.accountName}`,
+        account: mainAccount.bankName,
+        category: '現金・預金',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      // 既存の銀行口座資産エントリを更新または追加
+      const existingIndex = assetEntries.findIndex(
+        (entry) => entry._id === `bank_${mainAccount._id}`
+      );
+
+      if (existingIndex >= 0) {
+        // 既存のエントリを更新
+        dispatch(
+          updateAssetEntry({
+            id: `bank_${mainAccount._id}`,
+            entry: {
+              value: mainAccount.lastBalance,
+            },
+          })
+        );
+      } else {
+        // 新しいエントリを追加
+        dispatch(addAssetEntry(bankAssetEntry));
+      }
+    }
+  }, [mainAccount, dispatch, user?.id]);
 
   // 月次データの自動生成
   const generateMonthlySnapshots = async () => {
