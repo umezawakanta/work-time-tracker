@@ -39,10 +39,12 @@ interface TransactionListProps {
 
 export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [bankAccounts, setBankAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
+  const [accountFilter, setAccountFilter] = useState('all');
   const [showAddForm, setShowAddForm] = useState(false);
 
   // 取引明細データを取得
@@ -63,8 +65,24 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
     }
   };
 
+  // 銀行口座データを取得
+  const fetchBankAccounts = async () => {
+    try {
+      const response = await fetch(`/api/bank-accounts?userId=${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setBankAccounts(data);
+      } else {
+        console.error('Failed to fetch bank accounts');
+      }
+    } catch (error) {
+      console.error('Failed to fetch bank accounts:', error);
+    }
+  };
+
   useEffect(() => {
     fetchTransactions();
+    fetchBankAccounts();
   }, [userId]);
 
   // 日付範囲の判定
@@ -120,38 +138,59 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
     const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || transaction.category === categoryFilter;
     const matchesDate = dateFilter === 'all' || isWithinDateRange(transaction.date, dateFilter);
+    const matchesAccount = accountFilter === 'all' || transaction.accountId === accountFilter;
 
-    return matchesSearch && matchesCategory && matchesDate;
+    return matchesSearch && matchesCategory && matchesDate && matchesAccount;
   });
 
   // カテゴリの一覧を取得
   const categories = Array.from(new Set(transactions.map((t) => t.category)));
 
-  // 収支の計算（残高の差分から計算）
+  // 収支の計算（残高の差分から計算、口座別に集計）
   const calculateIncomeExpense = () => {
     if (filteredTransactions.length === 0) {
       return { totalIncome: 0, totalExpense: 0, netAmount: 0 };
     }
 
-    // 既に重複除去・ソート済みのデータを使用
-    // CSVの並び順：一番上が最新（残高が高い）、下に行くほど古い（残高が低い）
-    const sortedTransactions = filteredTransactions;
+    // 口座別に取引明細をグループ化
+    const transactionsByAccount = filteredTransactions.reduce(
+      (acc, transaction) => {
+        const accountId = transaction.accountId || 'unknown';
+        if (!acc[accountId]) {
+          acc[accountId] = [];
+        }
+        acc[accountId].push(transaction);
+        return acc;
+      },
+      {} as Record<string, Transaction[]>
+    );
 
     let totalIncome = 0;
     let totalExpense = 0;
 
-    // 残高の順序で計算（新しい明細から古い明細へ）
-    for (let i = 0; i < sortedTransactions.length - 1; i++) {
-      const currentBalance = sortedTransactions[i].amount;
-      const nextBalance = sortedTransactions[i + 1].amount;
-      const difference = currentBalance - nextBalance; // 現在の残高 - 次の残高
+    // 各口座ごとに収支を計算
+    Object.values(transactionsByAccount).forEach((accountTransactions) => {
+      // 口座内でCSVの並び順でソート（csvOrderが小さいほど新しい）
+      const sortedTransactions = accountTransactions.sort((a, b) => {
+        if (a.csvOrder !== undefined && b.csvOrder !== undefined) {
+          return a.csvOrder - b.csvOrder;
+        }
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      });
 
-      if (difference > 0) {
-        totalIncome += difference; // 残高が増加 = 収入
-      } else if (difference < 0) {
-        totalExpense += Math.abs(difference); // 残高が減少 = 支出
+      // 残高の順序で計算（新しい明細から古い明細へ）
+      for (let i = 0; i < sortedTransactions.length - 1; i++) {
+        const currentBalance = sortedTransactions[i].balance || sortedTransactions[i].amount;
+        const nextBalance = sortedTransactions[i + 1].balance || sortedTransactions[i + 1].amount;
+        const difference = currentBalance - nextBalance; // 現在の残高 - 次の残高
+
+        if (difference > 0) {
+          totalIncome += difference; // 残高が増加 = 収入
+        } else if (difference < 0) {
+          totalExpense += Math.abs(difference); // 残高が減少 = 支出
+        }
       }
-    }
+    });
 
     return {
       totalIncome,
@@ -301,6 +340,20 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
               </SelectContent>
             </Select>
 
+            <Select value={accountFilter} onValueChange={setAccountFilter}>
+              <SelectTrigger className="w-full md:w-48">
+                <SelectValue placeholder="口座で絞り込み" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">すべての口座</SelectItem>
+                {bankAccounts.map((account) => (
+                  <SelectItem key={account._id} value={account._id}>
+                    {account.bankName} {account.accountName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <Button onClick={() => setShowAddForm(true)} className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               取引を追加
@@ -346,7 +399,14 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
                         <div className="flex items-center gap-1">
                           <Building2 className="h-3 w-3 text-gray-400" />
                           <span className="text-sm text-gray-600">
-                            {transaction.accountId || 'メイン口座'}
+                            {(() => {
+                              const account = bankAccounts.find(
+                                (acc) => acc._id === transaction.accountId
+                              );
+                              return account
+                                ? `${account.bankName} ${account.accountName}`
+                                : '不明な口座';
+                            })()}
                           </span>
                         </div>
                       </TableCell>

@@ -4260,11 +4260,12 @@ app.post('/api/transactions/import', async (req: Request, res: Response) => {
       };
     });
 
-    // 重複を除去
+    // 重複を除去（同じ口座内での重複のみチェック）
     const uniqueTransactions = newTransactions.filter(
       (newTx) =>
         !existingTransactions.some(
           (existingTx) =>
+            existingTx.accountId === newTx.accountId &&
             existingTx.date === newTx.date &&
             existingTx.amount === newTx.amount &&
             existingTx.description === newTx.description
