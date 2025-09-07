@@ -47,7 +47,7 @@ export const DebtList: React.FC<DebtListProps> = ({ debtEntries, onBalanceUpdate
         <CardTitle>負債情報</CardTitle>
       </CardHeader>
       <CardContent>
-        {debtEntries.length > 0 ? (
+        {debtEntries && debtEntries.length > 0 ? (
           <div>
             {debtEntries
               .filter((entry) => entry && entry._id && entry.account && entry.value !== undefined)

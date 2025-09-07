@@ -19,6 +19,9 @@ export const AssetList: React.FC<AssetListProps> = ({ assetEntries, onBalanceUpd
   const dispatch = useDispatch<AppDispatch>();
   const { locale } = useLocale();
 
+  // Debug logging
+  console.log('AssetList - assetEntries:', assetEntries);
+
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return '未設定';
     return formatDateAndTime(dateString, locale, { dateStyle: 'short' });
@@ -47,7 +50,7 @@ export const AssetList: React.FC<AssetListProps> = ({ assetEntries, onBalanceUpd
         <CardTitle>資産情報</CardTitle>
       </CardHeader>
       <CardContent>
-        {assetEntries.length > 0 ? (
+        {assetEntries && assetEntries.length > 0 ? (
           <div>
             {assetEntries
               .filter((entry) => entry && entry._id && entry.account && entry.value !== undefined)
