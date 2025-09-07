@@ -64,14 +64,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const newAsset = await financialService.createAsset({
-        _id: `asset_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         userId: userId as string,
         account,
         value: parseFloat(value),
         date: new Date(date),
         description,
         category: category || 'cash',
-      });
+      } as any);
 
       // レスポンス用にフォーマット
       const formattedAsset = {

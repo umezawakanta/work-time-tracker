@@ -1430,7 +1430,7 @@ app.get('/api/asset-liability-report', (req, res) => {
   const userIdStr = String(userId);
 
   // 実際のデータを取得（初期化は行わない）
-  let assets = assetStore.get(userIdStr) || [];
+  const assets = assetStore.get(userIdStr) || [];
   const debts = debtStore.get(userIdStr) || [];
 
   // 銀行口座データの自動変換を無効化

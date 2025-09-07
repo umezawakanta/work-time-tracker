@@ -480,7 +480,7 @@ export default function AssetLiabilityReportPage() {
       assetEntries: assetEntries.length,
       debtEntries: debtEntries.length,
       mainAccount: mainAccount ? `${mainAccount.bankName} ${mainAccount.accountName}` : 'none',
-      hasBankData,
+      hasBankData: false,
       chartDataLength: result.length,
       assetChartData: assetChartData.length,
       bankChartData: bankChartData.length,
