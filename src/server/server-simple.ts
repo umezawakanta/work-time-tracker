@@ -4220,14 +4220,24 @@ app.post('/api/transactions/import', async (req: Request, res: Response) => {
 
     // CSVの並び順を保持（一番上が最新の明細）
     // インデックスを使って順序を保持し、後でソートに使用
-    // メイン口座を取得
-    const mainAccount = await financialService.getBankAccounts(userId);
-    const mainAccountId = mainAccount.find((acc) => acc.isMain)?._id || mainAccount[0]?._id;
+    // 口座IDを取得（CSVから送信されたaccountIdを使用）
+    const accountId = csvTransactions[0]?.accountId;
 
-    if (!mainAccountId) {
+    if (!accountId) {
       return res.status(400).json({
         success: false,
-        error: 'メイン口座が見つかりません。まず口座を登録してください。',
+        error: '口座IDが指定されていません。',
+      });
+    }
+
+    // 指定された口座が存在するか確認
+    const bankAccounts = await financialService.getBankAccounts(userId);
+    const selectedAccount = bankAccounts.find((acc) => acc._id === accountId);
+
+    if (!selectedAccount) {
+      return res.status(400).json({
+        success: false,
+        error: '指定された口座が見つかりません。',
       });
     }
 
@@ -4240,8 +4250,8 @@ app.post('/api/transactions/import', async (req: Request, res: Response) => {
         amount: tx.amount,
         category: tx.category,
         type: tx.type || (tx.amount >= 0 ? 'income' : 'expense'),
-        balance: 0, // 残高は計算で求める
-        accountId: mainAccountId, // 実際のメイン口座のIDを使用
+        balance: tx.balance || tx.amount, // CSVから送信された残高を使用、なければamountを使用
+        accountId: accountId, // CSVから送信された口座IDを使用
         userId: userId,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

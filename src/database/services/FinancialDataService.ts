@@ -270,7 +270,7 @@ export class FinancialDataService {
       if (latestTransaction) {
         // 最新の残高で口座情報を更新
         await BankAccount.findByIdAndUpdate(account._id, {
-          lastBalance: latestTransaction.amount,
+          lastBalance: latestTransaction.balance || latestTransaction.amount,
           lastUpdated: new Date().toISOString(),
         });
       }

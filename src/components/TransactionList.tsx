@@ -370,7 +370,8 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
                           return (
                             <div className="text-right">
                               <div className="text-sm text-gray-500">
-                                残高: ¥{transaction.amount.toLocaleString()}
+                                残高: ¥
+                                {(transaction.balance || transaction.amount).toLocaleString()}
                               </div>
                               <div
                                 className={`font-semibold ${
