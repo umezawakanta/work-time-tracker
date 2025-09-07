@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface BankAccount {
   _id: string;
@@ -21,7 +21,7 @@ export const useBankAccounts = (userId: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAccounts = async () => {
+  const fetchAccounts = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -46,13 +46,13 @@ export const useBankAccounts = (userId: string) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     if (userId) {
       fetchAccounts();
     }
-  }, [userId]);
+  }, [userId, fetchAccounts]);
 
   const mainAccount = accounts.find((account) => account.isMain && account.isActive);
 

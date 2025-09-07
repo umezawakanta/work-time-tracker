@@ -109,8 +109,10 @@ export const useDaily10Tasks = () => {
       }
     };
 
-    initialize();
-  }, [fetchTasks, fetchProgress, fetchStats, currentDate]);
+    if (user?.id) {
+      initialize();
+    }
+  }, [user?.id, currentDate]); // 依存配列を簡素化
 
   return {
     tasks,

@@ -114,6 +114,7 @@ interface TaskItemProps {
   onUpdate: (taskId: string, completed: boolean, notes?: string, subtaskId?: string) => void;
   mainAccount?: any;
   bankLoading?: boolean;
+  renderStepWithLinks: (step: string) => React.ReactNode;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -122,6 +123,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onUpdate,
   mainAccount,
   bankLoading,
+  renderStepWithLinks,
 }) => {
   const [notes, setNotes] = useState(progress?.notes || '');
   const [showNotes, setShowNotes] = useState(false);
@@ -1077,6 +1079,7 @@ const Daily10TasksPage: React.FC = () => {
                   onUpdate={updateProgress}
                   mainAccount={mainAccount}
                   bankLoading={bankLoading}
+                  renderStepWithLinks={renderStepWithLinks}
                 />
               ))
             ) : (
