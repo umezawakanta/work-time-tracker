@@ -112,12 +112,21 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
         (h) => h.includes('残高') || h.includes('残額') || h === '残高'
       );
 
+      // じぶん銀行の特徴的なフィールド名をチェック
+      const hasJibunSpecificFields =
+        headers.some((h) => h === 'お取引内容') &&
+        headers.some((h) => h === '出金') &&
+        headers.some((h) => h === '入金') &&
+        headers.some((h) => h === '残高');
+
       const isJibunFormat =
-        hasDateField &&
-        hasTransactionField &&
-        (hasDepositField || hasWithdrawalField || hasBalanceField);
+        (hasDateField &&
+          hasTransactionField &&
+          (hasDepositField || hasWithdrawalField || hasBalanceField)) ||
+        hasJibunSpecificFields;
 
       console.log('じぶん銀行フォーマットか:', isJibunFormat);
+      console.log('じぶん銀行特有フィールド検出:', hasJibunSpecificFields);
       console.log('検出結果:', {
         hasDateField,
         hasTransactionField,
@@ -150,12 +159,24 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
       // じぶん銀行のCSVの場合、最新の残高のみを取得
       if (isJibunFormat) {
         const sortedData = parsedData.sort((a, b) => {
-          const dateA = new Date(
-            a[Object.keys(a).find((key) => key.includes('年月日') || key.includes('日付')) || '']
-          );
-          const dateB = new Date(
-            b[Object.keys(b).find((key) => key.includes('年月日') || key.includes('日付')) || '']
-          );
+          const dateFieldA =
+            Object.keys(a).find((key) => key.includes('年月日') || key.includes('日付')) || '';
+          const dateFieldB =
+            Object.keys(b).find((key) => key.includes('年月日') || key.includes('日付')) || '';
+
+          // じぶん銀行の日付形式「2025年08月30日」を解析
+          const parseJibunDate = (dateStr: string) => {
+            if (!dateStr) return new Date(0);
+            // 「2025年08月30日」形式を「2025-08-30」に変換
+            const normalizedDate = dateStr
+              .replace(/年/g, '-')
+              .replace(/月/g, '-')
+              .replace(/日/g, '');
+            return new Date(normalizedDate);
+          };
+
+          const dateA = parseJibunDate(a[dateFieldA]);
+          const dateB = parseJibunDate(b[dateFieldB]);
           return dateB.getTime() - dateA.getTime();
         });
 
@@ -438,7 +459,19 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
         } else {
           // じぶん銀行のCSVから口座情報を抽出
           const latestBalance = Number(balanceValue);
-          const transactionDate = dateValue;
+
+          // じぶん銀行の日付形式をISO形式に変換
+          const parseJibunDate = (dateStr: string) => {
+            if (!dateStr) return new Date().toISOString();
+            // 「2025年08月30日」形式を「2025-08-30」に変換
+            const normalizedDate = dateStr
+              .replace(/年/g, '-')
+              .replace(/月/g, '-')
+              .replace(/日/g, '');
+            return new Date(normalizedDate).toISOString();
+          };
+
+          const transactionDate = parseJibunDate(dateValue);
 
           valid.push({
             bankName: 'じぶん銀行',
