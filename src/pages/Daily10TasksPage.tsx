@@ -553,9 +553,87 @@ const TaskItem: React.FC<TaskItemProps> = ({
 const Daily10TasksPage: React.FC = () => {
   const { tasks, progress, stats, isLoading, error, updateProgress } = useDaily10Tasks();
   const { user } = useAuth();
-  const { mainAccount, isLoading: bankLoading } = useBankAccounts(user?.id || '');
+  const { accounts, mainAccount, isLoading: bankLoading } = useBankAccounts(user?.id || '');
   const [activeTab, setActiveTab] = useState('tasks');
   const navigate = useNavigate();
+
+  // 銀行口座情報に基づいてタスクを動的に生成
+  const dynamicTasks = useMemo(() => {
+    if (!tasks.length) return tasks;
+
+    // 銀行口座がない場合は元のタスクを返す
+    if (!accounts.length) return tasks;
+
+    return tasks.map((task) => {
+      // タスク1のサブタスク1-1を動的に更新
+      if (task.id === '1' && task.subtasks) {
+        const updatedSubtasks = task.subtasks.map((subtask) => {
+          if (subtask.id === '1-1' && mainAccount) {
+            return {
+              ...subtask,
+              name: `メイン銀行口座「${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}」の入出金履歴を確認する`,
+              steps: [
+                '銀行のオンラインバンキングにログインする',
+                '過去3ヶ月の入出金履歴を表示する',
+                '給与振込、ボーナス等の収入を確認する',
+                '固定費（家賃、光熱費等）の支出を確認する',
+                `→ 銀行口座管理ページでCSVインポート: ${mainAccount.bankName}${mainAccount.branchName ? ` ${mainAccount.branchName}` : ''}${mainAccount.accountName}の入出金履歴をダウンロードして登録する`,
+              ],
+            };
+          }
+          // タスク1のサブタスク1-2を動的に更新（サブ口座がある場合）
+          if (subtask.id === '1-2' && accounts.length > 1) {
+            const subAccounts = accounts.filter((acc) => !acc.isMain);
+            if (subAccounts.length > 0) {
+              const subAccount = subAccounts[0]; // 最初のサブ口座を使用
+              return {
+                ...subtask,
+                name: `サブ銀行口座「${subAccount.bankName} ${subAccount.branchName ? `${subAccount.branchName} ` : ''}${subAccount.accountName}」の入出金履歴を確認する`,
+                steps: [
+                  'サブ口座のオンラインバンキングにログインする',
+                  '過去3ヶ月の入出金履歴を表示する',
+                  '臨時収入や臨時支出を確認する',
+                  `→ 銀行口座管理ページでCSVインポート: ${subAccount.bankName}${subAccount.branchName ? ` ${subAccount.branchName}` : ''}${subAccount.accountName}の入出金履歴をダウンロードして登録する`,
+                ],
+              };
+            }
+          }
+          return subtask;
+        });
+
+        return {
+          ...task,
+          subtasks: updatedSubtasks,
+        };
+      }
+
+      // タスク2のサブタスク2-1を動的に更新
+      if (task.id === '2' && task.subtasks) {
+        const updatedSubtasks = task.subtasks.map((subtask) => {
+          if (subtask.id === '2-1' && mainAccount) {
+            return {
+              ...subtask,
+              name: `銀行預金残高を確認する（${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}）`,
+              steps: [
+                '銀行口座管理ページで残高を確認する',
+                `メイン口座「${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}」の残高を記録する`,
+                'サブ口座の残高を記録する',
+                '→ 資産負債レポートページで総資産を確認する',
+              ],
+            };
+          }
+          return subtask;
+        });
+
+        return {
+          ...task,
+          subtasks: updatedSubtasks,
+        };
+      }
+
+      return task;
+    });
+  }, [tasks, accounts, mainAccount]);
 
   // 手順内のリンクを処理する関数
   const renderStepWithLinks = (step: string) => {
@@ -627,7 +705,7 @@ const Daily10TasksPage: React.FC = () => {
     }
 
     const completed = progress.tasks.filter((task) => task.completed).length;
-    const total = tasks.length;
+    const total = dynamicTasks.length;
     const percentage = Math.round((completed / total) * 100);
     const streak = stats?.currentStreak || 0;
     const todayCompleted = progress.tasks.filter(
@@ -644,20 +722,20 @@ const Daily10TasksPage: React.FC = () => {
       streak,
       todayCompleted,
     };
-  }, [progress, tasks, stats]);
+  }, [progress, dynamicTasks, stats]);
 
   // タスク状況に応じたメッセージを生成
   const getMotivationalMessage = () => {
-    if (!progress?.tasks || tasks.length === 0) {
+    if (!progress?.tasks || dynamicTasks.length === 0) {
       return '今日も一日頑張りましょう！まずは最初のタスクから始めてみてください。';
     }
 
     const completedTasks = progress.tasks.filter((task) => task.completed).length;
-    const totalTasks = tasks.length;
+    const totalTasks = dynamicTasks.length;
     const completionRate = (completedTasks / totalTasks) * 100;
 
     // 未完了のタスクを特定
-    const incompleteTasks = tasks.filter((task) => {
+    const incompleteTasks = dynamicTasks.filter((task) => {
       const taskProgress = progress.tasks.find((t) => t.taskId === task.id);
       return !taskProgress?.completed;
     });
@@ -1097,8 +1175,8 @@ const Daily10TasksPage: React.FC = () => {
 
         <TabsContent value="tasks" className="mt-6">
           <div className="space-y-4">
-            {tasks && tasks.length > 0 ? (
-              tasks.map((task) => (
+            {dynamicTasks && dynamicTasks.length > 0 ? (
+              dynamicTasks.map((task) => (
                 <div key={task.id}>
                   <TaskItem
                     task={task}

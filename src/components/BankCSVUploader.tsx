@@ -578,6 +578,8 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
             accept=".csv"
             onChange={handleFileSelect}
             className="hidden"
+            aria-label="CSVファイルを選択"
+            title="CSVファイルを選択"
           />
 
           <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
