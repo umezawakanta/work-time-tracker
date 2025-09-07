@@ -317,12 +317,17 @@ const BankAccountPage: React.FC = () => {
                       <li>
                         <strong>三井住友銀行</strong>
                         <br />
-                        取引明細CSVを直接アップロード
+                        取引明細CSVを直接アップロード（年月日、残高形式）
+                      </li>
+                      <li>
+                        <strong>横浜銀行</strong>
+                        <br />
+                        取引明細CSVを直接アップロード（取引日形式）
                       </li>
                       <li>
                         <strong>その他の銀行</strong>
                         <br />
-                        汎用CSV形式で対応
+                        汎用CSV形式で対応（日付,内容,金額,カテゴリ,口座名）
                       </li>
                       <li>
                         <strong>口座選択機能</strong>

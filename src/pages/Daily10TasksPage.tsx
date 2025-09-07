@@ -729,24 +729,26 @@ const Daily10TasksPage: React.FC = () => {
               <h4 className="font-semibold mb-3 text-purple-900">🌅 朝のルーティン（30分）</h4>
               <ol className="list-decimal list-inside space-y-2">
                 <li>
-                  <strong>起床後すぐ</strong>
+                  <strong>起床後すぐ（5分）</strong>
                   <br />
                   このページを開いて今日のタスクを確認
                 </li>
                 <li>
-                  <strong>資産確認タスク</strong>
-                  <br />
-                  「直近3ヶ月の収入と支出をすべて把握する」を実行
-                </li>
-                <li>
-                  <strong>銀行口座更新</strong>
+                  <strong>銀行口座確認（10分）</strong>
                   <br />
                   銀行口座管理ページで残高を最新に更新
+                  <br />→ 三井住友銀行・横浜銀行のCSVインポート
                 </li>
                 <li>
-                  <strong>計画確認</strong>
+                  <strong>取引明細確認（10分）</strong>
                   <br />
-                  「現在から3ヶ月後までの予定をすべて把握する」を実行
+                  前日の取引明細を確認して収支を把握
+                  <br />→ カテゴリ別・期間別で支出を分析
+                </li>
+                <li>
+                  <strong>資産確認タスク（5分）</strong>
+                  <br />
+                  「直近3ヶ月の収入と支出をすべて把握する」を実行
                 </li>
               </ol>
             </div>
@@ -754,22 +756,22 @@ const Daily10TasksPage: React.FC = () => {
               <h4 className="font-semibold mb-3 text-purple-900">🌆 夕方のルーティン（20分）</h4>
               <ol className="list-decimal list-inside space-y-2">
                 <li>
-                  <strong>家事タスク</strong>
+                  <strong>家事タスク（10分）</strong>
                   <br />
                   洗い物、自炊、風呂、洗濯などの家事を完了
                 </li>
                 <li>
-                  <strong>整理整頓</strong>
+                  <strong>整理整頓（5分）</strong>
                   <br />
                   新聞を捨てる、チラシを捨てる、冷蔵庫の中身を確認
                 </li>
                 <li>
-                  <strong>清掃作業</strong>
+                  <strong>清掃作業（3分）</strong>
                   <br />
                   床掃除、押入れの整理を実行
                 </li>
                 <li>
-                  <strong>進捗確認</strong>
+                  <strong>進捗確認（2分）</strong>
                   <br />
                   完了したタスクのチェックボックスをクリック
                 </li>
@@ -779,22 +781,22 @@ const Daily10TasksPage: React.FC = () => {
               <h4 className="font-semibold mb-3 text-purple-900">🌙 夜のルーティン（10分）</h4>
               <ol className="list-decimal list-inside space-y-2">
                 <li>
-                  <strong>個人活動</strong>
+                  <strong>個人活動（5分）</strong>
                   <br />
                   ギターの練習、読書、このサイトの開発
                 </li>
                 <li>
-                  <strong>最終確認</strong>
+                  <strong>最終確認（2分）</strong>
                   <br />
                   未完了のタスクがないか確認
                 </li>
                 <li>
-                  <strong>明日の準備</strong>
+                  <strong>明日の準備（2分）</strong>
                   <br />
                   明日取り組むタスクを決める
                 </li>
                 <li>
-                  <strong>振り返り</strong>
+                  <strong>振り返り（1分）</strong>
                   <br />
                   今日の成果を確認して満足感を得る
                 </li>
