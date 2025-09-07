@@ -779,7 +779,7 @@ export const featuresRegistry: Feature[] = [
     path: '/asset-liability-report',
     category: 'サブスクリプション・請求',
     description:
-      '資産と負債の詳細レポート・財務指標・トレンド分析・操作手順ガイド完備・データ永続化対応',
+      '資産と負債の詳細レポート・財務指標・トレンド分析・取引明細データ統合・操作手順ガイド完備・データ永続化対応',
     status: 'complete',
     requiresRealAPI: true,
     priority: 'P0',
@@ -791,7 +791,19 @@ export const featuresRegistry: Feature[] = [
     path: '/daily-10-tasks',
     category: '生産性',
     description:
-      '毎日実行すべき20のタスクを管理・追跡・進捗可視化・詳細操作ガイド完備・データ永続化対応',
+      '毎日実行すべき20のタスクを管理・追跡・進捗可視化・取引明細確認タスク追加・詳細操作ガイド完備・データ永続化対応',
+    status: 'complete',
+    requiresRealAPI: true,
+    priority: 'P0',
+    targetRelease: '2025-01-25',
+  },
+  {
+    id: 'transaction-management',
+    name: '💰 取引明細管理',
+    path: '/bank-accounts',
+    category: '生産性',
+    description:
+      '日々の取引明細の一覧表示・収支分析・CSVインポート・カテゴリ別集計・期間別フィルタ・操作手順ガイド完備・データ永続化対応',
     status: 'complete',
     requiresRealAPI: true,
     priority: 'P0',
@@ -836,7 +848,7 @@ export const featuresRegistry: Feature[] = [
     path: '/bank-accounts',
     category: '生産性',
     description:
-      '複数銀行口座の登録・管理・設定・CSVインポート機能・操作手順ガイド完備・データ永続化対応・メイン口座以外も登録可能',
+      '複数銀行口座の登録・管理・設定・CSVインポート機能・取引明細一覧・収支分析・操作手順ガイド完備・データ永続化対応・メイン口座以外も登録可能',
     status: 'complete',
     requiresRealAPI: true,
     priority: 'P0',

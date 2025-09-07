@@ -248,6 +248,18 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     </ol>
                   </div>
                 )}
+                {task.id === '2.5' && (
+                  <div>
+                    <p className="font-medium mb-1">📊 日々の取引明細を確認・記録する</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>銀行口座管理ページの「取引明細一覧」タブを開く</li>
+                      <li>前日の取引明細を確認して収支を把握</li>
+                      <li>CSVインポートで銀行の取引明細を一括取り込み</li>
+                      <li>カテゴリ別・期間別で支出を分析</li>
+                      <li>収入・支出のバランスを確認</li>
+                    </ol>
+                  </div>
+                )}
                 {task.id === '3' && (
                   <div>
                     <p className="font-medium mb-1">📅 現在から3ヶ月後までの予定をすべて把握する</p>

@@ -1,0 +1,338 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  TrendingUp,
+  TrendingDown,
+  Calendar,
+  Filter,
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  DollarSign,
+} from 'lucide-react';
+import { Transaction } from '@/types/transaction';
+import { toast } from 'sonner';
+
+interface TransactionListProps {
+  userId: string;
+}
+
+export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  // 取引明細データを取得
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch(`/api/transactions?userId=${userId}`);
+      const result = await response.json();
+
+      if (result.success) {
+        setTransactions(result.transactions || []);
+      } else {
+        console.error('Failed to fetch transactions:', result.message);
+      }
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [userId]);
+
+  // フィルタリングされた取引明細
+  const filteredTransactions = transactions.filter((transaction) => {
+    const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === 'all' || transaction.category === categoryFilter;
+    const matchesDate = dateFilter === 'all' || isWithinDateRange(transaction.date, dateFilter);
+
+    return matchesSearch && matchesCategory && matchesDate;
+  });
+
+  // 日付範囲の判定
+  const isWithinDateRange = (date: string, range: string): boolean => {
+    const transactionDate = new Date(date);
+    const now = new Date();
+
+    switch (range) {
+      case 'today':
+        return transactionDate.toDateString() === now.toDateString();
+      case 'week':
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return transactionDate >= weekAgo;
+      case 'month':
+        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        return transactionDate >= monthAgo;
+      case 'year':
+        const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+        return transactionDate >= yearAgo;
+      default:
+        return true;
+    }
+  };
+
+  // カテゴリの一覧を取得
+  const categories = Array.from(new Set(transactions.map((t) => t.category)));
+
+  // 収支の計算
+  const totalIncome = filteredTransactions
+    .filter((t) => t.amount > 0)
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const totalExpense = filteredTransactions
+    .filter((t) => t.amount < 0)
+    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+  const netAmount = totalIncome - totalExpense;
+
+  // 取引明細の削除
+  const handleDelete = async (transactionId: string) => {
+    if (!confirm('この取引明細を削除しますか？')) return;
+
+    try {
+      const response = await fetch('/api/transactions', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          transactionId,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success('取引明細を削除しました');
+        fetchTransactions();
+      } else {
+        toast.error(result.message || '削除に失敗しました');
+      }
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      toast.error('削除中にエラーが発生しました');
+    }
+  };
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="p-8 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-500">取引明細を読み込み中...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* 統計サマリー */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-green-50 border-green-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-green-600">収入</p>
+                <p className="text-2xl font-bold text-green-900">¥{totalIncome.toLocaleString()}</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-red-50 border-red-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-red-600">支出</p>
+                <p className="text-2xl font-bold text-red-900">¥{totalExpense.toLocaleString()}</p>
+              </div>
+              <TrendingDown className="h-8 w-8 text-red-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card
+          className={`${netAmount >= 0 ? 'bg-blue-50 border-blue-200' : 'bg-orange-50 border-orange-200'}`}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">純収支</p>
+                <p
+                  className={`text-2xl font-bold ${netAmount >= 0 ? 'text-blue-900' : 'text-orange-900'}`}
+                >
+                  ¥{netAmount.toLocaleString()}
+                </p>
+              </div>
+              <DollarSign
+                className={`h-8 w-8 ${netAmount >= 0 ? 'text-blue-600' : 'text-orange-600'}`}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* フィルターと検索 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            取引明細一覧
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="取引内容で検索..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-full md:w-48">
+                <SelectValue placeholder="カテゴリで絞り込み" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">すべてのカテゴリ</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={dateFilter} onValueChange={setDateFilter}>
+              <SelectTrigger className="w-full md:w-48">
+                <SelectValue placeholder="期間で絞り込み" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">すべての期間</SelectItem>
+                <SelectItem value="today">今日</SelectItem>
+                <SelectItem value="week">過去1週間</SelectItem>
+                <SelectItem value="month">過去1ヶ月</SelectItem>
+                <SelectItem value="year">過去1年</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Button onClick={() => setShowAddForm(true)} className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              取引を追加
+            </Button>
+          </div>
+
+          {/* 取引明細テーブル */}
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>日付</TableHead>
+                  <TableHead>取引内容</TableHead>
+                  <TableHead>カテゴリ</TableHead>
+                  <TableHead className="text-right">金額</TableHead>
+                  <TableHead className="text-center">操作</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredTransactions.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                      取引明細がありません
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredTransactions.map((transaction) => (
+                    <TableRow key={transaction._id}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                          {new Date(transaction.date).toLocaleDateString('ja-JP')}
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-medium">{transaction.description}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs">
+                          {transaction.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span
+                          className={`font-semibold ${
+                            transaction.amount > 0 ? 'text-green-600' : 'text-red-600'
+                          }`}
+                        >
+                          {transaction.amount > 0 ? '+' : ''}¥{transaction.amount.toLocaleString()}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              /* TODO: 編集機能 */
+                            }}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(transaction._id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* ページネーション情報 */}
+          <div className="mt-4 text-sm text-gray-500 text-center">
+            {filteredTransactions.length}件中 {filteredTransactions.length}件を表示
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};

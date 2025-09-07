@@ -1408,6 +1408,43 @@ app.get('/api/asset-liability-report', (req, res) => {
     console.error('銀行口座データの統合でエラー:', error);
   }
 
+  // 取引明細データを取得して収支情報を追加
+  let transactionData = null;
+  try {
+    const transactions = transactionStore.get(userIdStr) || [];
+    if (transactions.length > 0) {
+      // 直近30日間の取引明細を分析
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const recentTransactions = transactions.filter(
+        (tx: any) => new Date(tx.date) >= thirtyDaysAgo
+      );
+
+      const totalIncome = recentTransactions
+        .filter((tx: any) => tx.amount > 0)
+        .reduce((sum: number, tx: any) => sum + tx.amount, 0);
+
+      const totalExpense = recentTransactions
+        .filter((tx: any) => tx.amount < 0)
+        .reduce((sum: number, tx: any) => sum + Math.abs(tx.amount), 0);
+
+      transactionData = {
+        recentIncome: totalIncome,
+        recentExpense: totalExpense,
+        netCashFlow: totalIncome - totalExpense,
+        transactionCount: recentTransactions.length,
+        period: '30日間',
+      };
+
+      console.log(
+        `取引明細から収支データを統合: 収入 ${totalIncome.toLocaleString()}円, 支出 ${totalExpense.toLocaleString()}円`
+      );
+    }
+  } catch (error) {
+    console.error('取引明細データの統合でエラー:', error);
+  }
+
   // 財務指標を計算
   const totalAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
   const totalDebts = debts.reduce((sum, debt) => sum + debt.value, 0);
@@ -1447,6 +1484,7 @@ app.get('/api/asset-liability-report', (req, res) => {
     metrics,
     trends,
     categories,
+    transactionData, // 取引明細データを追加
   };
 
   if (action === 'summary') {
@@ -5498,6 +5536,7 @@ type BankAccount = {
 
 // データストア（ファイルから読み込み）
 const bankAccountsStore = loadData<BankAccount>('bank-accounts');
+const transactionStore = loadData<any>('transactions');
 
 // 銀行口座管理API
 app.get('/api/bank-accounts', (req: Request, res: Response) => {
@@ -5746,6 +5785,164 @@ const startServer = async () => {
   startAutoSave(assetStore, 'assets', 30000); // 30秒間隔
   startAutoSave(debtStore, 'debts', 30000); // 30秒間隔
   startAutoSave(bankAccountsStore, 'bank-accounts', 30000); // 30秒間隔
+  startAutoSave(transactionStore, 'transactions', 30000); // 30秒間隔
+
+  // 取引明細API
+  app.get('/api/transactions', (req: Request, res: Response) => {
+    const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+    const { startDate, endDate, category } = req.query;
+
+    let transactions = transactionStore.get(userId) || [];
+
+    // 日付フィルタリング
+    if (startDate) {
+      transactions = transactions.filter((tx) => tx.date >= startDate);
+    }
+    if (endDate) {
+      transactions = transactions.filter((tx) => tx.date <= endDate);
+    }
+
+    // カテゴリフィルタリング
+    if (category) {
+      transactions = transactions.filter((tx) => tx.category === category);
+    }
+
+    // 日付順でソート（新しい順）
+    transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    res.json({ success: true, transactions, total: transactions.length });
+  });
+
+  app.post('/api/transactions', (req: Request, res: Response) => {
+    const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
+    const transaction = req.body.transaction;
+
+    if (!transaction) {
+      return res.status(400).json({ success: false, message: 'Transaction data is required' });
+    }
+
+    const id = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const newTransaction = {
+      _id: id,
+      date: transaction.date || new Date().toISOString().split('T')[0],
+      description: transaction.description || '',
+      amount: transaction.amount || 0,
+      category: transaction.category || 'その他',
+      accountId: transaction.accountId || 'main_account',
+      userId: userId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const existingTransactions = transactionStore.get(userId) || [];
+    existingTransactions.push(newTransaction);
+    transactionStore.set(userId, existingTransactions);
+    saveDataImmediately(transactionStore, 'transactions');
+
+    res
+      .status(201)
+      .json({ success: true, message: '取引明細を追加しました', transaction: newTransaction });
+  });
+
+  app.put('/api/transactions', (req: Request, res: Response) => {
+    const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
+    const { transactionId, updates } = req.body;
+
+    if (!transactionId) {
+      return res.status(400).json({ success: false, message: 'Transaction ID is required' });
+    }
+
+    const transactions = transactionStore.get(userId) || [];
+    const transactionIndex = transactions.findIndex((tx) => tx._id === transactionId);
+
+    if (transactionIndex === -1) {
+      return res.status(404).json({ success: false, message: 'Transaction not found' });
+    }
+
+    transactions[transactionIndex] = {
+      ...transactions[transactionIndex],
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+
+    transactionStore.set(userId, transactions);
+    saveDataImmediately(transactionStore, 'transactions');
+
+    res.json({
+      success: true,
+      message: '取引明細を更新しました',
+      transaction: transactions[transactionIndex],
+    });
+  });
+
+  app.delete('/api/transactions', (req: Request, res: Response) => {
+    const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
+    const { transactionId } = req.body;
+
+    if (!transactionId) {
+      return res.status(400).json({ success: false, message: 'Transaction ID is required' });
+    }
+
+    const transactions = transactionStore.get(userId) || [];
+    const filteredTransactions = transactions.filter((tx) => tx._id !== transactionId);
+
+    if (transactions.length === filteredTransactions.length) {
+      return res.status(404).json({ success: false, message: 'Transaction not found' });
+    }
+
+    transactionStore.set(userId, filteredTransactions);
+    saveDataImmediately(transactionStore, 'transactions');
+
+    res.json({ success: true, message: '取引明細を削除しました' });
+  });
+
+  app.post('/api/transactions/import', (req: Request, res: Response) => {
+    const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
+    const { transactions: csvTransactions } = req.body;
+
+    if (!csvTransactions || !Array.isArray(csvTransactions)) {
+      return res.status(400).json({ success: false, message: 'Transactions array is required' });
+    }
+
+    const existingTransactions = transactionStore.get(userId) || [];
+
+    const newTransactions = csvTransactions.map((tx) => {
+      const id = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      return {
+        _id: id,
+        date: tx.date,
+        description: tx.description,
+        amount: tx.amount,
+        category: tx.category,
+        accountId: 'main_account',
+        userId: userId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    });
+
+    const allTransactions = [...existingTransactions, ...newTransactions];
+
+    // 重複を除去
+    const uniqueTransactions = allTransactions.filter((tx, index, arr) => {
+      return (
+        arr.findIndex(
+          (t) => t.date === tx.date && t.amount === tx.amount && t.description === tx.description
+        ) === index
+      );
+    });
+
+    transactionStore.set(userId, uniqueTransactions);
+    saveDataImmediately(transactionStore, 'transactions');
+
+    res.json({
+      success: true,
+      message: `${newTransactions.length}件の取引明細をインポートしました`,
+      importedCount: newTransactions.length,
+      errors: [],
+      transactions: newTransactions,
+    });
+  });
 
   app.listen(PORT, () => {
     console.log(`\n✅ Enhanced server running on port ${PORT}`);
@@ -5753,6 +5950,7 @@ const startServer = async () => {
     console.log(`📍 Todos: http://localhost:${PORT}/api/todos`);
     console.log(`📚 Books: http://localhost:${PORT}/api/books`);
     console.log(`🤖 AI API: http://localhost:${PORT}/api/ai/anthropic`);
+    console.log(`💰 Transactions: http://localhost:${PORT}/api/transactions`);
     console.log(`   API Key configured: ${ANTHROPIC_API_KEY ? 'Yes ✅' : 'No ❌'}`);
     console.log(`   Database connected: ${dbConnected ? 'Yes ✅' : 'No ❌ (degraded mode)'}`);
     console.log('🔍 Debug mode enabled - detailed logging active\n');

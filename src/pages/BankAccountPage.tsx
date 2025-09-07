@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import BankAccountManager from '@/components/BankAccountManager';
 import { BankCSVUploader } from '@/components/BankCSVUploader';
 import { TransactionCSVUploader } from '@/components/TransactionCSVUploader';
+import { TransactionList } from '@/components/TransactionList';
 import BankAccountForm from '@/components/BankAccountForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -85,7 +86,7 @@ const BankAccountPage: React.FC = () => {
 
         {/* タブナビゲーション */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="manage" className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />
               口座管理
@@ -97,6 +98,10 @@ const BankAccountPage: React.FC = () => {
             <TabsTrigger value="transactions" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
               取引明細CSVインポート
+            </TabsTrigger>
+            <TabsTrigger value="list" className="flex items-center gap-2">
+              <List className="h-4 w-4" />
+              取引明細一覧
             </TabsTrigger>
           </TabsList>
 
@@ -374,11 +379,114 @@ const BankAccountPage: React.FC = () => {
               userId={user.id}
               onUploadComplete={(result) => {
                 if (result.success) {
-                  // 成功時の処理
-                  console.log('取引明細のインポートが完了しました:', result);
+                  // 成功時は取引明細一覧タブに切り替え
+                  setActiveTab('list');
                 }
               }}
             />
+          </TabsContent>
+
+          <TabsContent value="list" className="space-y-6">
+            {/* 取引明細一覧ガイド */}
+            <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-indigo-800">
+                  <List className="h-5 w-5" />
+                  取引明細一覧・分析
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm">
+                  <div>
+                    <h4 className="font-semibold text-indigo-900 mb-3">📊 収支分析機能</h4>
+                    <ol className="list-decimal list-inside space-y-2 text-indigo-700">
+                      <li>
+                        <strong>収入・支出の集計</strong>
+                        <br />
+                        期間別・カテゴリ別の収支を表示
+                      </li>
+                      <li>
+                        <strong>純収支の計算</strong>
+                        <br />
+                        収入から支出を引いた純収支を表示
+                      </li>
+                      <li>
+                        <strong>カテゴリ別分析</strong>
+                        <br />
+                        食費、交通費などカテゴリごとの支出
+                      </li>
+                      <li>
+                        <strong>期間別フィルタ</strong>
+                        <br />
+                        今日、1週間、1ヶ月、1年で絞り込み
+                      </li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-indigo-900 mb-3">🔍 検索・フィルタ機能</h4>
+                    <ol className="list-decimal list-inside space-y-2 text-indigo-700">
+                      <li>
+                        <strong>取引内容検索</strong>
+                        <br />
+                        キーワードで取引を検索
+                      </li>
+                      <li>
+                        <strong>カテゴリフィルタ</strong>
+                        <br />
+                        特定のカテゴリのみ表示
+                      </li>
+                      <li>
+                        <strong>期間フィルタ</strong>
+                        <br />
+                        指定した期間の取引のみ表示
+                      </li>
+                      <li>
+                        <strong>リアルタイム更新</strong>
+                        <br />
+                        CSVインポート後すぐに反映
+                      </li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-indigo-900 mb-3">💡 毎日の使い方</h4>
+                    <ol className="list-decimal list-inside space-y-2 text-indigo-700">
+                      <li>
+                        <strong>朝の確認</strong>
+                        <br />
+                        前日の取引を確認・記録
+                      </li>
+                      <li>
+                        <strong>支出の記録</strong>
+                        <br />
+                        その日の支出をリアルタイムで記録
+                      </li>
+                      <li>
+                        <strong>週次振り返り</strong>
+                        <br />
+                        週末に支出パターンを確認
+                      </li>
+                      <li>
+                        <strong>月次分析</strong>
+                        <br />
+                        月末に予算と実績を比較
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <h5 className="font-semibold text-yellow-800 mb-2">💡 活用のコツ</h5>
+                  <ul className="text-yellow-700 text-sm space-y-1">
+                    <li>• 毎日取引を確認して家計の流れを把握しましょう</li>
+                    <li>• カテゴリ別の支出を見て無駄遣いを発見できます</li>
+                    <li>• 月次で収支を振り返って家計改善につなげましょう</li>
+                    <li>• CSVインポートで銀行データを一括取り込み可能です</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 取引明細一覧コンポーネント */}
+            <TransactionList userId={user.id} />
           </TabsContent>
         </Tabs>
 
