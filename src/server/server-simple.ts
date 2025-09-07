@@ -304,6 +304,7 @@ app.post('/api/debt', async (req, res) => {
     const financialService = FinancialDataService.getInstance();
 
     const rec = await financialService.createDebt({
+      _id: id,
       userId,
       date: new Date(date),
       value: Number(value),
@@ -1218,6 +1219,7 @@ app.post('/api/asset', async (req, res) => {
     const financialService = FinancialDataService.getInstance();
 
     const assetEntry = await financialService.createAsset({
+      _id: id,
       userId,
       date: new Date(date),
       value: Number(value),
@@ -5943,6 +5945,7 @@ const startServer = async () => {
       const financialService = FinancialDataService.getInstance();
 
       const newTransaction = await financialService.createTransaction({
+        _id: id,
         userId,
         accountId: transaction.accountId || 'main_account',
         date: new Date(transaction.date || new Date().toISOString().split('T')[0]),
