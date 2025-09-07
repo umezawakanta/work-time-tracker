@@ -556,7 +556,8 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
           let category = 'その他';
           const desc = description.toLowerCase();
           if (desc.includes('返済') || desc.includes('利息')) category = '借金返済';
-          else if (desc.includes('利用') || desc.includes('ショッピング')) category = 'ショッピング';
+          else if (desc.includes('利用') || desc.includes('ショッピング'))
+            category = 'ショッピング';
           else if (desc.includes('手数料')) category = '手数料';
 
           transactions.push({
@@ -566,7 +567,10 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
             category: category,
             accountName: 'アコムカードローン',
           });
-          console.log(`Acom Card Loan CSV - Added transaction:`, transactions[transactions.length - 1]);
+          console.log(
+            `Acom Card Loan CSV - Added transaction:`,
+            transactions[transactions.length - 1]
+          );
         } else {
           console.log(`Acom Card Loan CSV - Skipped line ${i}: date=${date}, amount=${amount}`);
         }
@@ -678,7 +682,10 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
             category: category,
             accountName: 'アコムショッピング',
           });
-          console.log(`Acom Shopping CSV - Added transaction:`, transactions[transactions.length - 1]);
+          console.log(
+            `Acom Shopping CSV - Added transaction:`,
+            transactions[transactions.length - 1]
+          );
         } else {
           console.log(`Acom Shopping CSV - Skipped line ${i}: date=${date}, amount=${amount}`);
         }
@@ -688,6 +695,172 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     }
 
     console.log('Acom Shopping CSV - Total transactions found:', transactions.length);
+    return transactions;
+  };
+
+  // PayPayカードの取引明細CSVを解析
+  const parsePayPayCardTransactionCSV = (csvText: string): CSVTransactionData[] => {
+    const lines = csvText.split('\n').filter((line) => line.trim());
+    console.log('PayPay Card CSV - Total lines:', lines.length);
+
+    // ヘッダー行を検出
+    let headerIndex = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].toLowerCase();
+      if (
+        line.includes('年月日') ||
+        line.includes('日付') ||
+        line.includes('date') ||
+        line.includes('paypay')
+      ) {
+        headerIndex = i;
+        break;
+      }
+    }
+
+    const delimiter = detectDelimiter(csvText);
+    const headers = lines[headerIndex].split(delimiter).map((h) => h.trim());
+    console.log('PayPay Card Headers detected:', headers);
+
+    const transactions: CSVTransactionData[] = [];
+
+    for (let i = headerIndex + 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      const values = line.split(delimiter).map((v) => v.trim());
+      console.log(`PayPay Card CSV - Line ${i}:`, values);
+
+      if (values.length < headers.length) {
+        console.log(
+          `PayPay Card CSV - Line ${i} has insufficient columns:`,
+          values.length,
+          'expected:',
+          headers.length
+        );
+        continue;
+      }
+
+      try {
+        // 日付の解析
+        let date = '';
+        let amount = 0;
+        let description = '';
+
+        // 日付フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (
+            header.includes('年月日') ||
+            header.includes('日付') ||
+            header.includes('date') ||
+            header.includes('利用日')
+          ) {
+            date = values[j];
+            break;
+          }
+        }
+
+        // 金額フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (
+            header.includes('金額') ||
+            header.includes('利用額') ||
+            header.includes('amount') ||
+            header.includes('支払額')
+          ) {
+            const amountStr = values[j].replace(/[^\d.-]/g, '');
+            amount = parseFloat(amountStr) || 0;
+            break;
+          }
+        }
+
+        // 取引内容フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (
+            header.includes('内容') ||
+            header.includes('摘要') ||
+            header.includes('description') ||
+            header.includes('利用先') ||
+            header.includes('店舗名')
+          ) {
+            description = values[j];
+            break;
+          }
+        }
+
+        console.log(
+          `PayPay Card CSV - Parsed: date=${date}, description=${description}, amount=${amount}`
+        );
+
+        if (date && amount !== 0) {
+          // 日付の形式を統一
+          const dateObj = new Date(date);
+          const formattedDate = dateObj.toISOString().split('T')[0];
+
+          // カテゴリの自動判定
+          let category = 'その他';
+          const desc = description.toLowerCase();
+          if (
+            desc.includes('コンビニ') ||
+            desc.includes('スーパー') ||
+            desc.includes('外食') ||
+            desc.includes('レストラン')
+          )
+            category = '食費';
+          else if (
+            desc.includes('電車') ||
+            desc.includes('バス') ||
+            desc.includes('タクシー') ||
+            desc.includes('ガソリン')
+          )
+            category = '交通費';
+          else if (
+            desc.includes('ショッピング') ||
+            desc.includes('買い物') ||
+            desc.includes('デパート')
+          )
+            category = 'ショッピング';
+          else if (
+            desc.includes('光熱費') ||
+            desc.includes('電気') ||
+            desc.includes('ガス') ||
+            desc.includes('水道')
+          )
+            category = '光熱費';
+          else if (
+            desc.includes('通信費') ||
+            desc.includes('携帯') ||
+            desc.includes('インターネット')
+          )
+            category = '通信費';
+          else if (desc.includes('医療費') || desc.includes('病院') || desc.includes('薬局'))
+            category = '医療費';
+          else if (desc.includes('娯楽') || desc.includes('映画') || desc.includes('ゲーム'))
+            category = '娯楽費';
+
+          transactions.push({
+            date: formattedDate,
+            description: description || 'PayPayカード利用',
+            amount: amount,
+            category: category,
+            accountName: 'PayPayカード',
+          });
+          console.log(
+            `PayPay Card CSV - Added transaction:`,
+            transactions[transactions.length - 1]
+          );
+        } else {
+          console.log(`PayPay Card CSV - Skipped line ${i}: date=${date}, amount=${amount}`);
+        }
+      } catch (error) {
+        console.error('Error parsing line:', line, error);
+      }
+    }
+
+    console.log('PayPay Card CSV - Total transactions found:', transactions.length);
     return transactions;
   };
 
@@ -1321,6 +1494,8 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     const isMUFJSecuritiesFormat = csvText.includes('三菱UFJ') || csvText.includes('証券');
     const isAcomCardLoanFormat = csvText.includes('アコム') && csvText.includes('カードローン');
     const isAcomShoppingFormat = csvText.includes('アコム') && csvText.includes('ショッピング');
+    const isPayPayCardFormat =
+      csvText.includes('PayPay') || csvText.includes('paypay') || csvText.includes('PAYPAY');
 
     if (isSMBCFormat && !isSMBCLFormat) {
       console.log('Detected SMBC format');
@@ -1343,6 +1518,9 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     } else if (isAcomShoppingFormat) {
       console.log('Detected Acom Shopping format');
       return parseAcomShoppingTransactionCSV(csvText);
+    } else if (isPayPayCardFormat) {
+      console.log('Detected PayPay Card format');
+      return parsePayPayCardTransactionCSV(csvText);
     } else {
       console.log('Detected generic format');
       return parseGenericCSV(csvText);
@@ -1679,6 +1857,13 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
               <p className="font-semibold mb-2">対応形式:</p>
               <ul className="space-y-1">
                 <li>• 三井住友銀行の取引明細CSV</li>
+                <li>• 横浜銀行の取引明細CSV</li>
+                <li>• じぶん銀行の取引明細CSV</li>
+                <li>• 三井住友銀行CL口座の取引明細CSV</li>
+                <li>• 三菱UFJ証券の取引明細CSV</li>
+                <li>• アコムカードローンの取引明細CSV</li>
+                <li>• アコムショッピングの取引明細CSV</li>
+                <li>• PayPayカードの取引明細CSV</li>
                 <li>• 汎用CSV形式（日付,取引内容,金額,カテゴリ,口座名）</li>
                 <li>• 文字エンコーディング: Shift_JIS, UTF-8, EUC-JP</li>
               </ul>

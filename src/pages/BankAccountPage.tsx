@@ -387,9 +387,9 @@ const BankAccountPage: React.FC = () => {
                       <li>
                         <strong>三菱UFJ証券</strong>
                         <br />
-                        <a 
-                          href="https://www.mufg.jp/" 
-                          target="_blank" 
+                        <a
+                          href="https://www.mufg.jp/"
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:text-blue-800 underline"
                         >
@@ -400,9 +400,9 @@ const BankAccountPage: React.FC = () => {
                       <li>
                         <strong>アコムカードローン</strong>
                         <br />
-                        <a 
-                          href="https://www.acom.co.jp/" 
-                          target="_blank" 
+                        <a
+                          href="https://www.acom.co.jp/"
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:text-blue-800 underline"
                         >
@@ -413,15 +413,28 @@ const BankAccountPage: React.FC = () => {
                       <li>
                         <strong>アコムショッピング</strong>
                         <br />
-                        <a 
-                          href="https://www.acom.co.jp/" 
-                          target="_blank" 
+                        <a
+                          href="https://www.acom.co.jp/"
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:text-blue-800 underline"
                         >
                           アコムオンラインサービス
                         </a>
                         でショッピングの取引明細をダウンロードして登録
+                      </li>
+                      <li>
+                        <strong>PayPayカード</strong>
+                        <br />
+                        <a
+                          href="https://www.paypay-card.jp/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                          PayPayカードオンラインサービス
+                        </a>
+                        でカードの利用明細をダウンロードして登録
                       </li>
                       <li>
                         <strong>その他の銀行</strong>

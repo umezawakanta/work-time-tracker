@@ -71,16 +71,21 @@ const taskInstructions: {
         url: 'https://www.yokohamabank.co.jp/kojin/',
         description: '横浜銀行の取引明細をダウンロード',
       },
-       {
-         label: 'じぶん銀行オンラインバンキング',
-         url: 'https://www.jibunbank.co.jp/',
-         description: 'じぶん銀行の取引明細をダウンロード',
-       },
-       {
-         label: 'アコムオンラインサービス',
-         url: 'https://www.acom.co.jp/',
-         description: 'アコムカードローン・ショッピングの取引明細をダウンロード',
-       },
+      {
+        label: 'じぶん銀行オンラインバンキング',
+        url: 'https://www.jibunbank.co.jp/',
+        description: 'じぶん銀行の取引明細をダウンロード',
+      },
+      {
+        label: 'アコムオンラインサービス',
+        url: 'https://www.acom.co.jp/',
+        description: 'アコムカードローン・ショッピングの取引明細をダウンロード',
+      },
+      {
+        label: 'PayPayカードオンラインサービス',
+        url: 'https://www.paypay-card.jp/',
+        description: 'PayPayカードの利用明細をダウンロード',
+      },
     ],
   },
   '3': {
