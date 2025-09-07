@@ -803,7 +803,7 @@ export const featuresRegistry: Feature[] = [
     path: '/bank-accounts',
     category: '生産性',
     description:
-      '日々の取引明細の一覧表示・収支分析・CSVインポート・カテゴリ別集計・期間別フィルタ・操作手順ガイド完備・データ永続化対応',
+      '日々の取引明細の一覧表示・収支分析・CSVインポート・口座選択機能・カテゴリ別集計・期間別フィルタ・操作手順ガイド完備・データ永続化対応',
     status: 'complete',
     requiresRealAPI: true,
     priority: 'P0',

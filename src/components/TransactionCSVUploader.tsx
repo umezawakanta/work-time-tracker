@@ -1,9 +1,24 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { Upload, FileText, CheckCircle, AlertCircle, Download, TrendingUp } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Upload,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+  Download,
+  TrendingUp,
+  Building2,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { TransactionImportResult, CSVTransactionData } from '@/types/transaction';
 
@@ -19,7 +34,39 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [dragActive, setDragActive] = useState(false);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>('');
+  const [bankAccounts, setBankAccounts] = useState<any[]>([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 銀行口座データを取得
+  const fetchBankAccounts = async () => {
+    try {
+      const response = await fetch(`/api/bank-accounts?userId=${userId}`);
+      const result = await response.json();
+
+      if (result.success) {
+        setBankAccounts(result.data || []);
+        // メイン口座をデフォルトで選択
+        const mainAccount = result.data?.find((account: any) => account.isMainAccount);
+        if (mainAccount) {
+          setSelectedAccountId(mainAccount._id);
+        } else if (result.data?.length > 0) {
+          setSelectedAccountId(result.data[0]._id);
+        }
+      } else {
+        console.error('Failed to fetch bank accounts:', result.message);
+      }
+    } catch (error) {
+      console.error('Error fetching bank accounts:', error);
+    } finally {
+      setLoadingAccounts(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBankAccounts();
+  }, [userId]);
 
   // CSVテンプレートのダウンロード
   const downloadTemplate = () => {
@@ -225,6 +272,11 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
   const handleFileUpload = async (file: File) => {
     if (!file) return;
 
+    if (!selectedAccountId) {
+      toast.error('取引明細を紐付ける口座を選択してください');
+      return;
+    }
+
     setIsUploading(true);
     setUploadProgress(0);
 
@@ -249,6 +301,19 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
 
       setUploadProgress(50);
 
+      // 選択された口座の情報を取得
+      const selectedAccount = bankAccounts.find((account) => account._id === selectedAccountId);
+      const accountName = selectedAccount
+        ? `${selectedAccount.bankName} ${selectedAccount.accountName}`
+        : '選択された口座';
+
+      // 取引明細に口座情報を追加
+      const transactionsWithAccount = transactions.map((tx) => ({
+        ...tx,
+        accountName: accountName,
+        accountId: selectedAccountId,
+      }));
+
       // サーバーに送信
       const response = await fetch('/api/transactions/import', {
         method: 'POST',
@@ -257,7 +322,7 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
         },
         body: JSON.stringify({
           userId,
-          transactions,
+          transactions: transactionsWithAccount,
         }),
       });
 
@@ -342,6 +407,56 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
               <Download className="h-4 w-4 mr-2" />
               テンプレートをダウンロード
             </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 口座選択 */}
+      <Card className="bg-purple-50 border-purple-200">
+        <CardContent className="p-4">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-purple-600" />
+              <h4 className="font-semibold text-purple-900">取引明細を紐付ける口座を選択</h4>
+            </div>
+
+            {loadingAccounts ? (
+              <div className="flex items-center gap-2 text-purple-700">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                <span className="text-sm">口座情報を読み込み中...</span>
+              </div>
+            ) : bankAccounts.length === 0 ? (
+              <div className="text-purple-700 text-sm">
+                <p>登録されている口座がありません。</p>
+                <p>先に「口座管理」タブで口座を登録してください。</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="口座を選択してください" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {bankAccounts.map((account) => (
+                      <SelectItem key={account._id} value={account._id}>
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4" />
+                          <span>
+                            {account.bankName} {account.accountName}
+                          </span>
+                          {account.isMainAccount && (
+                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                              メイン
+                            </span>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-purple-600">選択した口座に取引明細が紐付けられます</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

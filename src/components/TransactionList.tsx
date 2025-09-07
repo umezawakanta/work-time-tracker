@@ -28,6 +28,7 @@ import {
   Edit,
   Trash2,
   DollarSign,
+  Building2,
 } from 'lucide-react';
 import { Transaction } from '@/types/transaction';
 import { toast } from 'sonner';
@@ -264,6 +265,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
                   <TableHead>日付</TableHead>
                   <TableHead>取引内容</TableHead>
                   <TableHead>カテゴリ</TableHead>
+                  <TableHead>口座</TableHead>
                   <TableHead className="text-right">金額</TableHead>
                   <TableHead className="text-center">操作</TableHead>
                 </TableRow>
@@ -271,7 +273,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
               <TableBody>
                 {filteredTransactions.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
                       取引明細がありません
                     </TableCell>
                   </TableRow>
@@ -289,6 +291,14 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
                         <Badge variant="outline" className="text-xs">
                           {transaction.category}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <Building2 className="h-3 w-3 text-gray-400" />
+                          <span className="text-sm text-gray-600">
+                            {transaction.accountId || 'メイン口座'}
+                          </span>
+                        </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <span

@@ -312,7 +312,7 @@ const BankAccountPage: React.FC = () => {
                     </ol>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-purple-900 mb-3">🏦 対応銀行</h4>
+                    <h4 className="font-semibold text-purple-900 mb-3">🏦 対応銀行・口座選択</h4>
                     <ol className="list-decimal list-inside space-y-2 text-purple-700">
                       <li>
                         <strong>三井住友銀行</strong>
@@ -325,9 +325,9 @@ const BankAccountPage: React.FC = () => {
                         汎用CSV形式で対応
                       </li>
                       <li>
-                        <strong>手動入力</strong>
+                        <strong>口座選択機能</strong>
                         <br />
-                        個別に取引を追加可能
+                        複数口座から対象口座を選択してインポート
                       </li>
                       <li>
                         <strong>自動分類</strong>

@@ -1409,7 +1409,7 @@ app.get('/api/asset-liability-report', (req, res) => {
   }
 
   // 取引明細データを取得して収支情報を追加
-  let transactionData = null;
+  let transactionData: any = null;
   try {
     const transactions = transactionStore.get(userIdStr) || [];
     if (transactions.length > 0) {
