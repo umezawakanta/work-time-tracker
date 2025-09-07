@@ -2068,6 +2068,8 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
             accept=".csv"
             onChange={handleFileSelect}
             className="hidden"
+            aria-label="CSVファイルを選択"
+            title="CSVファイルを選択"
           />
 
           <div className="space-y-4">

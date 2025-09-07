@@ -25,6 +25,9 @@ import {
 } from '../utils/bankDataParser.js';
 import { FinancialDataService } from '../database/services/FinancialDataService.js';
 
+// データベースサービス
+const financialService = FinancialDataService.getInstance();
+
 // Load environment variables
 dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env' });
@@ -4585,26 +4588,42 @@ app.post('/api/cleanup-duplicate-bank-accounts', async (req, res) => {
   }
 });
 
-app.delete('/api/transactions', (req: Request, res: Response) => {
-  const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
-  const { transactionId } = req.body;
+app.delete('/api/transactions', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
+    const { transactionId, accountName } = req.body;
 
-  if (!transactionId) {
-    return res.status(400).json({ success: false, message: 'Transaction ID is required' });
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'userId is required' });
+    }
+
+    // 特定の口座名の取引明細を一括削除
+    if (accountName) {
+      const result = await financialService.deleteTransactionsByAccountName(userId, accountName);
+      return res.json({
+        success: true,
+        message: `${accountName}の取引明細を削除しました`,
+        deletedCount: result.deletedCount,
+      });
+    }
+
+    // 個別の取引明細を削除
+    if (!transactionId) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'transactionId or accountName is required' });
+    }
+
+    const success = await financialService.deleteTransaction(transactionId);
+    if (!success) {
+      return res.status(404).json({ success: false, message: 'Transaction not found' });
+    }
+
+    res.json({ success: true, message: '取引明細を削除しました' });
+  } catch (error) {
+    console.error('Delete transaction error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
-
-  const transactions = transactionStore.get(userId) || [];
-  const filteredTransactions = transactions.filter((tx) => tx._id !== transactionId);
-
-  if (transactions.length === filteredTransactions.length) {
-    return res.status(404).json({ success: false, message: 'Transaction not found' });
-  }
-
-  transactionStore.set(userId, filteredTransactions);
-  // データベース使用のため、ローカルファイル保存を無効化
-  // saveDataImmediately(transactionStore, 'transactions');
-
-  res.json({ success: true, message: '取引明細を削除しました' });
 });
 
 console.log('\n🗺️  Registered Routes:');
@@ -4657,6 +4676,7 @@ console.log('   POST /api/transactions/import'); // 追加
 console.log('   GET  /api/transactions'); // 追加
 console.log('   GET  /api/debug/assets'); // 追加
 console.log('   POST /api/cleanup-duplicate-bank-accounts'); // 追加
+console.log('   DELETE /api/transactions'); // 追加
 
 // ========================================
 // Notification API Endpoints

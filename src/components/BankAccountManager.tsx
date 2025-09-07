@@ -60,7 +60,7 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
   const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     bankName: '',
-    accountType: 'checking' as const,
+    accountType: 'checking' as 'checking' | 'savings' | 'time_deposit' | 'credit_card',
     accountNumber: '',
     branchName: '',
     accountName: '',
@@ -126,7 +126,7 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
         if (bankBalances.length > 0) {
           toast.success(`${bankBalances.length}件の口座データを同期しました`);
         } else {
-          toast.info('登録された銀行口座がありません。新しい口座を追加してください。');
+          toast('登録された銀行口座がありません。新しい口座を追加してください。');
         }
       } else {
         throw new Error('Failed to fetch bank data');
@@ -541,8 +541,7 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
                     </div>
                     <div>
                       <h4 className="font-medium text-green-900">
-                        {balance.bankName} {balance.branchName ? `${balance.branchName} ` : ''}
-                        {balance.accountName}
+                        {balance.bankName} {balance.accountName}
                       </h4>
                       <p className="text-sm text-green-700">{balance.accountType}</p>
                     </div>
