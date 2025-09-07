@@ -128,6 +128,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   const [showSubtasks, setShowSubtasks] = useState(false);
   const [showStepsStates, setShowStepsStates] = useState<Record<string, boolean>>({});
   const IconComponent = taskIcons[task.id] || categoryIcons[task.category] || Circle;
+  const navigate = useNavigate();
 
   const handleToggle = (completed: boolean) => {
     onUpdate(task.id, completed, notes);
