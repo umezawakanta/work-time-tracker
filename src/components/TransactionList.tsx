@@ -67,15 +67,6 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
     fetchTransactions();
   }, [userId]);
 
-  // フィルタリングされた取引明細
-  const filteredTransactions = transactions.filter((transaction) => {
-    const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || transaction.category === categoryFilter;
-    const matchesDate = dateFilter === 'all' || isWithinDateRange(transaction.date, dateFilter);
-
-    return matchesSearch && matchesCategory && matchesDate;
-  });
-
   // 日付範囲の判定
   const isWithinDateRange = (date: string, range: string): boolean => {
     const transactionDate = new Date(date);
@@ -100,6 +91,15 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
         return true;
     }
   };
+
+  // フィルタリングされた取引明細
+  const filteredTransactions = transactions.filter((transaction) => {
+    const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === 'all' || transaction.category === categoryFilter;
+    const matchesDate = dateFilter === 'all' || isWithinDateRange(transaction.date, dateFilter);
+
+    return matchesSearch && matchesCategory && matchesDate;
+  });
 
   // カテゴリの一覧を取得
   const categories = Array.from(new Set(transactions.map((t) => t.category)));
