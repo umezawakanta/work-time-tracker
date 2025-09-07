@@ -1,17 +1,9 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { loadVercelData, saveVercelDataImmediately } from '../../_lib/vercel-storage';
+import { FinancialDataService } from '../../../src/database/services/FinancialDataService';
 import { Transaction, CSVTransactionData } from '../../../src/types/transaction';
 
-// 取引明細データのストア（メモリ）
-let transactionStore: Map<string, Transaction[]> = new Map();
-
-// データを読み込み
-try {
-  transactionStore = loadVercelData<Transaction>('transactions');
-} catch (error) {
-  console.error('Error loading transactions data:', error);
-  transactionStore = new Map();
-}
+// データベースサービス
+const financialService = FinancialDataService.getInstance();
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
@@ -43,8 +35,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    // 既存の取引明細を取得
-    const existingTransactions = transactionStore.get(userId) || [];
+    // データベースから既存の取引明細を取得（重複チェック用）
+    const existingTransactions = await financialService.getTransactions(userId);
 
     // 新しい取引明細を作成
     const newTransactions: Transaction[] = transactions.map((tx) => {
@@ -62,28 +54,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       };
     });
 
-    // 既存の取引明細とマージ
-    const allTransactions = [...existingTransactions, ...newTransactions];
-
     // 重複を除去（同じ日付、同じ金額、同じ説明の取引）
-    const uniqueTransactions = allTransactions.filter((tx, index, arr) => {
-      return (
-        arr.findIndex(
-          (t) => t.date === tx.date && t.amount === tx.amount && t.description === tx.description
-        ) === index
+    const uniqueTransactions = newTransactions.filter((tx) => {
+      return !existingTransactions.some(
+        (existing) =>
+          existing.date.toISOString().split('T')[0] === tx.date &&
+          existing.amount === tx.amount &&
+          existing.description === tx.description
       );
     });
 
-    // データを保存
-    transactionStore.set(userId, uniqueTransactions);
-    saveVercelDataImmediately(transactionStore, 'transactions');
+    // データベースに取引明細を保存
+    const createdTransactions = [];
+    for (const transaction of uniqueTransactions) {
+      try {
+        const created = await financialService.createTransaction({
+          _id: transaction._id,
+          userId: transaction.userId,
+          accountId: transaction.accountId,
+          date: new Date(transaction.date),
+          description: transaction.description,
+          amount: transaction.amount,
+          category: transaction.category,
+          type: transaction.type as 'income' | 'expense',
+          balance: 0, // 残高は計算で求める
+        });
+        createdTransactions.push(created);
+      } catch (error) {
+        console.error('Error creating transaction:', error);
+      }
+    }
 
     res.status(200).json({
       success: true,
-      message: `${newTransactions.length}件の取引明細をインポートしました`,
-      importedCount: newTransactions.length,
+      message: `${createdTransactions.length}件の取引明細をインポートしました`,
+      importedCount: createdTransactions.length,
       errors: [],
-      transactions: newTransactions,
+      transactions: createdTransactions,
     });
   } catch (error) {
     console.error('Transaction import error:', error);

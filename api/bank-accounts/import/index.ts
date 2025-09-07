@@ -1,8 +1,8 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { loadVercelData, saveVercelDataImmediately } from '../../_lib/vercel-storage';
+import { FinancialDataService } from '../../../src/database/services/FinancialDataService';
 
-// データストア（ファイルから読み込み）
-const bankAccountsStore = loadVercelData<any>('bank-accounts');
+// データベースサービス
+const financialService = FinancialDataService.getInstance();
 
 interface BankAccount {
   _id: string;
@@ -59,26 +59,12 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      // 既存の口座データを取得
-      const existingAccounts = bankAccountsStore.get(userId) || [];
+      // データベースに口座データを作成
+      const newAccounts: BankAccount[] = [];
 
-      // メイン口座の重複チェック（フロントエンドで制御するため無効化）
-      // const hasMainAccount = existingAccounts.some((account) => account.isMain);
-      // const newMainAccount = accounts.find((account) => account.isMain);
-
-      // if (hasMainAccount && newMainAccount) {
-      //   return res.status(400).json({
-      //     success: false,
-      //     message:
-      //       'メイン口座は既に設定されています。既存のメイン口座を削除してから再度お試しください。',
-      //   });
-      // }
-
-      // 新しい口座データを作成
-      const newAccounts: BankAccount[] = accounts.map((account: any) => {
-        const now = new Date().toISOString();
-        return {
-          _id: createBankAccountId(),
+      for (const account of accounts) {
+        const now = new Date();
+        const newAccount = await financialService.createBankAccount({
           userId,
           bankName: account.bankName,
           accountType: account.accountType,
@@ -89,24 +75,34 @@ async function handler(req: VercelRequest, res: VercelResponse) {
           isActive: true,
           lastBalance: account.lastBalance || 0,
           lastUpdated: now,
-          createdAt: now,
-          updatedAt: now,
-        };
-      });
+        });
 
-      // 既存の口座データとマージ
-      const updatedAccounts = [...existingAccounts, ...newAccounts];
-      bankAccountsStore.set(userId, updatedAccounts);
+        newAccounts.push({
+          _id: newAccount._id,
+          userId: newAccount.userId,
+          bankName: newAccount.bankName,
+          accountType: newAccount.accountType,
+          accountNumber: newAccount.accountNumber,
+          branchName: newAccount.branchName,
+          accountName: newAccount.accountName,
+          isMain: newAccount.isMain,
+          isActive: newAccount.isActive,
+          lastBalance: newAccount.lastBalance,
+          lastUpdated: newAccount.lastUpdated?.toISOString(),
+          createdAt: newAccount.createdAt.toISOString(),
+          updatedAt: newAccount.updatedAt.toISOString(),
+        });
+      }
 
-      // データを即座に保存
-      saveVercelDataImmediately(bankAccountsStore, 'bank-accounts');
+      // 総口座数を取得
+      const allAccounts = await financialService.getBankAccounts(userId);
 
       res.status(200).json({
         success: true,
         message: `${newAccounts.length}件の口座データをインポートしました`,
         data: {
           importedCount: newAccounts.length,
-          totalCount: updatedAccounts.length,
+          totalCount: allAccounts.length,
           accounts: newAccounts,
         },
       });

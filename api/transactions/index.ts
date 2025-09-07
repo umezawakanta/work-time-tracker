@@ -1,17 +1,9 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { loadVercelData, saveVercelDataImmediately } from '../_lib/vercel-storage';
+import { FinancialDataService } from '../../src/database/services/FinancialDataService';
 import { Transaction } from '../../src/types/transaction';
 
-// 取引明細データのストア（メモリ）
-let transactionStore: Map<string, Transaction[]> = new Map();
-
-// データを読み込み
-try {
-  transactionStore = loadVercelData<Transaction>('transactions');
-} catch (error) {
-  console.error('Error loading transactions data:', error);
-  transactionStore = new Map();
-}
+// データベースサービス
+const financialService = FinancialDataService.getInstance();
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
@@ -33,23 +25,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return;
       }
 
-      let transactions = transactionStore.get(userId as string) || [];
-
-      // 日付フィルタリング
-      if (startDate) {
-        transactions = transactions.filter((tx) => (tx.date >= startDate) as string);
-      }
-      if (endDate) {
-        transactions = transactions.filter((tx) => (tx.date <= endDate) as string);
-      }
+      // データベースから取引明細を取得
+      const start = startDate ? new Date(startDate as string) : undefined;
+      const end = endDate ? new Date(endDate as string) : undefined;
+      let transactions = await financialService.getTransactions(
+        userId as string,
+        undefined, // accountId
+        start,
+        end
+      );
 
       // カテゴリフィルタリング
       if (category) {
         transactions = transactions.filter((tx) => tx.category === category);
       }
-
-      // 日付順でソート（新しい順）
-      transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
       res.status(200).json({
         success: true,
@@ -76,22 +65,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const id = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      const newTransaction: Transaction = {
+      const newTransaction = await financialService.createTransaction({
         _id: id,
-        date: transaction.date || new Date().toISOString().split('T')[0],
+        userId: userId,
+        accountId: transaction.accountId || 'main_account',
+        date: new Date(transaction.date || new Date().toISOString().split('T')[0]),
         description: transaction.description || '',
         amount: transaction.amount || 0,
         category: transaction.category || 'その他',
-        accountId: transaction.accountId || 'main_account',
-        userId: userId,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      const existingTransactions = transactionStore.get(userId) || [];
-      existingTransactions.push(newTransaction);
-      transactionStore.set(userId, existingTransactions);
-      saveVercelDataImmediately(transactionStore, 'transactions');
+        type: (transaction.type as 'income' | 'expense') || 'expense',
+        balance: 0, // 残高は計算で求める
+      });
 
       res.status(201).json({
         success: true,

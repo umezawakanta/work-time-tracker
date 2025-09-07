@@ -1203,8 +1203,8 @@ app.post('/api/asset', (req, res) => {
     userAssets.push(assetEntry);
     assetStore.set(userId, userAssets);
 
-    // データを即座に保存
-    saveDataImmediately(assetStore, 'assets');
+    // データベース使用のため、ローカルファイル保存を無効化
+    // saveDataImmediately(assetStore, 'assets');
 
     res.status(201).json(assetEntry);
   } catch (error) {
@@ -5673,8 +5673,8 @@ app.post('/api/bank-accounts', (req: Request, res: Response) => {
   userAccounts.push(newAccount);
   bankAccountsStore.set(userId, userAccounts);
 
-  // データを即座に保存
-  saveDataImmediately(bankAccountsStore, 'bank-accounts');
+  // データベース使用のため、ローカルファイル保存を無効化
+  // saveDataImmediately(bankAccountsStore, 'bank-accounts');
 
   res.status(201).json({
     success: true,
@@ -5798,8 +5798,8 @@ app.post('/api/bank-accounts/import', (req: Request, res: Response) => {
     const updatedAccounts = [...existingAccounts, ...newAccounts];
     bankAccountsStore.set(userId, updatedAccounts);
 
-    // データを即座に保存
-    saveDataImmediately(bankAccountsStore, 'bank-accounts');
+    // データベース使用のため、ローカルファイル保存を無効化
+    // saveDataImmediately(bankAccountsStore, 'bank-accounts');
 
     res.status(200).json({
       success: true,
@@ -5915,7 +5915,8 @@ const startServer = async () => {
     const existingTransactions = transactionStore.get(userId) || [];
     existingTransactions.push(newTransaction);
     transactionStore.set(userId, existingTransactions);
-    saveDataImmediately(transactionStore, 'transactions');
+    // データベース使用のため、ローカルファイル保存を無効化
+    // saveDataImmediately(transactionStore, 'transactions');
 
     res
       .status(201)
@@ -5944,7 +5945,8 @@ const startServer = async () => {
     };
 
     transactionStore.set(userId, transactions);
-    saveDataImmediately(transactionStore, 'transactions');
+    // データベース使用のため、ローカルファイル保存を無効化
+    // saveDataImmediately(transactionStore, 'transactions');
 
     res.json({
       success: true,
@@ -5969,7 +5971,8 @@ const startServer = async () => {
     }
 
     transactionStore.set(userId, filteredTransactions);
-    saveDataImmediately(transactionStore, 'transactions');
+    // データベース使用のため、ローカルファイル保存を無効化
+    // saveDataImmediately(transactionStore, 'transactions');
 
     res.json({ success: true, message: '取引明細を削除しました' });
   });
@@ -6011,7 +6014,8 @@ const startServer = async () => {
     });
 
     transactionStore.set(userId, uniqueTransactions);
-    saveDataImmediately(transactionStore, 'transactions');
+    // データベース使用のため、ローカルファイル保存を無効化
+    // saveDataImmediately(transactionStore, 'transactions');
 
     res.json({
       success: true,
