@@ -1,1 +1,30 @@
-{}
+{
+  "670e92050c5920b8a57dcb9e": [
+    {
+      "_id": "bank_account_1757204208976_k1n3j",
+      "userId": "670e92050c5920b8a57dcb9e",
+      "bankName": "三井住友銀行",
+      "accountType": "checking",
+      "accountNumber": "1956189",
+      "branchName": "大塚支店",
+      "accountName": "梅澤寛太",
+      "isMain": true,
+      "isActive": true,
+      "createdAt": "2025-09-07T00:16:48.977Z",
+      "updatedAt": "2025-09-07T00:16:48.977Z"
+    },
+    {
+      "_id": "bank_account_1757204234541_9rwig",
+      "userId": "670e92050c5920b8a57dcb9e",
+      "bankName": "三井住友銀行",
+      "accountType": "checking",
+      "accountNumber": "7977337",
+      "branchName": "神田支店",
+      "accountName": "梅澤寛太",
+      "isMain": false,
+      "isActive": true,
+      "createdAt": "2025-09-07T00:17:14.541Z",
+      "updatedAt": "2025-09-07T00:17:14.541Z"
+    }
+  ]
+}
