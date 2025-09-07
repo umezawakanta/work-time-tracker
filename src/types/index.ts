@@ -26,7 +26,7 @@ export interface AssetEntry {
   date: string; // 日付 - ISO文字列形式
   value: number; // 金額
   account: string; // 口座名・資産名
-  description: string; // 説明（APIで必須）
+  description?: string; // 説明（オプション）
   category?: string; // 資産カテゴリ
   targetSettings?: TargetSettings; // 目標設定
 
@@ -194,6 +194,7 @@ export interface User {
   _id: string;
   username: string;
   isAdmin: boolean;
+  lastLoginAt?: string; // 最終ログイン日時
   uid?: string; // Firebase UID
   displayName?: string; // 表示名
   avatar?: string; // オプショナルプロパティとして avatar を追加

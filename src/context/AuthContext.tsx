@@ -187,7 +187,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setIsAuthenticated(true);
           setSessionExpired(false);
           // 開発環境でもユーザー情報を取得（初回のみ）
-          if (isMounted && !user) {
+          if (!user) {
             await fetchUser();
           }
           return true;
@@ -387,7 +387,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
               email: 'dev@example.com',
               name: '開発ユーザー',
               isAdmin: true,
-              lastLoginAt: new Date(),
+              lastLoginAt: new Date().toISOString(),
             } as User;
             setUser(dummyUser);
             console.log('🧪 開発環境 - ダミーユーザー情報を設定（refreshAuth）');
@@ -533,7 +533,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                   email: 'dev@example.com',
                   name: '開発ユーザー',
                   isAdmin: true,
-                  lastLoginAt: new Date(),
+                  lastLoginAt: new Date().toISOString(),
                 } as User;
                 setUser(dummyUser);
                 console.log('🧪 開発環境 - ダミーユーザー情報を設定');
@@ -561,7 +561,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                   email: 'dev@example.com',
                   name: '開発ユーザー',
                   isAdmin: true,
-                  lastLoginAt: new Date(),
+                  lastLoginAt: new Date().toISOString(),
                 } as User;
                 setUser(dummyUser);
                 console.log('🧪 開発環境 - ダミーユーザー情報を設定');

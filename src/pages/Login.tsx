@@ -198,7 +198,7 @@ export default function Login() {
           email: 'dev@example.com',
           name: '開発ユーザー',
           isAdmin: true,
-          lastLoginAt: new Date(),
+          lastLoginAt: new Date().toISOString(),
         };
         setUser(dummyUser);
         console.log('🧪 開発環境 - ダミーユーザー情報を設定（ログイン後）');
