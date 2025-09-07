@@ -20,6 +20,7 @@ import { QuickInput } from '@/components/QuickInput'; // 追加: 新しいクイ
 import { GoalTracking } from '@/components/goals/GoalTracking'; // 追加: 目標設定コンポーネント
 import { LongTermTrend } from '@/components/trends/LongTermTrend'; // 追加: 長期トレンド可視化コンポーネント
 import { AssetLiabilityInstructions } from '@/components/AssetLiabilityInstructions'; // 追加: 操作手順説明コンポーネント
+import { TransactionList } from '@/components/TransactionList'; // 追加: 取引明細一覧コンポーネント
 import { useReportData } from '@/hooks/useReportData';
 import { useBalanceUpdate } from '@/hooks/useBalanceUpdate';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
@@ -52,6 +53,7 @@ import {
   Filter,
   Target, // 追加: 目標のアイコン
   Building2, // 追加: 銀行のアイコン
+  FileText, // 追加: 取引明細のアイコン
 } from 'lucide-react';
 import {
   Card,
@@ -831,9 +833,12 @@ export default function AssetLiabilityReportPage() {
                                 : 'クレジットカード'}
                         </p>
                         {mainAccount.lastBalance && (
-                          <p className="text-lg font-bold text-blue-900 mt-1">
-                            残高: {mainAccount.lastBalance.toLocaleString()}円
-                          </p>
+                          <div className="mt-2">
+                            <p className="text-lg font-bold text-blue-900">
+                              残高: {mainAccount.lastBalance.toLocaleString()}円
+                            </p>
+                            <p className="text-sm text-blue-600">取引明細から自動更新</p>
+                          </div>
                         )}
                       </div>
                       <div className="text-right">
@@ -1160,99 +1165,112 @@ export default function AssetLiabilityReportPage() {
               <PieChart className="h-4 w-4 mr-2" />
               詳細
             </TabsTrigger>
+            <TabsTrigger
+              value="transactions"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              取引明細
+            </TabsTrigger>
           </TabsList>
 
           <div className="flex items-center gap-2">
             {/* フィルターとオプション */}
-            {activeView !== 'details' && activeView !== 'goals' && (
-              <>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-9">
-                      <Filter className="h-4 w-4 mr-2" />
-                      <span className="hidden sm:inline">表示オプション</span>
-                      <span className="sm:hidden">オプション</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() =>
-                        setDisplayMode(displayMode === 'actual' ? 'percentage' : 'actual')
-                      }
-                    >
-                      <span className="mr-2">{displayMode === 'actual' ? '%' : '¥'}</span>
-                      {displayMode === 'actual' ? '割合表示' : '金額表示'}に切替
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCompareWithPrevious(!compareWithPrevious)}>
-                      <Switch checked={compareWithPrevious} className="mr-2" />
-                      前回と比較
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => generateMonthlySnapshots()}>
-                      <Clock className="mr-2 h-4 w-4" />
-                      月次データ生成
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setExportDialogOpen(true)}>
-                      <FileDown className="mr-2 h-4 w-4" />
-                      データをエクスポート
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                {timeRange === 'custom' && (
-                  <div className="flex items-center space-x-2">
-                    <div className="flex flex-col">
-                      <label htmlFor="start-date">開始日</label>
-                      <input
-                        id="start-date"
-                        type="date"
-                        className="h-9 rounded-md border border-input bg-background px-3"
-                        value={
-                          viewDateRange.start ? viewDateRange.start.toISOString().split('T')[0] : ''
+            {activeView !== 'details' &&
+              activeView !== 'goals' &&
+              activeView !== 'transactions' && (
+                <>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-9">
+                        <Filter className="h-4 w-4 mr-2" />
+                        <span className="hidden sm:inline">表示オプション</span>
+                        <span className="sm:hidden">オプション</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() =>
+                          setDisplayMode(displayMode === 'actual' ? 'percentage' : 'actual')
                         }
-                        onChange={(e) => {
-                          const newDate = e.target.value ? new Date(e.target.value) : null;
-                          setViewDateRange((prev) => ({
-                            ...prev,
-                            start: newDate,
-                          }));
-                        }}
-                      />
+                      >
+                        <span className="mr-2">{displayMode === 'actual' ? '%' : '¥'}</span>
+                        {displayMode === 'actual' ? '割合表示' : '金額表示'}に切替
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setCompareWithPrevious(!compareWithPrevious)}
+                      >
+                        <Switch checked={compareWithPrevious} className="mr-2" />
+                        前回と比較
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => generateMonthlySnapshots()}>
+                        <Clock className="mr-2 h-4 w-4" />
+                        月次データ生成
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setExportDialogOpen(true)}>
+                        <FileDown className="mr-2 h-4 w-4" />
+                        データをエクスポート
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  {timeRange === 'custom' && (
+                    <div className="flex items-center space-x-2">
+                      <div className="flex flex-col">
+                        <label htmlFor="start-date">開始日</label>
+                        <input
+                          id="start-date"
+                          type="date"
+                          className="h-9 rounded-md border border-input bg-background px-3"
+                          value={
+                            viewDateRange.start
+                              ? viewDateRange.start.toISOString().split('T')[0]
+                              : ''
+                          }
+                          onChange={(e) => {
+                            const newDate = e.target.value ? new Date(e.target.value) : null;
+                            setViewDateRange((prev) => ({
+                              ...prev,
+                              start: newDate,
+                            }));
+                          }}
+                        />
+                      </div>
+                      <span>〜</span>
+                      <div className="flex flex-col">
+                        <label htmlFor="end-date">終了日</label>
+                        <input
+                          id="end-date"
+                          type="date"
+                          className="h-9 rounded-md border border-input bg-background px-3"
+                          value={
+                            viewDateRange.end ? viewDateRange.end.toISOString().split('T')[0] : ''
+                          }
+                          onChange={(e) => {
+                            const newDate = e.target.value ? new Date(e.target.value) : null;
+                            setViewDateRange((prev) => ({
+                              ...prev,
+                              end: newDate,
+                            }));
+                          }}
+                        />
+                      </div>
                     </div>
-                    <span>〜</span>
-                    <div className="flex flex-col">
-                      <label htmlFor="end-date">終了日</label>
-                      <input
-                        id="end-date"
-                        type="date"
-                        className="h-9 rounded-md border border-input bg-background px-3"
-                        value={
-                          viewDateRange.end ? viewDateRange.end.toISOString().split('T')[0] : ''
-                        }
-                        onChange={(e) => {
-                          const newDate = e.target.value ? new Date(e.target.value) : null;
-                          setViewDateRange((prev) => ({
-                            ...prev,
-                            end: newDate,
-                          }));
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
-                <Select value={timeRange} onValueChange={setTimeRange}>
-                  <SelectTrigger className="w-32 h-9">
-                    <SelectValue placeholder="期間" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="month">1ヶ月</SelectItem>
-                    <SelectItem value="quarter">3ヶ月</SelectItem>
-                    <SelectItem value="year">1年</SelectItem>
-                    <SelectItem value="all">すべて</SelectItem>
-                    <SelectItem value="custom">カスタム期間</SelectItem>
-                  </SelectContent>
-                </Select>
-              </>
-            )}
+                  )}
+                  <Select value={timeRange} onValueChange={setTimeRange}>
+                    <SelectTrigger className="w-32 h-9">
+                      <SelectValue placeholder="期間" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="month">1ヶ月</SelectItem>
+                      <SelectItem value="quarter">3ヶ月</SelectItem>
+                      <SelectItem value="year">1年</SelectItem>
+                      <SelectItem value="all">すべて</SelectItem>
+                      <SelectItem value="custom">カスタム期間</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
           </div>
         </div>
 
@@ -1625,6 +1643,34 @@ export default function AssetLiabilityReportPage() {
                     onBalanceUpdate={handleBalanceUpdateWrapper}
                   />
                 </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="transactions" className="mt-6">
+          {/* 取引明細タブの内容 */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  取引明細一覧
+                </CardTitle>
+                <CardDescription>
+                  銀行口座の取引履歴を確認し、収支の詳細を把握できます
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {user?.id ? (
+                  <TransactionList userId={user.id} />
+                ) : (
+                  <div className="text-center py-8">
+                    <AlertCircle className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                    <h3 className="text-lg font-semibold mb-2">ログインが必要です</h3>
+                    <p className="text-gray-600 mb-4">取引明細を表示するにはログインしてください</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
