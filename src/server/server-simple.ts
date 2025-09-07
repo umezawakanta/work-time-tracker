@@ -5933,48 +5933,63 @@ app.get('/api/bank-accounts/:id', (req: Request, res: Response) => {
   res.json({ success: true, data: account });
 });
 
-app.put('/api/bank-accounts/:id', (req: Request, res: Response) => {
-  const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
-  const { id } = req.params;
-  const accounts = bankAccountsStore.get(userId) || [];
-  const accountIndex = accounts.findIndex((acc) => acc._id === id);
+app.put('/api/bank-accounts/:id', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+    const { id } = req.params;
 
-  if (accountIndex === -1) {
-    return res.status(404).json({
+    // データベースから銀行口座を更新
+    const { FinancialDataService } = await import('../database/services/FinancialDataService');
+    const financialService = FinancialDataService.getInstance();
+
+    const updatedAccount = await financialService.updateBankAccount(id, {
+      ...req.body,
+      updatedAt: new Date(),
+    } as any);
+
+    if (!updatedAccount) {
+      return res.status(404).json({
+        success: false,
+        message: '銀行口座が見つかりません',
+      });
+    }
+
+    res.json({ success: true, data: updatedAccount });
+  } catch (error) {
+    console.error('Bank account update error:', error);
+    res.status(500).json({
       success: false,
-      message: '銀行口座が見つかりません',
+      error: '銀行口座の更新に失敗しました',
     });
   }
-
-  const updatedAccount = {
-    ...accounts[accountIndex],
-    ...req.body,
-    updatedAt: new Date().toISOString(),
-  };
-
-  accounts[accountIndex] = updatedAccount;
-  bankAccountsStore.set(userId, accounts);
-
-  res.json({ success: true, data: updatedAccount });
 });
 
-app.delete('/api/bank-accounts/:id', (req: Request, res: Response) => {
-  const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
-  const { id } = req.params;
-  const accounts = bankAccountsStore.get(userId) || [];
-  const accountIndex = accounts.findIndex((acc) => acc._id === id);
+app.delete('/api/bank-accounts/:id', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+    const { id } = req.params;
 
-  if (accountIndex === -1) {
-    return res.status(404).json({
+    // データベースから銀行口座を削除
+    const { FinancialDataService } = await import('../database/services/FinancialDataService');
+    const financialService = FinancialDataService.getInstance();
+
+    const deleted = await financialService.deleteBankAccount(id);
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: '銀行口座が見つかりません',
+      });
+    }
+
+    res.json({ success: true, message: '銀行口座が削除されました' });
+  } catch (error) {
+    console.error('Bank account deletion error:', error);
+    res.status(500).json({
       success: false,
-      message: '銀行口座が見つかりません',
+      error: '銀行口座の削除に失敗しました',
     });
   }
-
-  accounts.splice(accountIndex, 1);
-  bankAccountsStore.set(userId, accounts);
-
-  res.json({ success: true, message: '銀行口座が削除されました' });
 });
 
 // ID生成関数
