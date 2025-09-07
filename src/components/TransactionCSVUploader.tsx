@@ -274,14 +274,26 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
           }
         }
 
-        // 金額フィールドを探す
+        // 入金・出金フィールドを探して取引金額を計算
+        let incomeAmount = 0;
+        let expenseAmount = 0;
+
         for (let j = 0; j < headers.length; j++) {
           const header = headers[j].toLowerCase();
-          if (header.includes('金額') || header.includes('残高') || header.includes('amount')) {
-            const amountStr = values[j].replace(/[^\d.-]/g, '');
-            amount = parseFloat(amountStr) || 0;
-            break;
+          if (header.includes('入金')) {
+            const incomeStr = values[j].replace(/[^\d.-]/g, '');
+            incomeAmount = parseFloat(incomeStr) || 0;
+          } else if (header.includes('出金')) {
+            const expenseStr = values[j].replace(/[^\d.-]/g, '');
+            expenseAmount = parseFloat(expenseStr) || 0;
           }
+        }
+
+        // 取引金額を計算（入金があれば正の値、出金があれば負の値）
+        if (incomeAmount > 0) {
+          amount = incomeAmount;
+        } else if (expenseAmount > 0) {
+          amount = -expenseAmount;
         }
 
         // 取引内容フィールドを探す
@@ -290,6 +302,7 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
           if (
             header.includes('内容') ||
             header.includes('摘要') ||
+            header.includes('お取引内容') ||
             header.includes('description')
           ) {
             description = values[j];
@@ -302,9 +315,25 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
         );
 
         if (date && amount !== 0) {
-          // 日付の形式を統一
-          const dateObj = new Date(date);
-          const formattedDate = dateObj.toISOString().split('T')[0];
+          // 日付の形式を統一（YYYY年MM月DD日形式を処理）
+          let formattedDate = '';
+          try {
+            // YYYY年MM月DD日形式をYYYY-MM-DDに変換
+            const dateMatch = date.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+            if (dateMatch) {
+              const year = dateMatch[1];
+              const month = dateMatch[2].padStart(2, '0');
+              const day = dateMatch[3].padStart(2, '0');
+              formattedDate = `${year}-${month}-${day}`;
+            } else {
+              // その他の形式の場合は通常のDate解析を試行
+              const dateObj = new Date(date);
+              formattedDate = dateObj.toISOString().split('T')[0];
+            }
+          } catch (error) {
+            console.error('Date parsing error:', error);
+            continue;
+          }
 
           // カテゴリの自動判定
           let category = 'その他';
@@ -1238,9 +1267,25 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
         );
 
         if (date && amount !== 0) {
-          // 日付の形式を統一
-          const dateObj = new Date(date);
-          const formattedDate = dateObj.toISOString().split('T')[0];
+          // 日付の形式を統一（YYYY年MM月DD日形式を処理）
+          let formattedDate = '';
+          try {
+            // YYYY年MM月DD日形式をYYYY-MM-DDに変換
+            const dateMatch = date.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+            if (dateMatch) {
+              const year = dateMatch[1];
+              const month = dateMatch[2].padStart(2, '0');
+              const day = dateMatch[3].padStart(2, '0');
+              formattedDate = `${year}-${month}-${day}`;
+            } else {
+              // その他の形式の場合は通常のDate解析を試行
+              const dateObj = new Date(date);
+              formattedDate = dateObj.toISOString().split('T')[0];
+            }
+          } catch (error) {
+            console.error('Date parsing error:', error);
+            continue;
+          }
 
           // カテゴリの自動判定
           let category = 'その他';
@@ -1653,10 +1698,12 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
 
   // CSVファイルの解析
   const parseCSV = (csvText: string): CSVTransactionData[] => {
-    // 銀行形式を判定
-    const isSMBCFormat = csvText.includes('年月日') || csvText.includes('残高');
+    // 銀行形式を判定（より具体的な判定を優先）
+    const isJibunFormat =
+      csvText.includes('じぶん銀行') ||
+      csvText.includes('JIBUN BANK') ||
+      (csvText.includes('お取引内容') && csvText.includes('入金') && csvText.includes('出金'));
     const isYokohamaFormat = csvText.includes('取引日') || csvText.includes('横浜銀行');
-    const isJibunFormat = csvText.includes('じぶん銀行') || csvText.includes('JIBUN BANK');
     const isSMBCLFormat = csvText.includes('三井住友銀行') && csvText.includes('CL');
     const isMUFJSecuritiesFormat = csvText.includes('三菱UFJ') || csvText.includes('証券');
     const isAcomCardLoanFormat = csvText.includes('アコム') && csvText.includes('カードローン');
@@ -1668,16 +1715,14 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
       csvText.includes('au pay') ||
       csvText.includes('AUPay') ||
       csvText.includes('AU PAY');
+    const isSMBCFormat = csvText.includes('年月日') || csvText.includes('残高');
 
-    if (isSMBCFormat && !isSMBCLFormat) {
-      console.log('Detected SMBC format');
-      return parseSMBCTransactionCSV(csvText);
+    if (isJibunFormat) {
+      console.log('Detected Jibun Bank format');
+      return parseJibunBankTransactionCSV(csvText);
     } else if (isYokohamaFormat) {
       console.log('Detected Yokohama Bank format');
       return parseYokohamaBankTransactionCSV(csvText);
-    } else if (isJibunFormat) {
-      console.log('Detected Jibun Bank format');
-      return parseJibunBankTransactionCSV(csvText);
     } else if (isSMBCLFormat) {
       console.log('Detected SMBC CL format');
       return parseSMBCLTransactionCSV(csvText);
@@ -1696,6 +1741,9 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     } else if (isAuPayCardFormat) {
       console.log('Detected auPay Card format');
       return parseAuPayCardTransactionCSV(csvText);
+    } else if (isSMBCFormat) {
+      console.log('Detected SMBC format');
+      return parseSMBCTransactionCSV(csvText);
     } else {
       console.log('Detected generic format');
       return parseGenericCSV(csvText);
