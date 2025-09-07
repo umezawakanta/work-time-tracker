@@ -230,7 +230,12 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     let headerIndex = 0;
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].toLowerCase();
-      if (line.includes('年月日') || line.includes('日付') || line.includes('date')) {
+      if (
+        line.includes('年月日') ||
+        line.includes('日付') ||
+        line.includes('date') ||
+        line.includes('取引日')
+      ) {
         headerIndex = i;
         break;
       }
@@ -268,7 +273,12 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
         // 日付フィールドを探す
         for (let j = 0; j < headers.length; j++) {
           const header = headers[j].toLowerCase();
-          if (header.includes('年月日') || header.includes('日付') || header.includes('date')) {
+          if (
+            header.includes('年月日') ||
+            header.includes('日付') ||
+            header.includes('date') ||
+            header.includes('取引日')
+          ) {
             date = values[j];
             break;
           }
@@ -296,6 +306,10 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
           amount = -expenseAmount;
         }
 
+        console.log(
+          `Jibun Bank CSV - Amount calculation: income=${incomeAmount}, expense=${expenseAmount}, final=${amount}`
+        );
+
         // 取引内容フィールドを探す
         for (let j = 0; j < headers.length; j++) {
           const header = headers[j].toLowerCase();
@@ -303,6 +317,9 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
             header.includes('内容') ||
             header.includes('摘要') ||
             header.includes('お取引内容') ||
+            header.includes('取引内容') ||
+            header.includes('備考') ||
+            header.includes('メモ') ||
             header.includes('description')
           ) {
             description = values[j];
