@@ -13,30 +13,8 @@ const fetchUserData = async (userIdStr: string) => {
     // データベースから負債データを取得
     const debts = await financialService.getDebts(userIdStr);
 
-    // 銀行口座データを取得して資産に追加
-    try {
-      const bankAccounts = await financialService.getBankAccounts(userIdStr);
-
-      if (bankAccounts.length > 0) {
-        // 銀行口座の残高を資産として追加
-        const bankAssets = bankAccounts
-          .filter((account) => account.isActive && account.lastBalance)
-          .map((account) => ({
-            _id: `bank_${account._id}`,
-            date: account.lastUpdated || new Date(),
-            value: account.lastBalance,
-            description: `${account.bankName} ${account.accountName}`,
-            account: account.accountType,
-            createdAt: account.createdAt,
-            updatedAt: account.updatedAt,
-          }));
-
-        // Type assertion to match the expected interface
-        assets.push(...(bankAssets as any));
-      }
-    } catch (bankError) {
-      console.error('Error fetching bank data:', bankError);
-    }
+    // 銀行口座データの自動変換を無効化
+    // 銀行口座データは別途管理し、資産データには自動変換しない
 
     return { assets, debts };
   } catch (error) {

@@ -29,17 +29,11 @@ export const calculateFinancialMetrics = (assetEntries: AssetEntry[], debtEntrie
     }
   });
 
-  // 最新のエントリを使って総資産を計算
-  const totalAssets = Array.from(latestAssetByAccount.values()).reduce(
-    (sum, entry) => sum + entry.value,
-    0
-  );
+  // 全ての資産エントリの合計を計算（詳細リストと一致させる）
+  const totalAssets = assetEntries.reduce((sum, entry) => sum + entry.value, 0);
 
-  // 最新のエントリを使って総負債を計算
-  const totalDebts = Array.from(latestDebtByAccount.values()).reduce(
-    (sum, entry) => sum + entry.value,
-    0
-  );
+  // 全ての負債エントリの合計を計算（詳細リストと一致させる）
+  const totalDebts = debtEntries.reduce((sum, entry) => sum + entry.value, 0);
 
   // 他の財務指標計算
   const netWorth = totalAssets - totalDebts;
