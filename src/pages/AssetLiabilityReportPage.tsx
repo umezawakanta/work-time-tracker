@@ -173,20 +173,14 @@ export default function AssetLiabilityReportPage() {
     console.log('Current asset entries:', assetEntries.length);
 
     if (accounts && accounts.length > 0) {
-      // 既存の銀行口座資産エントリをすべて削除
+      // 既存の銀行口座資産エントリをチェック
       const bankAssetEntries = assetEntries.filter(
         (entry) => entry && entry._id && entry._id.startsWith('bank_')
       );
 
-      console.log(`Found ${bankAssetEntries.length} existing bank asset entries to remove`);
+      console.log(`Found ${bankAssetEntries.length} existing bank asset entries`);
 
-      // 既存の銀行口座資産エントリを削除
-      bankAssetEntries.forEach((entry) => {
-        console.log(`Removing existing bank asset entry: ${entry._id}`);
-        // ここではReduxから削除するのではなく、新しいデータで上書きする
-      });
-
-      // 銀行口座データから新しい資産エントリを作成
+      // 銀行口座データから新しい資産エントリを作成（重複チェック付き）
       accounts.forEach((account) => {
         console.log('Processing account:', {
           id: account._id,
@@ -197,25 +191,33 @@ export default function AssetLiabilityReportPage() {
 
         if (account.lastBalance !== undefined && account.lastBalance !== null) {
           const accountName = `${account.bankName} ${account.branchName ? `${account.branchName} ` : ''}${account.accountName}`;
+          const bankAssetId = `bank_${account._id}`;
 
-          console.log('Adding bank account entry:', {
-            id: `bank_${account._id}`,
-            account: accountName,
-            value: account.lastBalance,
-          });
+          // 既存のエントリをチェック
+          const existingEntry = bankAssetEntries.find((entry) => entry._id === bankAssetId);
 
-          const bankAssetEntry = {
-            _id: `bank_${account._id}`,
-            userId: user?.id || 'default-user',
-            date: new Date().toISOString().split('T')[0],
-            value: account.lastBalance,
-            description: accountName,
-            account: accountName,
-            category: '現金・預金',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          };
-          dispatch(addAssetEntry(bankAssetEntry));
+          if (!existingEntry) {
+            console.log('Adding new bank account entry:', {
+              id: bankAssetId,
+              account: accountName,
+              value: account.lastBalance,
+            });
+
+            const bankAssetEntry = {
+              _id: bankAssetId,
+              userId: user?.id || 'default-user',
+              date: new Date().toISOString().split('T')[0],
+              value: account.lastBalance,
+              description: accountName,
+              account: accountName,
+              category: '現金・預金',
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            };
+            dispatch(addAssetEntry(bankAssetEntry));
+          } else {
+            console.log('Bank account entry already exists, skipping:', accountName);
+          }
         } else {
           console.log('Account has no balance, skipping:', account.accountName);
         }
