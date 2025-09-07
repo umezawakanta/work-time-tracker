@@ -19,6 +19,7 @@ import { AssetDebtLists } from '@/components/list/AssetDebtLists';
 import { QuickInput } from '@/components/QuickInput'; // 追加: 新しいクイック入力コンポーネント
 import { GoalTracking } from '@/components/goals/GoalTracking'; // 追加: 目標設定コンポーネント
 import { LongTermTrend } from '@/components/trends/LongTermTrend'; // 追加: 長期トレンド可視化コンポーネント
+import { AssetLiabilityInstructions } from '@/components/AssetLiabilityInstructions'; // 追加: 操作手順説明コンポーネント
 import { useReportData } from '@/hooks/useReportData';
 import { useBalanceUpdate } from '@/hooks/useBalanceUpdate';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
@@ -654,105 +655,7 @@ export default function AssetLiabilityReportPage() {
       </div>
 
       {/* 操作手順ガイド */}
-      <Card className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-green-800">
-            <BarChart2 className="h-5 w-5" />
-            資産負債レポート完全操作ガイド
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm">
-            <div>
-              <h4 className="font-semibold text-green-900 mb-3">📊 データ入力の手順</h4>
-              <ol className="list-decimal list-inside space-y-2 text-green-700">
-                <li>
-                  <strong>銀行口座の登録</strong>
-                  <br />
-                  「銀行口座管理」ページでCSVファイルをアップロード
-                </li>
-                <li>
-                  <strong>手動データ入力</strong>
-                  <br />
-                  「資産・負債を追加」ボタンで個別にデータを追加
-                </li>
-                <li>
-                  <strong>自動更新の設定</strong>
-                  <br />
-                  「毎日20のこと」で資産確認タスクを完了
-                </li>
-                <li>
-                  <strong>残高の更新</strong>
-                  <br />
-                  「残高更新」ボタンで最新の残高を反映
-                </li>
-              </ol>
-            </div>
-            <div>
-              <h4 className="font-semibold text-green-900 mb-3">📈 レポートの活用方法</h4>
-              <ol className="list-decimal list-inside space-y-2 text-green-700">
-                <li>
-                  <strong>概要タブ</strong>
-                  <br />
-                  現在の総資産・総負債・純資産を一目で確認
-                </li>
-                <li>
-                  <strong>トレンドタブ</strong>
-                  <br />
-                  月次・年次の資産変化をグラフで分析
-                </li>
-                <li>
-                  <strong>詳細タブ</strong>
-                  <br />
-                  カテゴリ別の内訳と詳細データを表示
-                </li>
-                <li>
-                  <strong>目標タブ</strong>
-                  <br />
-                  将来の目標設定と進捗管理
-                </li>
-              </ol>
-            </div>
-            <div>
-              <h4 className="font-semibold text-green-900 mb-3">💡 毎日の使い方</h4>
-              <ol className="list-decimal list-inside space-y-2 text-green-700">
-                <li>
-                  <strong>朝の確認</strong>
-                  <br />
-                  「毎日20のこと」で資産確認タスクを完了
-                </li>
-                <li>
-                  <strong>データ更新</strong>
-                  <br />
-                  銀行口座の残高を最新に更新
-                </li>
-                <li>
-                  <strong>進捗チェック</strong>
-                  <br />
-                  目標に対する進捗を確認
-                </li>
-                <li>
-                  <strong>分析・改善</strong>
-                  <br />
-                  トレンドを確認して支出を見直し
-                </li>
-              </ol>
-            </div>
-          </div>
-          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <h5 className="font-semibold text-yellow-800 mb-2">⚠️ 重要な注意事項</h5>
-            <ul className="text-yellow-700 text-sm space-y-1">
-              <li>
-                • 銀行口座のCSVファイルは三井住友銀行・横浜銀行・じぶん銀行の形式に対応しています
-              </li>
-              <li>• データは自動的に保存され、ページを再読み込みしても保持されます</li>
-              <li>• セッションが切れた場合は自動的にログイン画面にリダイレクトされます</li>
-              <li>• 個人情報は暗号化されて保存され、第三者と共有されることはありません</li>
-              <li>• 取引明細データは自動的に資産負債レポートに統合されます</li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
+      <AssetLiabilityInstructions />
 
       {/* 財務ヒント */}
       {showTips && (

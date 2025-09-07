@@ -467,6 +467,230 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     return transactions;
   };
 
+  // アコムのカードローンの取引明細CSVを解析
+  const parseAcomCardLoanTransactionCSV = (csvText: string): CSVTransactionData[] => {
+    const lines = csvText.split('\n').filter((line) => line.trim());
+    console.log('Acom Card Loan CSV - Total lines:', lines.length);
+
+    // ヘッダー行を検出
+    let headerIndex = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].toLowerCase();
+      if (line.includes('年月日') || line.includes('日付') || line.includes('date')) {
+        headerIndex = i;
+        break;
+      }
+    }
+
+    const delimiter = detectDelimiter(csvText);
+    const headers = lines[headerIndex].split(delimiter).map((h) => h.trim());
+    console.log('Acom Card Loan Headers detected:', headers);
+
+    const transactions: CSVTransactionData[] = [];
+
+    for (let i = headerIndex + 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      const values = line.split(delimiter).map((v) => v.trim());
+      console.log(`Acom Card Loan CSV - Line ${i}:`, values);
+
+      if (values.length < headers.length) {
+        console.log(
+          `Acom Card Loan CSV - Line ${i} has insufficient columns:`,
+          values.length,
+          'expected:',
+          headers.length
+        );
+        continue;
+      }
+
+      try {
+        // 日付の解析
+        let date = '';
+        let amount = 0;
+        let description = '';
+
+        // 日付フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('年月日') || header.includes('日付') || header.includes('date')) {
+            date = values[j];
+            break;
+          }
+        }
+
+        // 金額フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('金額') || header.includes('残高') || header.includes('amount')) {
+            const amountStr = values[j].replace(/[^\d.-]/g, '');
+            amount = parseFloat(amountStr) || 0;
+            break;
+          }
+        }
+
+        // 取引内容フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (
+            header.includes('内容') ||
+            header.includes('摘要') ||
+            header.includes('description')
+          ) {
+            description = values[j];
+            break;
+          }
+        }
+
+        console.log(
+          `Acom Card Loan CSV - Parsed: date=${date}, description=${description}, amount=${amount}`
+        );
+
+        if (date && amount !== 0) {
+          // 日付の形式を統一
+          const dateObj = new Date(date);
+          const formattedDate = dateObj.toISOString().split('T')[0];
+
+          // カテゴリの自動判定
+          let category = 'その他';
+          const desc = description.toLowerCase();
+          if (desc.includes('返済') || desc.includes('利息')) category = '借金返済';
+          else if (desc.includes('利用') || desc.includes('ショッピング')) category = 'ショッピング';
+          else if (desc.includes('手数料')) category = '手数料';
+
+          transactions.push({
+            date: formattedDate,
+            description: description || '取引',
+            amount: amount,
+            category: category,
+            accountName: 'アコムカードローン',
+          });
+          console.log(`Acom Card Loan CSV - Added transaction:`, transactions[transactions.length - 1]);
+        } else {
+          console.log(`Acom Card Loan CSV - Skipped line ${i}: date=${date}, amount=${amount}`);
+        }
+      } catch (error) {
+        console.error('Error parsing line:', line, error);
+      }
+    }
+
+    console.log('Acom Card Loan CSV - Total transactions found:', transactions.length);
+    return transactions;
+  };
+
+  // アコムのショッピングの取引明細CSVを解析
+  const parseAcomShoppingTransactionCSV = (csvText: string): CSVTransactionData[] => {
+    const lines = csvText.split('\n').filter((line) => line.trim());
+    console.log('Acom Shopping CSV - Total lines:', lines.length);
+
+    // ヘッダー行を検出
+    let headerIndex = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].toLowerCase();
+      if (line.includes('年月日') || line.includes('日付') || line.includes('date')) {
+        headerIndex = i;
+        break;
+      }
+    }
+
+    const delimiter = detectDelimiter(csvText);
+    const headers = lines[headerIndex].split(delimiter).map((h) => h.trim());
+    console.log('Acom Shopping Headers detected:', headers);
+
+    const transactions: CSVTransactionData[] = [];
+
+    for (let i = headerIndex + 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      const values = line.split(delimiter).map((v) => v.trim());
+      console.log(`Acom Shopping CSV - Line ${i}:`, values);
+
+      if (values.length < headers.length) {
+        console.log(
+          `Acom Shopping CSV - Line ${i} has insufficient columns:`,
+          values.length,
+          'expected:',
+          headers.length
+        );
+        continue;
+      }
+
+      try {
+        // 日付の解析
+        let date = '';
+        let amount = 0;
+        let description = '';
+
+        // 日付フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('年月日') || header.includes('日付') || header.includes('date')) {
+            date = values[j];
+            break;
+          }
+        }
+
+        // 金額フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('金額') || header.includes('残高') || header.includes('amount')) {
+            const amountStr = values[j].replace(/[^\d.-]/g, '');
+            amount = parseFloat(amountStr) || 0;
+            break;
+          }
+        }
+
+        // 取引内容フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (
+            header.includes('内容') ||
+            header.includes('摘要') ||
+            header.includes('description')
+          ) {
+            description = values[j];
+            break;
+          }
+        }
+
+        console.log(
+          `Acom Shopping CSV - Parsed: date=${date}, description=${description}, amount=${amount}`
+        );
+
+        if (date && amount !== 0) {
+          // 日付の形式を統一
+          const dateObj = new Date(date);
+          const formattedDate = dateObj.toISOString().split('T')[0];
+
+          // カテゴリの自動判定
+          let category = 'その他';
+          const desc = description.toLowerCase();
+          if (desc.includes('ショッピング') || desc.includes('利用')) category = 'ショッピング';
+          else if (desc.includes('返済') || desc.includes('支払い')) category = '借金返済';
+          else if (desc.includes('手数料')) category = '手数料';
+
+          transactions.push({
+            date: formattedDate,
+            description: description || '取引',
+            amount: amount,
+            category: category,
+            accountName: 'アコムショッピング',
+          });
+          console.log(`Acom Shopping CSV - Added transaction:`, transactions[transactions.length - 1]);
+        } else {
+          console.log(`Acom Shopping CSV - Skipped line ${i}: date=${date}, amount=${amount}`);
+        }
+      } catch (error) {
+        console.error('Error parsing line:', line, error);
+      }
+    }
+
+    console.log('Acom Shopping CSV - Total transactions found:', transactions.length);
+    return transactions;
+  };
+
   // 三菱UFJ証券の取引明細CSVを解析
   const parseMUFJSecuritiesTransactionCSV = (csvText: string): CSVTransactionData[] => {
     const lines = csvText.split('\n').filter((line) => line.trim());
@@ -1095,6 +1319,8 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     const isJibunFormat = csvText.includes('じぶん銀行') || csvText.includes('JIBUN BANK');
     const isSMBCLFormat = csvText.includes('三井住友銀行') && csvText.includes('CL');
     const isMUFJSecuritiesFormat = csvText.includes('三菱UFJ') || csvText.includes('証券');
+    const isAcomCardLoanFormat = csvText.includes('アコム') && csvText.includes('カードローン');
+    const isAcomShoppingFormat = csvText.includes('アコム') && csvText.includes('ショッピング');
 
     if (isSMBCFormat && !isSMBCLFormat) {
       console.log('Detected SMBC format');
@@ -1111,6 +1337,12 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     } else if (isMUFJSecuritiesFormat) {
       console.log('Detected MUFJ Securities format');
       return parseMUFJSecuritiesTransactionCSV(csvText);
+    } else if (isAcomCardLoanFormat) {
+      console.log('Detected Acom Card Loan format');
+      return parseAcomCardLoanTransactionCSV(csvText);
+    } else if (isAcomShoppingFormat) {
+      console.log('Detected Acom Shopping format');
+      return parseAcomShoppingTransactionCSV(csvText);
     } else {
       console.log('Detected generic format');
       return parseGenericCSV(csvText);

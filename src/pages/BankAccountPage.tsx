@@ -97,7 +97,7 @@ const BankAccountPage: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">銀行口座管理</h1>
             <p className="text-lg text-gray-600">
-              メイン銀行口座を登録・管理して、「毎日20のこと」を効率的に進めましょう
+              複数の銀行口座を登録・管理して、日々の収支を把握し、「毎日20のこと」を効率的に進めましょう
             </p>
           </div>
         </div>
@@ -387,15 +387,41 @@ const BankAccountPage: React.FC = () => {
                       <li>
                         <strong>三菱UFJ証券</strong>
                         <br />
-                        <a
-                          href="https://www.mufg.jp/"
-                          target="_blank"
+                        <a 
+                          href="https://www.mufg.jp/" 
+                          target="_blank" 
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:text-blue-800 underline"
                         >
                           三菱UFJ証券オンライントレード
                         </a>
                         で証券口座の取引明細をダウンロードして登録
+                      </li>
+                      <li>
+                        <strong>アコムカードローン</strong>
+                        <br />
+                        <a 
+                          href="https://www.acom.co.jp/" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                          アコムオンラインサービス
+                        </a>
+                        でカードローンの取引明細をダウンロードして登録
+                      </li>
+                      <li>
+                        <strong>アコムショッピング</strong>
+                        <br />
+                        <a 
+                          href="https://www.acom.co.jp/" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                          アコムオンラインサービス
+                        </a>
+                        でショッピングの取引明細をダウンロードして登録
                       </li>
                       <li>
                         <strong>その他の銀行</strong>
