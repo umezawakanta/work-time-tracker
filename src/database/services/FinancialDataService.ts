@@ -265,9 +265,11 @@ export class FinancialDataService {
     accountName: string
   ): Promise<{ deletedCount: number }> {
     await this.ensureConnection();
+    // 正規表現の特殊文字をエスケープ
+    const escapedAccountName = accountName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const result = await Transaction.deleteMany({
       userId,
-      accountName: { $regex: accountName, $options: 'i' },
+      accountName: { $regex: escapedAccountName, $options: 'i' },
     });
     return { deletedCount: result.deletedCount || 0 };
   }

@@ -4591,10 +4591,20 @@ app.post('/api/cleanup-duplicate-bank-accounts', async (req, res) => {
 app.delete('/api/transactions', async (req: Request, res: Response) => {
   try {
     const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
-    const { transactionId, accountName } = req.body;
+    const { transactionId, accountName, deleteAll } = req.body;
 
     if (!userId) {
       return res.status(400).json({ success: false, message: 'userId is required' });
+    }
+
+    // すべての取引明細を削除
+    if (deleteAll) {
+      const result = await financialService.deleteAllTransactions(userId);
+      return res.json({
+        success: true,
+        message: 'すべての取引明細を削除しました',
+        deletedCount: result.deletedCount,
+      });
     }
 
     // 特定の口座名の取引明細を一括削除
@@ -4611,7 +4621,7 @@ app.delete('/api/transactions', async (req: Request, res: Response) => {
     if (!transactionId) {
       return res
         .status(400)
-        .json({ success: false, message: 'transactionId or accountName is required' });
+        .json({ success: false, message: 'transactionId, accountName, or deleteAll is required' });
     }
 
     const success = await financialService.deleteTransaction(transactionId);
