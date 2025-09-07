@@ -7,6 +7,7 @@ export interface Transaction {
   accountId: string; // 関連する口座ID
   userId: string;
   csvOrder?: number; // CSVの並び順（0が最新、数が大きくなるほど古い）
+  balance?: number; // 残高（オプション）
   createdAt: string;
   updatedAt: string;
 }
