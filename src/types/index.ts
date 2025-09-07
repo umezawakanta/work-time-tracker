@@ -204,7 +204,6 @@ export interface User {
   isPremium?: boolean; // プレミアムユーザー状態
   trialActivated?: boolean; // トライアル有効化状態
   trialExpiryDate?: string; // トライアル有効期限
-  lastLoginAt?: string; // 最終ログイン日時
   // その他必要なユーザープロパティ
   traits?: {
     iq?: number;

@@ -1,5 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 
+// Request型を拡張してsessionIDプロパティを追加
+declare global {
+  namespace Express {
+    interface Request {
+      sessionID?: string;
+    }
+  }
+}
+
 interface ErrorLog {
   timestamp: Date;
   level: 'error' | 'warn' | 'info' | 'debug';

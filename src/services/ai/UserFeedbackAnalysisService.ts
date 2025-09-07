@@ -528,9 +528,9 @@ ${insights
   private analyzeFeatureRequestTrends(requests: UserFeedback[]): string[] {
     const keywords: Record<string, number> = {};
 
-    requests.forEach((request) => {
+    requests.forEach((request: UserFeedback) => {
       const words = request.content.toLowerCase().match(/\w+/g) || [];
-      words.forEach((word) => {
+      words.forEach((word: string) => {
         if (word.length > 3) {
           // 3文字以上の単語のみ
           keywords[word] = (keywords[word] || 0) + 1;

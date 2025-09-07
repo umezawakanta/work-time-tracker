@@ -97,6 +97,24 @@ interface AnalyticsSummary {
   compare?: { today: number; yesterday: number; diff: number; pct: number };
   retentionCohort?: Array<{ day: string; newUsers: number; retainedNextDay: number }>;
   topErrors?: Array<{ message: string; count: number; url?: string }>;
+  taskStats?: {
+    total: number;
+    byStatus: Record<string, number>;
+    byCategory: Record<string, number>;
+    byPriority: Record<string, number>;
+    completionRate: number;
+    overdueCount: number;
+    thisWeekCount: number;
+    lastUpdated?: string;
+  };
+  deviceStats?: {
+    desktop: number;
+    mobile: number;
+    tablet: number;
+  };
+  regionStats?: {
+    [region: string]: number;
+  };
 }
 
 interface AssessmentsSummary {
