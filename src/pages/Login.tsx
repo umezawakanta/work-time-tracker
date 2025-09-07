@@ -48,9 +48,14 @@ export default function Login() {
 
   // 既にログイン済みの場合はリダイレクト（管理者は /admin 優先）
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !user) return;
+
+    // ユーザー情報が完全に読み込まれるまで待機
+    if (!user.id) return;
+
     const isAdmin = Boolean((user as any)?.isAdmin) || (user as any)?.role === 'admin';
     const target = isAdmin || from === '/admin' ? '/admin' : from;
+    console.log('🔀 Login redirect:', { isAuthenticated, user: !!user, isAdmin, target });
     navigate(target, { replace: true });
   }, [isAuthenticated, user, navigate, from]);
 
@@ -188,9 +193,13 @@ export default function Login() {
         sessionStorage.removeItem('post_login_redirect');
       }
       const isAdmin = (u?: any) => Boolean(u?.isAdmin) || u?.role === 'admin';
-      const target = stored || (isAdmin(user as any) || from === '/admin' ? '/admin' : from);
+      const target = stored || (isAdmin(loginResponse.user) || from === '/admin' ? '/admin' : from);
       console.log('🔀 Redirecting to:', target);
-      navigate(target, { replace: true });
+
+      // 少し待ってからリダイレクト（認証状態の更新を待つ）
+      setTimeout(() => {
+        navigate(target, { replace: true });
+      }, 100);
     } catch (error) {
       console.error('❌ Login submission error:', error);
       if (error instanceof Error) {

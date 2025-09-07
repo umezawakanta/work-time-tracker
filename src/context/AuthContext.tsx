@@ -253,66 +253,79 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
-  // 管理者トースト表示フラグ
-  const adminToastShown = useRef(false);
-  // fetchUserのデバウンス用タイマー
-  const fetchUserTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  // ユーザー情報の取得（デバウンス付き）
-  const fetchUser = useCallback(async () => {
-    // 既存のタイマーをクリア
-    if (fetchUserTimeout.current) {
-      clearTimeout(fetchUserTimeout.current);
+  // 管理者トースト表示フラグ（セッションストレージベース）
+  const getAdminToastShown = () => {
+    try {
+      return sessionStorage.getItem('admin-toast-shown') === 'true';
+    } catch {
+      return false;
     }
+  };
 
-    // 100ms後に実行（デバウンス）
-    fetchUserTimeout.current = setTimeout(async () => {
-      try {
-        if (!tokenManager.isAuthenticated()) {
-          setUser(null);
-          adminToastShown.current = false; // ログアウト時にフラグをリセット
-          return;
-        }
-
-        const userData = await fetchUserData();
-        const previousUser = user;
-        setUser(userData);
-
-        // 管理者の場合は初回ログイン時のみ成功メッセージ表示
-        if (userData.isAdmin && !adminToastShown.current) {
-          adminToastShown.current = true;
-          logger.info('Auth', 'Admin user logged in', { userId: userData.id });
-          toast.success('🔥 管理者としてログインしました', {
-            duration: 3000,
-            style: {
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              fontWeight: 'bold',
-            },
-          });
-        }
-      } catch (error: any) {
-        logger.error('Auth', 'Failed to fetch user data', error);
-
-        // 認証エラー（401/403）の場合は認証状態をリセット
-        if (error?.response?.status === 401 || error?.response?.status === 403) {
-          console.log('🔒 Authentication error in fetchUser, clearing auth state');
-          tokenManager.clearTokens();
-          setIsAuthenticated(false);
-          setUser(null);
-          setSessionExpired(true);
-          adminToastShown.current = false; // エラー時にフラグをリセット
-
-          // ログイン画面にリダイレクト
-          if (typeof window !== 'undefined') {
-            window.location.replace('/login');
-          }
-        } else {
-          setUser(null);
-        }
+  const setAdminToastShown = (value: boolean) => {
+    try {
+      if (value) {
+        sessionStorage.setItem('admin-toast-shown', 'true');
+      } else {
+        sessionStorage.removeItem('admin-toast-shown');
       }
-    }, 100); // 100msのデバウンス
-  }, []);
+    } catch {
+      // セッションストレージが使用できない場合は無視
+    }
+  };
+
+  // ユーザー情報の取得
+  const fetchUser = useCallback(async () => {
+    try {
+      if (!tokenManager.isAuthenticated()) {
+        setUser(null);
+        setAdminToastShown(false); // ログアウト時にフラグをリセット
+        return;
+      }
+
+      // 既にユーザー情報が存在する場合はスキップ（重複取得を防ぐ）
+      if (user && user.id) {
+        console.log('👤 User already exists, skipping fetchUser');
+        return;
+      }
+
+      const userData = await fetchUserData();
+      setUser(userData);
+
+      // 管理者の場合は初回ログイン時のみ成功メッセージ表示
+      if (userData.isAdmin && !getAdminToastShown()) {
+        setAdminToastShown(true);
+        logger.info('Auth', 'Admin user logged in', { userId: userData.id });
+        toast.success('🔥 管理者としてログインしました', {
+          duration: 3000,
+          style: {
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            fontWeight: 'bold',
+          },
+        });
+      }
+    } catch (error: any) {
+      logger.error('Auth', 'Failed to fetch user data', error);
+
+      // 認証エラー（401/403）の場合は認証状態をリセット
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        console.log('🔒 Authentication error in fetchUser, clearing auth state');
+        tokenManager.clearTokens();
+        setIsAuthenticated(false);
+        setUser(null);
+        setSessionExpired(true);
+        setAdminToastShown(false); // エラー時にフラグをリセット
+
+        // ログイン画面にリダイレクト
+        if (typeof window !== 'undefined') {
+          window.location.replace('/login');
+        }
+      } else {
+        setUser(null);
+      }
+    }
+  }, [user]);
 
   // 認証の更新
   const refreshAuth = useCallback(async () => {
@@ -345,7 +358,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (isValid) {
         try {
-          if (!user) {
+          // 開発環境ではfetchUserを呼び出さない（管理者トーストを防ぐため）
+          const host = typeof window !== 'undefined' ? window.location.hostname : '';
+          const isTrustedHost =
+            host === 'work-time-tracker-five.vercel.app' ||
+            /^work-time-tracker-5d9q-.*\.vercel\.app$/.test(host);
+
+          if (isTrustedHost && !user) {
             await fetchUser();
           }
           setIsAuthenticated(true);
@@ -480,7 +499,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.log('🧪 開発環境 - 認証状態を維持');
             if (isMounted) {
               setIsAuthenticated(true);
-              // 開発環境でもユーザー情報を取得（初回のみ）
+              // 開発環境ではユーザー情報を取得（管理者トーストは制御済み）
               if (!user) {
                 await fetchUser();
               }
@@ -498,7 +517,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.log('🧪 開発環境 - トークン無効でも認証状態を維持');
             if (isMounted) {
               setIsAuthenticated(true);
-              // 開発環境でもユーザー情報を取得（初回のみ）
+              // 開発環境ではユーザー情報を取得（管理者トーストは制御済み）
               if (!user) {
                 await fetchUser();
               }
@@ -595,10 +614,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      // タイマーをクリア
-      if (fetchUserTimeout.current) {
-        clearTimeout(fetchUserTimeout.current);
-      }
     };
   }, []);
 
