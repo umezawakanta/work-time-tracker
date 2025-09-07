@@ -314,7 +314,13 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     let headerIndex = 0;
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].toLowerCase();
-      if (line.includes('取引日') || line.includes('日付') || line.includes('年月日') || line.includes('date') || line.includes('じぶん銀行')) {
+      if (
+        line.includes('取引日') ||
+        line.includes('日付') ||
+        line.includes('年月日') ||
+        line.includes('date') ||
+        line.includes('じぶん銀行')
+      ) {
         headerIndex = i;
         break;
       }
@@ -352,7 +358,12 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
         // 日付フィールドを探す
         for (let j = 0; j < headers.length; j++) {
           const header = headers[j].toLowerCase();
-          if (header.includes('取引日') || header.includes('年月日') || header.includes('日付') || header.includes('date')) {
+          if (
+            header.includes('取引日') ||
+            header.includes('年月日') ||
+            header.includes('日付') ||
+            header.includes('date')
+          ) {
             date = values[j];
             break;
           }
@@ -361,7 +372,13 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
         // 金額フィールドを探す
         for (let j = 0; j < headers.length; j++) {
           const header = headers[j].toLowerCase();
-          if (header.includes('金額') || header.includes('入金') || header.includes('出金') || header.includes('amount') || header.includes('残高')) {
+          if (
+            header.includes('金額') ||
+            header.includes('入金') ||
+            header.includes('出金') ||
+            header.includes('amount') ||
+            header.includes('残高')
+          ) {
             const amountStr = values[j].replace(/[^\d.-]/g, '');
             amount = parseFloat(amountStr) || 0;
             break;
