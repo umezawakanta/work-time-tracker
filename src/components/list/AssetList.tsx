@@ -50,7 +50,7 @@ export const AssetList: React.FC<AssetListProps> = ({ assetEntries, onBalanceUpd
         {assetEntries.length > 0 ? (
           <div>
             {assetEntries
-              .filter((entry) => entry && entry._id && entry.account)
+              .filter((entry) => entry && entry._id && entry.account && entry.value !== undefined)
               .map((entry) => (
                 <div key={entry._id} className="flex items-center justify-between py-2 border-b">
                   <div>
