@@ -188,12 +188,15 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
     let totalIncome = 0;
     let totalExpense = 0;
 
-    // 各取引の金額を直接計算
-    for (const transaction of sortedTransactions) {
-      if (transaction.amount > 0) {
-        totalIncome += transaction.amount; // 正の値 = 収入
-      } else if (transaction.amount < 0) {
-        totalExpense += Math.abs(transaction.amount); // 負の値 = 支出
+    // 残高の差分で収支を計算
+    for (let i = 0; i < sortedTransactions.length; i++) {
+      const currentTransaction = sortedTransactions[i];
+      const amount = currentTransaction.amount; // これは残高の差分
+
+      if (amount > 0) {
+        totalIncome += amount; // 正の値 = 収入
+      } else if (amount < 0) {
+        totalExpense += Math.abs(amount); // 負の値 = 支出
       }
     }
 
@@ -476,7 +479,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
                             <TableCell className="text-right">
                               <div className="text-right">
                                 <div className="text-sm text-gray-500">
-                                  取引金額: ¥{transaction.amount.toLocaleString()}
+                                  残高: ¥{transaction.balance?.toLocaleString() || '0'}
                                 </div>
                                 <div
                                   className={`font-semibold ${

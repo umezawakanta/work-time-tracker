@@ -26,4 +26,5 @@ export interface CSVTransactionData {
   category: string;
   accountName: string;
   accountId?: string; // 口座ID（オプション）
+  balance?: number; // 残高（オプション）
 }

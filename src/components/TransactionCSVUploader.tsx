@@ -221,7 +221,140 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     return transactions;
   };
 
-  // じぶん銀行の取引明細CSVを解析
+  // じぶん銀行の取引明細CSVを解析（新しい形式：お引出し・お預入れ列）
+  const parseJibunBankNewFormatCSV = (csvText: string): CSVTransactionData[] => {
+    const lines = csvText.split('\n').filter((line) => line.trim());
+    console.log('Jibun Bank New Format CSV - Total lines:', lines.length);
+
+    // ヘッダー行を検出
+    let headerIndex = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].toLowerCase();
+      if (line.includes('年月日') && line.includes('お引出し') && line.includes('お預入れ')) {
+        headerIndex = i;
+        break;
+      }
+    }
+
+    const delimiter = detectDelimiter(csvText);
+    const headers = lines[headerIndex].split(delimiter).map((h) => h.trim());
+    console.log('Jibun Bank New Format Headers detected:', headers);
+
+    const transactions: CSVTransactionData[] = [];
+
+    for (let i = headerIndex + 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      const values = line.split(delimiter).map((v) => v.trim());
+      console.log(`Jibun Bank New Format CSV - Line ${i}:`, values);
+
+      if (values.length < headers.length) {
+        console.log(
+          `Jibun Bank New Format CSV - Line ${i} has insufficient columns:`,
+          values.length,
+          'expected:',
+          headers.length
+        );
+        continue;
+      }
+
+      try {
+        // 日付の解析
+        let date = '';
+        let amount = 0;
+        let description = '';
+        let currentBalance = 0;
+
+        // 日付フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('年月日')) {
+            date = values[j];
+            break;
+          }
+        }
+
+        // お引出し・お預入れ列から取引金額を計算
+        let withdrawalAmount = 0;
+        let depositAmount = 0;
+
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('お引出し')) {
+            const withdrawalStr = values[j].replace(/[^\d.-]/g, '');
+            withdrawalAmount = parseFloat(withdrawalStr) || 0;
+          } else if (header.includes('お預入れ')) {
+            const depositStr = values[j].replace(/[^\d.-]/g, '');
+            depositAmount = parseFloat(depositStr) || 0;
+          } else if (header.includes('残高')) {
+            const balanceStr = values[j].replace(/[^\d.-]/g, '');
+            currentBalance = parseFloat(balanceStr) || 0;
+          }
+        }
+
+        // 取引金額を計算（預入れ - 引出し）
+        amount = depositAmount - withdrawalAmount;
+
+        // 取引内容フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('お取り扱い内容') || header.includes('内容')) {
+            description = values[j];
+            break;
+          }
+        }
+
+        console.log(
+          `Jibun Bank New Format CSV - Amount calculation: withdrawal=${withdrawalAmount}, deposit=${depositAmount}, amount=${amount}`
+        );
+
+        if (date && amount !== 0) {
+          // 日付の形式を統一（YYYY/MM/DD形式を処理）
+          let formattedDate = '';
+          try {
+            const dateObj = new Date(date);
+            formattedDate = dateObj.toISOString().split('T')[0];
+          } catch (error) {
+            console.error('Date parsing error:', error);
+            continue;
+          }
+
+          // カテゴリの自動判定
+          let category = 'その他';
+          const desc = description.toLowerCase();
+          if (desc.includes('給与') || desc.includes('ボーナス')) category = '給与';
+          else if (desc.includes('利息')) category = '利息';
+          else if (desc.includes('カード') || desc.includes('手数料')) category = '手数料';
+          else if (desc.includes('振込')) category = '振込';
+
+          transactions.push({
+            date: formattedDate,
+            description: description || '取引',
+            amount: amount,
+            category: category,
+            accountName: 'じぶん銀行口座',
+            balance: currentBalance,
+          } as CSVTransactionData);
+          console.log(
+            `Jibun Bank New Format CSV - Added transaction:`,
+            transactions[transactions.length - 1]
+          );
+        } else {
+          console.log(
+            `Jibun Bank New Format CSV - Skipped line ${i}: date=${date}, amount=${amount}`
+          );
+        }
+      } catch (error) {
+        console.error('Error parsing line:', line, error);
+      }
+    }
+
+    console.log('Jibun Bank New Format CSV - Total transactions found:', transactions.length);
+    return transactions;
+  };
+
+  // じぶん銀行の取引明細CSVを解析（旧形式：入金・出金列）
   const parseJibunBankTransactionCSV = (csvText: string): CSVTransactionData[] => {
     const lines = csvText.split('\n').filter((line) => line.trim());
     console.log('Jibun Bank CSV - Total lines:', lines.length);
@@ -284,47 +417,47 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
           }
         }
 
-        // 入金・出金フィールドを探して取引金額を計算
-        let incomeAmount = 0;
-        let expenseAmount = 0;
-        let balanceAmount = 0;
+        // 残高フィールドを探す
+        let currentBalance = 0;
 
         for (let j = 0; j < headers.length; j++) {
           const header = headers[j].toLowerCase();
           console.log(`Jibun Bank CSV - Header ${j}: "${header}" = "${values[j]}"`);
 
-          if (header.includes('入金')) {
-            const incomeStr = values[j].replace(/[^\d.-]/g, '');
-            incomeAmount = parseFloat(incomeStr) || 0;
-            console.log(`Jibun Bank CSV - Found income column: "${values[j]}" -> ${incomeAmount}`);
-          } else if (header.includes('出金')) {
-            const expenseStr = values[j].replace(/[^\d.-]/g, '');
-            expenseAmount = parseFloat(expenseStr) || 0;
-            console.log(
-              `Jibun Bank CSV - Found expense column: "${values[j]}" -> ${expenseAmount}`
-            );
-          } else if (header.includes('残高')) {
+          if (header.includes('残高')) {
             const balanceStr = values[j].replace(/[^\d.-]/g, '');
-            balanceAmount = parseFloat(balanceStr) || 0;
+            currentBalance = parseFloat(balanceStr) || 0;
             console.log(
-              `Jibun Bank CSV - Found balance column: "${values[j]}" -> ${balanceAmount}`
+              `Jibun Bank CSV - Found balance column: "${values[j]}" -> ${currentBalance}`
             );
+            break;
           }
         }
 
-        // 取引金額を計算（入金があれば正の値、出金があれば負の値）
+        // 入金・出金列から直接取引金額を計算
+        let incomeAmount = 0;
+        let expenseAmount = 0;
+
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('入金')) {
+            const incomeStr = values[j].replace(/[^\d.-]/g, '');
+            incomeAmount = parseFloat(incomeStr) || 0;
+          } else if (header.includes('出金')) {
+            const expenseStr = values[j].replace(/[^\d.-]/g, '');
+            expenseAmount = parseFloat(expenseStr) || 0;
+          }
+        }
+
+        // 入金・出金から取引金額を計算
         if (incomeAmount > 0) {
           amount = incomeAmount;
-          console.log(`Jibun Bank CSV - Using income amount: ${amount}`);
         } else if (expenseAmount > 0) {
           amount = -expenseAmount;
-          console.log(`Jibun Bank CSV - Using expense amount: ${amount}`);
-        } else {
-          console.log(`Jibun Bank CSV - No valid income/expense found, amount remains 0`);
         }
 
         console.log(
-          `Jibun Bank CSV - Amount calculation: income=${incomeAmount}, expense=${expenseAmount}, balance=${balanceAmount}, final=${amount}`
+          `Jibun Bank CSV - Amount calculation: income=${incomeAmount}, expense=${expenseAmount}, amount=${amount}`
         );
 
         // 取引内容フィールドを探す
@@ -393,6 +526,7 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
             amount: amount,
             category: category,
             accountName: 'じぶん銀行口座',
+            balance: currentBalance, // 残高情報を追加
           });
           console.log(`Jibun Bank CSV - Added transaction:`, transactions[transactions.length - 1]);
         } else {
@@ -1220,7 +1354,7 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     return transactions;
   };
 
-  // 三井住友銀行の取引明細CSVを解析
+  // 三井住友銀行の取引明細CSVを解析（お引出し・お預入れ形式）
   const parseSMBCTransactionCSV = (csvText: string): CSVTransactionData[] => {
     const lines = csvText.split('\n').filter((line) => line.trim());
     console.log('SMBC CSV - Total lines:', lines.length);
@@ -1229,7 +1363,7 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     let headerIndex = 0;
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].toLowerCase();
-      if (line.includes('年月日') || line.includes('日付') || line.includes('date')) {
+      if (line.includes('年月日') && line.includes('お引出し') && line.includes('お預入れ')) {
         headerIndex = i;
         break;
       }
@@ -1263,59 +1397,57 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
         let date = '';
         let amount = 0;
         let description = '';
+        let currentBalance = 0;
 
         // 日付フィールドを探す
         for (let j = 0; j < headers.length; j++) {
           const header = headers[j].toLowerCase();
-          if (header.includes('年月日') || header.includes('日付') || header.includes('date')) {
+          if (header.includes('年月日')) {
             date = values[j];
             break;
           }
         }
 
-        // 金額フィールドを探す
+        // お引出し・お預入れ列から取引金額を計算
+        let withdrawalAmount = 0;
+        let depositAmount = 0;
+
         for (let j = 0; j < headers.length; j++) {
           const header = headers[j].toLowerCase();
-          if (header.includes('金額') || header.includes('残高') || header.includes('amount')) {
-            const amountStr = values[j].replace(/[^\d.-]/g, '');
-            amount = parseFloat(amountStr) || 0;
-            break;
+          if (header.includes('お引出し')) {
+            const withdrawalStr = values[j].replace(/[^\d.-]/g, '');
+            withdrawalAmount = parseFloat(withdrawalStr) || 0;
+          } else if (header.includes('お預入れ')) {
+            const depositStr = values[j].replace(/[^\d.-]/g, '');
+            depositAmount = parseFloat(depositStr) || 0;
+          } else if (header.includes('残高')) {
+            const balanceStr = values[j].replace(/[^\d.-]/g, '');
+            currentBalance = parseFloat(balanceStr) || 0;
           }
         }
+
+        // 取引金額を計算（預入れ - 引出し）
+        amount = depositAmount - withdrawalAmount;
 
         // 取引内容フィールドを探す
         for (let j = 0; j < headers.length; j++) {
           const header = headers[j].toLowerCase();
-          if (
-            header.includes('内容') ||
-            header.includes('摘要') ||
-            header.includes('description')
-          ) {
+          if (header.includes('お取り扱い内容') || header.includes('内容')) {
             description = values[j];
             break;
           }
         }
 
         console.log(
-          `SMBC CSV - Parsed: date=${date}, description=${description}, amount=${amount}`
+          `SMBC CSV - Amount calculation: withdrawal=${withdrawalAmount}, deposit=${depositAmount}, amount=${amount}`
         );
 
         if (date && amount !== 0) {
-          // 日付の形式を統一（YYYY年MM月DD日形式を処理）
+          // 日付の形式を統一（YYYY/MM/DD形式を処理）
           let formattedDate = '';
           try {
-            // YYYY年MM月DD日形式をYYYY-MM-DDに変換
-            const dateMatch = date.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
-            if (dateMatch) {
-              const year = dateMatch[1];
-              const month = dateMatch[2].padStart(2, '0');
-              const day = dateMatch[3].padStart(2, '0');
-              formattedDate = `${year}-${month}-${day}`;
-            } else {
-              // その他の形式の場合は通常のDate解析を試行
-              const dateObj = new Date(date);
-              formattedDate = dateObj.toISOString().split('T')[0];
-            }
+            const dateObj = new Date(date);
+            formattedDate = dateObj.toISOString().split('T')[0];
           } catch (error) {
             console.error('Date parsing error:', error);
             continue;
@@ -1325,19 +1457,9 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
           let category = 'その他';
           const desc = description.toLowerCase();
           if (desc.includes('給与') || desc.includes('ボーナス')) category = '給与';
-          else if (
-            desc.includes('食費') ||
-            desc.includes('コンビニ') ||
-            desc.includes('スーパー') ||
-            desc.includes('外食')
-          )
-            category = '食費';
-          else if (desc.includes('交通費') || desc.includes('電車') || desc.includes('ガソリン'))
-            category = '交通費';
-          else if (desc.includes('住居費') || desc.includes('家賃')) category = '住居費';
-          else if (desc.includes('光熱費') || desc.includes('電気') || desc.includes('ガス'))
-            category = '光熱費';
-          else if (desc.includes('通信費') || desc.includes('携帯')) category = '通信費';
+          else if (desc.includes('利息')) category = '利息';
+          else if (desc.includes('カード') || desc.includes('手数料')) category = '手数料';
+          else if (desc.includes('振込')) category = '振込';
 
           transactions.push({
             date: formattedDate,
@@ -1345,6 +1467,7 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
             amount: amount,
             category: category,
             accountName: 'メイン口座',
+            balance: currentBalance,
           });
           console.log(`SMBC CSV - Added transaction:`, transactions[transactions.length - 1]);
         } else {
@@ -1733,6 +1856,10 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
   // CSVファイルの解析
   const parseCSV = (csvText: string): CSVTransactionData[] => {
     // 銀行形式を判定（より具体的な判定を優先）
+    const isSMBCNewFormat =
+      csvText.includes('お引出し') &&
+      csvText.includes('お預入れ') &&
+      csvText.includes('お取り扱い内容');
     const isJibunFormat =
       csvText.includes('じぶん銀行') ||
       csvText.includes('JIBUN BANK') ||
@@ -1751,8 +1878,11 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
       csvText.includes('AU PAY');
     const isSMBCFormat = csvText.includes('年月日') || csvText.includes('残高');
 
-    if (isJibunFormat) {
-      console.log('Detected Jibun Bank format');
+    if (isSMBCNewFormat) {
+      console.log('Detected SMBC new format (お引出し・お預入れ)');
+      return parseSMBCTransactionCSV(csvText);
+    } else if (isJibunFormat) {
+      console.log('Detected Jibun Bank format (入金・出金)');
       return parseJibunBankTransactionCSV(csvText);
     } else if (isYokohamaFormat) {
       console.log('Detected Yokohama Bank format');
@@ -2116,9 +2246,10 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
             <div className="text-sm text-gray-500">
               <p className="font-semibold mb-2">対応形式:</p>
               <ul className="space-y-1">
-                <li>• 三井住友銀行の取引明細CSV</li>
+                <li>• 三井住友銀行の取引明細CSV（お引出し・お預入れ形式）</li>
+                <li>• 三井住友銀行の取引明細CSV（従来形式）</li>
                 <li>• 横浜銀行の取引明細CSV</li>
-                <li>• じぶん銀行の取引明細CSV</li>
+                <li>• じぶん銀行の取引明細CSV（入金・出金形式）</li>
                 <li>• 三井住友銀行CL口座の取引明細CSV</li>
                 <li>• 三菱UFJ証券の取引明細CSV</li>
                 <li>• アコムカードローンの取引明細CSV</li>
