@@ -64,6 +64,113 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
     });
   };
 
+  // じぶん銀行のCSVフォーマットを解析
+  const parseJibunBankCSV = (csvText: string): any[] => {
+    try {
+      console.log('じぶん銀行CSV解析開始:', csvText.substring(0, 200) + '...');
+
+      const lines = csvText.split('\n').filter((line) => line.trim());
+      console.log('行数:', lines.length);
+
+      if (lines.length === 0) {
+        console.log('CSVファイルが空です');
+        return [];
+      }
+
+      // 区切り文字を自動検出（カンマまたはタブ）
+      const firstLine = lines[0];
+      const isTabDelimited = firstLine.includes('\t') && !firstLine.includes(',');
+      const delimiter = isTabDelimited ? '\t' : ',';
+      console.log('区切り文字:', delimiter);
+
+      const headers = firstLine.split(delimiter).map((h) => h.trim());
+      console.log('ヘッダー:', headers);
+
+      // じぶん銀行のCSVフォーマットかチェック
+      const hasDateField = headers.some(
+        (h) =>
+          h.includes('年月日') ||
+          h.includes('日付') ||
+          h.includes('日時') ||
+          h.includes('日') ||
+          h === '年月日' ||
+          h === '日付' ||
+          h.includes('2025') ||
+          h.includes('2024')
+      );
+      const hasTransactionField = headers.some(
+        (h) =>
+          h.includes('取引内容') || h.includes('内容') || h.includes('摘要') || h === '取引内容'
+      );
+      const hasDepositField = headers.some(
+        (h) => h.includes('入金') || h.includes('預入') || h.includes('受取') || h === '入金'
+      );
+      const hasWithdrawalField = headers.some(
+        (h) => h.includes('出金') || h.includes('引出') || h.includes('支払') || h === '出金'
+      );
+      const hasBalanceField = headers.some(
+        (h) => h.includes('残高') || h.includes('残額') || h === '残高'
+      );
+
+      const isJibunFormat =
+        hasDateField &&
+        hasTransactionField &&
+        (hasDepositField || hasWithdrawalField || hasBalanceField);
+
+      console.log('じぶん銀行フォーマットか:', isJibunFormat);
+      console.log('検出結果:', {
+        hasDateField,
+        hasTransactionField,
+        hasDepositField,
+        hasWithdrawalField,
+        hasBalanceField,
+      });
+
+      if (!isJibunFormat) {
+        console.log('通常のフォーマットで解析');
+        return parseCSV(csvText);
+      }
+
+      const parsedData = lines.slice(1).map((line, index) => {
+        const values = line.split(delimiter).map((v) => v.trim());
+        const row: any = {};
+
+        headers.forEach((header, i) => {
+          row[header] = values[i] || '';
+        });
+
+        return {
+          ...row,
+          rowNumber: index + 2,
+        };
+      });
+
+      console.log('解析されたデータ:', parsedData.slice(0, 3));
+
+      // じぶん銀行のCSVの場合、最新の残高のみを取得
+      if (isJibunFormat) {
+        const sortedData = parsedData.sort((a, b) => {
+          const dateA = new Date(
+            a[Object.keys(a).find((key) => key.includes('年月日') || key.includes('日付')) || '']
+          );
+          const dateB = new Date(
+            b[Object.keys(b).find((key) => key.includes('年月日') || key.includes('日付')) || '']
+          );
+          return dateB.getTime() - dateA.getTime();
+        });
+
+        const latestData = sortedData[0];
+        console.log('最新のデータ（メイン口座用）:', latestData);
+        return [latestData];
+      }
+
+      return parsedData;
+    } catch (error) {
+      console.error('じぶん銀行CSV解析エラー:', error);
+      return [];
+    }
+  };
+
   // 三井住友銀行のCSVフォーマットを解析
   const parseSMBCBankCSV = (csvText: string): any[] => {
     try {
@@ -229,7 +336,29 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
       );
       const isSMBCFormat = hasDateField && hasBalanceField;
 
-      console.log('SMBCフォーマットか:', isSMBCFormat, '利用可能なフィールド:', Object.keys(row));
+      // じぶん銀行のCSVフォーマットかチェック
+      const hasTransactionField = Object.keys(row).some(
+        (key) => key.includes('取引内容') || key.includes('内容') || key.includes('摘要')
+      );
+      const hasDepositField = Object.keys(row).some(
+        (key) => key.includes('入金') || key.includes('預入') || key.includes('受取')
+      );
+      const hasWithdrawalField = Object.keys(row).some(
+        (key) => key.includes('出金') || key.includes('引出') || key.includes('支払')
+      );
+      const isJibunFormat =
+        hasDateField &&
+        hasTransactionField &&
+        (hasDepositField || hasWithdrawalField || hasBalanceField);
+
+      console.log(
+        'SMBCフォーマットか:',
+        isSMBCFormat,
+        'Jibunフォーマットか:',
+        isJibunFormat,
+        '利用可能なフィールド:',
+        Object.keys(row)
+      );
 
       if (isSMBCFormat) {
         // 三井住友銀行のCSVフォーマットの場合
@@ -276,6 +405,53 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
                 ? Number(row['お預入れ'] || row['預入れ'] || row['入金'])
                 : 0,
             transactionDetails: row['お取り扱い'] || row['取引内容'] || '',
+            memo: row['メモ'] || '',
+            label: row['ラベル'] || '',
+          });
+        }
+      } else if (isJibunFormat) {
+        // じぶん銀行のCSVフォーマットの場合
+        const dateField = Object.keys(row).find(
+          (key) => key.includes('年月日') || key.includes('日付') || key.includes('日時')
+        );
+        const balanceField = Object.keys(row).find(
+          (key) => key.includes('残高') || key.includes('残額')
+        );
+        const transactionField = Object.keys(row).find(
+          (key) => key.includes('取引内容') || key.includes('内容') || key.includes('摘要')
+        );
+
+        const dateValue = dateField ? row[dateField] : '';
+        const balanceValue = balanceField ? row[balanceField] : '';
+        const transactionValue = transactionField ? row[transactionField] : '';
+
+        if (!dateValue) rowErrors.push('年月日が入力されていません');
+        if (!balanceValue) rowErrors.push('残高が入力されていません');
+
+        // 残高の数値チェック
+        if (balanceValue && isNaN(Number(balanceValue))) {
+          rowErrors.push('残高は数値で入力してください');
+        }
+
+        if (rowErrors.length > 0) {
+          errors.push(`行${row.rowNumber}: ${rowErrors.join(', ')}`);
+        } else {
+          // じぶん銀行のCSVから口座情報を抽出
+          const latestBalance = Number(balanceValue);
+          const transactionDate = dateValue;
+
+          valid.push({
+            bankName: 'じぶん銀行',
+            accountType: 'checking',
+            accountNumber: 'JIBUN_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+            branchName: '本店',
+            accountName: 'メイン口座',
+            lastBalance: latestBalance,
+            isMain: true,
+            transactionDate: transactionDate,
+            withdrawal: row['出金'] ? Number(row['出金']) : 0,
+            deposit: row['入金'] ? Number(row['入金']) : 0,
+            transactionDetails: transactionValue,
             memo: row['メモ'] || '',
             label: row['ラベル'] || '',
           });
@@ -386,7 +562,13 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
       console.log('ファイル内容（最初の500文字）:', text.substring(0, 500));
       setUploadProgress(25);
 
-      const parsedData = parseSMBCBankCSV(text);
+      // 銀行フォーマットを自動検出して解析
+      let parsedData;
+      if (text.includes('じぶん銀行') || text.includes('取引内容')) {
+        parsedData = parseJibunBankCSV(text);
+      } else {
+        parsedData = parseSMBCBankCSV(text);
+      }
       console.log('解析されたデータの行数:', parsedData.length);
       setUploadProgress(50);
 
@@ -653,6 +835,56 @@ export const BankCSVUploader: React.FC<BankCSVUploaderProps> = ({ onUploadComple
               <ol className="list-decimal list-inside space-y-1 ml-2">
                 <li>三井住友銀行のWebサイトにアクセス</li>
                 <li>「SMBCダイレクト」にログイン</li>
+                <li>「明細・入出金履歴」をクリック</li>
+                <li>対象の口座を選択</li>
+                <li>「明細ダウンロード」をクリック</li>
+                <li>CSV形式を選択し、期間を指定</li>
+                <li>「ダウンロード」をクリックしてCSVファイルを保存</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        {/* じぶん銀行の詳細手順 */}
+        <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-green-900 mb-4 flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            じぶん銀行のCSVフォーマット対応
+          </h3>
+          <div className="p-3 bg-white rounded-lg border border-green-200 mb-4">
+            <h4 className="font-semibold text-green-900 mb-2">✅ 対応済みフォーマット</h4>
+            <p className="text-sm text-green-700 mb-2">
+              じぶん銀行のCSVファイル（年月日、取引内容、入金、出金、残高）をそのままアップロードできます。
+            </p>
+            <div className="text-xs text-green-600">
+              <p>
+                <strong>自動処理:</strong> 最新の残高を自動取得し、メイン口座として登録
+              </p>
+              <p>
+                <strong>取引履歴:</strong> 入出金履歴も同時に保存されます
+              </p>
+            </div>
+          </div>
+          <div className="space-y-4 text-sm text-green-800">
+            <div className="p-3 bg-white rounded-lg border border-green-200">
+              <h4 className="font-semibold text-green-900 mb-2">
+                📱 スマートフォンアプリ「じぶん銀行」の場合
+              </h4>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>「じぶん銀行」アプリを開く</li>
+                <li>ログイン後、メイン画面の「明細・入出金履歴」をタップ</li>
+                <li>対象の口座を選択</li>
+                <li>「明細ダウンロード」または「CSVダウンロード」をタップ</li>
+                <li>期間を選択（例：直近3ヶ月）</li>
+                <li>「ダウンロード」をタップしてCSVファイルを保存</li>
+              </ol>
+            </div>
+
+            <div className="p-3 bg-white rounded-lg border border-green-200">
+              <h4 className="font-semibold text-green-900 mb-2">💻 パソコン（Web版）の場合</h4>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>じぶん銀行のWebサイトにアクセス</li>
+                <li>「じぶん銀行ダイレクト」にログイン</li>
                 <li>「明細・入出金履歴」をクリック</li>
                 <li>対象の口座を選択</li>
                 <li>「明細ダウンロード」をクリック</li>
