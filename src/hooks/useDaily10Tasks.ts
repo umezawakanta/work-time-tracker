@@ -13,64 +13,6 @@ export const useDaily10Tasks = () => {
 
   const currentDate = new Date().toISOString().split('T')[0];
 
-  // タスク一覧を取得
-  const fetchTasks = useCallback(async () => {
-    try {
-      const tasksData = await daily10Api.fetchTasks();
-      setTasks(tasksData);
-    } catch (err: any) {
-      console.error('Failed to fetch tasks:', err);
-      const errorMessage =
-        err?.response?.status === 404
-          ? 'APIエンドポイントが見つかりません。デプロイを確認してください。'
-          : err?.response?.status === 500
-            ? 'サーバーエラーが発生しました。しばらく待ってから再試行してください。'
-            : err?.message || 'タスクの取得に失敗しました';
-      setError(errorMessage);
-    }
-  }, []);
-
-  // 進捗を取得
-  const fetchProgress = useCallback(
-    async (date: string) => {
-      if (!user?.id) return;
-
-      try {
-        const progressData = await daily10Api.fetchProgress(user.id, date);
-        setProgress(progressData);
-      } catch (err: any) {
-        console.error('Failed to fetch progress:', err);
-        const errorMessage =
-          err?.response?.status === 404
-            ? 'APIエンドポイントが見つかりません。デプロイを確認してください。'
-            : err?.response?.status === 500
-              ? 'サーバーエラーが発生しました。しばらく待ってから再試行してください。'
-              : err?.message || '進捗の取得に失敗しました';
-        setError(errorMessage);
-      }
-    },
-    [user?.id]
-  );
-
-  // 統計データを取得
-  const fetchStats = useCallback(async () => {
-    if (!user?.id) return;
-
-    try {
-      const statsData = await daily10Api.fetchStats(user.id);
-      setStats(statsData);
-    } catch (err: any) {
-      console.error('Failed to fetch stats:', err);
-      const errorMessage =
-        err?.response?.status === 404
-          ? 'APIエンドポイントが見つかりません。デプロイを確認してください。'
-          : err?.response?.status === 500
-            ? 'サーバーエラーが発生しました。しばらく待ってから再試行してください。'
-            : err?.message || '統計データの取得に失敗しました';
-      setError(errorMessage);
-    }
-  }, [user?.id]);
-
   // 進捗を更新
   const updateProgress = useCallback(
     async (taskId: string, completed: boolean, notes?: string, subtaskId?: string) => {
@@ -96,23 +38,65 @@ export const useDaily10Tasks = () => {
   // 初期化
   useEffect(() => {
     const initialize = async () => {
+      if (!user?.id) return;
+
       setIsLoading(true);
       setError(null);
 
       try {
-        await Promise.all([fetchTasks(), fetchProgress(currentDate), fetchStats()]);
-      } catch (err) {
+        // タスク一覧を取得
+        const tasksData = await daily10Api.fetchTasks();
+        setTasks(tasksData);
+
+        // 進捗を取得
+        const progressData = await daily10Api.fetchProgress(user.id, currentDate);
+        setProgress(progressData);
+
+        // 統計データを取得
+        const statsData = await daily10Api.fetchStats(user.id);
+        setStats(statsData);
+      } catch (err: any) {
         console.error('Initialization failed:', err);
-        setError('データの読み込みに失敗しました');
+        const errorMessage =
+          err?.response?.status === 404
+            ? 'APIエンドポイントが見つかりません。デプロイを確認してください。'
+            : err?.response?.status === 500
+              ? 'サーバーエラーが発生しました。しばらく待ってから再試行してください。'
+              : err?.message || 'データの読み込みに失敗しました';
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (user?.id) {
-      initialize();
+    initialize();
+  }, [user?.id, currentDate]);
+
+  // 進捗を再取得
+  const refreshProgress = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      const progressData = await daily10Api.fetchProgress(user.id, currentDate);
+      setProgress(progressData);
+    } catch (err: any) {
+      console.error('Failed to refresh progress:', err);
+      setError('進捗の再取得に失敗しました');
     }
-  }, [user?.id, currentDate]); // 依存配列を簡素化
+  }, [user?.id, currentDate]);
+
+  // 統計を再取得
+  const refreshStats = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      const statsData = await daily10Api.fetchStats(user.id);
+      setStats(statsData);
+    } catch (err: any) {
+      console.error('Failed to refresh stats:', err);
+      setError('統計の再取得に失敗しました');
+    }
+  }, [user?.id]);
 
   return {
     tasks,
@@ -121,7 +105,7 @@ export const useDaily10Tasks = () => {
     isLoading,
     error,
     updateProgress,
-    refreshProgress: () => fetchProgress(currentDate),
-    refreshStats: fetchStats,
+    refreshProgress,
+    refreshStats,
   };
 };
