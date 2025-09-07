@@ -5,33 +5,23 @@ import { loadVercelData, saveVercelDataImmediately } from '../_lib/vercel-storag
 const assetStore = loadVercelData<AssetRecord>('assets');
 const debtStore = loadVercelData<DebtRecord>('debts');
 
-// 実際のデータベースからデータを取得する関数
+// ローカルデータストアからデータを取得する関数
 const fetchUserData = async (userIdStr: string) => {
   try {
-    // 資産データを取得
-    const assetResponse = await fetch(
-      `${process.env.API_BASE_URL || 'http://localhost:3000'}/api/asset?userId=${userIdStr}`
-    );
-    const assetData = await assetResponse.json();
-    const assets = assetData.success ? assetData.data : [];
+    // ローカルデータストアから資産データを取得
+    const assets = assetStore.get(userIdStr) || [];
 
-    // 負債データを取得
-    const debtResponse = await fetch(
-      `${process.env.API_BASE_URL || 'http://localhost:3000'}/api/debt?userId=${userIdStr}`
-    );
-    const debtData = await debtResponse.json();
-    const debts = debtData.success ? debtData.data : [];
+    // ローカルデータストアから負債データを取得
+    const debts = debtStore.get(userIdStr) || [];
 
     // 銀行口座データを取得して資産に追加
     try {
-      const bankResponse = await fetch(
-        `${process.env.API_BASE_URL || 'http://localhost:3000'}/api/bank-accounts?userId=${userIdStr}`
-      );
-      const bankData = await bankResponse.json();
+      const bankAccountsStore = loadVercelData<any>('bank-accounts');
+      const bankAccounts = bankAccountsStore.get(userIdStr) || [];
 
-      if (bankData.success && bankData.data) {
+      if (bankAccounts.length > 0) {
         // 銀行口座の残高を資産として追加
-        const bankAssets: AssetRecord[] = bankData.data
+        const bankAssets: AssetRecord[] = bankAccounts
           .filter((account: any) => account.isActive && account.lastBalance)
           .map((account: any) => ({
             _id: `bank_${account._id}`,
