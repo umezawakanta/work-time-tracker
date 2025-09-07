@@ -1,4 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { FinancialDataService } from '../../src/database/services/FinancialDataService';
 
 // 資産データの型定義
 interface AssetRecord {
@@ -12,8 +13,8 @@ interface AssetRecord {
   updatedAt: string;
 }
 
-// メモリ内ストア（実際の実装ではデータベースを使用）
-const assetStore = new Map<string, AssetRecord[]>();
+// データベースサービス
+const financialService = FinancialDataService.getInstance();
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
@@ -30,12 +31,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const userId = (req.query.userId as string) || 'default-user';
 
     if (req.method === 'GET') {
-      // 資産データを取得
-      const assets = assetStore.get(userId as string) || [];
+      // データベースから資産データを取得
+      const assets = await financialService.getAssets(userId as string);
+
+      // MongoDBのドキュメントをAPIレスポンス形式に変換
+      const formattedAssets = assets.map((asset) => ({
+        _id: asset._id,
+        date: asset.date.toISOString(),
+        value: asset.value,
+        description: asset.description,
+        account: asset.account,
+        category: asset.category || 'cash',
+        createdAt: asset.createdAt.toISOString(),
+        updatedAt: asset.updatedAt.toISOString(),
+      }));
 
       return res.status(200).json({
         success: true,
-        data: assets,
+        data: formattedAssets,
       });
     }
 
@@ -50,24 +63,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      const newAsset: AssetRecord = {
+      const newAsset = await financialService.createAsset({
         _id: `asset_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        userId: userId as string,
         account,
         value: parseFloat(value),
-        date,
+        date: new Date(date),
         description,
         category: category || 'cash',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      });
 
-      const userAssets = assetStore.get(userId as string) || [];
-      userAssets.push(newAsset);
-      assetStore.set(userId as string, userAssets);
+      // レスポンス用にフォーマット
+      const formattedAsset = {
+        _id: newAsset._id,
+        date: newAsset.date.toISOString(),
+        value: newAsset.value,
+        description: newAsset.description,
+        account: newAsset.account,
+        category: newAsset.category || 'cash',
+        createdAt: newAsset.createdAt.toISOString(),
+        updatedAt: newAsset.updatedAt.toISOString(),
+      };
 
       return res.status(201).json({
         success: true,
-        data: newAsset,
+        data: formattedAsset,
       });
     }
 

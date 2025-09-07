@@ -1,4 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { FinancialDataService } from '../../src/database/services/FinancialDataService';
 
 // 負債データの型定義
 interface DebtRecord {
@@ -12,8 +13,8 @@ interface DebtRecord {
   updatedAt: string;
 }
 
-// メモリ内ストア（実際の実装ではデータベースを使用）
-const debtStore = new Map<string, DebtRecord[]>();
+// データベースサービス
+const financialService = FinancialDataService.getInstance();
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
@@ -30,12 +31,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const userId = (req.query.userId as string) || 'default-user';
 
     if (req.method === 'GET') {
-      // 負債データを取得
-      const debts = debtStore.get(userId as string) || [];
+      // データベースから負債データを取得
+      const debts = await financialService.getDebts(userId as string);
+
+      // MongoDBのドキュメントをAPIレスポンス形式に変換
+      const formattedDebts = debts.map((debt) => ({
+        _id: debt._id,
+        date: debt.date.toISOString(),
+        value: debt.value,
+        description: debt.description,
+        account: debt.account,
+        category: debt.category || 'mortgage',
+        createdAt: debt.createdAt.toISOString(),
+        updatedAt: debt.updatedAt.toISOString(),
+      }));
 
       return res.status(200).json({
         success: true,
-        data: debts,
+        data: formattedDebts,
       });
     }
 
@@ -50,24 +63,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      const newDebt: DebtRecord = {
+      const newDebt = await financialService.createDebt({
         _id: `debt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        userId: userId as string,
         account,
         value: parseFloat(value),
-        date,
+        date: new Date(date),
         description: description || '',
         category: category || 'mortgage',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      });
 
-      const userDebts = debtStore.get(userId as string) || [];
-      userDebts.push(newDebt);
-      debtStore.set(userId as string, userDebts);
+      // レスポンス用にフォーマット
+      const formattedDebt = {
+        _id: newDebt._id,
+        date: newDebt.date.toISOString(),
+        value: newDebt.value,
+        description: newDebt.description,
+        account: newDebt.account,
+        category: newDebt.category || 'mortgage',
+        createdAt: newDebt.createdAt.toISOString(),
+        updatedAt: newDebt.updatedAt.toISOString(),
+      };
 
       return res.status(201).json({
         success: true,
-        data: newDebt,
+        data: formattedDebt,
       });
     }
 

@@ -1,31 +1,29 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { loadVercelData, saveVercelDataImmediately } from '../_lib/vercel-storage';
+import { FinancialDataService } from '../../src/database/services/FinancialDataService';
 
-// データストア（ファイルから読み込み）
-const assetStore = loadVercelData<AssetRecord>('assets');
-const debtStore = loadVercelData<DebtRecord>('debts');
+// データベースサービス
+const financialService = FinancialDataService.getInstance();
 
-// ローカルデータストアからデータを取得する関数
+// データベースからデータを取得する関数
 const fetchUserData = async (userIdStr: string) => {
   try {
-    // ローカルデータストアから資産データを取得
-    const assets = assetStore.get(userIdStr) || [];
+    // データベースから資産データを取得
+    const assets = await financialService.getAssets(userIdStr);
 
-    // ローカルデータストアから負債データを取得
-    const debts = debtStore.get(userIdStr) || [];
+    // データベースから負債データを取得
+    const debts = await financialService.getDebts(userIdStr);
 
     // 銀行口座データを取得して資産に追加
     try {
-      const bankAccountsStore = loadVercelData<any>('bank-accounts');
-      const bankAccounts = bankAccountsStore.get(userIdStr) || [];
+      const bankAccounts = await financialService.getBankAccounts(userIdStr);
 
       if (bankAccounts.length > 0) {
         // 銀行口座の残高を資産として追加
-        const bankAssets: AssetRecord[] = bankAccounts
-          .filter((account: any) => account.isActive && account.lastBalance)
-          .map((account: any) => ({
+        const bankAssets = bankAccounts
+          .filter((account) => account.isActive && account.lastBalance)
+          .map((account) => ({
             _id: `bank_${account._id}`,
-            date: account.lastUpdated || new Date().toISOString(),
+            date: account.lastUpdated || new Date(),
             value: account.lastBalance,
             description: `${account.bankName} ${account.accountName}`,
             account: account.accountType,
@@ -33,7 +31,8 @@ const fetchUserData = async (userIdStr: string) => {
             updatedAt: account.updatedAt,
           }));
 
-        assets.push(...bankAssets);
+        // Type assertion to match the expected interface
+        assets.push(...(bankAssets as any));
       }
     } catch (bankError) {
       console.error('Error fetching bank data:', bankError);
@@ -48,22 +47,22 @@ const fetchUserData = async (userIdStr: string) => {
 
 interface AssetRecord {
   _id: string;
-  date: string;
+  date: Date | string;
   value: number;
   description: string;
   account: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 interface DebtRecord {
   _id: string;
-  date: string;
+  date: Date | string;
   value: number;
   description: string;
   account: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 interface FinancialMetrics {

@@ -5859,11 +5859,11 @@ const startServer = async () => {
   // Error handling middleware (must be last)
   app.use(errorHandler);
 
-  // 自動保存を開始
-  startAutoSave(assetStore, 'assets', 5 * 60 * 1000); // 5分間隔
-  startAutoSave(debtStore, 'debts', 5 * 60 * 1000); // 5分間隔
-  startAutoSave(bankAccountsStore, 'bank-accounts', 5 * 60 * 1000); // 5分間隔
-  startAutoSave(transactionStore, 'transactions', 5 * 60 * 1000); // 5分間隔
+  // データベース使用のため、ローカルファイル自動保存を無効化
+  // startAutoSave(assetStore, 'assets', 5 * 60 * 1000); // データベース使用のため無効化
+  // startAutoSave(debtStore, 'debts', 5 * 60 * 1000); // データベース使用のため無効化
+  // startAutoSave(bankAccountsStore, 'bank-accounts', 5 * 60 * 1000); // データベース使用のため無効化
+  // startAutoSave(transactionStore, 'transactions', 5 * 60 * 1000); // データベース使用のため無効化
 
   // 取引明細API
   app.get('/api/transactions', (req: Request, res: Response) => {

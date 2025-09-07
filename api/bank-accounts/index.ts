@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { loadVercelData, saveVercelDataImmediately } from '../_lib/vercel-storage';
+import { FinancialDataService } from '../../src/database/services/FinancialDataService';
 
 // 銀行口座の型定義
 interface BankAccount {
@@ -18,28 +18,8 @@ interface BankAccount {
   updatedAt: string;
 }
 
-// データストア（ファイルから読み込み）
-const bankAccountsStore = loadVercelData<BankAccount>('bank-accounts');
-
-// 実際のデータベースから銀行口座データを取得する関数
-const fetchBankAccountsFromDB = async (userId: string): Promise<BankAccount[]> => {
-  try {
-    // 実際のデータベース接続（MongoDB等）
-    // 現在はメモリ内ストアを使用
-    const accounts = bankAccountsStore.get(userId) || [];
-
-    // データベースが空の場合は、ユーザーに口座登録を促す
-    if (accounts.length === 0) {
-      console.log(`No bank accounts found for user: ${userId}`);
-      return [];
-    }
-
-    return accounts;
-  } catch (error) {
-    console.error('Error fetching bank accounts from database:', error);
-    return [];
-  }
-};
+// データベースサービス
+const financialService = FinancialDataService.getInstance();
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
@@ -62,16 +42,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'GET') {
-      // 実際のデータベースから銀行口座データを取得
-      const accounts = await fetchBankAccountsFromDB(userId as string);
+      // データベースから銀行口座データを取得
+      const accounts = await financialService.getBankAccounts(userId as string);
+
+      // MongoDBのドキュメントをAPIレスポンス形式に変換
+      const formattedAccounts = accounts.map((account) => ({
+        _id: account._id,
+        userId: account.userId,
+        bankName: account.bankName,
+        accountType: account.accountType,
+        accountNumber: account.accountNumber,
+        branchName: account.branchName,
+        accountName: account.accountName,
+        isMain: account.isMain,
+        isActive: account.isActive,
+        lastBalance: account.lastBalance,
+        lastUpdated: account.lastUpdated?.toISOString(),
+        createdAt: account.createdAt.toISOString(),
+        updatedAt: account.updatedAt.toISOString(),
+      }));
 
       // デバッグログを追加
       console.log('Bank accounts API - User ID:', userId);
-      console.log('Bank accounts API - Accounts:', accounts);
+      console.log('Bank accounts API - Accounts:', formattedAccounts);
 
       return res.status(200).json({
         success: true,
-        data: accounts,
+        data: formattedAccounts,
       });
     }
 
@@ -95,7 +92,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       // メイン口座の重複チェック
       if (isMain) {
-        const existingAccounts = bankAccountsStore.get(userId as string) || [];
+        const existingAccounts = await financialService.getBankAccounts(userId as string);
         const hasMainAccount = existingAccounts.some(
           (account) => account.isMain && account.isActive
         );
@@ -109,30 +106,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
       }
 
-      const newAccount: BankAccount = {
+      const newAccount = await financialService.createBankAccount({
         _id: `bank_account_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         userId: userId as string,
         bankName,
+        accountName,
         accountType,
         accountNumber,
-        branchName,
-        accountName,
+        branchName: branchName || '',
+        lastBalance: 0,
         isMain,
         isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        lastUpdated: new Date(),
+      });
+
+      // レスポンス用にフォーマット
+      const formattedAccount = {
+        _id: newAccount._id,
+        userId: newAccount.userId,
+        bankName: newAccount.bankName,
+        accountType: newAccount.accountType,
+        accountNumber: newAccount.accountNumber,
+        branchName: newAccount.branchName,
+        accountName: newAccount.accountName,
+        isMain: newAccount.isMain,
+        isActive: newAccount.isActive,
+        lastBalance: newAccount.lastBalance,
+        lastUpdated: newAccount.lastUpdated?.toISOString(),
+        createdAt: newAccount.createdAt.toISOString(),
+        updatedAt: newAccount.updatedAt.toISOString(),
       };
-
-      const userAccounts = bankAccountsStore.get(userId as string) || [];
-      userAccounts.push(newAccount);
-      bankAccountsStore.set(userId as string, userAccounts);
-
-      // データを即座に保存
-      saveVercelDataImmediately(bankAccountsStore, 'bank-accounts');
 
       return res.status(201).json({
         success: true,
-        data: newAccount,
+        data: formattedAccount,
       });
     }
 

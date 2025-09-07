@@ -18,6 +18,7 @@
         "lint:fix": "eslint . --ext ts,tsx --fix",
         "preview": "vite preview",
         "preview:start": "vite preview --port 4173",
+        "migrate:db": "ts-node scripts/migrate-to-database.ts",
         "cypress:install": "pnpm exec cypress install || node -e \"process.exit(0)\"",
         "status:unit": "pnpm test -- --coverage --watchAll=false --passWithNoTests",
         "status:e2e": "start-server-and-test preview http://localhost:4173 cypress:summary",
