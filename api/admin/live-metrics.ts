@@ -24,30 +24,51 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
     console.log('[admin/live-metrics] Starting request');
 
     // 管理者認証
-    const ctx = require('../_lib/user-context.js');
-    console.log('[admin/live-metrics] Context loaded');
+    let ctx, auth, User, user;
+    try {
+      ctx = require('../_lib/user-context.js');
+      console.log('[admin/live-metrics] Context loaded');
 
-    const auth = await ctx.verifyJwtAndExtract(req as any);
-    console.log('[admin/live-metrics] Auth verified:', { userId: auth?.userId });
+      auth = await ctx.verifyJwtAndExtract(req as any);
+      console.log('[admin/live-metrics] Auth verified:', { userId: auth?.userId });
 
-    // 管理者権限チェック
-    const User = await ctx.ensureDbAndUserModel();
-    console.log('[admin/live-metrics] User model ensured');
+      if (!auth || !auth.userId) {
+        return void res.status(401).json({ success: false, message: 'Authentication required' });
+      }
 
-    const user = await ctx.findUserByIdLoose(User, auth.userId);
-    console.log('[admin/live-metrics] User found:', {
-      user: user ? { id: user._id, role: user.role } : null,
-    });
+      // 管理者権限チェック
+      User = await ctx.ensureDbAndUserModel();
+      console.log('[admin/live-metrics] User model ensured');
 
-    if (!user || user.role !== 'admin') {
-      return void res.status(403).json({ success: false, message: 'Admin access required' });
+      user = await ctx.findUserByIdLoose(User, auth.userId);
+      console.log('[admin/live-metrics] User found:', {
+        user: user ? { id: user._id, role: user.role } : null,
+      });
+
+      if (!user || user.role !== 'admin') {
+        return void res.status(403).json({ success: false, message: 'Admin access required' });
+      }
+    } catch (authError) {
+      console.error('[admin/live-metrics] Authentication error:', authError);
+      return void res.status(401).json({
+        success: false,
+        message: 'Authentication failed',
+        error: authError instanceof Error ? authError.message : 'Unknown auth error',
+      });
     }
 
     // MongoDB接続
     console.log('[admin/live-metrics] Connecting to MongoDB');
     const mongoLib = require('../_lib/mongo');
-    await mongoLib.connectMongoDirect();
-    console.log('[admin/live-metrics] MongoDB connected');
+    try {
+      await mongoLib.connectMongoDirect();
+      console.log('[admin/live-metrics] MongoDB connected');
+    } catch (mongoError) {
+      console.error('[admin/live-metrics] MongoDB connection failed:', mongoError);
+      throw new Error(
+        `MongoDB connection failed: ${mongoError instanceof Error ? mongoError.message : 'Unknown error'}`
+      );
+    }
 
     const mongoose = await mongoLib.getMongoose();
     console.log('[admin/live-metrics] Mongoose obtained');
@@ -120,10 +141,18 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
     res.status(200).json({ success: true, data: liveMetrics });
   } catch (error) {
     console.error('Live metrics fetch error:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error('Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      cause: error instanceof Error ? error.cause : undefined,
+    });
+
     res.status(500).json({
       success: false,
       message: 'Internal Server Error',
       error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString(),
     });
   }
 }
