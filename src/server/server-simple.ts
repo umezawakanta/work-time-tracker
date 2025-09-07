@@ -1235,6 +1235,30 @@ app.post('/api/asset', async (req, res) => {
   }
 });
 
+app.delete('/api/asset/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // データベースから資産データを削除
+    const { FinancialDataService } = await import('../database/services/FinancialDataService');
+    const financialService = FinancialDataService.getInstance();
+
+    const deleted = await financialService.deleteAsset(id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: '資産が見つかりません' });
+    }
+
+    res.json({
+      success: true,
+      message: '資産が削除されました',
+    });
+  } catch (error) {
+    console.error('Asset deletion error:', error);
+    res.status(500).json({ error: '資産の削除に失敗しました' });
+  }
+});
+
 // 財務指標計算関数
 const calculateAssetGrowthRate = (assets: AssetRecord[]): number => {
   if (assets.length < 2) return 0;
