@@ -52,7 +52,7 @@ export const useBankAccounts = (userId: string) => {
     if (userId) {
       fetchAccounts();
     }
-  }, [userId, fetchAccounts]);
+  }, [userId]); // fetchAccountsを依存配列から削除
 
   const mainAccount = accounts.find((account) => account.isMain && account.isActive);
 

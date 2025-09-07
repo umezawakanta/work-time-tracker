@@ -5860,10 +5860,10 @@ const startServer = async () => {
   app.use(errorHandler);
 
   // 自動保存を開始
-  startAutoSave(assetStore, 'assets', 30000); // 30秒間隔
-  startAutoSave(debtStore, 'debts', 30000); // 30秒間隔
-  startAutoSave(bankAccountsStore, 'bank-accounts', 30000); // 30秒間隔
-  startAutoSave(transactionStore, 'transactions', 30000); // 30秒間隔
+  startAutoSave(assetStore, 'assets', 5 * 60 * 1000); // 5分間隔
+  startAutoSave(debtStore, 'debts', 5 * 60 * 1000); // 5分間隔
+  startAutoSave(bankAccountsStore, 'bank-accounts', 5 * 60 * 1000); // 5分間隔
+  startAutoSave(transactionStore, 'transactions', 5 * 60 * 1000); // 5分間隔
 
   // 取引明細API
   app.get('/api/transactions', (req: Request, res: Response) => {

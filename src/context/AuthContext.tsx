@@ -98,7 +98,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     updateSessionInfo();
-    const interval = setInterval(updateSessionInfo, 30000); // 30秒ごと
+    const interval = setInterval(updateSessionInfo, 5 * 60 * 1000); // 5分ごと
 
     return () => clearInterval(interval);
   }, []);

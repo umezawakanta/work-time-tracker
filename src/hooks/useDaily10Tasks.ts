@@ -70,7 +70,7 @@ export const useDaily10Tasks = () => {
     };
 
     initialize();
-  }, [user?.id, currentDate]);
+  }, [user?.id]); // currentDateを依存配列から削除
 
   // 進捗を再取得
   const refreshProgress = useCallback(async () => {

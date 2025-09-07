@@ -106,9 +106,12 @@ export const useRealtimeGamificationTracking = (): UseRealtimeGamificationTracki
     setIsTracking(true);
 
     // Start interval for real-time updates
-    trackingInterval.current = setInterval(() => {
-      updateRealtimeData();
-    }, 30000); // Update every 30 seconds
+    trackingInterval.current = setInterval(
+      () => {
+        updateRealtimeData();
+      },
+      5 * 60 * 1000
+    ); // Update every 5 minutes
 
     console.log('🚀 Real-time gamification tracking started');
   }, [isTracking]);
