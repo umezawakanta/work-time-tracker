@@ -71,12 +71,22 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
       const response = await fetch(`/api/bank-accounts?userId=${userId}`);
       if (response.ok) {
         const data = await response.json();
-        setBankAccounts(data);
+        // APIレスポンスの構造に応じて配列を取得
+        if (data.success && Array.isArray(data.accounts)) {
+          setBankAccounts(data.accounts);
+        } else if (Array.isArray(data)) {
+          setBankAccounts(data);
+        } else {
+          console.error('Invalid bank accounts data structure:', data);
+          setBankAccounts([]);
+        }
       } else {
         console.error('Failed to fetch bank accounts');
+        setBankAccounts([]);
       }
     } catch (error) {
       console.error('Failed to fetch bank accounts:', error);
+      setBankAccounts([]);
     }
   };
 
@@ -171,7 +181,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
     // 各口座ごとに収支を計算
     Object.values(transactionsByAccount).forEach((accountTransactions) => {
       // 口座内でCSVの並び順でソート（csvOrderが小さいほど新しい）
-      const sortedTransactions = accountTransactions.sort((a, b) => {
+      const sortedTransactions = (accountTransactions as Transaction[]).sort((a, b) => {
         if (a.csvOrder !== undefined && b.csvOrder !== undefined) {
           return a.csvOrder - b.csvOrder;
         }
@@ -180,8 +190,8 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
 
       // 残高の順序で計算（新しい明細から古い明細へ）
       for (let i = 0; i < sortedTransactions.length - 1; i++) {
-        const currentBalance = sortedTransactions[i].balance || sortedTransactions[i].amount;
-        const nextBalance = sortedTransactions[i + 1].balance || sortedTransactions[i + 1].amount;
+        const currentBalance = sortedTransactions[i].amount;
+        const nextBalance = sortedTransactions[i + 1].amount;
         const difference = currentBalance - nextBalance; // 現在の残高 - 次の残高
 
         if (difference > 0) {
@@ -346,11 +356,12 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">すべての口座</SelectItem>
-                {bankAccounts.map((account) => (
-                  <SelectItem key={account._id} value={account._id}>
-                    {account.bankName} {account.accountName}
-                  </SelectItem>
-                ))}
+                {Array.isArray(bankAccounts) &&
+                  bankAccounts.map((account) => (
+                    <SelectItem key={account._id} value={account._id}>
+                      {account.bankName} {account.accountName}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
 
@@ -400,6 +411,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
                           <Building2 className="h-3 w-3 text-gray-400" />
                           <span className="text-sm text-gray-600">
                             {(() => {
+                              if (!Array.isArray(bankAccounts)) return '不明な口座';
                               const account = bankAccounts.find(
                                 (acc) => acc._id === transaction.accountId
                               );
