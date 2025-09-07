@@ -242,12 +242,14 @@ type AssetRecord = {
   updatedAt: string;
 };
 
-// データストア（ファイルから読み込み）
-const debtStore: Map<string, DebtRecord[]> = loadData<DebtRecord>('debts');
+// データベース使用のため、ローカルファイル読み込みを無効化
+// const debtStore: Map<string, DebtRecord[]> = loadData<DebtRecord>('debts');
+const debtStore: Map<string, DebtRecord[]> = new Map(); // メモリ内キャッシュ用
 const createDebtId = () => 'debt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
 
 // Asset store and ID generator
-const assetStore: Map<string, AssetRecord[]> = loadData<AssetRecord>('assets');
+// const assetStore: Map<string, AssetRecord[]> = loadData<AssetRecord>('assets');
+const assetStore: Map<string, AssetRecord[]> = new Map(); // メモリ内キャッシュ用
 const createAssetId = () => 'asset_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
 
 // Work Time store and ID generator
@@ -266,40 +268,55 @@ type WorkTimeRecord = {
 const workTimeStore: Map<string, WorkTimeRecord> = new Map();
 const createWorkTimeId = () => 'wt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
 
-app.get('/api/debt', (_req, res) => {
-  const all = Array.from(debtStore.values())
-    .flat()
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  res.json(all);
+app.get('/api/debt', async (req, res) => {
+  try {
+    const userId = (req.query.userId as string) || 'default-user';
+
+    // データベースから負債データを取得
+    const { FinancialDataService } = await import('../database/services/FinancialDataService');
+    const financialService = FinancialDataService.getInstance();
+    const debts = await financialService.getDebts(userId);
+
+    // 日付順でソート
+    const sortedDebts = debts.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    res.json(sortedDebts);
+  } catch (error) {
+    console.error('Error fetching debts:', error);
+    res.status(500).json({ error: '負債データの取得に失敗しました' });
+  }
 });
 
-app.post('/api/debt', (req, res) => {
+app.post('/api/debt', async (req, res) => {
   try {
     const { date, value, description, account } = req.body || {};
     if (!date || value == null || !description || !account) {
       return res.status(400).json({ success: false, error: 'Missing required fields' });
     }
+
+    const userId = (req as any)?.user?.id || 'default-user';
     const id = createDebtId();
-    const now = new Date().toISOString();
-    const rec: DebtRecord = {
-      _id: id,
-      date: String(date),
+
+    // データベースに負債データを作成
+    const { FinancialDataService } = await import('../database/services/FinancialDataService');
+    const financialService = FinancialDataService.getInstance();
+
+    const rec = await financialService.createDebt({
+      userId,
+      date: new Date(date),
       value: Number(value),
       description: String(description),
       account: String(account),
-      createdAt: now,
-      updatedAt: now,
-    };
-    // Store in user-specific array
-    const userId = 'default-user';
-    if (!debtStore.has(userId)) {
-      debtStore.set(userId, []);
-    }
-    const userDebts = debtStore.get(userId) || [];
-    userDebts.push(rec);
-    debtStore.set(userId, userDebts);
+      category: 'mortgage', // デフォルトカテゴリ
+      interestRate: 0,
+      monthlyPayment: 0,
+    } as any);
+
     res.status(201).json({ message: '負債情報が正常に記録されました', debt: rec });
   } catch (e) {
+    console.error('Debt creation error:', e);
     res.status(500).json({ success: false, error: 'Failed to create debt entry' });
   }
 });
@@ -1164,16 +1181,28 @@ app.post('/api/worktime', (req, res) => {
 // =============================
 // Asset API endpoints
 // =============================
-app.get('/api/asset', (req, res) => {
-  const all = Array.from(assetStore.values())
-    .flat()
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+app.get('/api/asset', async (req, res) => {
+  try {
+    const userId = (req.query.userId as string) || 'default-user';
 
-  // 実際のデータを返す（空の場合は空配列）
-  res.json(all);
+    // データベースから資産データを取得
+    const { FinancialDataService } = await import('../database/services/FinancialDataService');
+    const financialService = FinancialDataService.getInstance();
+    const assets = await financialService.getAssets(userId);
+
+    // 日付順でソート
+    const sortedAssets = assets.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    res.json(sortedAssets);
+  } catch (error) {
+    console.error('Error fetching assets:', error);
+    res.status(500).json({ error: '資産データの取得に失敗しました' });
+  }
 });
 
-app.post('/api/asset', (req, res) => {
+app.post('/api/asset', async (req, res) => {
   try {
     const { date, value, description, account } = req.body;
 
@@ -1181,30 +1210,21 @@ app.post('/api/asset', (req, res) => {
       return res.status(400).json({ error: '日付、金額、説明、口座名は必須です' });
     }
 
+    const userId = (req as any)?.user?.id || 'default-user';
     const id = createAssetId();
-    const now = new Date().toISOString();
 
-    const assetEntry: AssetRecord = {
-      _id: id,
-      date: String(date),
+    // データベースに資産データを作成
+    const { FinancialDataService } = await import('../database/services/FinancialDataService');
+    const financialService = FinancialDataService.getInstance();
+
+    const assetEntry = await financialService.createAsset({
+      userId,
+      date: new Date(date),
       value: Number(value),
       description: String(description),
       account: String(account),
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    // ユーザーIDを取得（実際の実装では認証から取得）
-    const userId = 'default-user';
-    if (!assetStore.has(userId)) {
-      assetStore.set(userId, []);
-    }
-    const userAssets = assetStore.get(userId) || [];
-    userAssets.push(assetEntry);
-    assetStore.set(userId, userAssets);
-
-    // データベース使用のため、ローカルファイル保存を無効化
-    // saveDataImmediately(assetStore, 'assets');
+      category: 'cash', // デフォルトカテゴリ
+    } as any);
 
     res.status(201).json(assetEntry);
   } catch (error) {
@@ -5612,74 +5632,90 @@ type BankAccount = {
   updatedAt: string;
 };
 
-// データストア（ファイルから読み込み）
-const bankAccountsStore = loadData<BankAccount>('bank-accounts');
-const transactionStore = loadData<any>('transactions');
+// データベース使用のため、ローカルファイル読み込みを無効化
+// const bankAccountsStore = loadData<BankAccount>('bank-accounts');
+// const transactionStore = loadData<any>('transactions');
+const bankAccountsStore = new Map(); // メモリ内キャッシュ用
+const transactionStore = new Map(); // メモリ内キャッシュ用
 
 // 銀行口座管理API
-app.get('/api/bank-accounts', (req: Request, res: Response) => {
-  const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
-  const accounts = bankAccountsStore.get(userId) || [];
-  res.json({ success: true, data: accounts });
+app.get('/api/bank-accounts', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+
+    // データベースから銀行口座データを取得
+    const { FinancialDataService } = await import('../database/services/FinancialDataService');
+    const financialService = FinancialDataService.getInstance();
+    const accounts = await financialService.getBankAccounts(userId);
+
+    res.json({ success: true, data: accounts });
+  } catch (error) {
+    console.error('Error fetching bank accounts:', error);
+    res.status(500).json({ success: false, error: '銀行口座データの取得に失敗しました' });
+  }
 });
 
-app.post('/api/bank-accounts', (req: Request, res: Response) => {
-  const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
-  const {
-    bankName,
-    accountType,
-    accountNumber,
-    branchName,
-    accountName,
-    isMain = false,
-  } = req.body;
+app.post('/api/bank-accounts', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+    const {
+      bankName,
+      accountType,
+      accountNumber,
+      branchName,
+      accountName,
+      isMain = false,
+    } = req.body;
 
-  if (!bankName || !accountType || !accountNumber || !accountName) {
-    return res.status(400).json({
-      success: false,
-      message: '銀行名、口座種別、口座番号、口座名は必須です',
-    });
-  }
-
-  // メイン口座の重複チェック
-  if (isMain) {
-    const existingAccounts = bankAccountsStore.get(userId) || [];
-    const hasMainAccount = existingAccounts.some((account) => account.isMain && account.isActive);
-
-    if (hasMainAccount) {
+    if (!bankName || !accountType || !accountNumber || !accountName) {
       return res.status(400).json({
         success: false,
-        message:
-          'メイン口座は既に登録されています。既存のメイン口座を無効にしてから登録してください。',
+        message: '銀行名、口座種別、口座番号、口座名は必須です',
       });
     }
+
+    // データベースから銀行口座データを取得してメイン口座の重複チェック
+    const { FinancialDataService } = await import('../database/services/FinancialDataService');
+    const financialService = FinancialDataService.getInstance();
+
+    if (isMain) {
+      const existingAccounts = await financialService.getBankAccounts(userId);
+      const hasMainAccount = existingAccounts.some((account) => account.isMain && account.isActive);
+
+      if (hasMainAccount) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'メイン口座は既に登録されています。既存のメイン口座を無効にしてから登録してください。',
+        });
+      }
+    }
+
+    // データベースに銀行口座データを作成
+    const newAccount = await financialService.createBankAccount({
+      userId,
+      bankName,
+      accountType,
+      accountNumber,
+      branchName: branchName || '',
+      accountName,
+      isMain,
+      isActive: true,
+      lastBalance: 0,
+      lastUpdated: new Date(),
+    } as any);
+
+    res.status(201).json({
+      success: true,
+      data: newAccount,
+    });
+  } catch (error) {
+    console.error('Error creating bank account:', error);
+    res.status(500).json({
+      success: false,
+      error: '銀行口座の作成に失敗しました',
+    });
   }
-
-  const newAccount: BankAccount = {
-    _id: `bank_account_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-    userId,
-    bankName,
-    accountType,
-    accountNumber,
-    branchName,
-    accountName,
-    isMain,
-    isActive: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  const userAccounts = bankAccountsStore.get(userId) || [];
-  userAccounts.push(newAccount);
-  bankAccountsStore.set(userId, userAccounts);
-
-  // データベース使用のため、ローカルファイル保存を無効化
-  // saveDataImmediately(bankAccountsStore, 'bank-accounts');
-
-  res.status(201).json({
-    success: true,
-    data: newAccount,
-  });
 });
 
 app.get('/api/bank-accounts/:id', (req: Request, res: Response) => {
@@ -5866,61 +5902,64 @@ const startServer = async () => {
   // startAutoSave(transactionStore, 'transactions', 5 * 60 * 1000); // データベース使用のため無効化
 
   // 取引明細API
-  app.get('/api/transactions', (req: Request, res: Response) => {
-    const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
-    const { startDate, endDate, category } = req.query;
+  app.get('/api/transactions', async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+      const { startDate, endDate, category } = req.query;
 
-    let transactions = transactionStore.get(userId) || [];
+      // データベースから取引明細データを取得
+      const { FinancialDataService } = await import('../database/services/FinancialDataService');
+      const financialService = FinancialDataService.getInstance();
 
-    // 日付フィルタリング
-    if (startDate) {
-      transactions = transactions.filter((tx) => tx.date >= startDate);
+      const start = startDate ? new Date(startDate as string) : undefined;
+      const end = endDate ? new Date(endDate as string) : undefined;
+      let transactions = await financialService.getTransactions(userId, undefined, start, end);
+
+      // カテゴリフィルタリング
+      if (category) {
+        transactions = transactions.filter((tx) => tx.category === category);
+      }
+
+      res.json({ success: true, transactions, total: transactions.length });
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      res.status(500).json({ success: false, error: '取引明細の取得に失敗しました' });
     }
-    if (endDate) {
-      transactions = transactions.filter((tx) => tx.date <= endDate);
-    }
-
-    // カテゴリフィルタリング
-    if (category) {
-      transactions = transactions.filter((tx) => tx.category === category);
-    }
-
-    // 日付順でソート（新しい順）
-    transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    res.json({ success: true, transactions, total: transactions.length });
   });
 
-  app.post('/api/transactions', (req: Request, res: Response) => {
-    const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
-    const transaction = req.body.transaction;
+  app.post('/api/transactions', async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
+      const transaction = req.body.transaction;
 
-    if (!transaction) {
-      return res.status(400).json({ success: false, message: 'Transaction data is required' });
+      if (!transaction) {
+        return res.status(400).json({ success: false, message: 'Transaction data is required' });
+      }
+
+      const id = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      // データベースに取引明細データを作成
+      const { FinancialDataService } = await import('../database/services/FinancialDataService');
+      const financialService = FinancialDataService.getInstance();
+
+      const newTransaction = await financialService.createTransaction({
+        userId,
+        accountId: transaction.accountId || 'main_account',
+        date: new Date(transaction.date || new Date().toISOString().split('T')[0]),
+        description: transaction.description || '',
+        amount: transaction.amount || 0,
+        category: transaction.category || 'その他',
+        type: (transaction.type as 'income' | 'expense') || 'expense',
+        balance: 0, // 残高は計算で求める
+      } as any);
+
+      res
+        .status(201)
+        .json({ success: true, message: '取引明細を追加しました', transaction: newTransaction });
+    } catch (error) {
+      console.error('Error creating transaction:', error);
+      res.status(500).json({ success: false, error: '取引明細の作成に失敗しました' });
     }
-
-    const id = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const newTransaction = {
-      _id: id,
-      date: transaction.date || new Date().toISOString().split('T')[0],
-      description: transaction.description || '',
-      amount: transaction.amount || 0,
-      category: transaction.category || 'その他',
-      accountId: transaction.accountId || 'main_account',
-      userId: userId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    const existingTransactions = transactionStore.get(userId) || [];
-    existingTransactions.push(newTransaction);
-    transactionStore.set(userId, existingTransactions);
-    // データベース使用のため、ローカルファイル保存を無効化
-    // saveDataImmediately(transactionStore, 'transactions');
-
-    res
-      .status(201)
-      .json({ success: true, message: '取引明細を追加しました', transaction: newTransaction });
   });
 
   app.put('/api/transactions', (req: Request, res: Response) => {
