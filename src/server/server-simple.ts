@@ -23,6 +23,7 @@ import {
   BankTransaction,
   ParsedBankData,
 } from '../utils/bankDataParser.js';
+import { FinancialDataService } from '../database/services/FinancialDataService.js';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
@@ -6214,6 +6215,69 @@ const startServer = async () => {
     // saveDataImmediately(transactionStore, 'transactions');
 
     res.json({ success: true, message: '取引明細を削除しました' });
+  });
+
+  // 重複する銀行口座データをクリーンアップするエンドポイント
+  app.post('/api/cleanup-duplicate-bank-accounts', async (req, res) => {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User ID is required' });
+    }
+
+    try {
+      const financialService = FinancialDataService.getInstance();
+      // 資産データから銀行口座データを取得
+      const assets = await financialService.getAssets(userId);
+      const bankAssets = assets.filter((asset) => asset._id && asset._id.startsWith('bank_'));
+
+      console.log(`Found ${bankAssets.length} bank account entries for user ${userId}`);
+
+      // 重複を除去（最新のデータのみ保持）
+      const uniqueBankAssets = bankAssets.reduce((acc: any[], current: any) => {
+        const existing = acc.find(
+          (item) => item.account === current.account && item.value === current.value
+        );
+
+        if (!existing) {
+          acc.push(current);
+        } else {
+          // より新しい日付のデータを保持
+          if (
+            new Date(current.updatedAt || current.createdAt) >
+            new Date(existing.updatedAt || existing.createdAt)
+          ) {
+            const index = acc.findIndex((item) => item._id === existing._id);
+            acc[index] = current;
+          }
+        }
+
+        return acc;
+      }, []);
+
+      // 古い銀行口座データを削除
+      for (const asset of bankAssets) {
+        await financialService.deleteAsset(asset._id);
+      }
+
+      // 最新のデータを再追加
+      for (const asset of uniqueBankAssets) {
+        await financialService.createAsset(asset);
+      }
+
+      res.json({
+        success: true,
+        message: `重複する銀行口座データをクリーンアップしました。${bankAssets.length}件から${uniqueBankAssets.length}件に整理しました。`,
+        removed: bankAssets.length - uniqueBankAssets.length,
+        kept: uniqueBankAssets.length,
+      });
+    } catch (error) {
+      console.error('Error cleaning up duplicate bank accounts:', error);
+      res.status(500).json({
+        success: false,
+        message: 'クリーンアップ中にエラーが発生しました',
+      });
+    }
   });
 
   app.listen(PORT, () => {

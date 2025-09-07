@@ -54,6 +54,7 @@ import {
   Target, // 追加: 目標のアイコン
   Building2, // 追加: 銀行のアイコン
   FileText, // 追加: 取引明細のアイコン
+  Trash2, // 追加: 削除のアイコン
 } from 'lucide-react';
 import {
   Card,
@@ -176,6 +177,11 @@ export default function AssetLiabilityReportPage() {
         // 既存のエントリを更新（値が変更されている場合のみ）
         const existingEntry = assetEntries[existingIndex];
         if (existingEntry.value !== mainAccount.lastBalance) {
+          console.log('Updating existing bank account entry:', {
+            id: `bank_${mainAccount._id}`,
+            oldValue: existingEntry.value,
+            newValue: mainAccount.lastBalance,
+          });
           dispatch(
             updateAssetEntry({
               id: `bank_${mainAccount._id}`,
@@ -189,6 +195,11 @@ export default function AssetLiabilityReportPage() {
         }
       } else {
         // 新しいエントリを追加
+        console.log('Adding new bank account entry:', {
+          id: `bank_${mainAccount._id}`,
+          account: `${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}`,
+          value: mainAccount.lastBalance,
+        });
         const bankAssetEntry = {
           _id: `bank_${mainAccount._id}`,
           userId: user?.id || 'default-user',
@@ -203,7 +214,7 @@ export default function AssetLiabilityReportPage() {
         dispatch(addAssetEntry(bankAssetEntry));
       }
     }
-  }, [mainAccount, dispatch, user?.id, assetEntries]);
+  }, [mainAccount, dispatch, user?.id]);
 
   // デバッグ用：assetEntriesの内容をログ出力
   useEffect(() => {
@@ -749,6 +760,47 @@ export default function AssetLiabilityReportPage() {
               </TooltipTrigger>
               <TooltipContent>
                 <p>口座残高を更新</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* 重複データクリーンアップ */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={async () => {
+                    if (confirm('重複する銀行口座データをクリーンアップしますか？')) {
+                      try {
+                        const response = await fetch('/api/cleanup-duplicate-bank-accounts', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({ userId: user?.id || 'default-user' }),
+                        });
+                        const result = await response.json();
+                        if (result.success) {
+                          toast.success(result.message);
+                          // ページを再読み込みしてデータを更新
+                          window.location.reload();
+                        } else {
+                          toast.error(result.message);
+                        }
+                      } catch (error) {
+                        console.error('Failed to cleanup duplicate data:', error);
+                        toast.error('クリーンアップに失敗しました');
+                      }
+                    }
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>重複データをクリーンアップ</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
