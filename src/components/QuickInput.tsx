@@ -74,6 +74,7 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
   console.log('QuickInput - Bank loading:', bankLoading);
   const [entryType, setEntryType] = useState<'asset' | 'debt'>('asset');
   const [accountName, setAccountName] = useState('');
+  const [branchName, setBranchName] = useState('');
   const [category, setCategory] = useState(entryType === 'asset' ? 'cash' : 'mortgage');
   const [value, setValue] = useState('');
   const [enableAutoUpdate, setEnableAutoUpdate] = useState(false);
@@ -174,10 +175,10 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
       if (entryType === 'asset') {
         dispatch(
           addAssetEntry({
-            account: accountName,
+            account: branchName ? `${accountName} ${branchName}` : accountName,
             value: numericValue,
             date: currentDate,
-            description: accountName, // 口座名を説明として使用
+            description: branchName ? `${accountName} ${branchName}` : accountName, // 口座名と支店名を説明として使用
             category,
             targetSettings,
           })
@@ -239,6 +240,7 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
 
       // フォームをリセット
       setAccountName('');
+      setBranchName('');
       setValue('');
       setTargetValue('');
 
@@ -332,20 +334,30 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
                   />
                 </div>
                 <div>
-                  <Label htmlFor="category">カテゴリ</Label>
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="カテゴリを選択" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(entryType === 'asset' ? ASSET_CATEGORIES : DEBT_CATEGORIES).map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="branch-name">支店名（任意）</Label>
+                  <Input
+                    id="branch-name"
+                    placeholder="例：大塚支店"
+                    value={branchName}
+                    onChange={(e) => setBranchName(e.target.value)}
+                  />
                 </div>
+              </div>
+
+              <div>
+                <Label htmlFor="category">カテゴリ</Label>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="カテゴリを選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(entryType === 'asset' ? ASSET_CATEGORIES : DEBT_CATEGORIES).map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>

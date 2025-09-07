@@ -54,7 +54,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (req.method === 'POST') {
       // 新しい資産データを追加
-      const { account, value, date, description, category } = req.body;
+      const { account, value, date, description, category, branchName } = req.body;
 
       if (!account || value === undefined || !date || !description) {
         return res.status(400).json({
@@ -65,7 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       const newAsset = await financialService.createAsset({
         userId: userId as string,
-        account,
+        account: branchName ? `${account} ${branchName}` : account,
         value: parseFloat(value),
         date: new Date(date),
         description,

@@ -22,6 +22,7 @@ export const AssetForm: React.FC<AssetFormProps> = ({
   const dispatch = useDispatch<AppDispatch>();
   const [currentAssetValue, setCurrentAssetValue] = useState<string>('');
   const [currentAssetAccount, setCurrentAssetAccount] = useState<string>('');
+  const [currentAssetBranch, setCurrentAssetBranch] = useState<string>('');
 
   const handleAssetSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +37,9 @@ export const AssetForm: React.FC<AssetFormProps> = ({
     const newAssetEntry = {
       date: new Date().toISOString().split('T')[0],
       value: parseFloat(currentAssetValue),
-      account: currentAssetAccount,
+      account: currentAssetBranch
+        ? `${currentAssetAccount} ${currentAssetBranch}`
+        : currentAssetAccount,
     };
     if (editingAsset) {
       dispatch(updateAssetEntry({ id: editingAsset, entry: newAssetEntry }));
@@ -46,6 +49,7 @@ export const AssetForm: React.FC<AssetFormProps> = ({
     }
     setCurrentAssetValue('');
     setCurrentAssetAccount('');
+    setCurrentAssetBranch('');
     updateLastBalanceDate();
     toast({
       title: '成功',
@@ -78,6 +82,16 @@ export const AssetForm: React.FC<AssetFormProps> = ({
               value={currentAssetAccount}
               onChange={(e) => setCurrentAssetAccount(e.target.value)}
               required
+            />
+          </div>
+          <div>
+            <Label htmlFor="assetBranch">支店名（任意）</Label>
+            <Input
+              id="assetBranch"
+              type="text"
+              value={currentAssetBranch}
+              onChange={(e) => setCurrentAssetBranch(e.target.value)}
+              placeholder="例：大塚支店"
             />
           </div>
           <Button type="submit">{editingAsset ? '更新' : '登録'}</Button>
