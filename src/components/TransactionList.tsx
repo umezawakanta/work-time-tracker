@@ -155,53 +155,68 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
     return matchesSearch && matchesCategory && matchesDate && matchesAccount;
   });
 
+  // 口座別に取引明細をグループ化
+  const transactionsByAccount = filteredTransactions.reduce(
+    (acc, transaction) => {
+      const accountId = transaction.accountId || 'unknown';
+      if (!acc[accountId]) {
+        acc[accountId] = [];
+      }
+      acc[accountId].push(transaction);
+      return acc;
+    },
+    {} as Record<string, Transaction[]>
+  );
+
   // カテゴリの一覧を取得
   const categories = Array.from(new Set(transactions.map((t) => t.category)));
 
-  // 収支の計算（残高の差分から計算、口座別に集計）
-  const calculateIncomeExpense = () => {
-    if (filteredTransactions.length === 0) {
+  // 口座別の収支計算
+  const calculateAccountIncomeExpense = (accountTransactions: Transaction[]) => {
+    if (accountTransactions.length === 0) {
       return { totalIncome: 0, totalExpense: 0, netAmount: 0 };
     }
 
-    // 口座別に取引明細をグループ化
-    const transactionsByAccount = filteredTransactions.reduce(
-      (acc, transaction) => {
-        const accountId = transaction.accountId || 'unknown';
-        if (!acc[accountId]) {
-          acc[accountId] = [];
-        }
-        acc[accountId].push(transaction);
-        return acc;
-      },
-      {} as Record<string, Transaction[]>
-    );
+    // 口座内でCSVの並び順でソート（csvOrderが小さいほど新しい）
+    const sortedTransactions = accountTransactions.sort((a, b) => {
+      if (a.csvOrder !== undefined && b.csvOrder !== undefined) {
+        return a.csvOrder - b.csvOrder;
+      }
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
 
     let totalIncome = 0;
     let totalExpense = 0;
 
-    // 各口座ごとに収支を計算
-    Object.values(transactionsByAccount).forEach((accountTransactions) => {
-      // 口座内でCSVの並び順でソート（csvOrderが小さいほど新しい）
-      const sortedTransactions = (accountTransactions as Transaction[]).sort((a, b) => {
-        if (a.csvOrder !== undefined && b.csvOrder !== undefined) {
-          return a.csvOrder - b.csvOrder;
-        }
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      });
+    // 残高の順序で計算（新しい明細から古い明細へ）
+    for (let i = 0; i < sortedTransactions.length - 1; i++) {
+      const currentBalance = sortedTransactions[i].amount;
+      const nextBalance = sortedTransactions[i + 1].amount;
+      const difference = currentBalance - nextBalance; // 現在の残高 - 次の残高
 
-      // 残高の順序で計算（新しい明細から古い明細へ）
-      for (let i = 0; i < sortedTransactions.length - 1; i++) {
-        const currentBalance = sortedTransactions[i].amount;
-        const nextBalance = sortedTransactions[i + 1].amount;
-        const difference = currentBalance - nextBalance; // 現在の残高 - 次の残高
-
-        if (difference > 0) {
-          totalIncome += difference; // 残高が増加 = 収入
-        } else if (difference < 0) {
-          totalExpense += Math.abs(difference); // 残高が減少 = 支出
-        }
+      if (difference > 0) {
+        totalIncome += difference; // 残高が増加 = 収入
+      } else if (difference < 0) {
+        totalExpense += Math.abs(difference); // 残高が減少 = 支出
       }
+    }
+
+    return {
+      totalIncome,
+      totalExpense,
+      netAmount: totalIncome - totalExpense,
+    };
+  };
+
+  // 全体の収支計算（全口座合計）
+  const calculateTotalIncomeExpense = () => {
+    let totalIncome = 0;
+    let totalExpense = 0;
+
+    Object.values(transactionsByAccount).forEach((accountTransactions) => {
+      const accountResult = calculateAccountIncomeExpense(accountTransactions as Transaction[]);
+      totalIncome += accountResult.totalIncome;
+      totalExpense += accountResult.totalExpense;
     });
 
     return {
@@ -211,7 +226,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
     };
   };
 
-  const { totalIncome, totalExpense, netAmount } = calculateIncomeExpense();
+  const { totalIncome, totalExpense, netAmount } = calculateTotalIncomeExpense();
 
   // 取引明細の削除
   const handleDelete = async (transactionId: string) => {
@@ -374,122 +389,159 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
             </Button>
           </div>
 
-          {/* 取引明細テーブル */}
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>日付</TableHead>
-                  <TableHead>取引内容</TableHead>
-                  <TableHead>カテゴリ</TableHead>
-                  <TableHead>口座</TableHead>
-                  <TableHead className="text-right">金額</TableHead>
-                  <TableHead className="text-center">操作</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTransactions.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                      取引明細がありません
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredTransactions.map((transaction) => (
-                    <TableRow key={transaction._id}>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-gray-400" />
-                          {new Date(transaction.date).toLocaleDateString('ja-JP')}
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-medium">{transaction.description}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-xs">
-                          {transaction.category}
+          {/* 口座別の取引明細表示 */}
+          {Object.keys(transactionsByAccount).length === 0 ? (
+            <div className="text-center py-8 text-gray-500">取引明細がありません</div>
+          ) : (
+            Object.entries(transactionsByAccount).map(([accountId, accountTransactions]) => {
+              const account = Array.isArray(bankAccounts)
+                ? bankAccounts.find((acc) => acc._id === accountId)
+                : null;
+              const accountName = account
+                ? `${account.bankName} ${account.branchName ? `${account.branchName} ` : ''}${account.accountName}`
+                : '不明な口座';
+              const accountResult = calculateAccountIncomeExpense(
+                accountTransactions as Transaction[]
+              );
+
+              return (
+                <div key={accountId} className="mb-8">
+                  {/* 口座別サマリーカード */}
+                  <Card className="mb-4">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2">
+                        <Building2 className="h-5 w-5" />
+                        {accountName}
+                        <Badge variant="outline" className="ml-2">
+                          {(accountTransactions as Transaction[]).length}件
                         </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
-                          <Building2 className="h-3 w-3 text-gray-400" />
-                          <span className="text-sm text-gray-600">
-                            {(() => {
-                              if (!Array.isArray(bankAccounts)) return '不明な口座';
-                              const account = bankAccounts.find(
-                                (acc) => acc._id === transaction.accountId
-                              );
-                              return account
-                                ? `${account.bankName} ${account.branchName ? `${account.branchName} ` : ''}${account.accountName}`
-                                : '不明な口座';
-                            })()}
-                          </span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-green-600">
+                            ¥{accountResult.totalIncome.toLocaleString()}
+                          </div>
+                          <div className="text-sm text-gray-600">収入</div>
                         </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {(() => {
-                          // 残高の差分を計算（CSVの並び順：上から下へ古くなる）
-                          const currentIndex = filteredTransactions.findIndex(
-                            (t) => t._id === transaction._id
-                          );
-
-                          let difference = 0;
-                          if (currentIndex < filteredTransactions.length - 1) {
-                            // 次の明細（古い明細）との差分を計算
-                            const nextBalance = filteredTransactions[currentIndex + 1].amount;
-                            difference = transaction.amount - nextBalance;
-                          } else {
-                            // 最後の明細（最も古い）の場合は0
-                            difference = 0;
-                          }
-
-                          return (
-                            <div className="text-right">
-                              <div className="text-sm text-gray-500">
-                                残高: ¥
-                                {(transaction.balance || transaction.amount).toLocaleString()}
-                              </div>
-                              <div
-                                className={`font-semibold ${
-                                  difference > 0
-                                    ? 'text-green-600'
-                                    : difference < 0
-                                      ? 'text-red-600'
-                                      : 'text-gray-600'
-                                }`}
-                              >
-                                {difference > 0 ? '+' : ''}¥{difference.toLocaleString()}
-                              </div>
-                            </div>
-                          );
-                        })()}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              /* TODO: 編集機能 */
-                            }}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(transaction._id)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-red-600">
+                            ¥{accountResult.totalExpense.toLocaleString()}
+                          </div>
+                          <div className="text-sm text-gray-600">支出</div>
                         </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                        <div className="text-center">
+                          <div
+                            className={`text-2xl font-bold ${accountResult.netAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                          >
+                            ¥{accountResult.netAmount.toLocaleString()}
+                          </div>
+                          <div className="text-sm text-gray-600">純収支</div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* 口座別取引明細テーブル */}
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>日付</TableHead>
+                          <TableHead>取引内容</TableHead>
+                          <TableHead>カテゴリ</TableHead>
+                          <TableHead className="text-right">金額</TableHead>
+                          <TableHead className="text-center">操作</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {(accountTransactions as Transaction[]).map((transaction) => (
+                          <TableRow key={transaction._id}>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4 text-gray-400" />
+                                {new Date(transaction.date).toLocaleDateString('ja-JP')}
+                              </div>
+                            </TableCell>
+                            <TableCell className="font-medium">{transaction.description}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="text-xs">
+                                {transaction.category}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {(() => {
+                                // 口座内での残高の差分を計算（CSVの並び順：上から下へ古くなる）
+                                const currentIndex = (
+                                  accountTransactions as Transaction[]
+                                ).findIndex((t) => t._id === transaction._id);
+
+                                let difference = 0;
+                                if (
+                                  currentIndex <
+                                  (accountTransactions as Transaction[]).length - 1
+                                ) {
+                                  // 次の明細（古い明細）との差分を計算
+                                  const nextBalance = (accountTransactions as Transaction[])[
+                                    currentIndex + 1
+                                  ].amount;
+                                  difference = transaction.amount - nextBalance;
+                                } else {
+                                  // 最後の明細（最も古い）の場合は0
+                                  difference = 0;
+                                }
+
+                                return (
+                                  <div className="text-right">
+                                    <div className="text-sm text-gray-500">
+                                      残高: ¥{transaction.amount.toLocaleString()}
+                                    </div>
+                                    <div
+                                      className={`font-semibold ${
+                                        difference > 0
+                                          ? 'text-green-600'
+                                          : difference < 0
+                                            ? 'text-red-600'
+                                            : 'text-gray-600'
+                                      }`}
+                                    >
+                                      {difference > 0 ? '+' : ''}¥{difference.toLocaleString()}
+                                    </div>
+                                  </div>
+                                );
+                              })()}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <div className="flex items-center justify-center gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    /* TODO: 編集機能 */
+                                  }}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDelete(transaction._id)}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              );
+            })
+          )}
 
           {/* ページネーション情報 */}
           <div className="mt-4 text-sm text-gray-500 text-center">
