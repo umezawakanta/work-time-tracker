@@ -4450,7 +4450,7 @@ app.post('/api/cleanup-all-assets', async (req, res) => {
     let deletedCount = 0;
     for (const asset of assets) {
       try {
-        console.log(`Deleting asset: ${asset._id} - ${asset.account}`);
+        console.log(`Deleting asset: ${asset._id} - ${asset.account} (${asset.value}円)`);
         await financialService.deleteAsset(asset._id);
         deletedCount++;
       } catch (error) {
