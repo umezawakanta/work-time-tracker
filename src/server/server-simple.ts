@@ -4428,6 +4428,86 @@ app.get('/api/debug/assets', async (req, res) => {
   }
 });
 
+// 全資産データをクリーンアップする機能
+app.post('/api/cleanup-all-assets', async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'User ID is required' });
+  }
+
+  try {
+    const financialService = FinancialDataService.getInstance();
+
+    console.log('=== FULL CLEANUP START ===');
+    console.log('User ID:', userId);
+
+    // 1. 現在の全資産データを取得
+    const assets = await financialService.getAssets(userId);
+    console.log(`Found ${assets.length} total assets`);
+
+    // 2. 全資産データを削除
+    let deletedCount = 0;
+    for (const asset of assets) {
+      try {
+        console.log(`Deleting asset: ${asset._id} - ${asset.account}`);
+        await financialService.deleteAsset(asset._id);
+        deletedCount++;
+      } catch (error) {
+        console.error(`Failed to delete asset ${asset._id}:`, error);
+      }
+    }
+
+    // 3. 銀行口座データから新しい資産エントリを作成
+    const bankAccounts = await financialService.getBankAccounts(userId);
+    let createdCount = 0;
+    for (const account of bankAccounts) {
+      if (account.lastBalance !== undefined && account.lastBalance !== null) {
+        try {
+          const accountName = `${account.bankName} ${account.branchName ? `${account.branchName} ` : ''}${account.accountName}`;
+          const bankAssetEntry = {
+            _id: `bank_${account._id}`,
+            userId: userId,
+            date: new Date().toISOString().split('T')[0],
+            value: account.lastBalance,
+            description: accountName,
+            account: accountName,
+            category: '現金・預金',
+          } as any;
+
+          console.log(`Creating asset for account: ${accountName} (${account.lastBalance})`);
+          await financialService.createAsset(bankAssetEntry);
+          createdCount++;
+        } catch (error) {
+          console.error(`Failed to create asset for account ${account._id}:`, error);
+        }
+      }
+    }
+
+    // 4. クリーンアップ後の確認
+    const afterCleanup = await financialService.getAssets(userId);
+    console.log('=== FULL CLEANUP COMPLETE ===');
+    console.log(`Deleted: ${deletedCount} assets`);
+    console.log(`Created: ${createdCount} assets`);
+    console.log(`Final assets: ${afterCleanup.length}`);
+
+    res.json({
+      success: true,
+      message: `全資産データをクリーンアップしました。削除: ${deletedCount}件, 作成: ${createdCount}件`,
+      deleted: deletedCount,
+      created: createdCount,
+      finalCount: afterCleanup.length,
+    });
+  } catch (error) {
+    console.error('Error cleaning up all assets:', error);
+    res.status(500).json({
+      success: false,
+      message: 'クリーンアップ中にエラーが発生しました',
+      error: error.message,
+    });
+  }
+});
+
 // 強力なクリーンアップ機能：全銀行口座データを削除して再構築
 app.post('/api/cleanup-duplicate-bank-accounts', async (req, res) => {
   const { userId } = req.body;

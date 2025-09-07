@@ -867,6 +867,52 @@ export default function AssetLiabilityReportPage() {
             </Tooltip>
           </TooltipProvider>
 
+          {/* 全資産データクリーンアップ */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={async () => {
+                    if (
+                      confirm('全資産データをクリーンアップしますか？この操作は元に戻せません。')
+                    ) {
+                      try {
+                        const response = await fetch(
+                          'http://localhost:3001/api/cleanup-all-assets',
+                          {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ userId: user?.id || 'default-user' }),
+                          }
+                        );
+                        const result = await response.json();
+                        if (result.success) {
+                          toast.success(result.message);
+                          // ページを再読み込みしてデータを更新
+                          window.location.reload();
+                        } else {
+                          toast.error(result.message);
+                        }
+                      } catch (error) {
+                        console.error('Failed to cleanup all assets:', error);
+                        toast.error('全資産クリーンアップに失敗しました');
+                      }
+                    }
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>全資産データをクリーンアップ</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           {/* 重複データクリーンアップ */}
           <TooltipProvider>
             <Tooltip>
