@@ -72,7 +72,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
       if (response.ok) {
         const data = await response.json();
         // APIレスポンスの構造に応じて配列を取得
-        if (data.success && Array.isArray(data.accounts)) {
+        if (data.success && Array.isArray(data.data)) {
+          setBankAccounts(data.data);
+        } else if (data.success && Array.isArray(data.accounts)) {
           setBankAccounts(data.accounts);
         } else if (Array.isArray(data)) {
           setBankAccounts(data);
@@ -359,7 +361,8 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
                 {Array.isArray(bankAccounts) &&
                   bankAccounts.map((account) => (
                     <SelectItem key={account._id} value={account._id}>
-                      {account.bankName} {account.accountName}
+                      {account.bankName} {account.branchName ? `${account.branchName} ` : ''}
+                      {account.accountName}
                     </SelectItem>
                   ))}
               </SelectContent>
@@ -416,7 +419,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
                                 (acc) => acc._id === transaction.accountId
                               );
                               return account
-                                ? `${account.bankName} ${account.accountName}`
+                                ? `${account.bankName} ${account.branchName ? `${account.branchName} ` : ''}${account.accountName}`
                                 : '不明な口座';
                             })()}
                           </span>
