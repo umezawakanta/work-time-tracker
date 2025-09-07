@@ -89,7 +89,7 @@ async function migrateAssets(service: FinancialDataService, userId: string, reco
   }));
 
   try {
-    await service.createMultipleAssets(assets);
+    await service.createMultipleAssets(assets as any);
     console.log(`    ✅ 資産データ ${assets.length}件を移行しました`);
   } catch (error) {
     console.error(`    ❌ 資産データの移行に失敗しました:`, error);
@@ -110,7 +110,7 @@ async function migrateDebts(service: FinancialDataService, userId: string, recor
   }));
 
   try {
-    await service.createMultipleDebts(debts);
+    await service.createMultipleDebts(debts as any);
     console.log(`    ✅ 負債データ ${debts.length}件を移行しました`);
   } catch (error) {
     console.error(`    ❌ 負債データの移行に失敗しました:`, error);
@@ -121,7 +121,6 @@ async function migrateBankAccounts(service: FinancialDataService, userId: string
   for (const record of records) {
     try {
       await service.createBankAccount({
-        _id: record._id,
         userId,
         bankName: record.bankName,
         accountName: record.accountName,
@@ -132,7 +131,7 @@ async function migrateBankAccounts(service: FinancialDataService, userId: string
         isMain: record.isMain || false,
         isActive: record.isActive !== false,
         lastUpdated: record.lastUpdated ? new Date(record.lastUpdated) : new Date(),
-      });
+      } as any);
     } catch (error) {
       console.error(`    ❌ 銀行口座 ${record._id} の移行に失敗しました:`, error);
     }
@@ -154,7 +153,7 @@ async function migrateTransactions(service: FinancialDataService, userId: string
   }));
 
   try {
-    await service.createMultipleTransactions(transactions);
+    await service.createMultipleTransactions(transactions as any);
     console.log(`    ✅ 取引データ ${transactions.length}件を移行しました`);
   } catch (error) {
     console.error(`    ❌ 取引データの移行に失敗しました:`, error);
