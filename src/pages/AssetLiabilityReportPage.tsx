@@ -181,7 +181,8 @@ export default function AssetLiabilityReportPage() {
               id: `bank_${mainAccount._id}`,
               entry: {
                 value: mainAccount.lastBalance,
-                account: `${mainAccount.bankName} ${mainAccount.accountName}`,
+                account: `${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}`,
+                description: `${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}`,
               },
             })
           );
@@ -193,8 +194,8 @@ export default function AssetLiabilityReportPage() {
           userId: user?.id || 'default-user',
           date: new Date().toISOString().split('T')[0],
           value: mainAccount.lastBalance,
-          description: `${mainAccount.bankName} ${mainAccount.accountName}`,
-          account: `${mainAccount.bankName} ${mainAccount.accountName}`,
+          description: `${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}`,
+          account: `${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}`,
           category: '現金・預金',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -203,6 +204,22 @@ export default function AssetLiabilityReportPage() {
       }
     }
   }, [mainAccount, dispatch, user?.id, assetEntries]);
+
+  // デバッグ用：assetEntriesの内容をログ出力
+  useEffect(() => {
+    console.log('Asset Entries Debug:', {
+      totalEntries: assetEntries.length,
+      bankEntries: assetEntries.filter(
+        (entry) => entry && entry._id && entry._id.startsWith('bank_')
+      ),
+      allEntries: assetEntries.map((entry) => ({
+        id: entry?._id,
+        account: entry?.account,
+        value: entry?.value,
+        description: entry?.description,
+      })),
+    });
+  }, [assetEntries]);
 
   // 月次データの自動生成
   const generateMonthlySnapshots = async () => {
@@ -416,7 +433,7 @@ export default function AssetLiabilityReportPage() {
         ? [
             {
               date: new Date(),
-              account: `${mainAccount.bankName} ${mainAccount.accountName}`,
+              account: `${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}`,
               value: mainAccount.lastBalance,
               type: 'asset' as const,
             },
