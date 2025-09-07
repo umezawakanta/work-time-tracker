@@ -26,6 +26,20 @@ export const useBankAccounts = (userId: string) => {
       setIsLoading(true);
       setError(null);
 
+      // まず取引明細から口座残高を更新
+      try {
+        await fetch('/api/bank-accounts/update-balances', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId }),
+        });
+      } catch (updateError) {
+        console.warn('Failed to update account balances:', updateError);
+        // 残高更新に失敗しても口座情報の取得は続行
+      }
+
       const response = await fetch(`/api/bank-accounts?userId=${userId}`);
       const data = await response.json();
 

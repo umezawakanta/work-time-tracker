@@ -4233,6 +4233,14 @@ app.post('/api/transactions/import', async (req: Request, res: Response) => {
       createdTransactions.push(createdTx);
     }
 
+    // 取引明細インポート後に口座残高を更新
+    try {
+      await financialService.updateAccountBalancesFromTransactions(userId);
+    } catch (updateError) {
+      console.warn('Failed to update account balances after import:', updateError);
+      // 残高更新に失敗してもインポートは成功とする
+    }
+
     res.json({
       success: true,
       message: `${createdTransactions.length}件の取引明細をインポートしました`,
@@ -4271,6 +4279,31 @@ app.delete('/api/transactions/clear', async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: '取引明細データのクリアに失敗しました',
+    });
+  }
+});
+
+// 口座残高を取引明細から更新するAPI
+app.post('/api/bank-accounts/update-balances', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any)?.user?.id || req.body?.userId || 'default-user';
+
+    // データベースから口座残高を更新
+    const { FinancialDataService } = await import('../database/services/FinancialDataService');
+    const financialService = FinancialDataService.getInstance();
+
+    // 取引明細から口座残高を更新
+    await financialService.updateAccountBalancesFromTransactions(userId);
+
+    res.json({
+      success: true,
+      message: '口座残高を更新しました',
+    });
+  } catch (error) {
+    console.error('Error updating account balances:', error);
+    res.status(500).json({
+      success: false,
+      error: '口座残高の更新に失敗しました',
     });
   }
 });

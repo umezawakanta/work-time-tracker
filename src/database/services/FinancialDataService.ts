@@ -252,4 +252,40 @@ export class FinancialDataService {
     const result = await Transaction.deleteMany({ userId });
     return { deletedCount: result.deletedCount || 0 };
   }
+
+  // 取引明細から最新の残高を取得して口座情報を更新
+  async updateAccountBalancesFromTransactions(userId: string): Promise<void> {
+    await this.ensureConnection();
+
+    // ユーザーのすべての口座を取得
+    const accounts = await BankAccount.find({ userId, isActive: true });
+
+    for (const account of accounts) {
+      // 各口座の最新の取引明細を取得（csvOrder順、最新が上）
+      const latestTransaction = await Transaction.findOne({
+        userId,
+        accountId: account._id,
+      }).sort({ csvOrder: 1 }); // csvOrder: 1 = 最新（一番上）
+
+      if (latestTransaction) {
+        // 最新の残高で口座情報を更新
+        await BankAccount.findByIdAndUpdate(account._id, {
+          lastBalance: latestTransaction.amount,
+          lastUpdated: new Date().toISOString(),
+        });
+      }
+    }
+  }
+
+  // 特定の口座の最新残高を取得
+  async getLatestBalanceForAccount(userId: string, accountId: string): Promise<number | null> {
+    await this.ensureConnection();
+
+    const latestTransaction = await Transaction.findOne({
+      userId,
+      accountId,
+    }).sort({ csvOrder: 1 }); // csvOrder: 1 = 最新（一番上）
+
+    return latestTransaction ? latestTransaction.amount : null;
+  }
 }

@@ -106,12 +106,37 @@ const BankAccountPage: React.FC = () => {
             <ArrowLeft className="h-4 w-4" />
             戻る
           </Button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-3xl font-bold text-gray-900">銀行口座管理</h1>
             <p className="text-lg text-gray-600">
               複数の銀行口座を登録・管理して、日々の収支を把握し、「毎日20のこと」を効率的に進めましょう
             </p>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              try {
+                const response = await fetch('/api/bank-accounts/update-balances', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ userId: user?.id || 'default-user' }),
+                });
+                if (response.ok) {
+                  // 口座情報を再取得
+                  window.location.reload();
+                }
+              } catch (error) {
+                console.error('Failed to update balances:', error);
+              }
+            }}
+            className="flex items-center gap-2"
+          >
+            <TrendingUp className="h-4 w-4" />
+            残高更新
+          </Button>
         </div>
 
         {/* 銀行口座未登録の案内 */}
