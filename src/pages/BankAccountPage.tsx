@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useBankAccounts } from '@/hooks/useBankAccounts';
 import BankAccountManager from '@/components/BankAccountManager';
 import { BankCSVUploader } from '@/components/BankCSVUploader';
 import { TransactionCSVUploader } from '@/components/TransactionCSVUploader';
@@ -7,12 +8,23 @@ import { TransactionList } from '@/components/TransactionList';
 import BankAccountForm from '@/components/BankAccountForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building2, ArrowLeft, Upload, FileText, Plus, List, TrendingUp } from 'lucide-react';
+import {
+  Building2,
+  ArrowLeft,
+  Upload,
+  FileText,
+  Plus,
+  List,
+  TrendingUp,
+  AlertCircle,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const BankAccountPage: React.FC = () => {
   const { user, isAuthenticated, loading } = useAuth();
+  const { accounts, isLoading: accountsLoading } = useBankAccounts(user?.id || 'default-user');
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('manage');
@@ -101,6 +113,27 @@ const BankAccountPage: React.FC = () => {
             </p>
           </div>
         </div>
+
+        {/* 銀行口座未登録の案内 */}
+        {!accountsLoading && accounts.length === 0 && (
+          <Alert className="border-amber-200 bg-amber-50">
+            <AlertCircle className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              <div className="space-y-2">
+                <p className="font-semibold">まず銀行口座を登録してください</p>
+                <p>
+                  収支管理を開始するには、まず銀行口座を登録する必要があります。
+                  以下の手順で進めてください：
+                </p>
+                <ol className="list-decimal list-inside space-y-1 ml-4">
+                  <li>「口座管理」タブで銀行口座を登録</li>
+                  <li>「口座CSVインポート」タブで既存の口座データを一括登録</li>
+                  <li>「取引明細CSVインポート」タブで取引履歴を登録</li>
+                </ol>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* タブナビゲーション */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>

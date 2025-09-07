@@ -28,6 +28,7 @@ import {
   Refrigerator,
   Sparkles,
   Shirt,
+  AlertCircle,
   Sun,
   Folders,
   Archive,
@@ -717,6 +718,31 @@ const Daily10TasksPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* 銀行口座未登録の案内 */}
+      {!bankLoading && !mainAccount && (
+        <Alert className="border-amber-200 bg-amber-50 mb-6">
+          <AlertCircle className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-800">
+            <div className="space-y-2">
+              <p className="font-semibold">まず銀行口座を登録してください</p>
+              <p>
+                「毎日20のこと」の一部のタスク（銀行口座の入出金履歴確認など）を実行するには、
+                まず銀行口座を登録する必要があります。
+              </p>
+              <p>
+                <a
+                  href="/bank-accounts?tab=manage"
+                  className="text-amber-700 hover:text-amber-900 underline font-medium"
+                >
+                  銀行口座管理ページ
+                </a>
+                で銀行口座を登録してから、タスクを開始してください。
+              </p>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">必ず毎日やる20のこと</h1>
         <p className="text-gray-600 mb-2">毎日の習慣を継続して、目標を達成しましょう</p>

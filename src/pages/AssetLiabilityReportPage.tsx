@@ -48,6 +48,7 @@ import {
   Plus,
   Download,
   Camera,
+  AlertCircle,
   Filter,
   Target, // 追加: 目標のアイコン
   Building2, // 追加: 銀行のアイコン
@@ -60,6 +61,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -106,6 +108,7 @@ export default function AssetLiabilityReportPage() {
     error: bankError,
     refetch: refetchBankAccounts,
   } = useBankAccounts(user?.id || 'default-user');
+  const accountsLoading = bankLoading;
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
   const [editingDebt, setEditingDebt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -569,6 +572,34 @@ export default function AssetLiabilityReportPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
+      {/* 銀行口座未登録の案内 */}
+      {!accountsLoading && accounts && accounts.length === 0 && (
+        <Alert className="border-amber-200 bg-amber-50 mb-6">
+          <AlertCircle className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-800">
+            <div className="space-y-2">
+              <p className="font-semibold">まず銀行口座を登録してください</p>
+              <p>
+                資産負債レポートを表示するには、まず銀行口座を登録する必要があります。
+                以下の手順で進めてください：
+              </p>
+              <ol className="list-decimal list-inside space-y-1 ml-4">
+                <li>
+                  <a
+                    href="/bank-accounts?tab=manage"
+                    className="text-amber-700 hover:text-amber-900 underline font-medium"
+                  >
+                    銀行口座管理ページ
+                  </a>
+                  で銀行口座を登録
+                </li>
+                <li>銀行口座登録後、このページで資産負債レポートを確認</li>
+              </ol>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* ヘッダーセクション */}
       <div className="flex justify-between items-center mb-6">
         <div>
