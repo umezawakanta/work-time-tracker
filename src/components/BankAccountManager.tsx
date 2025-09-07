@@ -541,7 +541,8 @@ const BankAccountManager: React.FC<BankAccountManagerProps> = ({ userId, onAccou
                     </div>
                     <div>
                       <h4 className="font-medium text-green-900">
-                        {balance.bankName} {balance.accountName}
+                        {balance.bankName} {balance.branchName ? `${balance.branchName} ` : ''}
+                        {balance.accountName}
                       </h4>
                       <p className="text-sm text-green-700">{balance.accountType}</p>
                     </div>

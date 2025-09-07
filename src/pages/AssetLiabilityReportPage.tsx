@@ -479,7 +479,9 @@ export default function AssetLiabilityReportPage() {
     console.log('Chart Data Debug:', {
       assetEntries: assetEntries.length,
       debtEntries: debtEntries.length,
-      mainAccount: mainAccount ? `${mainAccount.bankName} ${mainAccount.accountName}` : 'none',
+      mainAccount: mainAccount
+        ? `${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}`
+        : 'none',
       hasBankData: false,
       chartDataLength: result.length,
       assetChartData: assetChartData.length,

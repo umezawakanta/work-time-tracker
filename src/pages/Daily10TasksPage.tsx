@@ -165,7 +165,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     // メイン銀行口座の情報を含むメッセージ
     if (task.id === '2') {
       if (mainAccount) {
-        return `🏦 メイン銀行口座「${mainAccount.bankName} ${mainAccount.accountName}」の入出金履歴を確認しよう！${mainAccount.lastBalance ? ` 現在の残高: ${mainAccount.lastBalance.toLocaleString()}円` : ''}`;
+        return `🏦 メイン銀行口座「${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}」の入出金履歴を確認しよう！${mainAccount.lastBalance ? ` 現在の残高: ${mainAccount.lastBalance.toLocaleString()}円` : ''}`;
       } else if (!bankLoading) {
         return '🏦 メイン銀行口座を登録してから、入出金履歴を確認しよう！銀行口座管理ページで登録できます。';
       }

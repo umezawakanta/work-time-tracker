@@ -1826,7 +1826,7 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
       // 選択された口座の情報を取得
       const selectedAccount = bankAccounts.find((account) => account._id === selectedAccountId);
       const accountName = selectedAccount
-        ? `${selectedAccount.bankName} ${selectedAccount.accountName}`
+        ? `${selectedAccount.bankName} ${selectedAccount.branchName ? `${selectedAccount.branchName} ` : ''}${selectedAccount.accountName}`
         : '選択された口座';
 
       // 取引明細に口座情報を追加
@@ -1964,7 +1964,8 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
                         <div className="flex items-center gap-2">
                           <Building2 className="h-4 w-4" />
                           <span>
-                            {account.bankName} {account.accountName}
+                            {account.bankName} {account.branchName ? `${account.branchName} ` : ''}
+                            {account.accountName}
                           </span>
                           {account.isMainAccount && (
                             <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
