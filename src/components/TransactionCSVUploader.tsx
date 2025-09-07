@@ -110,7 +110,8 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
       }
     }
 
-    const headers = lines[headerIndex].split(',').map((h) => h.trim());
+    const delimiter = detectDelimiter(csvText);
+    const headers = lines[headerIndex].split(delimiter).map((h) => h.trim());
     console.log('SMBC Headers detected:', headers);
 
     const transactions: CSVTransactionData[] = [];
@@ -119,7 +120,7 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
       const line = lines[i].trim();
       if (!line) continue;
 
-      const values = line.split(',').map((v) => v.trim());
+      const values = line.split(delimiter).map((v) => v.trim());
       console.log(`SMBC CSV - Line ${i}:`, values);
 
       if (values.length < headers.length) {
@@ -217,6 +218,28 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     return transactions;
   };
 
+  // 区切り文字を自動検出
+  const detectDelimiter = (text: string): string => {
+    const lines = text.split('\n').filter((line) => line.trim());
+    if (lines.length < 2) return ',';
+
+    const firstLine = lines[0];
+    const delimiters = [',', '\t', ';', '|'];
+    let bestDelimiter = ',';
+    let maxColumns = 0;
+
+    for (const delimiter of delimiters) {
+      const columns = firstLine.split(delimiter).length;
+      if (columns > maxColumns) {
+        maxColumns = columns;
+        bestDelimiter = delimiter;
+      }
+    }
+
+    console.log(`Detected delimiter: ${bestDelimiter} (${maxColumns} columns)`);
+    return bestDelimiter;
+  };
+
   // 汎用CSVを解析
   const parseGenericCSV = (csvText: string): CSVTransactionData[] => {
     const lines = csvText.split('\n').filter((line) => line.trim());
@@ -227,7 +250,8 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
       return [];
     }
 
-    const headers = lines[0].split(',').map((h) => h.trim());
+    const delimiter = detectDelimiter(csvText);
+    const headers = lines[0].split(delimiter).map((h) => h.trim());
     console.log('Generic CSV - Headers:', headers);
 
     const transactions: CSVTransactionData[] = [];
@@ -236,7 +260,7 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
       const line = lines[i].trim();
       if (!line) continue;
 
-      const values = line.split(',').map((v) => v.trim());
+      const values = line.split(delimiter).map((v) => v.trim());
       console.log(`Generic CSV - Line ${i}:`, values);
 
       // より柔軟な列数のチェック
@@ -316,6 +340,45 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     return errors;
   };
 
+  // 文字コードを検出してテキストを読み込む
+  const readFileWithEncoding = async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    
+    // 文字コードを検出
+    const encodings = ['shift_jis', 'utf-8', 'euc-jp', 'iso-2022-jp'];
+    let detectedText = '';
+    let detectedEncoding = 'utf-8';
+    
+    for (const encoding of encodings) {
+      try {
+        const decoder = new TextDecoder(encoding);
+        const text = decoder.decode(uint8Array);
+        
+        // 日本語文字が正しくデコードされているかチェック
+        if (text.includes('年月日') || text.includes('日付') || text.includes('金額') || text.includes('内容')) {
+          detectedText = text;
+          detectedEncoding = encoding;
+          console.log(`Detected encoding: ${encoding}`);
+          break;
+        }
+      } catch (error) {
+        console.log(`Failed to decode with ${encoding}:`, error);
+        continue;
+      }
+    }
+    
+    // どのエンコーディングでも成功しなかった場合はUTF-8でフォールバック
+    if (!detectedText) {
+      const decoder = new TextDecoder('utf-8');
+      detectedText = decoder.decode(uint8Array);
+      detectedEncoding = 'utf-8';
+      console.log('Fallback to UTF-8 encoding');
+    }
+    
+    return detectedText;
+  };
+
   // ファイルアップロード処理
   const handleFileUpload = async (file: File) => {
     if (!file) return;
@@ -329,10 +392,16 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     setUploadProgress(0);
 
     try {
-      // ファイルの読み込み
-      const text = await file.text();
+      // ファイルの読み込み（文字コード自動検出）
+      const text = await readFileWithEncoding(file);
       console.log('File content preview:', text.substring(0, 500));
       console.log('File lines:', text.split('\n').length);
+      
+      // 文字化けチェック
+      if (text.includes('') || text.includes('N◆◆') || text.includes('舵')) {
+        console.warn('Possible character encoding issues detected');
+        toast.warning('ファイルの文字コードに問題がある可能性があります。Shift_JISで保存されたCSVファイルをアップロードしてください。');
+      }
 
       // CSVの解析
       const transactions = parseCSV(text);
