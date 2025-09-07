@@ -167,14 +167,42 @@ export function AuthProvider({ children }: AuthProviderProps) {
         /^work-time-tracker-5d9q-.*\.vercel\.app$/.test(host);
 
       if (!isTrustedHost) {
-        console.log('🧪 Dev host detected - skipping server auth check');
-        setIsAuthenticated(true);
-        setSessionExpired(false);
-        // 開発環境でもユーザー情報を取得
-        if (isMounted) {
-          await fetchUser();
+        console.log('🧪 Dev host detected - checking server auth anyway');
+        try {
+          const isValidOnServer = await checkAuth();
+          console.log('📡 Dev server auth check result:', { isValidOnServer });
+          if (!isValidOnServer) {
+            console.log('❌ Dev server auth check failed');
+            tokenManager.clearTokens();
+            setIsAuthenticated(false);
+            setUser(null);
+            setSessionExpired(true);
+            // 開発環境でもログイン画面にリダイレクト
+            if (typeof window !== 'undefined') {
+              window.location.replace('/login');
+            }
+            return false;
+          }
+          console.log('✅ Dev server auth check passed');
+          setIsAuthenticated(true);
+          setSessionExpired(false);
+          // 開発環境でもユーザー情報を取得
+          if (isMounted) {
+            await fetchUser();
+          }
+          return true;
+        } catch (serverError) {
+          console.log('⚠️ Dev server auth check failed, redirecting to login', serverError);
+          tokenManager.clearTokens();
+          setIsAuthenticated(false);
+          setUser(null);
+          setSessionExpired(true);
+          // 開発環境でもログイン画面にリダイレクト
+          if (typeof window !== 'undefined') {
+            window.location.replace('/login');
+          }
+          return false;
         }
-        return true;
       }
 
       console.log('📡 Starting server auth check...');
@@ -248,9 +276,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
           },
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Auth', 'Failed to fetch user data', error);
-      setUser(null);
+
+      // 認証エラー（401/403）の場合は認証状態をリセット
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        console.log('🔒 Authentication error in fetchUser, clearing auth state');
+        tokenManager.clearTokens();
+        setIsAuthenticated(false);
+        setUser(null);
+        setSessionExpired(true);
+
+        // ログイン画面にリダイレクト
+        if (typeof window !== 'undefined') {
+          window.location.replace('/login');
+        }
+      } else {
+        setUser(null);
+      }
     }
   }, []);
 

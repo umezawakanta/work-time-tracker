@@ -26,6 +26,14 @@ const BankAccountPage: React.FC = () => {
     userId: user?.id,
   });
 
+  // セッション切れの場合は自動的にログイン画面にリダイレクト
+  React.useEffect(() => {
+    if (!loading && (!isAuthenticated || !user)) {
+      console.log('🔒 Not authenticated, redirecting to login');
+      navigate('/login', { replace: true });
+    }
+  }, [isAuthenticated, user, loading, navigate]);
+
   // ローディング中の場合
   if (loading) {
     return (

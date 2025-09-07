@@ -269,7 +269,7 @@ api.interceptors.response.use(
       const url = String(error.config?.url || '');
       const isAuthEndpoint = /\/auth\//.test(url);
       if (!isAuthEndpoint) {
-        // 本番環境での確実なリダイレクト処理
+        // 開発環境・本番環境両方での確実なリダイレクト処理
         try {
           if (typeof window !== 'undefined') {
             const path = window.location.pathname + window.location.search;
@@ -283,16 +283,14 @@ api.interceptors.response.use(
                 window.dispatchEvent(new CustomEvent('auth:token-expired'));
               } catch {}
 
-              // 本番環境では即座にリダイレクト
-              if (isProduction) {
-                console.log('🚨 Production: Redirecting to login due to auth error');
-                window.location.replace('/login');
-              } else {
-                window.location.assign('/login');
-              }
+              // 開発環境・本番環境両方で即座にリダイレクト
+              console.log('🚨 Redirecting to login due to auth error', { isProduction, url });
+              window.location.replace('/login');
             }
           }
-        } catch {}
+        } catch (redirectError) {
+          console.error('Failed to redirect to login:', redirectError);
+        }
       }
     }
 
