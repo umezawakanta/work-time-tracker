@@ -103,27 +103,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return;
       }
 
-      const transactions = transactionStore.get(userId) || [];
-      const transactionIndex = transactions.findIndex((tx) => tx._id === transactionId);
-
-      if (transactionIndex === -1) {
+      const updatedTransaction = await financialService.updateTransaction(transactionId, updates);
+      if (!updatedTransaction) {
         res.status(404).json({ success: false, message: 'Transaction not found' });
         return;
       }
 
-      transactions[transactionIndex] = {
-        ...transactions[transactionIndex],
-        ...updates,
-        updatedAt: new Date().toISOString(),
-      };
-
-      transactionStore.set(userId, transactions);
-      saveVercelDataImmediately(transactionStore, 'transactions');
-
       res.status(200).json({
         success: true,
         message: '取引明細を更新しました',
-        transaction: transactions[transactionIndex],
+        transaction: updatedTransaction,
       });
     } catch (error) {
       console.error('Update transaction error:', error);
@@ -131,23 +120,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   } else if (req.method === 'DELETE') {
     try {
-      const { userId, transactionId } = req.body;
+      const { userId, transactionId, accountName } = req.body;
 
-      if (!userId || !transactionId) {
-        res.status(400).json({ success: false, message: 'userId and transactionId are required' });
+      if (!userId) {
+        res.status(400).json({ success: false, message: 'userId is required' });
         return;
       }
 
-      const transactions = transactionStore.get(userId) || [];
-      const filteredTransactions = transactions.filter((tx) => tx._id !== transactionId);
+      // 特定の口座名の取引明細を一括削除
+      if (accountName) {
+        const result = await financialService.deleteTransactionsByAccountName(userId, accountName);
+        res.status(200).json({
+          success: true,
+          message: `${accountName}の取引明細を削除しました`,
+          deletedCount: result.deletedCount,
+        });
+        return;
+      }
 
-      if (transactions.length === filteredTransactions.length) {
+      // 個別の取引明細を削除
+      if (!transactionId) {
+        res
+          .status(400)
+          .json({ success: false, message: 'transactionId or accountName is required' });
+        return;
+      }
+
+      const success = await financialService.deleteTransaction(transactionId);
+      if (!success) {
         res.status(404).json({ success: false, message: 'Transaction not found' });
         return;
       }
-
-      transactionStore.set(userId, filteredTransactions);
-      saveVercelDataImmediately(transactionStore, 'transactions');
 
       res.status(200).json({
         success: true,

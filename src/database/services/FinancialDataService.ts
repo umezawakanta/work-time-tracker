@@ -259,6 +259,19 @@ export class FinancialDataService {
     return { deletedCount: result.deletedCount || 0 };
   }
 
+  // 特定の口座名の取引明細を削除
+  async deleteTransactionsByAccountName(
+    userId: string,
+    accountName: string
+  ): Promise<{ deletedCount: number }> {
+    await this.ensureConnection();
+    const result = await Transaction.deleteMany({
+      userId,
+      accountName: { $regex: accountName, $options: 'i' },
+    });
+    return { deletedCount: result.deletedCount || 0 };
+  }
+
   // 取引明細から最新の残高を取得して口座情報を更新
   async updateAccountBalancesFromTransactions(userId: string): Promise<void> {
     await this.ensureConnection();
