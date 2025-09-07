@@ -836,6 +836,42 @@ export default function AssetLiabilityReportPage() {
             </Tooltip>
           </TooltipProvider>
 
+          {/* 詳細デバッグボタン */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={async () => {
+                    try {
+                      const response = await fetch(
+                        `/api/debug/detailed-assets?userId=${user?.id || 'default-user'}`
+                      );
+                      const result = await response.json();
+                      if (result.success) {
+                        console.log('Detailed Debug Data:', result);
+                        toast.success(
+                          `詳細: 総資産${result.counts.totalAssets}件, 銀行${result.counts.bankAssets}件, 重複${result.counts.duplicates}件`
+                        );
+                      } else {
+                        toast.error(result.message);
+                      }
+                    } catch (error) {
+                      console.error('Failed to fetch detailed debug data:', error);
+                      toast.error('詳細デバッグデータの取得に失敗しました');
+                    }
+                  }}
+                >
+                  <AlertCircle className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>詳細デバッグ情報を表示</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           {/* 銀行口座データ同期 */}
           <TooltipProvider>
             <Tooltip>
@@ -914,6 +950,55 @@ export default function AssetLiabilityReportPage() {
               </TooltipTrigger>
               <TooltipContent>
                 <p>全資産データをクリーンアップ</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* 強制クリーンアップボタン */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={async () => {
+                    if (
+                      confirm(
+                        '強制クリーンアップを実行しますか？全てのデータが削除されます。この操作は元に戻せません。'
+                      )
+                    ) {
+                      try {
+                        const response = await fetch('/api/cleanup/force-cleanup', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            userId: user?.id || 'default-user',
+                            cleanupType: 'all',
+                          }),
+                        });
+                        const result = await response.json();
+                        if (result.success) {
+                          toast.success(result.message);
+                          console.log('Force cleanup results:', result.results);
+                          // ページを再読み込みしてデータを更新
+                          window.location.reload();
+                        } else {
+                          toast.error(result.message);
+                        }
+                      } catch (error) {
+                        console.error('Failed to force cleanup:', error);
+                        toast.error('強制クリーンアップに失敗しました');
+                      }
+                    }
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>強制クリーンアップ（全データ削除）</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

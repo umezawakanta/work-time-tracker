@@ -1,5 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { connectToDatabase } from '../_lib/mongodb';
+import { MongoClient } from 'mongodb';
+
+const uri = process.env.MONGODB_URI;
+if (!uri) {
+  throw new Error('MONGODB_URI is not set');
+}
+
+const client = new MongoClient(uri);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -13,19 +20,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ success: false, message: 'User ID is required' });
     }
 
-    const { db } = await connectToDatabase();
+    await client.connect();
+    const db = client.db();
 
     // 全資産データを取得
     const allAssets = await db.collection('assets').find({ userId }).toArray();
 
     // 銀行口座関連の資産データを取得
-    const bankAssets = await db
-      .collection('assets')
-      .find({
-        userId,
-        $or: [{ _id: { $regex: /^bank_/ } }, { account: { $regex: /銀行|残高別|普通|貯蓄|定期/ } }],
-      })
-      .toArray();
+    const bankAssets = allAssets.filter(
+      (asset) =>
+        asset._id?.toString().startsWith('bank_') ||
+        /銀行|残高別|普通|貯蓄|定期/.test(asset.account || '')
+    );
 
     // 負債データを取得
     const allDebts = await db.collection('debts').find({ userId }).toArray();
