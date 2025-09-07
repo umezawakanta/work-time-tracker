@@ -37,6 +37,7 @@ import { useDaily10Tasks } from '@/hooks/useDaily10Tasks';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
 import { useAuth } from '@/hooks/useAuth';
 import { DailyTask, TaskProgress } from '@/types/daily10';
+import { DailyTaskInstructions } from '@/components/DailyTaskInstructions';
 
 const categoryIcons = {
   finance: DollarSign,
@@ -1072,15 +1073,21 @@ const Daily10TasksPage: React.FC = () => {
           <div className="space-y-4">
             {tasks && tasks.length > 0 ? (
               tasks.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  progress={progress?.tasks[task.id]}
-                  onUpdate={updateProgress}
-                  mainAccount={mainAccount}
-                  bankLoading={bankLoading}
-                  renderStepWithLinks={renderStepWithLinks}
-                />
+                <div key={task.id}>
+                  <TaskItem
+                    task={task}
+                    progress={progress?.tasks[task.id]}
+                    onUpdate={updateProgress}
+                    mainAccount={mainAccount}
+                    bankLoading={bankLoading}
+                    renderStepWithLinks={renderStepWithLinks}
+                  />
+                  <DailyTaskInstructions
+                    taskId={task.id}
+                    taskName={task.name}
+                    category={task.category}
+                  />
+                </div>
               ))
             ) : (
               <div className="text-center py-8 text-gray-500">

@@ -364,8 +364,8 @@ const IntegratedDashboard: React.FC = () => {
 
     loadGameLoopStats();
 
-    // 30秒ごとに統計を更新
-    const statsInterval = setInterval(loadGameLoopStats, 30000);
+    // 5分ごとに統計を更新（頻度を下げる）
+    const statsInterval = setInterval(loadGameLoopStats, 5 * 60 * 1000);
 
     return () => clearInterval(statsInterval);
   }, [isAuthenticated]);

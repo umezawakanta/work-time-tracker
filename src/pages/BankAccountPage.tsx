@@ -335,17 +335,67 @@ const BankAccountPage: React.FC = () => {
                       <li>
                         <strong>三井住友銀行</strong>
                         <br />
-                        取引明細CSVを直接アップロード（年月日、残高形式）
+                        <a
+                          href="https://www.smbc.co.jp/kojin/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                          三井住友銀行オンラインバンキング
+                        </a>
+                        で9月分の入出金履歴をダウンロードして登録
                       </li>
                       <li>
                         <strong>横浜銀行</strong>
                         <br />
-                        取引明細CSVを直接アップロード（取引日形式）
+                        <a
+                          href="https://www.yokohamabank.co.jp/kojin/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                          横浜銀行オンラインバンキング
+                        </a>
+                        で取引明細をダウンロードして登録
                       </li>
                       <li>
                         <strong>じぶん銀行</strong>
                         <br />
-                        取引明細CSVを直接アップロード（じぶん銀行形式）
+                        <a
+                          href="https://www.jibunbank.co.jp/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                          じぶん銀行オンラインバンキング
+                        </a>
+                        で取引明細をダウンロードして登録
+                      </li>
+                      <li>
+                        <strong>三井住友銀行CL口座</strong>
+                        <br />
+                        <a
+                          href="https://www.smbc.co.jp/kojin/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                          三井住友銀行オンラインバンキング
+                        </a>
+                        でCL口座の取引明細をダウンロードして登録
+                      </li>
+                      <li>
+                        <strong>三菱UFJ証券</strong>
+                        <br />
+                        <a
+                          href="https://www.mufg.jp/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                          三菱UFJ証券オンライントレード
+                        </a>
+                        で証券口座の取引明細をダウンロードして登録
                       </li>
                       <li>
                         <strong>その他の銀行</strong>

@@ -95,6 +95,504 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     document.body.removeChild(link);
   };
 
+  // 横浜銀行の取引明細CSVを解析
+  const parseYokohamaBankTransactionCSV = (csvText: string): CSVTransactionData[] => {
+    const lines = csvText.split('\n').filter((line) => line.trim());
+    console.log('Yokohama Bank CSV - Total lines:', lines.length);
+
+    // ヘッダー行を検出
+    let headerIndex = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].toLowerCase();
+      if (line.includes('年月日') || line.includes('日付') || line.includes('date')) {
+        headerIndex = i;
+        break;
+      }
+    }
+
+    const delimiter = detectDelimiter(csvText);
+    const headers = lines[headerIndex].split(delimiter).map((h) => h.trim());
+    console.log('Yokohama Bank Headers detected:', headers);
+
+    const transactions: CSVTransactionData[] = [];
+
+    for (let i = headerIndex + 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      const values = line.split(delimiter).map((v) => v.trim());
+      console.log(`Yokohama Bank CSV - Line ${i}:`, values);
+
+      if (values.length < headers.length) {
+        console.log(
+          `Yokohama Bank CSV - Line ${i} has insufficient columns:`,
+          values.length,
+          'expected:',
+          headers.length
+        );
+        continue;
+      }
+
+      try {
+        // 日付の解析
+        let date = '';
+        let amount = 0;
+        let description = '';
+
+        // 日付フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('年月日') || header.includes('日付') || header.includes('date')) {
+            date = values[j];
+            break;
+          }
+        }
+
+        // 金額フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('金額') || header.includes('残高') || header.includes('amount')) {
+            const amountStr = values[j].replace(/[^\d.-]/g, '');
+            amount = parseFloat(amountStr) || 0;
+            break;
+          }
+        }
+
+        // 取引内容フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (
+            header.includes('内容') ||
+            header.includes('摘要') ||
+            header.includes('description')
+          ) {
+            description = values[j];
+            break;
+          }
+        }
+
+        console.log(
+          `Yokohama Bank CSV - Parsed: date=${date}, description=${description}, amount=${amount}`
+        );
+
+        if (date && amount !== 0) {
+          // 日付の形式を統一
+          const dateObj = new Date(date);
+          const formattedDate = dateObj.toISOString().split('T')[0];
+
+          // カテゴリの自動判定
+          let category = 'その他';
+          const desc = description.toLowerCase();
+          if (desc.includes('給与') || desc.includes('ボーナス')) category = '給与';
+          else if (
+            desc.includes('食費') ||
+            desc.includes('コンビニ') ||
+            desc.includes('スーパー') ||
+            desc.includes('外食')
+          )
+            category = '食費';
+          else if (desc.includes('交通費') || desc.includes('電車') || desc.includes('ガソリン'))
+            category = '交通費';
+          else if (desc.includes('住居費') || desc.includes('家賃')) category = '住居費';
+          else if (desc.includes('光熱費') || desc.includes('電気') || desc.includes('ガス'))
+            category = '光熱費';
+          else if (desc.includes('通信費') || desc.includes('携帯')) category = '通信費';
+
+          transactions.push({
+            date: formattedDate,
+            description: description || '取引',
+            amount: amount,
+            category: category,
+            accountName: '横浜銀行口座',
+          });
+          console.log(
+            `Yokohama Bank CSV - Added transaction:`,
+            transactions[transactions.length - 1]
+          );
+        } else {
+          console.log(`Yokohama Bank CSV - Skipped line ${i}: date=${date}, amount=${amount}`);
+        }
+      } catch (error) {
+        console.error('Error parsing line:', line, error);
+      }
+    }
+
+    console.log('Yokohama Bank CSV - Total transactions found:', transactions.length);
+    return transactions;
+  };
+
+  // じぶん銀行の取引明細CSVを解析
+  const parseJibunBankTransactionCSV = (csvText: string): CSVTransactionData[] => {
+    const lines = csvText.split('\n').filter((line) => line.trim());
+    console.log('Jibun Bank CSV - Total lines:', lines.length);
+
+    // ヘッダー行を検出
+    let headerIndex = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].toLowerCase();
+      if (line.includes('年月日') || line.includes('日付') || line.includes('date')) {
+        headerIndex = i;
+        break;
+      }
+    }
+
+    const delimiter = detectDelimiter(csvText);
+    const headers = lines[headerIndex].split(delimiter).map((h) => h.trim());
+    console.log('Jibun Bank Headers detected:', headers);
+
+    const transactions: CSVTransactionData[] = [];
+
+    for (let i = headerIndex + 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      const values = line.split(delimiter).map((v) => v.trim());
+      console.log(`Jibun Bank CSV - Line ${i}:`, values);
+
+      if (values.length < headers.length) {
+        console.log(
+          `Jibun Bank CSV - Line ${i} has insufficient columns:`,
+          values.length,
+          'expected:',
+          headers.length
+        );
+        continue;
+      }
+
+      try {
+        // 日付の解析
+        let date = '';
+        let amount = 0;
+        let description = '';
+
+        // 日付フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('年月日') || header.includes('日付') || header.includes('date')) {
+            date = values[j];
+            break;
+          }
+        }
+
+        // 金額フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('金額') || header.includes('残高') || header.includes('amount')) {
+            const amountStr = values[j].replace(/[^\d.-]/g, '');
+            amount = parseFloat(amountStr) || 0;
+            break;
+          }
+        }
+
+        // 取引内容フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (
+            header.includes('内容') ||
+            header.includes('摘要') ||
+            header.includes('description')
+          ) {
+            description = values[j];
+            break;
+          }
+        }
+
+        console.log(
+          `Jibun Bank CSV - Parsed: date=${date}, description=${description}, amount=${amount}`
+        );
+
+        if (date && amount !== 0) {
+          // 日付の形式を統一
+          const dateObj = new Date(date);
+          const formattedDate = dateObj.toISOString().split('T')[0];
+
+          // カテゴリの自動判定
+          let category = 'その他';
+          const desc = description.toLowerCase();
+          if (desc.includes('給与') || desc.includes('ボーナス')) category = '給与';
+          else if (
+            desc.includes('食費') ||
+            desc.includes('コンビニ') ||
+            desc.includes('スーパー') ||
+            desc.includes('外食')
+          )
+            category = '食費';
+          else if (desc.includes('交通費') || desc.includes('電車') || desc.includes('ガソリン'))
+            category = '交通費';
+          else if (desc.includes('住居費') || desc.includes('家賃')) category = '住居費';
+          else if (desc.includes('光熱費') || desc.includes('電気') || desc.includes('ガス'))
+            category = '光熱費';
+          else if (desc.includes('通信費') || desc.includes('携帯')) category = '通信費';
+
+          transactions.push({
+            date: formattedDate,
+            description: description || '取引',
+            amount: amount,
+            category: category,
+            accountName: 'じぶん銀行口座',
+          });
+          console.log(`Jibun Bank CSV - Added transaction:`, transactions[transactions.length - 1]);
+        } else {
+          console.log(`Jibun Bank CSV - Skipped line ${i}: date=${date}, amount=${amount}`);
+        }
+      } catch (error) {
+        console.error('Error parsing line:', line, error);
+      }
+    }
+
+    console.log('Jibun Bank CSV - Total transactions found:', transactions.length);
+    return transactions;
+  };
+
+  // 三井住友銀行CL口座の取引明細CSVを解析
+  const parseSMBCLTransactionCSV = (csvText: string): CSVTransactionData[] => {
+    const lines = csvText.split('\n').filter((line) => line.trim());
+    console.log('SMBC CL CSV - Total lines:', lines.length);
+
+    // ヘッダー行を検出
+    let headerIndex = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].toLowerCase();
+      if (line.includes('年月日') || line.includes('日付') || line.includes('date')) {
+        headerIndex = i;
+        break;
+      }
+    }
+
+    const delimiter = detectDelimiter(csvText);
+    const headers = lines[headerIndex].split(delimiter).map((h) => h.trim());
+    console.log('SMBC CL Headers detected:', headers);
+
+    const transactions: CSVTransactionData[] = [];
+
+    for (let i = headerIndex + 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      const values = line.split(delimiter).map((v) => v.trim());
+      console.log(`SMBC CL CSV - Line ${i}:`, values);
+
+      if (values.length < headers.length) {
+        console.log(
+          `SMBC CL CSV - Line ${i} has insufficient columns:`,
+          values.length,
+          'expected:',
+          headers.length
+        );
+        continue;
+      }
+
+      try {
+        // 日付の解析
+        let date = '';
+        let amount = 0;
+        let description = '';
+
+        // 日付フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('年月日') || header.includes('日付') || header.includes('date')) {
+            date = values[j];
+            break;
+          }
+        }
+
+        // 金額フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('金額') || header.includes('残高') || header.includes('amount')) {
+            const amountStr = values[j].replace(/[^\d.-]/g, '');
+            amount = parseFloat(amountStr) || 0;
+            break;
+          }
+        }
+
+        // 取引内容フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (
+            header.includes('内容') ||
+            header.includes('摘要') ||
+            header.includes('description')
+          ) {
+            description = values[j];
+            break;
+          }
+        }
+
+        console.log(
+          `SMBC CL CSV - Parsed: date=${date}, description=${description}, amount=${amount}`
+        );
+
+        if (date && amount !== 0) {
+          // 日付の形式を統一
+          const dateObj = new Date(date);
+          const formattedDate = dateObj.toISOString().split('T')[0];
+
+          // カテゴリの自動判定
+          let category = 'その他';
+          const desc = description.toLowerCase();
+          if (desc.includes('給与') || desc.includes('ボーナス')) category = '給与';
+          else if (
+            desc.includes('食費') ||
+            desc.includes('コンビニ') ||
+            desc.includes('スーパー') ||
+            desc.includes('外食')
+          )
+            category = '食費';
+          else if (desc.includes('交通費') || desc.includes('電車') || desc.includes('ガソリン'))
+            category = '交通費';
+          else if (desc.includes('住居費') || desc.includes('家賃')) category = '住居費';
+          else if (desc.includes('光熱費') || desc.includes('電気') || desc.includes('ガス'))
+            category = '光熱費';
+          else if (desc.includes('通信費') || desc.includes('携帯')) category = '通信費';
+
+          transactions.push({
+            date: formattedDate,
+            description: description || '取引',
+            amount: amount,
+            category: category,
+            accountName: '三井住友銀行CL口座',
+          });
+          console.log(`SMBC CL CSV - Added transaction:`, transactions[transactions.length - 1]);
+        } else {
+          console.log(`SMBC CL CSV - Skipped line ${i}: date=${date}, amount=${amount}`);
+        }
+      } catch (error) {
+        console.error('Error parsing line:', line, error);
+      }
+    }
+
+    console.log('SMBC CL CSV - Total transactions found:', transactions.length);
+    return transactions;
+  };
+
+  // 三菱UFJ証券の取引明細CSVを解析
+  const parseMUFJSecuritiesTransactionCSV = (csvText: string): CSVTransactionData[] => {
+    const lines = csvText.split('\n').filter((line) => line.trim());
+    console.log('MUFJ Securities CSV - Total lines:', lines.length);
+
+    // ヘッダー行を検出
+    let headerIndex = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].toLowerCase();
+      if (line.includes('年月日') || line.includes('日付') || line.includes('date')) {
+        headerIndex = i;
+        break;
+      }
+    }
+
+    const delimiter = detectDelimiter(csvText);
+    const headers = lines[headerIndex].split(delimiter).map((h) => h.trim());
+    console.log('MUFJ Securities Headers detected:', headers);
+
+    const transactions: CSVTransactionData[] = [];
+
+    for (let i = headerIndex + 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      const values = line.split(delimiter).map((v) => v.trim());
+      console.log(`MUFJ Securities CSV - Line ${i}:`, values);
+
+      if (values.length < headers.length) {
+        console.log(
+          `MUFJ Securities CSV - Line ${i} has insufficient columns:`,
+          values.length,
+          'expected:',
+          headers.length
+        );
+        continue;
+      }
+
+      try {
+        // 日付の解析
+        let date = '';
+        let amount = 0;
+        let description = '';
+
+        // 日付フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('年月日') || header.includes('日付') || header.includes('date')) {
+            date = values[j];
+            break;
+          }
+        }
+
+        // 金額フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (header.includes('金額') || header.includes('残高') || header.includes('amount')) {
+            const amountStr = values[j].replace(/[^\d.-]/g, '');
+            amount = parseFloat(amountStr) || 0;
+            break;
+          }
+        }
+
+        // 取引内容フィールドを探す
+        for (let j = 0; j < headers.length; j++) {
+          const header = headers[j].toLowerCase();
+          if (
+            header.includes('内容') ||
+            header.includes('摘要') ||
+            header.includes('description')
+          ) {
+            description = values[j];
+            break;
+          }
+        }
+
+        console.log(
+          `MUFJ Securities CSV - Parsed: date=${date}, description=${description}, amount=${amount}`
+        );
+
+        if (date && amount !== 0) {
+          // 日付の形式を統一
+          const dateObj = new Date(date);
+          const formattedDate = dateObj.toISOString().split('T')[0];
+
+          // カテゴリの自動判定
+          let category = 'その他';
+          const desc = description.toLowerCase();
+          if (desc.includes('給与') || desc.includes('ボーナス')) category = '給与';
+          else if (
+            desc.includes('食費') ||
+            desc.includes('コンビニ') ||
+            desc.includes('スーパー') ||
+            desc.includes('外食')
+          )
+            category = '食費';
+          else if (desc.includes('交通費') || desc.includes('電車') || desc.includes('ガソリン'))
+            category = '交通費';
+          else if (desc.includes('住居費') || desc.includes('家賃')) category = '住居費';
+          else if (desc.includes('光熱費') || desc.includes('電気') || desc.includes('ガス'))
+            category = '光熱費';
+          else if (desc.includes('通信費') || desc.includes('携帯')) category = '通信費';
+
+          transactions.push({
+            date: formattedDate,
+            description: description || '取引',
+            amount: amount,
+            category: category,
+            accountName: '三菱UFJ証券口座',
+          });
+          console.log(
+            `MUFJ Securities CSV - Added transaction:`,
+            transactions[transactions.length - 1]
+          );
+        } else {
+          console.log(`MUFJ Securities CSV - Skipped line ${i}: date=${date}, amount=${amount}`);
+        }
+      } catch (error) {
+        console.error('Error parsing line:', line, error);
+      }
+    }
+
+    console.log('MUFJ Securities CSV - Total transactions found:', transactions.length);
+    return transactions;
+  };
+
   // 三井住友銀行の取引明細CSVを解析
   const parseSMBCTransactionCSV = (csvText: string): CSVTransactionData[] => {
     const lines = csvText.split('\n').filter((line) => line.trim());
@@ -595,16 +1093,24 @@ export const TransactionCSVUploader: React.FC<TransactionCSVUploaderProps> = ({
     const isSMBCFormat = csvText.includes('年月日') || csvText.includes('残高');
     const isYokohamaFormat = csvText.includes('取引日') || csvText.includes('横浜銀行');
     const isJibunFormat = csvText.includes('じぶん銀行') || csvText.includes('JIBUN BANK');
+    const isSMBCLFormat = csvText.includes('三井住友銀行') && csvText.includes('CL');
+    const isMUFJSecuritiesFormat = csvText.includes('三菱UFJ') || csvText.includes('証券');
 
-    if (isSMBCFormat) {
+    if (isSMBCFormat && !isSMBCLFormat) {
       console.log('Detected SMBC format');
       return parseSMBCTransactionCSV(csvText);
     } else if (isYokohamaFormat) {
       console.log('Detected Yokohama Bank format');
-      return parseYokohamaBankCSV(csvText);
+      return parseYokohamaBankTransactionCSV(csvText);
     } else if (isJibunFormat) {
       console.log('Detected Jibun Bank format');
-      return parseJibunBankCSV(csvText);
+      return parseJibunBankTransactionCSV(csvText);
+    } else if (isSMBCLFormat) {
+      console.log('Detected SMBC CL format');
+      return parseSMBCLTransactionCSV(csvText);
+    } else if (isMUFJSecuritiesFormat) {
+      console.log('Detected MUFJ Securities format');
+      return parseMUFJSecuritiesTransactionCSV(csvText);
     } else {
       console.log('Detected generic format');
       return parseGenericCSV(csvText);

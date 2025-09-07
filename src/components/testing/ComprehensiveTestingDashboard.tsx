@@ -64,7 +64,7 @@ const ComprehensiveTestingDashboard: React.FC = () => {
   // 初期化とデータ取得
   useEffect(() => {
     fetchTestResults();
-    const interval = setInterval(fetchTestResults, 30000); // 30秒ごとに更新
+    const interval = setInterval(fetchTestResults, 5 * 60 * 1000); // 5分ごとに更新
     return () => clearInterval(interval);
   }, []);
 
