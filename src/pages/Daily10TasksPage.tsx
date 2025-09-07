@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useNavigate } from 'react-router-dom';
 import {
   CheckCircle,
   Circle,
@@ -496,7 +497,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                                     {subtask.steps && Array.isArray(subtask.steps)
                                       ? subtask.steps.map((step, index) => (
                                           <li key={index} className="leading-relaxed">
-                                            {step}
+                                            {renderStepWithLinks(step)}
                                           </li>
                                         ))
                                       : null}
@@ -549,6 +550,57 @@ const Daily10TasksPage: React.FC = () => {
   const { user } = useAuth();
   const { mainAccount, isLoading: bankLoading } = useBankAccounts(user?.id || '');
   const [activeTab, setActiveTab] = useState('tasks');
+  const navigate = useNavigate();
+
+  // 手順内のリンクを処理する関数
+  const renderStepWithLinks = (step: string) => {
+    // "→ ページ名" の形式を検出してリンクに変換
+    const linkPattern = /→\s*([^:：]+?)(?:ページ|で|：|:)/g;
+    const parts = step.split(linkPattern);
+
+    if (parts.length === 1) {
+      // リンクがない場合はそのまま表示
+      return step;
+    }
+
+    const result = [];
+    for (let i = 0; i < parts.length; i++) {
+      if (i % 2 === 0) {
+        // 通常のテキスト
+        result.push(parts[i]);
+      } else {
+        // リンク部分
+        const linkText = parts[i];
+        let linkPath = '';
+
+        if (linkText.includes('銀行口座管理')) {
+          linkPath = '/bank-accounts';
+        } else if (linkText.includes('取引明細CSVインポート')) {
+          linkPath = '/bank-accounts?tab=transactions';
+        } else if (linkText.includes('取引明細一覧')) {
+          linkPath = '/bank-accounts?tab=list';
+        } else if (linkText.includes('資産負債レポート')) {
+          linkPath = '/asset-liability-report';
+        }
+
+        if (linkPath) {
+          result.push(
+            <button
+              key={i}
+              onClick={() => navigate(linkPath)}
+              className="text-blue-600 hover:text-blue-800 underline font-medium mx-1"
+            >
+              {linkText}ページ
+            </button>
+          );
+        } else {
+          result.push(linkText);
+        }
+      }
+    }
+
+    return <span>{result}</span>;
+  };
 
   // 本番環境ではデバッグログを削除
   if (process.env.NODE_ENV === 'production') {

@@ -9,13 +9,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Building2, ArrowLeft, Upload, FileText, Plus, List, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const BankAccountPage: React.FC = () => {
   const { user, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('manage');
   const [showAddForm, setShowAddForm] = useState(false);
+
+  // URLパラメータからタブを設定
+  React.useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const tab = searchParams.get('tab');
+    if (tab && ['manage', 'import', 'transactions', 'list'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [location.search]);
 
   // デバッグ情報を表示
   console.log('BankAccountPage - Auth state:', {
