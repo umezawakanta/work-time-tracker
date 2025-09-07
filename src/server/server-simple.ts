@@ -4585,6 +4585,28 @@ app.post('/api/cleanup-duplicate-bank-accounts', async (req, res) => {
   }
 });
 
+app.delete('/api/transactions', (req: Request, res: Response) => {
+  const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
+  const { transactionId } = req.body;
+
+  if (!transactionId) {
+    return res.status(400).json({ success: false, message: 'Transaction ID is required' });
+  }
+
+  const transactions = transactionStore.get(userId) || [];
+  const filteredTransactions = transactions.filter((tx) => tx._id !== transactionId);
+
+  if (transactions.length === filteredTransactions.length) {
+    return res.status(404).json({ success: false, message: 'Transaction not found' });
+  }
+
+  transactionStore.set(userId, filteredTransactions);
+  // データベース使用のため、ローカルファイル保存を無効化
+  // saveDataImmediately(transactionStore, 'transactions');
+
+  res.json({ success: true, message: '取引明細を削除しました' });
+});
+
 console.log('\n🗺️  Registered Routes:');
 console.log('   GET  /api/health');
 console.log('   GET  /api/debug');
@@ -6396,28 +6418,6 @@ const startServer = async () => {
       message: '取引明細を更新しました',
       transaction: transactions[transactionIndex],
     });
-  });
-
-  app.delete('/api/transactions', (req: Request, res: Response) => {
-    const userId = (req as any)?.user?.id || req.body.userId || 'default-user';
-    const { transactionId } = req.body;
-
-    if (!transactionId) {
-      return res.status(400).json({ success: false, message: 'Transaction ID is required' });
-    }
-
-    const transactions = transactionStore.get(userId) || [];
-    const filteredTransactions = transactions.filter((tx) => tx._id !== transactionId);
-
-    if (transactions.length === filteredTransactions.length) {
-      return res.status(404).json({ success: false, message: 'Transaction not found' });
-    }
-
-    transactionStore.set(userId, filteredTransactions);
-    // データベース使用のため、ローカルファイル保存を無効化
-    // saveDataImmediately(transactionStore, 'transactions');
-
-    res.json({ success: true, message: '取引明細を削除しました' });
   });
 
   app.listen(PORT, () => {
