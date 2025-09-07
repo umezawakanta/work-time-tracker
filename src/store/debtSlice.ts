@@ -113,7 +113,7 @@ const debtSlice = createSlice({
         state.error = action.payload || '負債エントリーの追加に失敗しました';
       })
       .addCase(updateDebtEntry.fulfilled, (state, action: PayloadAction<DebtEntry>) => {
-        const index = state.entries.findIndex((entry) => entry._id === action.payload._id);
+        const index = state.entries.findIndex((entry) => entry && entry._id === action.payload._id);
         if (index !== -1) {
           state.entries[index] = action.payload;
         }
@@ -123,7 +123,7 @@ const debtSlice = createSlice({
         state.error = action.payload || '負債エントリーの更新に失敗しました';
       })
       .addCase(deleteDebtEntry.fulfilled, (state, action: PayloadAction<string>) => {
-        state.entries = state.entries.filter((entry) => entry._id !== action.payload);
+        state.entries = state.entries.filter((entry) => entry && entry._id !== action.payload);
         state.error = null;
       })
       .addCase(deleteDebtEntry.rejected, (state, action) => {

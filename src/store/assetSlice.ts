@@ -113,7 +113,7 @@ const assetSlice = createSlice({
         state.error = action.payload || '資産エントリーの追加に失敗しました';
       })
       .addCase(updateAssetEntry.fulfilled, (state, action: PayloadAction<AssetEntry>) => {
-        const index = state.entries.findIndex((entry) => entry._id === action.payload._id);
+        const index = state.entries.findIndex((entry) => entry && entry._id === action.payload._id);
         if (index !== -1) {
           state.entries[index] = action.payload;
         }
@@ -123,7 +123,7 @@ const assetSlice = createSlice({
         state.error = action.payload || '資産エントリーの更新に失敗しました';
       })
       .addCase(deleteAssetEntry.fulfilled, (state, action: PayloadAction<string>) => {
-        state.entries = state.entries.filter((entry) => entry._id !== action.payload);
+        state.entries = state.entries.filter((entry) => entry && entry._id !== action.payload);
         state.error = null;
       })
       .addCase(deleteAssetEntry.rejected, (state, action) => {
