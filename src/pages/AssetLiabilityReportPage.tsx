@@ -165,56 +165,63 @@ export default function AssetLiabilityReportPage() {
     }
   }, [user?.id, refetchBankAccounts]);
 
-  // 取引明細から資産データを生成・更新
+  // 取引明細から資産データを生成・更新（全口座対応）
   useEffect(() => {
-    if (mainAccount && mainAccount.lastBalance) {
-      // 既存の銀行口座資産エントリをチェック
-      const existingIndex = assetEntries.findIndex(
-        (entry) => entry && entry._id === `bank_${mainAccount._id}`
-      );
-
-      if (existingIndex >= 0) {
-        // 既存のエントリを更新（値が変更されている場合のみ）
-        const existingEntry = assetEntries[existingIndex];
-        if (existingEntry.value !== mainAccount.lastBalance) {
-          console.log('Updating existing bank account entry:', {
-            id: `bank_${mainAccount._id}`,
-            oldValue: existingEntry.value,
-            newValue: mainAccount.lastBalance,
-          });
-          dispatch(
-            updateAssetEntry({
-              id: `bank_${mainAccount._id}`,
-              entry: {
-                value: mainAccount.lastBalance,
-                account: `${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}`,
-                description: `${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}`,
-              },
-            })
+    if (accounts && accounts.length > 0) {
+      accounts.forEach((account) => {
+        if (account.lastBalance !== undefined && account.lastBalance !== null) {
+          // 既存の銀行口座資産エントリをチェック
+          const existingIndex = assetEntries.findIndex(
+            (entry) => entry && entry._id === `bank_${account._id}`
           );
+
+          const accountName = `${account.bankName} ${account.branchName ? `${account.branchName} ` : ''}${account.accountName}`;
+
+          if (existingIndex >= 0) {
+            // 既存のエントリを更新（値が変更されている場合のみ）
+            const existingEntry = assetEntries[existingIndex];
+            if (existingEntry.value !== account.lastBalance) {
+              console.log('Updating existing bank account entry:', {
+                id: `bank_${account._id}`,
+                account: accountName,
+                oldValue: existingEntry.value,
+                newValue: account.lastBalance,
+              });
+              dispatch(
+                updateAssetEntry({
+                  id: `bank_${account._id}`,
+                  entry: {
+                    value: account.lastBalance,
+                    account: accountName,
+                    description: accountName,
+                  },
+                })
+              );
+            }
+          } else {
+            // 新しいエントリを追加
+            console.log('Adding new bank account entry:', {
+              id: `bank_${account._id}`,
+              account: accountName,
+              value: account.lastBalance,
+            });
+            const bankAssetEntry = {
+              _id: `bank_${account._id}`,
+              userId: user?.id || 'default-user',
+              date: new Date().toISOString().split('T')[0],
+              value: account.lastBalance,
+              description: accountName,
+              account: accountName,
+              category: '現金・預金',
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            };
+            dispatch(addAssetEntry(bankAssetEntry));
+          }
         }
-      } else {
-        // 新しいエントリを追加
-        console.log('Adding new bank account entry:', {
-          id: `bank_${mainAccount._id}`,
-          account: `${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}`,
-          value: mainAccount.lastBalance,
-        });
-        const bankAssetEntry = {
-          _id: `bank_${mainAccount._id}`,
-          userId: user?.id || 'default-user',
-          date: new Date().toISOString().split('T')[0],
-          value: mainAccount.lastBalance,
-          description: `${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}`,
-          account: `${mainAccount.bankName} ${mainAccount.branchName ? `${mainAccount.branchName} ` : ''}${mainAccount.accountName}`,
-          category: '現金・預金',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-        dispatch(addAssetEntry(bankAssetEntry));
-      }
+      });
     }
-  }, [mainAccount, dispatch, user?.id]);
+  }, [accounts, dispatch, user?.id]);
 
   // デバッグ用：assetEntriesの内容をログ出力
   useEffect(() => {
@@ -760,6 +767,42 @@ export default function AssetLiabilityReportPage() {
               </TooltipTrigger>
               <TooltipContent>
                 <p>口座残高を更新</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* デバッグボタン */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={async () => {
+                    try {
+                      const response = await fetch(
+                        `/api/debug/assets?userId=${user?.id || 'default-user'}`
+                      );
+                      const result = await response.json();
+                      if (result.success) {
+                        console.log('Debug Data:', result);
+                        toast.success(
+                          `総資産: ${result.totalAssets}件, 銀行口座: ${result.bankAssets}件`
+                        );
+                      } else {
+                        toast.error(result.message);
+                      }
+                    } catch (error) {
+                      console.error('Failed to fetch debug data:', error);
+                      toast.error('デバッグデータの取得に失敗しました');
+                    }
+                  }}
+                >
+                  <AlertCircle className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>デバッグ情報を表示</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

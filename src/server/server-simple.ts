@@ -6217,6 +6217,39 @@ const startServer = async () => {
     res.json({ success: true, message: '取引明細を削除しました' });
   });
 
+  // デバッグ用：現在の資産データを確認するエンドポイント
+  app.get('/api/debug/assets', async (req, res) => {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User ID is required' });
+    }
+
+    try {
+      const financialService = FinancialDataService.getInstance();
+      const assets = await financialService.getAssets(userId as string);
+      const bankAssets = assets.filter((asset) => asset._id && asset._id.startsWith('bank_'));
+
+      console.log('Debug - All assets:', assets.length);
+      console.log('Debug - Bank assets:', bankAssets.length);
+      console.log('Debug - Bank assets details:', bankAssets);
+
+      res.json({
+        success: true,
+        totalAssets: assets.length,
+        bankAssets: bankAssets.length,
+        bankAssetsDetails: bankAssets,
+        allAssets: assets,
+      });
+    } catch (error) {
+      console.error('Error fetching debug data:', error);
+      res.status(500).json({
+        success: false,
+        message: 'デバッグデータの取得に失敗しました',
+      });
+    }
+  });
+
   // 重複する銀行口座データをクリーンアップするエンドポイント
   app.post('/api/cleanup-duplicate-bank-accounts', async (req, res) => {
     const { userId } = req.body;
@@ -6257,13 +6290,22 @@ const startServer = async () => {
 
       // 古い銀行口座データを削除
       for (const asset of bankAssets) {
+        console.log(`Deleting asset: ${asset._id}`);
         await financialService.deleteAsset(asset._id);
       }
 
       // 最新のデータを再追加
       for (const asset of uniqueBankAssets) {
+        console.log(`Recreating asset: ${asset._id}`);
         await financialService.createAsset(asset);
       }
+
+      // クリーンアップ後の確認
+      const afterCleanup = await financialService.getAssets(userId);
+      const afterBankAssets = afterCleanup.filter(
+        (asset) => asset._id && asset._id.startsWith('bank_')
+      );
+      console.log(`After cleanup - Bank assets: ${afterBankAssets.length}`);
 
       res.json({
         success: true,
