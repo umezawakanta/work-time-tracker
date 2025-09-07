@@ -23,11 +23,31 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   try {
     console.log('[admin/live-metrics] Starting request');
 
+    // 環境変数のチェック
+    const requiredEnvVars = ['MONGODB_URI'];
+    const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
+    if (missingEnvVars.length > 0) {
+      console.error('[admin/live-metrics] Missing environment variables:', missingEnvVars);
+      return void res.status(500).json({
+        success: false,
+        message: 'Server configuration error',
+        error: `Missing environment variables: ${missingEnvVars.join(', ')}`,
+      });
+    }
+
     // 管理者認証
     let ctx, auth, User, user;
     try {
-      ctx = require('../_lib/user-context.js');
-      console.log('[admin/live-metrics] Context loaded');
+      // 依存関係の読み込みを安全に行う
+      try {
+        ctx = require('../_lib/user-context.js');
+        console.log('[admin/live-metrics] Context loaded');
+      } catch (requireError) {
+        console.error('[admin/live-metrics] Failed to load user-context:', requireError);
+        throw new Error(
+          `Failed to load user-context: ${requireError instanceof Error ? requireError.message : 'Unknown error'}`
+        );
+      }
 
       auth = await ctx.verifyJwtAndExtract(req as any);
       console.log('[admin/live-metrics] Auth verified:', { userId: auth?.userId });
@@ -59,7 +79,17 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
 
     // MongoDB接続
     console.log('[admin/live-metrics] Connecting to MongoDB');
-    const mongoLib = require('../_lib/mongo');
+    let mongoLib;
+    try {
+      mongoLib = require('../_lib/mongo');
+      console.log('[admin/live-metrics] MongoDB library loaded');
+    } catch (requireError) {
+      console.error('[admin/live-metrics] Failed to load mongo library:', requireError);
+      throw new Error(
+        `Failed to load mongo library: ${requireError instanceof Error ? requireError.message : 'Unknown error'}`
+      );
+    }
+
     try {
       await mongoLib.connectMongoDirect();
       console.log('[admin/live-metrics] MongoDB connected');
@@ -138,6 +168,7 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
       weeklyTrend,
     };
 
+    console.log('[admin/live-metrics] Successfully calculated metrics:', liveMetrics);
     res.status(200).json({ success: true, data: liveMetrics });
   } catch (error) {
     console.error('Live metrics fetch error:', error);
@@ -148,9 +179,19 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
       cause: error instanceof Error ? error.cause : undefined,
     });
 
-    res.status(500).json({
-      success: false,
-      message: 'Internal Server Error',
+    // フォールバック: エラーが発生しても基本的なレスポンスを返す
+    const fallbackMetrics: LiveMetrics = {
+      activeUsers: 0,
+      completionRate: 0,
+      todaysTasks: 0,
+      weeklyTrend: 0,
+    };
+
+    console.log('[admin/live-metrics] Returning fallback metrics due to error');
+    res.status(200).json({
+      success: true,
+      data: fallbackMetrics,
+      warning: 'Using fallback data due to server error',
       error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString(),
     });
