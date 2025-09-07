@@ -28,10 +28,10 @@ interface GroupedDataItem {
 const groupByDate = (entries: AssetEntry[]): GroupedDataItem[] => {
   const groupedData: Record<string, GroupedDataItem> = {};
 
-  // データを日付でソート
-  const sortedEntries = [...entries].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  // 有効なエントリのみをフィルタリングして日付でソート
+  const sortedEntries = [...entries]
+    .filter((entry) => entry && entry.date && entry.value !== undefined)
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   // 日付ごとに合計値を計算
   sortedEntries.forEach((entry) => {
