@@ -6,6 +6,7 @@ export interface Transaction {
   category: string; // カテゴリ（食費、交通費、給与など）
   accountId: string; // 関連する口座ID
   userId: string;
+  csvOrder?: number; // CSVの並び順（0が最新、数が大きくなるほど古い）
   createdAt: string;
   updatedAt: string;
 }

@@ -116,6 +116,7 @@ export interface ITransaction extends Document {
   category: string;
   type: 'income' | 'expense';
   balance: number;
+  csvOrder?: number; // CSVの並び順（0が最新、数が大きくなるほど古い）
   createdAt: Date;
   updatedAt: Date;
 }
@@ -131,6 +132,7 @@ export const TransactionSchema = new Schema<ITransaction>(
     category: { type: String, required: true },
     type: { type: String, enum: ['income', 'expense'], required: true },
     balance: { type: Number, required: true },
+    csvOrder: { type: Number, default: 0 }, // CSVの並び順
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   },

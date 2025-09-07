@@ -245,4 +245,11 @@ export class FinancialDataService {
       transactionCount: transactions.length,
     };
   }
+
+  // ユーザーのすべての取引明細を削除
+  async deleteAllTransactions(userId: string): Promise<{ deletedCount: number }> {
+    await this.ensureConnection();
+    const result = await Transaction.deleteMany({ userId });
+    return { deletedCount: result.deletedCount || 0 };
+  }
 }

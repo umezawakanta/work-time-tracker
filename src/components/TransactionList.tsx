@@ -92,8 +92,31 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
     }
   };
 
+  // 重複を除去し、CSVの並び順でソートされた取引明細を取得
+  const getUniqueTransactions = (transactions: Transaction[]) => {
+    // 日付、説明、金額で重複を判定
+    const uniqueMap = new Map();
+
+    transactions.forEach((transaction) => {
+      const key = `${transaction.date}_${transaction.description}_${transaction.amount}`;
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, transaction);
+      }
+    });
+
+    // CSVの並び順でソート（csvOrderが小さいほど新しい、同じ場合は日付順）
+    return Array.from(uniqueMap.values()).sort((a, b) => {
+      // csvOrderが存在する場合はそれでソート
+      if (a.csvOrder !== undefined && b.csvOrder !== undefined) {
+        return a.csvOrder - b.csvOrder; // 小さいほど新しい（CSVの上）
+      }
+      // csvOrderが存在しない場合は日付順（新しい順）
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+  };
+
   // フィルタリングされた取引明細
-  const filteredTransactions = transactions.filter((transaction) => {
+  const filteredTransactions = getUniqueTransactions(transactions).filter((transaction) => {
     const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || transaction.category === categoryFilter;
     const matchesDate = dateFilter === 'all' || isWithinDateRange(transaction.date, dateFilter);
@@ -110,26 +133,24 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
       return { totalIncome: 0, totalExpense: 0, netAmount: 0 };
     }
 
-    // 日付順にソート
-    const sortedTransactions = [...filteredTransactions].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+    // 既に重複除去・ソート済みのデータを使用
+    // CSVの並び順：一番上が最新（残高が高い）、下に行くほど古い（残高が低い）
+    const sortedTransactions = filteredTransactions;
 
     let totalIncome = 0;
     let totalExpense = 0;
-    let previousBalance = 0;
 
-    for (let i = 0; i < sortedTransactions.length; i++) {
+    // 残高の順序で計算（新しい明細から古い明細へ）
+    for (let i = 0; i < sortedTransactions.length - 1; i++) {
       const currentBalance = sortedTransactions[i].amount;
-      const difference = currentBalance - previousBalance;
+      const nextBalance = sortedTransactions[i + 1].amount;
+      const difference = currentBalance - nextBalance; // 現在の残高 - 次の残高
 
       if (difference > 0) {
-        totalIncome += difference;
+        totalIncome += difference; // 残高が増加 = 収入
       } else if (difference < 0) {
-        totalExpense += Math.abs(difference);
+        totalExpense += Math.abs(difference); // 残高が減少 = 支出
       }
-
-      previousBalance = currentBalance;
     }
 
     return {
@@ -331,16 +352,20 @@ export const TransactionList: React.FC<TransactionListProps> = ({ userId }) => {
                       </TableCell>
                       <TableCell className="text-right">
                         {(() => {
-                          // 前回の残高からの差分を計算
-                          const sortedTransactions = [...filteredTransactions].sort(
-                            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-                          );
-                          const currentIndex = sortedTransactions.findIndex(
+                          // 残高の差分を計算（CSVの並び順：上から下へ古くなる）
+                          const currentIndex = filteredTransactions.findIndex(
                             (t) => t._id === transaction._id
                           );
-                          const previousBalance =
-                            currentIndex > 0 ? sortedTransactions[currentIndex - 1].amount : 0;
-                          const difference = transaction.amount - previousBalance;
+
+                          let difference = 0;
+                          if (currentIndex < filteredTransactions.length - 1) {
+                            // 次の明細（古い明細）との差分を計算
+                            const nextBalance = filteredTransactions[currentIndex + 1].amount;
+                            difference = transaction.amount - nextBalance;
+                          } else {
+                            // 最後の明細（最も古い）の場合は0
+                            difference = 0;
+                          }
 
                           return (
                             <div className="text-right">

@@ -4194,7 +4194,9 @@ app.post('/api/transactions/import', async (req: Request, res: Response) => {
     const financialService = FinancialDataService.getInstance();
     const existingTransactions = await financialService.getTransactions(userId);
 
-    const newTransactions = csvTransactions.map((tx) => {
+    // CSVの並び順を保持（一番上が最新の明細）
+    // インデックスを使って順序を保持し、後でソートに使用
+    const newTransactions = csvTransactions.map((tx, index) => {
       const id = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       return {
         _id: id,
@@ -4208,6 +4210,8 @@ app.post('/api/transactions/import', async (req: Request, res: Response) => {
         userId: userId,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        // CSVの順序を保持するためのフィールドを追加
+        csvOrder: index, // 0が最新（一番上）、数が大きくなるほど古い
       };
     });
 
@@ -4245,8 +4249,33 @@ app.post('/api/transactions/import', async (req: Request, res: Response) => {
   }
 });
 
+// 取引明細データをクリアするAPI
+app.delete('/api/transactions/clear', async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
+
+    // データベースから取引明細データを削除
+    const { FinancialDataService } = await import('../database/services/FinancialDataService');
+    const financialService = FinancialDataService.getInstance();
+
+    // ユーザーのすべての取引明細を削除
+    const result = await financialService.deleteAllTransactions(userId);
+
+    res.json({
+      success: true,
+      message: '取引明細データをクリアしました',
+      deletedCount: result.deletedCount || 0,
+    });
+  } catch (error) {
+    console.error('Error clearing transactions:', error);
+    res.status(500).json({
+      success: false,
+      error: '取引明細データのクリアに失敗しました',
+    });
+  }
+});
+
 // 取引明細API
-console.log('🔧 Registering GET /api/transactions route');
 app.get('/api/transactions', async (req: Request, res: Response) => {
   try {
     const userId = (req as any)?.user?.id || req.query.userId || 'default-user';
