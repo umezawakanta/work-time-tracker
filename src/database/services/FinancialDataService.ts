@@ -1,4 +1,4 @@
-import { connectToDatabase } from '../connection';
+import { connectToDatabase } from '../connection.js';
 import {
   AssetRecord,
   DebtRecord,
