@@ -945,7 +945,9 @@ export default function AssetLiabilityReportPage() {
                           メイン口座
                         </h4>
                         <p className="text-blue-700">
-                          {mainAccount.bankName} {mainAccount.accountName}
+                          {mainAccount.bankName}{' '}
+                          {mainAccount.branchName ? `${mainAccount.branchName} ` : ''}
+                          {mainAccount.accountName}
                         </p>
                         <p className="text-sm text-blue-600">
                           {mainAccount.accountType === 'checking'
@@ -1011,7 +1013,9 @@ export default function AssetLiabilityReportPage() {
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="font-medium">
-                                {account.bankName} {account.accountName}
+                                {account.bankName}{' '}
+                                {account.branchName ? `${account.branchName} ` : ''}
+                                {account.accountName}
                               </p>
                               <p className="text-sm text-gray-600">
                                 {account.accountType === 'checking'

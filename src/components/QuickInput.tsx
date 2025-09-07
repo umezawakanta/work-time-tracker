@@ -102,7 +102,9 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
 
     try {
       const currentDate = new Date().toISOString();
-      const accountName = `${account.bankName} ${account.accountName}`;
+      const accountName = account.branchName
+        ? `${account.bankName} ${account.branchName} ${account.accountName}`
+        : `${account.bankName} ${account.accountName}`;
 
       // 資産エントリーを追加
       dispatch(
@@ -283,7 +285,8 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
                     >
                       <div className="flex-1">
                         <p className="font-medium text-sm">
-                          {account.bankName} {account.accountName}
+                          {account.bankName} {account.branchName ? `${account.branchName} ` : ''}
+                          {account.accountName}
                           {account.isMain && (
                             <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
                               メイン
