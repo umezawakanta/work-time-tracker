@@ -83,63 +83,88 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ clas
   ];
 
   return (
-    <div className={`fixed bottom-6 right-6 z-50 ${className}`}>
-      {/* 展開されたメニュー */}
-      {isExpanded && (
-        <Card className="mb-4 w-80 shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-gray-800">クイックアクセス</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsExpanded(false)}
-                className="h-6 w-6 p-0"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {quickActions.map((action) => (
+    <>
+      <style>{`
+        /* フローティングボタンのモバイル対応 */
+        @media (max-width: 768px) {
+          .floating-action-button {
+            bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+            right: 1rem !important;
+          }
+          
+          .floating-action-menu {
+            bottom: calc(9rem + env(safe-area-inset-bottom)) !important;
+            right: 1rem !important;
+            width: calc(100vw - 2rem) !important;
+            max-width: 20rem !important;
+          }
+        }
+        
+        @media (min-width: 769px) {
+          .floating-action-button {
+            bottom: 1.5rem !important;
+            right: 1.5rem !important;
+          }
+        }
+      `}</style>
+      <div className={`fixed z-50 floating-action-button ${className}`}>
+        {/* 展開されたメニュー */}
+        {isExpanded && (
+          <Card className="mb-4 w-80 shadow-2xl border-0 bg-white/95 backdrop-blur-sm floating-action-menu">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-gray-800">クイックアクセス</h3>
                 <Button
-                  key={action.path}
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  onClick={() => {
-                    navigate(action.path);
-                    setIsExpanded(false);
-                  }}
-                  className="h-auto p-3 justify-start hover:shadow-md transition-all duration-200"
+                  onClick={() => setIsExpanded(false)}
+                  className="h-6 w-6 p-0"
                 >
-                  <div className="flex items-center gap-2 w-full">
-                    <div className={`p-1 rounded ${action.color} text-white`}>{action.icon}</div>
-                    <div className="flex-1 text-left">
-                      <div className="text-xs font-medium">{action.name}</div>
-                      <div className="text-xs text-gray-500 truncate">{action.description}</div>
-                    </div>
-                  </div>
+                  <X className="w-4 h-4" />
                 </Button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* メインボタン */}
-      <Button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className={`h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ${
-          isExpanded
-            ? 'bg-red-500 hover:bg-red-600 rotate-45'
-            : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
-        }`}
-      >
-        {isExpanded ? (
-          <X className="w-6 h-6 text-white" />
-        ) : (
-          <Plus className="w-6 h-6 text-white" />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {quickActions.map((action) => (
+                  <Button
+                    key={action.path}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigate(action.path);
+                      setIsExpanded(false);
+                    }}
+                    className="h-auto p-3 justify-start hover:shadow-md transition-all duration-200"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <div className={`p-1 rounded ${action.color} text-white`}>{action.icon}</div>
+                      <div className="flex-1 text-left">
+                        <div className="text-xs font-medium">{action.name}</div>
+                        <div className="text-xs text-gray-500 truncate">{action.description}</div>
+                      </div>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         )}
-      </Button>
-    </div>
+
+        {/* メインボタン */}
+        <Button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className={`h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ${
+            isExpanded
+              ? 'bg-red-500 hover:bg-red-600 rotate-45'
+              : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
+          }`}
+        >
+          {isExpanded ? (
+            <X className="w-6 h-6 text-white" />
+          ) : (
+            <Plus className="w-6 h-6 text-white" />
+          )}
+        </Button>
+      </div>
+    </>
   );
 };

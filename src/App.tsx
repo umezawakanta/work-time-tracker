@@ -14,16 +14,50 @@ const GlobalMobileStyles = () => (
       body {
         padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
         margin-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
       }
       
       .min-h-screen {
         min-height: calc(100vh - 6rem - env(safe-area-inset-bottom)) !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
       }
       
       /* 全ページ共通の下部マージン */
       main, .main-content, .page-content {
-        margin-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
-        padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
+        margin-bottom: calc(8rem + env(safe-area-inset-bottom)) !important;
+        padding-bottom: calc(8rem + env(safe-area-inset-bottom)) !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+      }
+      
+      /* フローティングボタンとの重なり防止 */
+      .sitemap-container, .home-container {
+        margin-bottom: calc(8rem + env(safe-area-inset-bottom)) !important;
+        padding-bottom: calc(8rem + env(safe-area-inset-bottom)) !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+      }
+      
+      /* モバイル表示を強制 */
+      * {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* コンテナの幅制限 */
+      .container, .mx-auto {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
       }
     }
   `}</style>

@@ -388,20 +388,32 @@ const SitemapPage: React.FC = () => {
               margin-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
               padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
             }
+            
+            /* デバッグ用：モバイル表示を強制 */
+            .sitemap-container {
+              width: 100vw !important;
+              max-width: 100vw !important;
+              overflow-x: hidden !important;
+            }
+            
+            .sitemap-container * {
+              max-width: 100% !important;
+              box-sizing: border-box !important;
+            }
           }
           
           .sitemap-container {
             min-height: 100vh;
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             position: relative;
-            width: 100vw;
-            max-width: 100vw;
-            overflow-x: hidden;
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            padding-bottom: calc(6rem + env(safe-area-inset-bottom));
-            margin-bottom: calc(6rem + env(safe-area-inset-bottom));
+            width: 100vw !important;
+            max-width: 100vw !important;
+            overflow-x: hidden !important;
+            box-sizing: border-box !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
+            margin-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
           }
           
           .sitemap-container * {

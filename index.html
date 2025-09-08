@@ -80,10 +80,32 @@
         font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         background: linear-gradient(to bottom right, #f8fafc, #e0f2fe, #f3e8ff);
         min-height: 100vh;
+        width: 100vw;
+        max-width: 100vw;
+        overflow-x: hidden;
+        box-sizing: border-box;
       }
       
       #root {
         min-height: 100vh;
+        width: 100vw;
+        max-width: 100vw;
+        overflow-x: hidden;
+        box-sizing: border-box;
+      }
+      
+      /* モバイル表示を強制 */
+      @media (max-width: 768px) {
+        body, #root {
+          width: 100vw !important;
+          max-width: 100vw !important;
+          overflow-x: hidden !important;
+        }
+        
+        * {
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+        }
       }
       
       /* Loading state styles */
