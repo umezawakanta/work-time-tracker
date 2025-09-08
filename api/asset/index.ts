@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { FinancialDataService } from '../../src/database/services/FinancialDataService';
+import { FinancialDataService } from '../../src/database/services/FinancialDataService.js';
 
 // 資産データの型定義
 interface AssetRecord {

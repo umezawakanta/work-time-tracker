@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { loadVercelData, saveVercelDataImmediately } from '../../_lib/vercel-storage';
+import { loadVercelData, saveVercelDataImmediately } from '../../_lib/vercel-storage.js';
 
 interface DailyTask {
   id: string;
