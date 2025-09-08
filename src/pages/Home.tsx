@@ -428,11 +428,17 @@ const Home: React.FC = () => {
         /* モバイルでの下部ナビゲーションとの重なり防止 */
         @media (max-width: 768px) {
           body {
-            padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+            padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
+            margin-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
           }
           
           .min-h-screen {
-            min-height: calc(100vh - 5rem - env(safe-area-inset-bottom)) !important;
+            min-height: calc(100vh - 6rem - env(safe-area-inset-bottom)) !important;
+          }
+          
+          /* 下部ナビゲーションの高さを確保 */
+          .home-container {
+            margin-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
           }
         }
         
@@ -440,8 +446,9 @@ const Home: React.FC = () => {
           width: 100vw !important;
           max-width: 100vw !important;
           padding: 0.5rem !important;
-          padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+          padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
           margin: 0 !important;
+          margin-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
           box-sizing: border-box !important;
           overflow-x: hidden !important;
         }

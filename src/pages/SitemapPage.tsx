@@ -375,11 +375,18 @@ const SitemapPage: React.FC = () => {
           /* モバイルでの下部ナビゲーションとの重なり防止 */
           @media (max-width: 768px) {
             body {
-              padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+              padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
+              margin-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
             }
             
             .min-h-screen {
-              min-height: calc(100vh - 5rem - env(safe-area-inset-bottom)) !important;
+              min-height: calc(100vh - 6rem - env(safe-area-inset-bottom)) !important;
+            }
+            
+            /* 下部ナビゲーションの高さを確保 */
+            .sitemap-content {
+              margin-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
+              padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
             }
           }
           
@@ -393,7 +400,8 @@ const SitemapPage: React.FC = () => {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+            padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+            margin-bottom: calc(6rem + env(safe-area-inset-bottom));
           }
           
           .sitemap-container * {
@@ -404,6 +412,7 @@ const SitemapPage: React.FC = () => {
             max-width: 6xl;
             margin: 0 auto;
             padding: 1rem;
+            padding-bottom: calc(7rem + env(safe-area-inset-bottom));
             width: 100%;
             box-sizing: border-box;
           }

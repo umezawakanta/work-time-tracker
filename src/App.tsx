@@ -6,6 +6,29 @@ import Layout from '@/components/layout/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useAnalytics } from './lib/analytics';
 
+// グローバルなモバイル対応CSS
+const GlobalMobileStyles = () => (
+  <style>{`
+    /* モバイルでの下部ナビゲーションとの重なり防止 - グローバル */
+    @media (max-width: 768px) {
+      body {
+        padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
+        margin-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
+      }
+      
+      .min-h-screen {
+        min-height: calc(100vh - 6rem - env(safe-area-inset-bottom)) !important;
+      }
+      
+      /* 全ページ共通の下部マージン */
+      main, .main-content, .page-content {
+        margin-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
+        padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
+      }
+    }
+  `}</style>
+);
+
 // Loading spinner component using Tailwind
 const LoadingSpinner: React.FC = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -1591,6 +1614,7 @@ const App: React.FC = () => {
 const AppWithProviders: React.FC = () => {
   return (
     <>
+      <GlobalMobileStyles />
       <App />
       <ProcrastinationGuard />
       <FloatingActionButton />
