@@ -694,7 +694,7 @@ const Daily10TasksPage: React.FC = () => {
 
   // 進捗の可視化データを計算
   const progressData = useMemo(() => {
-    if (!progress?.tasks || tasks.length === 0) {
+    if (!progress?.tasks || !Array.isArray(progress.tasks) || tasks.length === 0) {
       return {
         completed: 0,
         total: 0,
@@ -726,7 +726,7 @@ const Daily10TasksPage: React.FC = () => {
 
   // タスク状況に応じたメッセージを生成
   const getMotivationalMessage = () => {
-    if (!progress?.tasks || dynamicTasks.length === 0) {
+    if (!progress?.tasks || !Array.isArray(progress.tasks) || dynamicTasks.length === 0) {
       return '今日も一日頑張りましょう！まずは最初のタスクから始めてみてください。';
     }
 

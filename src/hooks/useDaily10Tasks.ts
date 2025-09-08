@@ -26,7 +26,15 @@ export const useDaily10Tasks = () => {
           completed,
           notes,
         });
-        setProgress(updatedProgress);
+        // データの検証と正規化
+        if (updatedProgress && typeof updatedProgress === 'object') {
+          const normalizedProgress = {
+            ...updatedProgress,
+            tasks: Array.isArray(updatedProgress.tasks) ? updatedProgress.tasks : [],
+            subtasks: Array.isArray(updatedProgress.subtasks) ? updatedProgress.subtasks : [],
+          };
+          setProgress(normalizedProgress);
+        }
       } catch (err) {
         console.error('Failed to update progress:', err);
         setError('進捗の更新に失敗しました');
@@ -50,7 +58,17 @@ export const useDaily10Tasks = () => {
 
         // 進捗を取得
         const progressData = await daily10Api.fetchProgress(user.id, currentDate);
-        setProgress(progressData);
+        // データの検証と正規化
+        if (progressData && typeof progressData === 'object') {
+          const normalizedProgress = {
+            ...progressData,
+            tasks: Array.isArray(progressData.tasks) ? progressData.tasks : [],
+            subtasks: Array.isArray(progressData.subtasks) ? progressData.subtasks : [],
+          };
+          setProgress(normalizedProgress);
+        } else {
+          setProgress(null);
+        }
 
         // 統計データを取得
         const statsData = await daily10Api.fetchStats(user.id);
@@ -78,7 +96,17 @@ export const useDaily10Tasks = () => {
 
     try {
       const progressData = await daily10Api.fetchProgress(user.id, currentDate);
-      setProgress(progressData);
+      // データの検証と正規化
+      if (progressData && typeof progressData === 'object') {
+        const normalizedProgress = {
+          ...progressData,
+          tasks: Array.isArray(progressData.tasks) ? progressData.tasks : [],
+          subtasks: Array.isArray(progressData.subtasks) ? progressData.subtasks : [],
+        };
+        setProgress(normalizedProgress);
+      } else {
+        setProgress(null);
+      }
     } catch (err: any) {
       console.error('Failed to refresh progress:', err);
       setError('進捗の再取得に失敗しました');
