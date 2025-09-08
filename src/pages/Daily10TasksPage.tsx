@@ -694,7 +694,52 @@ const Daily10TasksPage: React.FC = () => {
 
   // 進捗の可視化データを計算
   const progressData = useMemo(() => {
-    if (!progress?.tasks || !Array.isArray(progress.tasks) || tasks.length === 0) {
+    try {
+      // より堅牢な型チェック
+      if (!progress || typeof progress !== 'object' || !progress.tasks) {
+        return {
+          completed: 0,
+          total: 0,
+          percentage: 0,
+          streak: 0,
+          todayCompleted: 0,
+        };
+      }
+
+      // progress.tasksが配列でない場合は空配列として扱う
+      const tasksArray = Array.isArray(progress.tasks) ? progress.tasks : [];
+
+      if (tasksArray.length === 0 || dynamicTasks.length === 0) {
+        return {
+          completed: 0,
+          total: 0,
+          percentage: 0,
+          streak: 0,
+          todayCompleted: 0,
+        };
+      }
+
+      const completed = tasksArray.filter((task) => task && task.completed).length;
+      const total = dynamicTasks.length;
+      const percentage = Math.round((completed / total) * 100);
+      const streak = stats?.currentStreak || 0;
+      const todayCompleted = tasksArray.filter(
+        (task) =>
+          task &&
+          task.completed &&
+          task.completedAt &&
+          new Date(task.completedAt).toDateString() === new Date().toDateString()
+      ).length;
+
+      return {
+        completed,
+        total,
+        percentage,
+        streak,
+        todayCompleted,
+      };
+    } catch (error) {
+      console.error('Error calculating progress data:', error);
       return {
         completed: 0,
         total: 0,
@@ -703,69 +748,63 @@ const Daily10TasksPage: React.FC = () => {
         todayCompleted: 0,
       };
     }
-
-    const completed = progress.tasks.filter((task) => task.completed).length;
-    const total = dynamicTasks.length;
-    const percentage = Math.round((completed / total) * 100);
-    const streak = stats?.currentStreak || 0;
-    const todayCompleted = progress.tasks.filter(
-      (task) =>
-        task.completed &&
-        task.completedAt &&
-        new Date(task.completedAt).toDateString() === new Date().toDateString()
-    ).length;
-
-    return {
-      completed,
-      total,
-      percentage,
-      streak,
-      todayCompleted,
-    };
   }, [progress, dynamicTasks, stats]);
 
   // タスク状況に応じたメッセージを生成
   const getMotivationalMessage = () => {
-    if (!progress?.tasks || !Array.isArray(progress.tasks) || dynamicTasks.length === 0) {
+    try {
+      // より堅牢な型チェック
+      if (!progress || typeof progress !== 'object' || !progress.tasks) {
+        return '今日も一日頑張りましょう！まずは最初のタスクから始めてみてください。';
+      }
+
+      // progress.tasksが配列でない場合は空配列として扱う
+      const tasksArray = Array.isArray(progress.tasks) ? progress.tasks : [];
+
+      if (tasksArray.length === 0 || dynamicTasks.length === 0) {
+        return '今日も一日頑張りましょう！まずは最初のタスクから始めてみてください。';
+      }
+
+      const completedTasks = tasksArray.filter((task) => task && task.completed).length;
+      const totalTasks = dynamicTasks.length;
+      const completionRate = (completedTasks / totalTasks) * 100;
+
+      // 未完了のタスクを特定
+      const incompleteTasks = dynamicTasks.filter((task) => {
+        const taskProgress = tasksArray.find((t) => t && t.taskId === task.id);
+        return !taskProgress?.completed;
+      });
+
+      // 特定のタスクに基づくメッセージ
+      const financeTasks = incompleteTasks.filter((task) => task.category === 'finance');
+      const householdTasks = incompleteTasks.filter((task) => task.category === 'household');
+      const personalTasks = incompleteTasks.filter((task) => task.category === 'personal');
+
+      if (completionRate === 0) {
+        return '今日はまだ何も始めていませんね。まずは「直近3ヶ月の収入と支出をすべて把握する」から始めてみませんか？';
+      } else if (completionRate < 25) {
+        if (financeTasks.length > 0) {
+          return '財布の中の現金残高を確認して、資産管理ページに入力しろ！お金の管理は毎日が大切です。';
+        }
+        return 'いいスタートです！続けて次のタスクにも取り組んでみましょう。';
+      } else if (completionRate < 50) {
+        if (householdTasks.length > 0) {
+          return '家事も大切なタスクです。洗い物や掃除を済ませて、清潔な環境を保ちましょう！';
+        }
+        return '順調に進んでいます！あと半分で今日の目標達成です。';
+      } else if (completionRate < 75) {
+        if (personalTasks.length > 0) {
+          return '自分の時間も大切にしましょう。読書やギターの練習でリフレッシュしてください！';
+        }
+        return '素晴らしい進捗です！あと少しで今日の目標を達成できます。';
+      } else if (completionRate < 100) {
+        return 'もうすぐ完了です！最後の一押しで今日の目標を達成しましょう！';
+      } else {
+        return '🎉 おめでとうございます！今日の目標を100%達成しました！明日も頑張りましょう！';
+      }
+    } catch (error) {
+      console.error('Error generating motivational message:', error);
       return '今日も一日頑張りましょう！まずは最初のタスクから始めてみてください。';
-    }
-
-    const completedTasks = progress.tasks.filter((task) => task.completed).length;
-    const totalTasks = dynamicTasks.length;
-    const completionRate = (completedTasks / totalTasks) * 100;
-
-    // 未完了のタスクを特定
-    const incompleteTasks = dynamicTasks.filter((task) => {
-      const taskProgress = progress.tasks.find((t) => t.taskId === task.id);
-      return !taskProgress?.completed;
-    });
-
-    // 特定のタスクに基づくメッセージ
-    const financeTasks = incompleteTasks.filter((task) => task.category === 'finance');
-    const householdTasks = incompleteTasks.filter((task) => task.category === 'household');
-    const personalTasks = incompleteTasks.filter((task) => task.category === 'personal');
-
-    if (completionRate === 0) {
-      return '今日はまだ何も始めていませんね。まずは「直近3ヶ月の収入と支出をすべて把握する」から始めてみませんか？';
-    } else if (completionRate < 25) {
-      if (financeTasks.length > 0) {
-        return '財布の中の現金残高を確認して、資産管理ページに入力しろ！お金の管理は毎日が大切です。';
-      }
-      return 'いいスタートです！続けて次のタスクにも取り組んでみましょう。';
-    } else if (completionRate < 50) {
-      if (householdTasks.length > 0) {
-        return '家事も大切なタスクです。洗い物や掃除を済ませて、清潔な環境を保ちましょう！';
-      }
-      return '順調に進んでいます！あと半分で今日の目標達成です。';
-    } else if (completionRate < 75) {
-      if (personalTasks.length > 0) {
-        return '自分の時間も大切にしましょう。読書やギターの練習でリフレッシュしてください！';
-      }
-      return '素晴らしい進捗です！あと少しで今日の目標を達成できます。';
-    } else if (completionRate < 100) {
-      return 'もうすぐ完了です！最後の一押しで今日の目標を達成しましょう！';
-    } else {
-      return '🎉 おめでとうございます！今日の目標を100%達成しました！明日も頑張りましょう！';
     }
   };
 

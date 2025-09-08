@@ -54,6 +54,7 @@ const SitemapPage: React.FC = () => {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [activeTab, setActiveTab] = useState('grid');
 
   const canShow = (path: string) => {
     const res = isFeatureAccessible(path);
@@ -950,11 +951,27 @@ const SitemapPage: React.FC = () => {
         {/* メインコンテンツ */}
         <div className="sitemap-tabs">
           <div className="sitemap-tabs-list">
-            <button className="sitemap-tabs-trigger" data-state="active">
+            <button
+              className={`sitemap-tabs-trigger ${activeTab === 'grid' ? 'active' : ''}`}
+              onClick={() => setActiveTab('grid')}
+              data-state={activeTab === 'grid' ? 'active' : ''}
+            >
               グリッド表示
             </button>
-            <button className="sitemap-tabs-trigger">リスト表示</button>
-            <button className="sitemap-tabs-trigger">使用ガイド</button>
+            <button
+              className={`sitemap-tabs-trigger ${activeTab === 'list' ? 'active' : ''}`}
+              onClick={() => setActiveTab('list')}
+              data-state={activeTab === 'list' ? 'active' : ''}
+            >
+              リスト表示
+            </button>
+            <button
+              className={`sitemap-tabs-trigger ${activeTab === 'guide' ? 'active' : ''}`}
+              onClick={() => setActiveTab('guide')}
+              data-state={activeTab === 'guide' ? 'active' : ''}
+            >
+              使用ガイド
+            </button>
           </div>
 
           <div className="sitemap-tabs-content">
