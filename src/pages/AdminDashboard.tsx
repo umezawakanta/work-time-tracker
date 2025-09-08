@@ -624,9 +624,11 @@ const AdminDashboard: React.FC = () => {
       // タブリストの幅を強制的に制限
       const tabsList = document.querySelector('.admin-dashboard .tabs-list') as HTMLElement;
       if (tabsList) {
-        tabsList.style.maxWidth = '100%';
-        tabsList.style.overflowX = 'hidden';
+        tabsList.style.maxWidth = 'calc(100% - 0.75rem)';
+        tabsList.style.overflowX = 'auto';
         tabsList.style.width = 'calc(100% - 0.75rem)';
+        tabsList.style.scrollbarWidth = 'none';
+        (tabsList.style as any).msOverflowStyle = 'none';
       }
 
       // バッジコンテナの幅を強制的に制限
@@ -671,12 +673,14 @@ const AdminDashboard: React.FC = () => {
         userTableContainer.style.maxWidth = '100%';
         userTableContainer.style.overflowX = 'auto';
         userTableContainer.style.width = '100%';
+        (userTableContainer.style as any).webkitOverflowScrolling = 'touch';
       }
 
       const userTable = document.querySelector('.admin-dashboard .user-table') as HTMLElement;
       if (userTable) {
         userTable.style.width = '100%';
         userTable.style.maxWidth = '100%';
+        userTable.style.minWidth = '600px';
         userTable.style.tableLayout = 'fixed';
       }
 
@@ -685,15 +689,31 @@ const AdminDashboard: React.FC = () => {
         '.admin-dashboard .user-table th, .admin-dashboard .user-table td'
       ) as NodeListOf<HTMLElement>;
       tableCells.forEach((cell, index) => {
-        if (index % 3 === 0) {
+        const columnIndex = index % 6; // 6列のテーブル
+        if (columnIndex === 0) {
           // EMAIL列
-          cell.style.maxWidth = '150px';
-        } else if (index % 3 === 1) {
+          cell.style.width = '25%';
+          cell.style.maxWidth = '25%';
+        } else if (columnIndex === 1) {
           // NAME列
-          cell.style.maxWidth = '120px';
-        } else {
+          cell.style.width = '20%';
+          cell.style.maxWidth = '20%';
+        } else if (columnIndex === 2) {
           // ROLE列
-          cell.style.maxWidth = '80px';
+          cell.style.width = '15%';
+          cell.style.maxWidth = '15%';
+        } else if (columnIndex === 3) {
+          // STATUS列
+          cell.style.width = '15%';
+          cell.style.maxWidth = '15%';
+        } else if (columnIndex === 4) {
+          // LAST LOGIN列
+          cell.style.width = '15%';
+          cell.style.maxWidth = '15%';
+        } else {
+          // アクション列
+          cell.style.width = '10%';
+          cell.style.maxWidth = '10%';
         }
         cell.style.overflow = 'hidden';
         cell.style.textOverflow = 'ellipsis';
@@ -740,27 +760,25 @@ const AdminDashboard: React.FC = () => {
           /* 強力なCSSリセット */
           .admin-dashboard * {
             box-sizing: border-box !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
           
-          .admin-dashboard .tabs-list,
-          .admin-dashboard .tabs-list * {
-            max-width: 100% !important;
-            overflow-x: hidden !important;
-          }
-          
-          .admin-dashboard .badge-container,
-          .admin-dashboard .badge-container * {
-            max-width: 100% !important;
-            overflow-x: hidden !important;
+          .admin-dashboard *:before,
+          .admin-dashboard *:after {
+            box-sizing: border-box !important;
           }
           
           .admin-dashboard {
             min-height: 100vh;
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             position: relative;
-            width: 100%;
-            overflow-x: hidden;
-            box-sizing: border-box;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            overflow-x: hidden !important;
+            box-sizing: border-box !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
           
           .admin-dashboard::before {
@@ -777,7 +795,8 @@ const AdminDashboard: React.FC = () => {
           }
           
           .admin-dashboard .container {
-            max-width: 100% !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
             padding: 0.5rem !important;
             margin: 0 !important;
             position: relative;
@@ -795,7 +814,8 @@ const AdminDashboard: React.FC = () => {
             box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
             position: relative;
             overflow: hidden;
-            width: calc(100% + 1rem) !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
             box-sizing: border-box !important;
           }
           
@@ -884,8 +904,8 @@ const AdminDashboard: React.FC = () => {
             overflow: hidden;
             border: 1px solid rgba(0, 0, 0, 0.05);
             width: 100% !important;
-            box-sizing: border-box !important;
             max-width: 100% !important;
+            box-sizing: border-box !important;
           }
           
           .admin-dashboard .tabs-list {
@@ -901,9 +921,9 @@ const AdminDashboard: React.FC = () => {
             scroll-behavior: smooth !important;
             -webkit-overflow-scrolling: touch !important;
             width: calc(100% - 0.75rem) !important;
+            max-width: calc(100% - 0.75rem) !important;
             box-sizing: border-box !important;
             min-width: 0 !important;
-            max-width: 100% !important;
             flex-wrap: nowrap !important;
             align-items: center !important;
           }
@@ -1166,11 +1186,13 @@ const AdminDashboard: React.FC = () => {
             max-width: 100% !important;
             overflow-x: auto !important;
             box-sizing: border-box !important;
+            -webkit-overflow-scrolling: touch !important;
           }
           
           .admin-dashboard .user-table {
             width: 100% !important;
             max-width: 100% !important;
+            min-width: 600px !important;
             table-layout: fixed !important;
             border-collapse: collapse !important;
           }
@@ -1178,22 +1200,48 @@ const AdminDashboard: React.FC = () => {
           .admin-dashboard .user-table th,
           .admin-dashboard .user-table td {
             padding: 0.5rem 0.25rem !important;
-            font-size: 0.7rem !important;
+            font-size: 0.65rem !important;
             text-align: left !important;
             white-space: nowrap !important;
             overflow: hidden !important;
             text-overflow: ellipsis !important;
-            max-width: 120px !important;
+            border: 1px solid #e5e7eb !important;
           }
           
-          .admin-dashboard .user-table th:first-child,
-          .admin-dashboard .user-table td:first-child {
-            max-width: 150px !important;
+          .admin-dashboard .user-table th:nth-child(1),
+          .admin-dashboard .user-table td:nth-child(1) {
+            width: 25% !important;
+            max-width: 25% !important;
           }
           
-          .admin-dashboard .user-table th:last-child,
-          .admin-dashboard .user-table td:last-child {
-            max-width: 80px !important;
+          .admin-dashboard .user-table th:nth-child(2),
+          .admin-dashboard .user-table td:nth-child(2) {
+            width: 20% !important;
+            max-width: 20% !important;
+          }
+          
+          .admin-dashboard .user-table th:nth-child(3),
+          .admin-dashboard .user-table td:nth-child(3) {
+            width: 15% !important;
+            max-width: 15% !important;
+          }
+          
+          .admin-dashboard .user-table th:nth-child(4),
+          .admin-dashboard .user-table td:nth-child(4) {
+            width: 15% !important;
+            max-width: 15% !important;
+          }
+          
+          .admin-dashboard .user-table th:nth-child(5),
+          .admin-dashboard .user-table td:nth-child(5) {
+            width: 15% !important;
+            max-width: 15% !important;
+          }
+          
+          .admin-dashboard .user-table th:nth-child(6),
+          .admin-dashboard .user-table td:nth-child(6) {
+            width: 10% !important;
+            max-width: 10% !important;
           }
           
           /* タブレット対応 */
