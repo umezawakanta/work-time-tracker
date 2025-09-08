@@ -781,6 +781,62 @@ const AdminDashboard: React.FC = () => {
             padding: 0 !important;
           }
           
+          /* モバイル最適化のための追加スタイル */
+          .admin-dashboard .space-y-4 > * + * {
+            margin-top: 1rem;
+          }
+          
+          .admin-dashboard .rounded-2xl {
+            border-radius: 1rem;
+          }
+          
+          .admin-dashboard .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+          }
+          
+          .admin-dashboard .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+          
+          .admin-dashboard .grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+          
+          /* カードのモバイル最適化 */
+          .admin-dashboard .bg-white {
+            background-color: white;
+          }
+          
+          .admin-dashboard .p-4 {
+            padding: 1rem;
+          }
+          
+          .admin-dashboard .mb-3 {
+            margin-bottom: 0.75rem;
+          }
+          
+          .admin-dashboard .mb-4 {
+            margin-bottom: 1rem;
+          }
+          
+          .admin-dashboard .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem;
+          }
+          
+          .admin-dashboard .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+          }
+          
+          .admin-dashboard .font-bold {
+            font-weight: 700;
+          }
+          
+          .admin-dashboard .font-semibold {
+            font-weight: 600;
+          }
+          
           .admin-dashboard::before {
             content: '';
             position: fixed;
@@ -1485,68 +1541,91 @@ const AdminDashboard: React.FC = () => {
               </TabsList>
 
               {isFeatureAccessible('/admin/overview').allowed && (
-                <TabsContent value="overview" className="space-y-6">
-                  {/* 開発フローの現在位置 */}
-                  <div className="card">
-                    <div className="card-header">
-                      <div className="card-title">開発フロー（承認必須）</div>
-                      <div className="card-description">
-                        提案: {adminSuggested ?? '—'} / 承認: {adminApproved ?? '—'} / 有効:{' '}
-                        {adminEffective ?? '—'}
+                <TabsContent value="overview" className="space-y-4">
+                  {/* 開発フローの現在位置 - モバイル最適化 */}
+                  <div className="bg-white rounded-2xl shadow-sm border p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-lg font-bold text-gray-900">開発フロー</h2>
+                      <Badge variant="outline" className="text-xs">
+                        承認必須
+                      </Badge>
+                    </div>
+
+                    {/* 現在の状況 - コンパクト表示 */}
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                      <div className="text-center p-2 bg-blue-50 rounded-lg">
+                        <div className="text-xs text-blue-600 font-medium">提案</div>
+                        <div className="text-sm font-bold text-blue-900">
+                          {adminSuggested ?? '—'}
+                        </div>
                       </div>
-                      <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <div className="text-sm text-blue-800">
-                          <strong>📋 開発フローとは？</strong>
-                          <br />
-                          機能開発の各段階を管理する承認制のワークフローです。
-                          <br />
-                          <strong>提案</strong>: 開発者が次の段階を提案
-                          <br />
-                          <strong>承認</strong>: 管理者が提案を承認
-                          <br />
-                          <strong>有効</strong>: 現在有効な段階
+                      <div className="text-center p-2 bg-green-50 rounded-lg">
+                        <div className="text-xs text-green-600 font-medium">承認</div>
+                        <div className="text-sm font-bold text-green-900">
+                          {adminApproved ?? '—'}
                         </div>
-                        <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded">
-                          <div className="text-xs text-yellow-800">
-                            <strong>🎯 なぜ必要？</strong>
-                            <br />
-                            • 品質管理: 各段階で適切な承認を得ることで品質を保証
-                            <br />
-                            • リスク軽減: 未完成の機能が本番環境に誤って公開されることを防止
-                            <br />
-                            • チーム連携: 開発者と管理者の間で明確な責任分担を実現
-                            <br />• 進捗可視化: 現在の開発状況を一目で把握可能
-                          </div>
-                        </div>
-                        <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
-                          <div className="text-xs text-green-800">
-                            <strong>⚡ 操作方法</strong>
-                            <br />
-                            • ヘッダーの「次の段階を承認」ボタンで承認操作
-                            <br />
-                            • 各段階のバッジにマウスを合わせると詳細表示
-                            <br />
-                            • 紫色: 現在有効な段階
-                            <br />
-                            • グレー: 承認済み段階
-                            <br />• 白: 未承認段階
-                          </div>
+                      </div>
+                      <div className="text-center p-2 bg-purple-50 rounded-lg">
+                        <div className="text-xs text-purple-600 font-medium">有効</div>
+                        <div className="text-sm font-bold text-purple-900">
+                          {adminEffective ?? '—'}
                         </div>
                       </div>
                     </div>
-                    <div className="card-content">
-                      <div className="badge-container">
+
+                    {/* 折りたたみ可能な詳細説明 */}
+                    <details className="group">
+                      <summary className="flex items-center justify-between cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
+                        <span>📋 開発フローの詳細</span>
+                        <span className="group-open:rotate-180 transition-transform">▼</span>
+                      </summary>
+                      <div className="mt-3 space-y-3">
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <div className="text-sm text-blue-800">
+                            <strong>開発フローとは？</strong>
+                            <br />
+                            機能開発の各段階を管理する承認制のワークフローです。
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-2">
+                          <div className="p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
+                            <strong>🎯 なぜ必要？</strong>
+                            <ul className="mt-1 space-y-1">
+                              <li>• 品質管理: 各段階で適切な承認</li>
+                              <li>• リスク軽減: 未完成機能の本番公開防止</li>
+                              <li>• チーム連携: 明確な責任分担</li>
+                              <li>• 進捗可視化: 開発状況の把握</li>
+                            </ul>
+                          </div>
+
+                          <div className="p-2 bg-green-50 border border-green-200 rounded text-xs">
+                            <strong>⚡ 操作方法</strong>
+                            <ul className="mt-1 space-y-1">
+                              <li>• ヘッダーの「次の段階を承認」ボタン</li>
+                              <li>• 紫色: 現在有効な段階</li>
+                              <li>• グレー: 承認済み段階</li>
+                              <li>• 白: 未承認段階</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </details>
+
+                    {/* 段階バッジ - モバイル最適化 */}
+                    <div className="mt-4">
+                      <div className="flex flex-wrap gap-1">
                         {NEW_STATUS_ORDER.map((s) => (
-                          <div
+                          <Badge
                             key={s}
-                            className="badge"
-                            data-variant={
+                            variant={
                               adminEffective === s
                                 ? 'default'
                                 : adminApproved === s
                                   ? 'secondary'
                                   : 'outline'
                             }
+                            className="text-xs px-2 py-1"
                             title={
                               s === 'planning'
                                 ? '計画段階: 要件定義と設計'
@@ -1568,29 +1647,50 @@ const AdminDashboard: React.FC = () => {
                             }
                           >
                             {s}
-                          </div>
+                          </Badge>
                         ))}
                       </div>
-                      <div className="mt-3 text-xs text-gray-600">
-                        💡 各段階にマウスを合わせると詳細が表示されます
-                      </div>
+                      <p className="text-xs text-gray-500 mt-2">
+                        💡 各段階をタップすると詳細が表示されます
+                      </p>
                     </div>
                   </div>
 
                   {metrics && (
-                    <div className="metrics-grid">
-                      <div className="metric-card">
-                        <div className="metric-icon">
-                          <Users className="w-6 h-6" />
+                    <div className="space-y-4">
+                      {/* ユーザー数カード */}
+                      <div className="bg-white rounded-2xl shadow-sm border p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-2">
+                            <div className="p-2 bg-blue-100 rounded-lg">
+                              <Users className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <h3 className="font-semibold text-gray-900">ユーザー数</h3>
+                          </div>
+                          <Badge variant="secondary" className="text-xs">
+                            総数
+                          </Badge>
                         </div>
-                        <div className="metric-label">総ユーザー数</div>
-                        <div className="metric-value">
+                        <div className="text-2xl font-bold text-gray-900 mb-2">
                           {(
                             Number(analytics?.totalUsers || 0) || metrics.users.total
                           ).toLocaleString()}
                         </div>
-                        <div className="text-sm text-green-600 font-semibold mb-2">
-                          +{metrics.users.newToday} 今日
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-green-600 font-medium">
+                            +{metrics.users.newToday} 今日
+                          </span>
+                          <span className="text-gray-500">
+                            アクティブ率:{' '}
+                            {Math.round(
+                              (Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
+                                ? (metrics.users.active /
+                                    (Number(analytics?.totalUsers || 0) || metrics.users.total)) *
+                                    100
+                                : 0
+                            )}
+                            %
+                          </span>
                         </div>
                         <Progress
                           value={
@@ -1600,89 +1700,132 @@ const AdminDashboard: React.FC = () => {
                                 100
                               : 0
                           }
-                          className="mt-2"
+                          className="mt-3"
                         />
-                        <div className="text-xs text-gray-600 mt-2">
-                          アクティブ率:{' '}
-                          {(Number(analytics?.totalUsers || 0) || metrics.users.total) > 0
-                            ? Math.round(
-                                (metrics.users.active /
-                                  (Number(analytics?.totalUsers || 0) || metrics.users.total)) *
-                                  100
-                              )
-                            : 0}
-                          %
-                        </div>
                       </div>
 
-                      <div className="metric-card">
-                        <div className="metric-icon">
-                          <DollarSign className="w-6 h-6" />
+                      {/* 売上カード */}
+                      <div className="bg-white rounded-2xl shadow-sm border p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-2">
+                            <div className="p-2 bg-green-100 rounded-lg">
+                              <DollarSign className="w-5 h-5 text-green-600" />
+                            </div>
+                            <h3 className="font-semibold text-gray-900">月次売上</h3>
+                          </div>
+                          <Badge variant="secondary" className="text-xs">
+                            MRR
+                          </Badge>
                         </div>
-                        <div className="metric-label">月次売上 (MRR)</div>
-                        <div className="metric-value">¥{metrics.revenue.mrr.toLocaleString()}</div>
-                        <div className="text-sm text-green-600 font-semibold mb-2">
-                          +¥{Number(metrics.revenue.todayRevenue || 0).toLocaleString()} 今日
+                        <div className="text-2xl font-bold text-gray-900 mb-2">
+                          ¥{metrics.revenue.mrr.toLocaleString()}
                         </div>
-                        <Progress value={metrics.revenue.conversionRate} className="mt-2" />
-                        <div className="text-xs text-gray-600 mt-2">
-                          コンバージョン率: {metrics.revenue.conversionRate}%
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-green-600 font-medium">
+                            +¥{Number(metrics.revenue.todayRevenue || 0).toLocaleString()} 今日
+                          </span>
+                          <span className="text-gray-500">
+                            コンバージョン率: {metrics.revenue.conversionRate}%
+                          </span>
                         </div>
+                        <Progress value={metrics.revenue.conversionRate} className="mt-3" />
                       </div>
 
-                      <div className="metric-card">
-                        <div className="metric-icon">
-                          <Activity className="w-6 h-6" />
+                      {/* システム稼働率カード */}
+                      <div className="bg-white rounded-2xl shadow-sm border p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-2">
+                            <div className="p-2 bg-purple-100 rounded-lg">
+                              <Activity className="w-5 h-5 text-purple-600" />
+                            </div>
+                            <h3 className="font-semibold text-gray-900">システム稼働率</h3>
+                          </div>
+                          <Badge variant="secondary" className="text-xs">
+                            {metrics.system.uptime}%
+                          </Badge>
                         </div>
-                        <div className="metric-label">システム稼働率</div>
-                        <div className="metric-value">{metrics.system.uptime}%</div>
-                        <div className="text-sm text-blue-600 font-semibold mb-2">
-                          {metrics.system.responseTime}ms 平均応答
+                        <div className="text-2xl font-bold text-gray-900 mb-2">
+                          {metrics.system.uptime}%
                         </div>
-                        <Progress value={metrics.system.uptime} className="mt-2" />
-                        <div className="text-xs text-gray-600 mt-2">
-                          エラー率: {metrics.system.errorRate}%
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-blue-600 font-medium">
+                            {metrics.system.responseTime}ms 平均応答
+                          </span>
+                          <span className="text-gray-500">
+                            エラー率: {metrics.system.errorRate}%
+                          </span>
                         </div>
+                        <Progress value={metrics.system.uptime} className="mt-3" />
                       </div>
 
-                      <div className="metric-card">
-                        <div className="metric-icon">
-                          <Mail className="w-6 h-6" />
+                      {/* サポートカード */}
+                      <div className="bg-white rounded-2xl shadow-sm border p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-2">
+                            <div className="p-2 bg-orange-100 rounded-lg">
+                              <Mail className="w-5 h-5 text-orange-600" />
+                            </div>
+                            <h3 className="font-semibold text-gray-900">サポート</h3>
+                          </div>
+                          <Badge variant="secondary" className="text-xs">
+                            未対応
+                          </Badge>
                         </div>
-                        <div className="metric-label">サポート</div>
-                        <div className="metric-value">{metrics.support.openTickets}</div>
-                        <div className="text-sm text-orange-600 font-semibold mb-2">
-                          未対応チケット
+                        <div className="text-2xl font-bold text-gray-900 mb-2">
+                          {metrics.support.openTickets}
                         </div>
-                        <div className="text-xs text-gray-600 mt-2">
-                          平均応答: {metrics.support.avgResponseTime} | 満足度:{' '}
-                          {metrics.support.satisfaction}/5
+                        <div className="text-sm text-gray-600">
+                          <div className="flex justify-between">
+                            <span>平均応答: {metrics.support.avgResponseTime}</span>
+                            <span>満足度: {metrics.support.satisfaction}/5</span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {/* ライブメトリクス */}
-                  <Card>
-                    <CardContent className="pt-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-600">ライブアクティブ</p>
-                          <p className="text-2xl font-bold">
-                            {isLiveLoading ? '—' : (liveMetrics?.activeUsers ?? 0)}
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            完了率: {isLiveLoading ? '—' : `${liveMetrics?.completionRate ?? 0}%`}
-                          </p>
+                  {/* ライブメトリクス - モバイル最適化 */}
+                  <div className="bg-white rounded-2xl shadow-sm border p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold text-gray-900">ライブアクティブ</h3>
+                      <div className="flex items-center space-x-2">
+                        <Activity className="w-5 h-5 text-rose-500" />
+                        <Badge variant="outline" className="text-xs">
+                          リアルタイム
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <div className="text-2xl font-bold text-blue-900">
+                          {isLiveLoading ? '—' : (liveMetrics?.activeUsers ?? 0)}
                         </div>
-                        <Activity className="w-8 h-8 text-rose-500" />
+                        <div className="text-xs text-blue-600 font-medium">アクティブユーザー</div>
                       </div>
-                      <div className="mt-2 text-xs text-gray-600">
-                        今日のタスク: {isLiveLoading ? '—' : (liveMetrics?.todaysTasks ?? 0)} /
-                        週次傾向: {isLiveLoading ? '—' : (liveMetrics?.weeklyTrend ?? 0)}%
+                      <div className="text-center p-3 bg-green-50 rounded-lg">
+                        <div className="text-2xl font-bold text-green-900">
+                          {isLiveLoading ? '—' : `${liveMetrics?.completionRate ?? 0}%`}
+                        </div>
+                        <div className="text-xs text-green-600 font-medium">完了率</div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-2 bg-gray-50 rounded-lg text-center">
+                        <div className="text-sm font-semibold text-gray-900">
+                          {isLiveLoading ? '—' : (liveMetrics?.todaysTasks ?? 0)}
+                        </div>
+                        <div className="text-xs text-gray-500">今日のタスク</div>
+                      </div>
+                      <div className="p-2 bg-gray-50 rounded-lg text-center">
+                        <div className="text-sm font-semibold text-gray-900">
+                          {isLiveLoading ? '—' : `${liveMetrics?.weeklyTrend ?? 0}%`}
+                        </div>
+                        <div className="text-xs text-gray-500">週次傾向</div>
+                      </div>
+                    </div>
+                  </div>
 
                   {/* 今日のタスク */}
                   <Card>
