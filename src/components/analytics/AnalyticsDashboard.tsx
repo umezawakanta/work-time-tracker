@@ -172,15 +172,19 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 pb-28 max-w-md mx-auto sm:max-w-none sm:px-0">
       {/* ヘッダー */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">📊 ユーザー解析ダッシュボード</h1>
-          <p className="text-gray-600">リアルタイムユーザー行動とサイト解析</p>
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="text-center sm:text-left">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900 whitespace-normal break-words leading-snug">
+            📊 ユーザー解析ダッシュボード
+          </h1>
+          <p className="text-sm text-gray-600 whitespace-normal break-words">
+            リアルタイムユーザー行動とサイト解析
+          </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Select value={timeRange} onValueChange={(value: any) => setTimeRange(value)}>
             <SelectTrigger className="w-32">
               <SelectValue />
@@ -192,12 +196,12 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             </SelectContent>
           </Select>
 
-          <Button onClick={exportData} variant="outline" size="sm">
+          <Button onClick={exportData} variant="outline" size="sm" className="min-h-[40px] text-xs">
             <Download className="h-4 w-4 mr-2" />
             エクスポート
           </Button>
 
-          <Button onClick={loadAnalytics} size="sm">
+          <Button onClick={loadAnalytics} size="sm" className="min-h-[40px] text-xs">
             <RefreshCw className="h-4 w-4 mr-2" />
             更新
           </Button>
@@ -205,20 +209,16 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       </div>
 
       {/* 概要メトリクス */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">総ユーザー数</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {analytics.totalUsers.toLocaleString()}
-                </p>
-              </div>
-              <Users className="h-8 w-8 text-blue-600" />
-            </div>
-            <div className="mt-2 flex items-center text-sm">
-              <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
+          <CardContent className="p-4 text-center">
+            <Users className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+            <p className="text-xs text-gray-500 mb-1">総ユーザー数</p>
+            <p className="text-xl font-bold text-gray-900">
+              {analytics.totalUsers.toLocaleString()}
+            </p>
+            <div className="mt-2 flex items-center justify-center text-xs">
+              <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
               <span className="text-green-600">+12.5%</span>
               <span className="text-gray-600 ml-1">vs 先週</span>
             </div>
@@ -226,16 +226,12 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">アクティブユーザー</p>
-                <p className="text-2xl font-bold text-gray-900">{analytics.activeUsers}</p>
-              </div>
-              <Activity className="h-8 w-8 text-green-600" />
-            </div>
-            <div className="mt-2 flex items-center text-sm">
-              <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
+          <CardContent className="p-4 text-center">
+            <Activity className="h-6 w-6 text-green-600 mx-auto mb-2" />
+            <p className="text-xs text-gray-500 mb-1">アクティブユーザー</p>
+            <p className="text-xl font-bold text-gray-900">{analytics.activeUsers}</p>
+            <div className="mt-2 flex items-center justify-center text-xs">
+              <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
               <span className="text-green-600">+8.3%</span>
               <span className="text-gray-600 ml-1">vs 先週</span>
             </div>
@@ -243,18 +239,14 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">平均セッション時間</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {formatDuration(analytics.averageSessionDuration)}
-                </p>
-              </div>
-              <Clock className="h-8 w-8 text-purple-600" />
-            </div>
-            <div className="mt-2 flex items-center text-sm">
-              <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
+          <CardContent className="p-4 text-center">
+            <Clock className="h-6 w-6 text-purple-600 mx-auto mb-2" />
+            <p className="text-xs text-gray-500 mb-1">平均セッション時間</p>
+            <p className="text-xl font-bold text-gray-900">
+              {formatDuration(analytics.averageSessionDuration)}
+            </p>
+            <div className="mt-2 flex items-center justify-center text-xs">
+              <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
               <span className="text-green-600">+5.2%</span>
               <span className="text-gray-600 ml-1">vs 先週</span>
             </div>
@@ -262,18 +254,14 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">総ページビュー</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {analytics.pageViewsTotal.toLocaleString()}
-                </p>
-              </div>
-              <Eye className="h-8 w-8 text-orange-600" />
-            </div>
-            <div className="mt-2 flex items-center text-sm">
-              <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
+          <CardContent className="p-4 text-center">
+            <Eye className="h-6 w-6 text-orange-600 mx-auto mb-2" />
+            <p className="text-xs text-gray-500 mb-1">総ページビュー</p>
+            <p className="text-xl font-bold text-gray-900">
+              {analytics.pageViewsTotal.toLocaleString()}
+            </p>
+            <div className="mt-2 flex items-center justify-center text-xs">
+              <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
               <span className="text-green-600">+15.7%</span>
               <span className="text-gray-600 ml-1">vs 先週</span>
             </div>
