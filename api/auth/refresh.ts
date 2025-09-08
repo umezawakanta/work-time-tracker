@@ -1,4 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+const { VercelRequest, VercelResponse } = require('@vercel/node');
 let mongoose: any = null;
 async function getMongoLib() {
   const mod: any = await import('../_lib/mongo.js');
@@ -62,7 +62,7 @@ interface RefreshResponse {
   error?: string;
 }
 
-async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: any, res: any) {
   // CORS設定
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];

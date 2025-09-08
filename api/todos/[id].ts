@@ -1,9 +1,9 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectDB } from '../../src/server/config/database';
-import { TodoModel } from '../../src/server/models/Todo';
-import { withAuth, AuthenticatedRequest } from '../../src/middleware/auth';
+const { VercelRequest, VercelResponse } = require('@vercel/node');
+const { connectDB } = require('../../src/server/config/database');
+const { TodoModel } = require('../../src/server/models/Todo');
+const { withAuth } = require('../../src/middleware/auth');
 
-const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<void> => {
+const handler = async (req: any, res: any): Promise<void> => {
   try {
     // Connect to database
     await connectDB();

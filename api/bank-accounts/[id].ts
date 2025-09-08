@@ -20,7 +20,7 @@ interface BankAccount {
 // メモリ内ストア（実際の実装ではデータベースを使用）
 const bankAccountsStore = new Map<string, BankAccount[]>();
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -42,7 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const userAccounts = bankAccountsStore.get(userId as string) || [];
-    const accountIndex = userAccounts.findIndex(account => account._id === id);
+    const accountIndex = userAccounts.findIndex((account) => account._id === id);
 
     if (accountIndex === -1) {
       return res.status(404).json({
@@ -61,16 +61,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (req.method === 'PUT') {
       // 銀行口座を更新
-      const { 
-        bankName, 
-        accountType, 
-        accountNumber, 
-        branchName, 
-        accountName, 
+      const {
+        bankName,
+        accountType,
+        accountNumber,
+        branchName,
+        accountName,
         isMain,
         isActive,
         lastBalance,
-        lastUpdated
+        lastUpdated,
       } = req.body;
 
       const updatedAccount: BankAccount = {
@@ -82,21 +82,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         accountName: accountName || userAccounts[accountIndex].accountName,
         isMain: isMain !== undefined ? isMain : userAccounts[accountIndex].isMain,
         isActive: isActive !== undefined ? isActive : userAccounts[accountIndex].isActive,
-        lastBalance: lastBalance !== undefined ? lastBalance : userAccounts[accountIndex].lastBalance,
+        lastBalance:
+          lastBalance !== undefined ? lastBalance : userAccounts[accountIndex].lastBalance,
         lastUpdated: lastUpdated || userAccounts[accountIndex].lastUpdated,
         updatedAt: new Date().toISOString(),
       };
 
       // メイン口座の重複チェック
       if (isMain && isMain !== userAccounts[accountIndex].isMain) {
-        const hasOtherMainAccount = userAccounts.some((account, index) => 
-          index !== accountIndex && account.isMain && account.isActive
+        const hasOtherMainAccount = userAccounts.some(
+          (account, index) => index !== accountIndex && account.isMain && account.isActive
         );
-        
+
         if (hasOtherMainAccount) {
           return res.status(400).json({
             success: false,
-            message: 'メイン口座は既に登録されています。既存のメイン口座を無効にしてから設定してください。',
+            message:
+              'メイン口座は既に登録されています。既存のメイン口座を無効にしてから設定してください。',
           });
         }
       }
@@ -134,3 +136,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 }
+
+module.exports = handler;
