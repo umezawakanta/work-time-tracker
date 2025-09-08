@@ -1,10 +1,5 @@
 {
   "version": 2,
   "buildCommand": "pnpm run vercel-build-ci",
-  "outputDirectory": "dist",
-  "functions": {
-    "api/**": {
-      "runtime": "nodejs20.x"
-    }
-  }
+  "outputDirectory": "dist"
 }
