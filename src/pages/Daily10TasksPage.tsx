@@ -40,6 +40,66 @@ import { useAuth } from '@/hooks/useAuth';
 import { DailyTask, TaskProgress } from '@/types/daily10';
 import { DailyTaskInstructions } from '@/components/DailyTaskInstructions';
 
+// タスク配列の正規化関数
+function toTaskArray(src: unknown): TaskProgress[] {
+  // 1) すでに配列
+  if (Array.isArray(src)) {
+    return src.filter(
+      (task): task is TaskProgress =>
+        task &&
+        typeof task === 'object' &&
+        'taskId' in task &&
+        'completed' in task &&
+        'subtasks' in task
+    );
+  }
+
+  // 2) 連想オブジェクト {id: {..}, ...} 形式（Firestoreや正規化Stateでありがち）
+  if (src && typeof src === 'object') {
+    const obj = src as Record<string, unknown>;
+    return Object.values(obj).filter(
+      (task): task is TaskProgress =>
+        task &&
+        typeof task === 'object' &&
+        'taskId' in task &&
+        'completed' in task &&
+        'subtasks' in task
+    );
+  }
+
+  // 3) JSON文字列で来たケース
+  if (typeof src === 'string') {
+    try {
+      const parsed = JSON.parse(src);
+      if (Array.isArray(parsed)) {
+        return parsed.filter(
+          (task): task is TaskProgress =>
+            task &&
+            typeof task === 'object' &&
+            'taskId' in task &&
+            'completed' in task &&
+            'subtasks' in task
+        );
+      }
+      if (parsed && typeof parsed === 'object') {
+        return Object.values(parsed).filter(
+          (task): task is TaskProgress =>
+            task &&
+            typeof task === 'object' &&
+            'taskId' in task &&
+            'completed' in task &&
+            'subtasks' in task
+        );
+      }
+    } catch {
+      // JSON解析に失敗した場合は空配列を返す
+    }
+  }
+
+  // 4) それ以外は空配列
+  return [];
+}
+
 const categoryIcons = {
   finance: DollarSign,
   planning: CalendarIcon,
@@ -695,8 +755,8 @@ const Daily10TasksPage: React.FC = () => {
   // 進捗の可視化データを計算
   const progressData = useMemo(() => {
     try {
-      // より堅牢な型チェック
-      if (!progress || typeof progress !== 'object' || !progress.tasks) {
+      // progressが存在しない場合はデフォルト値を返す
+      if (!progress || typeof progress !== 'object') {
         return {
           completed: 0,
           total: 0,
@@ -706,8 +766,8 @@ const Daily10TasksPage: React.FC = () => {
         };
       }
 
-      // progress.tasksが配列でない場合は空配列として扱う
-      const tasksArray = Array.isArray(progress.tasks) ? progress.tasks : [];
+      // 正規化関数を使用してタスク配列を安全に取得
+      const tasksArray = toTaskArray(progress.tasks);
 
       if (tasksArray.length === 0 || dynamicTasks.length === 0) {
         return {
@@ -719,6 +779,7 @@ const Daily10TasksPage: React.FC = () => {
         };
       }
 
+      // 正規化された配列なので安全にfilterを使用
       const completed = tasksArray.filter((task) => task && task.completed).length;
       const total = dynamicTasks.length;
       const percentage = Math.round((completed / total) * 100);
@@ -753,18 +814,19 @@ const Daily10TasksPage: React.FC = () => {
   // タスク状況に応じたメッセージを生成
   const getMotivationalMessage = () => {
     try {
-      // より堅牢な型チェック
-      if (!progress || typeof progress !== 'object' || !progress.tasks) {
+      // progressが存在しない場合はデフォルトメッセージを返す
+      if (!progress || typeof progress !== 'object') {
         return '今日も一日頑張りましょう！まずは最初のタスクから始めてみてください。';
       }
 
-      // progress.tasksが配列でない場合は空配列として扱う
-      const tasksArray = Array.isArray(progress.tasks) ? progress.tasks : [];
+      // 正規化関数を使用してタスク配列を安全に取得
+      const tasksArray = toTaskArray(progress.tasks);
 
       if (tasksArray.length === 0 || dynamicTasks.length === 0) {
         return '今日も一日頑張りましょう！まずは最初のタスクから始めてみてください。';
       }
 
+      // 正規化された配列なので安全にfilterを使用
       const completedTasks = tasksArray.filter((task) => task && task.completed).length;
       const totalTasks = dynamicTasks.length;
       const completionRate = (completedTasks / totalTasks) * 100;

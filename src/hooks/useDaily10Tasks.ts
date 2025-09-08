@@ -1,7 +1,79 @@
 import { useState, useEffect, useCallback } from 'react';
 import { daily10Api } from '@/services/api/daily10Api';
-import { DailyTask, DailyProgress, DailyStats } from '@/types/daily10';
+import {
+  DailyTask,
+  DailyProgress,
+  DailyStats,
+  TaskProgress,
+  SubtaskProgress,
+} from '@/types/daily10';
 import { useAuth } from '@/hooks/useAuth';
+
+// タスク配列の正規化関数
+function toTaskArray(src: unknown): TaskProgress[] {
+  // 1) すでに配列
+  if (Array.isArray(src)) {
+    return src.filter(
+      (task): task is TaskProgress =>
+        task &&
+        typeof task === 'object' &&
+        'taskId' in task &&
+        'completed' in task &&
+        'subtasks' in task
+    );
+  }
+
+  // 2) 連想オブジェクト {id: {..}, ...} 形式（Firestoreや正規化Stateでありがち）
+  if (src && typeof src === 'object') {
+    const obj = src as Record<string, unknown>;
+    return Object.values(obj).filter(
+      (task): task is TaskProgress =>
+        task &&
+        typeof task === 'object' &&
+        'taskId' in task &&
+        'completed' in task &&
+        'subtasks' in task
+    );
+  }
+
+  // 3) JSON文字列で来たケース
+  if (typeof src === 'string') {
+    try {
+      const parsed = JSON.parse(src);
+      if (Array.isArray(parsed)) {
+        return parsed.filter(
+          (task): task is TaskProgress =>
+            task &&
+            typeof task === 'object' &&
+            'taskId' in task &&
+            'completed' in task &&
+            'subtasks' in task
+        );
+      }
+      if (parsed && typeof parsed === 'object') {
+        return Object.values(parsed).filter(
+          (task): task is TaskProgress =>
+            task &&
+            typeof task === 'object' &&
+            'taskId' in task &&
+            'completed' in task &&
+            'subtasks' in task
+        );
+      }
+    } catch {
+      // JSON解析に失敗した場合は空配列を返す
+    }
+  }
+
+  // 4) それ以外は空配列
+  return [];
+}
+
+// サブタスクを取得するヘルパー関数
+function getAllSubtasks(progress: DailyProgress | null): SubtaskProgress[] {
+  if (!progress || !progress.tasks) return [];
+  return progress.tasks.flatMap((task) => task.subtasks || []);
+}
 
 export const useDaily10Tasks = () => {
   const { user } = useAuth();
@@ -30,8 +102,7 @@ export const useDaily10Tasks = () => {
         if (updatedProgress && typeof updatedProgress === 'object') {
           const normalizedProgress = {
             ...updatedProgress,
-            tasks: Array.isArray(updatedProgress.tasks) ? updatedProgress.tasks : [],
-            subtasks: Array.isArray(updatedProgress.subtasks) ? updatedProgress.subtasks : [],
+            tasks: toTaskArray(updatedProgress.tasks),
           };
           setProgress(normalizedProgress);
         }
@@ -62,8 +133,7 @@ export const useDaily10Tasks = () => {
         if (progressData && typeof progressData === 'object') {
           const normalizedProgress = {
             ...progressData,
-            tasks: Array.isArray(progressData.tasks) ? progressData.tasks : [],
-            subtasks: Array.isArray(progressData.subtasks) ? progressData.subtasks : [],
+            tasks: toTaskArray(progressData.tasks),
           };
           setProgress(normalizedProgress);
         } else {
@@ -100,8 +170,7 @@ export const useDaily10Tasks = () => {
       if (progressData && typeof progressData === 'object') {
         const normalizedProgress = {
           ...progressData,
-          tasks: Array.isArray(progressData.tasks) ? progressData.tasks : [],
-          subtasks: Array.isArray(progressData.subtasks) ? progressData.subtasks : [],
+          tasks: toTaskArray(progressData.tasks),
         };
         setProgress(normalizedProgress);
       } else {
