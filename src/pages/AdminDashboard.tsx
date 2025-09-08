@@ -778,12 +778,13 @@ const AdminDashboard: React.FC = () => {
             background: #f8fafc;
             border-radius: 12px;
             margin: 0.5rem;
-            gap: 0.375rem;
+            gap: 0.25rem;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             width: calc(100% - 1rem);
             box-sizing: border-box;
             min-width: 0;
+            max-width: 100%;
           }
           
           .admin-dashboard .tabs-list::-webkit-scrollbar {
@@ -792,9 +793,9 @@ const AdminDashboard: React.FC = () => {
           
           .admin-dashboard .tabs-trigger {
             flex-shrink: 0;
-            padding: 0.75rem 0.875rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
@@ -803,12 +804,12 @@ const AdminDashboard: React.FC = () => {
             color: #6b7280;
             cursor: pointer;
             position: relative;
-            min-height: 2.5rem;
+            min-height: 2.25rem;
             display: flex;
             align-items: center;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
-            max-width: 120px;
+            max-width: 100px;
             text-overflow: ellipsis;
             overflow: hidden;
           }
@@ -944,20 +945,24 @@ const AdminDashboard: React.FC = () => {
           .admin-dashboard .badge-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.375rem;
+            gap: 0.25rem;
             margin-top: 0.75rem;
             width: 100%;
             box-sizing: border-box;
             overflow-x: hidden;
+            max-width: 100%;
           }
           
           .admin-dashboard .badge {
-            padding: 0.375rem 0.75rem;
-            border-radius: 16px;
-            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.65rem;
             font-weight: 600;
             transition: all 0.3s ease;
             border: 2px solid transparent;
+            flex-shrink: 0;
+            max-width: 100%;
+            word-break: break-word;
           }
           
           .admin-dashboard .badge[data-variant="default"] {
@@ -1036,6 +1041,12 @@ const AdminDashboard: React.FC = () => {
             .admin-dashboard .card-content {
               padding: 1.5rem;
             }
+            
+            .admin-dashboard .tabs-trigger {
+              max-width: 140px;
+              font-size: 0.8rem;
+              padding: 0.75rem 1rem;
+            }
           }
           
           /* デスクトップ対応 */
@@ -1056,6 +1067,7 @@ const AdminDashboard: React.FC = () => {
             .admin-dashboard .tabs-trigger {
               padding: 0.75rem 1rem;
               font-size: 0.85rem;
+              max-width: 160px;
             }
           }
         `}
@@ -1199,6 +1211,19 @@ const AdminDashboard: React.FC = () => {
                         提案: {adminSuggested ?? '—'} / 承認: {adminApproved ?? '—'} / 有効:{' '}
                         {adminEffective ?? '—'}
                       </div>
+                      <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="text-sm text-blue-800">
+                          <strong>📋 開発フローとは？</strong>
+                          <br />
+                          機能開発の各段階を管理する承認制のワークフローです。
+                          <br />
+                          <strong>提案</strong>: 開発者が次の段階を提案
+                          <br />
+                          <strong>承認</strong>: 管理者が提案を承認
+                          <br />
+                          <strong>有効</strong>: 現在有効な段階
+                        </div>
+                      </div>
                     </div>
                     <div className="card-content">
                       <div className="badge-container">
@@ -1213,10 +1238,32 @@ const AdminDashboard: React.FC = () => {
                                   ? 'secondary'
                                   : 'outline'
                             }
+                            title={
+                              s === 'planning'
+                                ? '計画段階: 要件定義と設計'
+                                : s === 'designing'
+                                  ? '設計段階: UI/UX設計'
+                                  : s === 'developing'
+                                    ? '開発段階: コーディング'
+                                    : s === 'unit_testing'
+                                      ? '単体テスト: 個別機能のテスト'
+                                      : s === 'documenting'
+                                        ? '文書化: ドキュメント作成'
+                                        : s === 'review'
+                                          ? 'レビュー: コードレビュー'
+                                          : s === 'release_pending'
+                                            ? 'リリース待ち: 本番デプロイ前'
+                                            : s === 'complete'
+                                              ? '完了: 本番リリース済み'
+                                              : s
+                            }
                           >
                             {s}
                           </div>
                         ))}
+                      </div>
+                      <div className="mt-3 text-xs text-gray-600">
+                        💡 各段階にマウスを合わせると詳細が表示されます
                       </div>
                     </div>
                   </div>
