@@ -29,71 +29,50 @@ const ErrorDashboardPage: React.FC = () => {
 
   return (
     <PageLayout title="エラー監視ダッシュボード">
-      <div className="container mx-auto px-4 py-8 space-y-6">
-        {/* ヘッダーセクション */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-3">
-            <Bug className="h-8 w-8 text-red-500" />
-            <h1 className="text-3xl font-bold tracking-tight">🐛 エラーエリミネーター</h1>
-            <Badge variant="secondary" className="gap-1">
+      <div className="px-4 pb-28 max-w-screen-md mx-auto">
+        {/* ヘッダーセクション - モバイル最適化 */}
+        <header className="pt-3 pb-2">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Bug className="h-6 w-6 text-red-500" />
+            <h1 className="text-base sm:text-lg font-bold text-center text-gray-800 break-words">
+              🐛 エラーエリミネーター
+            </h1>
+            <Badge variant="secondary" className="gap-1 text-xs">
               <Activity className="h-3 w-3" />
               LIVE
             </Badge>
           </div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm text-gray-600 text-center break-words">
             システム全体のエラーをリアルタイム監視し、自動回復機能でサービスの安定性を確保します
           </p>
-        </div>
+        </header>
 
-        {/* 機能概要カード */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Shield className="h-4 w-4 text-blue-500" />
-                自動回復
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">APIエラーを検出し、自動的に回復を試行</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Activity className="h-4 w-4 text-green-500" />
-                リアルタイム監視
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">エラー発生を即座に検出・分析</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-purple-500" />
-                パターン分析
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">エラーパターンを学習し、予防策を提案</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                品質向上
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">システム全体の安定性と信頼性を向上</p>
-            </CardContent>
-          </Card>
+        {/* 機能概要カード - モバイル最適化 */}
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="bg-white rounded-xl shadow-sm border p-3 text-center">
+            <Shield className="h-5 w-5 text-blue-500 mx-auto mb-1" />
+            <p className="text-xs text-gray-500">自動回復</p>
+            <p className="text-xs text-gray-600 break-words">
+              APIエラーを検出し、自動的に回復を試行
+            </p>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border p-3 text-center">
+            <Activity className="h-5 w-5 text-green-500 mx-auto mb-1" />
+            <p className="text-xs text-gray-500">リアルタイム監視</p>
+            <p className="text-xs text-gray-600 break-words">エラー発生を即座に検出・分析</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border p-3 text-center">
+            <TrendingUp className="h-5 w-5 text-purple-500 mx-auto mb-1" />
+            <p className="text-xs text-gray-500">パターン分析</p>
+            <p className="text-xs text-gray-600 break-words">
+              エラーパターンを学習し、予防策を提案
+            </p>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border p-3 text-center">
+            <CheckCircle2 className="h-5 w-5 text-emerald-500 mx-auto mb-1" />
+            <p className="text-xs text-gray-500">品質向上</p>
+            <p className="text-xs text-gray-600 break-words">システム全体の安定性と信頼性を向上</p>
+          </div>
         </div>
 
         {/* 401時のログイン導線 */}

@@ -270,103 +270,100 @@ export const ErrorMonitoringDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* ヘッダー */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">🐛 エラー監視ダッシュボード</h2>
-          <p className="text-muted-foreground">リアルタイムエラー追跡と自動復旧システム</p>
+      {/* ヘッダー - モバイル最適化 */}
+      <div className="space-y-4">
+        <div className="text-center">
+          <h2 className="text-base sm:text-lg font-bold text-gray-800 break-words">
+            🐛 エラー監視ダッシュボード
+          </h2>
+          <p className="text-sm text-gray-600 break-words">
+            リアルタイムエラー追跡と自動復旧システム
+          </p>
         </div>
-        <div className="flex gap-2">
-          <Button
+        <div className="flex flex-col sm:flex-row gap-2">
+          <button
             onClick={performSystemDiagnosis}
             disabled={isPerformingDiagnosis}
-            variant="outline"
+            className="w-full sm:w-auto min-h-[40px] px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm active:opacity-90 disabled:opacity-60"
           >
             {isPerformingDiagnosis ? (
-              <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+              <RefreshCw className="h-4 w-4 animate-spin mr-2 inline" />
             ) : (
-              <Activity className="h-4 w-4 mr-2" />
+              <Activity className="h-4 w-4 mr-2 inline" />
             )}
             システム診断
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={() => setAutoRecoveryEnabled(!autoRecoveryEnabled)}
-            variant={autoRecoveryEnabled ? 'default' : 'outline'}
+            className={`w-full sm:w-auto min-h-[40px] px-4 py-2 rounded-lg text-sm active:opacity-90 ${
+              autoRecoveryEnabled
+                ? 'bg-indigo-600 text-white'
+                : 'border border-gray-300 text-gray-700'
+            }`}
           >
-            <Zap className="h-4 w-4 mr-2" />
+            <Zap className="h-4 w-4 mr-2 inline" />
             自動復旧 {autoRecoveryEnabled ? 'ON' : 'OFF'}
-          </Button>
-          <Button onClick={generateTestError} disabled={isGeneratingTestError} variant="outline">
+          </button>
+          <button
+            onClick={generateTestError}
+            disabled={isGeneratingTestError}
+            className="w-full sm:w-auto min-h-[40px] px-4 py-2 rounded-lg bg-rose-600 text-white text-sm active:opacity-90 disabled:opacity-60"
+          >
             {isGeneratingTestError ? (
-              <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+              <RefreshCw className="h-4 w-4 animate-spin mr-2 inline" />
             ) : (
-              <AlertTriangle className="h-4 w-4 mr-2" />
+              <AlertTriangle className="h-4 w-4 mr-2 inline" />
             )}
             テストエラー生成
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* メインメトリクス */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">総エラー数</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metrics.totalErrors}</div>
-            <p className="text-xs text-muted-foreground">
-              クリティカル: {metrics.criticalErrors}件
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">復旧成功数</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{metrics.recoveredErrors}</div>
-            <p className="text-xs text-muted-foreground">
-              リアルタイム: {metrics.realtimeErrors}件/分
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">復旧率</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metrics.recoveryRate.toFixed(1)}%</div>
-            <Progress value={metrics.recoveryRate} className="mt-2" />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">最終復旧</CardTitle>
-            <RefreshCw className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm font-medium">{formatLastRecovery(metrics.lastRecovery)}</div>
-            <p className="text-xs text-muted-foreground">
-              自動復旧システム {autoRecoveryEnabled ? '有効' : '無効'}
-            </p>
-          </CardContent>
-        </Card>
+      {/* メインメトリクス - モバイル最適化 */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="bg-white rounded-xl shadow-sm border p-3 text-center">
+          <AlertTriangle className="h-5 w-5 text-red-500 mx-auto mb-1" />
+          <p className="text-xs text-gray-500">総エラー数</p>
+          <p className="text-lg font-bold">{metrics.totalErrors}</p>
+          <p className="text-xs text-gray-600">クリティカル: {metrics.criticalErrors}件</p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border p-3 text-center">
+          <CheckCircle className="h-5 w-5 text-green-500 mx-auto mb-1" />
+          <p className="text-xs text-gray-500">復旧成功数</p>
+          <p className="text-lg font-bold text-green-600">{metrics.recoveredErrors}</p>
+          <p className="text-xs text-gray-600">リアルタイム: {metrics.realtimeErrors}件/分</p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border p-3 text-center">
+          <Activity className="h-5 w-5 text-blue-500 mx-auto mb-1" />
+          <p className="text-xs text-gray-500">復旧率</p>
+          <p className="text-lg font-bold">{metrics.recoveryRate.toFixed(1)}%</p>
+          <Progress value={metrics.recoveryRate} className="mt-1 h-1" />
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border p-3 text-center">
+          <RefreshCw className="h-5 w-5 text-purple-500 mx-auto mb-1" />
+          <p className="text-xs text-gray-500">最終復旧</p>
+          <p className="text-xs font-medium break-words">
+            {formatLastRecovery(metrics.lastRecovery)}
+          </p>
+          <p className="text-xs text-gray-600">自動復旧 {autoRecoveryEnabled ? '有効' : '無効'}</p>
+        </div>
       </div>
 
-      {/* タブコンテンツ */}
+      {/* タブコンテンツ - モバイル最適化 */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">概要</TabsTrigger>
-          <TabsTrigger value="health">システム状態</TabsTrigger>
-          <TabsTrigger value="recovery">手動復旧</TabsTrigger>
-          <TabsTrigger value="analytics">分析</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+          <TabsTrigger value="overview" className="text-xs">
+            概要
+          </TabsTrigger>
+          <TabsTrigger value="health" className="text-xs">
+            システム状態
+          </TabsTrigger>
+          <TabsTrigger value="recovery" className="text-xs">
+            手動復旧
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="text-xs">
+            分析
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -436,126 +433,98 @@ export const ErrorMonitoringDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="health" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">サーバー</CardTitle>
-                <Server className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  {getHealthIcon(metrics.systemHealth.server)}
-                  {getHealthBadge(metrics.systemHealth.server)}
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">API応答性とパフォーマンス</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">WebSocket</CardTitle>
-                <Wifi className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  {getHealthIcon(metrics.systemHealth.websocket)}
-                  {getHealthBadge(metrics.systemHealth.websocket)}
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">リアルタイム通信状態</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">データベース</CardTitle>
-                <Database className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  {getHealthIcon(metrics.systemHealth.database)}
-                  {getHealthBadge(metrics.systemHealth.database)}
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">MongoDB接続状態</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">認証</CardTitle>
-                <Shield className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  {getHealthIcon(metrics.systemHealth.auth)}
-                  {getHealthBadge(metrics.systemHealth.auth)}
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">認証システム状態</p>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="bg-white rounded-xl shadow-sm border p-3 text-center">
+              <Server className="h-5 w-5 text-blue-500 mx-auto mb-1" />
+              <p className="text-xs text-gray-500">サーバー</p>
+              <div className="flex items-center justify-center gap-1 mt-1">
+                {getHealthIcon(metrics.systemHealth.server)}
+                {getHealthBadge(metrics.systemHealth.server)}
+              </div>
+              <p className="text-xs text-gray-600 mt-1 break-words">API応答性とパフォーマンス</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border p-3 text-center">
+              <Wifi className="h-5 w-5 text-green-500 mx-auto mb-1" />
+              <p className="text-xs text-gray-500">WebSocket</p>
+              <div className="flex items-center justify-center gap-1 mt-1">
+                {getHealthIcon(metrics.systemHealth.websocket)}
+                {getHealthBadge(metrics.systemHealth.websocket)}
+              </div>
+              <p className="text-xs text-gray-600 mt-1 break-words">リアルタイム通信状態</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border p-3 text-center">
+              <Database className="h-5 w-5 text-purple-500 mx-auto mb-1" />
+              <p className="text-xs text-gray-500">データベース</p>
+              <div className="flex items-center justify-center gap-1 mt-1">
+                {getHealthIcon(metrics.systemHealth.database)}
+                {getHealthBadge(metrics.systemHealth.database)}
+              </div>
+              <p className="text-xs text-gray-600 mt-1 break-words">MongoDB接続状態</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border p-3 text-center">
+              <Shield className="h-5 w-5 text-orange-500 mx-auto mb-1" />
+              <p className="text-xs text-gray-500">認証</p>
+              <div className="flex items-center justify-center gap-1 mt-1">
+                {getHealthIcon(metrics.systemHealth.auth)}
+                {getHealthBadge(metrics.systemHealth.auth)}
+              </div>
+              <p className="text-xs text-gray-600 mt-1 break-words">認証システム状態</p>
+            </div>
           </div>
         </TabsContent>
 
         <TabsContent value="recovery" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>手動復旧コントロール</CardTitle>
-              <CardDescription>各種エラーの手動復旧を実行できます</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-3">
-                  <Button
-                    onClick={() => performManualRecovery('api_500')}
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <Server className="h-4 w-4 mr-2" />
-                    API 500エラー復旧
-                  </Button>
+          <div className="bg-white rounded-xl shadow-sm border p-4">
+            <h3 className="text-sm font-bold text-gray-800 mb-2">手動復旧コントロール</h3>
+            <p className="text-xs text-gray-600 mb-4 break-words">
+              各種エラーの手動復旧を実行できます
+            </p>
 
-                  <Button
-                    onClick={() => performManualRecovery('websocket_port')}
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <Wifi className="h-4 w-4 mr-2" />
-                    WebSocketポート復旧
-                  </Button>
-                </div>
+            <div className="grid grid-cols-1 gap-2">
+              <button
+                onClick={() => performManualRecovery('api_500')}
+                className="w-full min-h-[40px] px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm active:opacity-90 flex items-center justify-center gap-2"
+              >
+                <Server className="h-4 w-4" />
+                API 500エラー復旧
+              </button>
 
-                <div className="space-y-3">
-                  <Button
-                    onClick={() => performManualRecovery('auth_failure')}
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <Shield className="h-4 w-4 mr-2" />
-                    認証エラー復旧
-                  </Button>
+              <button
+                onClick={() => performManualRecovery('websocket_port')}
+                className="w-full min-h-[40px] px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm active:opacity-90 flex items-center justify-center gap-2"
+              >
+                <Wifi className="h-4 w-4" />
+                WebSocketポート復旧
+              </button>
 
-                  <Button
-                    onClick={() => performManualRecovery('database_error')}
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <Database className="h-4 w-4 mr-2" />
-                    データベース復旧
-                  </Button>
-                </div>
+              <button
+                onClick={() => performManualRecovery('auth_failure')}
+                className="w-full min-h-[40px] px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm active:opacity-90 flex items-center justify-center gap-2"
+              >
+                <Shield className="h-4 w-4" />
+                認証エラー復旧
+              </button>
+
+              <button
+                onClick={() => performManualRecovery('database_error')}
+                className="w-full min-h-[40px] px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm active:opacity-90 flex items-center justify-center gap-2"
+              >
+                <Database className="h-4 w-4" />
+                データベース復旧
+              </button>
+            </div>
+
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Settings className="h-4 w-4" />
+                <span className="text-sm font-medium">自動復旧設定</span>
               </div>
-
-              <div className="mt-6 p-4 bg-muted rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Settings className="h-4 w-4" />
-                  <span className="font-medium">自動復旧設定</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  自動復旧機能が有効な場合、検出されたエラーは自動的に復旧処理が実行されます。
-                  手動復旧は自動復旧が失敗した場合や、特定のエラーを即座に解決したい場合に使用してください。
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+              <p className="text-xs text-gray-600 break-words">
+                自動復旧機能が有効な場合、検出されたエラーは自動的に復旧処理が実行されます。
+                手動復旧は自動復旧が失敗した場合や、特定のエラーを即座に解決したい場合に使用してください。
+              </p>
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-4">
