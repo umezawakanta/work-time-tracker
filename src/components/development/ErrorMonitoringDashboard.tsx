@@ -98,7 +98,7 @@ export const ErrorMonitoringDashboard: React.FC = () => {
       const stats = errorRecoveryService.getRecoveryStats();
       const diagnosis = await errorRecoveryService.performSelfDiagnosis().catch((e) => {
         // 401等は上位でハンドリング - バックオフを増加
-        setUpdateBackoff(prev => Math.min(prev * 1.5, 60000)); // 最大60秒
+        setUpdateBackoff((prev) => Math.min(prev * 1.5, 60000)); // 最大60秒
         return { server: false, websocket: false, database: false, auth: false } as any;
       });
 
@@ -132,13 +132,13 @@ export const ErrorMonitoringDashboard: React.FC = () => {
         criticalErrors,
         systemHealth: diagnosis,
       });
-      
+
       // 成功時はバックオフをリセット
       setUpdateBackoff(10000);
     } catch (error) {
       console.error('メトリクス更新エラー:', error);
       // エラー時はバックオフを増加
-      setUpdateBackoff(prev => Math.min(prev * 1.5, 60000));
+      setUpdateBackoff((prev) => Math.min(prev * 1.5, 60000));
     }
   };
 

@@ -575,7 +575,7 @@ export class ErrorRecoveryService {
             sessionStorage.getItem('access_token') ||
             sessionStorage.getItem('accessToken'))) ||
         '';
-      
+
       if (token) {
         const headers: Record<string, string> = {};
         headers['Authorization'] = `Bearer ${token}`;
