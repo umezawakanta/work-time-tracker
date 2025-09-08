@@ -1,5 +1,5 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import { FinancialDataService } from '../../src/database/services/FinancialDataService';
+const { VercelRequest, VercelResponse } = require('@vercel/node');
+const { FinancialDataService } = require('../../src/database/services/FinancialDataService');
 
 // 銀行口座の型定義
 interface BankAccount {

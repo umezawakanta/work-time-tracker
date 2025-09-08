@@ -1,6 +1,6 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import { FinancialDataService } from '../../src/database/services/FinancialDataService';
-import { Transaction } from '../../src/types/transaction';
+const { VercelRequest, VercelResponse } = require('@vercel/node');
+const { FinancialDataService } = require('../../src/database/services/FinancialDataService');
+const { Transaction } = require('../../src/types/transaction');
 
 // データベースサービス
 const financialService = FinancialDataService.getInstance();

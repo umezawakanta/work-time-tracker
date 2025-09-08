@@ -1,5 +1,5 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import { loadVercelData, saveVercelDataImmediately } from '../../_lib/vercel-storage';
+const { VercelRequest, VercelResponse } = require('@vercel/node');
+const { loadVercelData, saveVercelDataImmediately } = require('../../_lib/vercel-storage');
 
 interface DailyTask {
   id: string;
