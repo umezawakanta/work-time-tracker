@@ -165,6 +165,7 @@ const getReleaseDateStatus = (targetRelease?: string, status?: string) => {
 export const AdminFeaturesList: React.FC = () => {
   const [features, setFeatures] = useState<AdminFeature[]>([]);
   const [summary, setSummary] = useState<AdminFeaturesResponse['summary'] | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -182,6 +183,7 @@ export const AdminFeaturesList: React.FC = () => {
       if (response.data.success) {
         setFeatures(response.data.features);
         setSummary(response.data.summary);
+        setLastUpdated(response.data.lastUpdated);
       } else {
         toast.error('機能一覧の取得に失敗しました');
       }
@@ -440,8 +442,7 @@ export const AdminFeaturesList: React.FC = () => {
         <CardHeader>
           <CardTitle>機能一覧 ({filteredFeatures.length}件)</CardTitle>
           <CardDescription>
-            最終更新:{' '}
-            {summary?.lastUpdated ? new Date(summary.lastUpdated).toLocaleString() : '不明'}
+            最終更新: {lastUpdated ? new Date(lastUpdated).toLocaleString() : '不明'}
           </CardDescription>
         </CardHeader>
         <CardContent>
