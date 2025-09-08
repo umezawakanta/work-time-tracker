@@ -581,38 +581,40 @@ const AdminDashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchMetrics();
-    fetchAnalyticsSummary(pageviewWindow);
-    fetchPageviewsTrend(pageviewWindow);
-    fetchTopPages(pageviewWindow);
-    fetchUsersTrend(pageviewWindow);
-    fetchRevenueTrend(6);
-    fetchPaidUsersTrend(6);
-    fetchRevenueSummary();
-    fetchAssessmentsSummary();
-    fetchLearningSummary();
-    fetchLiveMetrics();
-    fetchActiveUsers(24);
-    fetchRetention30d();
-    fetchErrorReports(10);
+    // 初期データ読み込み
+    const loadInitialData = async () => {
+      try {
+        await Promise.all([
+          fetchMetrics(),
+          fetchAnalyticsSummary(pageviewWindow),
+          fetchPageviewsTrend(pageviewWindow),
+          fetchTopPages(pageviewWindow),
+          fetchUsersTrend(pageviewWindow),
+          fetchRevenueTrend(6),
+          fetchPaidUsersTrend(6),
+          fetchRevenueSummary(),
+          fetchAssessmentsSummary(),
+          fetchLearningSummary(),
+          fetchLiveMetrics(),
+          fetchActiveUsers(24),
+          fetchRetention30d(),
+          fetchErrorReports(10),
+        ]);
+      } catch (error) {
+        console.error('Error loading initial data:', error);
+      }
+    };
 
-    // 30秒ごとに自動更新
+    loadInitialData();
+
+    // 60秒ごとに自動更新（頻度を下げてレイアウトの安定性を向上）
     const interval = setInterval(() => {
+      // 重要なメトリクスのみを更新
       fetchMetrics();
-      fetchAnalyticsSummary(pageviewWindow);
-      fetchPageviewsTrend(pageviewWindow);
-      fetchTopPages(pageviewWindow);
-      fetchUsersTrend(pageviewWindow);
-      fetchRevenueTrend(6);
-      fetchPaidUsersTrend(6);
-      fetchRevenueSummary();
-      fetchAssessmentsSummary();
-      fetchLearningSummary();
       fetchLiveMetrics();
       fetchActiveUsers(24);
-      fetchRetention30d();
-      fetchErrorReports(10);
-    }, 30000);
+    }, 60000);
+
     return () => clearInterval(interval);
   }, [pageviewWindow]);
 
@@ -659,13 +661,13 @@ const AdminDashboard: React.FC = () => {
           }
           
           .admin-dashboard .container {
-            max-width: 100%;
-            padding: 0.5rem;
-            margin: 0;
+            max-width: 100% !important;
+            padding: 0.5rem !important;
+            margin: 0 !important;
             position: relative;
             z-index: 1;
-            overflow-x: hidden;
-            box-sizing: border-box;
+            overflow-x: hidden !important;
+            box-sizing: border-box !important;
           }
           
           .admin-dashboard .admin-header {
@@ -677,8 +679,8 @@ const AdminDashboard: React.FC = () => {
             box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
             position: relative;
             overflow: hidden;
-            width: calc(100% + 1rem);
-            box-sizing: border-box;
+            width: calc(100% + 1rem) !important;
+            box-sizing: border-box !important;
           }
           
           .admin-dashboard .admin-header::before {
@@ -765,26 +767,27 @@ const AdminDashboard: React.FC = () => {
             margin-bottom: 1rem;
             overflow: hidden;
             border: 1px solid rgba(0, 0, 0, 0.05);
-            width: 100%;
-            box-sizing: border-box;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            max-width: 100% !important;
           }
           
           .admin-dashboard .tabs-list {
-            display: flex;
-            overflow-x: auto;
+            display: flex !important;
+            overflow-x: auto !important;
             scrollbar-width: none;
             -ms-overflow-style: none;
-            padding: 0.375rem;
+            padding: 0.375rem !important;
             background: #f8fafc;
             border-radius: 12px;
-            margin: 0.375rem;
-            gap: 0.125rem;
+            margin: 0.375rem !important;
+            gap: 0.125rem !important;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            width: calc(100% - 0.75rem);
-            box-sizing: border-box;
-            min-width: 0;
-            max-width: 100%;
+            width: calc(100% - 0.75rem) !important;
+            box-sizing: border-box !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
           }
           
           .admin-dashboard .tabs-list::-webkit-scrollbar {
@@ -792,26 +795,26 @@ const AdminDashboard: React.FC = () => {
           }
           
           .admin-dashboard .tabs-trigger {
-            flex-shrink: 0;
-            padding: 0.5rem 0.625rem;
+            flex-shrink: 0 !important;
+            padding: 0.5rem 0.625rem !important;
             border-radius: 8px;
-            font-size: 0.65rem;
+            font-size: 0.65rem !important;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            white-space: nowrap;
+            white-space: nowrap !important;
             background: transparent;
             border: none;
             color: #6b7280;
             cursor: pointer;
             position: relative;
-            min-height: 2rem;
-            display: flex;
+            min-height: 2rem !important;
+            display: flex !important;
             align-items: center;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
-            max-width: 80px;
-            text-overflow: ellipsis;
-            overflow: hidden;
+            max-width: 80px !important;
+            text-overflow: ellipsis !important;
+            overflow: hidden !important;
           }
           
           .admin-dashboard .tabs-trigger[data-state="active"] {
@@ -943,28 +946,28 @@ const AdminDashboard: React.FC = () => {
           }
           
           .admin-dashboard .badge-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.125rem;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 0.125rem !important;
             margin-top: 0.75rem;
-            width: 100%;
-            box-sizing: border-box;
-            overflow-x: hidden;
-            max-width: 100%;
-            justify-content: flex-start;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+            justify-content: flex-start !important;
           }
           
           .admin-dashboard .badge {
-            padding: 0.125rem 0.375rem;
+            padding: 0.125rem 0.375rem !important;
             border-radius: 8px;
-            font-size: 0.6rem;
+            font-size: 0.6rem !important;
             font-weight: 600;
             transition: all 0.3s ease;
             border: 1px solid transparent;
-            flex-shrink: 0;
-            max-width: 100%;
-            word-break: break-word;
-            line-height: 1.2;
+            flex-shrink: 0 !important;
+            max-width: 100% !important;
+            word-break: break-word !important;
+            line-height: 1.2 !important;
           }
           
           .admin-dashboard .badge[data-variant="default"] {
@@ -1024,52 +1027,52 @@ const AdminDashboard: React.FC = () => {
           /* タブレット対応 */
           @media (min-width: 640px) {
             .admin-dashboard .container {
-              padding: 1rem;
+              padding: 1rem !important;
             }
             
             .admin-dashboard .admin-header {
-              margin: -1rem -1rem 1.5rem;
-              padding: 1.75rem 1.5rem;
+              margin: -1rem -1rem 1.5rem !important;
+              padding: 1.75rem 1.5rem !important;
             }
             
             .admin-dashboard .admin-title {
-              font-size: 2rem;
+              font-size: 2rem !important;
             }
             
             .admin-dashboard .metrics-grid {
-              grid-template-columns: repeat(2, 1fr);
+              grid-template-columns: repeat(2, 1fr) !important;
             }
             
             .admin-dashboard .card-content {
-              padding: 1.5rem;
+              padding: 1.5rem !important;
             }
             
             .admin-dashboard .tabs-trigger {
-              max-width: 120px;
-              font-size: 0.75rem;
-              padding: 0.625rem 0.875rem;
+              max-width: 120px !important;
+              font-size: 0.75rem !important;
+              padding: 0.625rem 0.875rem !important;
             }
           }
           
           /* デスクトップ対応 */
           @media (min-width: 1024px) {
             .admin-dashboard .metrics-grid {
-              grid-template-columns: repeat(4, 1fr);
+              grid-template-columns: repeat(4, 1fr) !important;
             }
             
             .admin-dashboard .admin-title {
-              font-size: 2.25rem;
+              font-size: 2.25rem !important;
             }
             
             .admin-dashboard .tabs-list {
-              padding: 0.5rem;
-              margin: 0.5rem;
+              padding: 0.5rem !important;
+              margin: 0.5rem !important;
             }
             
             .admin-dashboard .tabs-trigger {
-              padding: 0.75rem 1rem;
-              font-size: 0.8rem;
-              max-width: 140px;
+              padding: 0.75rem 1rem !important;
+              font-size: 0.8rem !important;
+              max-width: 140px !important;
             }
           }
         `}
