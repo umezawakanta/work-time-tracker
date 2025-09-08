@@ -639,16 +639,17 @@ const AdminDashboard: React.FC = () => {
         badgeContainer.style.width = '100%';
       }
 
-      // タブトリガーの幅を強制的に制限
+      // タブトリガーの幅を強制的に固定
       const tabTriggers = document.querySelectorAll(
         '.admin-dashboard .tabs-trigger'
       ) as NodeListOf<HTMLElement>;
       tabTriggers.forEach((trigger) => {
-        trigger.style.maxWidth = '80px';
-        trigger.style.minWidth = '60px';
+        trigger.style.width = '70px';
         trigger.style.flexShrink = '0';
+        trigger.style.flexGrow = '0';
         trigger.style.overflow = 'hidden';
         trigger.style.textOverflow = 'ellipsis';
+        trigger.style.boxSizing = 'border-box';
       });
 
       // バッジの幅を強制的に制限
@@ -660,6 +661,43 @@ const AdminDashboard: React.FC = () => {
         badge.style.overflow = 'hidden';
         badge.style.textOverflow = 'ellipsis';
         badge.style.whiteSpace = 'nowrap';
+      });
+
+      // ユーザー管理テーブルの幅を強制的に制限
+      const userTableContainer = document.querySelector(
+        '.admin-dashboard .user-table-container'
+      ) as HTMLElement;
+      if (userTableContainer) {
+        userTableContainer.style.maxWidth = '100%';
+        userTableContainer.style.overflowX = 'auto';
+        userTableContainer.style.width = '100%';
+      }
+
+      const userTable = document.querySelector('.admin-dashboard .user-table') as HTMLElement;
+      if (userTable) {
+        userTable.style.width = '100%';
+        userTable.style.maxWidth = '100%';
+        userTable.style.tableLayout = 'fixed';
+      }
+
+      // テーブルセルの幅を制限
+      const tableCells = document.querySelectorAll(
+        '.admin-dashboard .user-table th, .admin-dashboard .user-table td'
+      ) as NodeListOf<HTMLElement>;
+      tableCells.forEach((cell, index) => {
+        if (index % 3 === 0) {
+          // EMAIL列
+          cell.style.maxWidth = '150px';
+        } else if (index % 3 === 1) {
+          // NAME列
+          cell.style.maxWidth = '120px';
+        } else {
+          // ROLE列
+          cell.style.maxWidth = '80px';
+        }
+        cell.style.overflow = 'hidden';
+        cell.style.textOverflow = 'ellipsis';
+        cell.style.whiteSpace = 'nowrap';
       });
     };
 
@@ -877,9 +915,10 @@ const AdminDashboard: React.FC = () => {
           .admin-dashboard .tabs-trigger {
             flex-shrink: 0 !important;
             flex-grow: 0 !important;
-            padding: 0.5rem 0.625rem !important;
+            width: 70px !important;
+            padding: 0.375rem 0.5rem !important;
             border-radius: 8px !important;
-            font-size: 0.65rem !important;
+            font-size: 0.6rem !important;
             font-weight: 600 !important;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             white-space: nowrap !important;
@@ -888,16 +927,15 @@ const AdminDashboard: React.FC = () => {
             color: #6b7280 !important;
             cursor: pointer !important;
             position: relative !important;
-            min-height: 2rem !important;
+            min-height: 1.75rem !important;
             display: flex !important;
             align-items: center !important;
             touch-action: manipulation !important;
             -webkit-tap-highlight-color: transparent !important;
-            max-width: 80px !important;
-            min-width: 60px !important;
             text-overflow: ellipsis !important;
             overflow: hidden !important;
             text-align: center !important;
+            box-sizing: border-box !important;
           }
           
           .admin-dashboard .tabs-trigger[data-state="active"] {
@@ -905,11 +943,17 @@ const AdminDashboard: React.FC = () => {
             color: white;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
             transform: translateY(-1px);
+            width: 70px !important;
+            flex-shrink: 0 !important;
+            flex-grow: 0 !important;
           }
           
           .admin-dashboard .tabs-trigger:hover:not([data-state="active"]) {
             background: #e2e8f0;
             color: #374151;
+            width: 70px !important;
+            flex-shrink: 0 !important;
+            flex-grow: 0 !important;
           }
           
           .admin-dashboard .card {
@@ -1116,6 +1160,42 @@ const AdminDashboard: React.FC = () => {
             line-height: 1.4;
           }
           
+          /* ユーザー管理テーブルの横はみ出し防止 */
+          .admin-dashboard .user-table-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: auto !important;
+            box-sizing: border-box !important;
+          }
+          
+          .admin-dashboard .user-table {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: fixed !important;
+            border-collapse: collapse !important;
+          }
+          
+          .admin-dashboard .user-table th,
+          .admin-dashboard .user-table td {
+            padding: 0.5rem 0.25rem !important;
+            font-size: 0.7rem !important;
+            text-align: left !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            max-width: 120px !important;
+          }
+          
+          .admin-dashboard .user-table th:first-child,
+          .admin-dashboard .user-table td:first-child {
+            max-width: 150px !important;
+          }
+          
+          .admin-dashboard .user-table th:last-child,
+          .admin-dashboard .user-table td:last-child {
+            max-width: 80px !important;
+          }
+          
           /* タブレット対応 */
           @media (min-width: 640px) {
             .admin-dashboard .container {
@@ -1140,9 +1220,11 @@ const AdminDashboard: React.FC = () => {
             }
             
             .admin-dashboard .tabs-trigger {
-              max-width: 120px !important;
-              font-size: 0.75rem !important;
-              padding: 0.625rem 0.875rem !important;
+              width: 100px !important;
+              font-size: 0.7rem !important;
+              padding: 0.5rem 0.75rem !important;
+              flex-shrink: 0 !important;
+              flex-grow: 0 !important;
             }
           }
           
@@ -1164,7 +1246,9 @@ const AdminDashboard: React.FC = () => {
             .admin-dashboard .tabs-trigger {
               padding: 0.75rem 1rem !important;
               font-size: 0.8rem !important;
-              max-width: 140px !important;
+              width: 120px !important;
+              flex-shrink: 0 !important;
+              flex-grow: 0 !important;
             }
           }
         `}
@@ -1249,18 +1333,22 @@ const AdminDashboard: React.FC = () => {
                 className="tabs-list"
                 style={{
                   maxWidth: '100%',
-                  overflowX: 'hidden',
+                  overflowX: 'auto',
                   width: 'calc(100% - 0.75rem)',
                   display: 'flex',
                   flexWrap: 'nowrap',
                   gap: '0.125rem',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
                 }}
               >
                 {isFeatureAccessible('/admin/overview').allowed && (
                   <TabsTrigger
                     value="overview"
                     className="tabs-trigger"
-                    style={{ maxWidth: '80px', minWidth: '60px', flexShrink: 0 }}
+                    style={{ width: '70px', flexShrink: 0, flexGrow: 0 }}
                   >
                     概要
                   </TabsTrigger>
@@ -1269,7 +1357,7 @@ const AdminDashboard: React.FC = () => {
                   <TabsTrigger
                     value="users"
                     className="tabs-trigger"
-                    style={{ maxWidth: '80px', minWidth: '60px', flexShrink: 0 }}
+                    style={{ width: '70px', flexShrink: 0, flexGrow: 0 }}
                   >
                     ユーザー
                   </TabsTrigger>
@@ -1278,7 +1366,7 @@ const AdminDashboard: React.FC = () => {
                   <TabsTrigger
                     value="actions"
                     className="tabs-trigger"
-                    style={{ maxWidth: '80px', minWidth: '60px', flexShrink: 0 }}
+                    style={{ width: '70px', flexShrink: 0, flexGrow: 0 }}
                   >
                     優先アクション
                   </TabsTrigger>
@@ -1287,7 +1375,7 @@ const AdminDashboard: React.FC = () => {
                   <TabsTrigger
                     value="analytics"
                     className="tabs-trigger"
-                    style={{ maxWidth: '80px', minWidth: '60px', flexShrink: 0 }}
+                    style={{ width: '70px', flexShrink: 0, flexGrow: 0 }}
                   >
                     分析
                   </TabsTrigger>
@@ -1296,7 +1384,7 @@ const AdminDashboard: React.FC = () => {
                   <TabsTrigger
                     value="errors"
                     className="tabs-trigger"
-                    style={{ maxWidth: '80px', minWidth: '60px', flexShrink: 0 }}
+                    style={{ width: '70px', flexShrink: 0, flexGrow: 0 }}
                   >
                     エラー監視
                   </TabsTrigger>
@@ -1305,7 +1393,7 @@ const AdminDashboard: React.FC = () => {
                   <TabsTrigger
                     value="bugs"
                     className="tabs-trigger"
-                    style={{ maxWidth: '80px', minWidth: '60px', flexShrink: 0 }}
+                    style={{ width: '70px', flexShrink: 0, flexGrow: 0 }}
                   >
                     不具合
                   </TabsTrigger>
@@ -1314,7 +1402,7 @@ const AdminDashboard: React.FC = () => {
                   <TabsTrigger
                     value="features"
                     className="tabs-trigger"
-                    style={{ maxWidth: '80px', minWidth: '60px', flexShrink: 0 }}
+                    style={{ width: '70px', flexShrink: 0, flexGrow: 0 }}
                   >
                     機能一覧
                   </TabsTrigger>
@@ -1323,7 +1411,7 @@ const AdminDashboard: React.FC = () => {
                   <TabsTrigger
                     value="settings"
                     className="tabs-trigger"
-                    style={{ maxWidth: '80px', minWidth: '60px', flexShrink: 0 }}
+                    style={{ width: '70px', flexShrink: 0, flexGrow: 0 }}
                   >
                     設定
                   </TabsTrigger>
@@ -1332,7 +1420,7 @@ const AdminDashboard: React.FC = () => {
                   <TabsTrigger
                     value="assessments"
                     className="tabs-trigger"
-                    style={{ maxWidth: '80px', minWidth: '60px', flexShrink: 0 }}
+                    style={{ width: '70px', flexShrink: 0, flexGrow: 0 }}
                   >
                     診断集計
                   </TabsTrigger>
@@ -1341,7 +1429,7 @@ const AdminDashboard: React.FC = () => {
                   <TabsTrigger
                     value="learning"
                     className="tabs-trigger"
-                    style={{ maxWidth: '80px', minWidth: '60px', flexShrink: 0 }}
+                    style={{ width: '70px', flexShrink: 0, flexGrow: 0 }}
                   >
                     学習進捗
                   </TabsTrigger>
