@@ -640,6 +640,9 @@ const AdminDashboard: React.FC = () => {
             min-height: 100vh;
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             position: relative;
+            width: 100%;
+            overflow-x: hidden;
+            box-sizing: border-box;
           }
           
           .admin-dashboard::before {
@@ -661,6 +664,8 @@ const AdminDashboard: React.FC = () => {
             margin: 0;
             position: relative;
             z-index: 1;
+            overflow-x: hidden;
+            box-sizing: border-box;
           }
           
           .admin-dashboard .admin-header {
@@ -672,6 +677,8 @@ const AdminDashboard: React.FC = () => {
             box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
             position: relative;
             overflow: hidden;
+            width: calc(100% + 1rem);
+            box-sizing: border-box;
           }
           
           .admin-dashboard .admin-header::before {
@@ -758,6 +765,8 @@ const AdminDashboard: React.FC = () => {
             margin-bottom: 1rem;
             overflow: hidden;
             border: 1px solid rgba(0, 0, 0, 0.05);
+            width: 100%;
+            box-sizing: border-box;
           }
           
           .admin-dashboard .tabs-list {
@@ -772,6 +781,9 @@ const AdminDashboard: React.FC = () => {
             gap: 0.375rem;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
+            width: calc(100% - 1rem);
+            box-sizing: border-box;
+            min-width: 0;
           }
           
           .admin-dashboard .tabs-list::-webkit-scrollbar {
@@ -780,9 +792,9 @@ const AdminDashboard: React.FC = () => {
           
           .admin-dashboard .tabs-trigger {
             flex-shrink: 0;
-            padding: 0.75rem 1rem;
+            padding: 0.75rem 0.875rem;
             border-radius: 12px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
@@ -796,6 +808,9 @@ const AdminDashboard: React.FC = () => {
             align-items: center;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
+            max-width: 120px;
+            text-overflow: ellipsis;
+            overflow: hidden;
           }
           
           .admin-dashboard .tabs-trigger[data-state="active"] {
@@ -819,6 +834,9 @@ const AdminDashboard: React.FC = () => {
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             will-change: transform;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
           }
           
           .admin-dashboard .card:hover {
@@ -849,12 +867,17 @@ const AdminDashboard: React.FC = () => {
           
           .admin-dashboard .card-content {
             padding: 1.25rem;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden;
           }
           
           .admin-dashboard .metrics-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 0.75rem;
+            width: 100%;
+            box-sizing: border-box;
           }
           
           .admin-dashboard .metric-card {
@@ -866,6 +889,9 @@ const AdminDashboard: React.FC = () => {
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             will-change: transform;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
           }
           
           .admin-dashboard .metric-card::before {
@@ -920,6 +946,9 @@ const AdminDashboard: React.FC = () => {
             flex-wrap: wrap;
             gap: 0.375rem;
             margin-top: 0.75rem;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden;
           }
           
           .admin-dashboard .badge {
