@@ -33,6 +33,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+  const [successMessage, setSuccessMessage] = useState<string>('');
   // Offline/test modes are not supported to avoid mock-like behavior
 
   const navigate = useNavigate();
@@ -156,6 +157,7 @@ export default function Login() {
       }
 
       toast.success('ログインに成功しました');
+      setSuccessMessage('ログインに成功しました');
 
       // Save token locally and reflect immediately for API client
       if ((loginResponse as any)?.token) {
@@ -279,12 +281,15 @@ export default function Login() {
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-    // エラーをクリア
+    // エラーと成功メッセージをクリア
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
     if (errors.general) {
       setErrors((prev) => ({ ...prev, general: undefined }));
+    }
+    if (successMessage) {
+      setSuccessMessage('');
     }
   };
 
@@ -816,8 +821,8 @@ export default function Login() {
                   <input
                     type="checkbox"
                     id="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={(e) => handleInputChange('rememberMe', e.target.checked)}
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
                     disabled={isSubmitting}
                   />
                   <label htmlFor="rememberMe">ログイン状態を保持する</label>
