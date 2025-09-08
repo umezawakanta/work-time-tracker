@@ -1,4 +1,4 @@
-const { VercelRequest, VercelResponse } = require('@vercel/node');
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
 interface LiveMetrics {
   activeUsers: number;
