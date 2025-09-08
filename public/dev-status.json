@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2025-08-28T02:25:14.077Z",
+  "generatedAt": "2025-09-08T18:35:59.424Z",
   "totals": {
-    "filesScanned": 1185,
-    "findings": 882,
+    "filesScanned": 1287,
+    "findings": 899,
     "todo": 34,
-    "mock": 432,
-    "wip": 3,
-    "errorHints": 406
+    "mock": 394,
+    "wip": 4,
+    "errorHints": 460
   },
   "flags": {
     "wipRoutes": [],
@@ -67,79 +67,73 @@
     {
       "file": "src/components/analytics/LiveAnalyticsDashboard.tsx",
       "line": 234,
-      "snippet": "// フォールバック: モックデータ（API接続失敗時のみ）",
+      "snippet": "// 本番データのみ使用。失敗時は空データで表示（モック禁止）",
       "kind": "mock"
     },
     {
       "file": "src/components/analytics/TodoAnalytics.tsx",
-      "line": 102,
-      "snippet": "// Redux storeからTODOデータを取得（実際のプロジェクトではここから取得）",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/analytics/TodoAnalytics.tsx",
-      "line": 105,
-      "snippet": "// デモデータ生成（実際の実装では実際のTODOデータを使用）",
-      "kind": "todo"
-    },
-    {
-      "file": "src/components/analytics/TodoAnalyticsDashboard.tsx",
-      "line": 102,
+      "line": 104,
       "snippet": "// Redux storeからTODOデータを取得（実際のプロジェクトではここから取得）",
       "kind": "todo"
     },
     {
       "file": "src/components/analytics/TodoAnalyticsDashboard.tsx",
-      "line": 105,
-      "snippet": "// デモデータ生成（実際の実装では実際のTODOデータを使用）",
+      "line": 103,
+      "snippet": "// Redux storeからTODOデータを取得",
       "kind": "todo"
     },
     {
       "file": "src/components/auth/UnifiedAuthProvider.tsx",
-      "line": 359,
+      "line": 316,
       "snippet": "throw new Error('useUnifiedAuthContext must be used within a UnifiedAuthProvider');",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/BankAccountManager.tsx",
+      "line": 132,
+      "snippet": "throw new Error('Failed to fetch bank data');",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/BankCSVUploader.tsx",
+      "line": 620,
+      "snippet": "throw new Error(errorMessage);",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/BankCSVUploader.tsx",
+      "line": 708,
+      "snippet": "throw new Error(result.message || 'インポートに失敗しました');",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/BankDataUploader.tsx",
+      "line": 79,
+      "snippet": "throw new Error('有効な取引データが見つかりませんでした');",
       "kind": "error"
     },
     {
       "file": "src/components/chart/hooks/useSurveyData.ts",
       "line": 29,
-      "snippet": "// モックデータを定義",
+      "snippet": "// モック生成処理は完全撤廃（APIレスポンスが不正・取得不可の場合でもフォールバック無し）",
       "kind": "mock"
     },
     {
       "file": "src/components/chart/hooks/useSurveyData.ts",
-      "line": 370,
+      "line": 259,
       "snippet": "throw new Error('Invalid survey data structure');",
       "kind": "error"
     },
     {
       "file": "src/components/chart/hooks/useSurveyData.ts",
-      "line": 373,
-      "snippet": "// APIが利用できない場合はモックデータを使用",
+      "line": 262,
+      "snippet": "// APIが利用できない場合でもモックデータは使用しない",
       "kind": "mock"
     },
     {
       "file": "src/components/chart/hooks/useSurveyData.ts",
-      "line": 375,
-      "snippet": "console.warn('API error, falling back to mock data for political trends');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/components/chart/hooks/useSurveyData.ts",
-      "line": 385,
-      "snippet": "console.warn('API unavailable, using mock data for political trends');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/components/chart/hooks/useSurveyData.ts",
-      "line": 399,
-      "snippet": "// エラー時はモックデータにフォールバック",
-      "kind": "mock"
-    },
-    {
-      "file": "src/components/chart/hooks/useSurveyData.ts",
-      "line": 400,
-      "snippet": "console.warn('Falling back to mock data due to error');",
+      "line": 272,
+      "snippet": "// エラー時でもモックデータにはフォールバックしない",
       "kind": "mock"
     },
     {
@@ -449,6 +443,12 @@
       "kind": "error"
     },
     {
+      "file": "src/components/development/ErrorMonitoringDashboard.tsx",
+      "line": 187,
+      "snippet": "throw new Error('Failed to generate test error');",
+      "kind": "error"
+    },
+    {
       "file": "src/components/features/wbs/TaskEditDialog.tsx",
       "line": 283,
       "snippet": "throw new Error('実行がキャンセルされました');",
@@ -510,19 +510,19 @@
     },
     {
       "file": "src/components/layout/Layout.tsx",
-      "line": 461,
+      "line": 451,
       "snippet": "description: '未実装・モック・WIP自動検出',",
       "kind": "mock"
     },
     {
       "file": "src/components/layout/Layout.tsx",
-      "line": 839,
+      "line": 868,
       "snippet": "// flags.json 読み込み（WIP/Mock バナー）",
       "kind": "wip"
     },
     {
       "file": "src/components/layout/Layout.tsx",
-      "line": 839,
+      "line": 868,
       "snippet": "// flags.json 読み込み（WIP/Mock バナー）",
       "kind": "mock"
     },
@@ -624,7 +624,7 @@
     },
     {
       "file": "src/components/settings/NotificationSettings.tsx",
-      "line": 95,
+      "line": 97,
       "snippet": "throw new Error(data.message);",
       "kind": "error"
     },
@@ -633,6 +633,24 @@
       "line": 141,
       "snippet": "// モックの共有統計データ",
       "kind": "mock"
+    },
+    {
+      "file": "src/components/social/SocialSupportDashboard.tsx",
+      "line": 222,
+      "snippet": "if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/social/SocialSupportDashboard.tsx",
+      "line": 236,
+      "snippet": "if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/social/SocialSupportDashboard.tsx",
+      "line": 260,
+      "snippet": "if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');",
+      "kind": "error"
     },
     {
       "file": "src/components/subscription/EnhancedSubscriptionForm.tsx",
@@ -689,10 +707,70 @@
       "kind": "error"
     },
     {
+      "file": "src/components/timeTracking/RealtimeClockDashboard.tsx",
+      "line": 147,
+      "snippet": "if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/timeTracking/RealtimeClockDashboard.tsx",
+      "line": 168,
+      "snippet": "if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/timeTracking/RealtimeClockDashboard.tsx",
+      "line": 182,
+      "snippet": "if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/timeTracking/RealtimeClockDashboard.tsx",
+      "line": 196,
+      "snippet": "if (!isAuthenticated || !resolvedUserId) throw new Error('ログインが必要です');",
+      "kind": "error"
+    },
+    {
       "file": "src/components/todoAnalysis/hooks/useTodoAnalytics.ts",
       "line": 56,
       "snippet": "// モックデータの代わりに実際の計算ロジックを実装",
       "kind": "mock"
+    },
+    {
+      "file": "src/components/TransactionCSVUploader.tsx",
+      "line": 2020,
+      "snippet": "throw new Error('CSVファイルが空です');",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/TransactionCSVUploader.tsx",
+      "line": 2022,
+      "snippet": "throw new Error('CSVファイルにヘッダーのみで、データ行がありません');",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/TransactionCSVUploader.tsx",
+      "line": 2024,
+      "snippet": "throw new Error(",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/TransactionCSVUploader.tsx",
+      "line": 2033,
+      "snippet": "throw new Error(`データの検証に失敗しました: ${errors.join(', ')}`);",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/TransactionCSVUploader.tsx",
+      "line": 2073,
+      "snippet": "throw new Error(result.message || 'インポートに失敗しました');",
+      "kind": "error"
+    },
+    {
+      "file": "src/components/TransactionList.tsx",
+      "line": 504,
+      "snippet": "/* TODO: 編集機能 */",
+      "kind": "todo"
     },
     {
       "file": "src/components/ui/accessibility-provider.tsx",
@@ -737,6 +815,24 @@
       "kind": "error"
     },
     {
+      "file": "src/config/features.ts",
+      "line": 1,
+      "snippet": "import { USE_MOCK_DATA } from '@/services/api/apiConfig';",
+      "kind": "mock"
+    },
+    {
+      "file": "src/config/features.ts",
+      "line": 352,
+      "snippet": "description: '未実装・モック・WIPの自動検出',",
+      "kind": "mock"
+    },
+    {
+      "file": "src/config/features.ts",
+      "line": 2072,
+      "snippet": "if (feature.requiresRealAPI && USE_MOCK_DATA) {",
+      "kind": "mock"
+    },
+    {
       "file": "src/config/firebase.ts",
       "line": 41,
       "snippet": "throw new Error(`Missing Firebase configuration: ${missingFields.join(', ')}`);",
@@ -768,31 +864,37 @@
     },
     {
       "file": "src/config/stripe.ts",
-      "line": 20,
+      "line": 63,
       "snippet": "throw new Error(`Missing Stripe server configuration: ${missingServerKeys.join(', ')}`);",
       "kind": "error"
     },
     {
       "file": "src/config/stripe.ts",
-      "line": 35,
-      "snippet": "throw new Error(`Missing Stripe client configuration: ${missingClientKeys.join(', ')}`);",
-      "kind": "error"
+      "line": 81,
+      "snippet": "// Never crash the client; fall back to mock Stripe in production too",
+      "kind": "mock"
     },
     {
       "file": "src/config/stripe.ts",
-      "line": 57,
+      "line": 104,
       "snippet": "console.log('🎭 Development: Using mock Stripe server');",
       "kind": "mock"
     },
     {
       "file": "src/config/stripe.ts",
-      "line": 58,
+      "line": 105,
       "snippet": "// Mock Stripe for development",
       "kind": "mock"
     },
     {
       "file": "src/config/stripe.ts",
-      "line": 73,
+      "line": 118,
+      "snippet": "console.warn('[stripe.client] validateStripeConfig threw; falling back to mock', e);",
+      "kind": "mock"
+    },
+    {
+      "file": "src/config/stripe.ts",
+      "line": 132,
       "snippet": "console.log('🎭 Development: Using mock Stripe client');",
       "kind": "mock"
     },
@@ -800,6 +902,42 @@
       "file": "src/context/AuthContext.tsx",
       "line": 12,
       "snippet": "__VITE_USE_MOCK_DATA__?: string;",
+      "kind": "mock"
+    },
+    {
+      "file": "src/context/AuthContext.tsx",
+      "line": 382,
+      "snippet": "// 開発環境ではダミーユーザー情報を設定",
+      "kind": "mock"
+    },
+    {
+      "file": "src/context/AuthContext.tsx",
+      "line": 393,
+      "snippet": "console.log('🧪 開発環境 - ダミーユーザー情報を設定（refreshAuth）');",
+      "kind": "mock"
+    },
+    {
+      "file": "src/context/AuthContext.tsx",
+      "line": 527,
+      "snippet": "// 開発環境ではダミーユーザー情報を設定",
+      "kind": "mock"
+    },
+    {
+      "file": "src/context/AuthContext.tsx",
+      "line": 539,
+      "snippet": "console.log('🧪 開発環境 - ダミーユーザー情報を設定');",
+      "kind": "mock"
+    },
+    {
+      "file": "src/context/AuthContext.tsx",
+      "line": 555,
+      "snippet": "// 開発環境ではダミーユーザー情報を設定",
+      "kind": "mock"
+    },
+    {
+      "file": "src/context/AuthContext.tsx",
+      "line": 567,
+      "snippet": "console.log('🧪 開発環境 - ダミーユーザー情報を設定');",
       "kind": "mock"
     },
     {
@@ -989,10 +1127,52 @@
       "kind": "error"
     },
     {
+      "file": "src/database/connection.ts",
+      "line": 12,
+      "snippet": "throw new Error('MONGODB_URI is not set');",
+      "kind": "error"
+    },
+    {
       "file": "src/hooks/useAdvancedOptions.ts",
       "line": 112,
       "snippet": "// モック実装",
       "kind": "mock"
+    },
+    {
+      "file": "src/hooks/useAssetLiabilityReport.ts",
+      "line": 98,
+      "snippet": "throw new Error(`HTTP error! status: ${response.status}`);",
+      "kind": "error"
+    },
+    {
+      "file": "src/hooks/useAssetLiabilityReport.ts",
+      "line": 104,
+      "snippet": "throw new Error(result.message || 'Failed to fetch report data');",
+      "kind": "error"
+    },
+    {
+      "file": "src/hooks/useAssetLiabilityReport.ts",
+      "line": 129,
+      "snippet": "throw new Error(`HTTP error! status: ${response.status}`);",
+      "kind": "error"
+    },
+    {
+      "file": "src/hooks/useAssetLiabilityReport.ts",
+      "line": 135,
+      "snippet": "throw new Error(result.message || 'Failed to fetch metrics');",
+      "kind": "error"
+    },
+    {
+      "file": "src/hooks/useAssetLiabilityReport.ts",
+      "line": 158,
+      "snippet": "throw new Error(`HTTP error! status: ${response.status}`);",
+      "kind": "error"
+    },
+    {
+      "file": "src/hooks/useAssetLiabilityReport.ts",
+      "line": 164,
+      "snippet": "throw new Error(result.message || 'Failed to fetch trends');",
+      "kind": "error"
     },
     {
       "file": "src/hooks/useAuth.ts",
@@ -1092,13 +1272,13 @@
     },
     {
       "file": "src/hooks/useRealtimeGamificationTracking.ts",
-      "line": 298,
+      "line": 301,
       "snippet": "// Mock implementation - calculate progress to next badge",
       "kind": "mock"
     },
     {
       "file": "src/hooks/useRealtimeGamificationTracking.ts",
-      "line": 309,
+      "line": 312,
       "snippet": "// Mock implementation - calculate weekly goal progress",
       "kind": "mock"
     },
@@ -1176,7 +1356,7 @@
     },
     {
       "file": "src/lib/analytics.ts",
-      "line": 453,
+      "line": 461,
       "snippet": "// Dev: log + optionally send to local mock endpoint so admin trend works in dev",
       "kind": "mock"
     },
@@ -1214,6 +1394,12 @@
       "file": "src/pages/AutomationRulesPage.tsx",
       "line": 162,
       "snippet": "throw new Error('タスク生成に失敗しました');",
+      "kind": "error"
+    },
+    {
+      "file": "src/pages/BugForm.tsx",
+      "line": 40,
+      "snippet": "if (!res.ok || !data.success) throw new Error(data.message || 'failed');",
       "kind": "error"
     },
     {
@@ -1415,6 +1601,12 @@
       "kind": "wip"
     },
     {
+      "file": "src/pages/FeaturesStatus.tsx",
+      "line": 200,
+      "snippet": "完成の定義: 本番環境で実APIに接続し、不具合なく動作していること（デモ/モック不可）。",
+      "kind": "mock"
+    },
+    {
       "file": "src/pages/GuitarPracticePage.tsx",
       "line": 1072,
       "snippet": "// 開発環境では、APIが未実装の場合はモックデータを使用",
@@ -1457,6 +1649,12 @@
       "kind": "mock"
     },
     {
+      "file": "src/pages/ImprovementPlanPage.tsx",
+      "line": 169,
+      "snippet": "// モックデータを使用（実際のAPI実装時は置き換え）",
+      "kind": "mock"
+    },
+    {
       "file": "src/pages/ImpulseTrackerPage.tsx",
       "line": 200,
       "snippet": "// TODO: 本番環境では実際のAPIエンドポイントを使用",
@@ -1488,8 +1686,26 @@
     },
     {
       "file": "src/pages/Login.tsx",
-      "line": 27,
-      "snippet": "__VITE_USE_MOCK_DATA__?: string;",
+      "line": 24,
+      "snippet": "// (Removed legacy mock globals)",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/Login.tsx",
+      "line": 37,
+      "snippet": "// Offline/test modes are not supported to avoid mock-like behavior",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/Login.tsx",
+      "line": 189,
+      "snippet": "// 開発環境ではダミーユーザー情報を設定",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/Login.tsx",
+      "line": 206,
+      "snippet": "console.log('🧪 開発環境 - ダミーユーザー情報を設定（ログイン後）');",
       "kind": "mock"
     },
     {
@@ -1505,14 +1721,38 @@
       "kind": "error"
     },
     {
+      "file": "src/pages/ServerErrorReportingPage.tsx",
+      "line": 129,
+      "snippet": "throw new Error('Failed to fetch server errors');",
+      "kind": "error"
+    },
+    {
       "file": "src/pages/SiteImprovementPlan.tsx",
       "line": 271,
       "snippet": "throw new Error('Failed to start implementation');",
       "kind": "error"
     },
     {
+      "file": "src/pages/subscription/SubscriptionUpgradePage.tsx",
+      "line": 313,
+      "snippet": "// モック環境では未入力でも続行できるようにし、警告のみ表示",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/subscription/SubscriptionUpgradePage.tsx",
+      "line": 316,
+      "snippet": "toast('モック決済: カード情報は省略可能のため続行します');",
+      "kind": "mock"
+    },
+    {
+      "file": "src/pages/SubscriptionPage.tsx",
+      "line": 312,
+      "snippet": "<CardTitle className=\"text-xl\">支払い情報管理ポータル（モック）</CardTitle>",
+      "kind": "mock"
+    },
+    {
       "file": "src/pages/UserProfile.tsx",
-      "line": 43,
+      "line": 62,
       "snippet": "// モックセッションデータ",
       "kind": "mock"
     },
@@ -1713,6 +1953,18 @@
       "line": 652,
       "snippet": "throw new Error('すべてのAIサービスが失敗しました');",
       "kind": "error"
+    },
+    {
+      "file": "src/services/ai/CognitiveGrowthSupportService.ts",
+      "line": 415,
+      "snippet": "// デフォルトのモックスキル投入を廃止（実データは外部から供給）",
+      "kind": "mock"
+    },
+    {
+      "file": "src/services/ai/CognitiveGrowthSupportService.ts",
+      "line": 485,
+      "snippet": "// デフォルトのモック戦略投入を廃止（実データは外部から供給）",
+      "kind": "mock"
     },
     {
       "file": "src/services/ai/enhancedTaskAnalyzer.ts",
@@ -2232,278 +2484,104 @@
     },
     {
       "file": "src/services/analytics/UserTrackingService.ts",
-      "line": 496,
+      "line": 307,
+      "snippet": "throw new Error(`HTTP error! status: ${response.status}`);",
+      "kind": "error"
+    },
+    {
+      "file": "src/services/analytics/UserTrackingService.ts",
+      "line": 521,
       "snippet": "* 📊 モック解析データ",
       "kind": "mock"
     },
     {
       "file": "src/services/api/apiConfig.ts",
-      "line": 9,
+      "line": 10,
       "snippet": "__VITE_USE_MOCK_DATA__?: string;",
       "kind": "mock"
     },
     {
       "file": "src/services/api/apiConfig.ts",
       "line": 16,
+      "snippet": "// Only allow mock mode when explicitly requested via env",
+      "kind": "mock"
+    },
+    {
+      "file": "src/services/api/apiConfig.ts",
+      "line": 17,
       "snippet": "const explicitUseMockRaw = getEnv('VITE_USE_MOCK_DATA');",
       "kind": "mock"
     },
     {
       "file": "src/services/api/apiConfig.ts",
-      "line": 22,
-      "snippet": "export const USE_MOCK_DATA =",
+      "line": 18,
+      "snippet": "export const USE_MOCK_DATA = explicitUseMockRaw === 'true' || explicitUseMockRaw === '1';",
       "kind": "mock"
     },
     {
       "file": "src/services/api/apiConfig.ts",
-      "line": 24,
-      "snippet": "(typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true') ??",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/apiConfig.ts",
-      "line": 25,
-      "snippet": "// Historical fallback: on vercel.app, prefer mock when no explicit setting exists",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/apiConfig.ts",
-      "line": 34,
+      "line": 26,
       "snippet": "VITE_USE_MOCK_DATA: getEnv('VITE_USE_MOCK_DATA'),",
       "kind": "mock"
     },
     {
       "file": "src/services/api/apiConfig.ts",
-      "line": 35,
+      "line": 27,
       "snippet": "USE_MOCK_DATA: USE_MOCK_DATA,",
       "kind": "mock"
     },
     {
       "file": "src/services/api/apiConfig.ts",
-      "line": 38,
+      "line": 30,
       "snippet": "if (USE_MOCK_DATA) {",
       "kind": "mock"
     },
     {
       "file": "src/services/api/apiConfig.ts",
-      "line": 40,
+      "line": 32,
       "snippet": "'🎭 モックデータモード有効: APIサーバーへの接続は行わず、ローカルのモックデータを使用します'",
       "kind": "mock"
     },
     {
       "file": "src/services/api/apiConfig.ts",
-      "line": 280,
+      "line": 314,
       "snippet": "// グローバルフラグを設定してフロントエンドでモック利用可能にする",
       "kind": "mock"
     },
     {
-      "file": "src/services/api/assetApi.ts",
-      "line": 3,
-      "snippet": "import { api, USE_MOCK_DATA } from './apiConfig';",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/assetApi.ts",
-      "line": 29,
-      "snippet": "return USE_MOCK_DATA",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/assetApi.ts",
-      "line": 38,
-      "snippet": "return USE_MOCK_DATA",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/assetApi.ts",
-      "line": 52,
-      "snippet": "return USE_MOCK_DATA",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/assetApi.ts",
-      "line": 70,
-      "snippet": "return USE_MOCK_DATA",
+      "file": "src/services/api/authApi.ts",
+      "line": 7,
+      "snippet": "// (モック関連のグローバルは削除)",
       "kind": "mock"
     },
     {
       "file": "src/services/api/authApi.ts",
-      "line": 2,
-      "snippet": "import { USE_MOCK_DATA } from './apiConfig';",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/authApi.ts",
-      "line": 11,
-      "snippet": "__VITE_USE_MOCK_DATA__?: string;",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/authApi.ts",
-      "line": 155,
+      "line": 148,
       "snippet": "throw new Error('Invalid response format from server');",
       "kind": "error"
     },
     {
       "file": "src/services/api/authApi.ts",
-      "line": 191,
-      "snippet": "// モックモードの場合は常に認証成功",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/authApi.ts",
-      "line": 192,
-      "snippet": "if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/authApi.ts",
-      "line": 193,
-      "snippet": "console.log('🎭 Mock mode: Auth check always returns true');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/authApi.ts",
-      "line": 239,
-      "snippet": "(typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/authApi.ts",
-      "line": 284,
+      "line": 265,
       "snippet": "throw new Error('認証トークンがありません');",
       "kind": "error"
     },
     {
       "file": "src/services/api/authApi.ts",
-      "line": 412,
+      "line": 398,
       "snippet": "throw new Error('認証トークンがありません');",
       "kind": "error"
     },
     {
       "file": "src/services/api/blogApi.ts",
-      "line": 3,
-      "snippet": "import { api, USE_MOCK_DATA } from './apiConfig';",
+      "line": 6,
+      "snippet": "// (モック関連のグローバルは削除)",
       "kind": "mock"
     },
     {
       "file": "src/services/api/blogApi.ts",
-      "line": 9,
-      "snippet": "__VITE_USE_MOCK_DATA__?: string;",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 34,
-      "snippet": "// モックデータ",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 37,
-      "snippet": "_id: 'mock-post-1',",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 48,
-      "snippet": "_id: 'mock-comment-1',",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 58,
-      "snippet": "_id: 'mock-post-2',",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 72,
-      "snippet": "_id: 'mock-post-3',",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 83,
-      "snippet": "_id: 'mock-comment-2',",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 136,
-      "snippet": "// モックモードの場合はモックデータを返す",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 137,
-      "snippet": "if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 138,
-      "snippet": "console.log('🎭 Mock mode: Returning mock blog posts');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 183,
-      "snippet": "console.log('🔧 Network error detected: Fallback to mock blog data');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 223,
-      "snippet": "// モックモードの場合はモックデータを返す",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 224,
-      "snippet": "if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 225,
-      "snippet": "console.log('🎭 Mock mode: Returning mock blog post for ID:', id);",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/blogApi.ts",
-      "line": 257,
-      "snippet": "console.log('🔧 Network error detected: Fallback to mock blog post');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/debtApi.ts",
-      "line": 3,
-      "snippet": "import { api, USE_MOCK_DATA } from './apiConfig';",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/debtApi.ts",
-      "line": 31,
-      "snippet": "return USE_MOCK_DATA",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/debtApi.ts",
-      "line": 40,
-      "snippet": "return USE_MOCK_DATA",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/debtApi.ts",
-      "line": 54,
-      "snippet": "return USE_MOCK_DATA",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/debtApi.ts",
-      "line": 72,
-      "snippet": "return USE_MOCK_DATA",
+      "line": 28,
+      "snippet": "// モックデータは廃止",
       "kind": "mock"
     },
     {
@@ -2526,74 +2604,14 @@
     },
     {
       "file": "src/services/api/surveyApi.ts",
-      "line": 3,
-      "snippet": "import { api, USE_MOCK_DATA } from './apiConfig';",
+      "line": 15,
+      "snippet": "// モックデータは廃止",
       "kind": "mock"
     },
     {
       "file": "src/services/api/surveyApi.ts",
-      "line": 23,
-      "snippet": "// 複数の調査データをモック",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/surveyApi.ts",
-      "line": 68,
-      "snippet": "return USE_MOCK_DATA",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/surveyApi.ts",
-      "line": 85,
-      "snippet": "// モックの場合は配列から該当IDの調査を探す",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/surveyApi.ts",
-      "line": 86,
-      "snippet": "if (USE_MOCK_DATA) {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/surveyApi.ts",
-      "line": 110,
-      "snippet": "if (USE_MOCK_DATA) {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/surveyApi.ts",
-      "line": 111,
-      "snippet": "// モックの場合、最初の調査を最新として返す",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/surveyApi.ts",
-      "line": 133,
-      "snippet": "return USE_MOCK_DATA",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/surveyApi.ts",
-      "line": 172,
-      "snippet": "if (USE_MOCK_DATA) {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/surveyApi.ts",
-      "line": 173,
-      "snippet": "// モックの場合、成功レスポンスを返す",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/surveyApi.ts",
-      "line": 210,
-      "snippet": "if (USE_MOCK_DATA) {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/surveyApi.ts",
-      "line": 235,
-      "snippet": "return USE_MOCK_DATA",
+      "line": 17,
+      "snippet": "// モックデータは廃止",
       "kind": "mock"
     },
     {
@@ -2603,141 +2621,33 @@
       "kind": "error"
     },
     {
-      "file": "src/services/api/withdrawalApi.ts",
-      "line": 3,
-      "snippet": "import { api, USE_MOCK_DATA } from './apiConfig';",
-      "kind": "mock"
+      "file": "src/services/api/userSubscriptionApi.ts",
+      "line": 88,
+      "snippet": "if (!userId) throw new Error('userId is required');",
+      "kind": "error"
     },
     {
-      "file": "src/services/api/withdrawalApi.ts",
-      "line": 24,
-      "snippet": "return USE_MOCK_DATA",
-      "kind": "mock"
+      "file": "src/services/api/userSubscriptionApi.ts",
+      "line": 103,
+      "snippet": "if (!userId) throw new Error('userId is required');",
+      "kind": "error"
     },
     {
-      "file": "src/services/api/withdrawalApi.ts",
-      "line": 33,
-      "snippet": "return USE_MOCK_DATA",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/withdrawalApi.ts",
-      "line": 53,
-      "snippet": "return USE_MOCK_DATA",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/withdrawalApi.ts",
-      "line": 71,
-      "snippet": "return USE_MOCK_DATA",
+      "file": "src/services/api/workTimeApi.ts",
+      "line": 7,
+      "snippet": "// モックデータは廃止",
       "kind": "mock"
     },
     {
       "file": "src/services/api/workTimeApi.ts",
-      "line": 4,
-      "snippet": "import { api, USE_MOCK_DATA } from './apiConfig';",
+      "line": 9,
+      "snippet": "// ローカルストレージ利用のモックは廃止",
       "kind": "mock"
     },
     {
       "file": "src/services/api/workTimeApi.ts",
-      "line": 16,
-      "snippet": "userId: 'mock-user-id',",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 26,
-      "snippet": "userId: 'mock-user-id',",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 33,
-      "snippet": "const stored = localStorage.getItem('mock-api-work-entries');",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 46,
-      "snippet": "localStorage.setItem('mock-api-work-entries', JSON.stringify(updated));",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 53,
-      "snippet": "// 全エントリを取得（モック + ローカル作成分）",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 70,
-      "snippet": "if (USE_MOCK_DATA) {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 72,
-      "snippet": "console.log('📊 Mock API returning entries:', {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 74,
-      "snippet": "mock: mockWorkTimeData.length,",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 90,
-      "snippet": "if (USE_MOCK_DATA) {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 93,
-      "snippet": "_id: `mock-${Date.now()}`,",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 119,
-      "snippet": "if (USE_MOCK_DATA) {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 127,
-      "snippet": "localStorage.setItem('mock-api-work-entries', JSON.stringify(localEntries));",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 137,
-      "snippet": "// モックデータから検索（読み取り専用）",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 155,
-      "snippet": "if (USE_MOCK_DATA) {",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 159,
-      "snippet": "localStorage.setItem('mock-api-work-entries', JSON.stringify(filtered));",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 174,
-      "snippet": "return USE_MOCK_DATA",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/workTimeApi.ts",
-      "line": 189,
-      "snippet": "if (USE_MOCK_DATA) {",
+      "line": 11,
+      "snippet": "// 旧モック合成は削除",
       "kind": "mock"
     },
     {
@@ -2825,12 +2735,6 @@
       "kind": "error"
     },
     {
-      "file": "src/services/auth/UnifiedAuthManager.ts",
-      "line": 809,
-      "snippet": "* 🎭 モックユーザーの作成",
-      "kind": "mock"
-    },
-    {
       "file": "src/services/automation/IntegratedAutomationService.ts",
       "line": 227,
       "snippet": "throw new Error(`Automation rule not found: ${ruleId}`);",
@@ -2894,6 +2798,24 @@
       "file": "src/services/backup/BackupRestoreService.ts",
       "line": 600,
       "snippet": "throw new Error(`Backup not found: ${backupId}`);",
+      "kind": "error"
+    },
+    {
+      "file": "src/services/bank/BankAPIService.ts",
+      "line": 70,
+      "snippet": "throw new Error(`Bank API error: ${response.status}`);",
+      "kind": "error"
+    },
+    {
+      "file": "src/services/bank/BankAPIService.ts",
+      "line": 110,
+      "snippet": "throw new Error('銀行APIが設定されていません');",
+      "kind": "error"
+    },
+    {
+      "file": "src/services/bank/BankAPIService.ts",
+      "line": 131,
+      "snippet": "throw new Error(`銀行APIエラー: ${response.status} ${response.statusText}`);",
       "kind": "error"
     },
     {
@@ -2966,6 +2888,24 @@
       "file": "src/services/database/ProgressDatabaseService.ts",
       "line": 688,
       "snippet": "console.log('✅ Mock data migration completed');",
+      "kind": "mock"
+    },
+    {
+      "file": "src/services/dev/featureStatusEngine.ts",
+      "line": 3,
+      "snippet": "import { USE_MOCK_DATA } from '@/services/api/apiConfig';",
+      "kind": "mock"
+    },
+    {
+      "file": "src/services/dev/featureStatusEngine.ts",
+      "line": 11,
+      "snippet": "mock?: number;",
+      "kind": "mock"
+    },
+    {
+      "file": "src/services/dev/featureStatusEngine.ts",
+      "line": 111,
+      "snippet": "const realOk = !feature.requiresRealAPI || !USE_MOCK_DATA;",
       "kind": "mock"
     },
     {
@@ -3540,14 +3480,14 @@
     },
     {
       "file": "src/services/PomodoroWorkTimeIntegrationService.ts",
-      "line": 99,
+      "line": 97,
       "snippet": "throw new Error(result.payload as string);",
       "kind": "error"
     },
     {
       "file": "src/services/PomodoroWorkTimeIntegrationService.ts",
-      "line": 265,
-      "snippet": "// APIからのデータを取得（モックデータまたは実際のAPI）",
+      "line": 257,
+      "snippet": "// ローカルストレージ関連のモック機能は削除",
       "kind": "mock"
     },
     {
@@ -3723,6 +3663,18 @@
       "line": 89,
       "snippet": "throw new Error('Failed to delete resource');",
       "kind": "error"
+    },
+    {
+      "file": "src/services/share/generateDevProgressShareText.ts",
+      "line": 233,
+      "snippet": "// 他にも開発中機能がある場合は省略表示",
+      "kind": "wip"
+    },
+    {
+      "file": "src/services/social/SupportMatchingService.ts",
+      "line": 151,
+      "snippet": "// Removed demo-user seeding to prevent mock data usage in production",
+      "kind": "mock"
     },
     {
       "file": "src/services/sync/RealtimeDataSyncService.ts",
@@ -4620,86 +4572,92 @@
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 211,
+      "line": 189,
+      "snippet": "// メール通知の送信はバックエンド実装に委ねる（フロント側でのモック呼び出しは行わない）",
+      "kind": "mock"
+    },
+    {
+      "file": "src/store/todoSlice.ts",
+      "line": 198,
       "snippet": "throw new Error(`API呼び出しエラー: ${errorMsg}`);",
       "kind": "error"
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 214,
+      "line": 201,
       "snippet": "throw new Error('サーバーに接続できません。ネットワーク接続を確認してください。');",
       "kind": "error"
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 256,
+      "line": 243,
       "snippet": "throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);",
       "kind": "error"
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 261,
+      "line": 248,
       "snippet": "throw new Error('APIからの空のレスポンスです');",
       "kind": "error"
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 271,
+      "line": 258,
       "snippet": "throw new Error(`API操作エラー: ${errorMsg}`);",
       "kind": "error"
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 286,
+      "line": 273,
       "snippet": "throw new Error('APIレスポンスにtodoデータが含まれていません');",
       "kind": "error"
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 292,
+      "line": 279,
       "snippet": "throw new Error('更新されたタスクにIDが設定されていません');",
       "kind": "error"
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 303,
+      "line": 290,
       "snippet": "throw new Error(`API呼び出しエラー: ${errorMsg}`);",
       "kind": "error"
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 306,
+      "line": 293,
       "snippet": "throw new Error('サーバーに接続できません。ネットワーク接続を確認してください。');",
       "kind": "error"
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 317,
+      "line": 304,
       "snippet": "throw new Error('削除するタスクIDが無効です');",
       "kind": "error"
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 359,
-      "snippet": "// 直接サービスAPIを使用せず、todoApiのサポートメソッドがない場合はモック実装",
+      "line": 346,
+      "snippet": "// 未実装: 明示的に false を返す（モック値を廃止）",
+      "kind": "todo"
+    },
+    {
+      "file": "src/store/todoSlice.ts",
+      "line": 346,
+      "snippet": "// 未実装: 明示的に false を返す（モック値を廃止）",
       "kind": "mock"
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 361,
-      "snippet": "// モックデータを返す例（実装時には適切なAPI呼び出しに置き換えてください）",
-      "kind": "mock"
+      "line": 352,
+      "snippet": "// 未実装: モック返却を廃止し、空データを返す",
+      "kind": "todo"
     },
     {
       "file": "src/store/todoSlice.ts",
-      "line": 367,
-      "snippet": "// 直接サービスAPIを使用せず、todoApiのサポートメソッドがない場合はモック実装",
-      "kind": "mock"
-    },
-    {
-      "file": "src/store/todoSlice.ts",
-      "line": 369,
-      "snippet": "// モックデータを返す例（実装時には適切なAPI呼び出しに置き換えてください）",
+      "line": 352,
+      "snippet": "// 未実装: モック返却を廃止し、空データを返す",
       "kind": "mock"
     },
     {
@@ -4806,13 +4764,13 @@
     },
     {
       "file": "src/test/test-utils.tsx",
-      "line": 381,
+      "line": 380,
       "snippet": "// Mock form submission",
       "kind": "mock"
     },
     {
       "file": "src/test/test-utils.tsx",
-      "line": 401,
+      "line": 394,
       "snippet": "// Mock select value change",
       "kind": "mock"
     },
@@ -4887,6 +4845,18 @@
       "line": 56,
       "snippet": "* モックユーザー付きのAuthProviderラッパー",
       "kind": "mock"
+    },
+    {
+      "file": "src/utils/bankDataParser.ts",
+      "line": 178,
+      "snippet": "throw new Error('有効なCSVデータが見つかりません');",
+      "kind": "error"
+    },
+    {
+      "file": "src/utils/bankDataParser.ts",
+      "line": 239,
+      "snippet": "throw new Error('有効な取引データが見つかりませんでした');",
+      "kind": "error"
     },
     {
       "file": "src/utils/env.ts",
@@ -4985,6 +4955,24 @@
       "kind": "error"
     },
     {
+      "file": "api/admin/live-metrics.ts",
+      "line": 47,
+      "snippet": "throw new Error(",
+      "kind": "error"
+    },
+    {
+      "file": "api/admin/live-metrics.ts",
+      "line": 88,
+      "snippet": "throw new Error(",
+      "kind": "error"
+    },
+    {
+      "file": "api/admin/live-metrics.ts",
+      "line": 98,
+      "snippet": "throw new Error(",
+      "kind": "error"
+    },
+    {
       "file": "api/analysis/hardcoded-data.ts",
       "line": 11,
       "snippet": "| 'mock-data'",
@@ -5046,128 +5034,176 @@
     },
     {
       "file": "api/analysis/hardcoded-data.ts",
-      "line": 269,
+      "line": 272,
       "snippet": "const mockCount = issues.filter((i) => i.type === 'mock-data').length;",
       "kind": "mock"
     },
     {
       "file": "api/analysis/hardcoded-data.ts",
-      "line": 272,
+      "line": 275,
       "snippet": "suggestions.push('🚨 緊急度の高い問題が多数あります。API モックの実装を優先してください');",
       "kind": "mock"
     },
     {
       "file": "api/analysis/hardcoded-data.ts",
-      "line": 282,
+      "line": 285,
       "snippet": "suggestions.push('🔌 モックデータが多用されています。実際のAPI統合を進めてください');",
       "kind": "mock"
     },
     {
       "file": "api/analysis/hardcoded-data.ts",
-      "line": 305,
+      "line": 308,
       "snippet": "const mockKeywords = ['mock', 'fake', 'dummy', 'sample', 'test-data', '仮データ'];",
       "kind": "mock"
     },
     {
       "file": "api/analysis/hardcoded-data.ts",
-      "line": 344,
+      "line": 347,
       "snippet": "(line.includes('return {') && line.includes('mock')) ||",
       "kind": "mock"
     },
     {
-      "file": "api/analytics/batch.ts",
-      "line": 64,
-      "snippet": "if (Number.isNaN(ts.getTime())) throw new Error('INVALID_TIMESTAMP');",
-      "kind": "error"
-    },
-    {
       "file": "api/analytics/live-metrics.ts",
-      "line": 12,
-      "snippet": "// Best-effort: try DB; if fails, return mock data",
-      "kind": "mock"
-    },
-    {
-      "file": "api/analytics/live-metrics.ts",
-      "line": 75,
-      "snippet": "// fallthrough to mock",
-      "kind": "mock"
-    },
-    {
-      "file": "api/analytics/live-metrics.ts",
-      "line": 78,
-      "snippet": "// Fallback mock when DB not available",
-      "kind": "mock"
-    },
-    {
-      "file": "api/analytics/live-metrics.ts",
-      "line": 79,
-      "snippet": "const mock = {",
-      "kind": "mock"
-    },
-    {
-      "file": "api/analytics/live-metrics.ts",
-      "line": 100,
-      "snippet": "return res.status(200).json({ success: true, data: mock, degraded: true });",
+      "line": 11,
+      "snippet": "// Lightweight mock endpoint for production fallback",
       "kind": "mock"
     },
     {
       "file": "api/analytics/track-share.ts",
-      "line": 59,
+      "line": 70,
       "snippet": "// モック処理：実際にはデータベースに保存",
       "kind": "mock"
     },
     {
       "file": "api/auth/login.ts",
       "line": 173,
+      "snippet": "if (!loaded || !connectDB) throw new Error('Server modules not available');",
+      "kind": "error"
+    },
+    {
+      "file": "api/auth/login.ts",
+      "line": 322,
       "snippet": "if (!userIdForUpdate) throw new Error('Missing user id');",
       "kind": "error"
     },
     {
-      "file": "api/debt/index.ts",
-      "line": 27,
-      "snippet": "// Preview/demo: return empty list (no mock here)",
-      "kind": "mock"
-    },
-    {
-      "file": "api/implementation/logs/[projectId].ts",
-      "line": 19,
-      "snippet": "// Get mock logs for development",
-      "kind": "mock"
-    },
-    {
-      "file": "api/implementation/logs/[projectId].ts",
-      "line": 148,
-      "snippet": "// TODO: Replace with actual database query",
+      "file": "api/auth/magic-link.ts",
+      "line": 46,
+      "snippet": "// 現時点では実装されていないため、モック返却は行わず未実装を返す",
       "kind": "todo"
     },
     {
+      "file": "api/auth/magic-link.ts",
+      "line": 46,
+      "snippet": "// 現時点では実装されていないため、モック返却は行わず未実装を返す",
+      "kind": "mock"
+    },
+    {
+      "file": "api/auth/password-reset.js",
+      "line": 65,
+      "snippet": "throw new Error('MongoDB connection failed');",
+      "kind": "error"
+    },
+    {
+      "file": "api/auth/password-reset.js",
+      "line": 168,
+      "snippet": "throw new Error('MongoDB connection failed');",
+      "kind": "error"
+    },
+    {
+      "file": "api/auth/profile.ts",
+      "line": 31,
+      "snippet": "// Mock data for development",
+      "kind": "mock"
+    },
+    {
+      "file": "api/auth/profile.ts",
+      "line": 66,
+      "snippet": "// 現在はモックデータを返す",
+      "kind": "mock"
+    },
+    {
+      "file": "api/auth/profile.ts",
+      "line": 81,
+      "snippet": "// 開発環境ではモックデータを返す",
+      "kind": "mock"
+    },
+    {
+      "file": "api/auth/profile.ts",
+      "line": 111,
+      "snippet": "// 現在はモックデータを返す",
+      "kind": "mock"
+    },
+    {
+      "file": "api/auth/profile.ts",
+      "line": 117,
+      "snippet": "// 開発環境ではモックデータを返す",
+      "kind": "mock"
+    },
+    {
+      "file": "api/auth/refresh.ts",
+      "line": 110,
+      "snippet": "if (!loaded || !connectDB) throw new Error('Server modules not available');",
+      "kind": "error"
+    },
+    {
+      "file": "api/bank/upload.ts",
+      "line": 128,
+      "snippet": "throw new Error('有効なCSVデータが見つかりません');",
+      "kind": "error"
+    },
+    {
+      "file": "api/bank/upload.ts",
+      "line": 184,
+      "snippet": "throw new Error('有効な取引データが見つかりませんでした');",
+      "kind": "error"
+    },
+    {
+      "file": "api/daily10/stats/index.ts",
+      "line": 78,
+      "snippet": "// モックデータを生成（実際の実装ではデータベースから取得）",
+      "kind": "mock"
+    },
+    {
+      "file": "api/db/status.ts",
+      "line": 45,
+      "snippet": "if (!hasUri) throw new Error('MONGODB_URI is not set');",
+      "kind": "error"
+    },
+    {
+      "file": "api/docs/index.ts",
+      "line": 127,
+      "snippet": "throw new Error('ドキュメントが見つかりません');",
+      "kind": "error"
+    },
+    {
       "file": "api/implementation/logs/[projectId].ts",
-      "line": 159,
-      "snippet": "// For now, use mock data but include user context",
+      "line": 6,
+      "snippet": "// モックデータ廃止: 以降は実データのみを返却",
       "kind": "mock"
     },
     {
       "file": "api/implementation/tasks/[projectId].ts",
-      "line": 42,
-      "snippet": "// Get mock tasks for development",
+      "line": 37,
+      "snippet": "// モックデータ廃止: 実データのみを返す",
       "kind": "mock"
     },
     {
-      "file": "api/implementation/tasks/[projectId].ts",
-      "line": 96,
-      "snippet": "notes: 'モック部分をすべて本番用に修正中',",
+      "file": "api/improvement-plan/index.ts",
+      "line": 23,
+      "snippet": "// モックデータ",
       "kind": "mock"
     },
     {
-      "file": "api/implementation/tasks/[projectId].ts",
-      "line": 145,
-      "snippet": "// TODO: Replace with actual database query when DB is available on production",
-      "kind": "todo"
+      "file": "api/improvement-plan/[id].ts",
+      "line": 23,
+      "snippet": "// モックデータ（実際の実装ではデータベースから取得）",
+      "kind": "mock"
     },
     {
-      "file": "api/implementation/tasks/[projectId].ts",
-      "line": 148,
-      "snippet": "// For now, use mock data but include user context",
+      "file": "api/pricing/index.ts",
+      "line": 130,
+      "snippet": "// 現在はモック実装",
       "kind": "mock"
     },
     {
@@ -5196,43 +5232,19 @@
     },
     {
       "file": "api/progress/tracking.ts",
-      "line": 466,
-      "snippet": "console.warn('⚠️ GitHub Token not configured, using mock data for development');",
+      "line": 467,
+      "snippet": "'⚠️ GitHub Token not configured. Skipping GitHub sync (no mock changes applied).'",
       "kind": "mock"
     },
     {
       "file": "api/progress/tracking.ts",
-      "line": 468,
-      "snippet": "// 開発環境用のモックデータ（GitHub Token未設定時のみ）",
-      "kind": "mock"
-    },
-    {
-      "file": "api/progress/tracking.ts",
-      "line": 495,
-      "snippet": "// モックデータでの処理",
-      "kind": "mock"
-    },
-    {
-      "file": "api/progress/tracking.ts",
-      "line": 504,
-      "snippet": "reason: 'New commit detected (mock)',",
-      "kind": "mock"
-    },
-    {
-      "file": "api/progress/tracking.ts",
-      "line": 512,
-      "snippet": "description: `Mock commit: ${mockGitHubData.commits[0].message}`,",
-      "kind": "mock"
-    },
-    {
-      "file": "api/progress/tracking.ts",
-      "line": 537,
+      "line": 493,
       "snippet": "throw new Error(`GitHub API error: ${commitsResponse.status}`);",
       "kind": "error"
     },
     {
       "file": "api/progress/tracking.ts",
-      "line": 549,
+      "line": 505,
       "snippet": "throw new Error(`GitHub PR API error: ${prsResponse.status}`);",
       "kind": "error"
     },
@@ -5252,6 +5264,18 @@
       "file": "api/status/ci.ts",
       "line": 52,
       "snippet": "if (!res.ok) throw new Error(`Vercel API ${res.status}`);",
+      "kind": "error"
+    },
+    {
+      "file": "api/subscription/cancel.ts",
+      "line": 45,
+      "snippet": "if (!s) throw new Error('No active subscription');",
+      "kind": "error"
+    },
+    {
+      "file": "api/subscription/checkout.ts",
+      "line": 44,
+      "snippet": "if (!priceId) throw new Error('Missing price id');",
       "kind": "error"
     },
     {
@@ -5298,8 +5322,86 @@
     },
     {
       "file": "api/todos/index.ts",
-      "line": 96,
-      "snippet": "throw new Error('DB disabled for preview');",
+      "line": 22,
+      "snippet": "// Mock data for development",
+      "kind": "mock"
+    },
+    {
+      "file": "api/userSubscription/user/[userId].ts",
+      "line": 26,
+      "snippet": "// Mock data for development",
+      "kind": "mock"
+    },
+    {
+      "file": "api/userSubscription/user/[userId].ts",
+      "line": 58,
+      "snippet": "// 現在はモックデータを返す",
+      "kind": "mock"
+    },
+    {
+      "file": "api/userSubscription/user/[userId].ts",
+      "line": 73,
+      "snippet": "// 開発環境ではモックデータを返す",
+      "kind": "mock"
+    },
+    {
+      "file": "api/_lib/mongo.js",
+      "line": 31,
+      "snippet": "if (!uri) throw new Error('MONGODB_URI is not set');",
+      "kind": "error"
+    },
+    {
+      "file": "api/_lib/mongo.ts",
+      "line": 31,
+      "snippet": "if (!uri) throw new Error('MONGODB_URI is not set');",
+      "kind": "error"
+    },
+    {
+      "file": "api/_lib/stripe.ts",
+      "line": 8,
+      "snippet": "throw new Error('STRIPE_SECRET_KEY is not set');",
+      "kind": "error"
+    },
+    {
+      "file": "api/_lib/user-context.js",
+      "line": 8,
+      "snippet": "if (!token) throw new Error('UNAUTHORIZED');",
+      "kind": "error"
+    },
+    {
+      "file": "api/_lib/user-context.js",
+      "line": 38,
+      "snippet": "if (!u) throw new Error('USER_NOT_FOUND');",
+      "kind": "error"
+    },
+    {
+      "file": "api/_schemas/bug.js",
+      "line": 9,
+      "snippet": "if (!m) throw new Error('Mongoose unavailable');",
+      "kind": "error"
+    },
+    {
+      "file": "api/_schemas/bug.ts",
+      "line": 9,
+      "snippet": "if (!m) throw new Error('Mongoose unavailable');",
+      "kind": "error"
+    },
+    {
+      "file": "api/_schemas/subscription.ts",
+      "line": 9,
+      "snippet": "if (!m) throw new Error('Mongoose unavailable');",
+      "kind": "error"
+    },
+    {
+      "file": "api/_schemas/user.ts",
+      "line": 9,
+      "snippet": "if (!m) throw new Error('Mongoose unavailable');",
+      "kind": "error"
+    },
+    {
+      "file": "api/_schemas/userSubscription.js",
+      "line": 11,
+      "snippet": "if (!m) throw new Error('Mongoose unavailable');",
       "kind": "error"
     },
     {
