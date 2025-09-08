@@ -975,44 +975,173 @@ const SitemapPage: React.FC = () => {
           </div>
 
           <div className="sitemap-tabs-content">
-            <div className="sitemap-feature-grid">
-              {filteredPages
-                .filter((p) => {
-                  const feature = getFeatureByPath(p.path);
-                  return !feature || feature.status === 'complete';
-                })
-                .map((page) => (
-                  <div
-                    key={page.path}
-                    className={`sitemap-feature-card ${page.isNew ? 'new' : ''}`}
-                    onClick={() => handlePageNavigation(page.path)}
-                  >
-                    <div className="sitemap-feature-card-header">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          {page.icon}
-                          <div className="sitemap-feature-card-title">{page.name}</div>
+            {/* グリッド表示 */}
+            {activeTab === 'grid' && (
+              <div className="sitemap-feature-grid">
+                {filteredPages
+                  .filter((p) => {
+                    const feature = getFeatureByPath(p.path);
+                    return !feature || feature.status === 'complete';
+                  })
+                  .map((page) => (
+                    <div
+                      key={page.path}
+                      className={`sitemap-feature-card ${page.isNew ? 'new' : ''}`}
+                      onClick={() => handlePageNavigation(page.path)}
+                    >
+                      <div className="sitemap-feature-card-header">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            {page.icon}
+                            <div className="sitemap-feature-card-title">{page.name}</div>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            {page.isNew && <span className="sitemap-badge new">NEW!</span>}
+                            <span className={`sitemap-badge ${page.status}`}>
+                              {page.status === 'active' && 'アクティブ'}
+                              {page.status === 'available' && '利用可能'}
+                              {page.status === 'new' && '新機能'}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-1">
-                          {page.isNew && <span className="sitemap-badge new">NEW!</span>}
-                          <span className={`sitemap-badge ${page.status}`}>
-                            {page.status === 'active' && 'アクティブ'}
-                            {page.status === 'available' && '利用可能'}
-                            {page.status === 'new' && '新機能'}
-                          </span>
+                      </div>
+                      <div className="sitemap-feature-card-content">
+                        <div className="sitemap-feature-card-description">{page.description}</div>
+                        <div className="flex items-center justify-between">
+                          <code className="sitemap-feature-path">{page.path}</code>
+                          <ExternalLink className="w-3 h-3 text-gray-400" />
                         </div>
                       </div>
                     </div>
-                    <div className="sitemap-feature-card-content">
-                      <div className="sitemap-feature-card-description">{page.description}</div>
-                      <div className="flex items-center justify-between">
-                        <code className="sitemap-feature-path">{page.path}</code>
-                        <ExternalLink className="w-3 h-3 text-gray-400" />
+                  ))}
+              </div>
+            )}
+
+            {/* リスト表示 */}
+            {activeTab === 'list' && (
+              <div className="space-y-4">
+                {categories
+                  .filter((cat) => cat.id !== 'all')
+                  .map((category) => {
+                    const categoryPages = filteredPages.filter((page) => {
+                      const match = page.category === category.id;
+                      if (!match) return false;
+                      const feature = getFeatureByPath(page.path);
+                      return !feature || feature.status === 'complete';
+                    });
+                    if (categoryPages.length === 0) return null;
+
+                    return (
+                      <div key={category.id} className="sitemap-card">
+                        <div className="sitemap-card-header">
+                          <div className="sitemap-card-title flex items-center space-x-2">
+                            {category.icon}
+                            <span>{category.name}</span>
+                            <span className="sitemap-badge active">{categoryPages.length}件</span>
+                          </div>
+                        </div>
+                        <div className="sitemap-card-content">
+                          <div className="space-y-2">
+                            {categoryPages.map((page) => (
+                              <div
+                                key={page.path}
+                                className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                                onClick={() => handlePageNavigation(page.path)}
+                              >
+                                <div className="flex items-center space-x-3">
+                                  {page.icon}
+                                  <div>
+                                    <div className="flex items-center space-x-2">
+                                      <span className="font-medium">{page.name}</span>
+                                      {page.isNew && (
+                                        <span className="sitemap-badge new">NEW!</span>
+                                      )}
+                                    </div>
+                                    <p className="text-sm text-gray-600">{page.description}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <code className="sitemap-feature-path">{page.path}</code>
+                                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
+                    );
+                  })}
+              </div>
+            )}
+
+            {/* 使用ガイド */}
+            {activeTab === 'guide' && (
+              <div className="space-y-4">
+                <div className="sitemap-card">
+                  <div className="sitemap-card-header">
+                    <div className="sitemap-card-title flex items-center space-x-2">
+                      <Lightbulb className="w-5 h-5" />
+                      <span>🚀 クイックスタート</span>
                     </div>
+                    <div className="sitemap-card-description">初回利用時の推奨手順</div>
                   </div>
-                ))}
-            </div>
+                  <div className="sitemap-card-content">
+                    <ol className="space-y-3">
+                      <li className="flex items-start space-x-2">
+                        <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                          1
+                        </span>
+                        <div>
+                          <strong>プロフィール設定</strong>
+                          <p className="text-sm text-gray-600">
+                            まずはプロフィールページで基本情報を設定
+                          </p>
+                        </div>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                          2
+                        </span>
+                        <div>
+                          <strong>タスク登録</strong>
+                          <p className="text-sm text-gray-600">
+                            「従来タスク」でタスクを追加・整理
+                          </p>
+                        </div>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                          3
+                        </span>
+                        <div>
+                          <strong>4象限分析</strong>
+                          <p className="text-sm text-gray-600">
+                            「4象限マトリックス」でAI分析を実行
+                          </p>
+                        </div>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                          4
+                        </span>
+                        <div>
+                          <strong>ゲームループ開始</strong>
+                          <p className="text-sm text-gray-600">
+                            「ゲームループタスク」で楽しく実行
+                          </p>
+                        </div>
+                      </li>
+                    </ol>
+                    <button
+                      className="sitemap-category-button w-full mt-4"
+                      onClick={() => navigate('/quadrant-dashboard')}
+                    >
+                      🆕 新機能から始める
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {filteredPages.length === 0 && (
               <div className="sitemap-card">
