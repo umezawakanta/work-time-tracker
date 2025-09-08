@@ -371,6 +371,18 @@ const SitemapPage: React.FC = () => {
       <style>
         {`
           /* サイトマップ専用のモバイルファーストスタイル */
+          
+          /* モバイルでの下部ナビゲーションとの重なり防止 */
+          @media (max-width: 768px) {
+            body {
+              padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+            }
+            
+            .min-h-screen {
+              min-height: calc(100vh - 5rem - env(safe-area-inset-bottom)) !important;
+            }
+          }
+          
           .sitemap-container {
             min-height: 100vh;
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -381,6 +393,7 @@ const SitemapPage: React.FC = () => {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            padding-bottom: calc(5rem + env(safe-area-inset-bottom));
           }
           
           .sitemap-container * {

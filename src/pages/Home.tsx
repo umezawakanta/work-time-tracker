@@ -422,8 +422,263 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <style>{`
+        /* ホームページ専用のモバイルファーストスタイル */
+        
+        /* モバイルでの下部ナビゲーションとの重なり防止 */
+        @media (max-width: 768px) {
+          body {
+            padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+          }
+          
+          .min-h-screen {
+            min-height: calc(100vh - 5rem - env(safe-area-inset-bottom)) !important;
+          }
+        }
+        
+        .home-container {
+          width: 100vw !important;
+          max-width: 100vw !important;
+          padding: 0.5rem !important;
+          padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+          margin: 0 !important;
+          box-sizing: border-box !important;
+          overflow-x: hidden !important;
+        }
+        
+        .home-quick-actions {
+          width: 100% !important;
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+          margin-bottom: 2rem !important;
+        }
+        
+        .home-quick-actions .grid {
+          display: grid !important;
+          grid-template-columns: 1fr !important;
+          gap: 1rem !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+        }
+        
+        .home-quick-action-card {
+          width: 100% !important;
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+          margin: 0 !important;
+          padding: 1rem !important;
+          border-radius: 12px !important;
+          background: white !important;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+          border: 1px solid #e5e7eb !important;
+          transition: all 0.3s ease !important;
+          cursor: pointer !important;
+          touch-action: manipulation !important;
+          -webkit-tap-highlight-color: transparent !important;
+          min-height: 120px !important;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: space-between !important;
+        }
+        
+        .home-quick-action-card:hover {
+          transform: translateY(-2px) !important;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .home-quick-action-card:active {
+          transform: translateY(0) !important;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .home-quick-action-header {
+          display: flex !important;
+          align-items: flex-start !important;
+          justify-content: space-between !important;
+          margin-bottom: 0.75rem !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
+        }
+        
+        .home-quick-action-icon {
+          width: 2.5rem !important;
+          height: 2.5rem !important;
+          border-radius: 8px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          flex-shrink: 0 !important;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .home-quick-action-badge {
+          padding: 0.25rem 0.5rem !important;
+          border-radius: 6px !important;
+          font-size: 0.6rem !important;
+          font-weight: 600 !important;
+          flex-shrink: 0 !important;
+          white-space: nowrap !important;
+        }
+        
+        .home-quick-action-title {
+          font-size: 1rem !important;
+          font-weight: 700 !important;
+          color: #1f2937 !important;
+          margin-bottom: 0.5rem !important;
+          line-height: 1.3 !important;
+          word-break: break-word !important;
+        }
+        
+        .home-quick-action-description {
+          font-size: 0.8rem !important;
+          color: #6b7280 !important;
+          line-height: 1.4 !important;
+          margin-bottom: 0.75rem !important;
+          word-break: break-word !important;
+        }
+        
+        .home-quick-action-footer {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
+        }
+        
+        .home-quick-action-link {
+          font-size: 0.8rem !important;
+          font-weight: 600 !important;
+          color: #3b82f6 !important;
+        }
+        
+        .home-quick-action-arrow {
+          width: 1rem !important;
+          height: 1rem !important;
+          color: #9ca3af !important;
+          transition: all 0.3s ease !important;
+        }
+        
+        .home-quick-action-card:hover .home-quick-action-arrow {
+          color: #3b82f6 !important;
+          transform: translateX(2px) !important;
+        }
+        
+        /* タブレット対応 */
+        @media (min-width: 640px) {
+          .home-container {
+            padding: 1rem !important;
+          }
+          
+          .home-quick-actions .grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1.25rem !important;
+          }
+          
+          .home-quick-action-card {
+            min-height: 140px !important;
+            padding: 1.25rem !important;
+          }
+          
+          .home-quick-action-title {
+            font-size: 1.1rem !important;
+          }
+          
+          .home-quick-action-description {
+            font-size: 0.85rem !important;
+          }
+        }
+        
+        /* デスクトップ対応 */
+        @media (min-width: 1024px) {
+          .home-quick-actions .grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1.5rem !important;
+          }
+          
+          .home-quick-action-card {
+            min-height: 160px !important;
+            padding: 1.5rem !important;
+          }
+          
+          .home-quick-action-title {
+            font-size: 1.2rem !important;
+          }
+          
+          .home-quick-action-description {
+            font-size: 0.9rem !important;
+          }
+        }
+        
+        /* プレミアムCTAのモバイル最適化 */
+        .home-premium-cta {
+          width: 100% !important;
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+          margin: 1rem 0 !important;
+          padding: 1.5rem !important;
+          border-radius: 16px !important;
+          background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f59e0b 100%) !important;
+          color: white !important;
+          text-align: center !important;
+          box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3) !important;
+        }
+        
+        .home-premium-cta h3 {
+          font-size: 1.5rem !important;
+          font-weight: 800 !important;
+          margin-bottom: 0.75rem !important;
+          line-height: 1.2 !important;
+        }
+        
+        .home-premium-cta p {
+          font-size: 0.9rem !important;
+          margin-bottom: 1.5rem !important;
+          opacity: 0.9 !important;
+          line-height: 1.4 !important;
+        }
+        
+        .home-premium-cta button {
+          padding: 0.75rem 2rem !important;
+          font-size: 1rem !important;
+          font-weight: 700 !important;
+          border-radius: 12px !important;
+          background: white !important;
+          color: #8b5cf6 !important;
+          border: none !important;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+          transition: all 0.3s ease !important;
+          cursor: pointer !important;
+          touch-action: manipulation !important;
+          -webkit-tap-highlight-color: transparent !important;
+        }
+        
+        .home-premium-cta button:hover {
+          transform: translateY(-2px) !important;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+        }
+        
+        .home-premium-cta button:active {
+          transform: translateY(0) !important;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        @media (min-width: 640px) {
+          .home-premium-cta {
+            padding: 2rem !important;
+          }
+          
+          .home-premium-cta h3 {
+            font-size: 1.75rem !important;
+          }
+          
+          .home-premium-cta p {
+            font-size: 1rem !important;
+          }
+        }
+      `}</style>
       <InstallBanner />
-      <div className="container mx-auto px-4 max-w-7xl pt-6">
+      <div className="home-container">
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList>
             <TabsTrigger value="home">ホーム</TabsTrigger>
@@ -1045,57 +1300,47 @@ const Home: React.FC = () => {
 
               {/* Quick Actions */}
               {isFeatureCompleteVisible('/_bg/quick-actions') && (
-                <div className="mb-12">
+                <div className="home-quick-actions mb-12">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     <Zap className="w-6 h-6 text-blue-600" />
                     クイックアクション
                   </h2>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid">
                     {quickActions
                       .filter((action) => isFeatureAccessible(action.path).allowed)
                       .map((action) => (
-                        <Card
+                        <div
                           key={action.id}
-                          className={cn(
-                            'group cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105',
-                            action.featured
-                              ? 'bg-gradient-to-br from-white via-white to-blue-50'
-                              : 'bg-white/70 backdrop-blur'
-                          )}
+                          className="home-quick-action-card"
                           onClick={() => navigate(action.path)}
                         >
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div
-                                className={cn(
-                                  'p-3 rounded-xl bg-gradient-to-r',
-                                  action.gradient,
-                                  'shadow-lg'
-                                )}
-                              >
-                                <div className="text-white">{action.icon}</div>
-                              </div>
-                              {action.featured && (
-                                <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                                  おすすめ
-                                </Badge>
+                          <div className="home-quick-action-header">
+                            <div
+                              className={cn(
+                                'home-quick-action-icon bg-gradient-to-r',
+                                action.gradient
                               )}
+                            >
+                              <div className="text-white">{action.icon}</div>
                             </div>
+                            {action.featured && (
+                              <div className="home-quick-action-badge bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                                おすすめ
+                              </div>
+                            )}
+                          </div>
 
-                            <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                              {action.title}
-                            </h3>
-                            <p className="text-gray-600 text-sm mb-4">{action.description}</p>
+                          <div>
+                            <h3 className="home-quick-action-title">{action.title}</h3>
+                            <p className="home-quick-action-description">{action.description}</p>
+                          </div>
 
-                            <div className="flex items-center justify-between">
-                              <span className={cn('text-sm font-medium', action.color)}>
-                                開始する
-                              </span>
-                              <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
-                            </div>
-                          </CardContent>
-                        </Card>
+                          <div className="home-quick-action-footer">
+                            <span className="home-quick-action-link">開始する</span>
+                            <ArrowRight className="home-quick-action-arrow" />
+                          </div>
+                        </div>
                       ))}
                   </div>
                 </div>
@@ -1187,21 +1432,16 @@ const Home: React.FC = () => {
               {/* Premium CTA */}
               {!hasActiveSubscription &&
                 isFeatureAccessible('/subscription-management').allowed && (
-                  <Card className="bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500 border-0 shadow-2xl text-white">
-                    <CardContent className="p-8 text-center">
-                      <Crown className="w-16 h-16 mx-auto mb-4 text-yellow-200" />
-                      <h3 className="text-2xl font-bold mb-4">プレミアムでさらに強力に</h3>
-                      <p className="text-purple-100 mb-6 max-w-2xl mx-auto">
-                        限定バッジ、高度なAI分析、チーム機能など、プレミアム限定の機能で生産性を次のレベルへ
-                      </p>
-                      <Button
-                        onClick={() => navigate('/subscription-management')}
-                        className="bg-white text-purple-600 hover:bg-gray-100 font-bold px-8 py-3"
-                      >
-                        プレミアムを始める
-                      </Button>
-                    </CardContent>
-                  </Card>
+                  <div className="home-premium-cta">
+                    <Crown className="w-16 h-16 mx-auto mb-4 text-yellow-200" />
+                    <h3>生産性を次のレベルへ</h3>
+                    <p>
+                      限定バッジ、高度なAI分析、チーム機能など、プレミアム限定の機能で生産性を次のレベルへ
+                    </p>
+                    <button onClick={() => navigate('/subscription-management')}>
+                      プレミアムを始める
+                    </button>
+                  </div>
                 )}
 
               {/* Quick Add Todo */}
