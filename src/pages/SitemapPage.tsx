@@ -366,571 +366,664 @@ const SitemapPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
-      {/* ヘッダー */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center space-x-3">
-              <Map className="w-8 h-8 text-blue-600" />
-              <span>Work Time Tracker サイトマップ</span>
+    <>
+      <style>
+        {`
+          /* サイトマップ専用のモバイルファーストスタイル */
+          .sitemap-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            position: relative;
+            width: 100vw;
+            max-width: 100vw;
+            overflow-x: hidden;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+          }
+          
+          .sitemap-container * {
+            box-sizing: border-box;
+          }
+          
+          .sitemap-container .sitemap-content {
+            max-width: 6xl;
+            margin: 0 auto;
+            padding: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+          }
+          
+          .sitemap-container .sitemap-header {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+          }
+          
+          .sitemap-container .sitemap-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+            letter-spacing: -0.025em;
+          }
+          
+          .sitemap-container .sitemap-subtitle {
+            font-size: 0.9rem;
+            color: #6b7280;
+            line-height: 1.4;
+          }
+          
+          .sitemap-container .sitemap-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+          }
+          
+          .sitemap-container .sitemap-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+            overflow: hidden;
+          }
+          
+          .sitemap-container .sitemap-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+          }
+          
+          .sitemap-container .sitemap-card-header {
+            padding: 1rem 1.25rem 0.625rem;
+            border-bottom: 1px solid #f1f5f9;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+          }
+          
+          .sitemap-container .sitemap-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.375rem;
+            line-height: 1.3;
+            letter-spacing: -0.025em;
+          }
+          
+          .sitemap-container .sitemap-card-description {
+            font-size: 0.8rem;
+            color: #6b7280;
+            line-height: 1.4;
+          }
+          
+          .sitemap-container .sitemap-card-content {
+            padding: 1.25rem;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden;
+          }
+          
+          .sitemap-container .sitemap-search {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+          }
+          
+          .sitemap-container .sitemap-search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+          }
+          
+          .sitemap-container .sitemap-search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+          }
+          
+          .sitemap-container .sitemap-category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+          }
+          
+          .sitemap-container .sitemap-category-button {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-height: 2.5rem;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+          }
+          
+          .sitemap-container .sitemap-category-button:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+          }
+          
+          .sitemap-container .sitemap-category-button.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+          }
+          
+          .sitemap-container .sitemap-tabs {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+          }
+          
+          .sitemap-container .sitemap-tabs-list {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.5rem;
+            gap: 0.25rem;
+          }
+          
+          .sitemap-container .sitemap-tabs-trigger {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            text-align: center;
+            min-height: 2.5rem;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+          }
+          
+          .sitemap-container .sitemap-tabs-trigger:hover {
+            background: #e2e8f0;
+            color: #374151;
+          }
+          
+          .sitemap-container .sitemap-tabs-trigger[data-state="active"] {
+            background: #3b82f6;
+            color: white;
+          }
+          
+          .sitemap-container .sitemap-tabs-content {
+            padding: 1.5rem;
+          }
+          
+          .sitemap-container .sitemap-feature-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+          }
+          
+          .sitemap-container .sitemap-feature-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+            overflow: hidden;
+            cursor: pointer;
+          }
+          
+          .sitemap-container .sitemap-feature-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+          }
+          
+          .sitemap-container .sitemap-feature-card.new {
+            border-color: #fecaca;
+            background: #fef2f2;
+          }
+          
+          .sitemap-container .sitemap-feature-card-header {
+            padding: 1rem 1.25rem 0.625rem;
+            border-bottom: 1px solid #f1f5f9;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+          }
+          
+          .sitemap-container .sitemap-feature-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.375rem;
+            line-height: 1.3;
+            letter-spacing: -0.025em;
+          }
+          
+          .sitemap-container .sitemap-feature-card-description {
+            font-size: 0.75rem;
+            color: #6b7280;
+            line-height: 1.4;
+            margin-bottom: 0.75rem;
+          }
+          
+          .sitemap-container .sitemap-feature-card-content {
+            padding: 1.25rem;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden;
+          }
+          
+          .sitemap-container .sitemap-feature-path {
+            font-size: 0.7rem;
+            background: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            color: #374151;
+            font-family: monospace;
+            word-break: break-all;
+          }
+          
+          .sitemap-container .sitemap-badge {
+            padding: 0.125rem 0.375rem;
+            border-radius: 6px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            flex-shrink: 0;
+            flex-grow: 0;
+            max-width: 100%;
+            min-width: 0;
+            word-break: break-word;
+            line-height: 1.2;
+            display: inline-block;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          
+          .sitemap-container .sitemap-badge.new {
+            background: #fecaca;
+            color: #dc2626;
+            border-color: #fecaca;
+          }
+          
+          .sitemap-container .sitemap-badge.active {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #dcfce7;
+          }
+          
+          .sitemap-container .sitemap-badge.available {
+            background: #dbeafe;
+            color: #1e40af;
+            border-color: #dbeafe;
+          }
+          
+          /* タブレット対応 */
+          @media (min-width: 640px) {
+            .sitemap-container .sitemap-content {
+              padding: 1.5rem;
+            }
+            
+            .sitemap-container .sitemap-title {
+              font-size: 2rem;
+            }
+            
+            .sitemap-container .sitemap-feature-grid {
+              grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .sitemap-container .sitemap-category-buttons {
+              flex-wrap: nowrap;
+              overflow-x: auto;
+              scrollbar-width: none;
+              -ms-overflow-style: none;
+            }
+            
+            .sitemap-container .sitemap-category-buttons::-webkit-scrollbar {
+              display: none;
+            }
+          }
+          
+          /* デスクトップ対応 */
+          @media (min-width: 1024px) {
+            .sitemap-container .sitemap-content {
+              padding: 2rem;
+            }
+            
+            .sitemap-container .sitemap-title {
+              font-size: 2.25rem;
+            }
+            
+            .sitemap-container .sitemap-feature-grid {
+              grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .sitemap-container .sitemap-category-buttons {
+              flex-wrap: wrap;
+            }
+          }
+        `}
+      </style>
+      <div className="sitemap-container">
+        <div className="sitemap-content">
+          {/* ヘッダー */}
+          <div className="sitemap-header">
+            <h1 className="sitemap-title">
+              <Map className="w-8 h-8 text-blue-600 inline-block mr-3" />
+              Work Time Tracker サイトマップ
             </h1>
-            <p className="text-gray-600 mt-2">全機能一覧・使用方法ガイド・新機能案内</p>
+            <p className="sitemap-subtitle">全機能一覧・使用方法ガイド・新機能案内</p>
+          </div>
+
+          {/* 新機能ハイライト */}
+          {/* 完成している場合のみ新機能CTAを表示（未完成はサイトマップから非表示） */}
+          {(() => {
+            const quad = getFeatureByPath('/quadrant-dashboard');
+            if (!quad || quad.status !== 'complete') return null;
+            return (
+              <Alert className="border-red-200 bg-red-50">
+                <Target className="h-4 w-4 text-red-600" />
+                <AlertDescription className="text-red-800">
+                  <strong>🆕 新機能リリース:</strong>
+                  「4象限マトリックス」でAI駆動のタスク分類・生産性分析が利用可能になりました！
+                  <Button
+                    variant="link"
+                    className="p-0 ml-2 h-auto text-red-600 underline"
+                    onClick={() => navigate('/quadrant-dashboard')}
+                  >
+                    今すぐ試す <ArrowRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            );
+          })()}
+
+          {/* タスク追加クイックガイド */}
+          <Card className="border-blue-200 bg-blue-50">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center space-x-2 text-blue-800">
+                <CheckSquare className="w-5 h-5" />
+                <span>⚡ タスク追加クイックガイド</span>
+                <Badge variant="secondary" className="bg-blue-200 text-blue-800">
+                  5つの方法
+                </Badge>
+                <Badge variant="destructive" className="bg-red-200 text-red-800">
+                  🔐 ログイン必須
+                </Badge>
+              </CardTitle>
+              <CardDescription className="text-blue-700">
+                ⚠️
+                すべてのタスク管理機能にログインが必要です。目的に応じてタスクを追加できる場所をご案内します
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {canShow('/') && (
+                <div className="p-3 bg-white rounded-lg border border-blue-200">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Home className="w-4 h-4 text-green-600" />
+                    <span className="font-medium text-sm">ホームページ</span>
+                    <Badge variant="outline" className="text-xs">
+                      最速
+                    </Badge>
+                    <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                      🔐
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-2">
+                    日常タスクのクイック追加（要ログイン）
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full text-xs"
+                    onClick={() => navigate('/')}
+                  >
+                    ログイン後に追加
+                  </Button>
+                </div>
+              )}
+
+              {canShow('/todos') && (
+                <div className="p-3 bg-white rounded-lg border border-blue-200">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <CheckSquare className="w-4 h-4 text-blue-600" />
+                    <span className="font-medium text-sm">従来タスク</span>
+                    <Badge variant="outline" className="text-xs">
+                      詳細
+                    </Badge>
+                    <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                      🔐
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-2">
+                    優先度・期限・カテゴリ設定（要ログイン）
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full text-xs"
+                    onClick={() => navigate('/todos')}
+                  >
+                    ログイン後に管理
+                  </Button>
+                </div>
+              )}
+
+              {canShow('/game-loop-tasks') && (
+                <div className="p-3 bg-white rounded-lg border border-blue-200">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Play className="w-4 h-4 text-purple-600" />
+                    <span className="font-medium text-sm">ゲームループ</span>
+                    <Badge variant="outline" className="text-xs">
+                      AI分解
+                    </Badge>
+                    <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                      🔐
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-2">大きな作業を自動分解（要ログイン）</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full text-xs"
+                    onClick={() => navigate('/game-loop-tasks')}
+                  >
+                    ログイン後に分解
+                  </Button>
+                </div>
+              )}
+
+              {canShow('/integrated-dashboard') && (
+                <div className="p-3 bg-white rounded-lg border border-blue-200">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <BarChart3 className="w-4 h-4 text-orange-600" />
+                    <span className="font-medium text-sm">統合ダッシュボード</span>
+                    <Badge variant="outline" className="text-xs">
+                      プロジェクト
+                    </Badge>
+                    <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                      🔐
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-2">
+                    プロジェクト管理・進捗追跡（要ログイン）
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full text-xs"
+                    onClick={() => navigate('/integrated-dashboard')}
+                  >
+                    ログイン後に管理
+                  </Button>
+                </div>
+              )}
+
+              {canShow('/adhd-integrated-life') && (
+                <div className="p-3 bg-white rounded-lg border border-blue-200">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Brain className="w-4 h-4 text-indigo-600" />
+                    <span className="font-medium text-sm">認知特化</span>
+                    <Badge variant="outline" className="text-xs">
+                      ADHD対応
+                    </Badge>
+                    <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                      🔐
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-2">認知特性に最適化（要ログイン）</p>
+                  <Button size="sm" variant="outline" className="w-full text-xs" disabled>
+                    ログイン後に認知系機能から
+                  </Button>
+                </div>
+              )}
+
+              <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200 flex items-center justify-center">
+                <div className="text-center">
+                  <Lightbulb className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                  <p className="text-xs font-medium text-blue-800 mb-1">迷ったら？</p>
+                  <p className="text-xs text-blue-600">ログイン後にホームページから始めよう！</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* 検索・フィルタ */}
+        <div className="sitemap-search">
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="機能名やキーワードで検索..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="sitemap-search-input"
+            />
+          </div>
+          <div className="sitemap-category-buttons">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`sitemap-category-button ${
+                  selectedCategory === category.id ? 'active' : ''
+                }`}
+              >
+                {category.icon}
+                <span>{category.name}</span>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* 新機能ハイライト */}
-        {/* 完成している場合のみ新機能CTAを表示（未完成はサイトマップから非表示） */}
-        {(() => {
-          const quad = getFeatureByPath('/quadrant-dashboard');
-          if (!quad || quad.status !== 'complete') return null;
-          return (
-            <Alert className="border-red-200 bg-red-50">
-              <Target className="h-4 w-4 text-red-600" />
-              <AlertDescription className="text-red-800">
-                <strong>🆕 新機能リリース:</strong>
-                「4象限マトリックス」でAI駆動のタスク分類・生産性分析が利用可能になりました！
-                <Button
-                  variant="link"
-                  className="p-0 ml-2 h-auto text-red-600 underline"
-                  onClick={() => navigate('/quadrant-dashboard')}
-                >
-                  今すぐ試す <ArrowRight className="w-3 h-3 ml-1" />
-                </Button>
-              </AlertDescription>
-            </Alert>
-          );
-        })()}
-
-        {/* タスク追加クイックガイド */}
-        <Card className="border-blue-200 bg-blue-50">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center space-x-2 text-blue-800">
-              <CheckSquare className="w-5 h-5" />
-              <span>⚡ タスク追加クイックガイド</span>
-              <Badge variant="secondary" className="bg-blue-200 text-blue-800">
-                5つの方法
-              </Badge>
-              <Badge variant="destructive" className="bg-red-200 text-red-800">
-                🔐 ログイン必須
-              </Badge>
-            </CardTitle>
-            <CardDescription className="text-blue-700">
-              ⚠️
-              すべてのタスク管理機能にログインが必要です。目的に応じてタスクを追加できる場所をご案内します
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {canShow('/') && (
-              <div className="p-3 bg-white rounded-lg border border-blue-200">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Home className="w-4 h-4 text-green-600" />
-                  <span className="font-medium text-sm">ホームページ</span>
-                  <Badge variant="outline" className="text-xs">
-                    最速
-                  </Badge>
-                  <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
-                    🔐
-                  </Badge>
-                </div>
-                <p className="text-xs text-gray-600 mb-2">日常タスクのクイック追加（要ログイン）</p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full text-xs"
-                  onClick={() => navigate('/')}
-                >
-                  ログイン後に追加
-                </Button>
-              </div>
-            )}
-
-            {canShow('/todos') && (
-              <div className="p-3 bg-white rounded-lg border border-blue-200">
-                <div className="flex items-center space-x-2 mb-2">
-                  <CheckSquare className="w-4 h-4 text-blue-600" />
-                  <span className="font-medium text-sm">従来タスク</span>
-                  <Badge variant="outline" className="text-xs">
-                    詳細
-                  </Badge>
-                  <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
-                    🔐
-                  </Badge>
-                </div>
-                <p className="text-xs text-gray-600 mb-2">
-                  優先度・期限・カテゴリ設定（要ログイン）
-                </p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full text-xs"
-                  onClick={() => navigate('/todos')}
-                >
-                  ログイン後に管理
-                </Button>
-              </div>
-            )}
-
-            {canShow('/game-loop-tasks') && (
-              <div className="p-3 bg-white rounded-lg border border-blue-200">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Play className="w-4 h-4 text-purple-600" />
-                  <span className="font-medium text-sm">ゲームループ</span>
-                  <Badge variant="outline" className="text-xs">
-                    AI分解
-                  </Badge>
-                  <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
-                    🔐
-                  </Badge>
-                </div>
-                <p className="text-xs text-gray-600 mb-2">大きな作業を自動分解（要ログイン）</p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full text-xs"
-                  onClick={() => navigate('/game-loop-tasks')}
-                >
-                  ログイン後に分解
-                </Button>
-              </div>
-            )}
-
-            {canShow('/integrated-dashboard') && (
-              <div className="p-3 bg-white rounded-lg border border-blue-200">
-                <div className="flex items-center space-x-2 mb-2">
-                  <BarChart3 className="w-4 h-4 text-orange-600" />
-                  <span className="font-medium text-sm">統合ダッシュボード</span>
-                  <Badge variant="outline" className="text-xs">
-                    プロジェクト
-                  </Badge>
-                  <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
-                    🔐
-                  </Badge>
-                </div>
-                <p className="text-xs text-gray-600 mb-2">
-                  プロジェクト管理・進捗追跡（要ログイン）
-                </p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full text-xs"
-                  onClick={() => navigate('/integrated-dashboard')}
-                >
-                  ログイン後に管理
-                </Button>
-              </div>
-            )}
-
-            {canShow('/adhd-integrated-life') && (
-              <div className="p-3 bg-white rounded-lg border border-blue-200">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Brain className="w-4 h-4 text-indigo-600" />
-                  <span className="font-medium text-sm">認知特化</span>
-                  <Badge variant="outline" className="text-xs">
-                    ADHD対応
-                  </Badge>
-                  <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
-                    🔐
-                  </Badge>
-                </div>
-                <p className="text-xs text-gray-600 mb-2">認知特性に最適化（要ログイン）</p>
-                <Button size="sm" variant="outline" className="w-full text-xs" disabled>
-                  ログイン後に認知系機能から
-                </Button>
-              </div>
-            )}
-
-            <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200 flex items-center justify-center">
-              <div className="text-center">
-                <Lightbulb className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-                <p className="text-xs font-medium text-blue-800 mb-1">迷ったら？</p>
-                <p className="text-xs text-blue-600">ログイン後にホームページから始めよう！</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* 検索・フィルタ */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Input
-                  placeholder="機能名やキーワードで検索..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant={selectedCategory === category.id ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category.id)}
-                  className="flex items-center space-x-1"
-                >
-                  {category.icon}
-                  <span>{category.name}</span>
-                </Button>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* メインコンテンツ */}
-      <Tabs defaultValue="grid" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="grid">グリッド表示</TabsTrigger>
-          <TabsTrigger value="list">リスト表示</TabsTrigger>
-          <TabsTrigger value="guide">使用ガイド</TabsTrigger>
-        </TabsList>
-
-        {/* グリッド表示 */}
-        <TabsContent value="grid" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredPages
-              .filter((p) => {
-                const feature = getFeatureByPath(p.path);
-                return !feature || feature.status === 'complete';
-              })
-              .map((page) => (
-                <Card
-                  key={page.path}
-                  className={`hover:shadow-md transition-shadow cursor-pointer border-2 ${
-                    page.isNew ? 'border-red-200 bg-red-50' : 'border-transparent'
-                  }`}
-                  onClick={() => handlePageNavigation(page.path)}
-                >
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        {page.icon}
-                        <CardTitle className="text-sm">{page.name}</CardTitle>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        {page.isNew && (
-                          <Badge variant="destructive" className="text-xs">
-                            NEW!
-                          </Badge>
-                        )}
-                        <Badge className={`text-xs ${getStatusColor(page.status)}`}>
-                          {page.status === 'active' && 'アクティブ'}
-                          {page.status === 'available' && '利用可能'}
-                          {page.status === 'new' && '新機能'}
-                        </Badge>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-xs mb-3">{page.description}</CardDescription>
-                    <div className="flex items-center justify-between">
-                      <code className="text-xs bg-gray-100 px-2 py-1 rounded">{page.path}</code>
-                      <ExternalLink className="w-3 h-3 text-gray-400" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+        {/* メインコンテンツ */}
+        <div className="sitemap-tabs">
+          <div className="sitemap-tabs-list">
+            <button className="sitemap-tabs-trigger" data-state="active">
+              グリッド表示
+            </button>
+            <button className="sitemap-tabs-trigger">リスト表示</button>
+            <button className="sitemap-tabs-trigger">使用ガイド</button>
           </div>
 
-          {filteredPages.length === 0 && (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Search className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                <h3 className="text-lg font-medium mb-2">該当する機能が見つかりません</h3>
-                <p className="text-gray-600 mb-4">
-                  検索条件を変更するか、カテゴリフィルタを調整してください。
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedCategory('all');
-                  }}
-                >
-                  フィルタをクリア
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        {/* リスト表示 */}
-        <TabsContent value="list" className="space-y-4">
-          {categories
-            .filter((cat) => cat.id !== 'all')
-            .map((category) => {
-              const categoryPages = filteredPages.filter((page) => {
-                const match = page.category === category.id;
-                if (!match) return false;
-                const feature = getFeatureByPath(page.path);
-                return !feature || feature.status === 'complete';
-              });
-              if (categoryPages.length === 0) return null;
-
-              return (
-                <Card key={category.id}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      {category.icon}
-                      <span>{category.name}</span>
-                      <Badge variant="outline">{categoryPages.length}件</Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {categoryPages.map((page) => (
-                        <div
-                          key={page.path}
-                          className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                          onClick={() => handlePageNavigation(page.path)}
-                        >
-                          <div className="flex items-center space-x-3">
-                            {page.icon}
-                            <div>
-                              <div className="flex items-center space-x-2">
-                                <span className="font-medium">{page.name}</span>
-                                {page.isNew && (
-                                  <Badge variant="destructive" className="text-xs">
-                                    NEW!
-                                  </Badge>
-                                )}
-                              </div>
-                              <p className="text-sm text-gray-600">{page.description}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <code className="text-xs bg-gray-100 px-2 py-1 rounded">
-                              {page.path}
-                            </code>
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
-                          </div>
+          <div className="sitemap-tabs-content">
+            <div className="sitemap-feature-grid">
+              {filteredPages
+                .filter((p) => {
+                  const feature = getFeatureByPath(p.path);
+                  return !feature || feature.status === 'complete';
+                })
+                .map((page) => (
+                  <div
+                    key={page.path}
+                    className={`sitemap-feature-card ${page.isNew ? 'new' : ''}`}
+                    onClick={() => handlePageNavigation(page.path)}
+                  >
+                    <div className="sitemap-feature-card-header">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          {page.icon}
+                          <div className="sitemap-feature-card-title">{page.name}</div>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-        </TabsContent>
-
-        {/* 使用ガイド */}
-        <TabsContent value="guide" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* クイックスタート */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Lightbulb className="w-5 h-5" />
-                  <span>🚀 クイックスタート</span>
-                </CardTitle>
-                <CardDescription>初回利用時の推奨手順</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ol className="space-y-3">
-                  <li className="flex items-start space-x-2">
-                    <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      1
-                    </span>
-                    <div>
-                      <strong>プロフィール設定</strong>
-                      <p className="text-sm text-gray-600">
-                        まずはプロフィールページで基本情報を設定
-                      </p>
-                    </div>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      2
-                    </span>
-                    <div>
-                      <strong>タスク登録</strong>
-                      <p className="text-sm text-gray-600">「従来タスク」でタスクを追加・整理</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      3
-                    </span>
-                    <div>
-                      <strong>4象限分析</strong>
-                      <p className="text-sm text-gray-600">「4象限マトリックス」でAI分析を実行</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      4
-                    </span>
-                    <div>
-                      <strong>ゲームループ開始</strong>
-                      <p className="text-sm text-gray-600">「ゲームループタスク」で楽しく実行</p>
-                    </div>
-                  </li>
-                </ol>
-                <Button className="w-full mt-4" onClick={() => navigate('/quadrant-dashboard')}>
-                  🆕 新機能から始める
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* 主要機能紹介 */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Star className="w-5 h-5" />
-                  <span>⭐ 主要機能</span>
-                </CardTitle>
-                <CardDescription>特に重要な機能をピックアップ</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="border-l-4 border-l-red-500 pl-4">
-                    <h4 className="font-semibold flex items-center space-x-2">
-                      <Target className="w-4 h-4" />
-                      <span>4象限マトリックス</span>
-                      <Badge variant="destructive" className="text-xs">
-                        NEW!
-                      </Badge>
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      Gemini AIによるタスク自動分類・生産性分析
-                    </p>
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto text-sm"
-                      onClick={() => navigate('/quadrant-dashboard')}
-                    >
-                      使ってみる →
-                    </Button>
-                  </div>
-
-                  <div className="border-l-4 border-l-purple-500 pl-4">
-                    <h4 className="font-semibold flex items-center space-x-2">
-                      <Play className="w-4 h-4" />
-                      <span>ゲームループタスク</span>
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      プロシージネーション対策・ゲーミフィケーション
-                    </p>
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto text-sm"
-                      onClick={() => navigate('/game-loop-tasks')}
-                    >
-                      試してみる →
-                    </Button>
-                  </div>
-
-                  <div className="border-l-4 border-l-blue-500 pl-4">
-                    <h4 className="font-semibold flex items-center space-x-2">
-                      <BarChart3 className="w-4 h-4" />
-                      <span>統合ダッシュボード</span>
-                    </h4>
-                    <p className="text-sm text-gray-600">全システム統合・総合分析ビュー</p>
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto text-sm"
-                      onClick={() => navigate('/integrated-dashboard')}
-                    >
-                      確認する →
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* ヘルプ・サポート */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <HelpCircle className="w-5 h-5" />
-                  <span>❓ ヘルプ・サポート</span>
-                </CardTitle>
-                <CardDescription>困ったときのサポート情報</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <Alert>
-                    <Shield className="h-4 w-4" />
-                    <AlertDescription>
-                      <strong>安全な使用:</strong>
-                      全データは暗号化され、プライバシーが保護されています。
-                    </AlertDescription>
-                  </Alert>
-
-                  <div className="space-y-2">
-                    <h5 className="font-medium">📚 参考リソース</h5>
-                    <ul className="text-sm space-y-1 ml-4">
-                      <li>• 4象限分析: アイゼンハワーマトリックス理論</li>
-                      <li>• ゲームループ: プロシージネーション研究</li>
-                      <li>• AI分析: Gemini AI技術活用</li>
-                    </ul>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h5 className="font-medium">🔧 トラブルシューティング</h5>
-                    <ul className="text-sm space-y-1 ml-4">
-                      <li>• ページが表示されない → ログイン確認</li>
-                      <li>• 分析が失敗する → タスク詳細情報の充実</li>
-                      <li>• 動作が重い → ブラウザのキャッシュクリア</li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* システム統合効果 */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Activity className="w-5 h-5" />
-                  <span>🔗 システム統合効果</span>
-                </CardTitle>
-                <CardDescription>各機能の連携メリット</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-3 rounded-lg">
-                    <h5 className="font-medium mb-2">🎯 生産性向上の流れ</h5>
-                    <div className="text-sm space-y-1">
-                      <div className="flex items-center space-x-2">
-                        <Target className="w-3 h-3" />
-                        <span>4象限でタスク分類</span>
+                        <div className="flex items-center space-x-1">
+                          {page.isNew && <span className="sitemap-badge new">NEW!</span>}
+                          <span className={`sitemap-badge ${page.status}`}>
+                            {page.status === 'active' && 'アクティブ'}
+                            {page.status === 'available' && '利用可能'}
+                            {page.status === 'new' && '新機能'}
+                          </span>
+                        </div>
                       </div>
-                      <ArrowRight className="w-3 h-3 text-gray-400 ml-1" />
-                      <div className="flex items-center space-x-2">
-                        <Play className="w-3 h-3" />
-                        <span>ゲームループで実行</span>
-                      </div>
-                      <ArrowRight className="w-3 h-3 text-gray-400 ml-1" />
-                      <div className="flex items-center space-x-2">
-                        <BarChart3 className="w-3 h-3" />
-                        <span>統合ダッシュボードで分析</span>
-                      </div>
-                      <ArrowRight className="w-3 h-3 text-gray-400 ml-1" />
-                      <div className="flex items-center space-x-2">
-                        <Zap className="w-3 h-3" />
-                        <span>自動化で効率化</span>
+                    </div>
+                    <div className="sitemap-feature-card-content">
+                      <div className="sitemap-feature-card-description">{page.description}</div>
+                      <div className="flex items-center justify-between">
+                        <code className="sitemap-feature-path">{page.path}</code>
+                        <ExternalLink className="w-3 h-3 text-gray-400" />
                       </div>
                     </div>
                   </div>
+                ))}
+            </div>
 
-                  <p className="text-sm text-gray-600">
-                    各システムが連携することで、単体使用時の3倍以上の生産性向上効果が期待できます。
+            {filteredPages.length === 0 && (
+              <div className="sitemap-card">
+                <div
+                  className="sitemap-card-content"
+                  style={{ textAlign: 'center', padding: '2rem' }}
+                >
+                  <Search className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-medium mb-2">該当する機能が見つかりません</h3>
+                  <p className="text-gray-600 mb-4">
+                    検索条件を変更するか、カテゴリフィルタを調整してください。
                   </p>
+                  <button
+                    className="sitemap-category-button"
+                    onClick={() => {
+                      setSearchTerm('');
+                      setSelectedCategory('all');
+                    }}
+                  >
+                    フィルタをクリア
+                  </button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            )}
           </div>
-        </TabsContent>
-      </Tabs>
-    </div>
+        </div>
+      </div>
+    </>
   );
 };
 
