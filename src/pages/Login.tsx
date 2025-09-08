@@ -19,7 +19,7 @@ import { toast } from 'react-hot-toast';
 import { AxiosError } from 'axios';
 import { Eye, EyeOff, Loader2, AlertCircle, Mail, Lock, Shield, CheckCircle } from 'lucide-react';
 import { useAnalytics } from '@/lib/analytics';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/hooks/useInternationalization';
 
 // (Removed legacy mock globals)
 
@@ -778,9 +778,7 @@ export default function Login() {
                     autoComplete="email"
                   />
                 </div>
-                {errors.email && (
-                  <p className="text-sm text-red-600 mt-1">{errors.email}</p>
-                )}
+                {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
               </div>
 
               {/* パスワード */}
@@ -809,9 +807,7 @@ export default function Login() {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                {errors.password && (
-                  <p className="text-sm text-red-600 mt-1">{errors.password}</p>
-                )}
+                {errors.password && <p className="text-sm text-red-600 mt-1">{errors.password}</p>}
               </div>
 
               {/* オプション */}
@@ -832,11 +828,7 @@ export default function Login() {
               </div>
 
               {/* ログインボタン */}
-              <button
-                type="submit"
-                className="login-button"
-                disabled={isSubmitting}
-              >
+              <button type="submit" className="login-button" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -860,175 +852,10 @@ export default function Login() {
               </div>
 
               {/* セキュリティ通知 */}
-              <div className="security-notice">
-                このサイトはSSL暗号化通信により保護されています
-              </div>
+              <div className="security-notice">このサイトはSSL暗号化通信により保護されています</div>
             </form>
           </div>
         </div>
-      </div>
-    </>
-  );"login-page min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-        <Card className="w-full max-w-md shadow-lg">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
-              <Shield className="h-6 w-6 text-blue-600" />
-              {t('auth.login.title', 'ログイン')}
-            </CardTitle>
-            <CardDescription className="text-gray-600">
-              {t('auth.login.subtitle', 'Work Time Trackerにアクセス')}
-            </CardDescription>
-            {from !== '/' && (
-              <Alert className="mt-4 border-blue-200 bg-blue-50">
-                <AlertCircle className="h-4 w-4 text-blue-600" />
-                <AlertDescription className="text-blue-700">
-                  {t('auth.login.requireLogin', 'このページにアクセスするにはログインが必要です')}
-                </AlertDescription>
-              </Alert>
-            )}
-            {sessionExpired && (
-              <Alert className="mt-4 border-orange-200 bg-orange-50">
-                <AlertCircle className="h-4 w-4 text-orange-600" />
-                <AlertDescription className="text-orange-700">
-                  {t('auth.login.sessionExpired', 'セッションが期限切れになりました')}
-                </AlertDescription>
-              </Alert>
-            )}
-          </CardHeader>
-
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              {errors.general && (
-                <Alert className="border-red-200 bg-red-50">
-                  <AlertCircle className="h-4 w-4 text-red-600" />
-                  <AlertDescription className="text-red-700">{errors.general}</AlertDescription>
-                </Alert>
-              )}
-
-              {/* メールアドレスフィールド */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                  <Mail className="inline-block w-4 h-4 mr-1" />
-                  {t('auth.login.email', 'メールアドレス')}
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className={`pl-4 ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
-                    placeholder="メールアドレスを入力"
-                    disabled={isSubmitting}
-                    autoComplete="email"
-                  />
-                  {formData.email && !errors.email && (
-                    <div className="absolute right-3 top-3">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    </div>
-                  )}
-                </div>
-                {errors.email && (
-                  <p className="text-sm text-red-600 flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-1" />
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-
-              {/* パスワードフィールド */}
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                  <Lock className="inline-block w-4 h-4 mr-1" />
-                  {t('auth.login.password', 'パスワード')}
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    className={`pl-4 pr-12 ${errors.password ? 'border-red-500 focus:border-red-500' : ''}`}
-                    placeholder="パスワードを入力"
-                    disabled={isSubmitting}
-                    autoComplete="current-password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                    disabled={isSubmitting}
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-                {errors.password && (
-                  <p className="text-sm text-red-600 flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-1" />
-                    {errors.password}
-                  </p>
-                )}
-              </div>
-
-              {/* Remember Me チェックボックス */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="rememberMe"
-                    checked={rememberMe}
-                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                    disabled={isSubmitting}
-                  />
-                  <Label htmlFor="rememberMe" className="text-sm text-gray-700 cursor-pointer">
-                    {t('auth.login.remember', 'ログイン状態を保持する')}
-                  </Label>
-                </div>
-
-                {/* パスワードを忘れた場合のリンク */}
-                <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
-                  {t('auth.login.forgot', 'パスワードをお忘れですか？')}
-                </Link>
-              </div>
-            </CardContent>
-
-            <CardFooter className="flex flex-col space-y-4">
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isSubmitting}
-                data-testid="login-submit-btn"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    {t('auth.login.loggingIn', 'ログイン中...')}
-                  </>
-                ) : (
-                  <>
-                    <Shield className="h-4 w-4 mr-2" />
-                    {t('auth.login.submit', 'ログイン')}
-                  </>
-                )}
-              </Button>
-
-              {/* Alternative login UI removed */}
-
-              <div className="text-center text-sm text-gray-600">
-                {t('auth.login.noAccount', 'アカウントをお持ちでない方は')}
-                <Link to="/register" className="text-blue-600 hover:underline ml-1">
-                  {t('auth.login.register', 'こちらから登録')}
-                </Link>
-              </div>
-
-              {/* セキュリティ情報 */}
-              <div className="text-center">
-                <p className="text-xs text-gray-500">
-                  {t('auth.login.secureNotice', 'このサイトは SSL暗号化通信により保護されています')}
-                </p>
-              </div>
-            </CardFooter>
-          </form>
-        </Card>
       </div>
     </>
   );
