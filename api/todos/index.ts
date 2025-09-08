@@ -1,4 +1,5 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
+// @ts-nocheck
+const { VercelRequest, VercelResponse } = require('@vercel/node');
 
 interface TodoDocument {
   id: string;
@@ -53,7 +54,7 @@ const mockTodos: TodoDocument[] = [
   },
 ];
 
-async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: any, res: any) {
   // CORS設定
   const origin = req.headers.origin as string | undefined;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];

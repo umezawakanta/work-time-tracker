@@ -16,7 +16,7 @@ interface AssetRecord {
 // データベースサービス
 const financialService = FinancialDataService.getInstance();
 
-async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -102,5 +102,3 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 }
-
-module.exports = handler;

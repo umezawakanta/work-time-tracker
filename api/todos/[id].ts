@@ -129,7 +129,9 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
 };
 
 // Export with authentication
-export default withAuth(handler, {
+const authenticatedHandler = withAuth(handler, {
   requireAuth: true,
   requireVerified: false, // Allow unverified users for development
 });
+
+module.exports = authenticatedHandler;
