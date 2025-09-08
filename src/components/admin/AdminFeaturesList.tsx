@@ -183,7 +183,7 @@ export const AdminFeaturesList: React.FC = () => {
       if (response.data.success) {
         setFeatures(response.data.features);
         setSummary(response.data.summary);
-        setLastUpdated(response.data.lastUpdated);
+        setLastUpdated(response.data.lastUpdated ?? null);
       } else {
         toast.error('機能一覧の取得に失敗しました');
       }

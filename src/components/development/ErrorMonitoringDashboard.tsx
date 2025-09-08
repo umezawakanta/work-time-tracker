@@ -62,6 +62,7 @@ export const ErrorMonitoringDashboard: React.FC = () => {
   const [autoRecoveryEnabled, setAutoRecoveryEnabled] = useState(true);
   const [realtimeUpdateInterval, setRealtimeUpdateInterval] = useState<NodeJS.Timeout | null>(null);
   const [isGeneratingTestError, setIsGeneratingTestError] = useState(false);
+  const [updateBackoff, setUpdateBackoff] = useState(10000); // 初期10秒
 
   useEffect(() => {
     updateMetrics();
@@ -75,10 +76,18 @@ export const ErrorMonitoringDashboard: React.FC = () => {
     };
   }, []);
 
+  // バックオフ変更時に再起動
+  useEffect(() => {
+    if (realtimeUpdateInterval) {
+      clearInterval(realtimeUpdateInterval);
+      startRealtimeUpdates();
+    }
+  }, [updateBackoff]);
+
   const startRealtimeUpdates = () => {
     const interval = setInterval(() => {
       updateMetrics();
-    }, 2000); // 2秒間隔で更新
+    }, updateBackoff); // バックオフ間隔で更新
 
     setRealtimeUpdateInterval(interval);
   };
@@ -88,7 +97,8 @@ export const ErrorMonitoringDashboard: React.FC = () => {
       const errorRecoveryService = ErrorRecoveryService.getInstance();
       const stats = errorRecoveryService.getRecoveryStats();
       const diagnosis = await errorRecoveryService.performSelfDiagnosis().catch((e) => {
-        // 401等は上位でハンドリング
+        // 401等は上位でハンドリング - バックオフを増加
+        setUpdateBackoff(prev => Math.min(prev * 1.5, 60000)); // 最大60秒
         return { server: false, websocket: false, database: false, auth: false } as any;
       });
 
@@ -122,8 +132,13 @@ export const ErrorMonitoringDashboard: React.FC = () => {
         criticalErrors,
         systemHealth: diagnosis,
       });
+      
+      // 成功時はバックオフをリセット
+      setUpdateBackoff(10000);
     } catch (error) {
       console.error('メトリクス更新エラー:', error);
+      // エラー時はバックオフを増加
+      setUpdateBackoff(prev => Math.min(prev * 1.5, 60000));
     }
   };
 

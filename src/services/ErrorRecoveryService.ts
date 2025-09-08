@@ -567,8 +567,7 @@ export class ErrorRecoveryService {
     }
 
     try {
-      // 認証確認
-      // 認証はBearer必須
+      // 認証確認 - トークンが無い場合はスキップ（401スパム防止）
       const token =
         (typeof localStorage !== 'undefined' &&
           (localStorage.getItem('accessToken') ||
@@ -576,10 +575,16 @@ export class ErrorRecoveryService {
             sessionStorage.getItem('access_token') ||
             sessionStorage.getItem('accessToken'))) ||
         '';
-      const headers: Record<string, string> = {};
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      const authResponse = await fetch('/api/auth/check', { headers });
-      results.auth = authResponse.ok;
+      
+      if (token) {
+        const headers: Record<string, string> = {};
+        headers['Authorization'] = `Bearer ${token}`;
+        const authResponse = await fetch('/api/auth/check', { headers });
+        results.auth = authResponse.ok;
+      } else {
+        // トークンが無い場合は認証状態を false として扱う（401エラーを発生させない）
+        results.auth = false;
+      }
     } catch (e) {
       results.auth = false;
     }

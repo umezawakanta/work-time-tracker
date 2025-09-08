@@ -50,6 +50,14 @@ const GlobalMobileStyles = () => (
         box-sizing: border-box !important;
       }
       
+      /* 縦つぶれ対策 - 日本語テキストの改行改善 */
+      h1, h2, h3, h4, h5, h6, p, span, div {
+        word-break: normal !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+      }
+      }
+      
       /* コンテナの幅制限 */
       .container, .mx-auto {
         width: 100% !important;
