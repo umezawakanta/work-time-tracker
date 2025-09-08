@@ -100,33 +100,35 @@ const AdminUsersPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center">
-            <Users className="w-6 h-6 mr-2" /> ユーザー管理
-          </h1>
-          <p className="text-gray-600">登録ユーザーの一覧・検索・更新を行えます。</p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="メール/名前で検索"
-            aria-label="ユーザー検索"
-            className="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            aria-label="再読み込み"
-            onClick={() => void fetchPage()}
-            disabled={loading}
-          >
-            {loading ? '読み込み中…' : '再読み込み'}
-          </Button>
-        </div>
+    <div className="container mx-auto p-4 space-y-4">
+      {/* ヘッダー - モバイル最適化 */}
+      <div className="text-center mb-6">
+        <h1 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
+          <Users className="w-5 h-5 mr-2" /> ユーザー管理
+        </h1>
+        <p className="text-sm text-gray-600">登録ユーザーの一覧・検索・更新を行えます。</p>
+      </div>
+
+      {/* 検索フォーム - モバイル最適化 */}
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="メール/名前で検索"
+          aria-label="ユーザー検索"
+          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+        />
+        <Button
+          variant="outline"
+          size="sm"
+          aria-label="再読み込み"
+          onClick={() => void fetchPage()}
+          disabled={loading}
+          className="w-full sm:w-auto"
+        >
+          {loading ? '読み込み中…' : '再読み込み'}
+        </Button>
       </div>
 
       {error && (
@@ -139,113 +141,205 @@ const AdminUsersPage: React.FC = () => {
 
       <Card>
         <CardContent className="p-0">
-          <div className="overflow-x-auto" aria-live="polite">
+          <div aria-live="polite">
             <span className="sr-only" role="status">
               {loading ? '読み込み中' : '読み込み完了'}
             </span>
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Email
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Name
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Role
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Status
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Last login
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {loading && items.length === 0 ? (
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <tr key={`skeleton-${i}`} className="animate-pulse">
-                      <td className="px-6 py-4">
-                        <div className="h-4 bg-gray-200 rounded w-48" />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 bg-gray-200 rounded w-32" />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 bg-gray-200 rounded w-16" />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 bg-gray-200 rounded w-20" />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 bg-gray-200 rounded w-40" />
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="h-8 bg-gray-200 rounded w-24 ml-auto" />
+
+            {/* デスクトップ用テーブル表示 */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Email
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Name
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Role
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Status
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Last login
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {loading && items.length === 0 ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <tr key={`skeleton-${i}`} className="animate-pulse">
+                        <td className="px-6 py-4">
+                          <div className="h-4 bg-gray-200 rounded w-48" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-4 bg-gray-200 rounded w-32" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-4 bg-gray-200 rounded w-16" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-4 bg-gray-200 rounded w-20" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-4 bg-gray-200 rounded w-40" />
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="h-8 bg-gray-200 rounded w-24 ml-auto" />
+                        </td>
+                      </tr>
+                    ))
+                  ) : items.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
+                        ユーザーがいません
                       </td>
                     </tr>
-                  ))
-                ) : items.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
-                      ユーザーがいません
-                    </td>
-                  </tr>
-                ) : (
-                  items.map((u) => (
-                    <tr key={u._id || u.email}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {u.email}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {u.name || '—'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                          {u.role}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span
-                          className={
-                            'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ' +
-                            (u.blocked
-                              ? 'bg-red-100 text-red-800'
-                              : u.isActive
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-yellow-100 text-yellow-800')
-                          }
-                        >
-                          {formatStatus(u)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString() : '—'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                  ) : (
+                    items.map((u) => (
+                      <tr key={u._id || u.email}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {u.email}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {u.name || '—'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            {u.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                              u.blocked
+                                ? 'bg-red-100 text-red-800'
+                                : u.isActive
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-yellow-100 text-yellow-800'
+                            }`}
+                          >
+                            {formatStatus(u)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString() : '—'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                aria-label="アクションを開く"
+                                aria-haspopup="menu"
+                              >
+                                アクション
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>操作</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => setSubPanelUser(u)}
+                                aria-label="サブスクリプション管理"
+                              >
+                                Manage Subscription
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  setConfirm({
+                                    type: u.role === 'admin' ? 'demote' : 'promote',
+                                    user: u,
+                                  })
+                                }
+                                aria-label={u.role === 'admin' ? '一般権限に変更' : '管理者に昇格'}
+                              >
+                                {u.role === 'admin'
+                                  ? 'Demote (一般に変更)'
+                                  : 'Promote (管理者に昇格)'}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  setConfirm({ type: u.blocked ? 'unblock' : 'block', user: u })
+                                }
+                                aria-label={u.blocked ? 'ブロック解除' : 'ブロック'}
+                              >
+                                {u.blocked ? 'Unblock (ブロック解除)' : 'Block (ブロック)'}
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => setConfirm({ type: 'delete', user: u })}
+                                aria-label="ユーザー削除"
+                              >
+                                Delete (削除)
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* モバイル用カード表示 */}
+            <div className="md:hidden">
+              {loading && items.length === 0 ? (
+                <div className="space-y-3 p-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div
+                      key={`skeleton-${i}`}
+                      className="animate-pulse bg-white rounded-xl shadow p-4"
+                    >
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                      <div className="h-3 bg-gray-200 rounded w-1/2 mb-2" />
+                      <div className="h-3 bg-gray-200 rounded w-1/4" />
+                    </div>
+                  ))}
+                </div>
+              ) : items.length === 0 ? (
+                <div className="p-8 text-center text-gray-500">ユーザーがいません</div>
+              ) : (
+                <div className="space-y-3 p-4">
+                  {items.map((u) => (
+                    <div
+                      key={u._id || u.email}
+                      className="bg-white rounded-xl shadow-sm border p-4"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-semibold text-gray-900 truncate">
+                            {u.name || '—'}
+                          </h3>
+                          <p className="text-xs text-gray-500 truncate">{u.email}</p>
+                        </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
@@ -297,12 +391,34 @@ const AdminUsersPage: React.FC = () => {
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                          {u.role}
+                        </span>
+                        <span
+                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                            u.blocked
+                              ? 'bg-red-100 text-red-800'
+                              : u.isActive
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-yellow-100 text-yellow-800'
+                          }`}
+                        >
+                          {formatStatus(u)}
+                        </span>
+                      </div>
+
+                      <div className="text-xs text-gray-500">
+                        最終ログイン:{' '}
+                        {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString() : '—'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
@@ -356,20 +472,21 @@ const AdminUsersPage: React.FC = () => {
             </AlertDialogContent>
           </AlertDialog>
 
-          {/* Pagination */}
-          <div className="flex items-center justify-between px-4 py-3">
-            <div className="text-sm text-gray-600">
+          {/* Pagination - モバイル最適化 */}
+          <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 gap-3">
+            <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
               {total > 0
-                ? `${(page - 1) * limit + 1}–${Math.min(page * limit, total)} / ${total} （ページ ${page} / ${totalPages}）`
-                : '0 / 0 （ページ 0 / 0）'}
+                ? `${(page - 1) * limit + 1}–${Math.min(page * limit, total)} / ${total} （${page}/${totalPages}）`
+                : '0 / 0 （0/0）'}
             </div>
-            <div className="space-x-2">
+            <div className="flex space-x-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
                 disabled={page <= 1 || loading}
                 aria-label="前のページ"
+                className="text-xs px-3 py-1"
               >
                 前へ
               </Button>
@@ -379,6 +496,7 @@ const AdminUsersPage: React.FC = () => {
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                 disabled={page >= totalPages || loading}
                 aria-label="次のページ"
+                className="text-xs px-3 py-1"
               >
                 次へ
               </Button>
