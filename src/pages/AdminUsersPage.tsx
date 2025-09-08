@@ -73,8 +73,8 @@ const AdminUsersPage: React.FC = () => {
   }, [debouncedQuery]);
 
   const formatStatus = (u: PublicUser): string => {
-    if (u.blocked) return 'suspended';
-    return u.isActive ? 'active' : 'inactive';
+    if (u.blocked) return 'ブロック済み';
+    return u.isActive ? '有効' : '招待中';
   };
 
   const handlePromoteDemote = async (u: PublicUser) => {
@@ -100,35 +100,34 @@ const AdminUsersPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-4">
+    <div className="px-4 pb-28 max-w-screen-md mx-auto">
       {/* ヘッダー - モバイル最適化 */}
-      <div className="text-center mb-6">
-        <h1 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
+      <header className="pt-3 pb-2">
+        <h2 className="text-lg font-bold text-center text-gray-800 flex items-center justify-center">
           <Users className="w-5 h-5 mr-2" /> ユーザー管理
-        </h1>
-        <p className="text-sm text-gray-600">登録ユーザーの一覧・検索・更新を行えます。</p>
-      </div>
+        </h2>
+        <p className="text-sm text-gray-600 text-center mt-1">
+          登録ユーザーの一覧・検索・更新を行えます。
+        </p>
+      </header>
 
       {/* 検索フォーム - モバイル最適化 */}
-      <div className="flex flex-col sm:flex-row gap-2 mb-4">
+      <div className="mt-3 flex flex-col gap-2 md:flex-row md:items-center">
         <input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="メール/名前で検索"
           aria-label="ユーザー検索"
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          className="w-full md:flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
-        <Button
-          variant="outline"
-          size="sm"
-          aria-label="再読み込み"
+        <button
           onClick={() => void fetchPage()}
           disabled={loading}
-          className="w-full sm:w-auto"
+          className="w-full md:w-auto px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm active:opacity-90 disabled:opacity-60"
         >
           {loading ? '読み込み中…' : '再読み込み'}
-        </Button>
+        </button>
       </div>
 
       {error && (
@@ -139,371 +138,177 @@ const AdminUsersPage: React.FC = () => {
         </Alert>
       )}
 
-      <Card>
-        <CardContent className="p-0">
-          <div aria-live="polite">
-            <span className="sr-only" role="status">
-              {loading ? '読み込み中' : '読み込み完了'}
-            </span>
+      {/* モバイル用カード表示 */}
+      <section className="mt-4 md:hidden space-y-3">
+        {loading && items.length === 0 ? (
+          <div className="space-y-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={`skeleton-${i}`}
+                className="animate-pulse bg-white rounded-2xl shadow-sm border p-4"
+              >
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                <div className="h-3 bg-gray-200 rounded w-1/2 mb-2" />
+                <div className="h-3 bg-gray-200 rounded w-1/4" />
+              </div>
+            ))}
+          </div>
+        ) : items.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-sm text-gray-600">
+            ユーザーが見つかりません
+          </div>
+        ) : (
+          items.map((u) => (
+            <UserCard
+              key={u._id || u.email}
+              user={u}
+              onEdit={() => setSubPanelUser(u)}
+              onDelete={() => setConfirm({ type: 'delete', user: u })}
+              onPromote={() =>
+                setConfirm({ type: u.role === 'admin' ? 'demote' : 'promote', user: u })
+              }
+              onBlock={() => setConfirm({ type: u.blocked ? 'unblock' : 'block', user: u })}
+              formatStatus={formatStatus}
+            />
+          ))
+        )}
+      </section>
 
-            {/* デスクトップ用テーブル表示 */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Email
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Name
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Role
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Status
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Last login
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {loading && items.length === 0 ? (
-                    Array.from({ length: 5 }).map((_, i) => (
-                      <tr key={`skeleton-${i}`} className="animate-pulse">
-                        <td className="px-6 py-4">
-                          <div className="h-4 bg-gray-200 rounded w-48" />
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="h-4 bg-gray-200 rounded w-32" />
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="h-4 bg-gray-200 rounded w-16" />
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="h-4 bg-gray-200 rounded w-20" />
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="h-4 bg-gray-200 rounded w-40" />
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <div className="h-8 bg-gray-200 rounded w-24 ml-auto" />
-                        </td>
-                      </tr>
-                    ))
-                  ) : items.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
-                        ユーザーがいません
-                      </td>
-                    </tr>
-                  ) : (
-                    items.map((u) => (
-                      <tr key={u._id || u.email}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {u.email}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {u.name || '—'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                            {u.role}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                              u.blocked
-                                ? 'bg-red-100 text-red-800'
-                                : u.isActive
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-yellow-100 text-yellow-800'
-                            }`}
-                          >
-                            {formatStatus(u)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString() : '—'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                aria-label="アクションを開く"
-                                aria-haspopup="menu"
-                              >
-                                アクション
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>操作</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() => setSubPanelUser(u)}
-                                aria-label="サブスクリプション管理"
-                              >
-                                Manage Subscription
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  setConfirm({
-                                    type: u.role === 'admin' ? 'demote' : 'promote',
-                                    user: u,
-                                  })
-                                }
-                                aria-label={u.role === 'admin' ? '一般権限に変更' : '管理者に昇格'}
-                              >
-                                {u.role === 'admin'
-                                  ? 'Demote (一般に変更)'
-                                  : 'Promote (管理者に昇格)'}
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  setConfirm({ type: u.blocked ? 'unblock' : 'block', user: u })
-                                }
-                                aria-label={u.blocked ? 'ブロック解除' : 'ブロック'}
-                              >
-                                {u.blocked ? 'Unblock (ブロック解除)' : 'Block (ブロック)'}
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() => setConfirm({ type: 'delete', user: u })}
-                                aria-label="ユーザー削除"
-                              >
-                                Delete (削除)
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            {/* モバイル用カード表示 */}
-            <div className="md:hidden">
+      {/* デスクトップ用テーブル表示 */}
+      <section className="mt-4 hidden md:block">
+        <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+          <table className="min-w-full text-sm">
+            <thead className="bg-gray-50 text-gray-600">
+              <tr>
+                <Th>名前</Th>
+                <Th>メール</Th>
+                <Th>ロール</Th>
+                <Th>ステータス</Th>
+                <Th className="text-right pr-4">操作</Th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
               {loading && items.length === 0 ? (
-                <div className="space-y-3 p-4">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <div
-                      key={`skeleton-${i}`}
-                      className="animate-pulse bg-white rounded-xl shadow p-4"
-                    >
-                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-                      <div className="h-3 bg-gray-200 rounded w-1/2 mb-2" />
-                      <div className="h-3 bg-gray-200 rounded w-1/4" />
-                    </div>
-                  ))}
-                </div>
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={`skeleton-${i}`} className="animate-pulse">
+                    <td className="px-3 py-4">
+                      <div className="h-4 bg-gray-200 rounded w-32" />
+                    </td>
+                    <td className="px-3 py-4">
+                      <div className="h-4 bg-gray-200 rounded w-48" />
+                    </td>
+                    <td className="px-3 py-4">
+                      <div className="h-4 bg-gray-200 rounded w-16" />
+                    </td>
+                    <td className="px-3 py-4">
+                      <div className="h-4 bg-gray-200 rounded w-20" />
+                    </td>
+                    <td className="px-3 py-4 text-right">
+                      <div className="h-8 bg-gray-200 rounded w-24 ml-auto" />
+                    </td>
+                  </tr>
+                ))
               ) : items.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">ユーザーがいません</div>
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-gray-500">
+                    ユーザーが見つかりません
+                  </td>
+                </tr>
               ) : (
-                <div className="space-y-3 p-4">
-                  {items.map((u) => (
-                    <div
-                      key={u._id || u.email}
-                      className="bg-white rounded-xl shadow-sm border p-4"
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-semibold text-gray-900 truncate">
-                            {u.name || '—'}
-                          </h3>
-                          <p className="text-xs text-gray-500 truncate">{u.email}</p>
-                        </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              aria-label="アクションを開く"
-                              aria-haspopup="menu"
-                            >
-                              アクション
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>操作</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => setSubPanelUser(u)}
-                              aria-label="サブスクリプション管理"
-                            >
-                              Manage Subscription
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() =>
-                                setConfirm({
-                                  type: u.role === 'admin' ? 'demote' : 'promote',
-                                  user: u,
-                                })
-                              }
-                              aria-label={u.role === 'admin' ? '一般権限に変更' : '管理者に昇格'}
-                            >
-                              {u.role === 'admin'
-                                ? 'Demote (一般に変更)'
-                                : 'Promote (管理者に昇格)'}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                setConfirm({ type: u.blocked ? 'unblock' : 'block', user: u })
-                              }
-                              aria-label={u.blocked ? 'ブロック解除' : 'ブロック'}
-                            >
-                              {u.blocked ? 'Unblock (ブロック解除)' : 'Block (ブロック)'}
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => setConfirm({ type: 'delete', user: u })}
-                              aria-label="ユーザー削除"
-                            >
-                              Delete (削除)
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                          {u.role}
-                        </span>
-                        <span
-                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                            u.blocked
-                              ? 'bg-red-100 text-red-800'
-                              : u.isActive
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-yellow-100 text-yellow-800'
-                          }`}
+                items.map((u) => (
+                  <tr key={u._id || u.email} className="hover:bg-gray-50">
+                    <Td className="font-medium">{u.name || '—'}</Td>
+                    <Td>
+                      <span className="truncate inline-block max-w-[280px]">{u.email}</span>
+                    </Td>
+                    <Td>
+                      <RoleBadge role={u.role} />
+                    </Td>
+                    <Td>
+                      <StatusBadge status={formatStatus(u)} />
+                    </Td>
+                    <Td className="text-right pr-3">
+                      <div className="inline-flex gap-2">
+                        <button
+                          onClick={() => setSubPanelUser(u)}
+                          className="px-3 py-1 rounded-md border text-[13px] hover:bg-gray-50"
                         >
-                          {formatStatus(u)}
-                        </span>
+                          編集
+                        </button>
+                        <button
+                          onClick={() => setConfirm({ type: 'delete', user: u })}
+                          className="px-3 py-1 rounded-md bg-rose-600 text-white text-[13px] hover:opacity-90"
+                        >
+                          削除
+                        </button>
                       </div>
-
-                      <div className="text-xs text-gray-500">
-                        最終ログイン:{' '}
-                        {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString() : '—'}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    </Td>
+                  </tr>
+                ))
               )}
-            </div>
-          </div>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-          <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
-            <AlertDialogContent
-              role="alertdialog"
-              aria-modal="true"
-              aria-describedby="admin-user-confirm-desc"
+      <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
+        <AlertDialogContent
+          role="alertdialog"
+          aria-modal="true"
+          aria-describedby="admin-user-confirm-desc"
+        >
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirm?.type === 'promote' && '管理者に昇格しますか？'}
+              {confirm?.type === 'demote' && '一般ユーザーに変更しますか？'}
+              {confirm?.type === 'block' && 'このユーザーをブロックしますか？'}
+              {confirm?.type === 'unblock' && 'このユーザーのブロックを解除しますか？'}
+              {confirm?.type === 'delete' && 'このユーザーを削除しますか？（取り消しできません）'}
+            </AlertDialogTitle>
+            <AlertDialogDescription id="admin-user-confirm-desc">
+              対象: {confirm?.user.email}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel aria-label="キャンセル" autoFocus>
+              キャンセル
+            </AlertDialogCancel>
+            <AlertDialogAction
+              aria-label="実行"
+              onClick={async () => {
+                const c = confirm;
+                setConfirm(null);
+                if (!c) return;
+                if (c.type === 'promote' || c.type === 'demote') {
+                  await handlePromoteDemote(c.user);
+                } else if (c.type === 'block' || c.type === 'unblock') {
+                  await handleToggleBlock(c.user);
+                } else {
+                  try {
+                    const { deleteUser } = await import('@/services/api/adminUsersApi');
+                    await deleteUser(c.user._id);
+                    toast.success('ユーザーを削除しました');
+                    void fetchPage();
+                  } catch {
+                    toast.error('削除に失敗しました');
+                  }
+                }
+              }}
             >
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  {confirm?.type === 'promote' && '管理者に昇格しますか？'}
-                  {confirm?.type === 'demote' && '一般ユーザーに変更しますか？'}
-                  {confirm?.type === 'block' && 'このユーザーをブロックしますか？'}
-                  {confirm?.type === 'unblock' && 'このユーザーのブロックを解除しますか？'}
-                  {confirm?.type === 'delete' &&
-                    'このユーザーを削除しますか？（取り消しできません）'}
-                </AlertDialogTitle>
-                <AlertDialogDescription id="admin-user-confirm-desc">
-                  対象: {confirm?.user.email}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel aria-label="キャンセル" autoFocus>
-                  キャンセル
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  aria-label="実行"
-                  onClick={async () => {
-                    const c = confirm;
-                    setConfirm(null);
-                    if (!c) return;
-                    if (c.type === 'promote' || c.type === 'demote') {
-                      await handlePromoteDemote(c.user);
-                    } else if (c.type === 'block' || c.type === 'unblock') {
-                      await handleToggleBlock(c.user);
-                    } else {
-                      try {
-                        const { deleteUser } = await import('@/services/api/adminUsersApi');
-                        await deleteUser(c.user._id);
-                        toast.success('ユーザーを削除しました');
-                        void fetchPage();
-                      } catch {
-                        toast.error('削除に失敗しました');
-                      }
-                    }
-                  }}
-                >
-                  実行
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+              実行
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-          {/* Pagination - モバイル最適化 */}
-          <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 gap-3">
-            <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
-              {total > 0
-                ? `${(page - 1) * limit + 1}–${Math.min(page * limit, total)} / ${total} （${page}/${totalPages}）`
-                : '0 / 0 （0/0）'}
-            </div>
-            <div className="flex space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                disabled={page <= 1 || loading}
-                aria-label="前のページ"
-                className="text-xs px-3 py-1"
-              >
-                前へ
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                disabled={page >= totalPages || loading}
-                aria-label="次のページ"
-                className="text-xs px-3 py-1"
-              >
-                次へ
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* ページネーション */}
+      <Pagination
+        className="mt-5"
+        page={page}
+        pageCount={totalPages}
+        onChange={(p) => setPage(p)}
+        loading={loading}
+      />
 
       {subPanelUser && (
         <AdminUserSubscriptionPanel
@@ -515,5 +320,141 @@ const AdminUsersPage: React.FC = () => {
     </div>
   );
 };
+
+// サブコンポーネント
+function Th({ children, className = '' }: React.PropsWithChildren<{ className?: string }>) {
+  return <th className={`px-3 py-2 text-left font-semibold ${className}`}>{children}</th>;
+}
+
+function Td({ children, className = '' }: React.PropsWithChildren<{ className?: string }>) {
+  return <td className={`px-3 py-2 align-top text-gray-800 ${className}`}>{children}</td>;
+}
+
+function RoleBadge({ role }: { role?: string }) {
+  const map: Record<string, string> = {
+    admin: '管理者',
+    manager: 'マネージャー',
+    user: '一般',
+  };
+  const label = map[role ?? ''] || role || '—';
+  return (
+    <span className="inline-flex items-center rounded-full border px-2 py-[2px] text-xs">
+      {label}
+    </span>
+  );
+}
+
+function StatusBadge({ status }: { status?: string }) {
+  const s = (status ?? '').toLowerCase();
+  const styles =
+    s === 'active' || s === '有効'
+      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      : s === 'invited' || s === '招待中'
+        ? 'bg-amber-50 text-amber-700 border-amber-200'
+        : s === 'suspended' || s === '停止中' || s === 'ブロック済み'
+          ? 'bg-rose-50 text-rose-700 border-rose-200'
+          : 'bg-gray-50 text-gray-600 border-gray-200';
+  const label =
+    s === 'active' || s === '有効'
+      ? '有効'
+      : s === 'invited' || s === '招待中'
+        ? '招待中'
+        : s === 'suspended' || s === '停止中' || s === 'ブロック済み'
+          ? '停止中'
+          : '—';
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2 py-[2px] text-xs ${styles}`}
+    >
+      {label}
+    </span>
+  );
+}
+
+function UserCard({
+  user,
+  onEdit,
+  onDelete,
+  onPromote,
+  onBlock,
+  formatStatus,
+}: {
+  user: PublicUser;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onPromote?: () => void;
+  onBlock?: () => void;
+  formatStatus: (user: PublicUser) => string;
+}) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-semibold text-[15px] leading-5 truncate">
+            {user.name || '（名称未設定）'}
+          </p>
+          <p className="text-xs text-gray-500 truncate">{user.email}</p>
+        </div>
+        <div className="shrink-0 text-right space-y-1">
+          <RoleBadge role={user.role} />
+          <div>
+            <StatusBadge status={formatStatus(user)} />
+          </div>
+        </div>
+      </div>
+      <div className="mt-3 flex justify-end gap-2">
+        <button onClick={onEdit} className="px-3 py-2 rounded-lg border text-xs active:opacity-90">
+          編集
+        </button>
+        <button
+          onClick={onDelete}
+          className="px-3 py-2 rounded-lg bg-rose-600 text-white text-xs active:opacity-90"
+        >
+          削除
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Pagination({
+  page,
+  pageCount,
+  onChange,
+  loading,
+  className = '',
+}: {
+  page: number;
+  pageCount: number;
+  onChange?: (p: number) => void;
+  loading?: boolean;
+  className?: string;
+}) {
+  const prev = () => onChange?.(Math.max(1, page - 1));
+  const next = () => onChange?.(Math.min(pageCount, page + 1));
+  return (
+    <div className={`flex flex-col items-center gap-2 md:flex-row md:justify-between ${className}`}>
+      <span className="text-xs text-gray-500">
+        ページ {page} / {pageCount}
+      </span>
+      <div className="inline-flex gap-2">
+        <button
+          onClick={prev}
+          disabled={page <= 1 || loading}
+          className="px-3 py-2 rounded-lg border text-sm disabled:opacity-50"
+        >
+          前へ
+        </button>
+        <button
+          onClick={next}
+          disabled={page >= pageCount || loading}
+          className="px-3 py-2 rounded-lg border text-sm disabled:opacity-50"
+        >
+          次へ
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default AdminUsersPage;
