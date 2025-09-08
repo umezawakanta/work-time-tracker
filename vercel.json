@@ -9,7 +9,6 @@
   "functions": {
     "api/**/*.ts": {
       "includeFiles": "src/server/**",
-      "runtime": "nodejs22.x",
       "maxDuration": 30
     }
   },

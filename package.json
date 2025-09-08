@@ -4,7 +4,7 @@
     "version": "0.0.1",
     "packageManager": "pnpm@10.4.1",
     "engines": {
-        "node": "22.x"
+        "node": "20.x"
     },
     "scripts": {
         "start": "vite",
