@@ -292,7 +292,7 @@ export default function Login() {
     <>
       <style>
         {`
-          /* ログイン画面専用のスタイル */
+          /* ログイン画面専用のスタイル - モバイルファースト */
           .login-page * {
             color: #111827;
           }
@@ -467,9 +467,408 @@ export default function Login() {
           .login-page .alert-description {
             color: #92400e !important;
           }
+
+          /* モバイルファーストのレスポンシブデザイン */
+          .login-page .login-container {
+            min-height: 100vh;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          }
+
+          .login-page .login-card {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+          }
+
+          .login-page .login-header {
+            text-align: center;
+            padding: 2rem 1.5rem 1rem;
+          }
+
+          .login-page .login-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+
+          .login-page .login-subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0;
+          }
+
+          .login-page .login-form {
+            padding: 0 1.5rem 1.5rem;
+          }
+
+          .login-page .form-group {
+            margin-bottom: 1.25rem;
+          }
+
+          .login-page .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+          }
+
+          .login-page .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background-color: white;
+          }
+
+          .login-page .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+          }
+
+          .login-page .form-input.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+          }
+
+          .login-page .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            width: 1.25rem;
+            height: 1.25rem;
+          }
+
+          .login-page .input-container {
+            position: relative;
+          }
+
+          .login-page .input-container .form-input {
+            padding-left: 3rem;
+          }
+
+          .login-page .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: color 0.2s ease;
+          }
+
+          .login-page .password-toggle:hover {
+            color: #374151;
+          }
+
+          .login-page .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+          }
+
+          .login-page .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
+          .login-page .remember-me input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            accent-color: #3b82f6;
+          }
+
+          .login-page .remember-me label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            cursor: pointer;
+          }
+
+          .login-page .forgot-password {
+            font-size: 0.875rem;
+            color: #3b82f6;
+            text-decoration: none;
+            transition: color 0.2s ease;
+          }
+
+          .login-page .forgot-password:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+          }
+
+          .login-page .login-button {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+          }
+
+          .login-page .login-button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
+          }
+
+          .login-page .login-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+          }
+
+          .login-page .register-link {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6b7280;
+          }
+
+          .login-page .register-link a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+          }
+
+          .login-page .register-link a:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+          }
+
+          .login-page .security-notice {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: #f9fafb;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+          }
+
+          .login-page .error-message {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
+          .login-page .success-message {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
+          /* タブレット・デスクトップ対応 */
+          @media (min-width: 640px) {
+            .login-page .login-container {
+              padding: 2rem;
+            }
+            
+            .login-page .login-card {
+              max-width: 450px;
+            }
+            
+            .login-page .login-title {
+              font-size: 2rem;
+            }
+          }
+
+          @media (min-width: 1024px) {
+            .login-page .login-container {
+              padding: 3rem;
+            }
+            
+            .login-page .login-card {
+              max-width: 500px;
+            }
+          }
         `}
       </style>
-      <div className="login-page min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="login-page">
+        <div className="login-container">
+          <div className="login-card">
+            <div className="login-header">
+              <div className="flex items-center justify-center mb-4">
+                <Shield className="h-8 w-8 text-blue-600" />
+              </div>
+              <h1 className="login-title">ログイン</h1>
+              <p className="login-subtitle">Work Time Trackerにアクセス</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="login-form">
+              {/* エラーメッセージ */}
+              {errors.general && (
+                <div className="error-message">
+                  <AlertCircle className="h-4 w-4" />
+                  {errors.general}
+                </div>
+              )}
+
+              {/* 成功メッセージ */}
+              {successMessage && (
+                <div className="success-message">
+                  <CheckCircle className="h-4 w-4" />
+                  {successMessage}
+                </div>
+              )}
+
+              {/* メールアドレス */}
+              <div className="form-group">
+                <label htmlFor="email" className="form-label">
+                  メールアドレス
+                </label>
+                <div className="input-container">
+                  <Mail className="input-icon" />
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="メールアドレスを入力"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className={`form-input ${errors.email ? 'error' : ''}`}
+                    disabled={isSubmitting}
+                    autoComplete="email"
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-sm text-red-600 mt-1">{errors.email}</p>
+                )}
+              </div>
+
+              {/* パスワード */}
+              <div className="form-group">
+                <label htmlFor="password" className="form-label">
+                  パスワード
+                </label>
+                <div className="input-container">
+                  <Lock className="input-icon" />
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="パスワードを入力"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    className={`form-input ${errors.password ? 'error' : ''}`}
+                    disabled={isSubmitting}
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="password-toggle"
+                    disabled={isSubmitting}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="text-sm text-red-600 mt-1">{errors.password}</p>
+                )}
+              </div>
+
+              {/* オプション */}
+              <div className="form-options">
+                <div className="remember-me">
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    checked={formData.rememberMe}
+                    onChange={(e) => handleInputChange('rememberMe', e.target.checked)}
+                    disabled={isSubmitting}
+                  />
+                  <label htmlFor="rememberMe">ログイン状態を保持する</label>
+                </div>
+                <a href="#" className="forgot-password">
+                  パスワードをお忘れですか？
+                </a>
+              </div>
+
+              {/* ログインボタン */}
+              <button
+                type="submit"
+                className="login-button"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    ログイン中...
+                  </>
+                ) : (
+                  <>
+                    <Shield className="h-4 w-4" />
+                    ログイン
+                  </>
+                )}
+              </button>
+
+              {/* 登録リンク */}
+              <div className="register-link">
+                アカウントをお持ちでない方はこちらから
+                <br />
+                <Link to="/register" className="text-blue-600 hover:text-blue-700">
+                  登録
+                </Link>
+              </div>
+
+              {/* セキュリティ通知 */}
+              <div className="security-notice">
+                このサイトはSSL暗号化通信により保護されています
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </>
+  );"login-page min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
         <Card className="w-full max-w-md shadow-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
