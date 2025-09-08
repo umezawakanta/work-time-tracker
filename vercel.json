@@ -2,27 +2,9 @@
   "version": 2,
   "buildCommand": "pnpm run vercel-build-ci",
   "outputDirectory": "dist",
-  "framework": "vite",
-  "installCommand": "pnpm config set store-dir .pnpm-store && pnpm install --prefer-offline --frozen-lockfile=false",
-  "devCommand": "pnpm run dev",
-  "ignoreCommand": "node scripts/vercel-ignore.js",
-  "nodeVersion": "20.x",
   "functions": {
-    "api/**/*.ts": {
-      "includeFiles": "src/server/**",
-      "maxDuration": 30,
+    "api/**": {
       "runtime": "nodejs20.x"
-    },
-    "api/**/*.js": {
-      "includeFiles": "src/server/**",
-      "maxDuration": 30,
-      "runtime": "nodejs20.x"
-    }
-  },
-  "build": {
-    "env": {
-      "NODE_VERSION": "20",
-      "NODE_OPTIONS": "--max_old_space_size=1536"
     }
   },
   "headers": [
