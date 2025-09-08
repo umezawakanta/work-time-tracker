@@ -774,14 +774,14 @@ const AdminDashboard: React.FC = () => {
             overflow-x: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
-            padding: 0.5rem;
+            padding: 0.375rem;
             background: #f8fafc;
             border-radius: 12px;
-            margin: 0.5rem;
-            gap: 0.25rem;
+            margin: 0.375rem;
+            gap: 0.125rem;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            width: calc(100% - 1rem);
+            width: calc(100% - 0.75rem);
             box-sizing: border-box;
             min-width: 0;
             max-width: 100%;
@@ -793,9 +793,9 @@ const AdminDashboard: React.FC = () => {
           
           .admin-dashboard .tabs-trigger {
             flex-shrink: 0;
-            padding: 0.625rem 0.75rem;
-            border-radius: 10px;
-            font-size: 0.7rem;
+            padding: 0.5rem 0.625rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
@@ -804,12 +804,12 @@ const AdminDashboard: React.FC = () => {
             color: #6b7280;
             cursor: pointer;
             position: relative;
-            min-height: 2.25rem;
+            min-height: 2rem;
             display: flex;
             align-items: center;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
-            max-width: 100px;
+            max-width: 80px;
             text-overflow: ellipsis;
             overflow: hidden;
           }
@@ -945,24 +945,26 @@ const AdminDashboard: React.FC = () => {
           .admin-dashboard .badge-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.25rem;
+            gap: 0.125rem;
             margin-top: 0.75rem;
             width: 100%;
             box-sizing: border-box;
             overflow-x: hidden;
             max-width: 100%;
+            justify-content: flex-start;
           }
           
           .admin-dashboard .badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.65rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 8px;
+            font-size: 0.6rem;
             font-weight: 600;
             transition: all 0.3s ease;
-            border: 2px solid transparent;
+            border: 1px solid transparent;
             flex-shrink: 0;
             max-width: 100%;
             word-break: break-word;
+            line-height: 1.2;
           }
           
           .admin-dashboard .badge[data-variant="default"] {
@@ -1043,9 +1045,9 @@ const AdminDashboard: React.FC = () => {
             }
             
             .admin-dashboard .tabs-trigger {
-              max-width: 140px;
-              font-size: 0.8rem;
-              padding: 0.75rem 1rem;
+              max-width: 120px;
+              font-size: 0.75rem;
+              padding: 0.625rem 0.875rem;
             }
           }
           
@@ -1066,8 +1068,8 @@ const AdminDashboard: React.FC = () => {
             
             .admin-dashboard .tabs-trigger {
               padding: 0.75rem 1rem;
-              font-size: 0.85rem;
-              max-width: 160px;
+              font-size: 0.8rem;
+              max-width: 140px;
             }
           }
         `}
@@ -1222,6 +1224,32 @@ const AdminDashboard: React.FC = () => {
                           <strong>承認</strong>: 管理者が提案を承認
                           <br />
                           <strong>有効</strong>: 現在有効な段階
+                        </div>
+                        <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                          <div className="text-xs text-yellow-800">
+                            <strong>🎯 なぜ必要？</strong>
+                            <br />
+                            • 品質管理: 各段階で適切な承認を得ることで品質を保証
+                            <br />
+                            • リスク軽減: 未完成の機能が本番環境に誤って公開されることを防止
+                            <br />
+                            • チーム連携: 開発者と管理者の間で明確な責任分担を実現
+                            <br />• 進捗可視化: 現在の開発状況を一目で把握可能
+                          </div>
+                        </div>
+                        <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
+                          <div className="text-xs text-green-800">
+                            <strong>⚡ 操作方法</strong>
+                            <br />
+                            • ヘッダーの「次の段階を承認」ボタンで承認操作
+                            <br />
+                            • 各段階のバッジにマウスを合わせると詳細表示
+                            <br />
+                            • 紫色: 現在有効な段階
+                            <br />
+                            • グレー: 承認済み段階
+                            <br />• 白: 未承認段階
+                          </div>
                         </div>
                       </div>
                     </div>
