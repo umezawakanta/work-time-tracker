@@ -8,6 +8,7 @@
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {
     "api/**/*.ts": {
+      "runtime": "nodejs20.x",
       "includeFiles": "src/server/**",
       "maxDuration": 30
     }
