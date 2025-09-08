@@ -19,12 +19,12 @@ import { toast } from 'react-hot-toast';
 import { AxiosError } from 'axios';
 import { Eye, EyeOff, Loader2, AlertCircle, Mail, Lock, Shield, CheckCircle } from 'lucide-react';
 import { useAnalytics } from '@/lib/analytics';
-import { useTranslation } from '@/hooks/useInternationalization';
+import { useInternationalization } from '@/hooks/useInternationalization';
 
 // (Removed legacy mock globals)
 
 export default function Login() {
-  const { t } = useTranslation();
+  const { t } = useInternationalization();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
