@@ -43,6 +43,30 @@ const AdminUsersPage: React.FC = () => {
 
   const totalPages = useMemo(() => Math.max(Math.ceil(total / limit), 1), [total, limit]);
 
+  // 全角→半角正規化関数
+  const zenkaku2hankaku = (s: string): string => {
+    return s.replace(/[Ａ-Ｚａ-ｚ０-９＠．－＿]/g, (c) =>
+      String.fromCharCode(c.charCodeAt(0) - 0xfee0)
+    );
+  };
+
+  // 安全ガード: 配列でない場合は空配列に正規化
+  const safeItems = Array.isArray(items) ? items : [];
+
+  // クライアントサイド検索フィルタリング（全角→半角正規化対応）
+  const filteredItems = useMemo(() => {
+    if (!debouncedQuery.trim()) return safeItems;
+
+    const normalizedQuery = zenkaku2hankaku(debouncedQuery.trim().toLowerCase());
+
+    return safeItems.filter((user) => {
+      const normalizedName = zenkaku2hankaku((user.name || '').toLowerCase());
+      const normalizedEmail = zenkaku2hankaku((user.email || '').toLowerCase());
+
+      return normalizedName.includes(normalizedQuery) || normalizedEmail.includes(normalizedQuery);
+    });
+  }, [safeItems, debouncedQuery, zenkaku2hankaku]);
+
   const fetchPage = async () => {
     try {
       setLoading(true);
@@ -59,7 +83,7 @@ const AdminUsersPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query), 300);
+    const t = setTimeout(() => setDebouncedQuery(query), 250);
     return () => clearTimeout(t);
   }, [query]);
 
@@ -103,7 +127,7 @@ const AdminUsersPage: React.FC = () => {
     <div className="px-4 pb-28 max-w-screen-md mx-auto">
       {/* ヘッダー - モバイル最適化 */}
       <header className="pt-3 pb-2">
-        <h2 className="text-lg font-bold text-center text-gray-800 flex items-center justify-center">
+        <h2 className="text-base sm:text-lg font-bold text-center text-gray-800 flex items-center justify-center">
           <Users className="w-5 h-5 mr-2" /> ユーザー管理
         </h2>
         <p className="text-sm text-gray-600 text-center mt-1">
@@ -124,7 +148,7 @@ const AdminUsersPage: React.FC = () => {
         <button
           onClick={() => void fetchPage()}
           disabled={loading}
-          className="w-full md:w-auto px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm active:opacity-90 disabled:opacity-60"
+          className="w-full md:w-auto px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm active:opacity-90 disabled:opacity-60 min-h-[40px]"
         >
           {loading ? '読み込み中…' : '再読み込み'}
         </button>
@@ -140,25 +164,14 @@ const AdminUsersPage: React.FC = () => {
 
       {/* モバイル用カード表示 */}
       <section className="mt-4 md:hidden space-y-3">
-        {loading && items.length === 0 ? (
-          <div className="space-y-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={`skeleton-${i}`}
-                className="animate-pulse bg-white rounded-2xl shadow-sm border p-4"
-              >
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-                <div className="h-3 bg-gray-200 rounded w-1/2 mb-2" />
-                <div className="h-3 bg-gray-200 rounded w-1/4" />
-              </div>
-            ))}
-          </div>
-        ) : items.length === 0 ? (
+        {loading && safeItems.length === 0 ? (
+          <SkeletonList count={3} />
+        ) : filteredItems.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-sm text-gray-600">
             ユーザーが見つかりません
           </div>
         ) : (
-          items.map((u) => (
+          filteredItems.map((u) => (
             <UserCard
               key={u._id || u.email}
               user={u}
@@ -188,38 +201,40 @@ const AdminUsersPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {loading && items.length === 0 ? (
+              {loading && safeItems.length === 0 ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={`skeleton-${i}`} className="animate-pulse">
                     <td className="px-3 py-4">
-                      <div className="h-4 bg-gray-200 rounded w-32" />
+                      <div className="h-4 bg-gray-200 rounded w-24" />
                     </td>
                     <td className="px-3 py-4">
-                      <div className="h-4 bg-gray-200 rounded w-48" />
+                      <div className="h-4 bg-gray-200 rounded w-40" />
                     </td>
                     <td className="px-3 py-4">
-                      <div className="h-4 bg-gray-200 rounded w-16" />
+                      <div className="h-5 bg-gray-200 rounded-full w-12" />
                     </td>
                     <td className="px-3 py-4">
-                      <div className="h-4 bg-gray-200 rounded w-20" />
+                      <div className="h-5 bg-gray-200 rounded-full w-16" />
                     </td>
                     <td className="px-3 py-4 text-right">
-                      <div className="h-8 bg-gray-200 rounded w-24 ml-auto" />
+                      <div className="h-6 bg-gray-200 rounded w-16 ml-auto" />
                     </td>
                   </tr>
                 ))
-              ) : items.length === 0 ? (
+              ) : filteredItems.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-gray-500">
                     ユーザーが見つかりません
                   </td>
                 </tr>
               ) : (
-                items.map((u) => (
+                filteredItems.map((u) => (
                   <tr key={u._id || u.email} className="hover:bg-gray-50">
                     <Td className="font-medium">{u.name || '—'}</Td>
                     <Td>
-                      <span className="truncate inline-block max-w-[280px]">{u.email}</span>
+                      <span className="break-all line-clamp-1 inline-block max-w-[280px]">
+                        {u.email}
+                      </span>
                     </Td>
                     <Td>
                       <RoleBadge role={u.role} />
@@ -231,13 +246,13 @@ const AdminUsersPage: React.FC = () => {
                       <div className="inline-flex gap-2">
                         <button
                           onClick={() => setSubPanelUser(u)}
-                          className="px-3 py-1 rounded-md border text-[13px] hover:bg-gray-50"
+                          className="px-3 py-1 rounded-md border text-[13px] hover:bg-gray-50 min-h-[40px]"
                         >
                           編集
                         </button>
                         <button
                           onClick={() => setConfirm({ type: 'delete', user: u })}
-                          className="px-3 py-1 rounded-md bg-rose-600 text-white text-[13px] hover:opacity-90"
+                          className="px-3 py-1 rounded-md bg-rose-600 text-white text-[13px] hover:opacity-90 min-h-[40px]"
                         >
                           削除
                         </button>
@@ -258,23 +273,22 @@ const AdminUsersPage: React.FC = () => {
           aria-describedby="admin-user-confirm-desc"
         >
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              {confirm?.type === 'promote' && '管理者に昇格しますか？'}
-              {confirm?.type === 'demote' && '一般ユーザーに変更しますか？'}
-              {confirm?.type === 'block' && 'このユーザーをブロックしますか？'}
-              {confirm?.type === 'unblock' && 'このユーザーのブロックを解除しますか？'}
-              {confirm?.type === 'delete' && 'このユーザーを削除しますか？（取り消しできません）'}
+            <AlertDialogTitle className="text-base">
+              {confirm?.type === 'promote' && '管理者に昇格？'}
+              {confirm?.type === 'demote' && '一般ユーザーに変更？'}
+              {confirm?.type === 'block' && 'ユーザーをブロック？'}
+              {confirm?.type === 'unblock' && 'ブロック解除？'}
+              {confirm?.type === 'delete' && 'ユーザーを削除？'}
             </AlertDialogTitle>
-            <AlertDialogDescription id="admin-user-confirm-desc">
-              対象: {confirm?.user.email}
+            <AlertDialogDescription id="admin-user-confirm-desc" className="text-sm">
+              {confirm?.user.email}
+              {confirm?.type === 'delete' && '（取り消し不可）'}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel aria-label="キャンセル" autoFocus>
-              キャンセル
-            </AlertDialogCancel>
+          <AlertDialogFooter className="flex-row-reverse gap-2">
             <AlertDialogAction
               aria-label="実行"
+              className="min-h-[40px]"
               onClick={async () => {
                 const c = confirm;
                 setConfirm(null);
@@ -295,8 +309,11 @@ const AdminUsersPage: React.FC = () => {
                 }
               }}
             >
-              実行
+              {confirm?.type === 'delete' ? '削除' : '実行'}
             </AlertDialogAction>
+            <AlertDialogCancel aria-label="キャンセル" className="min-h-[40px]">
+              キャンセル
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -322,6 +339,36 @@ const AdminUsersPage: React.FC = () => {
 };
 
 // サブコンポーネント
+function SkeletonCard() {
+  return (
+    <div className="animate-pulse bg-white rounded-2xl shadow-sm border p-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+          <div className="h-3 bg-gray-200 rounded w-1/2" />
+        </div>
+        <div className="shrink-0 space-y-1">
+          <div className="h-5 bg-gray-200 rounded-full w-16" />
+          <div className="h-5 bg-gray-200 rounded-full w-12" />
+        </div>
+      </div>
+      <div className="mt-3 flex justify-end">
+        <div className="h-6 bg-gray-200 rounded w-12" />
+      </div>
+    </div>
+  );
+}
+
+function SkeletonList({ count = 3 }: { count?: number }) {
+  return (
+    <div className="space-y-3">
+      {Array.from({ length: count }).map((_, i) => (
+        <SkeletonCard key={`skeleton-${i}`} />
+      ))}
+    </div>
+  );
+}
+
 function Th({ children, className = '' }: React.PropsWithChildren<{ className?: string }>) {
   return <th className={`px-3 py-2 text-left font-semibold ${className}`}>{children}</th>;
 }
@@ -348,12 +395,12 @@ function StatusBadge({ status }: { status?: string }) {
   const s = (status ?? '').toLowerCase();
   const styles =
     s === 'active' || s === '有効'
-      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
       : s === 'invited' || s === '招待中'
-        ? 'bg-amber-50 text-amber-700 border-amber-200'
+        ? 'bg-amber-50 text-amber-800 border-amber-200'
         : s === 'suspended' || s === '停止中' || s === 'ブロック済み'
-          ? 'bg-rose-50 text-rose-700 border-rose-200'
-          : 'bg-gray-50 text-gray-600 border-gray-200';
+          ? 'bg-rose-50 text-rose-800 border-rose-200'
+          : 'bg-gray-50 text-gray-700 border-gray-200';
   const label =
     s === 'active' || s === '有効'
       ? '有効'
@@ -387,13 +434,16 @@ function UserCard({
   formatStatus: (user: PublicUser) => string;
 }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-3">
+    <div
+      onClick={onEdit}
+      className="bg-white rounded-2xl shadow-sm border border-gray-200 p-3 cursor-pointer active:opacity-80 select-none hover:shadow-md transition-shadow"
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-semibold text-[15px] leading-5 truncate">
             {user.name || '（名称未設定）'}
           </p>
-          <p className="text-xs text-gray-500 truncate">{user.email}</p>
+          <p className="text-xs text-gray-500 break-all line-clamp-1">{user.email}</p>
         </div>
         <div className="shrink-0 text-right space-y-1">
           <RoleBadge role={user.role} />
@@ -403,12 +453,12 @@ function UserCard({
         </div>
       </div>
       <div className="mt-3 flex justify-end gap-2">
-        <button onClick={onEdit} className="px-3 py-2 rounded-lg border text-xs active:opacity-90">
-          編集
-        </button>
         <button
-          onClick={onDelete}
-          className="px-3 py-2 rounded-lg bg-rose-600 text-white text-xs active:opacity-90"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete?.();
+          }}
+          className="px-3 py-2 rounded-lg bg-rose-600 text-white text-xs active:opacity-90 min-h-[40px]"
         >
           削除
         </button>
@@ -441,14 +491,14 @@ function Pagination({
         <button
           onClick={prev}
           disabled={page <= 1 || loading}
-          className="px-3 py-2 rounded-lg border text-sm disabled:opacity-50"
+          className="px-3 py-2 rounded-lg border text-sm disabled:opacity-50 min-h-[40px]"
         >
           前へ
         </button>
         <button
           onClick={next}
           disabled={page >= pageCount || loading}
-          className="px-3 py-2 rounded-lg border text-sm disabled:opacity-50"
+          className="px-3 py-2 rounded-lg border text-sm disabled:opacity-50 min-h-[40px]"
         >
           次へ
         </button>
