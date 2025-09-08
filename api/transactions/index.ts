@@ -5,7 +5,7 @@ import { Transaction } from '../../src/types/transaction';
 // データベースサービス
 const financialService = FinancialDataService.getInstance();
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -164,3 +164,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 }
+
+module.exports = handler;
