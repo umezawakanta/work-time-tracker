@@ -639,21 +639,37 @@ const AdminDashboard: React.FC = () => {
           .admin-dashboard {
             min-height: 100vh;
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            position: relative;
+          }
+          
+          .admin-dashboard::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
           }
           
           .admin-dashboard .container {
             max-width: 100%;
-            padding: 0.75rem;
+            padding: 0.5rem;
             margin: 0;
+            position: relative;
+            z-index: 1;
           }
           
           .admin-dashboard .admin-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 1.5rem 1rem;
-            margin: -0.75rem -0.75rem 1.5rem;
-            border-radius: 0 0 24px 24px;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            padding: 1.25rem 1rem;
+            margin: -0.5rem -0.5rem 1rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
             position: relative;
             overflow: hidden;
           }
@@ -665,32 +681,35 @@ const AdminDashboard: React.FC = () => {
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
             pointer-events: none;
           }
           
           .admin-dashboard .admin-title {
-            font-size: 1.75rem;
+            font-size: 1.625rem;
             font-weight: 900;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.375rem;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             position: relative;
             z-index: 1;
+            line-height: 1.2;
+            letter-spacing: -0.025em;
           }
           
           .admin-dashboard .admin-subtitle {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             opacity: 0.9;
             position: relative;
             z-index: 1;
+            margin-bottom: 0.75rem;
           }
           
           .admin-dashboard .admin-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            gap: 0.375rem;
+            margin-top: 0.75rem;
             position: relative;
             z-index: 1;
           }
@@ -699,16 +718,19 @@ const AdminDashboard: React.FC = () => {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.875rem;
             border-radius: 12px;
             font-size: 0.8rem;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(10px);
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            min-height: 2.5rem;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
           }
           
           .admin-dashboard .admin-actions .btn:hover {
@@ -731,10 +753,11 @@ const AdminDashboard: React.FC = () => {
           
           .admin-dashboard .tabs-container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1rem;
             overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
           }
           
           .admin-dashboard .tabs-list {
@@ -744,8 +767,11 @@ const AdminDashboard: React.FC = () => {
             -ms-overflow-style: none;
             padding: 0.5rem;
             background: #f8fafc;
-            border-radius: 16px;
+            border-radius: 12px;
             margin: 0.5rem;
+            gap: 0.375rem;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
           }
           
           .admin-dashboard .tabs-list::-webkit-scrollbar {
@@ -756,15 +782,20 @@ const AdminDashboard: React.FC = () => {
             flex-shrink: 0;
             padding: 0.75rem 1rem;
             border-radius: 12px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
             background: transparent;
             border: none;
             color: #6b7280;
             cursor: pointer;
             position: relative;
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
           }
           
           .admin-dashboard .tabs-trigger[data-state="active"] {
@@ -781,56 +812,60 @@ const AdminDashboard: React.FC = () => {
           
           .admin-dashboard .card {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             border: 1px solid #e2e8f0;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
           }
           
           .admin-dashboard .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
           }
           
           .admin-dashboard .card-header {
-            padding: 1.25rem 1.5rem 0.75rem;
+            padding: 1rem 1.25rem 0.625rem;
             border-bottom: 1px solid #f1f5f9;
             background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
           }
           
           .admin-dashboard .card-title {
-            font-size: 1.1rem;
+            font-size: 1.125rem;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.375rem;
+            line-height: 1.3;
+            letter-spacing: -0.025em;
           }
           
           .admin-dashboard .card-description {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #6b7280;
             line-height: 1.4;
           }
           
           .admin-dashboard .card-content {
-            padding: 1.5rem;
+            padding: 1.25rem;
           }
           
           .admin-dashboard .metrics-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 1rem;
+            gap: 0.75rem;
           }
           
           .admin-dashboard .metric-card {
             background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border-radius: 16px;
-            padding: 1.5rem;
+            border-radius: 14px;
+            padding: 1.25rem;
             border: 1px solid #e2e8f0;
             position: relative;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
           }
           
           .admin-dashboard .metric-card::before {
@@ -839,42 +874,42 @@ const AdminDashboard: React.FC = () => {
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 3px;
             background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
           }
           
           .admin-dashboard .metric-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
           }
           
           .admin-dashboard .metric-value {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 900;
             color: #1f2937;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.375rem;
             line-height: 1;
           }
           
           .admin-dashboard .metric-label {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.625rem;
           }
           
           .admin-dashboard .metric-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 12px;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
+            top: 1.25rem;
+            right: 1.25rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
@@ -883,14 +918,14 @@ const AdminDashboard: React.FC = () => {
           .admin-dashboard .badge-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            gap: 0.375rem;
+            margin-top: 0.75rem;
           }
           
           .admin-dashboard .badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
             font-weight: 600;
             transition: all 0.3s ease;
             border: 2px solid transparent;
@@ -915,9 +950,9 @@ const AdminDashboard: React.FC = () => {
           }
           
           .admin-dashboard .alert {
-            border-radius: 16px;
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
+            border-radius: 14px;
+            padding: 1rem;
+            margin-bottom: 1rem;
             border: 2px solid;
             position: relative;
             overflow: hidden;
@@ -934,49 +969,64 @@ const AdminDashboard: React.FC = () => {
             position: absolute;
             top: 0;
             left: 0;
-            width: 4px;
+            width: 3px;
             height: 100%;
             background: currentColor;
           }
           
           .admin-dashboard .alert-title {
             font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            margin-bottom: 0.375rem;
           }
           
           .admin-dashboard .alert-description {
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 0.8rem;
+            line-height: 1.4;
           }
           
-          /* タブレット・デスクトップ対応 */
+          /* タブレット対応 */
           @media (min-width: 640px) {
             .admin-dashboard .container {
-              padding: 1.5rem;
+              padding: 1rem;
             }
             
             .admin-dashboard .admin-header {
-              margin: -1.5rem -1.5rem 2rem;
-              padding: 2rem 1.5rem;
+              margin: -1rem -1rem 1.5rem;
+              padding: 1.75rem 1.5rem;
             }
             
             .admin-dashboard .admin-title {
-              font-size: 2.25rem;
+              font-size: 2rem;
             }
             
             .admin-dashboard .metrics-grid {
               grid-template-columns: repeat(2, 1fr);
             }
+            
+            .admin-dashboard .card-content {
+              padding: 1.5rem;
+            }
           }
           
+          /* デスクトップ対応 */
           @media (min-width: 1024px) {
             .admin-dashboard .metrics-grid {
               grid-template-columns: repeat(4, 1fr);
             }
             
             .admin-dashboard .admin-title {
-              font-size: 2.5rem;
+              font-size: 2.25rem;
+            }
+            
+            .admin-dashboard .tabs-list {
+              padding: 0.5rem;
+              margin: 0.5rem;
+            }
+            
+            .admin-dashboard .tabs-trigger {
+              padding: 0.75rem 1rem;
+              font-size: 0.85rem;
             }
           }
         `}
