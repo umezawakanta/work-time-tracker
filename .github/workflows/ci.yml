@@ -16,7 +16,7 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile=false
-      - run: pnpm run lint
+      - run: pnpm run lint:ci
       - run: pnpm run type-check
       - run: pnpm run test:ci
       # E2E を常時回したい場合だけ有効化

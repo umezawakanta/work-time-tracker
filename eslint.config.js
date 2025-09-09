@@ -10,13 +10,16 @@ module.exports = tseslint.config(
       'dist',
       'node_modules',
       '.eslintrc.js',
-      'vite.config.ts',
+      'vite.config.js',
       '*.config.js',
       'coverage/**',
       '.vercel/**',
       'jest.*.config.js', // Jest設定ファイルを除外
       'src/**/__tests__/**', // テストファイルのESLintチェックを緩和
       'src/**/__mocks__/**', // モックファイルを除外
+      'api/**', // API directory (legacy require() usage)
+      'public/dev-status.json',
+      'public/test-summary.json',
     ]
   },
   {
