@@ -26,7 +26,6 @@ module.exports = {
     '<rootDir>/src/components/hero/__tests__/Benefits.a11y.test.tsx',
     '<rootDir>/src/services/api/__tests__/authApi.test.ts',
     '<rootDir>/src/services/api/__tests__/apiConfig.test.ts',
-    '<rootDir>/src/pages/__tests__/ResetPassword.test.tsx',
     '<rootDir>/src/__tests__/payment-integration.test.tsx',
   ],
   transformIgnorePatterns: [
