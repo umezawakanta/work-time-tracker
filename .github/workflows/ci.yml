@@ -18,28 +18,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      # pnpm を Corepack で有効化（この順序が重要）
       - name: Enable pnpm via Corepack
         run: |
           corepack enable
           corepack prepare pnpm@${PNPM_VERSION} --activate
           pnpm -v
 
-      # * pnpm の store を "必ず" 書き込み可能な一時領域へ固定
-      - name: Configure writable pnpm store
+      - name: Ensure local pnpm store
         run: |
-          mkdir -p "$RUNNER_TEMP/pnpm-store"
-          # 1) プロジェクト .npmrc（最優先で効く）
-          echo "store-dir=$RUNNER_TEMP/pnpm-store" >> .npmrc
-          # 2) ローカル設定
-          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
-          # 3) グローバル設定（保険）
-          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store" --global
-          pnpm store path
+          mkdir -p .pnpm-store
+          echo "pnpm store-dir: $(pnpm config get store-dir)"
 
-      # 依存インストール（CLI でも直指定して三重固定）
       - name: Install deps
-        run: pnpm install --frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
+        run: pnpm install --frozen-lockfile
 
       # Lint（新規コードのみ厳格の lint:ci を使用）
       - name: Lint

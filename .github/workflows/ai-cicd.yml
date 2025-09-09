@@ -34,19 +34,13 @@ jobs:
           corepack prepare pnpm@${{ env.PNPM_VERSION }} --activate
           pnpm -v
 
-      - name: Configure writable pnpm store
+      - name: Ensure local pnpm store
         run: |
-          mkdir -p "$RUNNER_TEMP/pnpm-store"
-          # 1) プロジェクト .npmrc（最優先で効く）
-          echo "store-dir=$RUNNER_TEMP/pnpm-store" >> .npmrc
-          # 2) ローカル設定
-          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
-          # 3) グローバル設定（保険）
-          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store" --global
-          pnpm store path
+          mkdir -p .pnpm-store
+          echo "pnpm store-dir: $(pnpm config get store-dir)"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
+        run: pnpm install --frozen-lockfile
 
       - name: Type checking
         run: pnpm run type-check
