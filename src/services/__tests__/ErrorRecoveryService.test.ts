@@ -1,4 +1,4 @@
-import { ErrorRecoveryService } from '@/services/ErrorRecoveryService';
+import { ErrorRecoveryService } from '../ErrorRecoveryService';
 
 type FetchMap = Record<string, { ok: boolean; status?: number }>;
 
