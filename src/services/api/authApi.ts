@@ -1,6 +1,5 @@
 import { api } from './apiConfig';
-import * as TokenManagerMod from '@/services/auth/TokenManager';
-const TM: any = (TokenManagerMod as any).default ?? TokenManagerMod;
+import tokenManager from '@/services/auth/TokenManager';
 import { User } from '@/types';
 import axios from 'axios';
 import { getEnv } from '@/utils/env';
@@ -42,16 +41,14 @@ export const register = async (userData: RegisterData): Promise<AuthResponse> =>
 
     console.log('Register response:', response.data);
 
-    if (response.data.accessToken && response.data.refreshToken) {
+    if (response.data?.accessToken && response.data?.refreshToken) {
       // TokenManagerを使用してトークンを管理
-      if (TM?.setTokens) {
-        TM.setTokens(
-          response.data.accessToken,
-          response.data.refreshToken,
-          response.data.expiresIn || 3600, // デフォルト1時間
-          response.data.refreshExpiresIn || 604800 // デフォルト7日
-        );
-      }
+      tokenManager.setTokens(
+        response.data.accessToken,
+        response.data.refreshToken,
+        response.data.expiresIn || 3600, // デフォルト1時間
+        response.data.refreshExpiresIn || 604800 // デフォルト7日
+      );
 
       // ログアウトフラグをクリア
       sessionStorage.removeItem('user-logged-out');
@@ -94,23 +91,21 @@ export const login = async (
     console.log('  - Has user:', !!response.data.user);
 
     // Handle new format with accessToken and refreshToken
-    if (response.data.accessToken && response.data.refreshToken) {
+    if (response.data?.accessToken && response.data?.refreshToken) {
       const expiresIn = response.data.expiresIn || 3600;
       const refreshExpiresIn = response.data.refreshExpiresIn || (rememberMe ? 2592000 : 604800);
 
-      if (TM?.setTokens) {
-        TM.setTokens(
-          response.data.accessToken,
-          response.data.refreshToken,
-          expiresIn,
-          refreshExpiresIn
-        );
-      }
+      tokenManager.setTokens(
+        response.data.accessToken,
+        response.data.refreshToken,
+        expiresIn,
+        refreshExpiresIn
+      );
 
       if (rememberMe) {
-        TM?.setRememberMe?.(true);
+        tokenManager.setRememberMe?.(true);
       } else {
-        TM?.setRememberMe?.(false);
+        tokenManager.setRememberMe?.(false);
       }
 
       // ログアウトフラグをクリア
@@ -120,23 +115,21 @@ export const login = async (
     }
 
     // Legacy format fallback (single token field)
-    if (response.data.token) {
+    if (response.data?.token) {
       const expiresIn = 3600; // 1 hour
       const refreshExpiresIn = rememberMe ? 2592000 : 604800;
 
-      if (TM?.setTokens) {
-        TM.setTokens(
-          response.data.token, // accessTokenとして使用
-          response.data.token, // refreshTokenも同じ値を使用（一時的）
-          expiresIn,
-          refreshExpiresIn
-        );
-      }
+      tokenManager.setTokens(
+        response.data.token, // accessTokenとして使用
+        response.data.token, // refreshTokenも同じ値を使用（一時的）
+        expiresIn,
+        refreshExpiresIn
+      );
 
       if (rememberMe) {
-        TM?.setRememberMe?.(true);
+        tokenManager.setRememberMe?.(true);
       } else {
-        TM?.setRememberMe?.(false);
+        tokenManager.setRememberMe?.(false);
       }
 
       // ログアウトフラグをクリア
@@ -182,7 +175,7 @@ export const logout = async (): Promise<void> => {
   }
 
   // クライアント側トークンを確実に削除
-  TM?.clearTokens?.();
+  tokenManager.clearTokens();
   sessionStorage.setItem('user-logged-out', 'true');
   console.log('🚪 Logout completed - tokens cleared');
 };
@@ -190,13 +183,13 @@ export const logout = async (): Promise<void> => {
 export const checkAuth = async (): Promise<boolean> => {
   try {
     // TokenManagerで認証状態を確認
-    if (!TM?.isAuthenticated?.()) {
+    if (!tokenManager.isAuthenticated()) {
       console.log('🔒 No valid local token');
       return false;
     }
 
     // サーバーサイドで認証状態を確認
-    const token = await TM?.getAccessToken?.();
+    const token = await tokenManager.getAccessToken();
     if (!token) {
       console.log('🔒 No access token available');
       return false;
@@ -236,19 +229,19 @@ export const checkAuth = async (): Promise<boolean> => {
       !err.response
     ) {
       console.log('⚠️ Network error - maintaining auth state for valid token');
-      return TM?.isAuthenticated?.(); // ローカルトークンが有効なら認証状態を維持
+      return tokenManager.isAuthenticated(); // ローカルトークンが有効なら認証状態を維持
     }
 
     // サーバーが明示的に認証エラーを返した場合のみクリア
     if (err.response?.status === 401 || err.response?.status === 403) {
       console.log('🔒 Server rejected auth - clearing tokens');
-      TM?.clearTokens?.();
+      tokenManager.clearTokens();
       return false;
     }
 
     // その他のサーバーエラーの場合は認証状態を維持
     console.log('⚠️ Server error - maintaining auth state');
-    return TM?.isAuthenticated?.();
+    return tokenManager.isAuthenticated();
   }
 };
 
@@ -268,7 +261,7 @@ export const updateUserProfile = async (userData: {
   traits?: { iq?: number; mbti?: string };
 }): Promise<User> => {
   try {
-    const token = await TM?.getAccessToken?.();
+    const token = await tokenManager.getAccessToken();
     if (!token) {
       throw new Error('認証トークンがありません');
     }
@@ -375,21 +368,19 @@ export const refreshToken = async (refreshToken: string): Promise<AuthResponse> 
       refreshToken,
     });
 
-    if (response.data.accessToken && response.data.refreshToken) {
-      if (TM?.setTokens) {
-        TM.setTokens(
-          response.data.accessToken,
-          response.data.refreshToken,
-          response.data.expiresIn || 3600,
-          response.data.refreshExpiresIn || 604800
-        );
-      }
+    if (response.data?.accessToken && response.data?.refreshToken) {
+      tokenManager.setTokens(
+        response.data.accessToken,
+        response.data.refreshToken,
+        response.data.expiresIn || 3600,
+        response.data.refreshExpiresIn || 604800
+      );
     }
 
     return response.data;
   } catch (error) {
     console.error('Token refresh error:', error);
-    TM?.clearTokens?.();
+    tokenManager.clearTokens();
     throw error;
   }
 };
@@ -400,7 +391,7 @@ export const changePassword = async (
   newPassword: string
 ): Promise<{ message: string }> => {
   try {
-    const token = await TM?.getAccessToken?.();
+    const token = await tokenManager.getAccessToken();
     if (!token) {
       throw new Error('認証トークンがありません');
     }
@@ -452,12 +443,12 @@ export const promoteToAdmin = async (): Promise<User> => {
 
 // セッション情報の取得
 export const getSessionInfo = () => {
-  return TM?.getSessionInfo?.();
+  return tokenManager.getSessionInfo();
 };
 
 // デバッグ用
 export const getAuthDebugInfo = () => {
-  return TM?.getDebugInfo?.();
+  return tokenManager.getDebugInfo();
 };
 
 // 例: lastActivityを保存

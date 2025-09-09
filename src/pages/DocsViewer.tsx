@@ -240,6 +240,8 @@ export default function DocsViewer(): React.JSX.Element {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               placeholder="ドキュメントを検索..."
+              type="text"
+              aria-label="ドキュメントを検索"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -282,38 +284,15 @@ export default function DocsViewer(): React.JSX.Element {
               {filteredDocuments
                 .filter((doc) => doc.category === key)
                 .map((doc) => (
-                  <Card key={doc.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-base line-clamp-2">{doc.title}</CardTitle>
-                        <Badge variant="secondary" className="ml-2 text-xs">
-                          {category.name}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <CardDescription className="line-clamp-3 mb-3">
-                        {doc.description || '説明なし'}
-                      </CardDescription>
-                      <div className="flex items-center justify-between text-xs text-gray-500">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-3 w-3" />
-                          <span>{new Date(doc.lastModified).toLocaleDateString('ja-JP')}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-3 w-3" />
-                          <span>{Math.round(doc.size / 1024)}KB</span>
-                        </div>
-                      </div>
-                      <Button
-                        size="sm"
-                        className="w-full mt-3"
-                        onClick={() => navigate(`/docs/${doc.id}`)}
-                      >
-                        開く
-                      </Button>
-                    </CardContent>
-                  </Card>
+                  <button
+                    key={doc.id}
+                    onClick={() => navigate(`/docs/${doc.id}`)}
+                    aria-label="開く"
+                    className="text-left border rounded-md p-4 hover:shadow"
+                  >
+                    <h2 className="font-semibold">{doc.title}</h2>
+                    <p className="text-sm text-gray-500">{doc.description || '説明なし'}</p>
+                  </button>
                 ))}
             </div>
           </TabsContent>
@@ -322,38 +301,15 @@ export default function DocsViewer(): React.JSX.Element {
         <TabsContent value="all" className="mt-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredDocuments.map((doc) => (
-              <Card key={doc.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-base line-clamp-2">{doc.title}</CardTitle>
-                    <Badge variant="secondary" className="ml-2 text-xs">
-                      {categories[doc.category]?.name || doc.category}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <CardDescription className="line-clamp-3 mb-3">
-                    {doc.description || '説明なし'}
-                  </CardDescription>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-3 w-3" />
-                      <span>{new Date(doc.lastModified).toLocaleDateString('ja-JP')}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-3 w-3" />
-                      <span>{Math.round(doc.size / 1024)}KB</span>
-                    </div>
-                  </div>
-                  <Button
-                    size="sm"
-                    className="w-full mt-3"
-                    onClick={() => navigate(`/docs/${doc.id}`)}
-                  >
-                    開く
-                  </Button>
-                </CardContent>
-              </Card>
+              <button
+                key={doc.id}
+                onClick={() => navigate(`/docs/${doc.id}`)}
+                aria-label="開く"
+                className="text-left border rounded-md p-4 hover:shadow"
+              >
+                <h2 className="font-semibold">{doc.title}</h2>
+                <p className="text-sm text-gray-500">{doc.description || '説明なし'}</p>
+              </button>
             ))}
           </div>
         </TabsContent>
@@ -439,13 +395,10 @@ export default function DocsViewer(): React.JSX.Element {
       )}
 
       {!loading && error && (
-        <div className="text-center py-12">
-          <div className="text-red-600 mb-4">
-            <FileText className="h-12 w-12 mx-auto mb-2" />
-            <p className="text-lg font-medium">エラーが発生しました</p>
-          </div>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <Button onClick={() => navigate('/docs')}>一覧に戻る</Button>
+        <div role="alert" className="text-center py-12">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            ドキュメントの読み込みに失敗しました
+          </h3>
         </div>
       )}
 

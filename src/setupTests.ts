@@ -1236,3 +1236,20 @@ try {
   // msw 未導入環境でも壊れないように
   (globalThis as any).rest = undefined;
 }
+
+// --- Safe URL polyfill for JSDOM/Jest ---
+(() => {
+  const g: any = (typeof window !== 'undefined' ? window : globalThis) as any;
+  if (typeof g.URL !== 'function') {
+    // 最低限 new URL(...) を可能にするスタブ
+    g.URL = class {
+      href: string;
+      constructor(input: string, base?: string) {
+        this.href = (input || '').toString();
+      }
+      toString() {
+        return this.href;
+      }
+    } as any;
+  }
+})();

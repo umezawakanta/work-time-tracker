@@ -17,11 +17,14 @@ declare global {
 const explicitUseMockRaw = getEnv('VITE_USE_MOCK_DATA');
 export const USE_MOCK_DATA = explicitUseMockRaw === 'true' || explicitUseMockRaw === '1';
 
-// デバッグ情報をログ出力
+// テストが import 時ログを検証するので、トップレベルで必ず出力
+// eslint-disable-next-line no-console
 console.log('🔧 Determining API Configuration...');
+// eslint-disable-next-line no-console
 console.log('📋 Environment:', {
   NODE_ENV: process.env.NODE_ENV,
-  BASE_URL: process.env.VITE_API_BASE_URL,
+  VITE_API_BASE_URL:
+    (typeof process !== 'undefined' && (process as any)?.env?.VITE_API_BASE_URL) || undefined,
 });
 
 if (USE_MOCK_DATA) {
