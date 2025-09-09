@@ -34,7 +34,7 @@ import { TransactionList } from '@/components/TransactionList'; // 追加: 取�
 import { useReportData } from '@/hooks/useReportData';
 import { useBalanceUpdate } from '@/hooks/useBalanceUpdate';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthOptional } from '@/hooks/useAuth';
 import { combineData } from '@/utils/combineData';
 import { calculateFinancialMetrics } from '@/utils/financialMetrics';
 import { shareReport } from '@/utils/shareReport';
@@ -109,26 +109,9 @@ import { FinancialGoal } from '@/types'; // 追加: 目標の型定義
 
 export default function AssetLiabilityReportPage() {
   const dispatch = useDispatch<AppDispatch>();
-  // テスト環境などで AuthProvider が無い場合もページを描画可能にする
-  let auth:
-    | ReturnType<typeof useAuth>
-    | {
-        user: null;
-        isAuthenticated: boolean;
-        login: (...args: any[]) => Promise<void>;
-        logout: () => Promise<void>;
-      };
-  try {
-    auth = useAuth();
-  } catch {
-    auth = {
-      user: null,
-      isAuthenticated: false,
-      login: async () => {},
-      logout: async () => {},
-    };
-  }
-  const user = auth?.user;
+  // Provider が無くても「未ログイン」として安全に動作
+  const auth = useAuthOptional();
+  const user = auth.user;
   const assetEntries = useSelector((state: RootState) => state.asset?.entries ?? []);
   const debtEntries = useSelector((state: RootState) => state.debt?.entries ?? []);
 
