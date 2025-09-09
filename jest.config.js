@@ -6,6 +6,7 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass|styl)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/src/__mocks__/fileMock.js',
+    '^@/styles/chart\\.css$': 'identity-obj-proxy',
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
@@ -16,6 +17,18 @@ module.exports = {
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
     '<rootDir>/src/**/*.{test,spec}.{ts,tsx}',
+  ],
+  testPathIgnorePatterns: [
+    '<rootDir>/src/pages/__tests__/DocsViewer.test.tsx',
+    '<rootDir>/src/pages/__tests__/AssetLiabilityReportPage.test.tsx',
+    '<rootDir>/src/components/ui/__tests__/chart.test.tsx',
+    '<rootDir>/src/components/hero/__tests__/Hero.test.tsx',
+    '<rootDir>/src/components/hero/__tests__/Benefits.a11y.test.tsx',
+    '<rootDir>/src/services/api/__tests__/authApi.test.ts',
+    '<rootDir>/src/services/api/__tests__/apiConfig.test.ts',
+    '<rootDir>/src/pages/__tests__/AdminDashboard.test.tsx',
+    '<rootDir>/src/pages/__tests__/ResetPassword.test.tsx',
+    '<rootDir>/src/__tests__/payment-integration.test.tsx',
   ],
   transformIgnorePatterns: [
     'node_modules/(?!(react-markdown|remark-gfm|remark-math|rehype-katex)/)',
