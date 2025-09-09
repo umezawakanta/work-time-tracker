@@ -52,7 +52,7 @@ jest.mock('@/components/analytics/AnalyticsDashboard', () => 'div');
 // ErrorMonitoringDashboardをモック
 jest.mock('@/components/development/ErrorMonitoringDashboard', () => 'div');
 
-describe.skip('AdminDashboard', () => {
+describe('AdminDashboard', () => {
   it('renders admin dashboard with title', async () => {
     render(
       <MemoryRouter>

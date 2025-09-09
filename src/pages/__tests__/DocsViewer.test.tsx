@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { http, HttpResponse } from 'msw';
 import DocsViewer from '../DocsViewer';
 import { server } from '../../__mocks__/server';
 
@@ -51,25 +52,24 @@ describe.skip('DocsViewer Component', () => {
   beforeEach(() => {
     // モックAPIレスポンスの設定
     server.use(
-      rest.get('/api/docs', (req, res, ctx) => {
-        const action = req.url.searchParams.get('action');
+      http.get('/api/docs', ({ request }) => {
+        const url = new URL(request.url);
+        const action = url.searchParams.get('action');
         if (action === 'list') {
-          return res(ctx.json({ success: true, data: mockDocuments, total: 2 }));
+          return HttpResponse.json({ success: true, data: mockDocuments, total: 2 });
         } else if (action === 'categories') {
-          return res(ctx.json({ success: true, data: mockCategories }));
+          return HttpResponse.json({ success: true, data: mockCategories });
         } else if (action === 'content') {
-          const id = req.url.searchParams.get('id');
-          return res(
-            ctx.json({
-              success: true,
-              data: {
-                content: '# Test Document\n\nThis is test content.',
-                metadata: mockDocuments.find((doc) => doc.id === id),
-              },
-            })
-          );
+          const id = url.searchParams.get('id');
+          return HttpResponse.json({
+            success: true,
+            data: {
+              content: '# Test Document\n\nThis is test content.',
+              metadata: mockDocuments.find((doc) => doc.id === id),
+            },
+          });
         }
-        return res(ctx.status(404));
+        return HttpResponse.json({}, { status: 404 });
       })
     );
   });
@@ -232,21 +232,19 @@ describe.skip('DocsViewer Component', () => {
     test('should display loading state while fetching document', async () => {
       // 遅延レスポンスを設定
       server.use(
-        rest.get('/api/docs', (req, res, ctx) => {
-          const action = req.url.searchParams.get('action');
+        http.get('/api/docs', ({ request }) => {
+          const url = new URL(request.url);
+          const action = url.searchParams.get('action');
           if (action === 'content') {
-            return res(
-              ctx.delay(1000),
-              ctx.json({
-                success: true,
-                data: {
-                  content: '# Test Document',
-                  metadata: mockDocuments[0],
-                },
-              })
-            );
+            return HttpResponse.json({
+              success: true,
+              data: {
+                content: '# Test Document',
+                metadata: mockDocuments[0],
+              },
+            });
           }
-          return res(ctx.status(404));
+          return HttpResponse.json({}, { status: 404 });
         })
       );
 
@@ -269,18 +267,16 @@ describe.skip('DocsViewer Component', () => {
 
     test('should display error message when document not found', async () => {
       server.use(
-        rest.get('/api/docs', (req, res, ctx) => {
-          const action = req.url.searchParams.get('action');
+        http.get('/api/docs', ({ request }) => {
+          const url = new URL(request.url);
+          const action = url.searchParams.get('action');
           if (action === 'content') {
-            return res(
-              ctx.status(404),
-              ctx.json({
-                success: false,
-                message: 'ドキュメントが見つかりません',
-              })
-            );
+            return HttpResponse.json({
+              success: false,
+              message: 'ドキュメントが見つかりません',
+            }, { status: 404 });
           }
-          return res(ctx.status(404));
+          return HttpResponse.json({}, { status: 404 });
         })
       );
 
@@ -342,8 +338,8 @@ describe.skip('DocsViewer Component', () => {
   describe('Error Handling', () => {
     test('should handle API errors gracefully', async () => {
       server.use(
-        rest.get('/api/docs', (req, res, ctx) => {
-          return res(ctx.status(500), ctx.json({ message: 'Internal Server Error' }));
+        http.get('/api/docs', () => {
+          return HttpResponse.json({ message: 'Internal Server Error' }, { status: 500 });
         })
       );
 
@@ -361,8 +357,8 @@ describe.skip('DocsViewer Component', () => {
 
     test('should handle network errors', async () => {
       server.use(
-        rest.get('/api/docs', (req, res, ctx) => {
-          return res.networkError('Network error');
+        http.get('/api/docs', () => {
+          return HttpResponse.error();
         })
       );
 
@@ -431,12 +427,13 @@ describe.skip('DocsViewer Component', () => {
       }));
 
       server.use(
-        rest.get('/api/docs', (req, res, ctx) => {
-          const action = req.url.searchParams.get('action');
+        http.get('/api/docs', ({ request }) => {
+          const url = new URL(request.url);
+          const action = url.searchParams.get('action');
           if (action === 'list') {
-            return res(ctx.json({ success: true, data: largeDocumentList, total: 100 }));
+            return HttpResponse.json({ success: true, data: largeDocumentList, total: 100 });
           }
-          return res(ctx.status(404));
+          return HttpResponse.json({}, { status: 404 });
         })
       );
 
