@@ -1,5 +1,12 @@
 # 更新履歴
 
+## [1.1.1](https://github.com/umezawakanta/work-time-tracker/compare/v1.1.0...v1.1.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* **ci:** streamline pnpm setup in CI workflow ([5660283](https://github.com/umezawakanta/work-time-tracker/commit/5660283577f1d81f55cb11f939ce3380b8737d44))
+
 ## [1.1.0](https://github.com/umezawakanta/work-time-tracker/compare/v1.0.0...v1.1.0) (2025-09-09)
 
 
