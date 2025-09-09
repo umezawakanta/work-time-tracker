@@ -1219,9 +1219,8 @@ beforeEach(() => {
   console.log('🔄 Global beforeEach: Reset all mocks');
 });
 
-// MSW の rest をグローバルに露出（テストコードが global.rest を前提にしている）
-try {
-  const { rest } = require('msw');
-  // @ts-ignore
-  global.rest = rest;
-} catch {}
+// msw の rest をグローバルへ（テストコードが global.rest を参照）
+import { rest as mswRest } from 'msw';
+
+// @ts-ignore
+(globalThis as any).rest = mswRest;

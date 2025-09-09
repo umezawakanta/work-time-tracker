@@ -1,6 +1,6 @@
 import { api } from './apiConfig';
-import { tokenManager } from '@/services/auth/TokenManager';
-import tokenManagerDefault from '@/services/auth/TokenManager'; // ← テストのモックと揃える
+import * as TokenManagerMod from '@/services/auth/TokenManager';
+const TM: any = (TokenManagerMod as any).default ?? TokenManagerMod;
 import { User } from '@/types';
 import axios from 'axios';
 import { getEnv } from '@/utils/env';
@@ -44,12 +44,14 @@ export const register = async (userData: RegisterData): Promise<AuthResponse> =>
 
     if (response.data.accessToken && response.data.refreshToken) {
       // TokenManagerを使用してトークンを管理
-      tokenManager.setTokens(
-        response.data.accessToken,
-        response.data.refreshToken,
-        response.data.expiresIn || 3600, // デフォルト1時間
-        response.data.refreshExpiresIn || 604800 // デフォルト7日
-      );
+      if (accessToken && refreshToken && TM?.setTokens) {
+        TM.setTokens(
+          response.data.accessToken,
+          response.data.refreshToken,
+          response.data.expiresIn || 3600, // デフォルト1時間
+          response.data.refreshExpiresIn || 604800 // デフォルト7日
+        );
+      }
 
       // ログアウトフラグをクリア
       sessionStorage.removeItem('user-logged-out');
@@ -96,12 +98,14 @@ export const login = async (
       const expiresIn = response.data.expiresIn || 3600;
       const refreshExpiresIn = response.data.refreshExpiresIn || (rememberMe ? 2592000 : 604800);
 
-      tokenManager.setTokens(
-        response.data.accessToken,
-        response.data.refreshToken,
-        expiresIn,
-        refreshExpiresIn
-      );
+      if (accessToken && refreshToken && TM?.setTokens) {
+        TM.setTokens(
+          response.data.accessToken,
+          response.data.refreshToken,
+          expiresIn,
+          refreshExpiresIn
+        );
+      }
 
       if (rememberMe) {
         tokenManager.setRememberMe(true);
@@ -120,12 +124,14 @@ export const login = async (
       const expiresIn = 3600; // 1 hour
       const refreshExpiresIn = rememberMe ? 2592000 : 604800;
 
-      tokenManager.setTokens(
-        response.data.token, // accessTokenとして使用
-        response.data.token, // refreshTokenも同じ値を使用（一時的）
-        expiresIn,
-        refreshExpiresIn
-      );
+      if (accessToken && refreshToken && TM?.setTokens) {
+        TM.setTokens(
+          response.data.token, // accessTokenとして使用
+          response.data.token, // refreshTokenも同じ値を使用（一時的）
+          expiresIn,
+          refreshExpiresIn
+        );
+      }
 
       if (rememberMe) {
         tokenManager.setRememberMe(true);
@@ -176,7 +182,7 @@ export const logout = async (): Promise<void> => {
   }
 
   // クライアント側トークンを確実に削除
-  tokenManager.clearTokens();
+  TM?.clearTokens?.();
   sessionStorage.setItem('user-logged-out', 'true');
   console.log('🚪 Logout completed - tokens cleared');
 };
@@ -236,7 +242,7 @@ export const checkAuth = async (): Promise<boolean> => {
     // サーバーが明示的に認証エラーを返した場合のみクリア
     if (err.response?.status === 401 || err.response?.status === 403) {
       console.log('🔒 Server rejected auth - clearing tokens');
-      tokenManager.clearTokens();
+      TM?.clearTokens?.();
       return false;
     }
 
@@ -370,18 +376,20 @@ export const refreshToken = async (refreshToken: string): Promise<AuthResponse> 
     });
 
     if (response.data.accessToken && response.data.refreshToken) {
-      tokenManager.setTokens(
-        response.data.accessToken,
-        response.data.refreshToken,
-        response.data.expiresIn || 3600,
-        response.data.refreshExpiresIn || 604800
-      );
+      if (accessToken && refreshToken && TM?.setTokens) {
+        TM.setTokens(
+          response.data.accessToken,
+          response.data.refreshToken,
+          response.data.expiresIn || 3600,
+          response.data.refreshExpiresIn || 604800
+        );
+      }
     }
 
     return response.data;
   } catch (error) {
     console.error('Token refresh error:', error);
-    tokenManager.clearTokens();
+    TM?.clearTokens?.();
     throw error;
   }
 };

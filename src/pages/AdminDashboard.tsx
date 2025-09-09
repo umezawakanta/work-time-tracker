@@ -38,12 +38,15 @@ import { AdminBugsList } from '@/components/admin/AdminBugsList';
 import { api } from '@/services/api/apiConfig';
 import SocialShareButton from '@/components/ui/SocialShareButton';
 import AdminUsersPage from '@/pages/AdminUsersPage';
-import * as AdminListMod from '@/components/admin/AdminFeaturesList';
-const AdminFeaturesList =
-  // named export → default → 何もなければダミーで回避
-  (AdminListMod as any).AdminFeaturesList ||
-  (AdminListMod as any).default ||
-  (() => null);
+let AdminFeaturesList: React.ComponentType | null = null;
+try {
+  // named / default どちらでも拾う
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const mod = require('@/components/admin/AdminFeaturesList');
+  AdminFeaturesList = mod.AdminFeaturesList ?? mod.default ?? null;
+} catch {
+  AdminFeaturesList = null;
+}
 import { isFeatureAccessible } from '@/config/features';
 import { useDerivedFeatureStatuses } from '@/hooks/useDerivedFeatureStatuses';
 import {
@@ -2216,7 +2219,7 @@ const AdminDashboard: React.FC = () => {
 
               {isFeatureAccessible('/admin/features').allowed && (
                 <TabsContent value="features" className="space-y-6">
-                  <AdminFeaturesList />
+                  {AdminFeaturesList ? <AdminFeaturesList /> : null}
                 </TabsContent>
               )}
 

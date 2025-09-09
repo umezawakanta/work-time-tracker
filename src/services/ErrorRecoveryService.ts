@@ -580,17 +580,16 @@ export class ErrorRecoveryService {
         const headers: Record<string, string> = {};
         headers['Authorization'] = `Bearer ${token}`;
         const authResponse = await fetch('/api/auth/check', { headers });
-        // 200 / { ok: true } / { status: 'ok' } を成功とみなす
-        results.auth =
-          authResponse.status === 200 ||
-          authResponse.data?.ok === true ||
-          authResponse.data?.status === 'ok';
+        const status = authResponse.status;
+        const data = authResponse.data ?? {};
+        results.auth = status === 200 || data.ok === true || data.status === 'ok';
       } else {
         // トークンが無い場合は認証状態を false として扱う（401エラーを発生させない）
         results.auth = false;
       }
-    } catch (e) {
-      results.auth = false;
+    } catch (e: any) {
+      const status = e?.response?.status;
+      results.auth = status !== 401; // 401 の時だけ false、それ以外は自己診断上 true
     }
 
     return results;

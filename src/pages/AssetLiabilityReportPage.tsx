@@ -696,7 +696,7 @@ export default function AssetLiabilityReportPage() {
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-            <p className="text-xl text-muted-foreground">データを読み込んでいます...</p>
+            <p className="text-xl text-muted-foreground">読み込み中...</p>
           </div>
         </div>
       </div>
@@ -753,7 +753,7 @@ export default function AssetLiabilityReportPage() {
       {/* ヘッダーセクション */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">資産/負債レポート</h1>
+          <h1 className="text-4xl font-bold tracking-tight">資産負債レポート</h1>
           <p className="text-muted-foreground mt-1">
             あなたの財務状況を分析・管理するためのダッシュボード
           </p>
