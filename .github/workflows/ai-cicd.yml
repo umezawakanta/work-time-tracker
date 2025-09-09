@@ -32,7 +32,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
 
       - name: Configure pnpm store (writable)
         run: |
@@ -64,7 +63,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
       - name: Configure pnpm store (writable)
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
@@ -90,7 +88,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
       - name: Configure pnpm store (writable)
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
@@ -133,7 +130,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
       - name: Configure pnpm store (writable)
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
@@ -159,7 +155,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
       - name: Configure pnpm store (writable)
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
@@ -216,7 +211,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
       - name: Configure pnpm store (writable)
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
@@ -291,7 +285,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
       - name: Configure pnpm store (writable)
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
