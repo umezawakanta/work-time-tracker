@@ -1,14 +1,5 @@
 'use client';
 
-// --- JSDOM/Jest でも安全な URL ユーティリティ ---
-const safeNewURL = (input?: string) => {
-  try {
-    if (!input) return null;
-    return new window.URL(input, window.location?.href ?? 'http://localhost/');
-  } catch {
-    return null;
-  }
-};
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
