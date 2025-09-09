@@ -988,7 +988,7 @@ const Daily10TasksPage: React.FC = () => {
       />
 
       {/* ヘッダー高さぶん余白（h-11 + safe-area） */}
-      <div className="mt-14" />
+      <div className="mt-16" />
 
       {/* 以降がページ本文 */}
       <main className="max-w-screen-sm mx-auto px-4 py-3 pb-24">
@@ -1455,8 +1455,8 @@ const Daily10TasksPage: React.FC = () => {
                 </CardContent>
               </Card>
             </div>
-        </TabsContent>
-      </Tabs>
+          </TabsContent>
+        </Tabs>
       </main>
     </>
   );
