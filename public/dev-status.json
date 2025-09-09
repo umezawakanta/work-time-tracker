@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2025-09-08T18:56:33.677Z",
+  "generatedAt": "2025-09-09T04:47:02.028Z",
   "totals": {
-    "filesScanned": 1287,
-    "findings": 899,
+    "filesScanned": 1294,
+    "findings": 901,
     "todo": 34,
-    "mock": 394,
+    "mock": 395,
     "wip": 4,
-    "errorHints": 460
+    "errorHints": 461
   },
   "flags": {
     "wipRoutes": [],
@@ -803,6 +803,12 @@
       "kind": "error"
     },
     {
+      "file": "src/components/ui/MobileHeader.tsx",
+      "line": 64,
+      "snippet": "<span className=\"inline-block w-8\" /> /* タイトル中央揃えのためのダミー */",
+      "kind": "mock"
+    },
+    {
       "file": "src/components/ui/SocialShareButton.tsx",
       "line": 93,
       "snippet": "throw new Error('no distinct navigator');",
@@ -828,7 +834,7 @@
     },
     {
       "file": "src/config/features.ts",
-      "line": 2072,
+      "line": 2161,
       "snippet": "if (feature.requiresRealAPI && USE_MOCK_DATA) {",
       "kind": "mock"
     },
@@ -1133,6 +1139,12 @@
       "kind": "error"
     },
     {
+      "file": "src/guard/GuardContext.tsx",
+      "line": 45,
+      "snippet": "if (!ctx) throw new Error('GuardContext missing');",
+      "kind": "error"
+    },
+    {
       "file": "src/hooks/useAdvancedOptions.ts",
       "line": 112,
       "snippet": "// モック実装",
@@ -1362,7 +1374,7 @@
     },
     {
       "file": "src/main.tsx",
-      "line": 30,
+      "line": 32,
       "snippet": "throw new Error('React.Children missing');",
       "kind": "error"
     },
