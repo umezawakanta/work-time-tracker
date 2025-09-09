@@ -1,30 +1,18 @@
-# ADR-0001: ブランチ戦略
+# ADR-0001: Branching Strategy
 
-## 決定事項
+## 決定
 
-軽量GitFlowを採用する。
+- `main`: 本番。常にデプロイ可能。
+- `develop`: 次期統合。Previewへ自動デプロイ。
+- `feature/*`: 機能単位。完了したら PR → develop。
+- `hotfix/*`: 本番障害向け。`main` へ最短修正→ `develop` に逆マージ。
+- 大規模リリース時のみ `release/*` を使用。
 
 ## 理由
 
-- **Preview環境が強力**: VercelのPreview機能により、ブランチごとに完全な動作確認が可能
-- **小〜中規模開発**: 大規模なリリース管理は不要
-- **安全な本番デプロイ**: Preview → Production Promoteでゼロリスク
-
-## ブランチ構成
-
-- `main`: 本番（Vercel Production）
-- `develop`: 次期統合先（常時デプロイOK品質）
-- `feature/*`: 機能単位（例: `feature/guard-route`）
-- `hotfix/*`: 本番障害用最短ブランチ
-
-## 運用ルール
-
-1. 機能開発は `feature/*` から開始
-2. PR作成で自動Preview発行
-3. CI + レビュー通過で `develop` マージ
-4. 安定度確認後、`develop` → `main` または Preview Promote
+- Vercel の Preview を最大活用し、速い統合と安全な本番運用を両立。
+- 評価コストを PR 単位に閉じる。
 
 ## 代替案
 
-- **Trunk-Based**: `main` 直 + フラグ制御
-- 現状はPreview環境が充実しているため、軽量GitFlowが最適
+- Trunk-based + フィーチャーフラグ：小規模ならこれも可。

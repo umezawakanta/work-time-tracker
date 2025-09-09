@@ -1,12 +1,2 @@
-* @kanta
-
-# Guard system
-src/guard/* @kanta
-
-# Core features
-src/config/features.ts @kanta
-src/pages/GuardPage.tsx @kanta
-src/pages/Daily10TasksPage.tsx @kanta
-
-# Mobile components
-src/components/ui/MobileHeader.tsx @kanta
+* @your-org/maintainers
+src/guard/* @yourname @reviewer2

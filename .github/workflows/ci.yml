@@ -14,10 +14,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: pnpm
       - run: pnpm install --frozen-lockfile=false
       - run: pnpm run lint
       - run: pnpm run type-check
       - run: pnpm run test:ci
-      # E2E（任意・時間かかるなら develop/label 時だけ）
+      # E2E を常時回したい場合だけ有効化
       # - run: pnpm run test:e2e

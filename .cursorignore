@@ -1,10 +1,9 @@
 dist/
 coverage/
-.pnpm-store/
 node_modules/
-.vercel/
-.env.local
-.env.production
+.pnpm-store/
+.vscode/
+.idea/
 *.log
-.DS_Store
-Thumbs.db
+**/*.map
+public/dev-status.json

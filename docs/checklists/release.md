@@ -1,19 +1,18 @@
-# リリースチェックリスト
+# Release Checklist
 
-## PR 前
+## 事前
 
-- [ ] ESLint/TS 0、`test:ci` OK、iPhone SEで崩れない
-- [ ] 受け入れ条件を満たすスクショ/動画
-- [ ] ネーミングとUI文言が一貫
+- [ ] 必須チェック（CI/Vercel Preview）成功
+- [ ] 受け入れ条件 & スクショ確認
+- [ ] 500/console error なし、Lighthouse の重大退行なし
 
-## マージ 前
+## リリース方法
 
-- [ ] Vercel Preview OK（/sitemap、対象ページ、モバイル操作）
-- [ ] 主要ログ・警告なし
-- [ ] フラグ（例: `VITE_DOPAMINE_GUARD`）既定値が安全側
+- 方式A: develop → main をマージ（自動で Production）
+- 方式B: Preview を Promote to Production（安全切替）
 
-## リリース 後
+## リリース後
 
-- [ ] 500/エラーの新規発生なし
-- [ ] 重要指標（LCP/CLS）悪化なし
-- [ ] Rollback 手順（前のデプロイ/Preview URL）を把握
+- [ ] 主要ページの動作確認（iPhone SE 含む）
+- [ ] 監視に新規エラーなし
+- [ ] ロールバック手順を確認（直前デプロイまたは Preview）

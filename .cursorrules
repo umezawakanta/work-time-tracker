@@ -1,17 +1,25 @@
-# Tech
-- React 18 + Vite + TS
+# Tech baseline
+- React 18 + Vite + TypeScript
 - Tailwind + shadcn/ui
 - React Router
-- Cypress for E2E
-- featuresRegistry を唯一の仕様ソースにする
-- 既存スクリプト（lint/type-check/test/e2e）厳守
+- Cypress (E2E), Jest (unit)
+- featuresRegistry を唯一の仕様ソースとする
+- Mobile first、CLS=0、iPhone SE 幅で崩れないこと
 
-# Coding
-- ESLint/Prettier/TypeScript の警告を 0 に
-- UIは CLS=0/モバイル最優先、ヘッダーは MobileHeader を使う
-- API 直叩き禁止: 既存 hooks 経由
-- 新規はテスト最小 1 つ（ユニット or E2E）
+# Coding standards
+- ESLint/TypeScript のエラーは 0。any を避ける
+- 関数は副作用を最小化、早期 return
+- UI: MobileHeader を共通使用、タップ領域は最小 32x32
+- API は既存 hooks 経由。新規は仕様合意後
+- テストは最低 1 つ（unit か E2E）。重要経路は E2E
 
-# PR
-- 1 PR = 1 機能（または小さなまとまり）
-- 変更ファイルは目的最小限、不要リネーム禁止
+# PR rules
+- 1 PR = 1 目的 / 300行前後まで
+- 変更範囲は最小限。不要な rename/format 大量差分禁止
+- Conventional Commits を使う（feat/fix/chore/refactor/docs/test 等）
+- 受け入れ条件は PR 本文で明記。iPhone SE スクショ歓迎
+
+# Tasks for Agent Auto
+- 仕様は src/config/featuresRegistry.ts を読み、実装ギャップを列挙
+- 変更ファイル一覧 → 差分 → テスト → 動作確認手順 → リスク/ロールバック を出力
+- ESLint/TS/test:ci を通すまで自動修正を継続
