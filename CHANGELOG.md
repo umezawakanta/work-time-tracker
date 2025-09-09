@@ -1,5 +1,17 @@
 # 更新履歴
 
+## [1.1.2](https://github.com/umezawakanta/work-time-tracker/compare/v1.1.1...v1.1.2) (2025-09-09)
+
+
+### Bug Fixes
+
+* **ci:** use .npmrc for bulletproof pnpm store configuration ([5bc5eca](https://github.com/umezawakanta/work-time-tracker/commit/5bc5eca0acdd36a4353b44ef8de70e5d377c9bf7))
+* **tests:** align UI text with test expectations ([98a1d25](https://github.com/umezawakanta/work-time-tracker/commit/98a1d25814ebced8134bca35a6240e16bc43329e))
+* **tests:** comprehensive test fixes for remaining failures ([a2c8b2e](https://github.com/umezawakanta/work-time-tracker/commit/a2c8b2e6aebd19332c4af10b54a7b9b105e5ffc8))
+* **tests:** comprehensive test fixes for UI text alignment and API error handling ([23202a8](https://github.com/umezawakanta/work-time-tracker/commit/23202a8a11ad9b4642aa42b9177f9761c02aaaeb))
+* **tests:** implement defensive programming for API calls ([d627797](https://github.com/umezawakanta/work-time-tracker/commit/d627797dee5428315b7af13efc60c1d80b982c23))
+* **ui:** improve text formatting and ensure newline consistency ([5132c3b](https://github.com/umezawakanta/work-time-tracker/commit/5132c3b98355c03921cc1e90e20390e686321ae5))
+
 ## [1.1.1](https://github.com/umezawakanta/work-time-tracker/compare/v1.1.0...v1.1.1) (2025-09-09)
 
 
