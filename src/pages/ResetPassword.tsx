@@ -37,7 +37,7 @@ export default function ResetPassword() {
       setToken(tokenFromUrl);
       validateToken(tokenFromUrl);
     } else {
-      setError('無効なリセットリンクです');
+      setError('リセットリンクが無効です');
       setIsValidatingToken(false);
     }
   }, [searchParams]);
@@ -52,7 +52,7 @@ export default function ResetPassword() {
       }
     } catch (error) {
       console.error('Token validation error:', error);
-      setError('リセットリンクの検証に失敗しました');
+      setError('リセットリンクが無効です');
     } finally {
       setIsValidatingToken(false);
     }
@@ -98,7 +98,7 @@ export default function ResetPassword() {
     try {
       await resetPassword(token, password);
       setIsSuccess(true);
-      toast.success('パスワードが正常にリセットされました');
+      toast.success('パスワードが正常に変更されました');
     } catch (error) {
       console.error('Password reset error:', error);
 
@@ -111,7 +111,7 @@ export default function ResetPassword() {
         } else if (statusCode === 404) {
           setError('無効または期限切れのリセットリンクです');
         } else {
-          setError(errorMessage || 'パスワードリセットに失敗しました');
+          setError(errorMessage || 'パスワードが要件を満たしていません');
         }
       } else {
         setError('不明なエラーが発生しました');
@@ -215,7 +215,7 @@ export default function ResetPassword() {
             <Alert className="border-green-200 bg-green-50">
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-700">
-                パスワードが正常に変更されました。新しいパスワードでログインしてください。
+                パスワードが正常に変更されました
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -285,7 +285,7 @@ export default function ResetPassword() {
             <div className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
                 <Lock className="inline-block w-4 h-4 mr-1" />
-                パスワード確認
+                パスワード（確認）
               </Label>
               <div className="relative">
                 <Input
@@ -334,8 +334,8 @@ export default function ResetPassword() {
               disabled={
                 isSubmitting ||
                 !password.trim() ||
-                !confirmPassword.trim() ||
-                password !== confirmPassword
+                validatePassword(password) !== '' ||
+                (confirmPassword.trim() && password !== confirmPassword)
               }
             >
               {isSubmitting ? (
@@ -346,7 +346,7 @@ export default function ResetPassword() {
               ) : (
                 <>
                   <Lock className="h-4 w-4 mr-2" />
-                  パスワードをリセット
+                  パスワードを変更
                 </>
               )}
             </Button>

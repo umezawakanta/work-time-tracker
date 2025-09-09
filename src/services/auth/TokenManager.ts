@@ -399,6 +399,15 @@ export class TokenManager {
    * Axiosインターセプターの設定
    */
   private setupAxiosInterceptors(): void {
+    // axios が未注入の場合は安全にスキップ（テスト環境など）
+    const axios = api;
+    const hasReq = !!axios?.interceptors?.request;
+    const hasRes = !!axios?.interceptors?.response;
+    if (!hasReq || !hasRes) {
+      console.log('🚫 Axios not available, skipping interceptor setup');
+      return;
+    }
+
     // 本番環境判定を改善
     const isProduction = this.isProductionEnvironment();
     if (!isProduction) {
@@ -409,7 +418,7 @@ export class TokenManager {
     console.log('🔧 Setting up Axios interceptors for production');
 
     // リクエストインターセプター
-    api.interceptors.request.use(
+    axios.interceptors.request.use(
       async (config) => {
         const token = await this.getAccessToken();
         if (token) {
@@ -423,7 +432,7 @@ export class TokenManager {
     );
 
     // レスポンスインターセプター
-    api.interceptors.response.use(
+    axios.interceptors.response.use(
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
