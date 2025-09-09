@@ -1,5 +1,14 @@
 # 更新履歴
 
+## [1.1.3](https://github.com/umezawakanta/work-time-tracker/compare/v1.1.2...v1.1.3) (2025-09-09)
+
+
+### Bug Fixes
+
+* **eslint:** update ESLint configuration for improved TypeScript support ([0b2476e](https://github.com/umezawakanta/work-time-tracker/commit/0b2476e931bc810b96cf9eb197d2a103db59b635))
+* **tests:** skip certain test suites to streamline testing process ([8a329f8](https://github.com/umezawakanta/work-time-tracker/commit/8a329f8f313cd30fef8581592f3aff2609525698))
+* **tests:** update Jest configuration and improve test mock handling ([bc3c4ae](https://github.com/umezawakanta/work-time-tracker/commit/bc3c4aed054ac5d1224f87e1cc92291796652ed8))
+
 ## [1.1.2](https://github.com/umezawakanta/work-time-tracker/compare/v1.1.1...v1.1.2) (2025-09-09)
 
 
