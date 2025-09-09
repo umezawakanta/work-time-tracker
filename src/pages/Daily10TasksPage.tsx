@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useNavigate } from 'react-router-dom';
+import { MobileHeader } from '@/components/ui/MobileHeader';
 import {
   CheckCircle,
   Circle,
@@ -896,38 +897,70 @@ const Daily10TasksPage: React.FC = () => {
   const completionRate = progressData.percentage;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* 銀行口座未登録の案内 */}
-      {!bankLoading && !mainAccount && (
-        <Alert className="border-amber-200 bg-amber-50 mb-6">
-          <AlertCircle className="h-4 w-4 text-amber-600" />
-          <AlertDescription className="text-amber-800">
-            <div className="space-y-2">
-              <p className="font-semibold">まず銀行口座を登録してください</p>
-              <p>
-                「毎日20のこと」の一部のタスク（銀行口座の入出金履歴確認など）を実行するには、
-                まず銀行口座を登録する必要があります。
-              </p>
-              <p>
-                <a
-                  href="/bank-accounts?tab=manage"
-                  className="text-amber-700 hover:text-amber-900 underline font-medium"
-                >
-                  銀行口座管理ページ
-                </a>
-                で銀行口座を登録してから、タスクを開始してください。
-              </p>
-            </div>
-          </AlertDescription>
-        </Alert>
-      )}
+    <div className="max-w-screen-sm mx-auto">
+      <MobileHeader
+        title="必ず毎日やる20のこと"
+        subtitle="毎日の習慣で目標を達成"
+        backTo="/"
+        rightActions={
+          <>
+            {/* ヘルプボタン */}
+            <button
+              aria-label="ヘルプ"
+              className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-gray-100"
+              onClick={() => alert('ヘルプを準備中')}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
+                <path d="M12 18h.01M9 9a3 3 0 116 0c0 1.5-1 2-2 2s-1 1-1 2" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            {/* 設定ボタン */}
+            <a
+              href="/settings"
+              aria-label="設定"
+              className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-gray-100"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
+                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06A1.65 1.65 0 0015 19.4a1.65 1.65 0 00-1 .6 1.65 1.65 0 01-2.58 0 1.65 1.65 0 00-1-.6 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-.6-1 1.65 1.65 0 010-2.58 1.65 1.65 0 00.6-1 1.65 1.65 0 00-.33-1.82l-.06-.06A2 2 0 116.64 4.6l.06.06A1.65 1.65 0 008 5.6a1.65 1.65 0 001-.6 1.65 1.65 0 012.58 0 1.65 1.65 0 001 .6 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06c-.38.38-.53.9-.33 1.82.2.92.9 1.62 1.82 1.82z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              </svg>
+            </a>
+          </>
+        }
+      />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">必ず毎日やる20のこと</h1>
-        <p className="text-gray-600 mb-2">毎日の習慣を継続して、目標を達成しましょう</p>
-        <p className="text-sm text-gray-500">
-          各タスクは5分以内で完了できるサブタスクに分割されています
-        </p>
+      <div className="px-4 py-3">
+        {/* 銀行口座未登録の案内 */}
+        {!bankLoading && !mainAccount && (
+          <Alert className="border-amber-200 bg-amber-50 mb-6">
+            <AlertCircle className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              <div className="space-y-2">
+                <p className="font-semibold">まず銀行口座を登録してください</p>
+                <p>
+                  「毎日20のこと」の一部のタスク（銀行口座の入出金履歴確認など）を実行するには、
+                  まず銀行口座を登録する必要があります。
+                </p>
+                <p>
+                  <a
+                    href="/bank-accounts?tab=manage"
+                    className="text-amber-700 hover:text-amber-900 underline font-medium"
+                  >
+                    銀行口座管理ページ
+                  </a>
+                  で銀行口座を登録してから、タスクを開始してください。
+                </p>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold mb-2">必ず毎日やる20のこと</h1>
+          <p className="text-gray-600 mb-2">毎日の習慣を継続して、目標を達成しましょう</p>
+          <p className="text-sm text-gray-500">
+            各タスクは5分以内で完了できるサブタスクに分割されています
+          </p>
 
         {/* クイックスタートガイド */}
         <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg">
@@ -1358,6 +1391,7 @@ const Daily10TasksPage: React.FC = () => {
           </div>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 };
