@@ -127,7 +127,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // ユーザーアクティビティイベントの設定
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      return;
+    }
 
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
 
@@ -612,7 +614,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // 定期的な認証チェック（一時的に無効化してデバッグ）
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      return;
+    }
 
     // 無限ループ防止のため一時的にコメントアウト
     // const checkInterval = setInterval(

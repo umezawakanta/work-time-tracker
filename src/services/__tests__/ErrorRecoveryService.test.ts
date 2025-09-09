@@ -1,4 +1,4 @@
-import { ErrorRecoveryService } from '@/services/ErrorRecoveryService';
+import { ErrorRecoveryService } from '../ErrorRecoveryService';
 
 type FetchMap = Record<string, { ok: boolean; status?: number }>;
 
@@ -6,6 +6,14 @@ function mockFetch(map: FetchMap) {
   global.fetch = jest.fn(async (input: RequestInfo) => {
     const url = String(input);
     const entry = map[url] || { ok: false, status: 404 };
+
+    // 401エラーの場合は例外を投げる
+    if (entry.status === 401) {
+      const error = new Error('Unauthorized') as any;
+      error.response = { status: 401 };
+      throw error;
+    }
+
     return {
       ok: entry.ok,
       status: entry.status ?? (entry.ok ? 200 : 500),
@@ -17,6 +25,15 @@ function mockFetch(map: FetchMap) {
 describe('ErrorRecoveryService.performSelfDiagnosis', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Mock localStorage
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: jest.fn(() => 'mock-token'),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+      },
+      writable: true,
+    });
   });
 
   it('returns all true when all health endpoints are OK', async () => {

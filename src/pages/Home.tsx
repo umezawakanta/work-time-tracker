@@ -68,7 +68,9 @@ import { getVariant } from '@/lib/ab';
 import { useAnalytics } from '@/lib/analytics';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 const isTest = process.env.NODE_ENV === 'test';
-const IntegratedDashboard = isTest ? () => null : require('@/pages/IntegratedDashboard').default;
+const IntegratedDashboard = isTest
+  ? () => null
+  : React.lazy(() => import('@/pages/IntegratedDashboard'));
 import {
   isFeatureAccessible,
   getFeatureByPath,
@@ -1545,7 +1547,9 @@ const Home: React.FC = () => {
           <TabsContent value="dashboard">
             <div className="bg-white">
               <div className="container mx-auto px-4 max-w-7xl py-6">
-                <IntegratedDashboard />
+                <React.Suspense fallback={<div>Loading...</div>}>
+                  <IntegratedDashboard />
+                </React.Suspense>
               </div>
             </div>
           </TabsContent>

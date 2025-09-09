@@ -18,7 +18,7 @@ export async function fetchTokenFromDB(): Promise<string> {
   // API base URLを動的に取得（循環依存を避けるため）
   const getTokenApiUrl = () => {
     if (typeof window !== 'undefined') {
-      const hostname = window.location.hostname;
+      const { hostname, protocol } = window.location;
 
       if (hostname === 'work-time-tracker-five.vercel.app') {
         return 'https://work-time-tracker-five.vercel.app/api';
@@ -32,7 +32,7 @@ export async function fetchTokenFromDB(): Promise<string> {
         return 'http://localhost:3001/api';
       }
 
-      return `${window.location.protocol}//${window.location.hostname}/api`;
+      return `${protocol}//${hostname}/api`;
     }
 
     return 'http://localhost:3001/api';

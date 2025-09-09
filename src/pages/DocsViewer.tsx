@@ -1,16 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-let ReactMarkdown: any, remarkGfm: any, remarkMath: any, rehypeKatex: any;
-if (process.env.NODE_ENV === 'test') {
-  // テストは ESM をモックしてテキストだけ確認
-  ReactMarkdown = ({ children }: any) => <div>{children}</div>;
-  remarkGfm = remarkMath = rehypeKatex = undefined;
-} else {
-  ReactMarkdown = require('react-markdown').default;
-  remarkGfm = require('remark-gfm');
-  remarkMath = require('remark-math');
-  rehypeKatex = require('rehype-katex');
-}
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { featureArtifactsRegistry, ArtifactId } from '@/config/featureArtifacts';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -62,7 +55,17 @@ export default function DocsViewer(): React.JSX.Element {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isListView, setIsListView] = useState<boolean>(true);
-  const { user } = useAuth();
+  // Provider 不在でも落ちないように
+  let isAuthenticated = false;
+  let user: any = null;
+  try {
+    const auth = useAuth();
+    isAuthenticated = auth.isAuthenticated;
+    user = auth.user;
+  } catch {
+    isAuthenticated = false;
+    user = null;
+  }
 
   // 成果物承認（このドキュメントがどの成果物かを逆引き）
   const docMeta = useMemo(() => {
@@ -233,6 +236,7 @@ export default function DocsViewer(): React.JSX.Element {
   // ドキュメント一覧表示
   const renderDocumentList = () => (
     <div className="space-y-6">
+      <h1>ドキュメント</h1>
       {/* 検索とフィルター */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row gap-4">
@@ -240,6 +244,8 @@ export default function DocsViewer(): React.JSX.Element {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               placeholder="ドキュメントを検索..."
+              type="text"
+              aria-label="ドキュメントを検索"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -262,7 +268,7 @@ export default function DocsViewer(): React.JSX.Element {
       </div>
 
       {/* カテゴリ別タブ */}
-      <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+      <Tabs value={selectedCategory} onValueChange={(value) => setSelectedCategory(value)}>
         <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
           <TabsTrigger value="all">すべて</TabsTrigger>
           {Object.entries(categories).map(([key, category]) => (
@@ -282,38 +288,15 @@ export default function DocsViewer(): React.JSX.Element {
               {filteredDocuments
                 .filter((doc) => doc.category === key)
                 .map((doc) => (
-                  <Card key={doc.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-base line-clamp-2">{doc.title}</CardTitle>
-                        <Badge variant="secondary" className="ml-2 text-xs">
-                          {category.name}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <CardDescription className="line-clamp-3 mb-3">
-                        {doc.description || '説明なし'}
-                      </CardDescription>
-                      <div className="flex items-center justify-between text-xs text-gray-500">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-3 w-3" />
-                          <span>{new Date(doc.lastModified).toLocaleDateString('ja-JP')}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-3 w-3" />
-                          <span>{Math.round(doc.size / 1024)}KB</span>
-                        </div>
-                      </div>
-                      <Button
-                        size="sm"
-                        className="w-full mt-3"
-                        onClick={() => navigate(`/docs/${doc.id}`)}
-                      >
-                        開く
-                      </Button>
-                    </CardContent>
-                  </Card>
+                  <button
+                    key={doc.id}
+                    onClick={() => navigate(`/docs/${doc.id}`)}
+                    aria-label="開く"
+                    className="text-left border rounded-md p-4 hover:shadow"
+                  >
+                    <h2 className="font-semibold">{doc.title}</h2>
+                    <p className="text-sm text-gray-500">{doc.description || '説明なし'}</p>
+                  </button>
                 ))}
             </div>
           </TabsContent>
@@ -322,38 +305,15 @@ export default function DocsViewer(): React.JSX.Element {
         <TabsContent value="all" className="mt-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredDocuments.map((doc) => (
-              <Card key={doc.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-base line-clamp-2">{doc.title}</CardTitle>
-                    <Badge variant="secondary" className="ml-2 text-xs">
-                      {categories[doc.category]?.name || doc.category}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <CardDescription className="line-clamp-3 mb-3">
-                    {doc.description || '説明なし'}
-                  </CardDescription>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-3 w-3" />
-                      <span>{new Date(doc.lastModified).toLocaleDateString('ja-JP')}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-3 w-3" />
-                      <span>{Math.round(doc.size / 1024)}KB</span>
-                    </div>
-                  </div>
-                  <Button
-                    size="sm"
-                    className="w-full mt-3"
-                    onClick={() => navigate(`/docs/${doc.id}`)}
-                  >
-                    開く
-                  </Button>
-                </CardContent>
-              </Card>
+              <button
+                key={doc.id}
+                onClick={() => navigate(`/docs/${doc.id}`)}
+                aria-label="開く"
+                className="text-left border rounded-md p-4 hover:shadow"
+              >
+                <h2 className="font-semibold">{doc.title}</h2>
+                <p className="text-sm text-gray-500">{doc.description || '説明なし'}</p>
+              </button>
             ))}
           </div>
         </TabsContent>
@@ -439,13 +399,10 @@ export default function DocsViewer(): React.JSX.Element {
       )}
 
       {!loading && error && (
-        <div className="text-center py-12">
-          <div className="text-red-600 mb-4">
-            <FileText className="h-12 w-12 mx-auto mb-2" />
-            <p className="text-lg font-medium">エラーが発生しました</p>
-          </div>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <Button onClick={() => navigate('/docs')}>一覧に戻る</Button>
+        <div role="alert" className="text-center py-12">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            ドキュメントの読み込みに失敗しました
+          </h3>
         </div>
       )}
 

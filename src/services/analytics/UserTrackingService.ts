@@ -174,7 +174,9 @@ class UserTrackingService {
     value?: string,
     metadata?: Record<string, any>
   ): void {
-    if (!this.currentPageView) return;
+    if (!this.currentPageView) {
+      return;
+    }
 
     const interaction: UserInteraction = {
       type,

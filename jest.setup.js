@@ -512,7 +512,6 @@ jest.mock('@/services/api', () => ({
 
 // MSW の rest をグローバルに露出（テストコードが global.rest を前提にしている）
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { rest } = require('msw');
   // @ts-ignore
   global.rest = rest;

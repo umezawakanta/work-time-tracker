@@ -41,7 +41,7 @@ export const register = async (userData: RegisterData): Promise<AuthResponse> =>
 
     console.log('Register response:', response.data);
 
-    if (response.data.accessToken && response.data.refreshToken) {
+    if (response.data?.accessToken && response.data?.refreshToken) {
       // TokenManagerを使用してトークンを管理
       tokenManager.setTokens(
         response.data.accessToken,
@@ -91,7 +91,7 @@ export const login = async (
     console.log('  - Has user:', !!response.data.user);
 
     // Handle new format with accessToken and refreshToken
-    if (response.data.accessToken && response.data.refreshToken) {
+    if (response.data?.accessToken && response.data?.refreshToken) {
       const expiresIn = response.data.expiresIn || 3600;
       const refreshExpiresIn = response.data.refreshExpiresIn || (rememberMe ? 2592000 : 604800);
 
@@ -103,9 +103,9 @@ export const login = async (
       );
 
       if (rememberMe) {
-        tokenManager.setRememberMe(true);
+        tokenManager.setRememberMe?.(true);
       } else {
-        tokenManager.setRememberMe(false);
+        tokenManager.setRememberMe?.(false);
       }
 
       // ログアウトフラグをクリア
@@ -115,7 +115,7 @@ export const login = async (
     }
 
     // Legacy format fallback (single token field)
-    if (response.data.token) {
+    if (response.data?.token) {
       const expiresIn = 3600; // 1 hour
       const refreshExpiresIn = rememberMe ? 2592000 : 604800;
 
@@ -127,9 +127,9 @@ export const login = async (
       );
 
       if (rememberMe) {
-        tokenManager.setRememberMe(true);
+        tokenManager.setRememberMe?.(true);
       } else {
-        tokenManager.setRememberMe(false);
+        tokenManager.setRememberMe?.(false);
       }
 
       // ログアウトフラグをクリア
@@ -368,7 +368,7 @@ export const refreshToken = async (refreshToken: string): Promise<AuthResponse> 
       refreshToken,
     });
 
-    if (response.data.accessToken && response.data.refreshToken) {
+    if (response.data?.accessToken && response.data?.refreshToken) {
       tokenManager.setTokens(
         response.data.accessToken,
         response.data.refreshToken,

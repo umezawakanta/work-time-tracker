@@ -1,4 +1,137 @@
-import { setupServer } from 'msw/node';
+// URLポリフィルをMSWでも使用するため、グローバルに設定
+// これは setupServer を呼び出す前に実行される必要があります
+if (typeof globalThis.URL === 'undefined') {
+  // 基本的なURLポリフィル
+  globalThis.URL = class {
+    href: string;
+    origin: string;
+    protocol: string;
+    host: string;
+    hostname: string;
+    port: string;
+    pathname: string;
+    search: string;
+    hash: string;
+    searchParams: URLSearchParams;
+
+    constructor(input: string, base?: string) {
+      const url = (input || '').toString();
+      this.href = url;
+
+      // 基本的なURL解析
+      try {
+        const match = url.match(/^([^:]+):\/\/([^\/]+)(.*)$/);
+        if (match) {
+          this.protocol = match[1] + ':';
+          this.host = match[2];
+          this.hostname = match[2].split(':')[0];
+          this.port = match[2].split(':')[1] || '';
+          this.pathname = match[3].split('?')[0].split('#')[0] || '/';
+          this.search = match[3].includes('?') ? '?' + match[3].split('?')[1].split('#')[0] : '';
+          this.hash = match[3].includes('#') ? '#' + match[3].split('#')[1] : '';
+          this.origin = this.protocol + '//' + this.host;
+        } else {
+          this.protocol = '';
+          this.host = '';
+          this.hostname = '';
+          this.port = '';
+          this.pathname = url;
+          this.search = '';
+          this.hash = '';
+          this.origin = '';
+        }
+      } catch {
+        this.protocol = '';
+        this.host = '';
+        this.hostname = '';
+        this.port = '';
+        this.pathname = url;
+        this.search = '';
+        this.hash = '';
+        this.origin = '';
+      }
+
+      this.searchParams = new URLSearchParams(this.search);
+    }
+
+    toString() {
+      return this.href;
+    }
+  } as any;
+}
+
+if (typeof globalThis.URLSearchParams === 'undefined') {
+  globalThis.URLSearchParams = class {
+    private params: Map<string, string[]> = new Map();
+
+    constructor(init?: string | URLSearchParams | Record<string, string> | string[][]) {
+      if (init) {
+        if (typeof init === 'string') {
+          init.split('&').forEach((pair) => {
+            const [key, value] = pair.split('=');
+            if (key) {
+              this.append(decodeURIComponent(key), decodeURIComponent(value || ''));
+            }
+          });
+        } else if (init instanceof URLSearchParams) {
+          init.forEach((value, key) => {
+            this.append(key, value);
+          });
+        } else if (Array.isArray(init)) {
+          init.forEach(([key, value]) => {
+            this.append(key, value);
+          });
+        } else if (typeof init === 'object') {
+          Object.entries(init).forEach(([key, value]) => {
+            this.append(key, value);
+          });
+        }
+      }
+    }
+
+    get(name: string): string | null {
+      const values = this.params.get(name);
+      return values ? values[0] : null;
+    }
+
+    set(name: string, value: string): void {
+      this.params.set(name, [value]);
+    }
+
+    append(name: string, value: string): void {
+      const existing = this.params.get(name) || [];
+      existing.push(value);
+      this.params.set(name, existing);
+    }
+
+    has(name: string): boolean {
+      return this.params.has(name);
+    }
+
+    delete(name: string): void {
+      this.params.delete(name);
+    }
+
+    forEach(callback: (value: string, key: string) => void): void {
+      this.params.forEach((values, key) => {
+        values.forEach((value) => callback(value, key));
+      });
+    }
+
+    toString(): string {
+      const pairs: string[] = [];
+      this.params.forEach((values, key) => {
+        values.forEach((value) => {
+          pairs.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+        });
+      });
+      return pairs.join('&');
+    }
+  } as any;
+}
+
+// MSWのインポートはURLポリフィルの設定後に移動
+import { setupServer } from 'msw';
 import { http, HttpResponse } from 'msw';
 
 // モックデータ
