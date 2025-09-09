@@ -280,9 +280,7 @@ const Daily10TasksPage = lazy(() =>
 );
 
 // 🛡️ Impulse Control
-const GuardPage = lazy(() =>
-  import('@/pages/GuardPage').then((m) => ({ default: m.default }))
-);
+const GuardPage = lazy(() => import('@/pages/GuardPage').then((m) => ({ default: m.default })));
 
 // 🏦 Bank Data Import
 const BankImportPage = lazy(() =>
