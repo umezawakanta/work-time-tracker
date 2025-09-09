@@ -38,8 +38,14 @@ import {
 import { useDaily10Tasks } from '@/hooks/useDaily10Tasks';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
 import { useAuth } from '@/hooks/useAuth';
+import { logout } from '@/services/api/authApi';
 import { DailyTask, TaskProgress } from '@/types/daily10';
 import { DailyTaskInstructions } from '@/components/DailyTaskInstructions';
+import {
+  generateDevProgressShareText,
+  openShare,
+  getCanonicalUrl,
+} from '@/services/share/generateDevProgressShareText';
 
 // タスク配列の正規化関数
 function toTaskArray(src: unknown): TaskProgress[] {
@@ -618,6 +624,27 @@ const Daily10TasksPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('tasks');
   const navigate = useNavigate();
 
+  // 開発状況シェア機能
+  const handleShareDevProgress = async () => {
+    try {
+      const shareText = await generateDevProgressShareText();
+      const url = getCanonicalUrl();
+      openShare(shareText, url);
+    } catch (error) {
+      console.error('Share error:', error);
+    }
+  };
+
+  // ログアウト機能
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   // 銀行口座情報に基づいてタスクを動的に生成
   const dynamicTasks = useMemo(() => {
     if (!tasks.length) return tasks;
@@ -904,15 +931,15 @@ const Daily10TasksPage: React.FC = () => {
         backTo="/"
         rightActions={
           <>
-            {/* ヘルプボタン */}
+            {/* 開発状況シェアボタン */}
             <button
-              aria-label="ヘルプ"
+              aria-label="開発状況をシェア"
               className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-gray-100"
-              onClick={() => alert('ヘルプを準備中')}
+              onClick={handleShareDevProgress}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
                 <path
-                  d="M12 18h.01M9 9a3 3 0 116 0c0 1.5-1 2-2 2s-1 1-1 2"
+                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
                   stroke="currentColor"
                   strokeWidth="2"
                   fill="none"
@@ -921,27 +948,41 @@ const Daily10TasksPage: React.FC = () => {
                 />
               </svg>
             </button>
-            {/* 設定ボタン */}
-            <a
-              href="/settings"
-              aria-label="設定"
+            {/* プロフィールボタン */}
+            <button
+              aria-label="プロフィール"
               className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-gray-100"
+              onClick={() => navigate('/profile')}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
                 <path
-                  d="M12 15a3 3 0 100-6 3 3 0 000 6z"
+                  d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"
                   stroke="currentColor"
                   strokeWidth="2"
                   fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
+                <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" fill="none" />
+              </svg>
+            </button>
+            {/* ログアウトボタン */}
+            <button
+              aria-label="ログアウト"
+              className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-gray-100"
+              onClick={handleLogout}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
                 <path
-                  d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06A1.65 1.65 0 0015 19.4a1.65 1.65 0 00-1 .6 1.65 1.65 0 01-2.58 0 1.65 1.65 0 00-1-.6 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-.6-1 1.65 1.65 0 010-2.58 1.65 1.65 0 00.6-1 1.65 1.65 0 00-.33-1.82l-.06-.06A2 2 0 116.64 4.6l.06.06A1.65 1.65 0 008 5.6a1.65 1.65 0 001-.6 1.65 1.65 0 012.58 0 1.65 1.65 0 001 .6 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06c-.38.38-.53.9-.33 1.82.2.92.9 1.62 1.82 1.82z"
+                  d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4m7 14l5-5-5-5m5 5H9"
                   stroke="currentColor"
-                  strokeWidth="1.5"
+                  strokeWidth="2"
                   fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
-            </a>
+            </button>
           </>
         }
       />
