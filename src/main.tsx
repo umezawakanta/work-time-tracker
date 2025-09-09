@@ -12,6 +12,8 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { setupGlobalErrorHandling } from './lib/errorHandler';
 import PerformanceOptimizer from './lib/performanceOptimizer';
 import './i18n';
+import { GuardProvider } from './guard/GuardContext';
+import { RouteGuard } from './guard/routeGuard';
 // import { registerSW } from 'virtual:pwa-register';
 
 // 🐛 エラーエリミネーター: グローバルエラーハンドリングの初期化
@@ -77,7 +79,11 @@ ReactDOMClient.createRoot(document.getElementById('root')!).render(
       <ErrorBoundary>
         <Provider store={store}>
           <Router>
-            <App />
+            <GuardProvider>
+              <RouteGuard>
+                <App />
+              </RouteGuard>
+            </GuardProvider>
           </Router>
         </Provider>
       </ErrorBoundary>
@@ -86,7 +92,11 @@ ReactDOMClient.createRoot(document.getElementById('root')!).render(
     <ErrorBoundary>
       <Provider store={store}>
         <Router>
-          <App />
+          <GuardProvider>
+            <RouteGuard>
+              <App />
+            </RouteGuard>
+          </GuardProvider>
         </Router>
       </Provider>
     </ErrorBoundary>
