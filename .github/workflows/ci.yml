@@ -25,17 +25,24 @@ jobs:
           corepack prepare pnpm@${PNPM_VERSION} --activate
           pnpm -v
 
-      # pnpm のストアをランナーの一時領域に固定（EACCES 回避）
+      # pnpm store を書き込み可能な一時領域に固定（超重要）
       - name: Configure writable pnpm store
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
-          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
-          echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
+          # グローバル設定としても固定
+          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store" --global
+          # 念のため、このリポにローカル .npmrc も置く（最優先で効く）
+          echo "store-dir=$RUNNER_TEMP/pnpm-store" >> .npmrc
           pnpm store path
+        env:
+          # 環境変数経由でも固定（保険）
+          NPM_CONFIG_STORE_DIR: ${{ runner.temp }}/pnpm-store
 
-      # 依存インストール（lockfile 準拠）
+      # 依存インストール（store-dir を明示して"二重固定"）
       - name: Install deps
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
+        env:
+          NPM_CONFIG_STORE_DIR: ${{ runner.temp }}/pnpm-store
 
       # Lint（新規コードのみ厳格の lint:ci を使用）
       - name: Lint
