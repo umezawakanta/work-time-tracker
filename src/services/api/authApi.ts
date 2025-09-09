@@ -71,7 +71,8 @@ export const login = async (
     console.log('  - Email:', email);
     console.log('  - Password length:', password.length);
     console.log('  - Remember Me:', rememberMe);
-    console.log('  - API Base URL:', api.defaults.baseURL);
+    // api がモックのとき defaults が無い場合がある
+    if (api?.defaults?.baseURL) console.log('  - API Base URL:', api.defaults.baseURL);
 
     const requestData = {
       email,

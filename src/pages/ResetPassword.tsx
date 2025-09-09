@@ -58,6 +58,10 @@ export default function ResetPassword() {
     }
   };
 
+  // 8文字以上・大小英字・数字を含む
+  const isStrong = (pw: string) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(pw ?? '');
+
   const validatePassword = (password: string) => {
     if (password.length < 8) {
       return 'パスワードは8文字以上である必要があります';
