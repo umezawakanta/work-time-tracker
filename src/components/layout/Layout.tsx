@@ -1160,12 +1160,12 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         <main id="main-content" role="main" className="flex-1 flex flex-col min-h-screen">
           {/* トップナビゲーション */}
           <header
-            className={`hidden sm:block fixed top-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 z-30 transition-[left] duration-300`}
+            className={`!hidden sm:!flex fixed top-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 z-30 transition-[left] duration-300`}
             role="banner"
             style={{ left: isSidebarOpen ? '18rem' : '0' }}
           >
-            <div className="flex items-center justify-between">
-              <div className="hidden sm:flex items-center gap-4">
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-4">
                 {/* Invite quick copy */}
                 {/* 友だちを招待（機能完了まで非表示） */}
                 {/* <Button
@@ -1280,7 +1280,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                 </a> */}
 
                 {/* ユーザー情報とログアウト（ヘッダー右） */}
-                <div className="hidden sm:flex items-center gap-3">
+                <div className="flex items-center gap-3">
                   {getFeatureByPath('/_bg/header-user-info')?.status === 'complete' && user && (
                     <div className="flex items-center gap-3 group">
                       {/* ユーザーアバターと情報 */}
