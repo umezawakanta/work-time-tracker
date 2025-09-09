@@ -516,4 +516,4 @@ try {
   const { rest } = require('msw');
   // @ts-ignore
   global.rest = rest;
-} catch {}
+} catch { }
