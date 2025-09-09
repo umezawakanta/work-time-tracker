@@ -134,6 +134,7 @@ export const ENV = {
   USE_MOCK_DATA: () => getEnv('VITE_USE_MOCK_DATA') === 'true',
   ENABLE_ANALYTICS: () => getEnv('VITE_ENABLE_ANALYTICS') === 'true',
   DEBUG: () => getEnv('VITE_DEBUG') === 'true',
+  DOPAMINE_GUARD: () => getEnv('VITE_DOPAMINE_GUARD') === 'true',
 
   // Environment checks
   isDev,
