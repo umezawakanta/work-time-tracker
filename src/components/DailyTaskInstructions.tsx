@@ -31,8 +31,11 @@ interface DailyTaskInstructionsProps {
 }
 
 const taskInstructions: {
-  [key: string]: { 
-    steps: (string | { text: string; link?: { label: string; url: string; description: string } })[];
+  [key: string]: {
+    steps: (
+      | string
+      | { text: string; link?: { label: string; url: string; description: string } }
+    )[];
     links: { label: string; url: string; description: string }[];
   };
 } = {
@@ -45,8 +48,8 @@ const taskInstructions: {
         link: {
           label: '資産負債レポート',
           url: '/asset-liability-report',
-          description: '現金残高を入力・管理'
-        }
+          description: '現金残高を入力・管理',
+        },
       },
       '前日との差額を確認する',
     ],
@@ -60,8 +63,8 @@ const taskInstructions: {
         link: {
           label: '三井住友銀行オンラインバンキング',
           url: 'https://www.smbc.co.jp/kojin/',
-          description: '三井住友銀行大塚支店普通預金口座の9月分の入出金履歴をダウンロード'
-        }
+          description: '三井住友銀行大塚支店普通預金口座の9月分の入出金履歴をダウンロード',
+        },
       },
       '過去3ヶ月の入出金履歴を表示する',
       '給与振込、ボーナス等の収入を確認する',
@@ -108,8 +111,8 @@ const taskInstructions: {
         link: {
           label: 'カレンダー',
           url: '/calendar',
-          description: '予定の管理・確認'
-        }
+          description: '予定の管理・確認',
+        },
       },
       '今日の予定を確認する',
       '明日以降の重要な予定をチェックする',
@@ -127,8 +130,8 @@ const taskInstructions: {
         link: {
           label: '三井住友銀行オンラインバンキング',
           url: 'https://www.smbc.co.jp/kojin/',
-          description: '固定費の支払い実行'
-        }
+          description: '固定費の支払い実行',
+        },
       },
     ],
     links: [
@@ -146,8 +149,8 @@ const taskInstructions: {
         link: {
           label: '負債管理',
           url: '/debt',
-          description: '借金・ローン・クレジットカードの管理'
-        }
+          description: '借金・ローン・クレジットカードの管理',
+        },
       },
       '利息の支払い状況を確認する',
       '返済計画をチェックする',
@@ -162,8 +165,8 @@ const taskInstructions: {
         link: {
           label: '光熱費管理',
           url: '/utilities',
-          description: '電気・ガス・水道の使用量管理'
-        }
+          description: '電気・ガス・水道の使用量管理',
+        },
       },
       '電気・ガス・水道の使用量を確認する',
       '前月との比較を行う',
@@ -299,7 +302,9 @@ export const DailyTaskInstructions: React.FC<DailyTaskInstructionsProps> = ({
                             <a
                               href={step.link.url}
                               target={step.link.url.startsWith('http') ? '_blank' : '_self'}
-                              rel={step.link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                              rel={
+                                step.link.url.startsWith('http') ? 'noopener noreferrer' : undefined
+                              }
                               className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors text-sm font-medium ml-1"
                               title={step.link.description}
                             >

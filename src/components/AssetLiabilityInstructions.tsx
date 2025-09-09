@@ -2,7 +2,16 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, DollarSign, TrendingUp, PieChart, FileText, Building2, CreditCard, Target } from 'lucide-react';
+import {
+  ExternalLink,
+  DollarSign,
+  TrendingUp,
+  PieChart,
+  FileText,
+  Building2,
+  CreditCard,
+  Target,
+} from 'lucide-react';
 
 export const AssetLiabilityInstructions: React.FC = () => {
   return (
@@ -79,7 +88,9 @@ export const AssetLiabilityInstructions: React.FC = () => {
                   >
                     三井住友銀行オンラインバンキング
                   </a>
-                  <p className="text-xs text-gray-600 mt-1">銀行口座の残高確認・取引明細ダウンロード</p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    銀行口座の残高確認・取引明細ダウンロード
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2 p-2 bg-gray-50 rounded">
@@ -93,7 +104,9 @@ export const AssetLiabilityInstructions: React.FC = () => {
                   >
                     横浜銀行オンラインバンキング
                   </a>
-                  <p className="text-xs text-gray-600 mt-1">横浜銀行の残高確認・取引明細ダウンロード</p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    横浜銀行の残高確認・取引明細ダウンロード
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2 p-2 bg-gray-50 rounded">
@@ -107,7 +120,9 @@ export const AssetLiabilityInstructions: React.FC = () => {
                   >
                     じぶん銀行オンラインバンキング
                   </a>
-                  <p className="text-xs text-gray-600 mt-1">じぶん銀行の残高確認・取引明細ダウンロード</p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    じぶん銀行の残高確認・取引明細ダウンロード
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2 p-2 bg-gray-50 rounded">
@@ -121,7 +136,9 @@ export const AssetLiabilityInstructions: React.FC = () => {
                   >
                     アコムオンラインサービス
                   </a>
-                  <p className="text-xs text-gray-600 mt-1">アコムカードローン・ショッピングの残高確認</p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    アコムカードローン・ショッピングの残高確認
+                  </p>
                 </div>
               </div>
             </div>
@@ -137,7 +154,7 @@ export const AssetLiabilityInstructions: React.FC = () => {
                   <span className="font-medium">純資産</span>
                 </div>
                 <p className="text-gray-600 ml-6">総資産から総負債を引いた金額</p>
-                
+
                 <div className="flex items-center gap-2">
                   <TrendingUp className="h-4 w-4 text-blue-600" />
                   <span className="font-medium">資産成長率</span>
@@ -150,7 +167,7 @@ export const AssetLiabilityInstructions: React.FC = () => {
                   <span className="font-medium">負債比率</span>
                 </div>
                 <p className="text-gray-600 ml-6">総負債を総資産で割った比率</p>
-                
+
                 <div className="flex items-center gap-2">
                   <Target className="h-4 w-4 text-orange-600" />
                   <span className="font-medium">緊急資金比率</span>
