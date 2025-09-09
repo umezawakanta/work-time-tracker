@@ -17,14 +17,14 @@ declare global {
 const explicitUseMockRaw = getEnv('VITE_USE_MOCK_DATA');
 export const USE_MOCK_DATA = explicitUseMockRaw === 'true' || explicitUseMockRaw === '1';
 
-// テストが import 時ログを検証するので、トップレベルで必ず出力
+// テストが import 時のログ出力を検証
 // eslint-disable-next-line no-console
 console.log('🔧 Determining API Configuration...');
 // eslint-disable-next-line no-console
 console.log('📋 Environment:', {
-  NODE_ENV: process.env.NODE_ENV,
+  NODE_ENV: typeof process !== 'undefined' ? process.env.NODE_ENV : undefined,
   VITE_API_BASE_URL:
-    (typeof process !== 'undefined' && (process as any)?.env?.VITE_API_BASE_URL) || undefined,
+    typeof process !== 'undefined' ? (process as any).env?.VITE_API_BASE_URL : undefined,
 });
 
 if (USE_MOCK_DATA) {
@@ -345,9 +345,9 @@ api.interceptors.response.use(
   }
 );
 
-// トークンキャッシュをリセットする関数をエクスポート
-export const clearTokenCache = () => {
+// テストが要求する named export
+export function clearTokenCache(): void {
   tokenCache = null;
   tokenFetchPromise = null;
   console.log('Token cache cleared');
-};
+}

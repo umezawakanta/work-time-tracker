@@ -1,5 +1,5 @@
 import { api } from './apiConfig';
-import tokenManager from '@/services/auth/TokenManager';
+import { tokenManager } from '@/services/auth/TokenManager';
 import { User } from '@/types';
 import axios from 'axios';
 import { getEnv } from '@/utils/env';

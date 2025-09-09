@@ -15,7 +15,16 @@ import { getEnv, getBooleanEnv, isDev, isProd } from '../../../utils/env';
 
 // Mock dependencies
 jest.mock('../apiConfig');
-jest.mock('../../auth/TokenManager');
+jest.mock('../../auth/TokenManager', () => ({
+  tokenManager: {
+    setTokens: jest.fn(),
+    clearTokens: jest.fn(),
+    isAuthenticated: jest.fn(),
+    getAccessToken: jest.fn(),
+    setRememberMe: jest.fn(),
+    getSessionInfo: jest.fn(),
+  },
+}));
 jest.mock('react-hot-toast');
 
 // Mock utility functions to control USE_MOCK_DATA

@@ -109,8 +109,25 @@ import { FinancialGoal } from '@/types'; // 追加: 目標の型定義
 
 export default function AssetLiabilityReportPage() {
   const dispatch = useDispatch<AppDispatch>();
-  // テストでは AuthProvider でラップしないケースがあるため安全に取得
-  const auth = useAuth();
+  // テスト環境などで AuthProvider が無い場合もページを描画可能にする
+  let auth:
+    | ReturnType<typeof useAuth>
+    | {
+        user: null;
+        isAuthenticated: boolean;
+        login: (...args: any[]) => Promise<void>;
+        logout: () => Promise<void>;
+      };
+  try {
+    auth = useAuth();
+  } catch {
+    auth = {
+      user: null,
+      isAuthenticated: false,
+      login: async () => {},
+      logout: async () => {},
+    };
+  }
   const user = auth?.user;
   const assetEntries = useSelector((state: RootState) => state.asset?.entries ?? []);
   const debtEntries = useSelector((state: RootState) => state.debt?.entries ?? []);

@@ -62,7 +62,17 @@ export default function DocsViewer(): React.JSX.Element {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isListView, setIsListView] = useState<boolean>(true);
-  const { user } = useAuth();
+  // Provider 不在でも落ちないように
+  let isAuthenticated = false;
+  let user: any = null;
+  try {
+    const auth = useAuth();
+    isAuthenticated = auth.isAuthenticated;
+    user = auth.user;
+  } catch {
+    isAuthenticated = false;
+    user = null;
+  }
 
   // 成果物承認（このドキュメントがどの成果物かを逆引き）
   const docMeta = useMemo(() => {
@@ -233,6 +243,7 @@ export default function DocsViewer(): React.JSX.Element {
   // ドキュメント一覧表示
   const renderDocumentList = () => (
     <div className="space-y-6">
+      <h1>ドキュメント</h1>
       {/* 検索とフィルター */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row gap-4">
@@ -264,7 +275,7 @@ export default function DocsViewer(): React.JSX.Element {
       </div>
 
       {/* カテゴリ別タブ */}
-      <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+      <Tabs value={selectedCategory} onValueChange={(value) => setSelectedCategory(value)}>
         <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
           <TabsTrigger value="all">すべて</TabsTrigger>
           {Object.entries(categories).map(([key, category]) => (

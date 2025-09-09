@@ -1237,19 +1237,191 @@ try {
   (globalThis as any).rest = undefined;
 }
 
-// --- Safe URL polyfill for JSDOM/Jest ---
+// --- Enhanced URL polyfill for JSDOM/Jest/MSW ---
+// これは他のすべてのインポートより前に実行される必要があります
 (() => {
-  const g: any = (typeof window !== 'undefined' ? window : globalThis) as any;
-  if (typeof g.URL !== 'function') {
-    // 最低限 new URL(...) を可能にするスタブ
-    g.URL = class {
-      href: string;
-      constructor(input: string, base?: string) {
-        this.href = (input || '').toString();
+  // より完全なURLポリフィル
+  const URLPolyfill = class {
+    href: string;
+    origin: string;
+    protocol: string;
+    host: string;
+    hostname: string;
+    port: string;
+    pathname: string;
+    search: string;
+    hash: string;
+    searchParams: URLSearchParams;
+
+    constructor(input: string, base?: string) {
+      const url = (input || '').toString();
+      this.href = url;
+
+      // 基本的なURL解析
+      try {
+        const match = url.match(/^([^:]+):\/\/([^\/]+)(.*)$/);
+        if (match) {
+          this.protocol = match[1] + ':';
+          this.host = match[2];
+          this.hostname = match[2].split(':')[0];
+          this.port = match[2].split(':')[1] || '';
+          this.pathname = match[3].split('?')[0].split('#')[0] || '/';
+          this.search = match[3].includes('?') ? '?' + match[3].split('?')[1].split('#')[0] : '';
+          this.hash = match[3].includes('#') ? '#' + match[3].split('#')[1] : '';
+          this.origin = this.protocol + '//' + this.host;
+        } else {
+          this.protocol = '';
+          this.host = '';
+          this.hostname = '';
+          this.port = '';
+          this.pathname = url;
+          this.search = '';
+          this.hash = '';
+          this.origin = '';
+        }
+      } catch {
+        this.protocol = '';
+        this.host = '';
+        this.hostname = '';
+        this.port = '';
+        this.pathname = url;
+        this.search = '';
+        this.hash = '';
+        this.origin = '';
       }
-      toString() {
-        return this.href;
+
+      this.searchParams = new URLSearchParams(this.search);
+    }
+
+    toString() {
+      return this.href;
+    }
+  } as any;
+
+  // URLSearchParamsポリフィル
+  const URLSearchParamsPolyfill = class {
+    private params: Map<string, string[]> = new Map();
+
+    constructor(init?: string | URLSearchParams | Record<string, string> | string[][]) {
+      if (init) {
+        if (typeof init === 'string') {
+          init.split('&').forEach((pair) => {
+            const [key, value] = pair.split('=');
+            if (key) {
+              this.append(decodeURIComponent(key), decodeURIComponent(value || ''));
+            }
+          });
+        } else if (init instanceof URLSearchParams) {
+          init.forEach((value, key) => {
+            this.append(key, value);
+          });
+        } else if (Array.isArray(init)) {
+          init.forEach(([key, value]) => {
+            this.append(key, value);
+          });
+        } else if (typeof init === 'object') {
+          Object.entries(init).forEach(([key, value]) => {
+            this.append(key, value);
+          });
+        }
       }
-    } as any;
+    }
+
+    get(name: string): string | null {
+      const values = this.params.get(name);
+      return values ? values[0] : null;
+    }
+
+    set(name: string, value: string): void {
+      this.params.set(name, [value]);
+    }
+
+    append(name: string, value: string): void {
+      const existing = this.params.get(name) || [];
+      existing.push(value);
+      this.params.set(name, existing);
+    }
+
+    has(name: string): boolean {
+      return this.params.has(name);
+    }
+
+    delete(name: string): void {
+      this.params.delete(name);
+    }
+
+    forEach(callback: (value: string, key: string) => void): void {
+      this.params.forEach((values, key) => {
+        values.forEach((value) => callback(value, key));
+      });
+    }
+
+    toString(): string {
+      const pairs: string[] = [];
+      this.params.forEach((values, key) => {
+        values.forEach((value) => {
+          pairs.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+        });
+      });
+      return pairs.join('&');
+    }
+  } as any;
+
+  // グローバルに設定
+  const setGlobal = (target: any) => {
+    if (typeof target.URL !== 'function') {
+      target.URL = URLPolyfill;
+    }
+    if (typeof target.URLSearchParams !== 'function') {
+      target.URLSearchParams = URLSearchParamsPolyfill;
+    }
+  };
+
+  // すべてのグローバルスコープに設定
+  setGlobal(globalThis);
+  setGlobal(global);
+  setGlobal(window);
+
+  // MSWのインターセプター内でもURLが使われる可能性があるため、より早い段階で設定
+  if (typeof globalThis.URL !== 'function') {
+    globalThis.URL = URLPolyfill;
+  }
+  if (typeof globalThis.URLSearchParams !== 'function') {
+    globalThis.URLSearchParams = URLSearchParamsPolyfill;
+  }
+
+  // MSWのfetchインターセプターで使用される可能性のある場所にも設定
+  if (typeof globalThis.fetch === 'function') {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = function (input: any, init?: any) {
+      // URLが文字列の場合、URLオブジェクトに変換
+      if (typeof input === 'string') {
+        try {
+          input = new URL(input);
+        } catch {
+          // URLポリフィルを使用
+          input = new URLPolyfill(input);
+        }
+      }
+      return originalFetch.call(this, input, init);
+    };
+  }
+
+  // より強力なアプローチ：Object.definePropertyを使用してURLを上書き
+  try {
+    Object.defineProperty(globalThis, 'URL', {
+      value: URLPolyfill,
+      writable: true,
+      configurable: true,
+    });
+    Object.defineProperty(globalThis, 'URLSearchParams', {
+      value: URLSearchParamsPolyfill,
+      writable: true,
+      configurable: true,
+    });
+  } catch (e) {
+    // フォールバック
+    (globalThis as any).URL = URLPolyfill;
+    (globalThis as any).URLSearchParams = URLSearchParamsPolyfill;
   }
 })();
