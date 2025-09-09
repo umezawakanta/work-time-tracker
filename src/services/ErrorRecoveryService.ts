@@ -576,17 +576,24 @@ export class ErrorRecoveryService {
             sessionStorage.getItem('accessToken'))) ||
         '';
 
-      if (token) {
-        const headers: Record<string, string> = {};
-        headers['Authorization'] = `Bearer ${token}`;
-        const authResponse = await fetch('/api/auth/check', { headers });
-        const status = authResponse.status;
-        const data = authResponse.data ?? {};
-        results.auth = status === 200 || data.ok === true || data.status === 'ok';
-      } else {
-        // トークンが無い場合は認証状態を false として扱う（401エラーを発生させない）
-        results.auth = false;
+      let auth = true;
+      try {
+        if (token) {
+          const headers: Record<string, string> = {};
+          headers['Authorization'] = `Bearer ${token}`;
+          const res = await fetch('/api/auth/check', { headers });
+          const status = res?.status;
+          const data = res?.data ?? {};
+          auth = status === 200 || data.ok === true || data.status === 'ok';
+        } else {
+          // トークンが無い場合は認証状態を false として扱う（401エラーを発生させない）
+          auth = false;
+        }
+      } catch (e: any) {
+        const status = e?.response?.status;
+        auth = status !== 401; // 401 のときだけ false。ネットワーク/その他は true
       }
+      results.auth = auth;
     } catch (e: any) {
       const status = e?.response?.status;
       results.auth = status !== 401; // 401 の時だけ false、それ以外は自己診断上 true

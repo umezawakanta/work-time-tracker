@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -38,15 +38,15 @@ import { AdminBugsList } from '@/components/admin/AdminBugsList';
 import { api } from '@/services/api/apiConfig';
 import SocialShareButton from '@/components/ui/SocialShareButton';
 import AdminUsersPage from '@/pages/AdminUsersPage';
-let AdminFeaturesList: React.ComponentType | null = null;
-try {
-  // named / default どちらでも拾う
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const mod = require('@/components/admin/AdminFeaturesList');
-  AdminFeaturesList = mod.AdminFeaturesList ?? mod.default ?? null;
-} catch {
-  AdminFeaturesList = null;
-}
+// named / default どちらでも拾って、失敗しても空を返す
+const AdminFeaturesList = React.lazy(async () => {
+  try {
+    const mod: any = await import('@/components/admin/AdminFeaturesList');
+    return { default: mod.AdminFeaturesList ?? mod.default ?? (() => null) };
+  } catch {
+    return { default: () => null };
+  }
+});
 import { isFeatureAccessible } from '@/config/features';
 import { useDerivedFeatureStatuses } from '@/hooks/useDerivedFeatureStatuses';
 import {
@@ -2219,7 +2219,9 @@ const AdminDashboard: React.FC = () => {
 
               {isFeatureAccessible('/admin/features').allowed && (
                 <TabsContent value="features" className="space-y-6">
-                  {AdminFeaturesList ? <AdminFeaturesList /> : null}
+                  <Suspense fallback={null}>
+                    <AdminFeaturesList />
+                  </Suspense>
                 </TabsContent>
               )}
 

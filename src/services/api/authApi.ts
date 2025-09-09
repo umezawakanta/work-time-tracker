@@ -108,9 +108,9 @@ export const login = async (
       }
 
       if (rememberMe) {
-        tokenManager.setRememberMe(true);
+        TM?.setRememberMe?.(true);
       } else {
-        tokenManager.setRememberMe(false);
+        TM?.setRememberMe?.(false);
       }
 
       // ログアウトフラグをクリア
@@ -134,9 +134,9 @@ export const login = async (
       }
 
       if (rememberMe) {
-        tokenManager.setRememberMe(true);
+        TM?.setRememberMe?.(true);
       } else {
-        tokenManager.setRememberMe(false);
+        TM?.setRememberMe?.(false);
       }
 
       // ログアウトフラグをクリア
@@ -190,13 +190,13 @@ export const logout = async (): Promise<void> => {
 export const checkAuth = async (): Promise<boolean> => {
   try {
     // TokenManagerで認証状態を確認
-    if (!tokenManager.isAuthenticated()) {
+    if (!TM?.isAuthenticated?.()) {
       console.log('🔒 No valid local token');
       return false;
     }
 
     // サーバーサイドで認証状態を確認
-    const token = await tokenManager.getAccessToken();
+    const token = await TM?.getAccessToken?.();
     if (!token) {
       console.log('🔒 No access token available');
       return false;
@@ -236,7 +236,7 @@ export const checkAuth = async (): Promise<boolean> => {
       !err.response
     ) {
       console.log('⚠️ Network error - maintaining auth state for valid token');
-      return tokenManager.isAuthenticated(); // ローカルトークンが有効なら認証状態を維持
+      return TM?.isAuthenticated?.(); // ローカルトークンが有効なら認証状態を維持
     }
 
     // サーバーが明示的に認証エラーを返した場合のみクリア
@@ -248,7 +248,7 @@ export const checkAuth = async (): Promise<boolean> => {
 
     // その他のサーバーエラーの場合は認証状態を維持
     console.log('⚠️ Server error - maintaining auth state');
-    return tokenManager.isAuthenticated();
+    return TM?.isAuthenticated?.();
   }
 };
 
@@ -268,7 +268,7 @@ export const updateUserProfile = async (userData: {
   traits?: { iq?: number; mbti?: string };
 }): Promise<User> => {
   try {
-    const token = await tokenManager.getAccessToken();
+    const token = await TM?.getAccessToken?.();
     if (!token) {
       throw new Error('認証トークンがありません');
     }
@@ -400,7 +400,7 @@ export const changePassword = async (
   newPassword: string
 ): Promise<{ message: string }> => {
   try {
-    const token = await tokenManager.getAccessToken();
+    const token = await TM?.getAccessToken?.();
     if (!token) {
       throw new Error('認証トークンがありません');
     }
@@ -452,12 +452,12 @@ export const promoteToAdmin = async (): Promise<User> => {
 
 // セッション情報の取得
 export const getSessionInfo = () => {
-  return tokenManager.getSessionInfo();
+  return TM?.getSessionInfo?.();
 };
 
 // デバッグ用
 export const getAuthDebugInfo = () => {
-  return tokenManager.getDebugInfo();
+  return TM?.getDebugInfo?.();
 };
 
 // 例: lastActivityを保存

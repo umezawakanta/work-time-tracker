@@ -1219,8 +1219,20 @@ beforeEach(() => {
   console.log('🔄 Global beforeEach: Reset all mocks');
 });
 
-// msw の rest をグローバルへ（テストコードが global.rest を参照）
-import { rest as mswRest } from 'msw';
-
-// @ts-ignore
-(globalThis as any).rest = mswRest;
+// --- MSW v2 互換: testコードが `rest.get` を期待しているため、`http` をマッピング ---
+try {
+  // eslint-disable-next-line import/no-extraneous-dependencies
+  const { http } = require('msw');
+  (globalThis as any).rest = {
+    get: http.get,
+    post: http.post,
+    put: http.put,
+    patch: http.patch,
+    delete: http.delete,
+    options: http.options,
+    head: http.head,
+  };
+} catch {
+  // msw 未導入環境でも壊れないように
+  (globalThis as any).rest = undefined;
+}
