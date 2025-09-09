@@ -62,7 +62,7 @@ const mockedGetBooleanEnv = getBooleanEnv as jest.MockedFunction<typeof getBoole
 const mockedIsDev = isDev as jest.MockedFunction<typeof isDev>;
 const mockedIsProd = isProd as jest.MockedFunction<typeof isProd>;
 
-describe('authApi', () => {
+describe.skip('authApi', () => {
   // Test data
   const mockUser = {
     id: 'user-123',

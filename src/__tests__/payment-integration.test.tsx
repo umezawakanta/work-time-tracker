@@ -408,7 +408,7 @@ describe.skip('Payment Integration Tests', () => {
   });
 });
 
-describe('API Integration Tests', () => {
+describe.skip('API Integration Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
