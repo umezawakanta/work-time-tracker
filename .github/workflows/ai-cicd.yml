@@ -51,9 +51,9 @@ jobs:
       - name: Type checking
         run: pnpm run type-check
 
-      # 自動整形（フォーマット失敗を事前に解消）
-      - name: Pre-format (auto-fix)
-        run: pnpm run format
+      # フォーマットチェック（自動修正せず、失敗時はCIを落とす）
+      - name: Format Check (no auto-fix)
+        run: pnpm run format:check
 
       # ✅ 新規コードのみ厳格 / 既存の api/** を除外
       - name: Lint (new/changed code only)
