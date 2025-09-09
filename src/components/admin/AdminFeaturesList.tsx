@@ -222,12 +222,13 @@ export const AdminFeaturesList: React.FC = () => {
           return a.name.localeCompare(b.name);
         case 'status':
           return a.status.localeCompare(b.status);
-        case 'priority':
+        case 'priority': {
           const priorityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
           return (
             (priorityOrder[a.priority as keyof typeof priorityOrder] || 3) -
             (priorityOrder[b.priority as keyof typeof priorityOrder] || 3)
           );
+        }
         case 'completion':
           return (b.completionRate || 0) - (a.completionRate || 0);
         case 'release':

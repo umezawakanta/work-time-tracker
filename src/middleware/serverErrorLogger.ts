@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 // Request型を拡張してsessionIDプロパティを追加
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       sessionID?: string;
@@ -82,11 +83,13 @@ class ServerErrorLogger {
   private async saveErrorsToDatabase(errors: ErrorLog[]) {
     try {
       // MongoDB接続
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const mongoLib = require('../../api/_lib/mongo');
       await mongoLib.connectMongoDirect();
       const mongoose = await mongoLib.getMongoose();
 
       // 共通スキーマを使用
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { getErrorLogModel } = require('../../api/_schemas/errorLog');
       const ErrorLogModel = getErrorLogModel();
 

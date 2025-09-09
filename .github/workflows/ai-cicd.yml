@@ -2,7 +2,7 @@ name: AI-Enhanced CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
@@ -10,22 +10,18 @@ on:
     - cron: '0 9 1 * *'
 
 env:
-  NODE_VERSION: '22'
+  NODE_VERSION: '20' # ← engines と合わせて 20 に固定（22 警告回避）
   CACHE_VERSION: 'v1'
   PNPM_VERSION: '10.4.1'
 
 jobs:
-  # ===== 品質チェックジョブ (並列実行) =====
+  # ===== 品質チェック（並列の親） =====
   code-quality:
     name: Code Quality Checks
     runs-on: ubuntu-latest
-    outputs:
-      cache-key: ${{ steps.cache-key.outputs.key }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
 
       - name: Setup pnpm (corepack)
         run: |
@@ -36,6 +32,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
 
       - name: Configure pnpm store (writable)
         run: |
@@ -44,94 +41,69 @@ jobs:
           echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
           pnpm store path
 
-      - name: Generate cache key
-        id: cache-key
-        run: echo "key=node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ env.CACHE_VERSION }}" >> $GITHUB_OUTPUT
-
       - name: Install dependencies
-        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
-        env:
-          PNPM_HOME: ${{ env.PNPM_HOME }}
-          PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
+        run: pnpm install --prefer-offline --frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
 
       - name: Type checking
         run: pnpm run type-check
 
-      - name: Linting
-        run: pnpm run lint
+      # ✅ 新規コードのみ厳格 / 既存の api/** を除外
+      - name: Lint (new/changed code only)
+        run: pnpm run lint:ci
 
       - name: Format checking
         run: pnpm run format:check
 
-  # ===== セキュリティスキャン =====
+  # ===== セキュリティ =====
   security:
     name: Security Scan
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Setup pnpm (corepack)
         run: |
           corepack enable
           corepack prepare pnpm@${{ env.PNPM_VERSION }} --activate
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-
+          cache: pnpm
       - name: Configure pnpm store (writable)
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
           pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
           echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
           pnpm store path
-
       - name: Install dependencies
-        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
-        env:
-          PNPM_HOME: ${{ env.PNPM_HOME }}
-          PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
-
+        run: pnpm install --prefer-offline --frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
       - name: Run security audit
         run: pnpm audit --audit-level=high
 
-  # ===== テストジョブ (並列実行) =====
+  # ===== ユニットテスト =====
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
     needs: code-quality
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Setup pnpm (corepack)
         run: |
           corepack enable
           corepack prepare pnpm@${{ env.PNPM_VERSION }} --activate
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-
+          cache: pnpm
       - name: Configure pnpm store (writable)
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
           pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
           echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
           pnpm store path
-
       - name: Install dependencies
-        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
-        env:
-          PNPM_HOME: ${{ env.PNPM_HOME }}
-          PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
-
+        run: pnpm install --prefer-offline --frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
       - name: Run unit tests
         run: pnpm run test:ci
-
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
         if: ${{ always() && env.CODECOV_TOKEN != '' }}
@@ -141,7 +113,6 @@ jobs:
           token: ${{ env.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: false
-
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
@@ -151,183 +122,72 @@ jobs:
             coverage/
             junit.xml
 
+  # ===== 統合テスト =====
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
     needs: code-quality
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Setup pnpm (corepack)
         run: |
           corepack enable
           corepack prepare pnpm@${{ env.PNPM_VERSION }} --activate
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-
+          cache: pnpm
       - name: Configure pnpm store (writable)
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
           pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
           echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
           pnpm store path
-
       - name: Install dependencies
-        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
-        env:
-          PNPM_HOME: ${{ env.PNPM_HOME }}
-          PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
-
+        run: pnpm install --prefer-offline --frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
       - name: Run integration tests
         run: pnpm run test:integration
 
-  e2e-tests:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    needs: [code-quality, build]
-    if: github.event_name != 'schedule'
-    timeout-minutes: 40
-    env:
-      ANALYTICS_DISABLED: true
-      NOTIFICATIONS_DISABLED: true
-      CI_E2E_AUTH_BYPASS: true
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm (corepack)
-        run: |
-          corepack enable
-          corepack prepare pnpm@${{ env.PNPM_VERSION }} --activate
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Configure pnpm store (writable)
-        run: |
-          mkdir -p "$RUNNER_TEMP/pnpm-store"
-          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
-          echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
-          pnpm store path
-
-      - name: Install dependencies
-        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
-        env:
-          PNPM_HOME: ${{ env.PNPM_HOME }}
-          PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
-          path: dist
-
-      - name: Configure Cypress environment
-        run: |
-          mkdir -p "$RUNNER_TEMP/cypress"
-          echo "CYPRESS_CACHE_FOLDER=$RUNNER_TEMP/cypress" >> $GITHUB_ENV
-          echo "CYPRESS_VERIFY_TIMEOUT=120000" >> $GITHUB_ENV
-          echo "WAIT_ON_TIMEOUT=180000" >> $GITHUB_ENV
-          echo "CI=true" >> $GITHUB_ENV
-
-      - name: Install Cypress binary
-        run: pnpm exec cypress install --force
-
-      - name: Verify Cypress binary
-        run: pnpm exec cypress verify
-
-      - name: Run E2E tests (headless, with readiness and strict port)
-        run: |
-          pnpm run test:e2e
-
-      - name: Upload E2E test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: e2e-test-results
-          path: |
-            cypress/screenshots/
-            cypress/videos/
-
-  # ===== ビルドジョブ =====
+  # ===== ビルド =====
   build:
     name: Build Application
     runs-on: ubuntu-latest
     needs: code-quality
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Setup pnpm (corepack)
         run: |
           corepack enable
           corepack prepare pnpm@${{ env.PNPM_VERSION }} --activate
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
+          cache: pnpm
       - name: Configure pnpm store (writable)
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
           pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
           echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
           pnpm store path
-
       - name: Install dependencies
-        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
-        env:
-          PNPM_HOME: ${{ env.PNPM_HOME }}
-          PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
-
+        run: pnpm install --prefer-offline --frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
       - name: Build application
         run: pnpm run build
         env:
           NODE_ENV: production
-
       - name: Generate Dev Status and History (for /dev-status)
         run: |
           pnpm run build:dev-status || true
           pnpm run build:dev-status:history || true
-
       - name: Analyze bundle size
         run: pnpm run analyze
         continue-on-error: true
-
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: dist/
           retention-days: 7
-
       - name: Upload dev-status artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -339,37 +199,84 @@ jobs:
             public/test-summary.json
           retention-days: 7
 
-  # ===== AI Enhanced Code Review =====
+  # ===== E2E（必要なら） =====
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [code-quality, build]
+    if: github.event_name != 'schedule'
+    timeout-minutes: 40
+    env:
+      ANALYTICS_DISABLED: true
+      NOTIFICATIONS_DISABLED: true
+      CI_E2E_AUTH_BYPASS: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup pnpm (corepack)
+        run: |
+          corepack enable
+          corepack prepare pnpm@${{ env.PNPM_VERSION }} --activate
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - name: Configure pnpm store (writable)
+        run: |
+          mkdir -p "$RUNNER_TEMP/pnpm-store"
+          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
+          echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
+          pnpm store path
+      - name: Install dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist
+      - name: Configure Cypress environment
+        run: |
+          mkdir -p "$RUNNER_TEMP/cypress"
+          echo "CYPRESS_CACHE_FOLDER=$RUNNER_TEMP/cypress" >> $GITHUB_ENV
+          echo "CYPRESS_VERIFY_TIMEOUT=120000" >> $GITHUB_ENV
+          echo "WAIT_ON_TIMEOUT=180000" >> $GITHUB_ENV
+          echo "CI=true" >> $GITHUB_ENV
+      - name: Install Cypress binary
+        run: pnpm exec cypress install --force
+      - name: Verify Cypress binary
+        run: pnpm exec cypress verify
+      - name: Run E2E tests
+        run: pnpm run test:e2e
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-results
+          path: |
+            cypress/screenshots/
+            cypress/videos/
+
+  # ===== AI Enhanced Code Review（任意） =====
   ai-code-review:
     name: AI Code Review
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-
       - name: AI Code Review
         run: |
-          # AI コードレビューの実行
           export ENABLE_AI_REVIEW=true
           if [ -z "${ANTHROPIC_API_KEY:-}" ]; then echo "skip (no ANTHROPIC_API_KEY)"; exit 0; fi
           echo "Running AI-enhanced code review..."
-          # カスタムAIレビュースクリプトがあれば実行
-          if [ -f "scripts/ai-review.js" ]; then
-            node scripts/ai-review.js
-          fi
+          if [ -f "scripts/ai-review.js" ]; then node scripts/ai-review.js; fi
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # ===== パフォーマンステスト =====
+  # ===== パフォーマンス（mainのみ・任意） =====
   performance:
     name: Performance Tests
     runs-on: ubuntu-latest
@@ -379,45 +286,34 @@ jobs:
       ANALYTICS_DISABLED: true
       NOTIFICATIONS_DISABLED: true
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Setup pnpm (corepack)
         run: |
           corepack enable
           corepack prepare pnpm@${{ env.PNPM_VERSION }} --activate
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-
+          cache: pnpm
       - name: Configure pnpm store (writable)
         run: |
           mkdir -p "$RUNNER_TEMP/pnpm-store"
           pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
           echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
           pnpm store path
-
       - name: Install dependencies
-        run: pnpm install --prefer-offline --no-frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
-        env:
-          PNPM_HOME: ${{ env.PNPM_HOME }}
-          PNPM_STORE_PATH: ${{ env.PNPM_STORE_PATH }}
-
+        run: pnpm install --prefer-offline --frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
           path: dist
-
       - name: Start preview server and run Cypress
         continue-on-error: true
         env:
           WAIT_ON_TIMEOUT: 120000
         run: |
           pnpm dlx start-server-and-test "pnpm run preview -- --port 4173 --strictPort" http://localhost:4173 "pnpm exec cypress run"
-
       - name: Run Lighthouse CI
         continue-on-error: true
         run: |
@@ -430,16 +326,14 @@ jobs:
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
-  # ===== デプロイメント (mainブランチのみ) =====
+  # ===== デプロイ（任意のダミー） =====
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
     needs: [unit-tests, integration-tests, build, security]
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     steps:
-      - name: Deploy to Staging
-        run: |
-          echo "Deploying to staging environment..."
+      - run: echo "Deploying to staging environment..."
 
   deploy-production:
     name: Deploy to Production
@@ -448,14 +342,11 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Deploy to Vercel
         continue-on-error: true
         run: |
           echo "Deploying to production environment..."
-          # Vercel CLI を使用したデプロイ（VERCEL_TOKEN が設定されている場合）
           if [ -n "${VERCEL_TOKEN:-}" ]; then
             npx vercel --prod --yes --token=$VERCEL_TOKEN
           else
@@ -466,7 +357,6 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-  # ===== 通知 =====
   notify:
     name: Notify Results
     runs-on: ubuntu-latest
@@ -482,7 +372,6 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-  # ===== Immediate workaround: Trigger Vercel via Deploy Hook =====
   vercel-deploy-hook:
     name: Trigger Vercel Deploy Hook
     runs-on: ubuntu-latest

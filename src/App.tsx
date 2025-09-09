@@ -281,6 +281,9 @@ const Daily10TasksPage = lazy(() =>
 
 // 🛡️ Impulse Control
 const GuardPage = lazy(() => import('@/pages/GuardPage').then((m) => ({ default: m.default })));
+const FocusPage = lazy(() =>
+  import('@/pages/focus/FocusPage').then((m) => ({ default: m.default }))
+);
 
 // 🏦 Bank Data Import
 const BankImportPage = lazy(() =>
@@ -1488,6 +1491,16 @@ const App: React.FC = () => {
                                   <LayoutWrapper>
                                     <LazyWrapper>
                                       <GuardPage />
+                                    </LazyWrapper>
+                                  </LayoutWrapper>
+                                }
+                              />
+                              <Route
+                                path="/focus"
+                                element={
+                                  <LayoutWrapper>
+                                    <LazyWrapper>
+                                      <FocusPage />
                                     </LazyWrapper>
                                   </LayoutWrapper>
                                 }
