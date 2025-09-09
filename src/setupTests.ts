@@ -684,7 +684,9 @@ if (typeof EventTarget === 'undefined') {
     private listeners: { [key: string]: EventListener[] } = {};
 
     addEventListener(type: string, listener: EventListener | null): void {
-      if (!listener) return;
+      if (!listener) {
+        return;
+      }
       if (!this.listeners[type]) {
         this.listeners[type] = [];
       }
@@ -692,7 +694,9 @@ if (typeof EventTarget === 'undefined') {
     }
 
     removeEventListener(type: string, listener: EventListener | null): void {
-      if (!listener || !this.listeners[type]) return;
+      if (!listener || !this.listeners[type]) {
+        return;
+      }
       this.listeners[type] = this.listeners[type].filter((l) => l !== listener);
     }
 
@@ -892,11 +896,17 @@ jest.mock('@radix-ui/react-dropdown-menu', () => {
     Item: ({ children, ...props }: any) => {
       const { onClick, onPointerDown, onSelect, ...rest } = props || {};
       const handleClick = (e: any) => {
-        if (typeof onClick === 'function') onClick(e);
-        if (typeof onSelect === 'function') onSelect(e);
+        if (typeof onClick === 'function') {
+          onClick(e);
+        }
+        if (typeof onSelect === 'function') {
+          onSelect(e);
+        }
       };
       const handlePointerDown = (e: any) => {
-        if (typeof onPointerDown === 'function') onPointerDown(e);
+        if (typeof onPointerDown === 'function') {
+          onPointerDown(e);
+        }
       };
       return React.createElement(
         'button',
@@ -1221,7 +1231,7 @@ beforeEach(() => {
 
 // --- MSW v2 互換: testコードが `rest.get` を期待しているため、`http` をマッピング ---
 try {
-  // eslint-disable-next-line import/no-extraneous-dependencies
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { http } = require('msw');
   (globalThis as any).rest = {
     get: http.get,
@@ -1259,7 +1269,7 @@ try {
 
       // 基本的なURL解析
       try {
-        const match = url.match(/^([^:]+):\/\/([^\/]+)(.*)$/);
+        const match = url.match(/^([^:]+):\/\/([^/]+)(.*)$/);
         if (match) {
           this.protocol = match[1] + ':';
           this.host = match[2];

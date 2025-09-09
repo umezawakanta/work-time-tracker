@@ -364,8 +364,12 @@ describe('authApi', () => {
       mockedIsDev.mockReturnValue(false);
       mockedIsProd.mockReturnValue(false);
       mockedGetEnv.mockImplementation((key: string) => {
-        if (key === 'NODE_ENV') return 'test';
-        if (key === 'VITE_USE_MOCK_DATA') return 'false';
+        if (key === 'NODE_ENV') {
+          return 'test';
+        }
+        if (key === 'VITE_USE_MOCK_DATA') {
+          return 'false';
+        }
         return '';
       });
 

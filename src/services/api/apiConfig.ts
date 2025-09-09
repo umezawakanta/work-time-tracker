@@ -18,9 +18,7 @@ const explicitUseMockRaw = getEnv('VITE_USE_MOCK_DATA');
 export const USE_MOCK_DATA = explicitUseMockRaw === 'true' || explicitUseMockRaw === '1';
 
 // テストが import 時のログ出力を検証
-// eslint-disable-next-line no-console
 console.log('🔧 Determining API Configuration...');
-// eslint-disable-next-line no-console
 console.log('📋 Environment:', {
   NODE_ENV: typeof process !== 'undefined' ? process.env.NODE_ENV : undefined,
   VITE_API_BASE_URL:
@@ -132,7 +130,9 @@ api.interceptors.request.use(
             (config.headers as any).Authorization = `Bearer ${localToken}`;
             try {
               const masked = `Bearer ${String(localToken).slice(0, 12)}...`;
-              if (typeof window !== 'undefined') window.__API_AUTH_HEADER__ = masked;
+              if (typeof window !== 'undefined') {
+                window.__API_AUTH_HEADER__ = masked;
+              }
               console.log('🔒 (dev) Authorization set (masked):', masked);
             } catch {}
           }
@@ -235,14 +235,11 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     // 本番環境でのデータ形式統一
-    if (response.config.url?.includes('/books') && response.config.method === 'get') {
-      // レスポンスが配列でない場合の対応
-      if (response.data && !Array.isArray(response.data)) {
-        if (response.data.books) {
-          response.data = response.data.books;
-        } else if (response.data.data) {
-          response.data = response.data.data;
-        }
+    if (response.config.url?.includes('/books') && response.config.method === 'get' && response.data && !Array.isArray(response.data)) {
+      if (response.data.books) {
+        response.data = response.data.books;
+      } else if (response.data.data) {
+        response.data = response.data.data;
       }
     }
     const suppressLog =
