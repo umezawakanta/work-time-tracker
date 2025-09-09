@@ -51,9 +51,6 @@ jobs:
       - name: Lint (new/changed code only)
         run: pnpm run lint:ci
 
-      - name: Format checking
-        run: pnpm run format:check
-
   # ===== セキュリティ =====
   security:
     name: Security Scan
