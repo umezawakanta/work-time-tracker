@@ -1229,24 +1229,6 @@ beforeEach(() => {
   console.log('🔄 Global beforeEach: Reset all mocks');
 });
 
-// --- MSW v2 互換: testコードが `rest.get` を期待しているため、`http` をマッピング ---
-try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { http } = require('msw');
-  (globalThis as any).rest = {
-    get: http.get,
-    post: http.post,
-    put: http.put,
-    patch: http.patch,
-    delete: http.delete,
-    options: http.options,
-    head: http.head,
-  };
-} catch {
-  // msw 未導入環境でも壊れないように
-  (globalThis as any).rest = undefined;
-}
-
 // --- Enhanced URL polyfill for JSDOM/Jest/MSW ---
 // これは他のすべてのインポートより前に実行される必要があります
 (() => {
