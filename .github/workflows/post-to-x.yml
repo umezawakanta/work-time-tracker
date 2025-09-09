@@ -23,7 +23,8 @@ jobs:
           pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
           echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
           pnpm store path
-      - run: pnpm add -D twitter-api-v2 --store-dir "$RUNNER_TEMP/pnpm-store"
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
       - name: Build release note message (JA)
         id: msg
         run: |
