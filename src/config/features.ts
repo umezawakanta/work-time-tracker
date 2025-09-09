@@ -1582,7 +1582,7 @@ export const featuresRegistry: Feature[] = [
     path: '/focus',
     category: 'Impulse Control',
     description: 'ホワイトリストのみ許可する集中セッション',
-    status: 'planning',
+    status: 'complete',
     requiresRealAPI: false,
     priority: 'P0',
     targetRelease: '2025-01-15',
