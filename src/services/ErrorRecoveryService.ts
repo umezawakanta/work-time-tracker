@@ -583,7 +583,7 @@ export class ErrorRecoveryService {
           headers['Authorization'] = `Bearer ${token}`;
           const res = await fetch('/api/auth/check', { headers });
           const status = res?.status;
-          const data = res?.data ?? {};
+          const data = res.ok ? await res.json().catch(() => ({})) : {};
           auth = status === 200 || data.ok === true || data.status === 'ok';
         } else {
           // トークンが無い場合は認証状態を false として扱う（401エラーを発生させない）

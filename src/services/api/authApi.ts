@@ -44,7 +44,7 @@ export const register = async (userData: RegisterData): Promise<AuthResponse> =>
 
     if (response.data.accessToken && response.data.refreshToken) {
       // TokenManagerを使用してトークンを管理
-      if (accessToken && refreshToken && TM?.setTokens) {
+      if (TM?.setTokens) {
         TM.setTokens(
           response.data.accessToken,
           response.data.refreshToken,
@@ -98,7 +98,7 @@ export const login = async (
       const expiresIn = response.data.expiresIn || 3600;
       const refreshExpiresIn = response.data.refreshExpiresIn || (rememberMe ? 2592000 : 604800);
 
-      if (accessToken && refreshToken && TM?.setTokens) {
+      if (TM?.setTokens) {
         TM.setTokens(
           response.data.accessToken,
           response.data.refreshToken,
@@ -124,7 +124,7 @@ export const login = async (
       const expiresIn = 3600; // 1 hour
       const refreshExpiresIn = rememberMe ? 2592000 : 604800;
 
-      if (accessToken && refreshToken && TM?.setTokens) {
+      if (TM?.setTokens) {
         TM.setTokens(
           response.data.token, // accessTokenとして使用
           response.data.token, // refreshTokenも同じ値を使用（一時的）
@@ -376,7 +376,7 @@ export const refreshToken = async (refreshToken: string): Promise<AuthResponse> 
     });
 
     if (response.data.accessToken && response.data.refreshToken) {
-      if (accessToken && refreshToken && TM?.setTokens) {
+      if (TM?.setTokens) {
         TM.setTokens(
           response.data.accessToken,
           response.data.refreshToken,
