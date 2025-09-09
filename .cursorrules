@@ -1,43 +1,17 @@
-# Work Time Tracker AI開発ガイドライン
+# Tech
+- React 18 + Vite + TS
+- Tailwind + shadcn/ui
+- React Router
+- Cypress for E2E
+- featuresRegistry を唯一の仕様ソースにする
+- 既存スクリプト（lint/type-check/test/e2e）厳守
 
-## プロジェクト概要
-React + TypeScript + Viteを使用した勤怠管理アプリケーション
+# Coding
+- ESLint/Prettier/TypeScript の警告を 0 に
+- UIは CLS=0/モバイル最優先、ヘッダーは MobileHeader を使う
+- API 直叩き禁止: 既存 hooks 経由
+- 新規はテスト最小 1 つ（ユニット or E2E）
 
-## コーディング規約
-
-### TypeScript
-- strictモードを有効化
-- 型推論に頼らず明示的な型定義
-- anyの使用禁止
-- インターフェースを優先（typeは必要な場合のみ）
-
-### React
-- 関数コンポーネントを使用
-- カスタムフックでロジックを分離
-- メモ化は必要な場合のみ
-- エラーバウンダリーの実装
-
-### スタイリング
-- Tailwind CSS使用
-- レスポンシブデザイン必須
-- アクセシビリティ準拠（WCAG 2.1 AA）
-
-## AIアシスタントへの指示
-
-### コードレビュー時
-1. パフォーマンスの問題を指摘
-2. 型安全性の改善提案
-3. React best practicesの遵守確認
-4. セキュリティリスクの検出
-
-### 実装支援時
-1. テストファーストアプローチ
-2. エッジケースの考慮
-3. エラーハンドリングの実装
-4. ドキュメントの同時更新
-
-### リファクタリング時
-1. 単一責任の原則
-2. DRY原則の適用
-3. 可読性の向上
-4. パフォーマンスの最適化
+# PR
+- 1 PR = 1 機能（または小さなまとまり）
+- 変更ファイルは目的最小限、不要リネーム禁止
