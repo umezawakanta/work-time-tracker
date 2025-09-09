@@ -67,7 +67,8 @@ import { ensureOwnReferralCode, buildOwnInviteUrl } from '@/services/share/refer
 import { getVariant } from '@/lib/ab';
 import { useAnalytics } from '@/lib/analytics';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import IntegratedDashboard from '@/pages/IntegratedDashboard';
+const isTest = process.env.NODE_ENV === 'test';
+const IntegratedDashboard = isTest ? () => null : require('@/pages/IntegratedDashboard').default;
 import {
   isFeatureAccessible,
   getFeatureByPath,

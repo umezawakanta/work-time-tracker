@@ -37,7 +37,7 @@ export default function ResetPassword() {
       setToken(tokenFromUrl);
       validateToken(tokenFromUrl);
     } else {
-      setError('無効なリセットリンクです');
+      setError('リセットリンクが無効です');
       setIsValidatingToken(false);
     }
   }, [searchParams]);
@@ -52,11 +52,15 @@ export default function ResetPassword() {
       }
     } catch (error) {
       console.error('Token validation error:', error);
-      setError('リセットリンクの検証に失敗しました');
+      setError('リセットリンクが無効です');
     } finally {
       setIsValidatingToken(false);
     }
   };
+
+  // 8文字以上・大小英字・数字を含む
+  const isStrong = (pw: string) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(pw ?? '');
 
   const validatePassword = (password: string) => {
     if (password.length < 8) {
@@ -70,25 +74,14 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError('');
 
-    if (!password.trim()) {
-      setError('パスワードを入力してください');
+    if (!isStrong(password)) {
+      setFormError('パスワードの要件を満たしていません');
       return;
     }
-
-    if (!confirmPassword.trim()) {
-      setError('パスワード確認を入力してください');
-      return;
-    }
-
-    const passwordError = validatePassword(password);
-    if (passwordError) {
-      setError(passwordError);
-      return;
-    }
-
     if (password !== confirmPassword) {
-      setError('パスワードが一致しません');
+      setFormError('パスワードが一致しません');
       return;
     }
 
@@ -98,7 +91,7 @@ export default function ResetPassword() {
     try {
       await resetPassword(token, password);
       setIsSuccess(true);
-      toast.success('パスワードが正常にリセットされました');
+      toast.success('パスワードが正常に変更されました');
     } catch (error) {
       console.error('Password reset error:', error);
 
@@ -111,7 +104,7 @@ export default function ResetPassword() {
         } else if (statusCode === 404) {
           setError('無効または期限切れのリセットリンクです');
         } else {
-          setError(errorMessage || 'パスワードリセットに失敗しました');
+          setError(errorMessage || 'パスワードが要件を満たしていません');
         }
       } else {
         setError('不明なエラーが発生しました');
@@ -215,7 +208,7 @@ export default function ResetPassword() {
             <Alert className="border-green-200 bg-green-50">
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-700">
-                パスワードが正常に変更されました。新しいパスワードでログインしてください。
+                パスワードが正常に変更されました
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -285,7 +278,7 @@ export default function ResetPassword() {
             <div className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
                 <Lock className="inline-block w-4 h-4 mr-1" />
-                パスワード確認
+                パスワード（確認）
               </Label>
               <div className="relative">
                 <Input
@@ -333,9 +326,7 @@ export default function ResetPassword() {
               className="w-full"
               disabled={
                 isSubmitting ||
-                !password.trim() ||
-                !confirmPassword.trim() ||
-                password !== confirmPassword
+                !isStrong(password)
               }
             >
               {isSubmitting ? (
@@ -346,7 +337,7 @@ export default function ResetPassword() {
               ) : (
                 <>
                   <Lock className="h-4 w-4 mr-2" />
-                  パスワードをリセット
+                  パスワードを変更
                 </>
               )}
             </Button>

@@ -48,26 +48,26 @@ jest.mock('axios', () => {
         'Content-Type': 'application/json',
       },
     },
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-    patch: jest.fn(),
-    head: jest.fn(),
-    options: jest.fn(),
-    request: jest.fn(),
+    get: jest.fn().mockResolvedValue({ data: {} }),
+    post: jest.fn().mockResolvedValue({ data: {} }),
+    put: jest.fn().mockResolvedValue({ data: {} }),
+    delete: jest.fn().mockResolvedValue({ data: {} }),
+    patch: jest.fn().mockResolvedValue({ data: {} }),
+    head: jest.fn().mockResolvedValue({ data: {} }),
+    options: jest.fn().mockResolvedValue({ data: {} }),
+    request: jest.fn().mockResolvedValue({ data: {} }),
   };
 
   const mockedAxios = {
     create: jest.fn(() => mockAxiosInstance),
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-    patch: jest.fn(),
-    head: jest.fn(),
-    options: jest.fn(),
-    request: jest.fn(),
+    get: jest.fn().mockResolvedValue({ data: {} }),
+    post: jest.fn().mockResolvedValue({ data: {} }),
+    put: jest.fn().mockResolvedValue({ data: {} }),
+    delete: jest.fn().mockResolvedValue({ data: {} }),
+    patch: jest.fn().mockResolvedValue({ data: {} }),
+    head: jest.fn().mockResolvedValue({ data: {} }),
+    options: jest.fn().mockResolvedValue({ data: {} }),
+    request: jest.fn().mockResolvedValue({ data: {} }),
     interceptors: {
       request: {
         use: jest.fn(),
@@ -85,6 +85,10 @@ jest.mock('axios', () => {
         'Content-Type': 'application/json',
       },
     },
+    // Add isAxiosError function
+    isAxiosError: jest.fn((error) => {
+      return error && typeof error === 'object' && error.isAxiosError === true;
+    }),
   };
 
   console.log('🔧 Global axios mock created');
@@ -94,6 +98,17 @@ jest.mock('axios', () => {
     ...mockedAxios,
   };
 });
+
+// Mock API client for PersonalAIAssistantService
+jest.mock('@/services/api/apiConfig', () => ({
+  api: {
+    get: jest.fn().mockResolvedValue({ data: {} }),
+    post: jest.fn().mockResolvedValue({ data: {} }),
+    put: jest.fn().mockResolvedValue({ data: {} }),
+    patch: jest.fn().mockResolvedValue({ data: {} }),
+    delete: jest.fn().mockResolvedValue({ data: {} }),
+  },
+}));
 
 // ========================================
 // CSS and Asset Mocks

@@ -34,18 +34,20 @@ jobs:
           corepack prepare pnpm@${{ env.PNPM_VERSION }} --activate
           pnpm -v
 
-      - name: Configure pnpm store (writable)
+      - name: Ensure local pnpm store
         run: |
-          mkdir -p "$RUNNER_TEMP/pnpm-store"
-          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
-          echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
-          pnpm store path
+          mkdir -p .pnpm-store
+          echo "pnpm store-dir: $(pnpm config get store-dir)"
 
       - name: Install dependencies
-        run: pnpm install --prefer-offline --frozen-lockfile --store-dir "$RUNNER_TEMP/pnpm-store"
+        run: pnpm install --frozen-lockfile
 
       - name: Type checking
         run: pnpm run type-check
+
+      # フォーマットチェック（自動修正せず、失敗時はCIを落とす）
+      - name: Format Check (no auto-fix)
+        run: pnpm run format:check
 
       # ✅ 新規コードのみ厳格 / 既存の api/** を除外
       - name: Lint (new/changed code only)

@@ -100,8 +100,8 @@ import { FinancialGoal } from '@/types'; // 追加: 目標の型定義
 export default function AssetLiabilityReportPage() {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useAuth();
-  const assetEntries = useSelector((state: RootState) => state.asset.entries);
-  const debtEntries = useSelector((state: RootState) => state.debt.entries);
+  const assetEntries = useSelector((state: RootState) => state.asset?.entries ?? []);
+  const debtEntries = useSelector((state: RootState) => state.debt?.entries ?? []);
 
   // 銀行口座情報を取得
   const {
