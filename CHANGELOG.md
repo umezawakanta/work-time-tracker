@@ -1,5 +1,22 @@
 # 更新履歴
 
+## [1.1.0](https://github.com/umezawakanta/work-time-tracker/compare/v1.0.0...v1.1.0) (2025-09-09)
+
+
+### Features
+
+* add FocusPage for Impulse Control feature ([d0f9ce1](https://github.com/umezawakanta/work-time-tracker/commit/d0f9ce1b633aa502d0fd79f7ba798db6321b02a6))
+
+
+### Bug Fixes
+
+* **ci:** resolve EACCES error by using Corepack instead of pnpm/action-setup ([a11212b](https://github.com/umezawakanta/work-time-tracker/commit/a11212b0f6589b91ef4acc507066d151b44f8c73))
+* **ci:** resolve EACCES error by using Corepack instead of pnpm/action-setup ([09eb9a6](https://github.com/umezawakanta/work-time-tracker/commit/09eb9a6934b1cbce79347c623c9c2aa484f23e5e))
+* **ci:** resolve EACCES error in post-to-x workflow ([524f495](https://github.com/umezawakanta/work-time-tracker/commit/524f495af350f7c614371342f1e0310a01f3224e))
+* **ci:** resolve ERR_PNPM_ADDING_TO_ROOT by fixing dependencies ([70cf792](https://github.com/umezawakanta/work-time-tracker/commit/70cf7920e5e38838b81c0c2beab1656c589a248e))
+* **ci:** resolve lint failures by using lint:ci and Node 20 ([7477530](https://github.com/umezawakanta/work-time-tracker/commit/7477530bb60ebf37cfeba2e14b1292d484e2778b))
+* **ci:** update Node version and streamline dependency installation ([58935e5](https://github.com/umezawakanta/work-time-tracker/commit/58935e5f2bed4305418fea0c4a372cce9ae2c348))
+
 ## 1.0.0 (2025-09-09)
 
 
