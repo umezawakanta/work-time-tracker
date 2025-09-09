@@ -924,7 +924,7 @@ const Daily10TasksPage: React.FC = () => {
   const completionRate = progressData.percentage;
 
   return (
-    <div className="max-w-screen-sm mx-auto">
+    <>
       <MobileHeader
         title="必ず毎日やる20のこと"
         subtitle="毎日の習慣で目標を達成"
@@ -987,7 +987,11 @@ const Daily10TasksPage: React.FC = () => {
         }
       />
 
-      <div className="px-4 py-3">
+      {/* ヘッダー高さぶん余白（h-11 + safe-area） */}
+      <div className="mt-14" />
+
+      {/* 以降がページ本文 */}
+      <main className="max-w-screen-sm mx-auto px-4 py-3 pb-24">
         {/* 銀行口座未登録の案内 */}
         {!bankLoading && !mainAccount && (
           <Alert className="border-amber-200 bg-amber-50 mb-6">
@@ -1451,10 +1455,10 @@ const Daily10TasksPage: React.FC = () => {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+        </TabsContent>
+      </Tabs>
+      </main>
+    </>
   );
 };
 

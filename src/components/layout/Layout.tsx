@@ -1211,7 +1211,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                 )}
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-4">
                 {/* 3-step progress badge */}
                 {/* スタートガイド（機能完了まで非表示） */}
                 {/* <button

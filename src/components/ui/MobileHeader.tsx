@@ -29,7 +29,7 @@ export const MobileHeader = memo(function MobileHeader({
   return (
     <header
       className={
-        'sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-white/70 ' +
+        'sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-white/70 ' +
         'bg-white/95 border-b border-gray-200/70 ' +
         'pt-[env(safe-area-inset-top)] ' +
         className
