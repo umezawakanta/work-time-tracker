@@ -7,17 +7,45 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    env:
+      PNPM_VERSION: 10.4.1
+      NODE_VERSION: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-        with: { version: 10 }
+
+      # Node は engines に合わせて 20 を使用
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run lint:ci
-      - run: pnpm run type-check
-      - run: pnpm run test:ci
-      # E2E を常時回したい場合だけ有効化
-      # - run: pnpm run test:e2e
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      # Corepack で pnpm を有効化（ラッパーを使わず EACCES の温床を排除）
+      - name: Enable pnpm via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@${PNPM_VERSION} --activate
+          pnpm -v
+
+      # pnpm ストアをランナーの一時ディレクトリに固定（ここが重要）
+      - name: Configure writable pnpm store
+        run: |
+          mkdir -p "$RUNNER_TEMP/pnpm-store"
+          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
+          echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
+          pnpm store path
+
+      # 依存インストール（lockfile 準拠）
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      # Lint（既存方針の lint:ci を使用）
+      - name: Lint
+        run: pnpm run lint:ci
+
+      # 型チェック
+      - name: Type check
+        run: pnpm run type-check
+
+      # ユニットテスト
+      - name: Test (CI)
+        run: pnpm run test:ci
