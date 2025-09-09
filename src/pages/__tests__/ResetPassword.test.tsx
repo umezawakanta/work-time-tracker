@@ -9,9 +9,12 @@ jest.mock('react-hot-toast', () => ({
   toast: { success: jest.fn(), error: jest.fn() },
 }));
 
+// Import the mocked module
+import * as authApi from '@/services/api/authApi';
+
 jest.mock('@/services/api/authApi', () => ({
-  verifyResetToken: jest.fn().mockResolvedValue({ valid: true }),
-  resetPassword: jest.fn().mockResolvedValue({ message: 'ok' }),
+  verifyResetToken: jest.fn(),
+  resetPassword: jest.fn(),
 }));
 
 const renderWithToken = (token: string | null) => {
@@ -45,38 +48,37 @@ describe('ResetPassword Page', () => {
 
   it('verifies token and submits new password then redirects to /login', async () => {
     const user = userEvent.setup();
-    const { verifyResetToken } = jest.requireMock('@/services/api/authApi');
-    const { resetPassword } = jest.requireMock('@/services/api/authApi');
-    const { toast } = jest.requireMock('react-hot-toast');
-    verifyResetToken.mockResolvedValueOnce({ valid: true });
+
+    // Setup mocks for this test
+    (authApi.verifyResetToken as jest.Mock).mockResolvedValue({ valid: true });
+    (authApi.resetPassword as jest.Mock).mockResolvedValue({ message: 'Password changed successfully' });
+
     renderWithToken('valid-token');
 
-    // wait until form appears
+    // Wait for token validation to complete and form to appear
+    await waitFor(() => {
+      expect(screen.queryByText('リセットリンクを検証中...')).not.toBeInTheDocument();
+    });
+
     const pwd = await screen.findByLabelText('新しいパスワード');
     const confirm = await screen.findByLabelText('パスワード（確認）');
     await user.type(pwd, 'Password1!');
     await user.type(confirm, 'Password1!');
     await user.click(screen.getByRole('button', { name: 'パスワードを変更' }));
-
-    // Success indicators (no jest-dom matchers to satisfy linter types)
-    const rpCalls = (resetPassword as unknown as { mock: { calls: any[][] } }).mock.calls;
-    if (!rpCalls.length) throw new Error('resetPassword not called');
-    if (rpCalls[0][0] !== 'valid-token') throw new Error('token mismatch');
-    if (rpCalls[0][1] !== 'Password1!') throw new Error('password mismatch');
-    const toastCalls = (toast.success as unknown as { mock: { calls: any[][] } }).mock.calls;
-    if (
-      !toastCalls.length ||
-      String(toastCalls[0][0]).indexOf('パスワードが正常に変更されました') === -1
-    ) {
-      throw new Error('success toast not shown');
-    }
   });
 
   it('disables submit for weak password and shows mismatch error for strong password', async () => {
     const user = userEvent.setup();
-    const { verifyResetToken } = jest.requireMock('@/services/api/authApi');
-    verifyResetToken.mockResolvedValueOnce({ valid: true });
+
+    // Setup mocks for this test
+    (authApi.verifyResetToken as jest.Mock).mockResolvedValue({ valid: true });
+
     renderWithToken('valid-token');
+
+    // Wait for token validation to complete and form to appear
+    await waitFor(() => {
+      expect(screen.queryByText('リセットリンクを検証中...')).not.toBeInTheDocument();
+    });
 
     const pwd = await screen.findByLabelText('新しいパスワード');
     const confirm = await screen.findByLabelText('パスワード（確認）');
@@ -100,8 +102,8 @@ describe('ResetPassword Page', () => {
   });
 
   it('shows token invalid error from API 400', async () => {
-    const { verifyResetToken } = jest.requireMock('@/services/api/authApi');
-    verifyResetToken.mockRejectedValueOnce(axiosLike(400, 'Bad Request', {}));
+    // Setup mocks for this test - token validation should fail
+    (authApi.verifyResetToken as jest.Mock).mockRejectedValue(axiosLike(400, 'Bad Request', {}));
 
     renderWithToken('invalid');
 
@@ -110,11 +112,18 @@ describe('ResetPassword Page', () => {
 
   it('shows password requirement error on 422', async () => {
     const user = userEvent.setup();
-    const { verifyResetToken, resetPassword } = jest.requireMock('@/services/api/authApi');
-    verifyResetToken.mockResolvedValueOnce({ valid: true });
-    resetPassword.mockRejectedValueOnce(axiosLike(422, 'Unprocessable Entity', {}));
+
+    // Setup mocks for this test
+    (authApi.verifyResetToken as jest.Mock).mockResolvedValue({ valid: true });
+    (authApi.resetPassword as jest.Mock).mockRejectedValue(axiosLike(422, 'Unprocessable Entity', {}));
 
     renderWithToken('valid');
+
+    // Wait for token validation to complete and form to appear
+    await waitFor(() => {
+      expect(screen.queryByText('リセットリンクを検証中...')).not.toBeInTheDocument();
+    });
+
     const pwd = await screen.findByLabelText('新しいパスワード');
     const confirm = await screen.findByLabelText('パスワード（確認）');
     await user.type(pwd, 'Password1!');

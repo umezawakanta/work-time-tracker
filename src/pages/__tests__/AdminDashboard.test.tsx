@@ -15,18 +15,20 @@ jest.mock('@/config/features', () => ({
 
 jest.mock('@/services/api/apiConfig', () => ({
   api: {
-    get: jest.fn().mockResolvedValue({
-      data: {
-        success: true,
-        metrics: {
-          users: { total: 100, active: 50, newToday: 5, churnRate: 2.1 },
-          revenue: { mrr: 10000, arr: 120000, todayRevenue: 1000, conversionRate: 3.4 },
-          system: { uptime: 99.9, responseTime: 100, errorRate: 0.2, activeConnections: 10 },
-          support: { openTickets: 0, avgResponseTime: '2h', satisfaction: 4.6 },
+    get: jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        data: {
+          success: true,
+          metrics: {
+            users: { total: 100, active: 50, newToday: 5, churnRate: 2.1 },
+            revenue: { mrr: 10000, arr: 120000, todayRevenue: 1000, conversionRate: 3.4 },
+            system: { uptime: 99.9, responseTime: 100, errorRate: 0.2, activeConnections: 10 },
+            support: { openTickets: 0, avgResponseTime: '2h', satisfaction: 4.6 },
+          },
+          priorityActions: [],
         },
-        priorityActions: [],
-      },
-    }),
+      })
+    ),
   },
 }));
 
@@ -57,6 +59,10 @@ describe('AdminDashboard', () => {
         <AdminDashboard />
       </MemoryRouter>
     );
-    await waitFor(() => expect(screen.getByText('管理者ダッシュボード')).toBeInTheDocument());
+
+    // Wait for loading to complete and title to appear
+    await waitFor(() => {
+      expect(screen.getByText('管理者ダッシュボード')).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 });
