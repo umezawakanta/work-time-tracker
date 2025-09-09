@@ -1,16 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-let ReactMarkdown: any, remarkGfm: any, remarkMath: any, rehypeKatex: any;
-if (process.env.NODE_ENV === 'test') {
-  // テストは ESM をモックしてテキストだけ確認
-  ReactMarkdown = ({ children }: any) => <div>{children}</div>;
-  remarkGfm = remarkMath = rehypeKatex = undefined;
-} else {
-  ReactMarkdown = require('react-markdown').default;
-  remarkGfm = require('remark-gfm');
-  remarkMath = require('remark-math');
-  rehypeKatex = require('rehype-katex');
-}
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { featureArtifactsRegistry, ArtifactId } from '@/config/featureArtifacts';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
