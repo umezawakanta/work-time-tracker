@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { memo, ReactNode } from "react";
+import { Link } from 'react-router-dom';
+import { memo, ReactNode } from 'react';
 
 /**
  * モバイル向けの汎用ヘッダー
@@ -12,9 +12,9 @@ import { memo, ReactNode } from "react";
 type Props = {
   title: string;
   subtitle?: string;
-  backTo?: string;              // 指定時は←戻るを表示
-  leftSlot?: ReactNode;         // 戻るの代わりにアイコン等を置きたい場合
-  rightActions?: ReactNode;     // 右側アクション群（通知、プロフィール等）
+  backTo?: string; // 指定時は←戻るを表示
+  leftSlot?: ReactNode; // 戻るの代わりにアイコン等を置きたい場合
+  rightActions?: ReactNode; // 右側アクション群（通知、プロフィール等）
   className?: string;
 };
 
@@ -24,14 +24,15 @@ export const MobileHeader = memo(function MobileHeader({
   backTo,
   leftSlot,
   rightActions,
-  className = "",
+  className = '',
 }: Props) {
   return (
     <header
       className={
-        "sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-white/70 " +
-        "bg-white/95 border-b border-gray-200/70 " +
-        "pt-[env(safe-area-inset-top)] " + className
+        'sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-white/70 ' +
+        'bg-white/95 border-b border-gray-200/70 ' +
+        'pt-[env(safe-area-inset-top)] ' +
+        className
       }
       aria-label="ページヘッダー"
     >
@@ -49,7 +50,14 @@ export const MobileHeader = memo(function MobileHeader({
             >
               {/* 依存レスに矢印SVG */}
               <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden>
-                <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path
+                  d="M15 18l-6-6 6-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </Link>
           ) : (
@@ -66,9 +74,7 @@ export const MobileHeader = memo(function MobileHeader({
         </div>
 
         {/* 右側：アクション（最大3つ程度に） */}
-        <div className="flex items-center gap-1">
-          {rightActions}
-        </div>
+        <div className="flex items-center gap-1">{rightActions}</div>
       </div>
     </header>
   );

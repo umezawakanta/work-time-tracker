@@ -911,7 +911,14 @@ const Daily10TasksPage: React.FC = () => {
               onClick={() => alert('ヘルプを準備中')}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
-                <path d="M12 18h.01M9 9a3 3 0 116 0c0 1.5-1 2-2 2s-1 1-1 2" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                <path
+                  d="M12 18h.01M9 9a3 3 0 116 0c0 1.5-1 2-2 2s-1 1-1 2"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             {/* 設定ボタン */}
@@ -921,8 +928,18 @@ const Daily10TasksPage: React.FC = () => {
               className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-gray-100"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
-                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="2" fill="none"/>
-                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06A1.65 1.65 0 0015 19.4a1.65 1.65 0 00-1 .6 1.65 1.65 0 01-2.58 0 1.65 1.65 0 00-1-.6 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-.6-1 1.65 1.65 0 010-2.58 1.65 1.65 0 00.6-1 1.65 1.65 0 00-.33-1.82l-.06-.06A2 2 0 116.64 4.6l.06.06A1.65 1.65 0 008 5.6a1.65 1.65 0 001-.6 1.65 1.65 0 012.58 0 1.65 1.65 0 001 .6 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06c-.38.38-.53.9-.33 1.82.2.92.9 1.62 1.82 1.82z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                <path
+                  d="M12 15a3 3 0 100-6 3 3 0 000 6z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  fill="none"
+                />
+                <path
+                  d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06A1.65 1.65 0 0015 19.4a1.65 1.65 0 00-1 .6 1.65 1.65 0 01-2.58 0 1.65 1.65 0 00-1-.6 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-.6-1 1.65 1.65 0 010-2.58 1.65 1.65 0 00.6-1 1.65 1.65 0 00-.33-1.82l-.06-.06A2 2 0 116.64 4.6l.06.06A1.65 1.65 0 008 5.6a1.65 1.65 0 001-.6 1.65 1.65 0 012.58 0 1.65 1.65 0 001 .6 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06c-.38.38-.53.9-.33 1.82.2.92.9 1.62 1.82 1.82z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  fill="none"
+                />
               </svg>
             </a>
           </>
@@ -962,435 +979,439 @@ const Daily10TasksPage: React.FC = () => {
             各タスクは5分以内で完了できるサブタスクに分割されています
           </p>
 
-        {/* クイックスタートガイド */}
-        <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg">
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0">
-              <Target className="h-5 w-5 text-green-600 mt-0.5" />
+          {/* クイックスタートガイド */}
+          <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <Target className="h-5 w-5 text-green-600 mt-0.5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-green-900 mb-2">
+                  🚀 クイックスタートガイド
+                </h3>
+                <div className="text-sm text-green-800 space-y-1">
+                  <p>
+                    <strong>1. まず最初に：</strong>
+                    「直近3ヶ月の収入と支出をすべて把握する」から始めましょう
+                  </p>
+                  <p>
+                    <strong>2. サブタスクを確認：</strong>
+                    「サブタスクを表示」ボタンで10個のステップを確認
+                  </p>
+                  <p>
+                    <strong>3. 手順を確認：</strong>
+                    各サブタスクの「手順を表示」で具体的なやり方を見る
+                  </p>
+                  <p>
+                    <strong>4. 実行：</strong>5分以内で完了できるように取り組む
+                  </p>
+                  <p>
+                    <strong>5. チェック：</strong>完了したらチェックボックスをクリック
+                  </p>
+                  <p>
+                    <strong>6. 自動連携：</strong>銀行口座管理や資産管理ページでの入力は自動反映
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className="text-sm font-medium text-green-900 mb-2">🚀 クイックスタートガイド</h3>
-              <div className="text-sm text-green-800 space-y-1">
-                <p>
-                  <strong>1. まず最初に：</strong>
-                  「直近3ヶ月の収入と支出をすべて把握する」から始めましょう
-                </p>
-                <p>
-                  <strong>2. サブタスクを確認：</strong>
-                  「サブタスクを表示」ボタンで10個のステップを確認
-                </p>
-                <p>
-                  <strong>3. 手順を確認：</strong>各サブタスクの「手順を表示」で具体的なやり方を見る
-                </p>
-                <p>
-                  <strong>4. 実行：</strong>5分以内で完了できるように取り組む
-                </p>
-                <p>
-                  <strong>5. チェック：</strong>完了したらチェックボックスをクリック
-                </p>
-                <p>
-                  <strong>6. 自動連携：</strong>銀行口座管理や資産管理ページでの入力は自動反映
-                </p>
+          </div>
+
+          {/* 動的メッセージ表示 */}
+          <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <Target className="h-5 w-5 text-blue-600 mt-0.5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-blue-900 mb-1">今日のメッセージ</h3>
+                <p className="text-sm text-blue-800">{getMotivationalMessage()}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* 動的メッセージ表示 */}
-        <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0">
-              <Target className="h-5 w-5 text-blue-600 mt-0.5" />
+        {/* 詳細な使い方ガイド */}
+        <div className="mb-6 space-y-4">
+          {/* 毎日の実施手順ガイド */}
+          <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
+            <h3 className="text-lg font-semibold text-purple-800 mb-3 flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              毎日の実施手順（完全版）
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm text-purple-700">
+              <div>
+                <h4 className="font-semibold mb-3 text-purple-900">🌅 朝のルーティン（30分）</h4>
+                <ol className="list-decimal list-inside space-y-2">
+                  <li>
+                    <strong>起床後すぐ（5分）</strong>
+                    <br />
+                    このページを開いて今日のタスクを確認
+                  </li>
+                  <li>
+                    <strong>銀行口座確認（10分）</strong>
+                    <br />
+                    銀行口座管理ページで残高を最新に更新
+                    <br />→ 三井住友銀行・横浜銀行・じぶん銀行のCSVインポート
+                  </li>
+                  <li>
+                    <strong>取引明細確認（10分）</strong>
+                    <br />
+                    前日の取引明細を確認して収支を把握
+                    <br />→ カテゴリ別・期間別で支出を分析
+                  </li>
+                  <li>
+                    <strong>資産確認タスク（5分）</strong>
+                    <br />
+                    「直近3ヶ月の収入と支出をすべて把握する」を実行
+                  </li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-3 text-purple-900">🌆 夕方のルーティン（20分）</h4>
+                <ol className="list-decimal list-inside space-y-2">
+                  <li>
+                    <strong>家事タスク（10分）</strong>
+                    <br />
+                    洗い物、自炊、風呂、洗濯などの家事を完了
+                  </li>
+                  <li>
+                    <strong>整理整頓（5分）</strong>
+                    <br />
+                    新聞を捨てる、チラシを捨てる、冷蔵庫の中身を確認
+                  </li>
+                  <li>
+                    <strong>清掃作業（3分）</strong>
+                    <br />
+                    床掃除、押入れの整理を実行
+                  </li>
+                  <li>
+                    <strong>進捗確認（2分）</strong>
+                    <br />
+                    完了したタスクのチェックボックスをクリック
+                  </li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-3 text-purple-900">🌙 夜のルーティン（10分）</h4>
+                <ol className="list-decimal list-inside space-y-2">
+                  <li>
+                    <strong>個人活動（5分）</strong>
+                    <br />
+                    ギターの練習、読書、このサイトの開発
+                  </li>
+                  <li>
+                    <strong>最終確認（2分）</strong>
+                    <br />
+                    未完了のタスクがないか確認
+                  </li>
+                  <li>
+                    <strong>明日の準備（2分）</strong>
+                    <br />
+                    明日取り組むタスクを決める
+                  </li>
+                  <li>
+                    <strong>振り返り（1分）</strong>
+                    <br />
+                    今日の成果を確認して満足感を得る
+                  </li>
+                </ol>
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className="text-sm font-medium text-blue-900 mb-1">今日のメッセージ</h3>
-              <p className="text-sm text-blue-800">{getMotivationalMessage()}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 詳細な使い方ガイド */}
-      <div className="mb-6 space-y-4">
-        {/* 毎日の実施手順ガイド */}
-        <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
-          <h3 className="text-lg font-semibold text-purple-800 mb-3 flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            毎日の実施手順（完全版）
-          </h3>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm text-purple-700">
-            <div>
-              <h4 className="font-semibold mb-3 text-purple-900">🌅 朝のルーティン（30分）</h4>
-              <ol className="list-decimal list-inside space-y-2">
-                <li>
-                  <strong>起床後すぐ（5分）</strong>
-                  <br />
-                  このページを開いて今日のタスクを確認
-                </li>
-                <li>
-                  <strong>銀行口座確認（10分）</strong>
-                  <br />
-                  銀行口座管理ページで残高を最新に更新
-                  <br />→ 三井住友銀行・横浜銀行・じぶん銀行のCSVインポート
-                </li>
-                <li>
-                  <strong>取引明細確認（10分）</strong>
-                  <br />
-                  前日の取引明細を確認して収支を把握
-                  <br />→ カテゴリ別・期間別で支出を分析
-                </li>
-                <li>
-                  <strong>資産確認タスク（5分）</strong>
-                  <br />
-                  「直近3ヶ月の収入と支出をすべて把握する」を実行
-                </li>
-              </ol>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-3 text-purple-900">🌆 夕方のルーティン（20分）</h4>
-              <ol className="list-decimal list-inside space-y-2">
-                <li>
-                  <strong>家事タスク（10分）</strong>
-                  <br />
-                  洗い物、自炊、風呂、洗濯などの家事を完了
-                </li>
-                <li>
-                  <strong>整理整頓（5分）</strong>
-                  <br />
-                  新聞を捨てる、チラシを捨てる、冷蔵庫の中身を確認
-                </li>
-                <li>
-                  <strong>清掃作業（3分）</strong>
-                  <br />
-                  床掃除、押入れの整理を実行
-                </li>
-                <li>
-                  <strong>進捗確認（2分）</strong>
-                  <br />
-                  完了したタスクのチェックボックスをクリック
-                </li>
-              </ol>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-3 text-purple-900">🌙 夜のルーティン（10分）</h4>
-              <ol className="list-decimal list-inside space-y-2">
-                <li>
-                  <strong>個人活動（5分）</strong>
-                  <br />
-                  ギターの練習、読書、このサイトの開発
-                </li>
-                <li>
-                  <strong>最終確認（2分）</strong>
-                  <br />
-                  未完了のタスクがないか確認
-                </li>
-                <li>
-                  <strong>明日の準備（2分）</strong>
-                  <br />
-                  明日取り組むタスクを決める
-                </li>
-                <li>
-                  <strong>振り返り（1分）</strong>
-                  <br />
-                  今日の成果を確認して満足感を得る
-                </li>
-              </ol>
-            </div>
-          </div>
-          <div className="mt-4 p-3 bg-white rounded-lg border border-purple-200">
-            <h5 className="font-semibold text-purple-900 mb-2">💡 成功のコツ</h5>
-            <ul className="text-purple-700 text-sm space-y-1">
-              <li>• 毎日同じ時間に実行して習慣化する</li>
-              <li>• 1つのタスクが5分以内で完了するよう設計されている</li>
-              <li>• サブタスクを順番に実行することで確実に進捗できる</li>
-              <li>• 自動連携機能により手動入力の手間を削減</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* 基本操作ガイド */}
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            基本操作ガイド
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-blue-700">
-            <div>
-              <h4 className="font-semibold mb-2 text-blue-900">📋 タスクの進め方</h4>
-              <ol className="list-decimal list-inside space-y-2">
-                <li>
-                  <strong>タスクを選択</strong> - 下のリストから取り組みたいタスクを選ぶ
-                </li>
-                <li>
-                  <strong>サブタスクを確認</strong> - 「サブタスクを表示」ボタンをクリック
-                </li>
-                <li>
-                  <strong>手順を確認</strong> - 「手順を表示」ボタンで具体的な手順を見る
-                </li>
-                <li>
-                  <strong>実行</strong> - 手順に従って5分以内でタスクを完了
-                </li>
-                <li>
-                  <strong>チェック</strong> - 完了したサブタスクのチェックボックスをクリック
-                </li>
-              </ol>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2 text-blue-900">✅ 進捗の管理</h4>
-              <ol className="list-decimal list-inside space-y-2">
-                <li>
-                  <strong>サブタスク完了</strong> - 各サブタスクのチェックボックスをクリック
-                </li>
-                <li>
-                  <strong>メインタスク完了</strong> - 全サブタスク完了で自動的に完了
-                </li>
-                <li>
-                  <strong>自動連携</strong> - 資産管理ページでの入力は自動反映
-                </li>
-                <li>
-                  <strong>進捗確認</strong> - 上部の進捗バーで全体の進捗を確認
-                </li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        {/* 重要なタスクの詳細説明 */}
-        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-          <h3 className="text-lg font-semibold text-green-800 mb-3 flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
-            重要なタスクの詳細説明
-          </h3>
-          <div className="space-y-4 text-sm text-green-700">
-            <div className="p-3 bg-white rounded-lg border border-green-200">
-              <h4 className="font-semibold text-green-900 mb-2">
-                💰 直近3ヶ月の収入と支出をすべて把握する
-              </h4>
-              <p className="mb-2">このタスクは10個のサブタスクに分かれています：</p>
-              <ol className="list-decimal list-inside space-y-1 ml-4">
-                <li>財布の中の現金残高を確認（5分）</li>
-                <li>銀行口座の残高を確認（5分）</li>
-                <li>投資口座の残高を確認（5分）</li>
-                <li>クレジットカードの未払い残高を確認（5分）</li>
-                <li>資産管理ページに入力（5分）</li>
-                <li>給与明細を確認（5分）</li>
-                <li>ボーナス支給を確認（5分）</li>
-                <li>副業収入を確認（5分）</li>
-                <li>固定費の支払いを確認（5分）</li>
-                <li>変動費の支出を確認（5分）</li>
-              </ol>
-            </div>
-            <div className="p-3 bg-white rounded-lg border border-green-200">
-              <h4 className="font-semibold text-green-900 mb-2">
-                🏦 現在の資産と負債をすべて把握する
-              </h4>
-              <p className="mb-2">このタスクは銀行口座管理と連携しています：</p>
-              <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>メイン銀行口座を登録（銀行口座管理ページ）</li>
-                <li>銀行データ取り込み機能を使用</li>
-                <li>資産負債レポートページで確認</li>
-                <li>自動的に「毎日20のこと」に反映</li>
+            <div className="mt-4 p-3 bg-white rounded-lg border border-purple-200">
+              <h5 className="font-semibold text-purple-900 mb-2">💡 成功のコツ</h5>
+              <ul className="text-purple-700 text-sm space-y-1">
+                <li>• 毎日同じ時間に実行して習慣化する</li>
+                <li>• 1つのタスクが5分以内で完了するよう設計されている</li>
+                <li>• サブタスクを順番に実行することで確実に進捗できる</li>
+                <li>• 自動連携機能により手動入力の手間を削減</li>
               </ul>
             </div>
           </div>
-        </div>
 
-        {/* よくある質問 */}
-        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <h3 className="text-lg font-semibold text-yellow-800 mb-3 flex items-center gap-2">
-            <Circle className="h-5 w-5" />
-            よくある質問
-          </h3>
-          <div className="space-y-3 text-sm text-yellow-700">
-            <div>
-              <h4 className="font-semibold text-yellow-900">Q: サブタスクが表示されません</h4>
-              <p>
-                A:
-                「サブタスクを表示」ボタンをクリックしてください。一部のタスクにはサブタスクが定義されていない場合があります。
-              </p>
+          {/* 基本操作ガイド */}
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              基本操作ガイド
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-blue-700">
+              <div>
+                <h4 className="font-semibold mb-2 text-blue-900">📋 タスクの進め方</h4>
+                <ol className="list-decimal list-inside space-y-2">
+                  <li>
+                    <strong>タスクを選択</strong> - 下のリストから取り組みたいタスクを選ぶ
+                  </li>
+                  <li>
+                    <strong>サブタスクを確認</strong> - 「サブタスクを表示」ボタンをクリック
+                  </li>
+                  <li>
+                    <strong>手順を確認</strong> - 「手順を表示」ボタンで具体的な手順を見る
+                  </li>
+                  <li>
+                    <strong>実行</strong> - 手順に従って5分以内でタスクを完了
+                  </li>
+                  <li>
+                    <strong>チェック</strong> - 完了したサブタスクのチェックボックスをクリック
+                  </li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2 text-blue-900">✅ 進捗の管理</h4>
+                <ol className="list-decimal list-inside space-y-2">
+                  <li>
+                    <strong>サブタスク完了</strong> - 各サブタスクのチェックボックスをクリック
+                  </li>
+                  <li>
+                    <strong>メインタスク完了</strong> - 全サブタスク完了で自動的に完了
+                  </li>
+                  <li>
+                    <strong>自動連携</strong> - 資産管理ページでの入力は自動反映
+                  </li>
+                  <li>
+                    <strong>進捗確認</strong> - 上部の進捗バーで全体の進捗を確認
+                  </li>
+                </ol>
+              </div>
             </div>
-            <div>
-              <h4 className="font-semibold text-yellow-900">Q: 手順が分からない</h4>
-              <p>
-                A: 各サブタスクの「手順を表示」ボタンをクリックすると、具体的な手順が表示されます。
-              </p>
+          </div>
+
+          {/* 重要なタスクの詳細説明 */}
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <h3 className="text-lg font-semibold text-green-800 mb-3 flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              重要なタスクの詳細説明
+            </h3>
+            <div className="space-y-4 text-sm text-green-700">
+              <div className="p-3 bg-white rounded-lg border border-green-200">
+                <h4 className="font-semibold text-green-900 mb-2">
+                  💰 直近3ヶ月の収入と支出をすべて把握する
+                </h4>
+                <p className="mb-2">このタスクは10個のサブタスクに分かれています：</p>
+                <ol className="list-decimal list-inside space-y-1 ml-4">
+                  <li>財布の中の現金残高を確認（5分）</li>
+                  <li>銀行口座の残高を確認（5分）</li>
+                  <li>投資口座の残高を確認（5分）</li>
+                  <li>クレジットカードの未払い残高を確認（5分）</li>
+                  <li>資産管理ページに入力（5分）</li>
+                  <li>給与明細を確認（5分）</li>
+                  <li>ボーナス支給を確認（5分）</li>
+                  <li>副業収入を確認（5分）</li>
+                  <li>固定費の支払いを確認（5分）</li>
+                  <li>変動費の支出を確認（5分）</li>
+                </ol>
+              </div>
+              <div className="p-3 bg-white rounded-lg border border-green-200">
+                <h4 className="font-semibold text-green-900 mb-2">
+                  🏦 現在の資産と負債をすべて把握する
+                </h4>
+                <p className="mb-2">このタスクは銀行口座管理と連携しています：</p>
+                <ul className="list-disc list-inside space-y-1 ml-4">
+                  <li>メイン銀行口座を登録（銀行口座管理ページ）</li>
+                  <li>銀行データ取り込み機能を使用</li>
+                  <li>資産負債レポートページで確認</li>
+                  <li>自動的に「毎日20のこと」に反映</li>
+                </ul>
+              </div>
             </div>
-            <div>
-              <h4 className="font-semibold text-yellow-900">Q: 進捗が保存されません</h4>
-              <p>
-                A:
-                ブラウザの更新ボタンを押すか、ページを再読み込みしてください。進捗は自動的に保存されます。
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-yellow-900">Q: 銀行口座の情報が表示されません</h4>
-              <p>
-                A:
-                銀行口座管理ページでメイン銀行口座を登録してください。登録後、このページで口座情報が表示されます。
-              </p>
+          </div>
+
+          {/* よくある質問 */}
+          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h3 className="text-lg font-semibold text-yellow-800 mb-3 flex items-center gap-2">
+              <Circle className="h-5 w-5" />
+              よくある質問
+            </h3>
+            <div className="space-y-3 text-sm text-yellow-700">
+              <div>
+                <h4 className="font-semibold text-yellow-900">Q: サブタスクが表示されません</h4>
+                <p>
+                  A:
+                  「サブタスクを表示」ボタンをクリックしてください。一部のタスクにはサブタスクが定義されていない場合があります。
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-yellow-900">Q: 手順が分からない</h4>
+                <p>
+                  A:
+                  各サブタスクの「手順を表示」ボタンをクリックすると、具体的な手順が表示されます。
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-yellow-900">Q: 進捗が保存されません</h4>
+                <p>
+                  A:
+                  ブラウザの更新ボタンを押すか、ページを再読み込みしてください。進捗は自動的に保存されます。
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-yellow-900">Q: 銀行口座の情報が表示されません</h4>
+                <p>
+                  A:
+                  銀行口座管理ページでメイン銀行口座を登録してください。登録後、このページで口座情報が表示されます。
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* デバッグ情報は本番環境では非表示 */}
+        {/* デバッグ情報は本番環境では非表示 */}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* 進捗サマリー */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Target className="h-5 w-5" />
-              <span>今日の進捗</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">
-                {completedTasks}/{totalTasks}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* 進捗サマリー */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Target className="h-5 w-5" />
+                <span>今日の進捗</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600 mb-2">
+                  {completedTasks}/{totalTasks}
+                </div>
+                <Progress value={completionRate} className="mb-2" />
+                <p className="text-sm text-gray-600">{completionRate}% 完了</p>
+                {progressData.todayCompleted > 0 && (
+                  <p className="text-xs text-green-600 mt-1">
+                    今日完了: {progressData.todayCompleted}件
+                  </p>
+                )}
               </div>
-              <Progress value={completionRate} className="mb-2" />
-              <p className="text-sm text-gray-600">{completionRate}% 完了</p>
-              {progressData.todayCompleted > 0 && (
-                <p className="text-xs text-green-600 mt-1">
-                  今日完了: {progressData.todayCompleted}件
-                </p>
+            </CardContent>
+          </Card>
+
+          {/* 連続実行日数 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Flame className="h-5 w-5" />
+                <span>連続実行</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-orange-600 mb-2">
+                  {progress?.streak || 0}日
+                </div>
+                <p className="text-sm text-gray-600">連続実行中</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 統計情報 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <TrendingUp className="h-5 w-5" />
+                <span>統計</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm">平均完了率</span>
+                  <span className="text-sm font-medium">{stats?.averageCompletionRate || 0}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm">最長記録</span>
+                  <span className="text-sm font-medium">{stats?.longestStreak || 0}日</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="tasks">タスク一覧</TabsTrigger>
+            <TabsTrigger value="stats">統計</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="tasks" className="mt-6">
+            <div className="space-y-4">
+              {dynamicTasks && dynamicTasks.length > 0 ? (
+                dynamicTasks.map((task) => (
+                  <div key={task.id}>
+                    <TaskItem
+                      task={task}
+                      progress={progress?.tasks[task.id]}
+                      onUpdate={updateProgress}
+                      mainAccount={mainAccount}
+                      bankLoading={bankLoading}
+                      renderStepWithLinks={renderStepWithLinks}
+                    />
+                    <DailyTaskInstructions
+                      taskId={task.id}
+                      taskName={task.name}
+                      category={task.category}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  {isLoading ? 'タスクを読み込み中...' : 'タスクが見つかりません'}
+                </div>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </TabsContent>
 
-        {/* 連続実行日数 */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Flame className="h-5 w-5" />
-              <span>連続実行</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-orange-600 mb-2">
-                {progress?.streak || 0}日
-              </div>
-              <p className="text-sm text-gray-600">連続実行中</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 統計情報 */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <TrendingUp className="h-5 w-5" />
-              <span>統計</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm">平均完了率</span>
-                <span className="text-sm font-medium">{stats?.averageCompletionRate || 0}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm">最長記録</span>
-                <span className="text-sm font-medium">{stats?.longestStreak || 0}日</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="tasks">タスク一覧</TabsTrigger>
-          <TabsTrigger value="stats">統計</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="tasks" className="mt-6">
-          <div className="space-y-4">
-            {dynamicTasks && dynamicTasks.length > 0 ? (
-              dynamicTasks.map((task) => (
-                <div key={task.id}>
-                  <TaskItem
-                    task={task}
-                    progress={progress?.tasks[task.id]}
-                    onUpdate={updateProgress}
-                    mainAccount={mainAccount}
-                    bankLoading={bankLoading}
-                    renderStepWithLinks={renderStepWithLinks}
-                  />
-                  <DailyTaskInstructions
-                    taskId={task.id}
-                    taskName={task.name}
-                    category={task.category}
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                {isLoading ? 'タスクを読み込み中...' : 'タスクが見つかりません'}
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="stats" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* 週別統計 */}
-            <Card>
-              <CardHeader>
-                <CardTitle>週別完了率</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {stats?.weeklyStats && stats.weeklyStats.length > 0 ? (
-                    stats.weeklyStats.map((week) => (
-                      <div key={week.week} className="flex justify-between items-center">
-                        <span className="text-sm">{week.week}</span>
-                        <div className="flex items-center space-x-2">
-                          <Progress value={week.completionRate} className="w-20" />
-                          <span className="text-sm font-medium">{week.completionRate}%</span>
+          <TabsContent value="stats" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* 週別統計 */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>週別完了率</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {stats?.weeklyStats && stats.weeklyStats.length > 0 ? (
+                      stats.weeklyStats.map((week) => (
+                        <div key={week.week} className="flex justify-between items-center">
+                          <span className="text-sm">{week.week}</span>
+                          <div className="flex items-center space-x-2">
+                            <Progress value={week.completionRate} className="w-20" />
+                            <span className="text-sm font-medium">{week.completionRate}%</span>
+                          </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4 text-gray-500 text-sm">
+                        週別データがありません
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-4 text-gray-500 text-sm">
-                      週別データがありません
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
 
-            {/* 月別統計 */}
-            <Card>
-              <CardHeader>
-                <CardTitle>月別完了率</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {stats?.monthlyStats && stats.monthlyStats.length > 0 ? (
-                    stats.monthlyStats.map((month) => (
-                      <div key={month.month} className="flex justify-between items-center">
-                        <span className="text-sm">{month.month}</span>
-                        <div className="flex items-center space-x-2">
-                          <Progress value={month.completionRate} className="w-20" />
-                          <span className="text-sm font-medium">{month.completionRate}%</span>
+              {/* 月別統計 */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>月別完了率</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {stats?.monthlyStats && stats.monthlyStats.length > 0 ? (
+                      stats.monthlyStats.map((month) => (
+                        <div key={month.month} className="flex justify-between items-center">
+                          <span className="text-sm">{month.month}</span>
+                          <div className="flex items-center space-x-2">
+                            <Progress value={month.completionRate} className="w-20" />
+                            <span className="text-sm font-medium">{month.completionRate}%</span>
+                          </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4 text-gray-500 text-sm">
+                        月別データがありません
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-4 text-gray-500 text-sm">
-                      月別データがありません
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
