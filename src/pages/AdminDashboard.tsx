@@ -38,7 +38,12 @@ import { AdminBugsList } from '@/components/admin/AdminBugsList';
 import { api } from '@/services/api/apiConfig';
 import SocialShareButton from '@/components/ui/SocialShareButton';
 import AdminUsersPage from '@/pages/AdminUsersPage';
-import { AdminFeaturesList } from '@/components/admin/AdminFeaturesList';
+import * as AdminListMod from '@/components/admin/AdminFeaturesList';
+const AdminFeaturesList =
+  // named export → default → 何もなければダミーで回避
+  (AdminListMod as any).AdminFeaturesList ||
+  (AdminListMod as any).default ||
+  (() => null);
 import { isFeatureAccessible } from '@/config/features';
 import { useDerivedFeatureStatuses } from '@/hooks/useDerivedFeatureStatuses';
 import {

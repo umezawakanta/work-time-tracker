@@ -1218,3 +1218,10 @@ beforeEach(() => {
 
   console.log('🔄 Global beforeEach: Reset all mocks');
 });
+
+// MSW の rest をグローバルに露出（テストコードが global.rest を前提にしている）
+try {
+  const { rest } = require('msw');
+  // @ts-ignore
+  global.rest = rest;
+} catch {}

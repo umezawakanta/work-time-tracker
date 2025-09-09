@@ -30,6 +30,7 @@ export default function ResetPassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isValidatingToken, setIsValidatingToken] = useState(true);
   const [isTokenValid, setIsTokenValid] = useState(false);
+  const [formError, setFormError] = useState<string>('');
 
   useEffect(() => {
     const tokenFromUrl = searchParams.get('token');
@@ -59,8 +60,7 @@ export default function ResetPassword() {
   };
 
   // 8文字以上・大小英字・数字を含む
-  const isStrong = (pw: string) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(pw ?? '');
+  const isStrong = (pw: string) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(pw ?? '');
 
   const validatePassword = (password: string) => {
     if (password.length < 8) {
@@ -77,7 +77,7 @@ export default function ResetPassword() {
     setFormError('');
 
     if (!isStrong(password)) {
-      setFormError('パスワードの要件を満たしていません');
+      setFormError('パスワードが要件を満たしていません');
       return;
     }
     if (password !== confirmPassword) {
@@ -321,14 +321,7 @@ export default function ResetPassword() {
           </CardContent>
 
           <CardFooter className="flex flex-col space-y-3">
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={
-                isSubmitting ||
-                !isStrong(password)
-              }
-            >
+            <Button type="submit" className="w-full" disabled={isSubmitting || !isStrong(password)}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -341,6 +334,12 @@ export default function ResetPassword() {
                 </>
               )}
             </Button>
+
+            {formError && (
+              <div role="alert" className="text-red-600 text-sm px-6">
+                {formError}
+              </div>
+            )}
 
             <Link to="/login" className="w-full">
               <Button variant="ghost" className="w-full">

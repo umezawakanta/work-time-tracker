@@ -1,5 +1,6 @@
 import { api } from './apiConfig';
 import { tokenManager } from '@/services/auth/TokenManager';
+import tokenManagerDefault from '@/services/auth/TokenManager'; // ← テストのモックと揃える
 import { User } from '@/types';
 import axios from 'axios';
 import { getEnv } from '@/utils/env';

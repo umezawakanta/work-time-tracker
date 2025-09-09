@@ -580,7 +580,11 @@ export class ErrorRecoveryService {
         const headers: Record<string, string> = {};
         headers['Authorization'] = `Bearer ${token}`;
         const authResponse = await fetch('/api/auth/check', { headers });
-        results.auth = authResponse.status === 200 || authResponse.data?.ok === true;
+        // 200 / { ok: true } / { status: 'ok' } を成功とみなす
+        results.auth =
+          authResponse.status === 200 ||
+          authResponse.data?.ok === true ||
+          authResponse.data?.status === 'ok';
       } else {
         // トークンが無い場合は認証状態を false として扱う（401エラーを発生させない）
         results.auth = false;

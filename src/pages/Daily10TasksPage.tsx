@@ -1019,7 +1019,7 @@ const Daily10TasksPage: React.FC = () => {
 
         <div className="mb-8">
           <h1 className="text-2xl font-bold mb-2" aria-hidden="true">
-            必ず毎日やる10のこと
+            毎日やる10のこと
           </h1>
           <p className="text-gray-600 mb-2">毎日の習慣を継続して、目標を達成しましょう</p>
           <p className="text-sm text-gray-500">
