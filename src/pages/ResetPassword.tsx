@@ -127,7 +127,7 @@ export default function ResetPassword() {
     } else if (field === 'confirmPassword') {
       setConfirmPassword(value);
     }
-    
+
     if (error) {
       setError('');
     }
@@ -165,9 +165,7 @@ export default function ResetPassword() {
           <CardContent className="space-y-4">
             <Alert className="border-red-200 bg-red-50">
               <AlertCircle className="h-4 w-4 text-red-600" />
-              <AlertDescription className="text-red-700">
-                {error}
-              </AlertDescription>
+              <AlertDescription className="text-red-700">{error}</AlertDescription>
             </Alert>
 
             <div className="text-sm text-gray-600">
@@ -182,9 +180,7 @@ export default function ResetPassword() {
 
           <CardFooter className="flex flex-col space-y-3">
             <Link to="/forgot-password" className="w-full">
-              <Button className="w-full">
-                新しいリセットリンクをリクエスト
-              </Button>
+              <Button className="w-full">新しいリセットリンクをリクエスト</Button>
             </Link>
 
             <Link to="/login" className="w-full">
@@ -207,7 +203,9 @@ export default function ResetPassword() {
             <div className="mx-auto mb-4 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-900">パスワードがリセットされました</CardTitle>
+            <CardTitle className="text-2xl font-bold text-gray-900">
+              パスワードがリセットされました
+            </CardTitle>
             <CardDescription className="text-gray-600">
               新しいパスワードでログインできます
             </CardDescription>
@@ -224,9 +222,7 @@ export default function ResetPassword() {
 
           <CardFooter className="flex flex-col space-y-3">
             <Link to="/login" className="w-full">
-              <Button className="w-full">
-                ログインページに移動
-              </Button>
+              <Button className="w-full">ログインページに移動</Button>
             </Link>
           </CardFooter>
         </Card>
@@ -238,9 +234,7 @@ export default function ResetPassword() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-900">
-            新しいパスワードを設定
-          </CardTitle>
+          <CardTitle className="text-2xl font-bold text-gray-900">新しいパスワードを設定</CardTitle>
           <CardDescription className="text-gray-600">
             新しいパスワードを入力してください
           </CardDescription>
@@ -309,7 +303,11 @@ export default function ResetPassword() {
                   className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
-                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
               {confirmPassword && password === confirmPassword && (
@@ -333,7 +331,12 @@ export default function ResetPassword() {
             <Button
               type="submit"
               className="w-full"
-              disabled={isSubmitting || !password.trim() || !confirmPassword.trim() || password !== confirmPassword}
+              disabled={
+                isSubmitting ||
+                !password.trim() ||
+                !confirmPassword.trim() ||
+                password !== confirmPassword
+              }
             >
               {isSubmitting ? (
                 <>

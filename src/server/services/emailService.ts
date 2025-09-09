@@ -557,7 +557,7 @@ ${
 
     try {
       const template = this.createPasswordResetTemplate(resetUrl);
-      
+
       const mailOptions = {
         from: `"Work Time Tracker" <${this.getEmailConfig()?.user}>`,
         to: email,
