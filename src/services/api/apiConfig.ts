@@ -20,11 +20,8 @@ export const USE_MOCK_DATA = explicitUseMockRaw === 'true' || explicitUseMockRaw
 // デバッグ情報をログ出力
 console.log('🔧 Determining API Configuration...');
 console.log('📋 Environment:', {
-  NODE_ENV: getEnv('NODE_ENV'),
-  DEV: isDev(),
-  PROD: isProd(),
-  VITE_USE_MOCK_DATA: getEnv('VITE_USE_MOCK_DATA'),
-  USE_MOCK_DATA: USE_MOCK_DATA,
+  NODE_ENV: process.env.NODE_ENV,
+  BASE_URL: process.env.VITE_API_BASE_URL,
 });
 
 if (USE_MOCK_DATA) {

@@ -1,7 +1,7 @@
 import { api } from './apiConfig';
 import { tokenManager } from '@/services/auth/TokenManager';
 import { User } from '@/types';
-import { AxiosError } from 'axios';
+import axios from 'axios';
 import { getEnv } from '@/utils/env';
 
 // (モック関連のグローバルは削除)
@@ -152,7 +152,7 @@ export const login = async (
     console.error('  - Error type:', error?.constructor?.name);
     console.error('  - Error message:', (error as Error)?.message);
 
-    if (error instanceof AxiosError) {
+    if (axios.isAxiosError(error)) {
       console.error('  - HTTP Status:', error.response?.status);
       console.error('  - Response data:', error.response?.data);
       console.error('  - Request URL:', error.config?.url);
@@ -325,7 +325,6 @@ export const fetchUserData = async (): Promise<User> => {
 export const requestPasswordReset = async (email: string): Promise<{ message: string }> => {
   try {
     const response = await api.post<{ message: string }>('/auth/password-reset', {
-      action: 'forgot',
       email,
     });
     return response.data;
@@ -350,11 +349,9 @@ export const resetPassword = async (
   newPassword: string
 ): Promise<{ message: string }> => {
   try {
-    const response = await api.post<{ message: string }>('/auth/password-reset', {
-      action: 'reset',
+    const response = await api.post<{ message: string }>('/auth/password-reset/confirm', {
       token,
       password: newPassword,
-      confirmPassword: newPassword,
     });
     return response.data;
   } catch (error) {

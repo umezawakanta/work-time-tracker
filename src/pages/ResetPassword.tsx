@@ -70,25 +70,14 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError('');
 
-    if (!password.trim()) {
-      setError('パスワードを入力してください');
+    if (!isStrong(password)) {
+      setFormError('パスワードの要件を満たしていません');
       return;
     }
-
-    if (!confirmPassword.trim()) {
-      setError('パスワード確認を入力してください');
-      return;
-    }
-
-    const passwordError = validatePassword(password);
-    if (passwordError) {
-      setError(passwordError);
-      return;
-    }
-
     if (password !== confirmPassword) {
-      setError('パスワードが一致しません');
+      setFormError('パスワードが一致しません');
       return;
     }
 
@@ -333,9 +322,7 @@ export default function ResetPassword() {
               className="w-full"
               disabled={
                 isSubmitting ||
-                !password.trim() ||
-                validatePassword(password) !== '' ||
-                (confirmPassword.trim() && password !== confirmPassword)
+                !isStrong(password)
               }
             >
               {isSubmitting ? (
