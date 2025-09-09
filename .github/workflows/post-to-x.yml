@@ -9,26 +9,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm (corepack)
-        run: |
-          corepack enable
-          corepack prepare pnpm@10 --activate
+
+      # engines と足並みを揃えて Node 20 を利用（22 でも動きますが警告を避けます）
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'pnpm'
-      - name: Configure pnpm store (writable)
-        run: |
-          mkdir -p "$RUNNER_TEMP/pnpm-store"
-          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
-          echo "PNPM_STORE_PATH=$RUNNER_TEMP/pnpm-store" >> $GITHUB_ENV
-          pnpm store path
-      - name: Install deps
-        run: pnpm install --frozen-lockfile
+          node-version: 20
+
+      # 👉 リポジトリ依存は入れない。必要なライブラリだけ一時的に取得
+      - name: Install twitter-api-v2 (temp)
+        run: npm i twitter-api-v2@latest --no-save
+
       - name: Build release note message (JA)
         id: msg
         run: |
           node -e "const fs=require('fs'); const tag=process.env.GITHUB_REF?.split('/').pop()||''; const cl=JSON.parse(fs.readFileSync('public/changelog.json','utf8')); const entry=cl.entries.find(e=>('v'+e.version)===tag||e.version===tag)||cl.entries[0]; const title='Work Time Tracker '+(tag||('v'+entry.version))+' を公開しました'; let notes=(entry?.notes||'').trim(); if(notes.length>260) notes=notes.slice(0,257)+'...'; const url='https://work-time-tracker-five.vercel.app'; const out=title+'\n\n'+notes+'\n\n'+url+'\n#お知らせ #アップデート'; console.log(out); fs.writeFileSync('tweet.txt', out);"
+
       - name: Post to X
         env:
           X_APP_KEY: ${{ secrets.X_APP_KEY }}
@@ -36,4 +31,4 @@ jobs:
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
         run: |
-          node -e "const fs=require('fs'); const {TwitterApi}=require('twitter-api-v2'); const client=new TwitterApi({appKey:process.env.X_APP_KEY, appSecret:process.env.X_APP_SECRET, accessToken:process.env.X_ACCESS_TOKEN, accessSecret:process.env.X_ACCESS_SECRET}); const text=fs.readFileSync('tweet.txt','utf8'); client.v2.tweet(text).then(()=>console.log('tweeted')).catch(e=>{console.error(e); process.exit(1);});"
+          node -e "const fs=require('fs'); const {TwitterApi}=require('twitter-api-v2'); const client=newTwitterApi({appKey:process.env.X_APP_KEY, appSecret:process.env.X_APP_SECRET, accessToken:process.env.X_ACCESS_TOKEN, accessSecret:process.env.X_ACCESS_SECRET}); const text=fs.readFileSync('tweet.txt','utf8'); client.v2.tweet(text).then(()=>console.log('tweeted')).catch(e=>{console.error(e); process.exit(1);});"
