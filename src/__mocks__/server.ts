@@ -131,7 +131,7 @@ if (typeof globalThis.URLSearchParams === 'undefined') {
 }
 
 // MSWのインポートはURLポリフィルの設定後に移動
-import { setupServer } from 'msw';
+import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 
 // モックデータ
