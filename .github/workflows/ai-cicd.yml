@@ -10,7 +10,7 @@ on:
     - cron: '0 9 1 * *'
 
 env:
-  NODE_VERSION: '20'         # ← engines と合わせて 20 に固定（22 警告回避）
+  NODE_VERSION: '20' # ← engines と合わせて 20 に固定（22 警告回避）
   CACHE_VERSION: 'v1'
   PNPM_VERSION: '10.4.1'
 
