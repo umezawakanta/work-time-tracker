@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2025-09-10T04:11:33.463Z",
+  "generatedAt": "2025-09-10T10:50:44.608Z",
   "totals": {
-    "filesScanned": 1299,
+    "filesScanned": 1300,
     "findings": 906,
     "todo": 34,
     "mock": 396,
@@ -2544,7 +2544,7 @@
     },
     {
       "file": "src/services/api/apiConfig.ts",
-      "line": 311,
+      "line": 316,
       "snippet": "// グローバルフラグを設定してフロントエンドでモック利用可能にする",
       "kind": "mock"
     },
@@ -3672,25 +3672,25 @@
     },
     {
       "file": "src/services/secretarial/PersonalAIAssistantService.ts",
-      "line": 30,
+      "line": 31,
       "snippet": "throw new Error('AI Assistant is disabled in test environment');",
       "kind": "error"
     },
     {
       "file": "src/services/secretarial/PersonalAIAssistantService.ts",
-      "line": 37,
+      "line": 38,
       "snippet": "throw new Error('No data received from API');",
       "kind": "error"
     },
     {
       "file": "src/services/secretarial/PersonalAIAssistantService.ts",
-      "line": 52,
+      "line": 53,
       "snippet": "throw new Error('AI Assistant is disabled in test environment');",
       "kind": "error"
     },
     {
       "file": "src/services/secretarial/PersonalAIAssistantService.ts",
-      "line": 59,
+      "line": 62,
       "snippet": "throw new Error('No data received from API');",
       "kind": "error"
     },
