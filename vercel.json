@@ -61,10 +61,6 @@
   ],
   "rewrites": [
     {
-      "source": "/manifest.json",
-      "destination": "/manifest.webmanifest"
-    },
-    {
       "source": "/docs/(.*)",
       "destination": "/docs/$1.md"
     },
