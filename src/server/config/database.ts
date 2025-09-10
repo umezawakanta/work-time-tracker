@@ -8,6 +8,12 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/workTi
 // 🐛 エラーエリミネーター: MongoDB接続の安定化
 export const connectDB = async () => {
   try {
+    // テスト環境などでMongoDBを無効化する場合
+    if (MONGODB_URI === 'memory://') {
+      console.log('🧪 MongoDB connection skipped (memory mode for testing)');
+      return;
+    }
+
     // 接続オプションを追加してタイムアウトと再接続を最適化
     await mongoose.connect(MONGODB_URI, {
       maxPoolSize: 10, // 接続プールサイズ
