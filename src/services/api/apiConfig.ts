@@ -235,7 +235,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     // 本番環境でのデータ形式統一
-    if (response.config.url?.includes('/books') && response.config.method === 'get' && response.data && !Array.isArray(response.data)) {
+    if (
+      response.config.url?.includes('/books') &&
+      response.config.method === 'get' &&
+      response.data &&
+      !Array.isArray(response.data)
+    ) {
       if (response.data.books) {
         response.data = response.data.books;
       } else if (response.data.data) {

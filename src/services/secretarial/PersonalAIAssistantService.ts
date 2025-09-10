@@ -3,8 +3,9 @@ import { DailyOutcomeRecord, DailyWinCondition } from '@/types/dailyVictory';
 
 // テスト環境では AI アシスタントを無効化
 const AI_ASSISTANT_ENABLED =
-  (typeof process !== 'undefined' && process.env?.NODE_ENV !== 'test') &&
-  (import.meta?.env?.VITE_AI_ASSISTANT !== 'false');
+  typeof process !== 'undefined' &&
+  process.env?.NODE_ENV !== 'test' &&
+  import.meta?.env?.VITE_AI_ASSISTANT !== 'false';
 
 export class PersonalAIAssistantService {
   async getTodayOutcome(): Promise<DailyOutcomeRecord | null> {
@@ -53,7 +54,9 @@ export class PersonalAIAssistantService {
     }
 
     try {
-      const resp = await api?.patch?.('/daily-victory/today', { result, notes, score }).catch(() => undefined);
+      const resp = await api
+        ?.patch?.('/daily-victory/today', { result, notes, score })
+        .catch(() => undefined);
       const data = resp?.data ?? null;
       if (!data) {
         throw new Error('No data received from API');

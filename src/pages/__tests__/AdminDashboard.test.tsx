@@ -61,8 +61,11 @@ describe('AdminDashboard', () => {
     );
 
     // Wait for loading to complete and title to appear
-    await waitFor(() => {
-      expect(screen.getByText('管理者ダッシュボード')).toBeInTheDocument();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(screen.getByText('管理者ダッシュボード')).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 });

@@ -271,10 +271,13 @@ describe.skip('DocsViewer Component', () => {
           const url = new URL(request.url);
           const action = url.searchParams.get('action');
           if (action === 'content') {
-            return HttpResponse.json({
-              success: false,
-              message: 'ドキュメントが見つかりません',
-            }, { status: 404 });
+            return HttpResponse.json(
+              {
+                success: false,
+                message: 'ドキュメントが見つかりません',
+              },
+              { status: 404 }
+            );
           }
           return HttpResponse.json({}, { status: 404 });
         })
