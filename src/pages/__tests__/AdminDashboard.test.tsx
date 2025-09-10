@@ -52,7 +52,7 @@ jest.mock('@/components/analytics/AnalyticsDashboard', () => 'div');
 // ErrorMonitoringDashboardをモック
 jest.mock('@/components/development/ErrorMonitoringDashboard', () => 'div');
 
-describe.skip('AdminDashboard', () => {
+describe('AdminDashboard', () => {
   it('renders admin dashboard with title', async () => {
     render(
       <MemoryRouter>
@@ -61,8 +61,11 @@ describe.skip('AdminDashboard', () => {
     );
 
     // Wait for loading to complete and title to appear
-    await waitFor(() => {
-      expect(screen.getByText('管理者ダッシュボード')).toBeInTheDocument();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(screen.getByText('管理者ダッシュボード')).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 });

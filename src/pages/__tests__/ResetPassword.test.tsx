@@ -51,7 +51,9 @@ describe.skip('ResetPassword Page', () => {
 
     // Setup mocks for this test
     (authApi.verifyResetToken as jest.Mock).mockResolvedValue({ valid: true });
-    (authApi.resetPassword as jest.Mock).mockResolvedValue({ message: 'Password changed successfully' });
+    (authApi.resetPassword as jest.Mock).mockResolvedValue({
+      message: 'Password changed successfully',
+    });
 
     renderWithToken('valid-token');
 
@@ -115,7 +117,9 @@ describe.skip('ResetPassword Page', () => {
 
     // Setup mocks for this test
     (authApi.verifyResetToken as jest.Mock).mockResolvedValue({ valid: true });
-    (authApi.resetPassword as jest.Mock).mockRejectedValue(axiosLike(422, 'Unprocessable Entity', {}));
+    (authApi.resetPassword as jest.Mock).mockRejectedValue(
+      axiosLike(422, 'Unprocessable Entity', {})
+    );
 
     renderWithToken('valid');
 

@@ -1,0 +1,174 @@
+{
+    "name": "Work Time Tracker｜生成AIパーソナル秘書",
+    "short_name": "WTT AI秘書",
+    "description": "生成AI × IQ/MBTI 自己診断で個別最適。仕事・学習・生活を一元管理するパーソナル秘書サービス",
+    "version": "1.0.0",
+    "manifest_version": 3,
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "theme_color": "#6366f1",
+    "background_color": "#f8fafc",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "/icons/icon-72x72.svg",
+            "sizes": "72x72",
+            "type": "image/svg+xml",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/icons/icon-96x96.svg",
+            "sizes": "96x96",
+            "type": "image/svg+xml",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/icons/icon-128x128.svg",
+            "sizes": "128x128",
+            "type": "image/svg+xml",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/icons/icon-144x144.svg",
+            "sizes": "144x144",
+            "type": "image/svg+xml",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/icons/icon-152x152.svg",
+            "sizes": "152x152",
+            "type": "image/svg+xml",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/icons/icon-192x192.svg",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/icons/icon-384x384.svg",
+            "sizes": "384x384",
+            "type": "image/svg+xml",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/icons/icon-512x512.svg",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "maskable any"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "タスク管理",
+            "short_name": "タスク",
+            "description": "ADHD最適化タスク管理システム",
+            "url": "/adhd-task-manager",
+            "icons": [
+                {
+                    "src": "/icons/task-icon-96x96.svg",
+                    "sizes": "96x96",
+                    "type": "image/svg+xml"
+                }
+            ]
+        },
+        {
+            "name": "認知評価",
+            "short_name": "認知評価",
+            "description": "WEIS相当の認知機能評価",
+            "url": "/adhd-cognitive-assessment",
+            "icons": [
+                {
+                    "src": "/icons/brain-icon-96x96.svg",
+                    "sizes": "96x96",
+                    "type": "image/svg+xml"
+                }
+            ]
+        },
+        {
+            "name": "資産管理",
+            "short_name": "家計簿",
+            "description": "MoneyForward相当の資産管理",
+            "url": "/asset-liability-report",
+            "icons": [
+                {
+                    "src": "/icons/money-icon-96x96.svg",
+                    "sizes": "96x96",
+                    "type": "image/svg+xml"
+                }
+            ]
+        },
+        {
+            "name": "緊急サポート",
+            "short_name": "緊急",
+            "description": "ADHD/ASDクライシス緊急サポート",
+            "url": "/impulse-control",
+            "icons": [
+                {
+                    "src": "/icons/emergency-icon-96x96.svg",
+                    "sizes": "96x96",
+                    "type": "image/svg+xml"
+                }
+            ]
+        }
+    ],
+    "categories": [
+        "productivity",
+        "health",
+        "finance",
+        "lifestyle",
+        "accessibility"
+    ],
+    "protocol_handlers": [
+        {
+            "protocol": "web+adhdlifehub",
+            "url": "/handle?url=%s"
+        }
+    ],
+    "share_target": {
+        "action": "/share",
+        "method": "POST",
+        "enctype": "multipart/form-data",
+        "params": {
+            "title": "title",
+            "text": "text",
+            "url": "url",
+            "files": [
+                {
+                    "name": "files",
+                    "accept": [
+                        "image/*",
+                        "text/*",
+                        ".pdf"
+                    ]
+                }
+            ]
+        }
+    },
+    "lang": "ja",
+    "dir": "ltr",
+    "prefer_related_applications": false,
+    "edge_side_panel": {
+        "preferred_width": 320
+    },
+    "launch_handler": {
+        "client_mode": "focus-existing"
+    },
+    "permissions": [
+        "notifications",
+        "background-sync",
+        "storage",
+        "geolocation"
+    ],
+    "features": [
+        "cross-origin-isolated"
+    ]
+}
