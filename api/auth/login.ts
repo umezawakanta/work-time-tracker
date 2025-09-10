@@ -501,4 +501,4 @@ async function handler(req: any, res: any) {
   }
 }
 
-module.exports = handler;
+export default handler;
