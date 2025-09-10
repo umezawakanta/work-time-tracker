@@ -48,9 +48,11 @@ async function connectMongoDirect() {
     try {
         const opts = {
             maxPoolSize: 10,
-            serverSelectionTimeoutMS: 5000,
+            serverSelectionTimeoutMS: 15000, // Increased from 5000ms to 15000ms
             socketTimeoutMS: 45000,
             bufferCommands: false,
+            connectTimeoutMS: 10000, // Added connection timeout
+            maxIdleTimeMS: 30000, // Added max idle time
         };
         if (dbNameToUse) opts.dbName = dbNameToUse;
         await m.connect(uri, opts);

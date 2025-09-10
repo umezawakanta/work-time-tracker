@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2025-09-09T05:22:16.564Z",
+  "generatedAt": "2025-09-10T04:11:33.463Z",
   "totals": {
     "filesScanned": 1299,
-    "findings": 901,
+    "findings": 906,
     "todo": 34,
-    "mock": 395,
+    "mock": 396,
     "wip": 4,
-    "errorHints": 461
+    "errorHints": 465
   },
   "flags": {
     "wipRoutes": [],
@@ -912,37 +912,37 @@
     },
     {
       "file": "src/context/AuthContext.tsx",
-      "line": 382,
+      "line": 384,
       "snippet": "// 開発環境ではダミーユーザー情報を設定",
       "kind": "mock"
     },
     {
       "file": "src/context/AuthContext.tsx",
-      "line": 393,
+      "line": 395,
       "snippet": "console.log('🧪 開発環境 - ダミーユーザー情報を設定（refreshAuth）');",
       "kind": "mock"
     },
     {
       "file": "src/context/AuthContext.tsx",
-      "line": 527,
+      "line": 529,
       "snippet": "// 開発環境ではダミーユーザー情報を設定",
       "kind": "mock"
     },
     {
       "file": "src/context/AuthContext.tsx",
-      "line": 539,
+      "line": 541,
       "snippet": "console.log('🧪 開発環境 - ダミーユーザー情報を設定');",
       "kind": "mock"
     },
     {
       "file": "src/context/AuthContext.tsx",
-      "line": 555,
+      "line": 557,
       "snippet": "// 開発環境ではダミーユーザー情報を設定",
       "kind": "mock"
     },
     {
       "file": "src/context/AuthContext.tsx",
-      "line": 567,
+      "line": 569,
       "snippet": "console.log('🧪 開発環境 - ダミーユーザー情報を設定');",
       "kind": "mock"
     },
@@ -1140,7 +1140,7 @@
     },
     {
       "file": "src/guard/GuardContext.tsx",
-      "line": 45,
+      "line": 55,
       "snippet": "if (!ctx) throw new Error('GuardContext missing');",
       "kind": "error"
     },
@@ -2496,13 +2496,13 @@
     },
     {
       "file": "src/services/analytics/UserTrackingService.ts",
-      "line": 307,
+      "line": 309,
       "snippet": "throw new Error(`HTTP error! status: ${response.status}`);",
       "kind": "error"
     },
     {
       "file": "src/services/analytics/UserTrackingService.ts",
-      "line": 521,
+      "line": 523,
       "snippet": "* 📊 モック解析データ",
       "kind": "mock"
     },
@@ -2532,31 +2532,19 @@
     },
     {
       "file": "src/services/api/apiConfig.ts",
-      "line": 26,
-      "snippet": "VITE_USE_MOCK_DATA: getEnv('VITE_USE_MOCK_DATA'),",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/apiConfig.ts",
-      "line": 27,
-      "snippet": "USE_MOCK_DATA: USE_MOCK_DATA,",
-      "kind": "mock"
-    },
-    {
-      "file": "src/services/api/apiConfig.ts",
-      "line": 30,
+      "line": 28,
       "snippet": "if (USE_MOCK_DATA) {",
       "kind": "mock"
     },
     {
       "file": "src/services/api/apiConfig.ts",
-      "line": 32,
+      "line": 30,
       "snippet": "'🎭 モックデータモード有効: APIサーバーへの接続は行わず、ローカルのモックデータを使用します'",
       "kind": "mock"
     },
     {
       "file": "src/services/api/apiConfig.ts",
-      "line": 314,
+      "line": 311,
       "snippet": "// グローバルフラグを設定してフロントエンドでモック利用可能にする",
       "kind": "mock"
     },
@@ -2568,19 +2556,25 @@
     },
     {
       "file": "src/services/api/authApi.ts",
-      "line": 148,
+      "line": 74,
+      "snippet": "// api がモックのとき defaults が無い場合がある",
+      "kind": "mock"
+    },
+    {
+      "file": "src/services/api/authApi.ts",
+      "line": 149,
       "snippet": "throw new Error('Invalid response format from server');",
       "kind": "error"
     },
     {
       "file": "src/services/api/authApi.ts",
-      "line": 265,
+      "line": 266,
       "snippet": "throw new Error('認証トークンがありません');",
       "kind": "error"
     },
     {
       "file": "src/services/api/authApi.ts",
-      "line": 398,
+      "line": 396,
       "snippet": "throw new Error('認証トークンがありません');",
       "kind": "error"
     },
@@ -3677,6 +3671,30 @@
       "kind": "error"
     },
     {
+      "file": "src/services/secretarial/PersonalAIAssistantService.ts",
+      "line": 30,
+      "snippet": "throw new Error('AI Assistant is disabled in test environment');",
+      "kind": "error"
+    },
+    {
+      "file": "src/services/secretarial/PersonalAIAssistantService.ts",
+      "line": 37,
+      "snippet": "throw new Error('No data received from API');",
+      "kind": "error"
+    },
+    {
+      "file": "src/services/secretarial/PersonalAIAssistantService.ts",
+      "line": 52,
+      "snippet": "throw new Error('AI Assistant is disabled in test environment');",
+      "kind": "error"
+    },
+    {
+      "file": "src/services/secretarial/PersonalAIAssistantService.ts",
+      "line": 59,
+      "snippet": "throw new Error('No data received from API');",
+      "kind": "error"
+    },
+    {
       "file": "src/services/share/generateDevProgressShareText.ts",
       "line": 233,
       "snippet": "// 他にも開発中機能がある場合は省略表示",
@@ -4176,331 +4194,343 @@
     },
     {
       "file": "src/setupTests.ts",
-      "line": 90,
+      "line": 94,
       "snippet": "console.log('🔧 Global axios mock created');",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
+      "line": 102,
+      "snippet": "// Mock API client for PersonalAIAssistantService",
+      "kind": "mock"
+    },
+    {
+      "file": "src/setupTests.ts",
       "line": 103,
+      "snippet": "jest.mock('@/services/api/apiConfig', () => ({",
+      "kind": "mock"
+    },
+    {
+      "file": "src/setupTests.ts",
+      "line": 118,
       "snippet": "// No need to mock CSS files here since they're already handled by the pattern matcher",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 105,
+      "line": 120,
       "snippet": "// Mock image and asset imports",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 106,
+      "line": 121,
       "snippet": "jest.mock('*.png', () => 'test-file-stub', { virtual: true });",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 107,
+      "line": 122,
       "snippet": "jest.mock('*.jpg', () => 'test-file-stub', { virtual: true });",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 108,
+      "line": 123,
       "snippet": "jest.mock('*.jpeg', () => 'test-file-stub', { virtual: true });",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 109,
+      "line": 124,
       "snippet": "jest.mock('*.gif', () => 'test-file-stub', { virtual: true });",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 110,
+      "line": 125,
       "snippet": "jest.mock('*.svg', () => 'test-file-stub', { virtual: true });",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 116,
+      "line": 131,
       "snippet": "// Mock useInternationalization hook globally",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 117,
+      "line": 132,
       "snippet": "jest.mock('./hooks/useInternationalization', () => {",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 172,
+      "line": 187,
       "snippet": "// Firebase App mock (initializeApp and friends)",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 174,
+      "line": 189,
       "snippet": "jest.mock('firebase/app', () => ({",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 176,
+      "line": 191,
       "snippet": "initializeApp: jest.fn(() => ({ mock: true })),",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 179,
+      "line": 194,
       "snippet": "jest.mock('firebase/auth', () => ({",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 181,
+      "line": 196,
       "snippet": "getAuth: jest.fn(() => ({ mock: true })),",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 188,
+      "line": 203,
       "snippet": "jest.mock('firebase/firestore', () => ({",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 190,
+      "line": 205,
       "snippet": "getFirestore: jest.fn(() => ({ mock: true })),",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 193,
+      "line": 208,
       "snippet": "jest.mock('firebase/storage', () => ({",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 195,
+      "line": 210,
       "snippet": "getStorage: jest.fn(() => ({ mock: true })),",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 264,
+      "line": 279,
       "snippet": "process.env.VITE_USE_MOCK_DATA = 'true';",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 284,
+      "line": 299,
       "snippet": "VITE_USE_MOCK_DATA: 'true',",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 322,
+      "line": 337,
       "snippet": "// Mock BroadcastChannel for MSW compatibility",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 345,
+      "line": 360,
       "snippet": "// matchMedia mock for responsive components",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 360,
+      "line": 375,
       "snippet": "// IntersectionObserver mock with comprehensive implementation",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 409,
+      "line": 424,
       "snippet": "// ResizeObserver mock",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 416,
+      "line": 431,
       "snippet": "// MutationObserver mock",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 427,
+      "line": 442,
       "snippet": "// Enhanced Location mock",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 448,
+      "line": 463,
       "snippet": "// Navigator mock",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 457,
+      "line": 472,
       "snippet": "// Do not force a clipboard mock here; individual tests will configure as needed",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 487,
+      "line": 502,
       "snippet": "// Enhanced storage mock with events",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 564,
+      "line": 579,
       "snippet": "// scrollIntoView mock",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 567,
+      "line": 582,
       "snippet": "// hasPointerCapture mock (for Radix UI components)",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 572,
+      "line": 587,
       "snippet": "// scrollTo mock",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 702,
+      "line": 721,
       "snippet": "// Mock Radix UI components that cause issues in Jest",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 703,
+      "line": 722,
       "snippet": "jest.mock('@radix-ui/react-tabs', () => {",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 745,
+      "line": 764,
       "snippet": "jest.mock('@radix-ui/react-roving-focus', () => {",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 756,
+      "line": 775,
       "snippet": "// Mock Radix UI Popper to prevent infinite loops",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 757,
+      "line": 776,
       "snippet": "jest.mock('@radix-ui/react-popper', () => {",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 772,
+      "line": 791,
       "snippet": "// Mock other problematic Radix UI components",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 773,
+      "line": 792,
       "snippet": "jest.mock('@radix-ui/react-select', () => {",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 828,
+      "line": 847,
       "snippet": "// Mock Radix UI Popover",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 829,
+      "line": 848,
       "snippet": "jest.mock('@radix-ui/react-popover', () => {",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 859,
+      "line": 878,
       "snippet": "// Mock Radix UI Dropdown Menu",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 860,
+      "line": 879,
       "snippet": "jest.mock('@radix-ui/react-dropdown-menu', () => {",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 931,
+      "line": 956,
       "snippet": "// Firebase Auth Provider Mock Fix",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 933,
+      "line": 958,
       "snippet": "// Ensure GoogleAuthProvider is a constructible mock in any test file",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 934,
+      "line": 959,
       "snippet": "jest.mock('firebase/auth', () => {",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 954,
+      "line": 979,
       "snippet": "// Mock Radix UI Portal for better test reliability",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 955,
+      "line": 980,
       "snippet": "jest.mock('@radix-ui/react-portal', () => {",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 969,
+      "line": 994,
       "snippet": "// Mock createPortal to render in place instead of in document.body",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 982,
+      "line": 1007,
       "snippet": "// Apply Radix UI behavior mock globally",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 1145,
+      "line": 1170,
       "snippet": "// Mock CSS transitions and animations for tests",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 1168,
+      "line": 1193,
       "snippet": "// Mock CSSStyleDeclaration properties that Radix UI might use",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 1196,
+      "line": 1221,
       "snippet": "// TokenManager is now mocked via Jest's moduleNameMapper and the manual mock file",
       "kind": "mock"
     },
     {
       "file": "src/setupTests.ts",
-      "line": 1201,
+      "line": 1226,
       "snippet": "// Reset all mock calls but keep the implementations",
       "kind": "mock"
     },
