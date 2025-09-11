@@ -95,14 +95,3 @@ uploads/
 lighthouse/
 lighthouserc.json 
 
-# ----------------------------
-# Minimize API deployment scope (allowlist only login API for testing)
-# Exclude all API files except auth/, _lib/, _schemas/
-!api/
-api/*
-!api/auth/
-!api/auth/**
-!api/_lib/
-!api/_lib/**
-!api/_schemas/
-!api/_schemas/**
