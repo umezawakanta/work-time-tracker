@@ -253,8 +253,19 @@ async function handler(req: any, res: any) {
       } as LoginResponse);
     }
 
-    // パスワードの確認
-    const storedPassword = user?.metadata?.hashedPassword || (user as any)?.password;
+    // パスワードの確認（後方互換を考慮したフォールバック）
+    const passwordHashCandidates = [
+      { value: user?.metadata?.hashedPassword, source: 'metadata.hashedPassword' },
+      { value: (user as any)?.hashedPassword, source: 'hashedPassword' },
+      { value: (user as any)?.passwordHash, source: 'passwordHash' },
+      { value: (user as any)?.password, source: 'password' },
+    ];
+    const found = passwordHashCandidates.find(
+      (c) => typeof c.value === 'string' && (c.value as string).length > 0
+    );
+    const storedPassword = (found?.value as string) || '';
+    console.log('🔎 password hash source:', found?.source || 'none');
+    
     if (!storedPassword) {
       return res.status(422).json({
         success: false,
