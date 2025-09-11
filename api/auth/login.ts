@@ -32,10 +32,10 @@ async function loadServerModules(): Promise<boolean> {
       // Fallback to alternative paths
       console.warn('[auth/login] Primary import failed, trying fallback paths:', primaryError);
       try {
-        dbMod = await import('../../src/server/config/database');
-        userMod = await import('../../src/server/models/User');
+        dbMod = await import('../../src/server/config/database.js');
+        userMod = await import('../../src/server/models/User.js');
       } catch (fallbackError) {
-        throw new Error(`Both primary and fallback imports failed. Primary: ${primaryError.message}, Fallback: ${fallbackError.message}`);
+        throw new Error(`Both primary and fallback imports failed. Primary: ${primaryError instanceof Error ? primaryError.message : String(primaryError)}, Fallback: ${fallbackError instanceof Error ? fallbackError.message : String(fallbackError)}`);
       }
     }
     

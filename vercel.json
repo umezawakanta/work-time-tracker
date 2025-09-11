@@ -7,7 +7,7 @@
   "devCommand": "pnpm run dev",
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {
-    "api/auth/login.ts": {
+    "api/**/*.ts": {
       "includeFiles": "src/server/**",
       "maxDuration": 30
     }
