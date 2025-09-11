@@ -7,19 +7,19 @@
   "devCommand": "pnpm run dev",
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {
-    "api/auth/*.ts": {
+    "api/auth/*.js": {
       "includeFiles": "src/server/**",
       "maxDuration": 30
     },
-    "api/health.ts": {
+    "api/health.js": {
       "includeFiles": "src/server/**",
       "maxDuration": 10
     },
-    "api/admin/actions.ts": {
+    "api/admin/actions.js": {
       "includeFiles": "src/server/**",
       "maxDuration": 30
     },
-    "api/admin/features.ts": {
+    "api/admin/features.js": {
       "includeFiles": "src/server/**",
       "maxDuration": 30
     }
