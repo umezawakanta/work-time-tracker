@@ -88,7 +88,7 @@ async function ensureUserModel(): Promise<void> {
 
 async function handler(req: any, res: any) {
   // CORS設定
-  const { origin } = req.headers;
+  const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
 
   const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
