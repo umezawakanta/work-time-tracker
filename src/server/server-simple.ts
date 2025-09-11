@@ -827,7 +827,7 @@ app.get('/api/debug/password-reset-tokens', async (req, res) => {
     });
   } catch (error) {
     console.error('[DEBUG] Error checking tokens:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: error instanceof Error ? error instanceof Error ? error.message : String(error) : String(error) });
   }
 });
 
@@ -1726,7 +1726,7 @@ app.get('/api/todos', async (req, res) => {
     console.error('❌ Error in GET /api/todos:', error);
     res.status(500).json({
       error: 'Failed to fetch todos',
-      message: error instanceof Error ? error.message : 'Unknown error',
+      message: error instanceof Error ? error instanceof Error ? error.message : String(error) : 'Unknown error',
     });
   }
 });
@@ -1831,7 +1831,7 @@ app.post('/api/todos', async (req, res) => {
     console.error('❌ Error in POST /api/todos:', error);
     res.status(500).json({
       error: 'Failed to create todo',
-      message: error instanceof Error ? error.message : 'Unknown error',
+      message: error instanceof Error ? error instanceof Error ? error.message : String(error) : 'Unknown error',
     });
   }
 });
@@ -1939,7 +1939,7 @@ app.put('/api/todos/:id', async (req, res) => {
     console.error('❌ Error in PUT /api/todos/:id:', error);
     res.status(500).json({
       error: 'Failed to update todo',
-      message: error instanceof Error ? error.message : 'Unknown error',
+      message: error instanceof Error ? error instanceof Error ? error.message : String(error) : 'Unknown error',
     });
   }
 });
@@ -1993,7 +1993,7 @@ app.delete('/api/todos/:id', async (req, res) => {
     console.error('❌ Error in DELETE /api/todos/:id:', error);
     res.status(500).json({
       error: 'Failed to delete todo',
-      message: error instanceof Error ? error.message : 'Unknown error',
+      message: error instanceof Error ? error instanceof Error ? error.message : String(error) : 'Unknown error',
     });
   }
 });
@@ -2019,7 +2019,7 @@ app.post('/api/todos/reset', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to reset todos',
-      message: error instanceof Error ? error.message : 'Unknown error',
+      message: error instanceof Error ? error instanceof Error ? error.message : String(error) : 'Unknown error',
     });
   }
 });
@@ -2055,7 +2055,7 @@ app.get('/api/books', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error fetching books',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error instanceof Error ? error.message : String(error) : 'Unknown error',
     });
   }
 });
@@ -2078,7 +2078,7 @@ app.post('/api/books', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error creating book',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error instanceof Error ? error.message : String(error) : 'Unknown error',
     });
   }
 });
@@ -2113,7 +2113,7 @@ app.put('/api/books/:id', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error updating book',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error instanceof Error ? error.message : String(error) : 'Unknown error',
     });
   }
 });
@@ -2144,7 +2144,7 @@ app.delete('/api/books/:id', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error deleting book',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error instanceof Error ? error.message : String(error) : 'Unknown error',
     });
   }
 });
@@ -3725,7 +3725,7 @@ app.post('/api/ai/anthropic', async (req, res) => {
     res.status(500).json({
       error: 'Internal server error',
       code: 'INTERNAL_ERROR',
-      message: error instanceof Error ? error.message : 'Unknown error',
+      message: error instanceof Error ? error instanceof Error ? error.message : String(error) : 'Unknown error',
     });
   }
 });
@@ -4407,7 +4407,7 @@ app.get('/api/debug/assets', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'デバッグデータの取得に失敗しました',
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
     });
   }
 });
@@ -4495,7 +4495,7 @@ app.post('/api/cleanup-all-assets', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'クリーンアップ中にエラーが発生しました',
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
     });
   }
 });
@@ -4583,7 +4583,7 @@ app.post('/api/cleanup-duplicate-bank-accounts', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'クリーンアップ中にエラーが発生しました',
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
     });
   }
 });
@@ -4609,7 +4609,7 @@ app.delete('/api/transactions', async (req: Request, res: Response) => {
 
     // 特定の口座名の取引明細を一括削除
     if (accountName) {
-      const result = await financialService.deleteTransactionsByAccountName(userId, accountName);
+      const result = await financialService.deleteTransactionsByAccountName(userId, String(accountName));
       return res.json({
         success: true,
         message: `${accountName}の取引明細を削除しました`,
@@ -4624,7 +4624,7 @@ app.delete('/api/transactions', async (req: Request, res: Response) => {
         .json({ success: false, message: 'transactionId, accountName, or deleteAll is required' });
     }
 
-    const success = await financialService.deleteTransaction(transactionId);
+    const success = await financialService.deleteTransaction(String(transactionId));
     if (!success) {
       return res.status(404).json({ success: false, message: 'Transaction not found' });
     }
@@ -5471,7 +5471,7 @@ app.post('/api/bank/upload', (req: Request, res: Response) => {
     }
 
     // CSVデータを解析
-    const parsedData = parseBankCSV(csvData, bankName);
+    const parsedData = parseBankCSV(String(csvData), String(bankName));
 
     // データの検証
     const validation = validateBankData(parsedData);
@@ -5506,7 +5506,7 @@ app.post('/api/bank/upload', (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: '銀行データの処理中にエラーが発生しました',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error instanceof Error ? error.message : String(error) : 'Unknown error',
     });
   }
 });
@@ -5570,7 +5570,7 @@ app.post('/api/bank/import-to-assets', async (req: Request, res: Response) => {
       });
     }
 
-    const bankData = bankDataStore.get(dataId);
+    const bankData = bankDataStore.get(String(dataId));
     if (!bankData) {
       return res.status(404).json({
         success: false,
@@ -5579,7 +5579,7 @@ app.post('/api/bank/import-to-assets', async (req: Request, res: Response) => {
     }
 
     // ユーザーIDの確認
-    if (!dataId.startsWith(`bank_${userId}_`)) {
+    if (!String(dataId).startsWith(`bank_${String(userId)}_`)) {
       return res.status(403).json({
         success: false,
         message: 'アクセス権限がありません',
@@ -5610,12 +5610,12 @@ app.post('/api/bank/import-to-assets', async (req: Request, res: Response) => {
     };
 
     // 資産ストアに保存（実際の実装では適切なストアを使用）
-    if (!assetStore.has(userId)) {
-      assetStore.set(userId, []);
+    if (!assetStore.has(String(userId))) {
+      assetStore.set(String(userId), []);
     }
-    const userAssets = assetStore.get(userId) || [];
+    const userAssets = assetStore.get(String(userId)) || [];
     userAssets.push(newAsset);
-    assetStore.set(userId, userAssets);
+    assetStore.set(String(userId), userAssets);
 
     // 収入データの自動完了も試行
     try {
@@ -5800,7 +5800,7 @@ app.post('/api/daily10/progress', (req: Request, res: Response) => {
       });
     }
 
-    const existingProgress = progressStore.get(date) || {
+    const existingProgress = progressStore.get(String(date)) || {
       date,
       tasks: DEFAULT_TASKS.map((task) => ({
         taskId: task.id,
@@ -5866,7 +5866,7 @@ app.post('/api/daily10/progress', (req: Request, res: Response) => {
     existingProgress.streak =
       completedTasks === DEFAULT_TASKS.length ? (existingProgress.streak || 0) + 1 : 0;
 
-    progressStore.set(date, existingProgress);
+    progressStore.set(String(date), existingProgress);
 
     res.json({
       success: true,
@@ -5931,7 +5931,7 @@ app.post('/api/daily10/auto-complete', (req: Request, res: Response) => {
     }
 
     // Auto complete the subtask based on action
-    const shouldComplete = checkAutoCompleteCondition(taskId, subtaskId, action, data);
+    const shouldComplete = checkAutoCompleteCondition(String(taskId), String(subtaskId), String(action), data);
 
     if (shouldComplete) {
       existingProgress.tasks[taskIndex].subtasks[subtaskIndex].completed = true;
@@ -6400,12 +6400,12 @@ const startServer = async () => {
       const newTransaction = await financialService.createTransaction({
         _id: id,
         userId,
-        accountId: transaction.accountId || 'main_account',
-        date: new Date(transaction.date || new Date().toISOString().split('T')[0]),
-        description: transaction.description || '',
-        amount: transaction.amount || 0,
-        category: transaction.category || 'その他',
-        type: (transaction.type as 'income' | 'expense') || 'expense',
+        accountId: (transaction as any).accountId || 'main_account',
+        date: new Date((transaction as any).date || new Date().toISOString().split('T')[0]),
+        description: (transaction as any).description || '',
+        amount: (transaction as any).amount || 0,
+        category: (transaction as any).category || 'その他',
+        type: ((transaction as any).type as 'income' | 'expense') || 'expense',
         balance: 0, // 残高は計算で求める
       } as any);
 
@@ -6435,7 +6435,7 @@ const startServer = async () => {
 
     transactions[transactionIndex] = {
       ...transactions[transactionIndex],
-      ...updates,
+      ...(updates as any),
       updatedAt: new Date().toISOString(),
     };
 
