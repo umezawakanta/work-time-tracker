@@ -19,10 +19,7 @@ async function loadServerModules(): Promise<boolean> {
     const userMod = await import('../../src/server/models/User.js');
     User = (userMod as any).User;
     
-    // Ensure database connection is established
-    if (connectDB) {
-      await connectDB();
-    }
+    // Database connection will be established in the handler after modules are loaded
     
     return true;
   } catch (error) {
