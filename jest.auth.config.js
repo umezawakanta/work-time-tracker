@@ -5,7 +5,7 @@
  * 使用方法: npm run test:auth
  */
 
-module.exports = {
+export default {
   // 基本設定を継承
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
