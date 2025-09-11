@@ -198,64 +198,6 @@ async function handler(req: any, res: any) {
     }
 
     // データベース接続が確立されたので、通常のログイン処理を実行
-    // プレビュー/デモ: DBが無い場合の簡易ログイン（本番では無効）
-    if (false && process.env.NODE_ENV !== 'production') {
-      const isDemoUser = /@/.test(email) && password && password.length >= 4;
-      if (!isDemoUser) {
-        return res.status(401).json({
-          success: false,
-          message: 'メールアドレスまたはパスワードが正しくありません',
-          error: 'Invalid credentials (demo)',
-        } as LoginResponse);
-      }
-      
-      const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
-      const token = jwt.sign(
-        {
-          userId: 'demo-user',
-          email,
-          role: 'user',
-          roles: ['user'],
-          isAdmin: false,
-          isVerified: true,
-        },
-        jwtSecret,
-        {
-          expiresIn: '7d',
-          issuer: 'work-time-tracker',
-          audience: 'work-time-tracker-users',
-        }
-      );
-
-      const response: LoginResponse = {
-        success: true,
-        message: 'ログインに成功しました (デモ)',
-        user: {
-          id: 'demo-user',
-          email,
-          displayName: email.split('@')[0],
-          role: 'user',
-          isVerified: true,
-          preferences: {},
-        },
-        token,
-      };
-
-      try {
-        res.setHeader(
-          'Set-Cookie',
-          serialize('access_token', token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none',
-            path: '/',
-            maxAge: 60 * 60 * 24 * 7,
-          })
-        );
-      } catch {}
-
-      return res.status(200).json(response);
-    }
 
     // ユーザーの検索（DB有り）
     if (!User) {
