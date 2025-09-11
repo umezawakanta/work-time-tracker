@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2025-09-10T10:50:44.608Z",
+  "generatedAt": "2025-09-11T03:38:53.147Z",
   "totals": {
-    "filesScanned": 1300,
-    "findings": 906,
+    "filesScanned": 1301,
+    "findings": 905,
     "todo": 34,
     "mock": 396,
     "wip": 4,
-    "errorHints": 465
+    "errorHints": 464
   },
   "flags": {
     "wipRoutes": [],
@@ -5118,14 +5118,8 @@
     },
     {
       "file": "api/auth/login.ts",
-      "line": 173,
-      "snippet": "if (!loaded || !connectDB) throw new Error('Server modules not available');",
-      "kind": "error"
-    },
-    {
-      "file": "api/auth/login.ts",
-      "line": 322,
-      "snippet": "if (!userIdForUpdate) throw new Error('Missing user id');",
+      "line": 150,
+      "snippet": "throw new Error('Server modules not available');",
       "kind": "error"
     },
     {
