@@ -18,6 +18,30 @@ const formatErrorMessage = (error: unknown): string => {
   return error instanceof Error ? error.message : String(error);
 };
 
+// Database connection utility
+const ensureDatabaseConnection = async (): Promise<void> => {
+  const isConnected = mongoose.connection.readyState === 1;
+  
+  if (isConnected) {
+    return;
+  }
+
+  console.warn('[auth/login] Database not connected, attempting to connect...');
+  
+  if (connectDB) {
+    await connectDB();
+  } else {
+    // Fallback: direct connection
+    const mongoUri = process.env.MONGODB_URI;
+    if (!mongoUri) {
+      throw new Error('MONGODB_URI not found');
+    }
+    await mongoose.connect(mongoUri);
+  }
+  
+  console.log('[auth/login] Database connection established');
+};
+
 const IMPORT_PATHS = {
   DATABASE: '../../src/server/config/database',
   USER_MODEL: '../../src/server/models/User',
@@ -206,36 +230,21 @@ async function handler(req: any, res: any) {
     }
 
     // データベース接続確認
-    const isConnected = mongoose.connection.readyState === 1;
     console.log('[auth/login] DB connection state:', {
       readyState: mongoose.connection.readyState,
-      isConnected,
+      isConnected: mongoose.connection.readyState === 1,
       dbName: mongoose.connection.db?.databaseName,
     });
     
-    if (!isConnected) {
-      console.warn('[auth/login] Database not connected, attempting to connect...');
-      try {
-        if (connectDB) {
-          await connectDB();
-        } else {
-          // Fallback: direct connection
-          const mongoUri = process.env.MONGODB_URI;
-          if (mongoUri) {
-            await mongoose.connect(mongoUri);
-          } else {
-            throw new Error('MONGODB_URI not found');
-          }
-        }
-        console.log('[auth/login] Database connection established');
-      } catch (e) {
-        console.error('[auth/login] Database connection failed:', e);
-        return res.status(500).json({
-          success: false,
-          message: 'データベース接続に失敗しました',
-          error: 'Database connection failed',
-        } as LoginResponse);
-      }
+    try {
+      await ensureDatabaseConnection();
+    } catch (e) {
+      console.error('[auth/login] Database connection failed:', e);
+      return res.status(500).json({
+        success: false,
+        message: 'データベース接続に失敗しました',
+        error: 'Database connection failed',
+      } as LoginResponse);
     }
 
     // データベース接続が確立されたので、通常のログイン処理を実行
