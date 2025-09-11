@@ -1,6 +1,5 @@
 // ES module imports
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 import mongoose from 'mongoose';
 
