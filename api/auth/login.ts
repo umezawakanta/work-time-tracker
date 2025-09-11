@@ -8,6 +8,18 @@ import mongoose from 'mongoose';
 let connectDB: (() => Promise<void>) | null = null;
 let User: any = null;
 
+// Import path constants
+const IMPORT_PATHS = {
+  DATABASE: {
+    WITH_EXT: '../../src/server/config/database.js',
+    WITHOUT_EXT: '../../src/server/config/database',
+  },
+  USER_MODEL: {
+    WITH_EXT: '../../src/server/models/User.js',
+    WITHOUT_EXT: '../../src/server/models/User',
+  },
+} as const;
+
 async function loadServerModules(): Promise<boolean> {
   if (connectDB && User) {
     return true;
@@ -19,11 +31,11 @@ async function loadServerModules(): Promise<boolean> {
     // Helper function to construct import paths
     const getImportPaths = (useJsExtension: boolean) => ({
       dbPath: useJsExtension 
-        ? '../../src/server/config/database.js' 
-        : '../../src/server/config/database',
+        ? IMPORT_PATHS.DATABASE.WITH_EXT
+        : IMPORT_PATHS.DATABASE.WITHOUT_EXT,
       userPath: useJsExtension 
-        ? '../../src/server/models/User.js' 
-        : '../../src/server/models/User'
+        ? IMPORT_PATHS.USER_MODEL.WITH_EXT
+        : IMPORT_PATHS.USER_MODEL.WITHOUT_EXT
     });
     
     // Try primary path first
