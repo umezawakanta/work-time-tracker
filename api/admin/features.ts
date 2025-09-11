@@ -84,7 +84,7 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
     }
 
     // MongoDB接続
-    const mongoLib = (await import('../_lib/mongo.ts')) as any;
+    const mongoLib = (await import('../_lib/mongo')) as any;
     await mongoLib.connectMongoDirect();
     const mongoose = await mongoLib.getMongoose();
 
