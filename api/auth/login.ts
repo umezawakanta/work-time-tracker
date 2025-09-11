@@ -132,7 +132,7 @@ async function handler(req: any, res: any) {
     }
     
     // Ensure User model is available
-    ensureFallbackUserModel();
+    ensureUserModel();
     
     // Read JSON body safely across environments
     const body: Partial<LoginRequest> = await readJson(req);
