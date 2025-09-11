@@ -1,41 +1,22 @@
-// Avoid top-level ESM imports to be CJS-compatible in Vercel functions
+// ES module imports
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { serialize } from 'cookie';
+import mongoose from 'mongoose';
+
+// Dynamic imports for server modules
 let connectDB: (() => Promise<void>) | null = null;
 let User: any = null;
-let SubscriptionModel: any = null;
-let mongoose: any = null;
-
-async function getLibs() {
-  // dynamically import shared mongo lib to satisfy linter
-  const mod: any = await import('../_lib/mongo.js');
-  const mongoMod: any = (mod as any).default || mod;
-  if (mongoMod.mongoose) {
-    mongoose = mongoMod.mongoose;
-  } else if (mongoMod.getMongoose) {
-    mongoose = await mongoMod.getMongoose();
-  }
-  const bcryptMod: any = await import('bcryptjs');
-  const jwtMod: any = await import('jsonwebtoken');
-  const cookieMod: any = await import('cookie');
-  return {
-    connectMongoDirect: mongoMod.connectMongoDirect as () => Promise<void>,
-    maskMongoUri: mongoMod.maskMongoUri as (uri?: string) => string,
-    bcrypt: (bcryptMod as any).default || bcryptMod,
-    jwt: (jwtMod as any).default || jwtMod,
-    serialize: cookieMod.serialize as (name: string, val: string, opts?: any) => string,
-  };
-}
 
 async function loadServerModules(): Promise<boolean> {
-  if (connectDB && User) return true;
+  if (connectDB && User) {
+    return true;
+  }
   try {
-    const dbMod = await import('../../src/server/config/' + 'database.js');
+    const dbMod = await import('../../src/server/config/database');
     connectDB = (dbMod as any).connectDB as () => Promise<void>;
-    const userMod = await import('../../src/server/models/' + 'User.js');
+    const userMod = await import('../../src/server/models/User');
     User = (userMod as any).User;
-    try {
-      const subMod = await import('../../src/server/models/' + 'Subscription.js');
-      SubscriptionModel = (subMod as any).SubscriptionModel;
-    } catch {}
     return true;
   } catch {
     console.warn('[auth/login] Failed to load server modules');
@@ -64,12 +45,6 @@ interface LoginResponse {
     preferences: any;
   };
   token?: string;
-  subscription?: {
-    id: string;
-    planType: string;
-    status: string;
-    limits: any;
-  };
   error?: string;
 }
 
@@ -95,15 +70,17 @@ async function readJson(req: any): Promise<any> {
 }
 
 async function ensureUserModel(): Promise<void> {
-  if (User) return;
+  if (User) {
+    return;
+  }
   try {
-    const existing = (mongoose as any).models?.User;
+    const existing = mongoose.models?.User;
     if (existing) {
       User = existing;
       return;
     }
-    const schema = new (mongoose as any).Schema({}, { strict: false });
-    User = (mongoose as any).model('User', schema, 'users');
+    const schema = new mongoose.Schema({}, { strict: false });
+    User = mongoose.model('User', schema, 'users');
   } catch (e) {
     console.warn('[auth/login] Failed to ensure fallback User model', e);
   }
@@ -165,53 +142,34 @@ async function handler(req: any, res: any) {
       } as LoginResponse);
     }
 
-    // データベース接続（失敗時はプレビュー用のインメモリデモ応答）
+    // データベース接続
     let dbReady = true;
     try {
-      const { maskMongoUri, connectMongoDirect } = await getLibs();
       const loaded = await loadServerModules();
-      if (!loaded || !connectDB) throw new Error('Server modules not available');
+      if (!loaded || !connectDB) {
+        throw new Error('Server modules not available');
+      }
+      
       const hasUri = Boolean(process.env.MONGODB_URI);
-      const uriMasked = maskMongoUri(process.env.MONGODB_URI);
       console.log('[auth/login] DB connect start', {
         hasUri,
-        uri: hasUri ? uriMasked : 'undefined',
         nodeEnv: process.env.NODE_ENV,
       });
+      
       await connectDB();
       console.log('[auth/login] DB connect success');
     } catch (e) {
       dbReady = false;
       const err: any = e;
-      console.warn('[auth/login] Primary DB connect failed, trying direct mongo connect', {
+      console.warn('[auth/login] DB connect failed', {
         name: err?.name,
         message: err?.message,
         code: err?.code,
-        reasonCode: err?.reason?.code,
-        reasonMessage: err?.reason?.message,
-        labels: err?.errorLabels,
       });
-      try {
-        const { connectMongoDirect } = await getLibs();
-        await connectMongoDirect();
-        console.log('[auth/login] DB connect success (direct)');
-        dbReady = true;
-      } catch (e2) {
-        const err2: any = e2;
-        console.warn('[auth/login] DB connect failed (direct), using preview demo login', {
-          name: err2?.name,
-          message: err2?.message,
-          code: err2?.code,
-          reasonCode: err2?.reason?.code,
-          reasonMessage: err2?.reason?.message,
-          labels: err2?.errorLabels,
-        });
-      }
     }
 
     // プレビュー/デモ: DBが無い場合の簡易ログイン（本番では無効）
     if (!dbReady && process.env.NODE_ENV !== 'production') {
-      const { jwt, serialize } = await getLibs();
       const isDemoUser = /@/.test(email) && password && password.length >= 4;
       if (!isDemoUser) {
         return res.status(401).json({
@@ -220,6 +178,7 @@ async function handler(req: any, res: any) {
           error: 'Invalid credentials (demo)',
         } as LoginResponse);
       }
+      
       const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
       const token = jwt.sign(
         {
@@ -276,8 +235,8 @@ async function handler(req: any, res: any) {
     const maskedEmail = emailLc.replace(/^[^@]+/, '***');
     console.log('[auth/login] findOne(users) start', {
       modelReady: Boolean(User),
-      connState: (mongoose as any).connection?.readyState,
-      dbName: (mongoose as any).connection?.name,
+      connState: mongoose.connection?.readyState,
+      dbName: mongoose.connection?.name,
       email: maskedEmail,
     });
     const user = await User.findOne({ email: emailLc });
@@ -306,46 +265,16 @@ async function handler(req: any, res: any) {
     );
     const storedPassword = (found?.value as string) || '';
     console.log('🔎 password hash source:', found?.source || 'none');
-    let passwordToCompare = storedPassword;
+    
     if (!storedPassword) {
-      const allowFirstSetup = process.env.ALLOW_FIRST_HASH_SETUP === 'true';
-      const allowedEmails = (process.env.FIRST_HASH_EMAILS || '')
-        .split(',')
-        .map((s) => s.trim().toLowerCase())
-        .filter(Boolean);
-      const isAllowedEmail = allowedEmails.includes((email || '').toLowerCase());
-      if (allowFirstSetup && isAllowedEmail && user && (user as any).metadata) {
-        try {
-          const { bcrypt } = await getLibs();
-          const newHash = await bcrypt.hash(password, 12);
-          const userIdForUpdate = (user as any)?._id || (user as any)?.id;
-          if (!userIdForUpdate) throw new Error('Missing user id');
-          await User.updateOne(
-            { _id: userIdForUpdate },
-            { $set: { 'metadata.hashedPassword': newHash } },
-            { runValidators: false }
-          );
-          passwordToCompare = newHash;
-          console.log('🛠 Initialized password hash via first-login claim');
-        } catch (e) {
-          console.warn('Failed to initialize password hash:', e);
-          return res.status(422).json({
-            success: false,
-            message: 'パスワード再設定が必要です',
-            error: 'Password hash missing',
-          } as LoginResponse);
-        }
-      } else {
-        return res.status(422).json({
-          success: false,
-          message: 'パスワード再設定が必要です',
-          error: 'Password hash missing',
-        } as LoginResponse);
-      }
+      return res.status(422).json({
+        success: false,
+        message: 'パスワード再設定が必要です',
+        error: 'Password hash missing',
+      } as LoginResponse);
     }
 
-    const { bcrypt } = await getLibs();
-    const isPasswordValid = await bcrypt.compare(password, passwordToCompare);
+    const isPasswordValid = await bcrypt.compare(password, storedPassword);
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
@@ -371,33 +300,7 @@ async function handler(req: any, res: any) {
       } as LoginResponse);
     }
 
-    // ユーザーのサブスクリプション情報を取得
-    let subscription: any = null;
-    try {
-      if (SubscriptionModel) {
-        subscription = await SubscriptionModel.findOne({
-          userId: user.id,
-          status: { $in: ['active', 'trialing'] },
-        });
-      }
-    } catch {}
-
-    // 最終ログイン時刻の更新（バリデーション回避の部分更新）
-    try {
-      const userIdForUpdate = (user as any)?._id || (user as any)?.id;
-      if (userIdForUpdate) {
-        await User.updateOne(
-          { _id: userIdForUpdate },
-          { $set: { lastLoginAt: new Date(), lastActivityAt: new Date() } },
-          { runValidators: false }
-        );
-      }
-    } catch (e) {
-      console.warn('⚠️ Failed to update last login timestamps:', e);
-    }
-
     // JWTトークンの生成（管理者クレームを付与）
-    const { jwt, serialize } = await getLibs();
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
     const tokenExpiry = rememberMe ? '30d' : '7d';
     const adminEmails = (process.env.ADMIN_EMAILS || '')
@@ -467,21 +370,10 @@ async function handler(req: any, res: any) {
       console.warn('⚠️ Failed to set auth cookie:', e);
     }
 
-    // サブスクリプション情報を追加
-    if (subscription) {
-      response.subscription = {
-        id: subscription.id,
-        planType: subscription.planType,
-        status: subscription.status,
-        limits: subscription.limits,
-      };
-    }
-
     console.log('✅ User login successful:', {
       userId: user.id,
       email: user.email,
       rememberMe,
-      subscriptionPlan: subscription?.planType || 'none',
     });
 
     res.status(200).json(response);
@@ -501,4 +393,4 @@ async function handler(req: any, res: any) {
   }
 }
 
-module.exports = handler;
+export default handler;

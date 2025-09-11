@@ -15,7 +15,7 @@ let maskMongoUri: (uri?: string) => string;
 let mongoose: any;
 
 async function getMongoLib() {
-  const mod: any = await import('../_lib/mongo.js');
+  const mod: any = await import('../_lib/mongo');
   const lib = (mod as any).default || mod;
   connectMongoDirect = lib.connectMongoDirect as () => Promise<void>;
   maskMongoUri = lib.maskMongoUri as (uri?: string) => string;
@@ -23,8 +23,8 @@ async function getMongoLib() {
 }
 
 async function getSchemas() {
-  const userMod: any = await import('../_schemas/user.js');
-  const subMod: any = await import('../_schemas/subscription.js');
+  const userMod: any = await import('../_schemas/user');
+  const subMod: any = await import('../_schemas/subscription');
   const uLib = (userMod as any).default || userMod;
   const sLib = (subMod as any).default || subMod;
   return {

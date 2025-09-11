@@ -33,10 +33,10 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const libMod: any = await import('../_lib/mongo.js');
+  const libMod: any = await import('../_lib/mongo');
   const lib = (libMod as any).default || libMod;
   await lib.connectMongoDirect();
-  const schemaMod: any = await import('../_schemas/bug.js');
+  const schemaMod: any = await import('../_schemas/bug');
   const { ensureBugModel } = (schemaMod as any).default || schemaMod;
   const Bug = await ensureBugModel();
 

@@ -90,8 +90,10 @@ lighthouse/
 lighthouserc.json 
 
 # ----------------------------
-# Minimize API deployment scope (allowlist only specific top-level dirs)
+# Minimize API deployment scope (allowlist only essential APIs)
 api/*
+
+# Core infrastructure
 !api/health.ts
 !api/db
 !api/db/**
@@ -101,29 +103,97 @@ api/*
 !api/_schemas/**
 !api/_utils
 !api/_utils/**
+
+# Authentication & User Management
 !api/auth
 !api/auth/**
+!api/userSubscription
+!api/userSubscription/**
 !api/subscription
 !api/subscription/**
-!api/bugs
-!api/bugs/**
+!api/subscriptions
+!api/subscriptions/**
+
+# Admin & Analytics
 !api/admin
 !api/admin/**
 !api/analytics
 !api/analytics/**
+
+# Core Features
+!api/bugs
+!api/bugs/**
 !api/todos
 !api/todos/**
+!api/daily-victory
+!api/daily-victory/**
+
+# Financial Management
+!api/bank-accounts
+!api/bank-accounts/**
+!api/transactions
+!api/transactions/**
+!api/asset-liability-report
+!api/asset-liability-report/**
 !api/asset
 !api/asset/**
 !api/debt
 !api/debt/**
+!api/bank
+!api/bank/**
+
+# Project Management
+!api/projects
+!api/projects/**
+!api/implementation
+!api/implementation/**
+!api/automation
+!api/automation/**
+
+# AI & Intelligence
+!api/ai
+!api/ai/**
+!api/daily
+!api/daily/**
+
+# Quality & Testing
+!api/quality
+!api/quality/**
+!api/testing
+!api/testing/**
+!api/status
+!api/status/**
+
+# Notifications & Progress
+!api/notifications
+!api/notifications/**
+!api/progress
+!api/progress/**
+
+# Documentation
+!api/docs
+!api/docs/**
+!api/blogs
+!api/blogs/**
+!api/books
+!api/books/**
+
+# Webhooks
+!api/webhooks
+!api/webhooks/**
+
+# Work Time Tracking
 !api/worktime
 !api/worktime/**
-!api/bank-accounts
-!api/bank-accounts/**
-!api/asset-liability-report
-!api/asset-liability-report/**
+
+# Daily 10 Tasks
 !api/daily10
 !api/daily10/**
-!api/transactions
-!api/transactions/**
+
+# Improvement Plans
+!api/improvement-plan
+!api/improvement-plan/**
+
+# Cleanup & Debug (exclude from production)
+# api/cleanup
+# api/debug
