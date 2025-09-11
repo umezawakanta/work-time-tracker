@@ -7,7 +7,7 @@
   "devCommand": "pnpm run dev",
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {
-    "api/**/*.ts": {
+    "api/auth/login.ts": {
       "includeFiles": "src/server/**",
       "maxDuration": 30
     }
@@ -81,10 +81,5 @@
       "destination": "/index.html"
     }
   ],
-  "crons": [
-    {
-      "path": "/api/analytics/aggregate-daily",
-      "schedule": "0 3 * * *"
-    }
-  ]
+  "crons": []
 }
