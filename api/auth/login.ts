@@ -21,24 +21,29 @@ async function loadServerModules(): Promise<boolean> {
     // Try different import paths based on environment with fallback
     const isVercel = process.env.VERCEL === '1';
     
+    // Helper function to construct import paths
+    const getImportPaths = (useJsExtension: boolean) => ({
+      dbPath: useJsExtension 
+        ? '../../src/server/config/database.js' 
+        : '../../src/server/config/database',
+      userPath: useJsExtension 
+        ? '../../src/server/models/User.js' 
+        : '../../src/server/models/User'
+    });
+    
     // Try primary path first
     let dbMod, userMod;
     try {
-      const dbPath = isVercel 
-        ? '../../src/server/config/database.js' 
-        : '../../src/server/config/database';
-      const userPath = isVercel 
-        ? '../../src/server/models/User.js' 
-        : '../../src/server/models/User';
-      
+      const { dbPath, userPath } = getImportPaths(isVercel);
       dbMod = await import(dbPath);
       userMod = await import(userPath);
     } catch (primaryError) {
       // Fallback to alternative paths
       console.warn('[auth/login] Primary import failed, trying fallback paths:', primaryError);
       try {
-        dbMod = await import('../../src/server/config/database.js');
-        userMod = await import('../../src/server/models/User.js');
+        const { dbPath, userPath } = getImportPaths(!isVercel);
+        dbMod = await import(dbPath);
+        userMod = await import(userPath);
       } catch (fallbackError) {
         throw new Error(`Both primary and fallback imports failed. Primary: ${formatError(primaryError)}, Fallback: ${formatError(fallbackError)}`);
       }
