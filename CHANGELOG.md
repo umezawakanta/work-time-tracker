@@ -1,5 +1,25 @@
 # 更新履歴
 
+## [1.2.0](https://github.com/umezawakanta/work-time-tracker/compare/v1.1.3...v1.2.0) (2025-09-11)
+
+
+### Features
+
+* optimize Vercel build by excluding unused APIs ([292e7cf](https://github.com/umezawakanta/work-time-tracker/commit/292e7cf5065e774cb39354d1520ec57d716fc3a2))
+
+
+### Bug Fixes
+
+* add missing jsonwebtoken dependency ([e9bed25](https://github.com/umezawakanta/work-time-tracker/commit/e9bed257076b87cb836cd4dce5b265e05f31c8f9))
+* add missing jwt import in login handler ([ff07c22](https://github.com/umezawakanta/work-time-tracker/commit/ff07c2286bef06d8c05e5204951a150681635924))
+* convert Jest config files to ES module format ([a6d6ac8](https://github.com/umezawakanta/work-time-tracker/commit/a6d6ac8ab8fc4081c449bde600f5561306916644))
+* remove .ts extension from dynamic imports for consistency ([e4ba518](https://github.com/umezawakanta/work-time-tracker/commit/e4ba518b6c8d8b0f83b9d329cd71966704495117))
+* **tests:** add new test files and update ResetPassword suite ([91dff48](https://github.com/umezawakanta/work-time-tracker/commit/91dff487cd0dcca909f3241788ef653ce841c1a0))
+* **tests:** improve test readability and API response handling ([59affbb](https://github.com/umezawakanta/work-time-tracker/commit/59affbbae764a447ab916478a85cb2200c2018ab))
+* **tests:** skip E2E tests and enhance MongoDB connection handling ([99a4b75](https://github.com/umezawakanta/work-time-tracker/commit/99a4b75750cf65f221145577fe5906bd93847eed))
+* update dev-status and test-summary timestamps and findings ([7c9e715](https://github.com/umezawakanta/work-time-tracker/commit/7c9e715ddc43128e7f6559873d9614dbd3663706))
+* update pnpm-lock.yaml to resolve CI build errors ([97273c7](https://github.com/umezawakanta/work-time-tracker/commit/97273c7431273c30c673fc04a9b2c6481f5c5ff7))
+
 ## [1.1.3](https://github.com/umezawakanta/work-time-tracker/compare/v1.1.2...v1.1.3) (2025-09-09)
 
 
