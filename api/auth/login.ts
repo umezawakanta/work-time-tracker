@@ -13,10 +13,33 @@ async function loadServerModules(): Promise<boolean> {
     return true;
   }
   try {
-    // Try different import paths for Vercel environment
-    const dbMod = await import('../../src/server/config/database.js');
+    // Try different import paths based on environment with fallback
+    const isVercel = process.env.VERCEL === '1';
+    
+    // Try primary path first
+    let dbMod, userMod;
+    try {
+      const dbPath = isVercel 
+        ? '../../src/server/config/database.js' 
+        : '../../src/server/config/database';
+      const userPath = isVercel 
+        ? '../../src/server/models/User.js' 
+        : '../../src/server/models/User';
+      
+      dbMod = await import(dbPath);
+      userMod = await import(userPath);
+    } catch (primaryError) {
+      // Fallback to alternative paths
+      console.warn('[auth/login] Primary import failed, trying fallback paths:', primaryError);
+      try {
+        dbMod = await import('../../src/server/config/database');
+        userMod = await import('../../src/server/models/User');
+      } catch (fallbackError) {
+        throw new Error(`Both primary and fallback imports failed. Primary: ${primaryError.message}, Fallback: ${fallbackError.message}`);
+      }
+    }
+    
     connectDB = (dbMod as any).connectDB as () => Promise<void>;
-    const userMod = await import('../../src/server/models/User.js');
     User = (userMod as any).User;
     
     // Database connection will be established in the handler after modules are loaded
