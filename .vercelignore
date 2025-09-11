@@ -95,3 +95,6 @@ uploads/
 lighthouse/
 lighthouserc.json 
 
+# Cleanup & Debug (exclude from production)
+api/cleanup
+api/debug
