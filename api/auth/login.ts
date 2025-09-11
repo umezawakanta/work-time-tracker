@@ -8,11 +8,6 @@ import mongoose from 'mongoose';
 let connectDB: (() => Promise<void>) | null = null;
 let User: any = null;
 
-// Helper function to format error messages
-function formatError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
-
 async function loadServerModules(): Promise<boolean> {
   if (connectDB && User) {
     return true;
@@ -45,7 +40,7 @@ async function loadServerModules(): Promise<boolean> {
         dbMod = await import(dbPath);
         userMod = await import(userPath);
       } catch (fallbackError) {
-        throw new Error(`Both primary and fallback imports failed. Primary: ${formatError(primaryError)}, Fallback: ${formatError(fallbackError)}`);
+        throw new Error(`Both primary and fallback imports failed. Primary: ${primaryError instanceof Error ? primaryError.message : String(primaryError)}, Fallback: ${fallbackError instanceof Error ? fallbackError.message : String(fallbackError)}`);
       }
     }
     

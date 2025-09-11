@@ -95,6 +95,9 @@ uploads/
 lighthouse/
 lighthouserc.json 
 
+# Improvement Plans
+api/improvement-plan
+
 # Cleanup & Debug (exclude from production)
 api/cleanup
 api/debug
