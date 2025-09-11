@@ -55,40 +55,60 @@ async function loadServerModules(): Promise<boolean> {
   if (connectDB && User) {
     return true;
   }
+
   try {
-    // Try different import paths based on environment with fallback
+    // Define import path strategies
     const isVercel = process.env.VERCEL === '1';
-    
-    // Helper function to construct import paths
-    const getImportPaths = (useJsExtension: boolean) => ({
-      dbPath: getImportPath(IMPORT_PATHS.DATABASE, useJsExtension),
-      userPath: getImportPath(IMPORT_PATHS.USER_MODEL, useJsExtension)
-    });
-    
-    // Try primary path first
-    let dbMod, userMod;
-    try {
-      const { dbPath, userPath } = getImportPaths(isVercel);
-      dbMod = await import(dbPath);
-      userMod = await import(userPath);
-    } catch (primaryError) {
-      // Fallback to alternative paths
-      console.warn('[auth/login] Primary import failed, trying fallback paths:', primaryError);
+    const importStrategies = [
+      {
+        name: 'Vercel with JS extension',
+        dbPath: getImportPath(IMPORT_PATHS.DATABASE, true),
+        userPath: getImportPath(IMPORT_PATHS.USER_MODEL, true),
+        condition: isVercel
+      },
+      {
+        name: 'Development without extension',
+        dbPath: getImportPath(IMPORT_PATHS.DATABASE, false),
+        userPath: getImportPath(IMPORT_PATHS.USER_MODEL, false),
+        condition: !isVercel
+      },
+      {
+        name: 'Fallback with JS extension',
+        dbPath: getImportPath(IMPORT_PATHS.DATABASE, true),
+        userPath: getImportPath(IMPORT_PATHS.USER_MODEL, true),
+        condition: true
+      },
+      {
+        name: 'Fallback without extension',
+        dbPath: getImportPath(IMPORT_PATHS.DATABASE, false),
+        userPath: getImportPath(IMPORT_PATHS.USER_MODEL, false),
+        condition: true
+      }
+    ];
+
+    // Try each strategy until one succeeds
+    let lastError: Error | null = null;
+    for (const strategy of importStrategies) {
       try {
-        const { dbPath, userPath } = getImportPaths(!isVercel);
-        dbMod = await import(dbPath);
-        userMod = await import(userPath);
-      } catch (fallbackError) {
-        throw new Error(`Both primary and fallback imports failed. Primary: ${formatErrorMessage(primaryError)}, Fallback: ${formatErrorMessage(fallbackError)}`);
+        console.log(`[auth/login] Trying import strategy: ${strategy.name}`);
+        const [dbMod, userMod] = await Promise.all([
+          import(strategy.dbPath),
+          import(strategy.userPath)
+        ]);
+
+        connectDB = (dbMod as any).connectDB as () => Promise<void>;
+        User = (userMod as any).User;
+        
+        console.log(`[auth/login] Successfully loaded modules using strategy: ${strategy.name}`);
+        return true;
+      } catch (error) {
+        lastError = error as Error;
+        console.warn(`[auth/login] Strategy '${strategy.name}' failed:`, error);
       }
     }
-    
-    connectDB = (dbMod as any).connectDB as () => Promise<void>;
-    User = (userMod as any).User;
-    
-    // Database connection will be established in the handler after modules are loaded
-    
-    return true;
+
+    // If all strategies failed, throw an error
+    throw new Error(`All import strategies failed. Last error: ${formatErrorMessage(lastError)}`);
   } catch (error) {
     console.warn('[auth/login] Failed to load server modules:', error);
     return false;
