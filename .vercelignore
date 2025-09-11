@@ -95,6 +95,9 @@ uploads/
 lighthouse/
 lighthouserc.json 
 
+# Webhooks
+api/webhooks
+
 # Work Time Tracking
 api/worktime
 
