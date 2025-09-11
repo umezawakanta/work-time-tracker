@@ -91,11 +91,11 @@ lighthouserc.json
 
 # ----------------------------
 # Minimize API deployment scope (allowlist only login API for testing)
+# Exclude all API files except login
 api/*
-
-# Only allow login API for this fix
+!api/auth/
 !api/auth/login.ts
-!api/_lib
+!api/_lib/
 !api/_lib/**
-!api/_schemas
+!api/_schemas/
 !api/_schemas/**
