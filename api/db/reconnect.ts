@@ -27,7 +27,7 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
     if (mongoose.connection.readyState === 1) {
       await mongoose.disconnect();
     }
-    const mod: any = await import('../_lib/mongo.js');
+    const mod: any = await import('../_lib/mongo');
     const lib = (mod as any).default || mod;
     await (lib.connectMongoDirect as () => Promise<void>)();
     const ok = mongoose.connection.readyState === 1;

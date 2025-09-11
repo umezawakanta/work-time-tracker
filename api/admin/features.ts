@@ -64,7 +64,7 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
     console.log('[admin/features] Starting request');
 
     // 管理者認証
-    const ctx = await import('../_lib/user-context.js');
+    const ctx = await import('../_lib/user-context');
     console.log('[admin/features] Context loaded');
 
     const auth = await ctx.verifyJwtAndExtract(req as any);
@@ -89,7 +89,7 @@ async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
     const mongoose = await mongoLib.getMongoose();
 
     // 機能データの取得（featuresRegistryから）
-    const featuresModule = await import('../../src/config/features.js');
+    const featuresModule = await import('../../src/config/features');
     const featuresRegistry = featuresModule.featuresRegistry;
 
     // 各機能の詳細情報を取得

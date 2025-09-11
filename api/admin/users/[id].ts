@@ -51,14 +51,14 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     const id = String(req.query.id || '');
     // connect first to ensure mongoose is available
     await connectMongoDirect();
-    const mod: any = await import('../../_lib/mongo.js');
+    const mod: any = await import('../../_lib/mongo');
     const ml = (mod as any).default || mod;
     m = ml.mongoose || (ml.getMongoose ? await ml.getMongoose() : null);
 
     if (!id || !m?.Types?.ObjectId?.isValid?.(id)) {
       return res.status(400).json({ success: false, message: '無効なユーザーIDです' } as any);
     }
-    const userMod: any = await import('../../_schemas/user.js');
+    const userMod: any = await import('../../_schemas/user');
     const lib = (userMod as any).default || userMod;
     const ensureUserModel = (lib as any).ensureUserModel as () => Promise<any>;
     const User = await ensureUserModel();

@@ -33,7 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('[admin/actions] Starting request');
 
     // 管理者認証
-    const ctx = await import('../_lib/user-context.js');
+    const ctx = await import('../_lib/user-context');
     console.log('[admin/actions] Context loaded');
 
     const auth = await ctx.verifyJwtAndExtract(req as any);

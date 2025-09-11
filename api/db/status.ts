@@ -11,7 +11,7 @@ interface VercelResponse {
 }
 let mongoose: any = null;
 async function getMongoLib() {
-  const mod: any = await import('../_lib/mongo.js');
+  const mod: any = await import('../_lib/mongo');
   const lib = (mod as any).default || mod;
   if (!mongoose) {
     mongoose = lib.mongoose || (lib.getMongoose ? await lib.getMongoose() : null);

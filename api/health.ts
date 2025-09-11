@@ -8,7 +8,7 @@ const nonEsmImport: (p: string) => any = (p: string) =>
 async function getMongoLib() {
   // Prefer dynamic import; fallback to require when available
   try {
-    const mod = await import('./_lib/mongo.js');
+    const mod = await import('./_lib/mongo');
     return {
       connectMongoDirect: (mod as any).connectMongoDirect as () => Promise<void>,
       maskMongoUri: (mod as any).maskMongoUri as (uri?: string) => string,
