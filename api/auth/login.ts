@@ -13,6 +13,11 @@ const getImportPath = (basePath: string, useJsExtension: boolean): string => {
   return useJsExtension ? `${basePath}.js` : basePath;
 };
 
+// Error message formatting utility
+const formatErrorMessage = (error: unknown): string => {
+  return error instanceof Error ? error.message : String(error);
+};
+
 const IMPORT_PATHS = {
   DATABASE: '../../src/server/config/database',
   USER_MODEL: '../../src/server/models/User',
@@ -46,7 +51,7 @@ async function loadServerModules(): Promise<boolean> {
         dbMod = await import(dbPath);
         userMod = await import(userPath);
       } catch (fallbackError) {
-        throw new Error(`Both primary and fallback imports failed. Primary: ${primaryError instanceof Error ? primaryError.message : String(primaryError)}, Fallback: ${fallbackError instanceof Error ? fallbackError.message : String(fallbackError)}`);
+        throw new Error(`Both primary and fallback imports failed. Primary: ${formatErrorMessage(primaryError)}, Fallback: ${formatErrorMessage(fallbackError)}`);
       }
     }
     
@@ -393,9 +398,7 @@ async function handler(req: any, res: any) {
       message: 'ログイン処理中にエラーが発生しました',
       error:
         process.env.NODE_ENV === 'development'
-          ? error instanceof Error
-            ? error.message
-            : 'Unknown error'
+          ? formatErrorMessage(error)
           : 'Internal server error',
     } as LoginResponse);
   }
