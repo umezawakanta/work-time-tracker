@@ -149,7 +149,12 @@ async function handler(req: any, res: any) {
     console.log('🔐 User login started');
     
     // Ensure database connection is established
-    const modulesLoaded = await loadServerModules();
+    let modulesLoaded = false;
+    if (connectDB && User) {
+      modulesLoaded = true;
+    } else {
+      modulesLoaded = await loadServerModules();
+    }
     if (!modulesLoaded) {
       console.error('❌ Failed to load server modules');
       return res.status(500).json({
