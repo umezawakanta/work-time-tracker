@@ -13,13 +13,20 @@ async function loadServerModules(): Promise<boolean> {
     return true;
   }
   try {
-    const dbMod = await import('../../src/server/config/database');
+    // Try different import paths for Vercel environment
+    const dbMod = await import('../../src/server/config/database.js');
     connectDB = (dbMod as any).connectDB as () => Promise<void>;
-    const userMod = await import('../../src/server/models/User');
+    const userMod = await import('../../src/server/models/User.js');
     User = (userMod as any).User;
+    
+    // Ensure database connection is established
+    if (connectDB) {
+      await connectDB();
+    }
+    
     return true;
-  } catch {
-    console.warn('[auth/login] Failed to load server modules');
+  } catch (error) {
+    console.warn('[auth/login] Failed to load server modules:', error);
     return false;
   }
 }
@@ -115,6 +122,21 @@ async function handler(req: any, res: any) {
 
   try {
     console.log('🔐 User login started');
+    
+    // Ensure database connection is established
+    const modulesLoaded = await loadServerModules();
+    if (!modulesLoaded) {
+      console.error('❌ Failed to load server modules');
+      return res.status(500).json({
+        success: false,
+        message: 'サーバー初期化に失敗しました',
+        error: 'Server modules not available',
+      } as LoginResponse);
+    }
+    
+    // Ensure User model is available
+    ensureFallbackUserModel();
+    
     // Read JSON body safely across environments
     const body: Partial<LoginRequest> = await readJson(req);
     console.log('📥 Login request meta', {
@@ -142,34 +164,42 @@ async function handler(req: any, res: any) {
       } as LoginResponse);
     }
 
-    // データベース接続
-    let dbReady = true;
-    try {
-      const loaded = await loadServerModules();
-      if (!loaded || !connectDB) {
-        throw new Error('Server modules not available');
+    // データベース接続確認
+    const isConnected = mongoose.connection.readyState === 1;
+    console.log('[auth/login] DB connection state:', {
+      readyState: mongoose.connection.readyState,
+      isConnected,
+      dbName: mongoose.connection.db?.databaseName,
+    });
+    
+    if (!isConnected) {
+      console.warn('[auth/login] Database not connected, attempting to connect...');
+      try {
+        if (connectDB) {
+          await connectDB();
+        } else {
+          // Fallback: direct connection
+          const mongoUri = process.env.MONGODB_URI;
+          if (mongoUri) {
+            await mongoose.connect(mongoUri);
+          } else {
+            throw new Error('MONGODB_URI not found');
+          }
+        }
+        console.log('[auth/login] Database connection established');
+      } catch (e) {
+        console.error('[auth/login] Database connection failed:', e);
+        return res.status(500).json({
+          success: false,
+          message: 'データベース接続に失敗しました',
+          error: 'Database connection failed',
+        } as LoginResponse);
       }
-      
-      const hasUri = Boolean(process.env.MONGODB_URI);
-      console.log('[auth/login] DB connect start', {
-        hasUri,
-        nodeEnv: process.env.NODE_ENV,
-      });
-      
-      await connectDB();
-      console.log('[auth/login] DB connect success');
-    } catch (e) {
-      dbReady = false;
-      const err: any = e;
-      console.warn('[auth/login] DB connect failed', {
-        name: err?.name,
-        message: err?.message,
-        code: err?.code,
-      });
     }
 
+    // データベース接続が確立されたので、通常のログイン処理を実行
     // プレビュー/デモ: DBが無い場合の簡易ログイン（本番では無効）
-    if (!dbReady && process.env.NODE_ENV !== 'production') {
+    if (false && process.env.NODE_ENV !== 'production') {
       const isDemoUser = /@/.test(email) && password && password.length >= 4;
       if (!isDemoUser) {
         return res.status(401).json({
