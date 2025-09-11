@@ -87,8 +87,9 @@ async function loadServerModules(): Promise<boolean> {
     ];
 
     // Try each strategy until one succeeds
+    const enabledStrategies = importStrategies.filter(s => s.condition);
     let lastError: Error | null = null;
-    for (const strategy of importStrategies) {
+    for (const strategy of enabledStrategies) {
       try {
         console.log(`[auth/login] Trying import strategy: ${strategy.name}`);
         const [dbMod, userMod] = await Promise.all([
@@ -111,7 +112,7 @@ async function loadServerModules(): Promise<boolean> {
     throw new Error(`All import strategies failed. Last error: ${formatErrorMessage(lastError)}`);
   } catch (error) {
     console.warn('[auth/login] Failed to load server modules:', error);
-    return false;
+    throw error; // Re-throw to be handled by the caller
   }
 }
 
@@ -215,12 +216,7 @@ async function handler(req: any, res: any) {
       modulesLoaded = await loadServerModules();
     }
     if (!modulesLoaded) {
-      console.error('❌ Failed to load server modules');
-      return res.status(500).json({
-        success: false,
-        message: 'サーバー初期化に失敗しました',
-        error: 'Server modules not available',
-      } as LoginResponse);
+      throw new Error('Server modules not available');
     }
     
     // Ensure User model is available
