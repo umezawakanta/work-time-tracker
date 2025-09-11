@@ -107,3 +107,102 @@ api/improvement-plan
 # Cleanup & Debug (exclude from production)
 api/cleanup
 api/debug
+
+# Development & Testing APIs (exclude from production)
+api/testing
+api/status
+api/developer
+api/legal
+api/operations
+api/sales
+api/finance
+api/analysis
+
+# Automation APIs (exclude from production)
+api/automation
+
+# Quality & CI APIs (exclude from production)
+api/quality
+
+# Implementation APIs (exclude from production)
+api/implementation
+
+# Notifications (exclude from production)
+api/notifications
+
+# Daily10 APIs (exclude from production)
+api/daily10
+
+# Daily APIs (exclude from production)
+api/daily
+api/daily-victory
+
+# Progress APIs (exclude from production)
+api/progress
+
+# Projects APIs (exclude from production)
+api/projects
+
+# User Assessment APIs (exclude from production)
+api/user
+
+# Admin Analytics APIs (exclude from production)
+api/admin/analytics
+api/admin/metrics
+api/admin/error-report
+api/admin/error-reports
+api/admin/generate-test-error
+api/admin/live-metrics
+api/admin/server-errors
+api/admin/users
+
+# Analytics APIs (exclude from production)
+api/analytics
+
+# Asset Liability Report APIs (exclude from production)
+api/asset-liability-report
+
+# Bank APIs (exclude from production)
+api/bank
+
+# Bank Accounts APIs (exclude from production)
+api/bank-accounts
+
+# Blog APIs (exclude from production)
+api/blog
+api/blogs
+
+# Books APIs (exclude from production)
+api/books
+
+# Bugs APIs (exclude from production)
+api/bugs
+
+# Debt APIs (exclude from production)
+api/debt
+
+# Docs APIs (exclude from production)
+api/docs
+
+# Pricing APIs (exclude from production)
+api/pricing
+
+# Subscription APIs (exclude from production)
+api/subscription
+api/subscriptions
+api/userSubscription
+
+# Todos APIs (exclude from production)
+api/todos
+
+# Transactions APIs (exclude from production)
+api/transactions
+
+# Asset APIs (exclude from production)
+api/asset
+
+# AI APIs (exclude from production)
+api/ai
+
+# DB APIs (exclude from production)
+api/db
