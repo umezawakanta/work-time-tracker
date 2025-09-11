@@ -28,8 +28,12 @@ docs/
 !public/docs/**
 !README.md
 
-# Server-only code not needed for Vercel build
+# Server-only code not needed for Vercel build (except for login API dependencies)
 src/server/**
+!src/server/config/
+!src/server/config/database.js
+!src/server/models/
+!src/server/models/User.js
 
 # Test utilities (already excluded by patterns, add explicit dirs)
 src/test/**
