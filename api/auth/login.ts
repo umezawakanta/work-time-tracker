@@ -13,9 +13,9 @@ async function loadServerModules(): Promise<boolean> {
     return true;
   }
   try {
-    const dbMod = await import('../../src/server/config/database.js');
+    const dbMod = await import('../../src/server/config/database');
     connectDB = (dbMod as any).connectDB as () => Promise<void>;
-    const userMod = await import('../../src/server/models/User.js');
+    const userMod = await import('../../src/server/models/User');
     User = (userMod as any).User;
     return true;
   } catch {
