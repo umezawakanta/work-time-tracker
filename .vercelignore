@@ -101,7 +101,7 @@ lighthouserc.json
 !api/
 api/*
 !api/auth/
-!api/auth/login.ts
+!api/auth/**
 !api/_lib/
 !api/_lib/**
 !api/_schemas/
