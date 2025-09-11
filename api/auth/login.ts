@@ -30,12 +30,8 @@ async function loadServerModules(): Promise<boolean> {
     
     // Helper function to construct import paths
     const getImportPaths = (useJsExtension: boolean) => ({
-      dbPath: useJsExtension 
-        ? IMPORT_PATHS.DATABASE.WITH_EXT
-        : IMPORT_PATHS.DATABASE.WITHOUT_EXT,
-      userPath: useJsExtension 
-        ? IMPORT_PATHS.USER_MODEL.WITH_EXT
-        : IMPORT_PATHS.USER_MODEL.WITHOUT_EXT
+      dbPath: IMPORT_PATHS.DATABASE[useJsExtension ? 'WITH_EXT' : 'WITHOUT_EXT'],
+      userPath: IMPORT_PATHS.USER_MODEL[useJsExtension ? 'WITH_EXT' : 'WITHOUT_EXT']
     });
     
     // Try primary path first
