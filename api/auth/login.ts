@@ -8,16 +8,14 @@ import mongoose from 'mongoose';
 let connectDB: (() => Promise<void>) | null = null;
 let User: any = null;
 
-// Import path constants
+// Import path utility
+const getImportPath = (basePath: string, useJsExtension: boolean): string => {
+  return useJsExtension ? `${basePath}.js` : basePath;
+};
+
 const IMPORT_PATHS = {
-  DATABASE: {
-    WITH_EXT: '../../src/server/config/database.js',
-    WITHOUT_EXT: '../../src/server/config/database',
-  },
-  USER_MODEL: {
-    WITH_EXT: '../../src/server/models/User.js',
-    WITHOUT_EXT: '../../src/server/models/User',
-  },
+  DATABASE: '../../src/server/config/database',
+  USER_MODEL: '../../src/server/models/User',
 } as const;
 
 async function loadServerModules(): Promise<boolean> {
@@ -30,8 +28,8 @@ async function loadServerModules(): Promise<boolean> {
     
     // Helper function to construct import paths
     const getImportPaths = (useJsExtension: boolean) => ({
-      dbPath: IMPORT_PATHS.DATABASE[useJsExtension ? 'WITH_EXT' : 'WITHOUT_EXT'],
-      userPath: IMPORT_PATHS.USER_MODEL[useJsExtension ? 'WITH_EXT' : 'WITHOUT_EXT']
+      dbPath: getImportPath(IMPORT_PATHS.DATABASE, useJsExtension),
+      userPath: getImportPath(IMPORT_PATHS.USER_MODEL, useJsExtension)
     });
     
     // Try primary path first
@@ -157,7 +155,12 @@ async function handler(req: any, res: any) {
     console.log('🔐 User login started');
     
     // Ensure database connection is established
-    const modulesLoaded = (connectDB && User) || await loadServerModules();
+    let modulesLoaded = false;
+    if (connectDB && User) {
+      modulesLoaded = true;
+    } else {
+      modulesLoaded = await loadServerModules();
+    }
     if (!modulesLoaded) {
       console.error('❌ Failed to load server modules');
       return res.status(500).json({
