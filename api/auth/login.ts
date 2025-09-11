@@ -10,9 +10,9 @@ let User: any = null;
 
 // Import path utility
 const getImportPath = (basePath: string, useJsExtension: boolean): string => {
-  // In Vercel, we need to use .ts extension for TypeScript files
+  // In Vercel, TypeScript files are compiled to .js, so we always use .js extension
   if (process.env.VERCEL === '1') {
-    return `${basePath}.ts`;
+    return `${basePath}.js`;
   }
   return useJsExtension ? `${basePath}.js` : basePath;
 };
