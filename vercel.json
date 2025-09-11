@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "pnpm run build && pnpm run vercel-build-ci",
+  "buildCommand": "pnpm run vercel-build-ci",
   "outputDirectory": "dist",
   "framework": null,
   "installCommand": "pnpm config set store-dir .pnpm-store && pnpm install --prefer-offline --frozen-lockfile=false",
