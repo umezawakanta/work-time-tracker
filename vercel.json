@@ -8,7 +8,7 @@
   "ignoreCommand": "node scripts/vercel-ignore.js",
   "functions": {
     "api/auth/*.ts": {
-      "includeFiles": "src/server/config/** src/server/models/**",
+      "includeFiles": "src/server/**",
       "maxDuration": 30
     },
     "api/health.ts": {
