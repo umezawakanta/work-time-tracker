@@ -6,4 +6,3 @@ node_modules/
 .idea/
 *.log
 **/*.map
-public/dev-status.json
