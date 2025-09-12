@@ -4,10 +4,6 @@ import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 import mongoose from 'mongoose';
 
-// Static imports for server modules
-import { connectDB } from '../../src/server/config/database';
-import { User } from '../../src/server/models/User';
-
 // Error message formatting utility
 const formatErrorMessage = (error: unknown): string => {
   return error instanceof Error ? error.message : String(error);
@@ -22,8 +18,16 @@ const ensureDatabaseConnection = async (): Promise<void> => {
   }
 
   console.warn('[auth/login] Database not connected, attempting to connect...');
-  await connectDB();
-  console.log('[auth/login] Database connection established');
+  
+  try {
+    // Dynamic import for Vercel compatibility
+    const { connectDB } = await import('../../src/server/config/database.js');
+    await connectDB();
+    console.log('[auth/login] Database connection established');
+  } catch (error) {
+    console.error('[auth/login] Failed to import database config:', error);
+    throw new Error('Database connection failed');
+  }
 };
 
 // Login request interface
@@ -135,6 +139,10 @@ async function handler(req: any, res: any) {
     // ユーザーの検索
     const emailLc = (email || '').toLowerCase();
     const maskedEmail = emailLc.replace(/^[^@]+/, '***');
+    
+    // Dynamic import for User model
+    const { User } = await import('../../src/server/models/User.js');
+    
     console.log('[auth/login] findOne(users) start', {
       modelReady: Boolean(User),
       connState: mongoose.connection?.readyState,

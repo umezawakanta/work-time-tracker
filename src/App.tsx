@@ -30,7 +30,9 @@ function App() {
         setMessage(`ログイン失敗: ${data.message}`);
       }
     } catch (error) {
-      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+      setMessage(
+        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     } finally {
       setLoading(false);
     }
@@ -68,7 +70,9 @@ function App() {
           </button>
         </form>
         {message && (
-          <div className={`message ${message.includes("成功") ? "success" : "error"}`}>
+          <div
+            className={`message ${message.includes("成功") ? "success" : "error"}`}
+          >
             {message}
           </div>
         )}

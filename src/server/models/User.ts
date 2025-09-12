@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
 // User document interface
 export interface UserDocument extends Document {
@@ -10,19 +10,19 @@ export interface UserDocument extends Document {
   lastName?: string;
   avatar?: string;
   password: string; // Add password property
-  provider: 'jwt' | 'firebase' | 'google' | 'github';
+  provider: "jwt" | "firebase" | "google" | "github";
   isVerified: boolean;
-  role: 'user' | 'admin' | 'manager' | 'guest';
+  role: "user" | "admin" | "manager" | "guest";
   permissions: string[];
   preferences: any;
   settings: any;
   stats: any;
   employeeInfo?: any;
-  status: 'active' | 'inactive' | 'suspended';
+  status: "active" | "inactive" | "suspended";
   lastLoginAt?: Date;
   lastActivityAt?: Date;
   version: number;
-  syncStatus: 'synced' | 'pending' | 'conflict' | 'error';
+  syncStatus: "synced" | "pending" | "conflict" | "error";
   lastSyncAt?: Date;
   metadata: any;
   createdAt: Date;
@@ -40,14 +40,18 @@ const NotificationPreferencesSchema = new Schema(
     push: { type: Boolean, default: true },
     sms: { type: Boolean, default: false },
     inApp: { type: Boolean, default: true },
-    digest: { type: String, enum: ['none', 'daily', 'weekly'], default: 'daily' },
+    digest: {
+      type: String,
+      enum: ["none", "daily", "weekly"],
+      default: "daily",
+    },
     quietHours: {
       enabled: { type: Boolean, default: false },
-      start: { type: String, default: '22:00' },
-      end: { type: String, default: '08:00' },
+      start: { type: String, default: "22:00" },
+      end: { type: String, default: "08:00" },
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const DashboardWidgetSchema = new Schema(
@@ -63,18 +67,22 @@ const DashboardWidgetSchema = new Schema(
     config: { type: Schema.Types.Mixed, default: {} },
     isVisible: { type: Boolean, default: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const DashboardPreferencesSchema = new Schema(
   {
-    layout: { type: String, enum: ['compact', 'comfortable', 'spacious'], default: 'comfortable' },
-    defaultView: { type: String, default: 'dashboard' },
+    layout: {
+      type: String,
+      enum: ["compact", "comfortable", "spacious"],
+      default: "comfortable",
+    },
+    defaultView: { type: String, default: "dashboard" },
     widgets: [DashboardWidgetSchema],
     refreshInterval: { type: Number, default: 30000 },
     showWelcome: { type: Boolean, default: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const ProductivityPreferencesSchema = new Schema(
@@ -88,33 +96,41 @@ const ProductivityPreferencesSchema = new Schema(
     distractionBlocking: { type: Boolean, default: false },
     goalSetting: { type: Boolean, default: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const UserPreferencesSchema = new Schema(
   {
-    theme: { type: String, enum: ['light', 'dark', 'auto'], default: 'auto' },
-    language: { type: String, enum: ['ja', 'en', 'zh', 'ko'], default: 'ja' },
-    timezone: { type: String, default: 'Asia/Tokyo' },
-    dateFormat: { type: String, default: 'YYYY-MM-DD' },
-    timeFormat: { type: String, enum: ['12h', '24h'], default: '24h' },
-    currency: { type: String, default: 'JPY' },
+    theme: { type: String, enum: ["light", "dark", "auto"], default: "auto" },
+    language: { type: String, enum: ["ja", "en", "zh", "ko"], default: "ja" },
+    timezone: { type: String, default: "Asia/Tokyo" },
+    dateFormat: { type: String, default: "YYYY-MM-DD" },
+    timeFormat: { type: String, enum: ["12h", "24h"], default: "24h" },
+    currency: { type: String, default: "JPY" },
     notifications: NotificationPreferencesSchema,
     dashboard: DashboardPreferencesSchema,
     productivity: ProductivityPreferencesSchema,
   },
-  { _id: false }
+  { _id: false },
 );
 
 const PrivacySettingsSchema = new Schema(
   {
-    profileVisibility: { type: String, enum: ['public', 'team', 'private'], default: 'team' },
-    activityVisibility: { type: String, enum: ['public', 'team', 'private'], default: 'team' },
+    profileVisibility: {
+      type: String,
+      enum: ["public", "team", "private"],
+      default: "team",
+    },
+    activityVisibility: {
+      type: String,
+      enum: ["public", "team", "private"],
+      default: "team",
+    },
     allowDataSharing: { type: Boolean, default: false },
     allowAnalytics: { type: Boolean, default: true },
     allowMarketing: { type: Boolean, default: false },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const SecuritySettingsSchema = new Schema(
@@ -126,7 +142,7 @@ const SecuritySettingsSchema = new Schema(
     deviceTrust: { type: Boolean, default: false },
     loginNotifications: { type: Boolean, default: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const IntegrationSettingsSchema = new Schema(
@@ -135,9 +151,13 @@ const IntegrationSettingsSchema = new Schema(
     autoSync: { type: Boolean, default: true },
     syncFrequency: { type: Number, default: 300000 }, // 5 minutes
     dataMapping: { type: Schema.Types.Mixed, default: {} },
-    conflictResolution: { type: String, enum: ['manual', 'auto'], default: 'manual' },
+    conflictResolution: {
+      type: String,
+      enum: ["manual", "auto"],
+      default: "manual",
+    },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const FeatureFlagsSchema = new Schema(
@@ -148,7 +168,7 @@ const FeatureFlagsSchema = new Schema(
     advancedAnalytics: { type: Boolean, default: false },
     teamFeatures: { type: Boolean, default: false },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const UserSettingsSchema = new Schema(
@@ -158,7 +178,7 @@ const UserSettingsSchema = new Schema(
     integrations: IntegrationSettingsSchema,
     features: FeatureFlagsSchema,
   },
-  { _id: false }
+  { _id: false },
 );
 
 const UserStatsSchema = new Schema(
@@ -175,7 +195,7 @@ const UserStatsSchema = new Schema(
     lastWeekHours: { type: Number, default: 0 },
     lastMonthHours: { type: Number, default: 0 },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const EmployeeInfoSchema = new Schema(
@@ -188,7 +208,7 @@ const EmployeeInfoSchema = new Schema(
     startDate: { type: String, required: true },
     contractType: {
       type: String,
-      enum: ['full-time', 'part-time', 'contract', 'intern'],
+      enum: ["full-time", "part-time", "contract", "intern"],
       required: true,
     },
     workingHours: {
@@ -197,7 +217,7 @@ const EmployeeInfoSchema = new Schema(
       breakDuration: { type: Number, default: 60 }, // minutes
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 // Main User schema
@@ -215,15 +235,15 @@ const UserSchema = new Schema(
     // 認証情報
     provider: {
       type: String,
-      enum: ['jwt', 'firebase', 'google', 'github'],
+      enum: ["jwt", "firebase", "google", "github"],
       required: true,
     },
     password: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
     role: {
       type: String,
-      enum: ['user', 'admin', 'manager', 'guest'],
-      default: 'user',
+      enum: ["user", "admin", "manager", "guest"],
+      default: "user",
     },
     permissions: [{ type: String }],
 
@@ -240,8 +260,8 @@ const UserSchema = new Schema(
     // 状態
     status: {
       type: String,
-      enum: ['active', 'inactive', 'suspended'],
-      default: 'active',
+      enum: ["active", "inactive", "suspended"],
+      default: "active",
     },
     lastLoginAt: { type: Date },
     lastActivityAt: { type: Date },
@@ -250,8 +270,8 @@ const UserSchema = new Schema(
     version: { type: Number, default: 1 },
     syncStatus: {
       type: String,
-      enum: ['synced', 'pending', 'conflict', 'error'],
-      default: 'synced',
+      enum: ["synced", "pending", "conflict", "error"],
+      default: "synced",
     },
     lastSyncAt: { type: Date },
     metadata: { type: Schema.Types.Mixed, default: {} },
@@ -259,7 +279,7 @@ const UserSchema = new Schema(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 // Indexes for performance
@@ -270,17 +290,20 @@ UserSchema.index({ createdAt: -1 });
 
 // Text index for search (email/displayName/username)
 UserSchema.index(
-  { email: 'text', displayName: 'text', username: 'text' },
-  { name: 'user_text_search', weights: { email: 10, displayName: 5, username: 4 } }
+  { email: "text", displayName: "text", username: "text" },
+  {
+    name: "user_text_search",
+    weights: { email: 10, displayName: 5, username: 4 },
+  },
 );
 
 // Virtual for user ID
-UserSchema.virtual('id').get(function () {
+UserSchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
 // Ensure virtual fields are serialized
-UserSchema.set('toJSON', {
+UserSchema.set("toJSON", {
   virtuals: true,
   transform: function (doc, ret) {
     const { _id, __v, password, ...cleanRet } = ret;
@@ -289,10 +312,10 @@ UserSchema.set('toJSON', {
 });
 
 // Pre-save middleware to update version and sync status
-UserSchema.pre('save', function (next) {
+UserSchema.pre("save", function (next) {
   if (this.isModified() && !this.isNew) {
     this.version += 1;
-    this.syncStatus = 'pending';
+    this.syncStatus = "pending";
   }
   next();
 });
@@ -307,7 +330,7 @@ UserSchema.statics.findByUid = function (uid: string) {
 };
 
 UserSchema.statics.findActiveUsers = function () {
-  return this.find({ status: 'active' });
+  return this.find({ status: "active" });
 };
 
 // Instance methods
@@ -321,5 +344,5 @@ UserSchema.methods.updateStats = function (updates: any) {
   return this.save();
 };
 
-export const User = mongoose.model<UserDocument>('User', UserSchema);
+export const User = mongoose.model<UserDocument>("User", UserSchema);
 export default User;
