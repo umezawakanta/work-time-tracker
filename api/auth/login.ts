@@ -10,9 +10,9 @@ let User: any = null;
 
 // Import path utility
 const getImportPath = (basePath: string, useJsExtension: boolean): string => {
-  // In Vercel, TypeScript files are compiled to .js, so we always use .js extension
+  // In Vercel, try .ts extension first, then .js as fallback
   if (process.env.VERCEL === '1') {
-    return `${basePath}.js`;
+    return useJsExtension ? `${basePath}.js` : `${basePath}.ts`;
   }
   return useJsExtension ? `${basePath}.js` : basePath;
 };
@@ -47,8 +47,8 @@ const ensureDatabaseConnection = async (): Promise<void> => {
 };
 
 const IMPORT_PATHS = {
-  DATABASE: '../../src/server/config/database',
-  USER_MODEL: '../../src/server/models/User',
+  DATABASE: process.env.VERCEL === '1' ? './src/server/config/database' : '../../src/server/config/database',
+  USER_MODEL: process.env.VERCEL === '1' ? './src/server/models/User' : '../../src/server/models/User',
 } as const;
 
 async function loadServerModules(): Promise<boolean> {
@@ -60,6 +60,12 @@ async function loadServerModules(): Promise<boolean> {
     // Define import path strategies
     const isVercel = process.env.VERCEL === '1';
     const importStrategies = [
+      {
+        name: 'Vercel with TS extension',
+        dbPath: getImportPath(IMPORT_PATHS.DATABASE, false),
+        userPath: getImportPath(IMPORT_PATHS.USER_MODEL, false),
+        condition: isVercel
+      },
       {
         name: 'Vercel with JS extension',
         dbPath: getImportPath(IMPORT_PATHS.DATABASE, true),
