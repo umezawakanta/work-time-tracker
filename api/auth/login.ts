@@ -4,18 +4,9 @@ import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 import mongoose from 'mongoose';
 
-// Dynamic imports for server modules
-let connectDB: (() => Promise<void>) | null = null;
-let User: any = null;
-
-// Import path utility
-const getImportPath = (basePath: string, useJsExtension: boolean): string => {
-  // In Vercel, try .ts extension first, then .js as fallback
-  if (process.env.VERCEL === '1') {
-    return useJsExtension ? `${basePath}.js` : `${basePath}.ts`;
-  }
-  return useJsExtension ? `${basePath}.js` : basePath;
-};
+// Static imports for server modules
+import { connectDB } from '../../src/server/config/database';
+import { User } from '../../src/server/models/User';
 
 // Error message formatting utility
 const formatErrorMessage = (error: unknown): string => {
@@ -31,96 +22,9 @@ const ensureDatabaseConnection = async (): Promise<void> => {
   }
 
   console.warn('[auth/login] Database not connected, attempting to connect...');
-  
-  if (connectDB) {
-    await connectDB();
-  } else {
-    // Fallback: direct connection
-    const mongoUri = process.env.MONGODB_URI;
-    if (!mongoUri) {
-      throw new Error('MONGODB_URI not found');
-    }
-    await mongoose.connect(mongoUri);
-  }
-  
+  await connectDB();
   console.log('[auth/login] Database connection established');
 };
-
-const IMPORT_PATHS = {
-  DATABASE: process.env.VERCEL === '1' ? './src/server/config/database' : '../../src/server/config/database',
-  USER_MODEL: process.env.VERCEL === '1' ? './src/server/models/User' : '../../src/server/models/User',
-} as const;
-
-async function loadServerModules(): Promise<boolean> {
-  if (connectDB && User) {
-    return true;
-  }
-
-  try {
-    // Define import path strategies
-    const isVercel = process.env.VERCEL === '1';
-    const importStrategies = [
-      {
-        name: 'Vercel with TS extension',
-        dbPath: getImportPath(IMPORT_PATHS.DATABASE, false),
-        userPath: getImportPath(IMPORT_PATHS.USER_MODEL, false),
-        condition: isVercel
-      },
-      {
-        name: 'Vercel with JS extension',
-        dbPath: getImportPath(IMPORT_PATHS.DATABASE, true),
-        userPath: getImportPath(IMPORT_PATHS.USER_MODEL, true),
-        condition: isVercel
-      },
-      {
-        name: 'Development without extension',
-        dbPath: getImportPath(IMPORT_PATHS.DATABASE, false),
-        userPath: getImportPath(IMPORT_PATHS.USER_MODEL, false),
-        condition: !isVercel
-      },
-      {
-        name: 'Fallback with JS extension',
-        dbPath: getImportPath(IMPORT_PATHS.DATABASE, true),
-        userPath: getImportPath(IMPORT_PATHS.USER_MODEL, true),
-        condition: true
-      },
-      {
-        name: 'Fallback without extension',
-        dbPath: getImportPath(IMPORT_PATHS.DATABASE, false),
-        userPath: getImportPath(IMPORT_PATHS.USER_MODEL, false),
-        condition: true
-      }
-    ];
-
-    // Try each strategy until one succeeds
-    const enabledStrategies = importStrategies.filter(s => s.condition);
-    let lastError: Error | null = null;
-    for (const strategy of enabledStrategies) {
-      try {
-        console.log(`[auth/login] Trying import strategy: ${strategy.name}`);
-        const [dbMod, userMod] = await Promise.all([
-          import(strategy.dbPath),
-          import(strategy.userPath)
-        ]);
-
-        connectDB = (dbMod as any).connectDB as () => Promise<void>;
-        User = (userMod as any).User;
-        
-        console.log(`[auth/login] Successfully loaded modules using strategy: ${strategy.name}`);
-        return true;
-      } catch (error) {
-        lastError = error as Error;
-        console.warn(`[auth/login] Strategy '${strategy.name}' failed:`, error);
-      }
-    }
-
-    // If all strategies failed, throw an error
-    throw new Error(`All import strategies failed. Last error: ${formatErrorMessage(lastError)}`);
-  } catch (error) {
-    console.warn('[auth/login] Failed to load server modules:', error);
-    throw error; // Re-throw to be handled by the caller
-  }
-}
 
 // Login request interface
 interface LoginRequest {
@@ -167,22 +71,6 @@ async function readJson(req: any): Promise<any> {
   }
 }
 
-async function ensureUserModel(): Promise<void> {
-  if (User) {
-    return;
-  }
-  try {
-    const existing = mongoose.models?.User;
-    if (existing) {
-      User = existing;
-      return;
-    }
-    const schema = new mongoose.Schema({}, { strict: false });
-    User = mongoose.model('User', schema, 'users');
-  } catch (e) {
-    console.warn('[auth/login] Failed to ensure fallback User model', e);
-  }
-}
 
 async function handler(req: any, res: any) {
   // CORS設定
@@ -215,18 +103,7 @@ async function handler(req: any, res: any) {
     console.log('🔐 User login started');
     
     // Ensure database connection is established
-    let modulesLoaded = false;
-    if (connectDB && User) {
-      modulesLoaded = true;
-    } else {
-      modulesLoaded = await loadServerModules();
-    }
-    if (!modulesLoaded) {
-      throw new Error('Server modules not available');
-    }
-    
-    // Ensure User model is available
-    ensureUserModel();
+    await ensureDatabaseConnection();
     
     // Read JSON body safely across environments
     const body: Partial<LoginRequest> = await readJson(req);
@@ -255,30 +132,7 @@ async function handler(req: any, res: any) {
       } as LoginResponse);
     }
 
-    // データベース接続確認
-    console.log('[auth/login] DB connection state:', {
-      readyState: mongoose.connection.readyState,
-      isConnected: mongoose.connection.readyState === 1,
-      dbName: mongoose.connection.db?.databaseName,
-    });
-    
-    try {
-      await ensureDatabaseConnection();
-    } catch (e) {
-      console.error('[auth/login] Database connection failed:', e);
-      return res.status(500).json({
-        success: false,
-        message: 'データベース接続に失敗しました',
-        error: 'Database connection failed',
-      } as LoginResponse);
-    }
-
-    // データベース接続が確立されたので、通常のログイン処理を実行
-
-    // ユーザーの検索（DB有り）
-    if (!User) {
-      await ensureUserModel();
-    }
+    // ユーザーの検索
     const emailLc = (email || '').toLowerCase();
     const maskedEmail = emailLc.replace(/^[^@]+/, '***');
     console.log('[auth/login] findOne(users) start', {
