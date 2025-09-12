@@ -12,11 +12,9 @@
     "start": "vite",
     "build": "vite build",
     "vercel-build": "vite build --config vite.config.ts --minify false --logLevel warn",
-    "vercel-build-ci": "cross-env NODE_OPTIONS=--max_old_space_size=1536 VITE_ENABLE_REACT_GUARD=false VITE_DISABLE_CSS_MINIFY=true VITE_ENABLE_PWA=false VITE_CJS_IGNORE_WARNING=true pnpm run vercel-build",
     "dev": "pnpm run start",
     "dev:vercel": "vercel dev",
-    "type-check": "tsc --noEmit --skipLibCheck",
-    "postinstall": "echo skipping dedupe on Vercel"
+    "type-check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -35,7 +33,6 @@
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.4.0",
-    "cross-env": "^7.0.3",
     "vite": "^6.3.0"
   }
 }
