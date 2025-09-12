@@ -28,6 +28,7 @@ docs/
 !public/docs/**
 !README.md
 
+
 # Test utilities (already excluded by patterns, add explicit dirs)
 src/test/**
 src/test-utils/**
