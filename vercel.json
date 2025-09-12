@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "buildCommand": "pnpm run vercel-build-ci",
+  "outputDirectory": "dist",
+  "framework": null,
+  "installCommand": "pnpm config set store-dir .pnpm-store && pnpm install --prefer-offline --frozen-lockfile=false",
+  "devCommand": "pnpm run dev",
+  "functions": {
+    "api/auth/*.ts": {
+      "includeFiles": "src/server/**",
+      "maxDuration": 30
+    },
+    "api/health.ts": {
+      "includeFiles": "src/server/**",
+      "maxDuration": 10
+    }
+  },
+  "headers": [
+    {
+      "source": "/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "crons": []
+}
