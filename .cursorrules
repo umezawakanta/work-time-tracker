@@ -3,15 +3,9 @@
 - Mobile first、CLS=0、iPhone SE 幅で崩れないこと
 
 # Coding standards
-- ESLint/TypeScript のエラーは 0。any を避ける
+- TypeScript のエラーは 0。any を避ける
 - 関数は副作用を最小化、早期 return
-- API は既存 hooks 経由。新規は仕様合意後
-
-# PR rules
-- 1 PR = 1 目的 / 300行前後まで
-- 変更範囲は最小限。不要な rename/format 大量差分禁止
-- Conventional Commits を使う（feat/fix/chore/refactor/docs/test 等）
 
 # Tasks for Agent Auto
 - 変更ファイル一覧 → 差分 → 動作確認手順 → リスク/ロールバック を出力
-- ESLint/TS を通すまで自動修正を継続
+- TypeScript を通すまで自動修正を継続

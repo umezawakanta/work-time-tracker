@@ -11,9 +11,7 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "vercel-build": "vite build --config vite.config.ts --minify false --logLevel warn",
     "dev": "pnpm run start",
-    "dev:vercel": "vercel dev",
     "type-check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
