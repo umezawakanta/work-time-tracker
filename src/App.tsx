@@ -599,6 +599,31 @@ function App() {
     }
   };
 
+  // ユーザーIDを直接受け取る関数
+  const loadSalaryRecordsWithUserId = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/work-records/salary?userId=${userId}`);
+      const data = await response.json();
+      if (data.success) {
+        setSalaryRecords(data.records);
+      }
+    } catch (error) {
+      console.error('Failed to load salary records:', error);
+    }
+  };
+
+  const loadWorkDiariesWithUserId = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/work-records/diary?userId=${userId}`);
+      const data = await response.json();
+      if (data.success) {
+        setWorkDiaries(data.diaries);
+      }
+    } catch (error) {
+      console.error('Failed to load work diaries:', error);
+    }
+  };
+
   const handleCreateSalaryRecord = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user?.id) return;
@@ -980,6 +1005,14 @@ function App() {
     }
   }, []);
 
+  // ログイン状態が変更された時にデータを読み込み
+  useEffect(() => {
+    if (isLoggedIn && user?.id) {
+      loadSalaryRecords();
+      loadWorkDiaries();
+    }
+  }, [isLoggedIn, user?.id]);
+
   const verifyToken = async (token: string) => {
     try {
       // 簡単なトークン検証（実際の実装ではJWTをデコード）
@@ -993,6 +1026,21 @@ function App() {
         setIsLoggedIn(true);
         loadProjects();
         loadReportSummary();
+        // トークン検証時にもデータを読み込み
+        const userResponse = await fetch("/api/auth/verify", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          if (userData.success && userData.user) {
+            setUser(userData.user);
+            loadSalaryRecordsWithUserId(userData.user.id);
+            loadWorkDiariesWithUserId(userData.user.id);
+            loadUserSettings();
+          }
+        }
       } else {
         // トークンが無効な場合は削除
         localStorage.removeItem("access_token");
@@ -1043,10 +1091,13 @@ function App() {
         if (data.token) {
           localStorage.setItem("access_token", data.token);
         }
+        
+        // ユーザー情報を設定してからデータを読み込み
+        const userId = data.user.id;
         loadProjects(); // プロジェクトを読み込み
         loadReportSummary(); // レポートを読み込み
-        loadSalaryRecords(); // 給料記録を読み込み
-        loadWorkDiaries(); // 日記を読み込み
+        loadSalaryRecordsWithUserId(userId); // 給料記録を読み込み
+        loadWorkDiariesWithUserId(userId); // 日記を読み込み
         loadUserSettings(); // ユーザー設定を読み込み
         console.log("Login successful:", data);
       } else {
