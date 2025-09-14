@@ -97,7 +97,11 @@ const validateDisplayName = (displayName) => {
 
 // 機密情報をサニタイズする関数
 const sanitizeErrorData = (errorData) => {
-  const sensitiveFields = ['password', 'token', 'apiKey', 'secret', 'creditCard', 'email', 'hashedPassword', 'passwordHash'];
+  const sensitiveFields = [
+    'password', 'token', 'apiKey', 'secret', 'creditCard', 'email', 
+    'hashedPassword', 'passwordHash', 'accessToken', 'refreshToken',
+    'authorization', 'auth', 'credential', 'key', 'private', 'sensitive'
+  ];
   
   if (typeof errorData !== 'object' || errorData === null) {
     return errorData;
@@ -110,6 +114,14 @@ const sanitizeErrorData = (errorData) => {
     if (sensitiveFields.some(field => key.toLowerCase().includes(field))) {
       sanitized[key] = '[REDACTED]';
     }
+    
+    // 値が文字列で機密情報を含む可能性がある場合もマスク
+    if (typeof sanitized[key] === 'string' && sanitized[key].length > 0) {
+      const value = sanitized[key].toLowerCase();
+      if (sensitiveFields.some(field => value.includes(field))) {
+        sanitized[key] = '[REDACTED]';
+      }
+    }
   });
   
   return sanitized;
@@ -117,20 +129,21 @@ const sanitizeErrorData = (errorData) => {
 
 // エラーレスポンスを送信
 const sendErrorResponse = (res, statusCode, errorData) => {
-  // ログ用のデータをサニタイズ
-  const logData = {
-    statusCode,
-    error: errorData?.error || 'UNKNOWN_ERROR',
-    field: errorData?.field,
-    timestamp: new Date().toISOString(),
-    // 詳細は開発環境でのみ、かつサニタイズ済み
-    ...(process.env.NODE_ENV === 'development' && {
-      details: sanitizeErrorData(errorData)
-    })
-  };
-  
-  // 機密情報を除外してログ出力
-  console.error('API Error:', JSON.stringify(logData));
+  // バリデーションエラーの場合は機密情報をログに出力しない
+  if (errorData?.error === 'VALIDATION_ERROR') {
+    console.error(`API Error [${statusCode}]: VALIDATION_ERROR (${errorData.field || 'unknown field'})`);
+  } else if (errorData?.error === 'AUTH_ERROR' || errorData?.error === 'PERMISSION_ERROR') {
+    // 認証・権限エラーも機密情報を含む可能性があるため詳細を制限
+    console.error(`API Error [${statusCode}]: ${errorData.error}`);
+  } else {
+    // その他のエラーは開発環境でのみ詳細をログ出力（サニタイズ済み）
+    if (process.env.NODE_ENV === 'development') {
+      const sanitizedData = sanitizeErrorData(errorData);
+      console.error(`API Error [${statusCode}]:`, sanitizedData);
+    } else {
+      console.error(`API Error [${statusCode}]: ${errorData?.error || 'UNKNOWN_ERROR'}`);
+    }
+  }
   
   return res.status(statusCode).json(errorData);
 };
