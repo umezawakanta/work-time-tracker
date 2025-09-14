@@ -1,4 +1,3 @@
-// ES module imports
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
@@ -8,7 +7,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Database connection utility
-const ensureDatabaseConnection = async (): Promise<void> => {
+const ensureDatabaseConnection = async () => {
   const isConnected = mongoose.connection.readyState === 1;
   
   if (isConnected) {
@@ -23,7 +22,6 @@ const ensureDatabaseConnection = async (): Promise<void> => {
       throw new Error("MONGODB_URI environment variable is required but not set.");
     }
     
-    // テスト環境などでMongoDBを無効化する場合
     if (MONGODB_URI === "memory://") {
       console.log("🧪 MongoDB connection skipped (memory mode for testing)");
       return;
@@ -60,21 +58,6 @@ const ensureDatabaseConnection = async (): Promise<void> => {
   }
 };
 
-// User document interface
-interface UserDocument extends mongoose.Document {
-  id: string;
-  email: string;
-  displayName: string;
-  password: string;
-  role: string;
-  isVerified: boolean;
-  avatar?: string;
-  preferences: any;
-  status: "active" | "inactive" | "suspended";
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 // User schema
 const UserSchema = new mongoose.Schema(
   {
@@ -93,8 +76,7 @@ const UserSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    versionKey: false,
-  },
+  }
 );
 
 // Virtual for user ID
@@ -111,42 +93,18 @@ UserSchema.set("toJSON", {
   },
 });
 
-const User = mongoose.model<UserDocument>("User", UserSchema);
-
-// Login request interface
-interface LoginRequest {
-  email: string;
-  password: string;
-  rememberMe?: boolean;
-}
-
-// Login response interface
-interface LoginResponse {
-  success: boolean;
-  message: string;
-  user?: {
-    id: string;
-    email: string;
-    displayName: string;
-    role: string;
-    isVerified: boolean;
-    avatar?: string;
-    preferences: any;
-  };
-  token?: string;
-  error?: string;
-}
+const User = mongoose.model("User", UserSchema);
 
 // Robust JSON reader for Vercel Node (handles object, string, or raw stream)
-async function readJson(req: any): Promise<any> {
+async function readJson(req) {
   try {
-    const existingBody: unknown = (req as any).body;
+    const existingBody = req.body;
     if (existingBody !== undefined) {
       return typeof existingBody === 'string' ? JSON.parse(existingBody) : existingBody;
     }
-    const raw: string = await new Promise((resolve, reject) => {
+    const raw = await new Promise((resolve, reject) => {
       let data = '';
-      req.on('data', (chunk: Buffer) => {
+      req.on('data', (chunk) => {
         data += chunk.toString('utf8');
       });
       req.on('end', () => resolve(data));
@@ -158,12 +116,11 @@ async function readJson(req: any): Promise<any> {
   }
 }
 
-async function handler(req: any, res: any) {
+async function handler(req, res) {
   // CORS設定
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
-
-  const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
+  const isPreview = origin && /^https://work-time-tracker-five-.*.vercel.app$/.test(origin);
   const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
 
   res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
@@ -181,31 +138,31 @@ async function handler(req: any, res: any) {
     res.status(405).json({
       success: false,
       error: 'Method not allowed',
-    } as LoginResponse);
+    });
     return;
   }
 
   try {
     console.log('🔐 User login started');
-    
+
     // Ensure database connection is established
     await ensureDatabaseConnection();
-    
+
     // Read JSON body safely across environments
-    const body: Partial<LoginRequest> = await readJson(req);
+    const body = await readJson(req);
     console.log('📥 Login request meta', {
       contentType: req.headers['content-type'],
       contentLength: req.headers['content-length'],
       bodyType: typeof body,
-      hasEmail: Boolean((body as any)?.email),
+      hasEmail: Boolean(body?.email),
     });
     const {
       email,
       password,
       rememberMe = false,
-    }: LoginRequest = {
-      email: body?.email as string,
-      password: body?.password as string,
+    } = {
+      email: body?.email,
+      password: body?.password,
       rememberMe: Boolean(body?.rememberMe),
     };
 
@@ -215,7 +172,7 @@ async function handler(req: any, res: any) {
         success: false,
         message: 'メールアドレスとパスワードが必要です',
         error: 'Email and password are required',
-      } as LoginResponse);
+      });
     }
 
     // ユーザーの検索
@@ -231,7 +188,7 @@ async function handler(req: any, res: any) {
     const user = await User.findOne({ email: emailLc });
     console.log('[auth/login] findOne(users) done', {
       found: Boolean(user),
-      id: (user as any)?._id || (user as any)?.id || null,
+      id: user?._id || user?.id || null,
     });
 
     if (!user) {
@@ -239,7 +196,7 @@ async function handler(req: any, res: any) {
         success: false,
         message: 'メールアドレスまたはパスワードが正しくありません',
         error: 'Invalid credentials',
-      } as LoginResponse);
+      });
     }
 
     // パスワードの確認
@@ -249,7 +206,7 @@ async function handler(req: any, res: any) {
         success: false,
         message: 'メールアドレスまたはパスワードが正しくありません',
         error: 'Invalid credentials',
-      } as LoginResponse);
+      });
     }
 
     // アカウント状態の確認
@@ -258,7 +215,7 @@ async function handler(req: any, res: any) {
         success: false,
         message: 'アカウントが停止されています。管理者にお問い合わせください',
         error: 'Account suspended',
-      } as LoginResponse);
+      });
     }
 
     if (user.status === 'inactive') {
@@ -266,7 +223,7 @@ async function handler(req: any, res: any) {
         success: false,
         message: 'アカウントが無効です。アカウントを有効化してください',
         error: 'Account inactive',
-      } as LoginResponse);
+      });
     }
 
     // JWTトークンの生成（管理者クレームを付与）
@@ -277,16 +234,16 @@ async function handler(req: any, res: any) {
       .map((s) => s.trim().toLowerCase())
       .filter(Boolean);
     const userEmailLc = String(user.email || '').toLowerCase();
-    const existingRoles: string[] = Array.isArray((user as any).roles)
-      ? ((user as any).roles as string[])
+    const existingRoles = Array.isArray(user.roles)
+      ? user.roles
       : [];
     const computedIsAdmin =
-      (user as any).isAdmin === true ||
+      user.isAdmin === true ||
       String(user.role || '').toLowerCase() === 'admin' ||
       existingRoles.includes('admin') ||
       adminEmails.includes(userEmailLc);
     const roleClaim = computedIsAdmin ? 'admin' : user.role || 'user';
-    const rolesClaim: string[] = computedIsAdmin
+    const rolesClaim = computedIsAdmin
       ? Array.from(new Set([...existingRoles, 'admin']))
       : existingRoles;
 
@@ -307,7 +264,7 @@ async function handler(req: any, res: any) {
     );
 
     // レスポンスの構築
-    const response: LoginResponse = {
+    const response = {
       success: true,
       message: 'ログインに成功しました',
       user: {
@@ -355,7 +312,7 @@ async function handler(req: any, res: any) {
         process.env.NODE_ENV === 'development'
           ? (error instanceof Error ? error.message : String(error))
           : 'Internal server error',
-    } as LoginResponse);
+    });
   }
 }
 
