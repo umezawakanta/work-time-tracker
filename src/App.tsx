@@ -152,6 +152,56 @@ function App() {
   const [selectedFont, setSelectedFont] = useState("system");
   const [showFontSettings, setShowFontSettings] = useState(false);
 
+  // 利用可能なフォント一覧
+  const availableFonts = [
+    { value: "system", label: "システムデフォルト" },
+    { value: "serif", label: "Serif (明朝体)" },
+    { value: "sans-serif", label: "Sans-serif (ゴシック体)" },
+    { value: "monospace", label: "Monospace (等幅)" },
+    { value: "cursive", label: "Cursive (筆記体)" },
+    { value: "fantasy", label: "Fantasy (装飾体)" },
+    { value: "Arial", label: "Arial" },
+    { value: "Helvetica", label: "Helvetica" },
+    { value: "Times New Roman", label: "Times New Roman" },
+    { value: "Georgia", label: "Georgia" },
+    { value: "Verdana", label: "Verdana" },
+    { value: "Courier New", label: "Courier New" },
+    { value: "Impact", label: "Impact" },
+    { value: "Comic Sans MS", label: "Comic Sans MS" },
+    { value: "Trebuchet MS", label: "Trebuchet MS" },
+    { value: "Palatino", label: "Palatino" },
+    { value: "Garamond", label: "Garamond" },
+    { value: "Bookman", label: "Bookman" },
+    { value: "Avant Garde", label: "Avant Garde" },
+    { value: "Helvetica Neue", label: "Helvetica Neue" }
+  ];
+
+  // フォント設定の読み込みと適用
+  useEffect(() => {
+    const savedFont = localStorage.getItem("selectedFont");
+    if (savedFont) {
+      setSelectedFont(savedFont);
+      applyFont(savedFont);
+    }
+  }, []);
+
+  // フォント適用関数
+  const applyFont = (fontValue: string) => {
+    const root = document.documentElement;
+    if (fontValue === "system") {
+      root.style.setProperty("--app-font-family", "");
+    } else {
+      root.style.setProperty("--app-font-family", fontValue);
+    }
+  };
+
+  // フォント変更ハンドラー
+  const handleFontChange = (fontValue: string) => {
+    setSelectedFont(fontValue);
+    applyFont(fontValue);
+    localStorage.setItem("selectedFont", fontValue);
+  };
+
   // ログイン状態をチェック
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -925,6 +975,13 @@ function App() {
             <h1>Work Time Tracker</h1>
             <div className="user-info">
               <span>こんにちは、{user?.displayName || user?.email}さん</span>
+              <button 
+                onClick={() => setShowFontSettings(!showFontSettings)} 
+                className="font-settings-button"
+                title="フォント設定"
+              >
+                🔤
+              </button>
               <button onClick={handleLogout} className="logout-button">
                 ログアウト
               </button>
@@ -1783,6 +1840,46 @@ function App() {
             </div>
           </main>
         </div>
+        
+        {/* フォント設定モーダル */}
+        {showFontSettings && (
+          <div className="font-settings-modal">
+            <div className="font-settings-content">
+              <div className="font-settings-header">
+                <h3>フォント設定</h3>
+                <button 
+                  onClick={() => setShowFontSettings(false)}
+                  className="close-button"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="font-settings-body">
+                <div className="font-preview">
+                  <p style={{ fontFamily: selectedFont === "system" ? "" : selectedFont }}>
+                    このテキストでフォントをプレビューできます
+                  </p>
+                </div>
+                <div className="font-options">
+                  {availableFonts.map((font) => (
+                    <label key={font.value} className="font-option">
+                      <input
+                        type="radio"
+                        name="font"
+                        value={font.value}
+                        checked={selectedFont === font.value}
+                        onChange={(e) => handleFontChange(e.target.value)}
+                      />
+                      <span style={{ fontFamily: font.value === "system" ? "" : font.value }}>
+                        {font.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

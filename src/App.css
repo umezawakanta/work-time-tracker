@@ -1381,3 +1381,142 @@ tr:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* フォント設定ボタン */
+.font-settings-button {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.font-settings-button:hover {
+  background: #e0e0e0;
+}
+
+/* フォント設定モーダル */
+.font-settings-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.font-settings-content {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.font-settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  background: #f8f9fa;
+}
+
+.font-settings-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background: #e0e0e0;
+}
+
+.font-settings-body {
+  padding: 20px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.font-preview {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #eee;
+}
+
+.font-preview p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.font-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+}
+
+.font-option {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.font-option:hover {
+  background: #f8f9fa;
+  border-color: #007bff;
+}
+
+.font-option input[type="radio"] {
+  margin-right: 12px;
+  transform: scale(1.2);
+}
+
+.font-option span {
+  font-size: 16px;
+  color: #333;
+  flex: 1;
+}
+
+.font-option:has(input:checked) {
+  background: #e3f2fd;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* アプリ全体のフォント適用 */
+.app {
+  font-family: var(--app-font-family, inherit);
+}
