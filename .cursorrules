@@ -1,11 +1,25 @@
-# Tech baseline
+# Work Time Tracker - Cursor Rules
+
+## Tech Stack
 - React 18 + Vite + TypeScript
-- Mobile first、CLS=0、iPhone SE 幅で崩れないこと
+- MongoDB + Mongoose
+- Vercel Serverless Functions
+- JWT Authentication
 
-# Coding standards
-- TypeScript のエラーは 0。any を避ける
-- 関数は副作用を最小化、早期 return
+## Coding Standards
+- TypeScript strict mode enabled
+- No `any` types allowed
+- Functions should be pure when possible
+- Early returns for error handling
+- Mobile-first responsive design
 
-# Tasks for Agent Auto
-- 変更ファイル一覧 → 差分 → 動作確認手順 → リスク/ロールバック を出力
-- TypeScript を通すまで自動修正を継続
+## File Structure
+- `src/` - React application
+- `api/` - Vercel API routes
+- `src/server/` - Database models and config
+
+## Development Guidelines
+- Keep components simple and focused
+- Use meaningful variable names
+- Add comments for complex logic
+- Test manually before committing

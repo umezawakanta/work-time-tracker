@@ -2,15 +2,9 @@
   "version": 2,
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
-  "framework": null,
   "installCommand": "pnpm install --frozen-lockfile",
-  "devCommand": "pnpm run dev",
   "functions": {
-    "api/auth/*.ts": {
-      "includeFiles": "src/server/**",
-      "maxDuration": 30
-    },
-    "api/time/*.ts": {
+    "api/**/*.ts": {
       "includeFiles": "src/server/**",
       "maxDuration": 30
     }

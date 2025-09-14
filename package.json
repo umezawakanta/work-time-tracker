@@ -1,7 +1,7 @@
 {
   "name": "work-time-tracker",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.0.0",
   "type": "module",
   "packageManager": "pnpm@10.15.1",
   "engines": {
@@ -9,9 +9,8 @@
     "pnpm": ">=10.0.0"
   },
   "scripts": {
-    "start": "vite",
+    "dev": "vite",
     "build": "vite build",
-    "dev": "pnpm run start",
     "type-check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
@@ -21,8 +20,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.13.2",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "typescript": "^5.9.2"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -31,6 +29,7 @@
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.4.0",
+    "typescript": "^5.9.2",
     "vite": "^6.3.0"
   }
 }
