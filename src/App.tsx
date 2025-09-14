@@ -297,6 +297,8 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
+        console.log('🔍 Debug - loaded users:', data.users);
+        console.log('🔍 Debug - first user id:', data.users && data.users[0] ? data.users[0].id : 'no users');
         setAdminUsers(data.users || []);
       } else {
         setMessage(`ユーザー一覧取得失敗: ${data.message}`);
@@ -308,12 +310,18 @@ function App() {
   };
 
   const handleEditUser = async (user: AdminUser) => {
+    console.log('🔍 Debug - handleEditUser called with:', user);
+    console.log('🔍 Debug - user.id:', user.id);
     setEditingUser(user);
   };
 
   const handleUpdateUser = async (updatedUser: AdminUser) => {
     try {
       const token = localStorage.getItem("access_token");
+      
+      // デバッグログ：送信前のデータを確認
+      console.log('🔍 Debug - updatedUser:', updatedUser);
+      console.log('🔍 Debug - updatedUser.id:', updatedUser.id);
       
       // APIが期待する形式にデータを変換
       const requestData = {
@@ -323,6 +331,9 @@ function App() {
         isVerified: updatedUser.isVerified,
         status: updatedUser.status
       };
+
+      // デバッグログ：送信するデータを確認
+      console.log('🔍 Debug - requestData:', requestData);
 
       const response = await fetch("/api/admin/user-edit", {
         method: "PUT",
