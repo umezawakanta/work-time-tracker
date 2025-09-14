@@ -2184,72 +2184,97 @@ function App() {
             </div>
             <div className="user-info">
               <span>👋 こんにちは、{user?.displayName || user?.email}さん！</span>
-              {/* 時間記録アイコンの走り回るアニメーション */}
+              {/* 時間記録アイコンの横一列走るアニメーション */}
               <div className={`time-tracking-icon-animation ${isTracking ? 'active-tracking' : ''}`}>
-                {/* 5匹のキャラクターが走り回る */}
+                {/* 5匹のキャラクターが横一列で走る */}
                 <div className="running-character running-character-1">
-                  <div className="mini-character">
-                    <div className="mini-character-face">
-                      <div className="mini-character-eyes">
-                        <div className="mini-eye left-mini-eye"></div>
-                        <div className="mini-eye right-mini-eye"></div>
+                  <div className="cute-character">
+                    <div className="cute-character-face">
+                      <div className="cute-character-eyes">
+                        <div className="cute-eye left-cute-eye"></div>
+                        <div className="cute-eye right-cute-eye"></div>
                       </div>
-                      <div className="mini-character-mouth"></div>
+                      <div className="cute-character-mouth"></div>
+                      <div className="cute-character-blush"></div>
                     </div>
-                    <div className="mini-character-body"></div>
-                    <div className="mini-character-headphones"></div>
+                    <div className="cute-character-body"></div>
+                    <div className="cute-character-wings"></div>
+                    <div className="cute-character-sparkles">
+                      <div className="sparkle sparkle-1"></div>
+                      <div className="sparkle sparkle-2"></div>
+                    </div>
                   </div>
                 </div>
                 <div className="running-character running-character-2">
-                  <div className="mini-character">
-                    <div className="mini-character-face">
-                      <div className="mini-character-eyes">
-                        <div className="mini-eye left-mini-eye"></div>
-                        <div className="mini-eye right-mini-eye"></div>
+                  <div className="cute-character">
+                    <div className="cute-character-face">
+                      <div className="cute-character-eyes">
+                        <div className="cute-eye left-cute-eye"></div>
+                        <div className="cute-eye right-cute-eye"></div>
                       </div>
-                      <div className="mini-character-mouth"></div>
+                      <div className="cute-character-mouth"></div>
+                      <div className="cute-character-blush"></div>
                     </div>
-                    <div className="mini-character-body"></div>
-                    <div className="mini-character-headphones"></div>
+                    <div className="cute-character-body"></div>
+                    <div className="cute-character-wings"></div>
+                    <div className="cute-character-sparkles">
+                      <div className="sparkle sparkle-1"></div>
+                      <div className="sparkle sparkle-2"></div>
+                    </div>
                   </div>
                 </div>
                 <div className="running-character running-character-3">
-                  <div className="mini-character">
-                    <div className="mini-character-face">
-                      <div className="mini-character-eyes">
-                        <div className="mini-eye left-mini-eye"></div>
-                        <div className="mini-eye right-mini-eye"></div>
+                  <div className="cute-character">
+                    <div className="cute-character-face">
+                      <div className="cute-character-eyes">
+                        <div className="cute-eye left-cute-eye"></div>
+                        <div className="cute-eye right-cute-eye"></div>
                       </div>
-                      <div className="mini-character-mouth"></div>
+                      <div className="cute-character-mouth"></div>
+                      <div className="cute-character-blush"></div>
                     </div>
-                    <div className="mini-character-body"></div>
-                    <div className="mini-character-headphones"></div>
+                    <div className="cute-character-body"></div>
+                    <div className="cute-character-wings"></div>
+                    <div className="cute-character-sparkles">
+                      <div className="sparkle sparkle-1"></div>
+                      <div className="sparkle sparkle-2"></div>
+                    </div>
                   </div>
                 </div>
                 <div className="running-character running-character-4">
-                  <div className="mini-character">
-                    <div className="mini-character-face">
-                      <div className="mini-character-eyes">
-                        <div className="mini-eye left-mini-eye"></div>
-                        <div className="mini-eye right-mini-eye"></div>
+                  <div className="cute-character">
+                    <div className="cute-character-face">
+                      <div className="cute-character-eyes">
+                        <div className="cute-eye left-cute-eye"></div>
+                        <div className="cute-eye right-cute-eye"></div>
                       </div>
-                      <div className="mini-character-mouth"></div>
+                      <div className="cute-character-mouth"></div>
+                      <div className="cute-character-blush"></div>
                     </div>
-                    <div className="mini-character-body"></div>
-                    <div className="mini-character-headphones"></div>
+                    <div className="cute-character-body"></div>
+                    <div className="cute-character-wings"></div>
+                    <div className="cute-character-sparkles">
+                      <div className="sparkle sparkle-1"></div>
+                      <div className="sparkle sparkle-2"></div>
+                    </div>
                   </div>
                 </div>
                 <div className="running-character running-character-5 falling-character">
-                  <div className="mini-character">
-                    <div className="mini-character-face">
-                      <div className="mini-character-eyes">
-                        <div className="mini-eye left-mini-eye"></div>
-                        <div className="mini-eye right-mini-eye"></div>
+                  <div className="cute-character">
+                    <div className="cute-character-face">
+                      <div className="cute-character-eyes">
+                        <div className="cute-eye left-cute-eye"></div>
+                        <div className="cute-eye right-cute-eye"></div>
                       </div>
-                      <div className="mini-character-mouth"></div>
+                      <div className="cute-character-mouth"></div>
+                      <div className="cute-character-blush"></div>
                     </div>
-                    <div className="mini-character-body"></div>
-                    <div className="mini-character-headphones"></div>
+                    <div className="cute-character-body"></div>
+                    <div className="cute-character-wings"></div>
+                    <div className="cute-character-sparkles">
+                      <div className="sparkle sparkle-1"></div>
+                      <div className="sparkle sparkle-2"></div>
+                    </div>
                   </div>
                 </div>
                 {isTracking && <div className="tracking-pulse"></div>}
