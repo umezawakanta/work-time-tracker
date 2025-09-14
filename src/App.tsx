@@ -238,6 +238,7 @@ function App() {
   const [overtime, setOvertime] = useState("");
   const [bonus, setBonus] = useState("");
   const [salaryNotes, setSalaryNotes] = useState("");
+  const [recordType, setRecordType] = useState<'income' | 'expense'>('income');
   
   // 日記フォームの状態
   const [diaryDate, setDiaryDate] = useState("");
@@ -661,13 +662,16 @@ function App() {
     if (!user?.id) return;
 
     try {
+      // 記録タイプに基づいて金額を正負に変換
+      const salaryAmount = recordType === 'expense' ? -Math.abs(Number(salary)) : Math.abs(Number(salary));
+      
       const response = await fetch('/api/work-records/salary', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user.id,
           date: salaryDate,
-          salary: Number(salary),
+          salary: salaryAmount,
           transportation: Number(transportation) || 0,
           overtime: Number(overtime) || 0,
           bonus: Number(bonus) || 0,
@@ -677,13 +681,14 @@ function App() {
 
       const data = await response.json();
       if (data.success) {
-        setMessage('給料記録が作成されました！');
+        setMessage('収入・支出記録が作成されました！');
         setSalaryDate('');
         setSalary('');
         setTransportation('');
         setOvertime('');
         setBonus('');
         setSalaryNotes('');
+        setRecordType('income');
         setShowSalaryForm(false);
         loadSalaryRecords();
       } else {
@@ -699,13 +704,16 @@ function App() {
     if (!user?.id || !editingSalaryRecord) return;
 
     try {
+      // 記録タイプに基づいて金額を正負に変換
+      const salaryAmount = recordType === 'expense' ? -Math.abs(Number(salary)) : Math.abs(Number(salary));
+      
       const response = await fetch(`/api/work-records/salary/${editingSalaryRecord._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user.id,
           date: salaryDate,
-          salary: Number(salary),
+          salary: salaryAmount,
           transportation: Number(transportation) || 0,
           overtime: Number(overtime) || 0,
           bonus: Number(bonus) || 0,
@@ -715,13 +723,14 @@ function App() {
 
       const data = await response.json();
       if (data.success) {
-        setMessage('給料記録を更新しました！');
+        setMessage('収入・支出記録を更新しました！');
         setSalaryDate('');
         setSalary('');
         setTransportation('');
         setOvertime('');
         setBonus('');
         setSalaryNotes('');
+        setRecordType('income');
         setEditingSalaryRecord(null);
         setShowSalaryForm(false);
         loadSalaryRecords();
@@ -1102,11 +1111,12 @@ function App() {
 
   const editSalaryRecord = (record: any) => {
     setSalaryDate(record.date.split('T')[0]);
-    setSalary(record.salary.toString());
+    setSalary(Math.abs(record.salary).toString()); // 絶対値で表示
     setTransportation(record.transportation.toString());
     setOvertime(record.overtime.toString());
     setBonus(record.bonus.toString());
     setSalaryNotes(record.notes || '');
+    setRecordType(record.salary >= 0 ? 'income' : 'expense'); // 正負に基づいてタイプを設定
     setEditingSalaryRecord(record);
     setShowSalaryForm(true);
     setShowDiaryForm(false);
@@ -3328,13 +3338,11 @@ function App() {
                         <label htmlFor="recordType">記録タイプ</label>
                         <select
                           id="recordType"
-                          value={salary > 0 ? 'income' : 'expense'}
+                          value={recordType}
                           onChange={(e) => {
-                            if (e.target.value === 'expense' && salary > 0) {
-                              setSalary('');
-                            } else if (e.target.value === 'income' && salary < 0) {
-                              setSalary('');
-                            }
+                            setRecordType(e.target.value as 'income' | 'expense');
+                            // タイプ変更時に金額をクリア
+                            setSalary('');
                           }}
                         >
                           <option value="income">収入</option>
