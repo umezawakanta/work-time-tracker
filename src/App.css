@@ -3125,6 +3125,39 @@ figure, figcaption, details, summary, mark, small, sub, sup {
   cursor: grabbing;
 }
 
+.feature-order-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.order-button {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.order-button:hover:not(:disabled) {
+  background: #d97706;
+  transform: scale(1.1);
+}
+
+.order-button:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .feature-icon {
   font-size: 1.5rem;
   width: 2rem;
@@ -4782,5 +4815,17 @@ input:checked + .toggle-slider:before {
   .work-records-section {
     margin-top: 0.75rem;
     padding: 0.75rem;
+  }
+  
+  .feature-order-controls {
+    flex-direction: row;
+    gap: 0.5rem;
+    margin-left: 0.25rem;
+  }
+  
+  .order-button {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
   }
 }

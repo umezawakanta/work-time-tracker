@@ -896,6 +896,7 @@ function App() {
   };
 
   const handleFeatureReorder = (newOrder: string[]) => {
+    console.log('Updating feature order:', newOrder);
     updateUserSettings({ featureOrder: newOrder });
   };
 
@@ -911,19 +912,85 @@ function App() {
   };
 
   const handleDragStart = (e: React.DragEvent, featureId: string) => {
+    console.log('Drag started:', featureId);
     setDraggedFeature(featureId);
     e.dataTransfer.effectAllowed = 'move';
+  };
+
+  // タッチイベント用のハンドラー
+  const handleTouchStart = (e: React.TouchEvent, featureId: string) => {
+    console.log('Touch started:', featureId);
+    setDraggedFeature(featureId);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!draggedFeature) return;
+    e.preventDefault();
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent, targetFeatureId: string) => {
+    if (!draggedFeature || !userSettings || draggedFeature === targetFeatureId) {
+      console.log('Touch drop cancelled:', { draggedFeature, targetFeatureId, hasUserSettings: !!userSettings });
+      setDraggedFeature(null);
+      return;
+    }
+
+    console.log('Touch drop event:', { draggedFeature, targetFeatureId, userSettings: !!userSettings });
+
+    const currentOrder = [...userSettings.featureOrder];
+    const draggedIndex = currentOrder.indexOf(draggedFeature);
+    const targetIndex = currentOrder.indexOf(targetFeatureId);
+
+    console.log('Touch reordering:', { currentOrder, draggedIndex, targetIndex });
+
+    // 要素を移動
+    const [movedFeature] = currentOrder.splice(draggedIndex, 1);
+    currentOrder.splice(targetIndex, 0, movedFeature);
+
+    console.log('Touch new order:', currentOrder);
+    handleFeatureReorder(currentOrder);
+    setDraggedFeature(null);
+  };
+
+  // ボタンによる並び順変更
+  const moveFeatureUp = (featureId: string) => {
+    if (!userSettings) return;
+    
+    const currentOrder = [...userSettings.featureOrder];
+    const currentIndex = currentOrder.indexOf(featureId);
+    
+    if (currentIndex > 0) {
+      const newOrder = [...currentOrder];
+      [newOrder[currentIndex - 1], newOrder[currentIndex]] = [newOrder[currentIndex], newOrder[currentIndex - 1]];
+      handleFeatureReorder(newOrder);
+    }
+  };
+
+  const moveFeatureDown = (featureId: string) => {
+    if (!userSettings) return;
+    
+    const currentOrder = [...userSettings.featureOrder];
+    const currentIndex = currentOrder.indexOf(featureId);
+    
+    if (currentIndex < currentOrder.length - 1) {
+      const newOrder = [...currentOrder];
+      [newOrder[currentIndex], newOrder[currentIndex + 1]] = [newOrder[currentIndex + 1], newOrder[currentIndex]];
+      handleFeatureReorder(newOrder);
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
+    console.log('Drag over');
   };
 
   const handleDrop = (e: React.DragEvent, targetFeatureId: string) => {
     e.preventDefault();
+    console.log('Drop event:', { draggedFeature, targetFeatureId, userSettings: !!userSettings });
     
     if (!draggedFeature || !userSettings || draggedFeature === targetFeatureId) {
+      console.log('Drop cancelled:', { draggedFeature, targetFeatureId, hasUserSettings: !!userSettings });
       setDraggedFeature(null);
       return;
     }
@@ -932,10 +999,13 @@ function App() {
     const draggedIndex = currentOrder.indexOf(draggedFeature);
     const targetIndex = currentOrder.indexOf(targetFeatureId);
 
+    console.log('Reordering:', { currentOrder, draggedIndex, targetIndex });
+
     // 要素を移動
     const [movedFeature] = currentOrder.splice(draggedIndex, 1);
     currentOrder.splice(targetIndex, 0, movedFeature);
 
+    console.log('New order:', currentOrder);
     handleFeatureReorder(currentOrder);
     setDraggedFeature(null);
   };
@@ -4101,12 +4171,33 @@ function App() {
                         onDragStart={(e) => handleDragStart(e, feature.id)}
                         onDragOver={handleDragOver}
                         onDrop={(e) => handleDrop(e, feature.id)}
+                        onTouchStart={(e) => handleTouchStart(e, feature.id)}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={(e) => handleTouchEnd(e, feature.id)}
                       >
                         <div className="feature-drag-handle">⋮⋮</div>
                         <div className="feature-icon">{feature.icon}</div>
                         <div className="feature-info">
                           <div className="feature-name">{feature.name}</div>
                           <div className="feature-description">{feature.description}</div>
+                        </div>
+                        <div className="feature-order-controls">
+                          <button 
+                            className="order-button up-button"
+                            onClick={() => moveFeatureUp(feature.id)}
+                            disabled={userSettings?.featureOrder.indexOf(feature.id) === 0}
+                            title="上に移動"
+                          >
+                            ↑
+                          </button>
+                          <button 
+                            className="order-button down-button"
+                            onClick={() => moveFeatureDown(feature.id)}
+                            disabled={userSettings?.featureOrder.indexOf(feature.id) === (userSettings?.featureOrder.length || 0) - 1}
+                            title="下に移動"
+                          >
+                            ↓
+                          </button>
                         </div>
                         <div className="feature-toggle">
                           <label className="toggle-switch">
