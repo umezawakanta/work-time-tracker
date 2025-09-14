@@ -2206,7 +2206,10 @@ function App() {
           </header>
           
           <main className="dashboard-main">
-            <div className="time-tracking-section">
+            {getVisibleFeatures().map((feature) => {
+              if (feature.id === 'time-tracking') {
+                return (
+            <div key={feature.id} className="time-tracking-section">
               <h2>
                 <span className="section-icon">
                   <div className="mini-character">
@@ -2253,9 +2256,10 @@ function App() {
                 </div>
               )}
             </div>
-            
-            {/* プロジェクト管理セクション */}
-            <div className="projects-section">
+                );
+              } else if (feature.id === 'projects') {
+                return (
+            <div key={feature.id} className="projects-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -2365,9 +2369,10 @@ function App() {
                 ))}
               </div>
             </div>
-            
-            {/* レポートセクション */}
-            <div className="reports-section">
+                );
+              } else if (feature.id === 'reports') {
+                return (
+            <div key={feature.id} className="reports-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -2452,10 +2457,10 @@ function App() {
                 </div>
               )}
             </div>
-
-            {/* 管理者パネル */}
-            {user?.role === 'admin' && (
-              <div className="admin-section">
+                );
+              } else if (feature.id === 'admin-panel' && user?.role === 'admin') {
+                return (
+            <div key={feature.id} className="admin-section">
                 <div className="section-header">
                   <h2>
                   <span className="section-icon">
@@ -2659,10 +2664,10 @@ function App() {
                   </div>
                 )}
               </div>
-            )}
-
-            {/* 本棚セクション */}
-            <div className="bookshelf-section">
+                );
+              } else if (feature.id === 'bookshelf') {
+                return (
+            <div key={feature.id} className="bookshelf-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -2879,9 +2884,10 @@ function App() {
                 </div>
               )}
             </div>
-
-            {/* メモセクション */}
-            <div className="memos-section">
+                );
+              } else if (feature.id === 'memos') {
+                return (
+            <div key={feature.id} className="memos-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -3162,9 +3168,10 @@ function App() {
                 </div>
               )}
             </div>
-
-            {/* 公開メモセクション */}
-            <div className="public-memos-section">
+                );
+              } else if (feature.id === 'public-memos') {
+                return (
+            <div key={feature.id} className="public-memos-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -3350,9 +3357,10 @@ function App() {
                 </div>
               )}
             </div>
-
-            {/* お仕事記録セクション */}
-            <div className="work-records-section">
+                );
+              } else if (feature.id === 'work-records') {
+                return (
+            <div key={feature.id} className="work-records-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -4088,6 +4096,11 @@ function App() {
                 </div>
               )}
             </div>
+                );
+              } else {
+                return null;
+              }
+            })}
           </main>
         </div>
         
