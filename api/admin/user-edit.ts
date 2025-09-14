@@ -209,7 +209,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 更新データの構築
     const updateData: any = {};
     if (displayName !== undefined) updateData.displayName = displayName.trim();
-    if (role !== undefined) updateData.role = role;
+    if (role !== undefined) {
+      updateData.role = role;
+      // 管理者権限の設定
+      if (role === 'admin') {
+        updateData.isAdmin = true;
+        updateData.roles = ['admin'];
+      } else {
+        updateData.isAdmin = false;
+        updateData.roles = ['user'];
+      }
+    }
     if (isVerified !== undefined) updateData.isVerified = isVerified;
     if (status !== undefined) updateData.status = status;
 
