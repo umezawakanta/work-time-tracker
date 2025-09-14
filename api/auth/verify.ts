@@ -8,11 +8,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
   const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
-  const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
+  
+  // 明示的に"null"オリジンをブロックし、認証情報の漏洩を防ぐ
+  const isAllowedOrigin = origin
+    && origin !== "null"
+    && origin !== null
+    && (allowedOrigins.includes(origin) || isPreview);
 
   if (isAllowedOrigin && origin) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    // 許可されていないオリジンの場合は認証情報を送信しない
+    res.setHeader('Access-Control-Allow-Origin', '*');
   }
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
