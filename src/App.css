@@ -3295,6 +3295,7 @@ input:checked + .toggle-slider:before {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   background: #f59e0b;
+  gap: 0;
 }
 
 .weekday {
@@ -3308,7 +3309,10 @@ input:checked + .toggle-slider:before {
 .calendar-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  background: white;
+  gap: 1px;
+  background: #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .calendar-day {
@@ -3316,9 +3320,12 @@ input:checked + .toggle-slider:before {
   padding: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid #e5e7eb;
+  background: white;
+  border: none;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   position: relative;
 }
 
@@ -3842,6 +3849,181 @@ input:checked + .toggle-slider:before {
   
   .dog-sparkle {
     font-size: 10px;
+  }
+
+  /* カレンダーのモバイル対応 */
+  .calendar-container {
+    padding: 0.5rem;
+  }
+
+  .calendar-header {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .calendar-title {
+    font-size: 1.1rem;
+  }
+
+  .calendar-nav {
+    gap: 0.5rem;
+  }
+
+  .nav-button {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  .weekday {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .calendar-day {
+    min-height: 60px;
+    padding: 0.25rem;
+    background: white;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .day-number {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.125rem;
+  }
+
+  .day-records {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.125rem;
+    justify-content: center;
+    margin-top: auto;
+  }
+
+  .record-indicator {
+    font-size: 0.7rem;
+    padding: 0.125rem 0.25rem;
+    border-radius: 3px;
+  }
+
+  .selected-date-info {
+    margin-top: 1rem;
+    padding: 1rem;
+  }
+
+  .selected-date-info h4 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .date-records {
+    gap: 0.5rem;
+  }
+
+  .date-record-item {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .record-icon {
+    font-size: 1rem;
+  }
+
+  .record-content {
+    font-size: 0.85rem;
+  }
+}
+
+/* より小さな画面（iPhone SEなど）への対応 */
+@media (max-width: 375px) {
+  .calendar-container {
+    padding: 0.25rem;
+  }
+
+  .calendar-header {
+    padding: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .calendar-title {
+    font-size: 1rem;
+  }
+
+  .calendar-nav {
+    gap: 0.25rem;
+  }
+
+  .nav-button {
+    padding: 0.375rem;
+    font-size: 0.8rem;
+  }
+
+  .weekday {
+    padding: 0.375rem 0.125rem;
+    font-size: 0.75rem;
+  }
+
+  .calendar-day {
+    min-height: 50px;
+    padding: 0.125rem;
+  }
+
+  .day-number {
+    font-size: 0.8rem;
+    margin-bottom: 0.0625rem;
+  }
+
+  .day-records {
+    gap: 0.0625rem;
+  }
+
+  .record-indicator {
+    font-size: 0.6rem;
+    padding: 0.0625rem 0.125rem;
+  }
+
+  .selected-date-info {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .selected-date-info h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .date-record-item {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .record-icon {
+    font-size: 0.9rem;
+  }
+
+  .record-content {
+    font-size: 0.75rem;
   }
 }
 
