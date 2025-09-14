@@ -3372,6 +3372,12 @@ input:checked + .toggle-slider:before {
   background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  min-height: 2rem;
+  justify-content: center;
 }
 
 .record-indicator.clickable {
@@ -3390,6 +3396,29 @@ input:checked + .toggle-slider:before {
 
 .diary-indicator {
   background: rgba(59, 130, 246, 0.2);
+}
+
+.record-icon {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.record-amount {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #059669;
+  line-height: 1;
+  text-align: center;
+}
+
+.record-content {
+  font-size: 0.65rem;
+  color: #1e40af;
+  line-height: 1;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .selected-date-info {
@@ -3467,6 +3496,16 @@ input:checked + .toggle-slider:before {
   
   .record-indicator {
     font-size: 0.7rem;
+    min-height: 1.5rem;
+    padding: 0.1rem 0.2rem;
+  }
+  
+  .record-amount {
+    font-size: 0.6rem;
+  }
+  
+  .record-content {
+    font-size: 0.55rem;
   }
   
   .calendar-header h3 {
@@ -3921,6 +3960,15 @@ input:checked + .toggle-slider:before {
     font-size: 0.7rem;
     padding: 0.125rem 0.25rem;
     border-radius: 3px;
+    min-height: 1.75rem;
+  }
+  
+  .record-amount {
+    font-size: 0.6rem;
+  }
+  
+  .record-content {
+    font-size: 0.55rem;
   }
 
   .selected-date-info {
@@ -4001,6 +4049,15 @@ input:checked + .toggle-slider:before {
   .record-indicator {
     font-size: 0.6rem;
     padding: 0.0625rem 0.125rem;
+    min-height: 1.25rem;
+  }
+  
+  .record-amount {
+    font-size: 0.5rem;
+  }
+  
+  .record-content {
+    font-size: 0.45rem;
   }
 
   .selected-date-info {

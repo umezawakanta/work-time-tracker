@@ -3412,7 +3412,10 @@ function App() {
                                       handleRecordClick('salary', dayItem.date);
                                     }}
                                   >
-                                    💰
+                                    <div className="record-icon">💰</div>
+                                    <div className="record-amount">
+                                      ¥{dayRecords.salaryRecords[0].salary.toLocaleString()}
+                                    </div>
                                   </div>
                                 )}
                                 {dayRecords.diaries.length > 0 && (
@@ -3424,7 +3427,13 @@ function App() {
                                       handleRecordClick('diary', dayItem.date);
                                     }}
                                   >
-                                    📝
+                                    <div className="record-icon">📝</div>
+                                    <div className="record-content">
+                                      {dayRecords.diaries[0].title.length > 8 
+                                        ? dayRecords.diaries[0].title.substring(0, 8) + '...'
+                                        : dayRecords.diaries[0].title
+                                      }
+                                    </div>
                                   </div>
                                 )}
                               </div>
