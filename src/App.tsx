@@ -87,7 +87,7 @@ function App() {
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
-  const [deletingUser, setDeletingUser] = useState<AdminUser | null>(null);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
   // ログイン状態をチェック
   useEffect(() => {
@@ -342,9 +342,22 @@ function App() {
       return;
     }
 
+    // 削除中の状態を設定
+    setDeletingUserId(userId);
+    
+    // 楽観的更新：即座にUIから削除
+    const originalUsers = [...adminUsers];
+    setAdminUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+    setMessage("ユーザーを削除中...");
+
     try {
       const token = localStorage.getItem("access_token");
-      if (!token) return;
+      if (!token) {
+        // トークンがない場合は元に戻す
+        setAdminUsers(originalUsers);
+        setMessage("認証エラーが発生しました");
+        return;
+      }
 
       const response = await fetch("/api/admin/user-delete", {
         method: "DELETE",
@@ -359,12 +372,19 @@ function App() {
 
       if (data.success) {
         setMessage("ユーザーを削除しました");
-        loadAdminUsers();
+        // 成功時は楽観的更新のまま維持
       } else {
+        // 失敗時は元に戻す
+        setAdminUsers(originalUsers);
         setMessage(`ユーザー削除失敗: ${data.message}`);
       }
     } catch (error) {
+      // エラー時は元に戻す
+      setAdminUsers(originalUsers);
       setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    } finally {
+      // 削除中の状態をクリア
+      setDeletingUserId(null);
     }
   };
 
@@ -712,9 +732,14 @@ function App() {
                                   <button 
                                     onClick={() => handleDeleteUser(user.id, user.displayName)}
                                     className="delete-button"
-                                    style={{ marginLeft: '8px', backgroundColor: '#dc3545' }}
+                                    style={{ 
+                                      marginLeft: '8px', 
+                                      backgroundColor: deletingUserId === user.id ? '#6c757d' : '#dc3545',
+                                      opacity: deletingUserId === user.id ? 0.7 : 1
+                                    }}
+                                    disabled={deletingUserId === user.id}
                                   >
-                                    削除
+                                    {deletingUserId === user.id ? '削除中...' : '削除'}
                                   </button>
                                 </td>
                               </tr>
