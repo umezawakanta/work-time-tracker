@@ -26,7 +26,7 @@ const ensureDatabaseConnection = async (): Promise<void> => {
     console.log('[auth/login] Database connection established');
   } catch (error) {
     console.error('[auth/login] Failed to import database config:', error);
-    throw new Error('Database connection failed');
+    throw new Error('Database connection failed', { cause: error });
   }
 };
 
