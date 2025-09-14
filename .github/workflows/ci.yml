@@ -1,47 +1,30 @@
-name: Simplified CI/CD Pipeline
-permissions:
-  contents: read
+name: Build and Deploy
 
 on:
   push:
     branches: [main, develop]
   pull_request:
     types: [opened, synchronize, reopened]
-  workflow_dispatch:
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '10.4.1'
 
 jobs:
-  build-and-deploy:
-    name: Build and Deploy
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@${{ env.PNPM_VERSION }} --activate
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build
-        run: pnpm run build
-
-      - name: Deploy to Vercel (Preview)
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - name: Deploy to Vercel
         if: github.event_name == 'pull_request'
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./
           vercel-args: '--prod'

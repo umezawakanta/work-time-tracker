@@ -20,6 +20,15 @@ interface TimeEntry {
   project?: string;
 }
 
+interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  color: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -35,6 +44,14 @@ function App() {
   const [isTracking, setIsTracking] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [description, setDescription] = useState("");
+  
+  // プロジェクト関連の状態
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProject, setSelectedProject] = useState<string>("");
+  const [showProjectForm, setShowProjectForm] = useState(false);
+  const [projectName, setProjectName] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [projectColor, setProjectColor] = useState("#3b82f6");
 
   // ログイン状態をチェック
   useEffect(() => {
@@ -82,6 +99,7 @@ function App() {
         if (data.token) {
           localStorage.setItem("access_token", data.token);
         }
+        loadProjects(); // プロジェクトを読み込み
         console.log("Login successful:", data);
       } else {
         setMessage(`ログイン失敗: ${data.message}`);
@@ -126,6 +144,65 @@ function App() {
     }
   };
 
+  const handleCreateProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/projects/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ 
+          name: projectName, 
+          description: projectDescription,
+          color: projectColor 
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("プロジェクトが作成されました！");
+        setProjectName("");
+        setProjectDescription("");
+        setProjectColor("#3b82f6");
+        setShowProjectForm(false);
+        loadProjects();
+        console.log("Project creation successful:", data);
+      } else {
+        setMessage(`プロジェクト作成失敗: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadProjects = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/projects/list", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setProjects(data.projects || []);
+      }
+    } catch (error) {
+      console.error("Failed to load projects:", error);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     setIsLoggedIn(false);
@@ -134,6 +211,8 @@ function App() {
     setCurrentTimeEntry(null);
     setIsTracking(false);
     setElapsedTime(0);
+    setProjects([]);
+    setSelectedProject("");
   };
 
   const handleStartTracking = async () => {
@@ -257,15 +336,78 @@ function App() {
               )}
             </div>
             
-            <div className="feature-cards">
-              <div className="feature-card">
-                <h3>プロジェクト管理</h3>
-                <p>プロジェクト別の時間管理</p>
-                <button className="feature-button" disabled>
-                  準備中
+            {/* プロジェクト管理セクション */}
+            <div className="projects-section">
+              <div className="section-header">
+                <h2>プロジェクト</h2>
+                <button 
+                  onClick={() => setShowProjectForm(!showProjectForm)}
+                  className="add-project-button"
+                >
+                  {showProjectForm ? "キャンセル" : "プロジェクト追加"}
                 </button>
               </div>
-              
+
+              {showProjectForm && (
+                <form onSubmit={handleCreateProject} className="project-form">
+                  <div className="form-group">
+                    <label htmlFor="projectName">プロジェクト名</label>
+                    <input
+                      type="text"
+                      id="projectName"
+                      value={projectName}
+                      onChange={(e) => setProjectName(e.target.value)}
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="projectDescription">説明（任意）</label>
+                    <input
+                      type="text"
+                      id="projectDescription"
+                      value={projectDescription}
+                      onChange={(e) => setProjectDescription(e.target.value)}
+                      disabled={loading}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="projectColor">色</label>
+                    <input
+                      type="color"
+                      id="projectColor"
+                      value={projectColor}
+                      onChange={(e) => setProjectColor(e.target.value)}
+                      disabled={loading}
+                    />
+                  </div>
+                  <button type="submit" disabled={loading} className="submit-button">
+                    {loading ? "作成中..." : "プロジェクト作成"}
+                  </button>
+                </form>
+              )}
+
+              <div className="projects-list">
+                {projects.map((project) => (
+                  <div 
+                    key={project.id} 
+                    className={`project-item ${selectedProject === project.id ? 'selected' : ''}`}
+                    onClick={() => setSelectedProject(project.id)}
+                  >
+                    <div 
+                      className="project-color" 
+                      style={{ backgroundColor: project.color }}
+                    ></div>
+                    <div className="project-info">
+                      <h3>{project.name}</h3>
+                      {project.description && <p>{project.description}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="feature-cards">
               <div className="feature-card">
                 <h3>レポート</h3>
                 <p>時間使用状況の分析</p>
