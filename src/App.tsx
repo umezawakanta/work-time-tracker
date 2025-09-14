@@ -170,8 +170,6 @@ function App() {
   // 返信機能の状態
   const [replyingToMemo, setReplyingToMemo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
-  const [replyAuthorName, setReplyAuthorName] = useState("");
-  const [replyAuthorEmail, setReplyAuthorEmail] = useState("");
 
   // 利用可能なフォント一覧（小学生向けかわいいフォント中心）
   const availableFonts = [
@@ -291,22 +289,27 @@ function App() {
 
   // 返信機能の関数
   const handleReplySubmit = async (memoId: string) => {
-    if (!replyContent.trim() || !replyAuthorName.trim() || !replyAuthorEmail.trim()) {
-      setMessage("返信内容、お名前、メールアドレスをすべて入力してください");
+    if (!replyContent.trim()) {
+      setMessage("返信内容を入力してください");
+      return;
+    }
+
+    if (!isLoggedIn || !user) {
+      setMessage("ログインが必要です");
       return;
     }
 
     try {
+      const token = localStorage.getItem("access_token");
       const response = await fetch('/api/memos/reply', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           memoId,
-          content: replyContent.trim(),
-          authorName: replyAuthorName.trim(),
-          authorEmail: replyAuthorEmail.trim()
+          content: replyContent.trim()
         })
       });
 
@@ -315,8 +318,6 @@ function App() {
       if (data.success) {
         setMessage("返信を投稿しました！");
         setReplyContent("");
-        setReplyAuthorName("");
-        setReplyAuthorEmail("");
         setReplyingToMemo(null);
         // 公開メモを再読み込み
         loadPublicMemos();
@@ -332,8 +333,6 @@ function App() {
   const handleReplyCancel = () => {
     setReplyingToMemo(null);
     setReplyContent("");
-    setReplyAuthorName("");
-    setReplyAuthorEmail("");
   };
 
   // ログイン状態をチェック
@@ -2060,27 +2059,8 @@ function App() {
                             {replyingToMemo === memo.id && (
                               <div className="reply-form">
                                 <h5>💬 返信を投稿</h5>
-                                <div className="form-group">
-                                  <label htmlFor="replyAuthorName">お名前 *</label>
-                                  <input
-                                    type="text"
-                                    id="replyAuthorName"
-                                    value={replyAuthorName}
-                                    onChange={(e) => setReplyAuthorName(e.target.value)}
-                                    placeholder="お名前を入力してください"
-                                    required
-                                  />
-                                </div>
-                                <div className="form-group">
-                                  <label htmlFor="replyAuthorEmail">メールアドレス *</label>
-                                  <input
-                                    type="email"
-                                    id="replyAuthorEmail"
-                                    value={replyAuthorEmail}
-                                    onChange={(e) => setReplyAuthorEmail(e.target.value)}
-                                    placeholder="メールアドレスを入力してください"
-                                    required
-                                  />
+                                <div className="reply-author-info">
+                                  <p>👤 投稿者: {user?.displayName || user?.email}</p>
                                 </div>
                                 <div className="form-group">
                                   <label htmlFor="replyContent">返信内容 *</label>
@@ -2097,7 +2077,7 @@ function App() {
                                   <button 
                                     onClick={() => handleReplySubmit(memo.id)}
                                     className="submit-reply-button"
-                                    disabled={!replyContent.trim() || !replyAuthorName.trim() || !replyAuthorEmail.trim()}
+                                    disabled={!replyContent.trim()}
                                   >
                                     📤 返信を投稿
                                   </button>

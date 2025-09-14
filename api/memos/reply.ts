@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 // データベース接続
 const connectDB = async () => {
@@ -12,6 +13,23 @@ const connectDB = async () => {
     });
   } catch (error) {
     console.error('Database connection error:', error);
+  }
+};
+
+// JWTトークンからユーザー情報を取得
+const getUserFromToken = (req) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+  
+  const token = authHeader.substring(7);
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return decoded;
+  } catch (error) {
+    console.error('JWT verification error:', error);
+    return null;
   }
 };
 
@@ -76,13 +94,22 @@ module.exports = async function handler(req, res) {
   try {
     await connectDB();
 
-    const { memoId, content, authorName, authorEmail } = req.body;
+    // JWTトークンからユーザー情報を取得
+    const user = getUserFromToken(req);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: '認証が必要です'
+      });
+    }
+
+    const { memoId, content } = req.body;
 
     // バリデーション
-    if (!memoId || !content || !authorName || !authorEmail) {
+    if (!memoId || !content) {
       return res.status(400).json({
         success: false,
-        message: 'すべてのフィールドが必要です'
+        message: 'メモIDと返信内容が必要です'
       });
     }
 
@@ -107,8 +134,8 @@ module.exports = async function handler(req, res) {
     const reply = new Reply({
       memoId,
       content: content.trim(),
-      authorName: authorName.trim(),
-      authorEmail: authorEmail.trim()
+      authorName: user.displayName || user.email,
+      authorEmail: user.email
     });
 
     await reply.save();
@@ -121,7 +148,6 @@ module.exports = async function handler(req, res) {
         memoId: reply.memoId,
         content: reply.content,
         authorName: reply.authorName,
-        authorEmail: reply.authorEmail,
         createdAt: reply.createdAt.toISOString()
       }
     });

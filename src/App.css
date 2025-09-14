@@ -1814,6 +1814,21 @@ figure, figcaption, details, summary, mark, small, sub, sup {
   font-size: 16px;
 }
 
+.reply-author-info {
+  background: #e3f2fd;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  border-left: 3px solid #2196f3;
+}
+
+.reply-author-info p {
+  margin: 0;
+  color: #1976d2;
+  font-size: 14px;
+  font-weight: 500;
+}
+
 .reply-form .form-group {
   margin-bottom: 15px;
 }
