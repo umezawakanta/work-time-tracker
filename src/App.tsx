@@ -2184,9 +2184,62 @@ function App() {
             </div>
             <div className="user-info">
               <span>👋 こんにちは、{user?.displayName || user?.email}さん！</span>
-              {/* 時間記録アイコンの転ぶアニメーション */}
+              {/* 時間記録アイコンの走り回るアニメーション */}
               <div className={`time-tracking-icon-animation ${isTracking ? 'active-tracking' : ''}`}>
-                <div className="falling-icon">
+                {/* 5匹のキャラクターが走り回る */}
+                <div className="running-character running-character-1">
+                  <div className="mini-character">
+                    <div className="mini-character-face">
+                      <div className="mini-character-eyes">
+                        <div className="mini-eye left-mini-eye"></div>
+                        <div className="mini-eye right-mini-eye"></div>
+                      </div>
+                      <div className="mini-character-mouth"></div>
+                    </div>
+                    <div className="mini-character-body"></div>
+                    <div className="mini-character-headphones"></div>
+                  </div>
+                </div>
+                <div className="running-character running-character-2">
+                  <div className="mini-character">
+                    <div className="mini-character-face">
+                      <div className="mini-character-eyes">
+                        <div className="mini-eye left-mini-eye"></div>
+                        <div className="mini-eye right-mini-eye"></div>
+                      </div>
+                      <div className="mini-character-mouth"></div>
+                    </div>
+                    <div className="mini-character-body"></div>
+                    <div className="mini-character-headphones"></div>
+                  </div>
+                </div>
+                <div className="running-character running-character-3">
+                  <div className="mini-character">
+                    <div className="mini-character-face">
+                      <div className="mini-character-eyes">
+                        <div className="mini-eye left-mini-eye"></div>
+                        <div className="mini-eye right-mini-eye"></div>
+                      </div>
+                      <div className="mini-character-mouth"></div>
+                    </div>
+                    <div className="mini-character-body"></div>
+                    <div className="mini-character-headphones"></div>
+                  </div>
+                </div>
+                <div className="running-character running-character-4">
+                  <div className="mini-character">
+                    <div className="mini-character-face">
+                      <div className="mini-character-eyes">
+                        <div className="mini-eye left-mini-eye"></div>
+                        <div className="mini-eye right-mini-eye"></div>
+                      </div>
+                      <div className="mini-character-mouth"></div>
+                    </div>
+                    <div className="mini-character-body"></div>
+                    <div className="mini-character-headphones"></div>
+                  </div>
+                </div>
+                <div className="running-character running-character-5 falling-character">
                   <div className="mini-character">
                     <div className="mini-character-face">
                       <div className="mini-character-eyes">
