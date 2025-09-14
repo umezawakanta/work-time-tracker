@@ -3247,7 +3247,9 @@ input:checked + .toggle-slider:before {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   margin-bottom: 1.5rem;
   width: 100%;
-  max-width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
   overflow: hidden;
 }
 
@@ -3264,6 +3266,7 @@ input:checked + .toggle-slider:before {
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-width: 100%;
 }
 
 .calendar-header h3 {
@@ -3306,6 +3309,8 @@ input:checked + .toggle-slider:before {
   background: #f59e0b;
   border-radius: 8px 8px 0 0;
   overflow: hidden;
+  width: 100%;
+  min-width: 100%;
 }
 
 .weekday {
@@ -3322,6 +3327,8 @@ input:checked + .toggle-slider:before {
   background: #e5e7eb;
   border-radius: 0 0 8px 8px;
   overflow: hidden;
+  width: 100%;
+  min-width: 100%;
 }
 
 .calendar-day {
@@ -3863,6 +3870,9 @@ input:checked + .toggle-slider:before {
   /* カレンダーのモバイル対応 */
   .calendar-container {
     padding: 0.5rem;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .calendar-header {
@@ -3966,6 +3976,9 @@ input:checked + .toggle-slider:before {
 @media (max-width: 375px) {
   .calendar-container {
     padding: 0.25rem;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .calendar-header {
