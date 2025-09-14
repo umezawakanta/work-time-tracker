@@ -1003,6 +1003,43 @@ function App() {
     return { salaryRecords: filteredSalaryRecords, diaries: filteredDiaries };
   };
 
+  // 月間収支を計算する関数
+  const getMonthlySummary = (year: number, month: number) => {
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0);
+    
+    let totalIncome = 0;
+    let totalExpense = 0;
+    
+    salaryRecords.forEach(record => {
+      const recordDate = new Date(record.date);
+      if (recordDate >= startDate && recordDate <= endDate) {
+        if (record.salary > 0) {
+          totalIncome += record.salary;
+        } else {
+          totalExpense += Math.abs(record.salary);
+        }
+        
+        // 交通費、残業代、ボーナスも収入として計算
+        if (record.transportation > 0) totalIncome += record.transportation;
+        if (record.overtime > 0) totalIncome += record.overtime;
+        if (record.bonus > 0) totalIncome += record.bonus;
+      }
+    });
+    
+    const netIncome = totalIncome - totalExpense;
+    
+    return {
+      totalIncome,
+      totalExpense,
+      netIncome,
+      recordCount: salaryRecords.filter(record => {
+        const recordDate = new Date(record.date);
+        return recordDate >= startDate && recordDate <= endDate;
+      }).length
+    };
+  };
+
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
     // 日本時間での日付文字列を取得
@@ -3624,6 +3661,46 @@ function App() {
                           </div>
                         );
                       })()}
+                      
+                      {/* 月間収支サマリー */}
+                      <div className="monthly-summary">
+                        <h3>📊 {currentDate.getFullYear()}年{currentDate.getMonth() + 1}月の収支</h3>
+                        {(() => {
+                          const summary = getMonthlySummary(currentDate.getFullYear(), currentDate.getMonth());
+                          return (
+                            <div className="summary-cards">
+                              <div className="summary-card income">
+                                <div className="summary-icon">💰</div>
+                                <div className="summary-content">
+                                  <div className="summary-label">収入</div>
+                                  <div className="summary-amount">¥{summary.totalIncome.toLocaleString()}</div>
+                                </div>
+                              </div>
+                              <div className="summary-card expense">
+                                <div className="summary-icon">💸</div>
+                                <div className="summary-content">
+                                  <div className="summary-label">支出</div>
+                                  <div className="summary-amount">¥{summary.totalExpense.toLocaleString()}</div>
+                                </div>
+                              </div>
+                              <div className={`summary-card net ${summary.netIncome >= 0 ? 'positive' : 'negative'}`}>
+                                <div className="summary-icon">{summary.netIncome >= 0 ? '📈' : '📉'}</div>
+                                <div className="summary-content">
+                                  <div className="summary-label">差額</div>
+                                  <div className="summary-amount">¥{summary.netIncome.toLocaleString()}</div>
+                                </div>
+                              </div>
+                              <div className="summary-card count">
+                                <div className="summary-icon">📝</div>
+                                <div className="summary-content">
+                                  <div className="summary-label">記録数</div>
+                                  <div className="summary-amount">{summary.recordCount}件</div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
                     </div>
                   )}
 
