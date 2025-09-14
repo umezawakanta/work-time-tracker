@@ -1,5 +1,13 @@
 # 更新履歴
 
+## [1.2.1](https://github.com/umezawakanta/work-time-tracker/compare/v1.2.0...v1.2.1) (2025-09-14)
+
+
+### Bug Fixes
+
+* resolve Jest dependency conflict by downgrading jest-watch-typea… ([27f611f](https://github.com/umezawakanta/work-time-tracker/commit/27f611fd5f55315530b0414335808fb4f1cf09d8))
+* resolve Jest dependency conflict by downgrading jest-watch-typeahead ([27365b6](https://github.com/umezawakanta/work-time-tracker/commit/27365b6b1829e1dc22086bb6be009941b11ba016))
+
 ## [1.2.0](https://github.com/umezawakanta/work-time-tracker/compare/v1.1.3...v1.2.0) (2025-09-11)
 
 
