@@ -828,15 +828,16 @@ function App() {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
+    const startingDayOfWeek = firstDay.getDay(); // 0=日曜日, 1=月曜日, ..., 6=土曜日
     
     const days = [];
     
-    // 前月の日付を追加（日曜日から始まる場合の修正）
+    // 前月の日付を追加（カレンダーグリッドの最初の週を埋める）
     const prevMonth = month === 0 ? 11 : month - 1;
     const prevYear = month === 0 ? year - 1 : year;
     const prevMonthLastDay = new Date(prevYear, prevMonth + 1, 0).getDate();
     
+    // 前月の最後の日から逆算して必要な日数分を追加
     for (let i = startingDayOfWeek - 1; i >= 0; i--) {
       const prevDate = new Date(prevYear, prevMonth, prevMonthLastDay - i);
       days.push({ date: prevDate, isCurrentMonth: false });
@@ -848,8 +849,9 @@ function App() {
       days.push({ date: currentDate, isCurrentMonth: true });
     }
     
-    // 次月の日付を追加（42日分のグリッドを埋める）
-    const remainingDays = 42 - days.length;
+    // 次月の日付を追加（6週分のグリッドを埋めるため、42日分確保）
+    const totalDays = days.length;
+    const remainingDays = 42 - totalDays;
     for (let day = 1; day <= remainingDays; day++) {
       const nextDate = new Date(year, month + 1, day);
       days.push({ date: nextDate, isCurrentMonth: false });
@@ -3273,60 +3275,58 @@ function App() {
                         </button>
                       </div>
                       
-                      <div className="calendar-grid">
-                        <div className="calendar-weekdays">
-                          <div className="weekday">日</div>
-                          <div className="weekday">月</div>
-                          <div className="weekday">火</div>
-                          <div className="weekday">水</div>
-                          <div className="weekday">木</div>
-                          <div className="weekday">金</div>
-                          <div className="weekday">土</div>
-                        </div>
-                        
-                        <div className="calendar-days">
-                          {getDaysInMonth(currentDate).map((dayItem, index) => {
-                            const dayRecords = getRecordsForDate(dayItem.date);
-                            const isToday = dayItem.date.toDateString() === new Date().toDateString();
-                            const isSelected = selectedDate && dayItem.date.toDateString() === selectedDate.toDateString();
-                            
-                            return (
-                              <div
-                                key={index}
-                                className={`calendar-day ${!dayItem.isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
-                                onClick={() => handleDateClick(dayItem.date)}
-                              >
-                                <div className="day-number">{dayItem.date.getDate()}</div>
-                                <div className="day-records">
-                                  {dayRecords.salaryRecords.length > 0 && (
-                                    <div 
-                                      className="record-indicator salary-indicator clickable" 
-                                      title="給料記録を表示"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleRecordClick('salary', dayItem.date);
-                                      }}
-                                    >
-                                      💰
-                                    </div>
-                                  )}
-                                  {dayRecords.diaries.length > 0 && (
-                                    <div 
-                                      className="record-indicator diary-indicator clickable" 
-                                      title="日記を表示"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleRecordClick('diary', dayItem.date);
-                                      }}
-                                    >
-                                      📝
-                                    </div>
-                                  )}
-                                </div>
+                      <div className="calendar-weekdays">
+                        <div className="weekday">日</div>
+                        <div className="weekday">月</div>
+                        <div className="weekday">火</div>
+                        <div className="weekday">水</div>
+                        <div className="weekday">木</div>
+                        <div className="weekday">金</div>
+                        <div className="weekday">土</div>
+                      </div>
+                      
+                      <div className="calendar-days">
+                        {getDaysInMonth(currentDate).map((dayItem, index) => {
+                          const dayRecords = getRecordsForDate(dayItem.date);
+                          const isToday = dayItem.date.toDateString() === new Date().toDateString();
+                          const isSelected = selectedDate && dayItem.date.toDateString() === selectedDate.toDateString();
+                          
+                          return (
+                            <div
+                              key={index}
+                              className={`calendar-day ${!dayItem.isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
+                              onClick={() => handleDateClick(dayItem.date)}
+                            >
+                              <div className="day-number">{dayItem.date.getDate()}</div>
+                              <div className="day-records">
+                                {dayRecords.salaryRecords.length > 0 && (
+                                  <div 
+                                    className="record-indicator salary-indicator clickable" 
+                                    title="給料記録を表示"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRecordClick('salary', dayItem.date);
+                                    }}
+                                  >
+                                    💰
+                                  </div>
+                                )}
+                                {dayRecords.diaries.length > 0 && (
+                                  <div 
+                                    className="record-indicator diary-indicator clickable" 
+                                    title="日記を表示"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRecordClick('diary', dayItem.date);
+                                    }}
+                                  >
+                                    📝
+                                  </div>
+                                )}
                               </div>
-                            );
-                          })}
-                        </div>
+                            </div>
+                          );
+                        })}
                       </div>
                       
                       {selectedDate && (() => {
