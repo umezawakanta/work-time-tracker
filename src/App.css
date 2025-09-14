@@ -3362,6 +3362,17 @@ input:checked + .toggle-slider:before {
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.record-indicator.clickable {
+  cursor: pointer;
+  transform: scale(1);
+}
+
+.record-indicator.clickable:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .salary-indicator {
@@ -3400,6 +3411,17 @@ input:checked + .toggle-slider:before {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.date-record-item.clickable {
+  cursor: pointer;
+}
+
+.date-record-item.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: #f8fafc;
 }
 
 .record-icon {

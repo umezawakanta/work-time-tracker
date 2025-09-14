@@ -844,6 +844,23 @@ function App() {
     setDiaryDate(dateStr);
   };
 
+  const handleRecordClick = (type: 'salary' | 'diary', date: Date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    setSelectedDate(date);
+    
+    if (type === 'salary') {
+      setSalaryDate(dateStr);
+      setShowSalaryForm(true);
+      setShowDiaryForm(false);
+      setShowCalendar(false);
+    } else if (type === 'diary') {
+      setDiaryDate(dateStr);
+      setShowDiaryForm(true);
+      setShowSalaryForm(false);
+      setShowCalendar(false);
+    }
+  };
+
   const navigateMonth = (direction: 'prev' | 'next') => {
     const newDate = new Date(currentDate);
     if (direction === 'prev') {
@@ -3199,12 +3216,26 @@ function App() {
                                 <div className="day-number">{dayItem.date.getDate()}</div>
                                 <div className="day-records">
                                   {dayRecords.salaryRecords.length > 0 && (
-                                    <div className="record-indicator salary-indicator" title="給料記録">
+                                    <div 
+                                      className="record-indicator salary-indicator clickable" 
+                                      title="給料記録を表示"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleRecordClick('salary', dayItem.date);
+                                      }}
+                                    >
                                       💰
                                     </div>
                                   )}
                                   {dayRecords.diaries.length > 0 && (
-                                    <div className="record-indicator diary-indicator" title="日記">
+                                    <div 
+                                      className="record-indicator diary-indicator clickable" 
+                                      title="日記を表示"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleRecordClick('diary', dayItem.date);
+                                      }}
+                                    >
                                       📝
                                     </div>
                                   )}
@@ -3224,7 +3255,12 @@ function App() {
                             </h4>
                             <div className="date-records">
                               {selectedDateRecords.salaryRecords.map((record) => (
-                                <div key={record._id} className="date-record-item salary-record">
+                                <div 
+                                  key={record._id} 
+                                  className="date-record-item salary-record clickable"
+                                  onClick={() => handleRecordClick('salary', selectedDate)}
+                                  title="給料記録を表示"
+                                >
                                   <span className="record-icon">💰</span>
                                   <span className="record-content">
                                     給料: ¥{record.salary.toLocaleString()}
@@ -3233,7 +3269,12 @@ function App() {
                                 </div>
                               ))}
                               {selectedDateRecords.diaries.map((diary) => (
-                                <div key={diary._id} className="date-record-item diary-record">
+                                <div 
+                                  key={diary._id} 
+                                  className="date-record-item diary-record clickable"
+                                  onClick={() => handleRecordClick('diary', selectedDate)}
+                                  title="日記を表示"
+                                >
                                   <span className="record-icon">📝</span>
                                   <span className="record-content">
                                     {diary.mood} {diary.title}
