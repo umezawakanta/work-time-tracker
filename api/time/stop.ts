@@ -1,8 +1,11 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-// データベース接続の確認と接続
+dotenv.config();
+
+// Database connection utility
 const ensureDatabaseConnection = async (): Promise<void> => {
   const isConnected = mongoose.connection.readyState === 1;
   if (isConnected) {
@@ -10,9 +13,38 @@ const ensureDatabaseConnection = async (): Promise<void> => {
   }
   console.warn('[time/stop] Database not connected, attempting to connect...');
   try {
-    const { connectDB } = await import('../../src/server/config/database.ts');
-    await connectDB();
-    console.log('[time/stop] Database connection established');
+    const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/workTimeTracker";
+    
+    // テスト環境などでMongoDBを無効化する場合
+    if (MONGODB_URI === "memory://") {
+      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
+      return;
+    }
+
+    // 接続オプションを追加してタイムアウトと再接続を最適化
+    await mongoose.connect(MONGODB_URI, {
+      maxPoolSize: 10, // 接続プールサイズ
+      serverSelectionTimeoutMS: 15000, // サーバー選択タイムアウト (15秒)
+      socketTimeoutMS: 45000, // ソケットタイムアウト
+      bufferCommands: false, // コマンドバッファリング無効化
+      connectTimeoutMS: 10000, // 接続タイムアウト
+      maxIdleTimeMS: 30000, // 最大アイドル時間
+    });
+
+    console.log("✅ MongoDB connected successfully");
+
+    // 接続状態の監視
+    mongoose.connection.on("error", (error) => {
+      console.error("❌ MongoDB connection error:", error);
+    });
+
+    mongoose.connection.on("disconnected", () => {
+      console.warn("⚠️ MongoDB disconnected");
+    });
+
+    mongoose.connection.on("reconnected", () => {
+      console.log("🔄 MongoDB reconnected");
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[time/stop] Failed to connect to database:', message);

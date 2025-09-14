@@ -3,11 +3,9 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-// Error message formatting utility
-const formatErrorMessage = (error: unknown): string => {
-  return error instanceof Error ? error.message : String(error);
-};
+dotenv.config();
 
 // Database connection utility
 const ensureDatabaseConnection = async (): Promise<void> => {
@@ -20,15 +18,96 @@ const ensureDatabaseConnection = async (): Promise<void> => {
   console.warn('[auth/login] Database not connected, attempting to connect...');
   
   try {
-    // Dynamic import for Vercel compatibility
-    const { connectDB } = await import('../../src/server/config/database.ts');
-    await connectDB();
-    console.log('[auth/login] Database connection established');
+    const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/workTimeTracker";
+    
+    // テスト環境などでMongoDBを無効化する場合
+    if (MONGODB_URI === "memory://") {
+      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
+      return;
+    }
+
+    // 接続オプションを追加してタイムアウトと再接続を最適化
+    await mongoose.connect(MONGODB_URI, {
+      maxPoolSize: 10, // 接続プールサイズ
+      serverSelectionTimeoutMS: 15000, // サーバー選択タイムアウト (15秒)
+      socketTimeoutMS: 45000, // ソケットタイムアウト
+      bufferCommands: false, // コマンドバッファリング無効化
+      connectTimeoutMS: 10000, // 接続タイムアウト
+      maxIdleTimeMS: 30000, // 最大アイドル時間
+    });
+
+    console.log("✅ MongoDB connected successfully");
+
+    // 接続状態の監視
+    mongoose.connection.on("error", (error) => {
+      console.error("❌ MongoDB connection error:", error);
+    });
+
+    mongoose.connection.on("disconnected", () => {
+      console.warn("⚠️ MongoDB disconnected");
+    });
+
+    mongoose.connection.on("reconnected", () => {
+      console.log("🔄 MongoDB reconnected");
+    });
   } catch (error) {
-    console.error('[auth/login] Failed to import database config:', error);
+    console.error('[auth/login] Failed to connect to database:', error);
     throw new Error('Database connection failed', { cause: error });
   }
 };
+
+// User document interface
+interface UserDocument extends mongoose.Document {
+  id: string;
+  email: string;
+  displayName: string;
+  password: string;
+  role: string;
+  isVerified: boolean;
+  avatar?: string;
+  preferences: any;
+  status: "active" | "inactive" | "suspended";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// User schema
+const UserSchema = new mongoose.Schema(
+  {
+    email: { type: String, required: true, unique: true, index: true },
+    displayName: { type: String, required: true },
+    password: { type: String, required: true },
+    role: { type: String, default: "user" },
+    isVerified: { type: Boolean, default: false },
+    avatar: { type: String },
+    preferences: { type: mongoose.Schema.Types.Mixed, default: {} },
+    status: {
+      type: String,
+      enum: ["active", "inactive", "suspended"],
+      default: "active",
+    },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
+);
+
+// Virtual for user ID
+UserSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+// Ensure virtual fields are serialized
+UserSchema.set("toJSON", {
+  virtuals: true,
+  transform: function (doc, ret) {
+    const { _id, __v, password, ...cleanRet } = ret;
+    return cleanRet;
+  },
+});
+
+const User = mongoose.model<UserDocument>("User", UserSchema);
 
 // Login request interface
 interface LoginRequest {
@@ -74,7 +153,6 @@ async function readJson(req: any): Promise<any> {
     throw Object.assign(new Error('Invalid JSON'), { statusCode: 400 });
   }
 }
-
 
 async function handler(req: any, res: any) {
   // CORS設定
@@ -140,9 +218,6 @@ async function handler(req: any, res: any) {
     const emailLc = (email || '').toLowerCase();
     const maskedEmail = emailLc.replace(/^[^@]+/, '***');
     
-    // Dynamic import for User model
-    const { User } = await import('../../src/server/models/User.ts');
-    
     console.log('[auth/login] findOne(users) start', {
       modelReady: Boolean(User),
       connState: mongoose.connection?.readyState,
@@ -163,28 +238,8 @@ async function handler(req: any, res: any) {
       } as LoginResponse);
     }
 
-    // パスワードの確認（後方互換を考慮したフォールバック）
-    const passwordHashCandidates = [
-      { value: user?.metadata?.hashedPassword, source: 'metadata.hashedPassword' },
-      { value: (user as any)?.hashedPassword, source: 'hashedPassword' },
-      { value: (user as any)?.passwordHash, source: 'passwordHash' },
-      { value: (user as any)?.password, source: 'password' },
-    ];
-    const found = passwordHashCandidates.find(
-      (c) => typeof c.value === 'string' && (c.value as string).length > 0
-    );
-    const storedPassword = (found?.value as string) || '';
-    console.log('🔎 password hash source:', found?.source || 'none');
-    
-    if (!storedPassword) {
-      return res.status(422).json({
-        success: false,
-        message: 'パスワード再設定が必要です',
-        error: 'Password hash missing',
-      } as LoginResponse);
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, storedPassword);
+    // パスワードの確認
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
@@ -210,34 +265,15 @@ async function handler(req: any, res: any) {
       } as LoginResponse);
     }
 
-    // JWTトークンの生成（管理者クレームを付与）
+    // JWTトークンの生成
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
     const tokenExpiry = rememberMe ? '30d' : '7d';
-    const adminEmails = (process.env.ADMIN_EMAILS || '')
-      .split(',')
-      .map((s) => s.trim().toLowerCase())
-      .filter(Boolean);
-    const userEmailLc = String(user.email || '').toLowerCase();
-    const existingRoles: string[] = Array.isArray((user as any).roles)
-      ? ((user as any).roles as string[])
-      : [];
-    const computedIsAdmin =
-      (user as any).isAdmin === true ||
-      String(user.role || '').toLowerCase() === 'admin' ||
-      existingRoles.includes('admin') ||
-      adminEmails.includes(userEmailLc);
-    const roleClaim = computedIsAdmin ? 'admin' : user.role || 'user';
-    const rolesClaim: string[] = computedIsAdmin
-      ? Array.from(new Set([...existingRoles, 'admin']))
-      : existingRoles;
 
     const token = jwt.sign(
       {
         userId: user.id,
         email: user.email,
-        role: roleClaim,
-        roles: rolesClaim,
-        isAdmin: computedIsAdmin,
+        role: user.role,
         isVerified: user.isVerified,
       },
       jwtSecret,
@@ -256,7 +292,7 @@ async function handler(req: any, res: any) {
         id: user.id,
         email: user.email,
         displayName: user.displayName,
-        role: roleClaim,
+        role: user.role,
         isVerified: user.isVerified,
         avatar: user.avatar,
         preferences: user.preferences,
@@ -295,7 +331,7 @@ async function handler(req: any, res: any) {
       message: 'ログイン処理中にエラーが発生しました',
       error:
         process.env.NODE_ENV === 'development'
-          ? formatErrorMessage(error)
+          ? (error instanceof Error ? error.message : String(error))
           : 'Internal server error',
     } as LoginResponse);
   }
