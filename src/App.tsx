@@ -142,6 +142,12 @@ function App() {
   const [memoSearchTerm, setMemoSearchTerm] = useState("");
   const [selectedMemoCategory, setSelectedMemoCategory] = useState("all");
 
+  // 公開メモ関連の状態
+  const [publicMemos, setPublicMemos] = useState<Memo[]>([]);
+  const [showPublicMemos, setShowPublicMemos] = useState(false);
+  const [publicMemoSearchTerm, setPublicMemoSearchTerm] = useState("");
+  const [selectedPublicMemoCategory, setSelectedPublicMemoCategory] = useState("all");
+
   // ログイン状態をチェック
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -780,6 +786,46 @@ function App() {
 
   const getMemoCategories = () => {
     const categories = new Set(memos.map(memo => memo.category));
+    return Array.from(categories).sort();
+  };
+
+  // 公開メモ関連の関数
+  const loadPublicMemos = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (selectedPublicMemoCategory !== 'all') {
+        params.append('category', selectedPublicMemoCategory);
+      }
+      if (publicMemoSearchTerm) {
+        params.append('search', publicMemoSearchTerm);
+      }
+
+      const response = await fetch(`/api/memos/public?${params.toString()}`);
+
+      const data = await response.json();
+
+      if (data.success) {
+        setPublicMemos(data.memos || []);
+      } else {
+        setMessage(`公開メモの一覧取得失敗: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Failed to load public memos:", error);
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+
+  const handlePublicMemoSearch = () => {
+    loadPublicMemos();
+  };
+
+  const handlePublicMemoCategoryChange = (category: string) => {
+    setSelectedPublicMemoCategory(category);
+    loadPublicMemos();
+  };
+
+  const getPublicMemoCategories = () => {
+    const categories = new Set(publicMemos.map(memo => memo.category));
     return Array.from(categories).sort();
   };
 
@@ -1621,6 +1667,108 @@ function App() {
                                 削除
                               </button>
                             </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 公開メモセクション */}
+            <div className="public-memos-section">
+              <div className="section-header">
+                <h2>公開メモ</h2>
+                <button 
+                  onClick={() => {
+                    setShowPublicMemos(!showPublicMemos);
+                    if (!showPublicMemos && publicMemos.length === 0) {
+                      loadPublicMemos();
+                    }
+                  }}
+                  className="toggle-public-memos-button"
+                >
+                  {showPublicMemos ? "公開メモを閉じる" : "公開メモを表示"}
+                </button>
+              </div>
+
+              {showPublicMemos && (
+                <div className="public-memos-content">
+                  <div className="public-memos-stats">
+                    <div className="stat-card">
+                      <h3>公開メモ数</h3>
+                      <p className="stat-value">{publicMemos.length}</p>
+                    </div>
+                    <div className="stat-card">
+                      <h3>カテゴリ数</h3>
+                      <p className="stat-value">{getPublicMemoCategories().length}</p>
+                    </div>
+                    <div className="stat-card">
+                      <h3>最新更新</h3>
+                      <p className="stat-value">
+                        {publicMemos.length > 0 
+                          ? new Date(Math.max(...publicMemos.map(memo => new Date(memo.updatedAt).getTime()))).toLocaleDateString('ja-JP')
+                          : '-'
+                        }
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="public-memos-controls">
+                    <div className="search-controls">
+                      <input
+                        type="text"
+                        placeholder="公開メモを検索..."
+                        value={publicMemoSearchTerm}
+                        onChange={(e) => setPublicMemoSearchTerm(e.target.value)}
+                        className="search-input"
+                      />
+                      <button onClick={handlePublicMemoSearch} className="search-button">
+                        検索
+                      </button>
+                    </div>
+                    <div className="category-controls">
+                      <select
+                        value={selectedPublicMemoCategory}
+                        onChange={(e) => handlePublicMemoCategoryChange(e.target.value)}
+                        className="category-select"
+                      >
+                        <option value="all">すべてのカテゴリ</option>
+                        {getPublicMemoCategories().map(category => (
+                          <option key={category} value={category}>{category}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="public-memos-list">
+                    {publicMemos.length === 0 ? (
+                      <p className="no-public-memos">公開メモがありません</p>
+                    ) : (
+                      publicMemos.map((memo) => (
+                        <div key={memo.id} className="public-memo-item">
+                          <div className="memo-header">
+                            <h3>{memo.title}</h3>
+                            <div className="memo-meta">
+                              <span className="memo-category">{memo.category}</span>
+                              <span className="public-badge">公開</span>
+                            </div>
+                          </div>
+                          <div className="memo-content">
+                            <p>{memo.content}</p>
+                          </div>
+                          {memo.tags && memo.tags.length > 0 && (
+                            <div className="memo-tags">
+                              {memo.tags.map((tag, index) => (
+                                <span key={index} className="tag">{tag}</span>
+                              ))}
+                            </div>
+                          )}
+                          <div className="memo-footer">
+                            <span className="memo-date">
+                              {new Date(memo.updatedAt).toLocaleDateString('ja-JP')}
+                            </span>
                           </div>
                         </div>
                       ))

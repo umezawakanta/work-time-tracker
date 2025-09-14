@@ -1289,3 +1289,95 @@ tr:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* 公開メモセクション */
+.public-memos-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f0f8ff;
+  border-radius: 8px;
+  border: 2px solid #e3f2fd;
+}
+
+.public-memos-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.public-memos-section h2 {
+  margin: 0;
+  color: #1976d2;
+}
+
+.toggle-public-memos-button {
+  background: #1976d2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.toggle-public-memos-button:hover {
+  background: #1565c0;
+}
+
+.public-memos-content {
+  margin-top: 20px;
+}
+
+.public-memos-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.public-memos-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.public-memos-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.public-memo-item {
+  background: white;
+  border: 1px solid #e3f2fd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.public-memo-item:hover {
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.2);
+}
+
+.no-public-memos {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 40px;
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 768px) {
+  .public-memos-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .public-memos-list {
+    grid-template-columns: 1fr;
+  }
+}
