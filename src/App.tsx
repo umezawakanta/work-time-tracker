@@ -71,6 +71,17 @@ interface Book {
   updatedAt: string;
 }
 
+interface Memo {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  tags: string[];
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -117,6 +128,19 @@ function App() {
   const [bookTotalPages, setBookTotalPages] = useState(0);
   const [bookCategory, setBookCategory] = useState("");
   const [bookNotes, setBookNotes] = useState("");
+
+  // メモ関連の状態
+  const [memos, setMemos] = useState<Memo[]>([]);
+  const [showMemos, setShowMemos] = useState(false);
+  const [showMemoForm, setShowMemoForm] = useState(false);
+  const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
+  const [memoTitle, setMemoTitle] = useState("");
+  const [memoContent, setMemoContent] = useState("");
+  const [memoCategory, setMemoCategory] = useState("");
+  const [memoTags, setMemoTags] = useState("");
+  const [memoIsPublic, setMemoIsPublic] = useState(false);
+  const [memoSearchTerm, setMemoSearchTerm] = useState("");
+  const [selectedMemoCategory, setSelectedMemoCategory] = useState("all");
 
   // ログイン状態をチェック
   useEffect(() => {
@@ -590,6 +614,173 @@ function App() {
   const getReadingProgress = (book: Book) => {
     if (book.totalPages === 0) return 0;
     return Math.round((book.readPages / book.totalPages) * 100);
+  };
+
+  // メモ関連の関数
+  const loadMemos = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const params = new URLSearchParams();
+      if (selectedMemoCategory !== 'all') {
+        params.append('category', selectedMemoCategory);
+      }
+      if (memoSearchTerm) {
+        params.append('search', memoSearchTerm);
+      }
+
+      const response = await fetch(`/api/memos?${params.toString()}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMemos(data.memos || []);
+      } else {
+        setMessage(`メモの一覧取得失敗: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Failed to load memos:", error);
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+
+  const handleCreateMemo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!memoTitle || !memoContent || !memoCategory) {
+      setMessage("タイトル、内容、カテゴリは必須です");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const tags = memoTags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+      
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: memoTitle,
+          content: memoContent,
+          category: memoCategory,
+          tags,
+          isPublic: memoIsPublic,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("メモを追加しました！");
+        setMemoTitle("");
+        setMemoContent("");
+        setMemoCategory("");
+        setMemoTags("");
+        setMemoIsPublic(false);
+        setShowMemoForm(false);
+        loadMemos();
+      } else {
+        setMessage(`メモの追加失敗: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+
+  const handleEditMemo = (memo: Memo) => {
+    setEditingMemo(memo);
+    setMemoTitle(memo.title);
+    setMemoContent(memo.content);
+    setMemoCategory(memo.category);
+    setMemoTags(memo.tags.join(', '));
+    setMemoIsPublic(memo.isPublic);
+    setShowMemoForm(true);
+  };
+
+  const handleUpdateMemo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!editingMemo) return;
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const tags = memoTags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+      
+      const response = await fetch(`/api/memos/${editingMemo.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: memoTitle,
+          content: memoContent,
+          category: memoCategory,
+          tags,
+          isPublic: memoIsPublic,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("メモを更新しました！");
+        setEditingMemo(null);
+        setShowMemoForm(false);
+        loadMemos();
+      } else {
+        setMessage(`メモの更新失敗: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+
+  const handleDeleteMemo = async (memoId: string, memoTitle: string) => {
+    if (!window.confirm(`「${memoTitle}」を削除してもよろしいですか？`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/memos/${memoId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("メモを削除しました");
+        loadMemos();
+      } else {
+        setMessage(`メモの削除失敗: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+
+  const handleMemoSearch = () => {
+    loadMemos();
+  };
+
+  const handleMemoCategoryChange = (category: string) => {
+    setSelectedMemoCategory(category);
+    loadMemos();
+  };
+
+  const getMemoCategories = () => {
+    const categories = new Set(memos.map(memo => memo.category));
+    return Array.from(categories).sort();
   };
 
   const handleLogout = () => {
@@ -1232,6 +1423,204 @@ function App() {
                             >
                               削除
                             </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* メモセクション */}
+            <div className="memos-section">
+              <div className="section-header">
+                <h2>メモ</h2>
+                <button 
+                  onClick={() => {
+                    setShowMemos(!showMemos);
+                    if (!showMemos && memos.length === 0) {
+                      loadMemos();
+                    }
+                  }}
+                  className="toggle-memos-button"
+                >
+                  {showMemos ? "メモを閉じる" : "メモを表示"}
+                </button>
+              </div>
+
+              {showMemos && (
+                <div className="memos-content">
+                  <div className="memos-stats">
+                    <div className="stat-card">
+                      <h3>総メモ数</h3>
+                      <p className="stat-value">{memos.length}</p>
+                    </div>
+                    <div className="stat-card">
+                      <h3>カテゴリ数</h3>
+                      <p className="stat-value">{getMemoCategories().length}</p>
+                    </div>
+                    <div className="stat-card">
+                      <h3>公開メモ</h3>
+                      <p className="stat-value">{memos.filter(memo => memo.isPublic).length}</p>
+                    </div>
+                  </div>
+
+                  <div className="memos-controls">
+                    <div className="search-controls">
+                      <input
+                        type="text"
+                        placeholder="メモを検索..."
+                        value={memoSearchTerm}
+                        onChange={(e) => setMemoSearchTerm(e.target.value)}
+                        className="search-input"
+                      />
+                      <button onClick={handleMemoSearch} className="search-button">
+                        検索
+                      </button>
+                    </div>
+                    <div className="category-controls">
+                      <select
+                        value={selectedMemoCategory}
+                        onChange={(e) => handleMemoCategoryChange(e.target.value)}
+                        className="category-select"
+                      >
+                        <option value="all">すべてのカテゴリ</option>
+                        {getMemoCategories().map(category => (
+                          <option key={category} value={category}>{category}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        setEditingMemo(null);
+                        setShowMemoForm(!showMemoForm);
+                        if (!showMemoForm) {
+                          setMemoTitle("");
+                          setMemoContent("");
+                          setMemoCategory("");
+                          setMemoTags("");
+                          setMemoIsPublic(false);
+                        }
+                      }}
+                      className="add-memo-button"
+                    >
+                      {showMemoForm ? "キャンセル" : "メモを追加"}
+                    </button>
+                  </div>
+
+                  {showMemoForm && (
+                    <form onSubmit={editingMemo ? handleUpdateMemo : handleCreateMemo} className="memo-form">
+                      <h3>{editingMemo ? "メモを編集" : "メモを追加"}</h3>
+                      <div className="form-group">
+                        <label htmlFor="memoTitle">タイトル *</label>
+                        <input
+                          type="text"
+                          id="memoTitle"
+                          value={memoTitle}
+                          onChange={(e) => setMemoTitle(e.target.value)}
+                          required
+                          disabled={loading}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="memoCategory">カテゴリ *</label>
+                        <select
+                          id="memoCategory"
+                          value={memoCategory}
+                          onChange={(e) => setMemoCategory(e.target.value)}
+                          required
+                          disabled={loading}
+                        >
+                          <option value="">選択してください</option>
+                          <option value="仕事">仕事</option>
+                          <option value="学習">学習</option>
+                          <option value="アイデア">アイデア</option>
+                          <option value="メモ">メモ</option>
+                          <option value="タスク">タスク</option>
+                          <option value="その他">その他</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="memoContent">内容 *</label>
+                        <textarea
+                          id="memoContent"
+                          value={memoContent}
+                          onChange={(e) => setMemoContent(e.target.value)}
+                          required
+                          disabled={loading}
+                          rows={6}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="memoTags">タグ（カンマ区切り）</label>
+                        <input
+                          type="text"
+                          id="memoTags"
+                          value={memoTags}
+                          onChange={(e) => setMemoTags(e.target.value)}
+                          disabled={loading}
+                          placeholder="例: 重要, 会議, プロジェクト"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={memoIsPublic}
+                            onChange={(e) => setMemoIsPublic(e.target.checked)}
+                            disabled={loading}
+                          />
+                          公開メモにする
+                        </label>
+                      </div>
+                      <button type="submit" disabled={loading} className="submit-button">
+                        {loading ? "処理中..." : (editingMemo ? "更新" : "追加")}
+                      </button>
+                    </form>
+                  )}
+
+                  <div className="memos-list">
+                    {memos.length === 0 ? (
+                      <p className="no-memos">メモが登録されていません</p>
+                    ) : (
+                      memos.map((memo) => (
+                        <div key={memo.id} className="memo-item">
+                          <div className="memo-header">
+                            <h3>{memo.title}</h3>
+                            <div className="memo-meta">
+                              <span className="memo-category">{memo.category}</span>
+                              {memo.isPublic && <span className="public-badge">公開</span>}
+                            </div>
+                          </div>
+                          <div className="memo-content">
+                            <p>{memo.content}</p>
+                          </div>
+                          {memo.tags && memo.tags.length > 0 && (
+                            <div className="memo-tags">
+                              {memo.tags.map((tag, index) => (
+                                <span key={index} className="tag">{tag}</span>
+                              ))}
+                            </div>
+                          )}
+                          <div className="memo-footer">
+                            <span className="memo-date">
+                              {new Date(memo.updatedAt).toLocaleDateString('ja-JP')}
+                            </span>
+                            <div className="memo-actions">
+                              <button 
+                                onClick={() => handleEditMemo(memo)}
+                                className="edit-button"
+                              >
+                                編集
+                              </button>
+                              <button
+                                onClick={() => handleDeleteMemo(memo.id, memo.title)}
+                                className="delete-button"
+                              >
+                                削除
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))
