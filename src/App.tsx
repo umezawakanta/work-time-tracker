@@ -2184,6 +2184,12 @@ function App() {
             </div>
             <div className="user-info">
               <span>👋 こんにちは、{user?.displayName || user?.email}さん！</span>
+              {/* 時間記録アイコンの走るアニメーション */}
+              <div className={`time-tracking-icon-animation ${isTracking ? 'active-tracking' : ''}`}>
+                <div className="running-icon">⏰</div>
+                <div className="running-trail"></div>
+                {isTracking && <div className="tracking-pulse"></div>}
+              </div>
               <button 
                 onClick={() => setShowThemeSettings(!showThemeSettings)} 
                 className="theme-settings-button"

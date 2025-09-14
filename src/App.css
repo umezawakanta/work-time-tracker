@@ -2913,6 +2913,144 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   --header-title-gradient: linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1);
 }
 
+/* 時間記録アイコンの走るアニメーション */
+.time-tracking-icon-animation {
+  position: relative;
+  display: inline-block;
+  margin: 0 10px;
+  height: 30px;
+  width: 60px;
+  overflow: hidden;
+}
+
+.running-icon {
+  position: absolute;
+  font-size: 20px;
+  animation: runAcross 3s ease-in-out infinite;
+  z-index: 2;
+}
+
+.running-trail {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.3) 20%, 
+    rgba(255, 255, 255, 0.6) 50%, 
+    rgba(255, 255, 255, 0.3) 80%, 
+    transparent 100%
+  );
+  transform: translateY(-50%);
+  animation: trailGlow 3s ease-in-out infinite;
+}
+
+@keyframes runAcross {
+  0% {
+    left: -20px;
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.2) rotate(5deg);
+  }
+  50% {
+    left: 50%;
+    transform: scale(1) rotate(0deg);
+  }
+  75% {
+    transform: scale(1.2) rotate(-5deg);
+  }
+  100% {
+    left: 100%;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes trailGlow {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(0);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1);
+  }
+  75% {
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(0);
+  }
+}
+
+/* アクティブな時間記録時のスタイル */
+.time-tracking-icon-animation.active-tracking .running-icon {
+  animation: runAcross 2s ease-in-out infinite;
+  color: #ff6b6b;
+  text-shadow: 0 0 10px rgba(255, 107, 107, 0.8);
+}
+
+.time-tracking-icon-animation.active-tracking .running-trail {
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 107, 107, 0.3) 20%, 
+    rgba(255, 107, 107, 0.8) 50%, 
+    rgba(255, 107, 107, 0.3) 80%, 
+    transparent 100%
+  );
+  animation: trailGlow 2s ease-in-out infinite;
+}
+
+.tracking-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  border: 2px solid #ff6b6b;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse 1.5s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* モバイル用の調整 */
+@media (max-width: 768px) {
+  .time-tracking-icon-animation {
+    margin: 0 5px;
+    height: 25px;
+    width: 50px;
+  }
+  
+  .running-icon {
+    font-size: 16px;
+  }
+  
+  .tracking-pulse {
+    width: 30px;
+    height: 30px;
+  }
+}
+
 /* お仕事記録セクション */
 .work-records-section {
   margin-top: 2rem;
