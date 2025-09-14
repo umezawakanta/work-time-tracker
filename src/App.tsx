@@ -154,6 +154,12 @@ function App() {
   const [isTracking, setIsTracking] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [description, setDescription] = useState("");
+
+  // ゆでたまごタイマーの状態
+  const [eggTimerActive, setEggTimerActive] = useState(false);
+  const [eggTimerTime, setEggTimerTime] = useState(0); // 残り時間（秒）
+  const [eggTimerInterval, setEggTimerInterval] = useState<NodeJS.Timeout | null>(null);
+  const [eggTimerType, setEggTimerType] = useState<'soft' | 'medium' | 'hard'>('medium');
   
   // プロジェクト関連の状態
   const [projects, setProjects] = useState<Project[]>([]);
@@ -2138,6 +2144,81 @@ function App() {
     }
   };
 
+  // ゆでたまごタイマーの関数
+  const getEggTimerDuration = (type: 'soft' | 'medium' | 'hard') => {
+    switch (type) {
+      case 'soft': return 6 * 60; // 6分
+      case 'medium': return 8 * 60; // 8分
+      case 'hard': return 10 * 60; // 10分
+      default: return 8 * 60;
+    }
+  };
+
+  const startEggTimer = () => {
+    if (eggTimerActive) return;
+    
+    const duration = getEggTimerDuration(eggTimerType);
+    setEggTimerTime(duration);
+    setEggTimerActive(true);
+    
+    const interval = setInterval(() => {
+      setEggTimerTime(prev => {
+        if (prev <= 1) {
+          setEggTimerActive(false);
+          clearInterval(interval);
+          setEggTimerInterval(null);
+          // タイマー終了時の通知
+          playEggTimerSound();
+          setMessage(`🥚 ゆでたまごタイマー終了！${eggTimerType === 'soft' ? '半熟' : eggTimerType === 'medium' ? '中半熟' : '固ゆで'}のできあがりです！`);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    setEggTimerInterval(interval);
+  };
+
+  const stopEggTimer = () => {
+    if (eggTimerInterval) {
+      clearInterval(eggTimerInterval);
+      setEggTimerInterval(null);
+    }
+    setEggTimerActive(false);
+    setEggTimerTime(0);
+  };
+
+  const resetEggTimer = () => {
+    stopEggTimer();
+    setEggTimerTime(getEggTimerDuration(eggTimerType));
+  };
+
+  const playEggTimerSound = () => {
+    // ブラウザの通知音を再生
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
+  };
+
+  const formatEggTimerTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -2296,6 +2377,72 @@ function App() {
                   </div>
                 </div>
               )}
+              
+              {/* ゆでたまごタイマー */}
+              <div className="egg-timer-section">
+                <h3>🥚 ゆでたまごタイマー</h3>
+                <div className="egg-timer-controls">
+                  <div className="egg-timer-type-selector">
+                    <label>
+                      <input
+                        type="radio"
+                        name="eggTimerType"
+                        value="soft"
+                        checked={eggTimerType === 'soft'}
+                        onChange={(e) => setEggTimerType(e.target.value as 'soft' | 'medium' | 'hard')}
+                        disabled={eggTimerActive}
+                      />
+                      半熟 (6分)
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="eggTimerType"
+                        value="medium"
+                        checked={eggTimerType === 'medium'}
+                        onChange={(e) => setEggTimerType(e.target.value as 'soft' | 'medium' | 'hard')}
+                        disabled={eggTimerActive}
+                      />
+                      中半熟 (8分)
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="eggTimerType"
+                        value="hard"
+                        checked={eggTimerType === 'hard'}
+                        onChange={(e) => setEggTimerType(e.target.value as 'soft' | 'medium' | 'hard')}
+                        disabled={eggTimerActive}
+                      />
+                      固ゆで (10分)
+                    </label>
+                  </div>
+                  
+                  <div className="egg-timer-display">
+                    <div className="egg-timer-time">
+                      {formatEggTimerTime(eggTimerTime)}
+                    </div>
+                    <div className="egg-timer-status">
+                      {eggTimerActive ? '🍳 ゆで中...' : '🥚 待機中'}
+                    </div>
+                  </div>
+                  
+                  <div className="egg-timer-buttons">
+                    {!eggTimerActive ? (
+                      <button onClick={startEggTimer} className="egg-timer-start-btn">
+                        ▶️ タイマー開始
+                      </button>
+                    ) : (
+                      <button onClick={stopEggTimer} className="egg-timer-stop-btn">
+                        ⏹️ タイマー停止
+                      </button>
+                    )}
+                    <button onClick={resetEggTimer} className="egg-timer-reset-btn">
+                      🔄 リセット
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
                 );
               } else if (feature.id === 'projects') {
