@@ -2262,43 +2262,97 @@ html, body, .app {
   font-family: var(--app-font-family, inherit) !important;
 }
 
+/* より強力なフォント適用 - 特定の要素を明示的に指定 */
+.dashboard-header,
+.dashboard-header h1,
+.dashboard-header .user-info,
+.dashboard-header .header-right,
+.dashboard-header .header-right button,
+.dashboard-header .header-right span,
+.dashboard-header .header-right div {
+  font-family: var(--app-font-family, inherit) !important;
+}
+
+/* セクションヘッダーの強制適用 */
+.time-tracking-section h2,
+.projects-section h2,
+.reports-section h2,
+.admin-section h2,
+.bookshelf-section h2,
+.memos-section h2,
+.public-memos-section h2,
+.work-records-section h2,
+.section-header h2,
+.section-header button {
+  font-family: var(--app-font-family, inherit) !important;
+}
+
+/* ボタンとコントロール要素の強制適用 */
+button,
+input,
+textarea,
+select,
+option,
+label,
+.form-group label,
+.form-group input,
+.form-group textarea,
+.form-group select {
+  font-family: var(--app-font-family, inherit) !important;
+}
+
 /* テキスト要素の強制適用 */
-h1, h2, h3, h4, h5, h6,
 p, span, div, a, strong, em, b, i, u, s,
-button, input, textarea, select, option,
-label, legend, caption, th, td,
-.dashboard-header, .user-info, .time-tracking-section,
-.project-section, .reports-section, .admin-section,
-.bookshelf-section, .memos-section, .public-memos-section,
-.section-header, .form-group, .stat-card, .memo-item,
-.public-memo-item, .book-item, .project-item,
-.feature-cards, .dashboard-main, .login-container {
+h1, h2, h3, h4, h5, h6,
+li, ul, ol, dl, dt, dd {
   font-family: var(--app-font-family, inherit) !important;
 }
 
-/* ボタンと入力要素の強制適用 */
-button, input, textarea, select, option {
+/* モーダルとポップアップの強制適用 */
+.modal,
+.modal-content,
+.modal-header,
+.modal-body,
+.modal-footer,
+.theme-settings-modal,
+.font-settings-modal,
+.feature-settings-modal {
   font-family: var(--app-font-family, inherit) !important;
 }
 
-/* リスト要素の強制適用 */
-ul, ol, li, dl, dt, dd {
+/* カードとアイテムの強制適用 */
+.card,
+.stat-card,
+.memo-item,
+.public-memo-item,
+.book-item,
+.project-item,
+.salary-record-item,
+.diary-record-item {
   font-family: var(--app-font-family, inherit) !important;
 }
 
 /* テーブル要素の強制適用 */
-table, thead, tbody, tfoot, tr, th, td {
+table, thead, tbody, tfoot, tr, th, td,
+.user-table,
+.breakdown-list {
   font-family: var(--app-font-family, inherit) !important;
 }
 
 /* フォーム要素の強制適用 */
-form, fieldset, legend, label, input, textarea, select, option, button {
+form, fieldset, legend,
+.login-form,
+.project-form,
+.memo-form,
+.diary-form,
+.salary-form {
   font-family: var(--app-font-family, inherit) !important;
 }
 
 /* その他の要素の強制適用 */
 nav, header, main, section, article, aside, footer,
-figure, figcaption, details, summary, mark, small, sub, sup {
+figure, figcaption, details, summary, mark, small, sub, sup,
+.feature-cards, .dashboard-main, .login-container {
   font-family: var(--app-font-family, inherit) !important;
 }
 

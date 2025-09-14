@@ -443,6 +443,37 @@ function App() {
       });
     }
     
+    // より強力なフォント適用 - 特定の要素を明示的に更新
+    const specificSelectors = [
+      '.dashboard-header h1',
+      '.dashboard-header',
+      '.user-info',
+      '.time-tracking-section h2',
+      '.projects-section h2',
+      '.reports-section h2',
+      '.admin-section h2',
+      '.bookshelf-section h2',
+      '.memos-section h2',
+      '.public-memos-section h2',
+      '.work-records-section h2',
+      'button',
+      'input',
+      'textarea',
+      'select',
+      'label',
+      'p',
+      'span',
+      'div',
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
+    ];
+    
+    specificSelectors.forEach(selector => {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(el => {
+        (el as HTMLElement).style.fontFamily = fontValue === "system" ? "" : fontValue;
+      });
+    });
+    
     // デバッグ用ログ
     console.log("Applied font:", fontValue);
     console.log("CSS variable:", root.style.getPropertyValue("--app-font-family"));
@@ -453,6 +484,16 @@ function App() {
     setSelectedFont(fontValue);
     applyFont(fontValue);
     localStorage.setItem("selectedFont", fontValue);
+    
+    // より強力なフォント適用 - 少し遅延して再適用
+    setTimeout(() => {
+      applyFont(fontValue);
+    }, 100);
+    
+    // さらに遅延して最終確認
+    setTimeout(() => {
+      applyFont(fontValue);
+    }, 500);
   };
 
   // テーマ適用関数
@@ -4157,7 +4198,25 @@ function App() {
               <div className="font-settings-body">
                 <div className="font-preview">
                   <p style={{ fontFamily: selectedFont === "system" ? "" : selectedFont }}>
-                    このテキストでフォントをプレビューできます
+                    フォントプレビュー: {selectedFont}
+                  </p>
+                  <p style={{ fontFamily: selectedFont === "system" ? "" : selectedFont }}>
+                    ⏰ Work Time Tracker 📚
+                  </p>
+                  <p style={{ fontFamily: selectedFont === "system" ? "" : selectedFont }}>
+                    👋 こんにちは、梅澤寛太さん！
+                  </p>
+                  <p style={{ fontFamily: selectedFont === "system" ? "" : selectedFont }}>
+                    🎨 テーマ 🔤 フォント ⚙️ 機能設定 🚪 ログアウト
+                  </p>
+                  <p style={{ fontFamily: selectedFont === "system" ? "" : selectedFont }}>
+                    時間記録 | プロジェクト | レポート | 管理者パネル
+                  </p>
+                  <p style={{ fontFamily: selectedFont === "system" ? "" : selectedFont }}>
+                    本棚 | メモ | 公開メモ | お仕事記録
+                  </p>
+                  <p style={{ fontFamily: selectedFont === "system" ? "" : selectedFont }}>
+                    作業内容を入力してください | ▶️ 記録開始
                   </p>
                 </div>
                 <div className="font-options">
