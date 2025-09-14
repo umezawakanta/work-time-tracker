@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Database connection utility
-const ensureDatabaseConnection = async (): Promise<void> => {
+const ensureDatabaseConnection = async () => {
   const isConnected = mongoose.connection.readyState === 1;
   if (isConnected) {
     return;
@@ -41,23 +41,8 @@ const ensureDatabaseConnection = async (): Promise<void> => {
   }
 };
 
-// User document interface
-interface UserDocument extends mongoose.Document {
-  _id: mongoose.Types.ObjectId;
-  email: string;
-  displayName: string;
-  password: string;
-  role: string;
-  isVerified: boolean;
-  status: string;
-  isAdmin?: boolean;
-  roles?: string[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 // User schema
-const UserSchema = new mongoose.Schema<UserDocument>({
+const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true },
   displayName: { type: String, required: true },
   password: { type: String, required: true },
@@ -84,25 +69,13 @@ UserSchema.set("toJSON", {
   },
 });
 
-const User = mongoose.model<UserDocument>("User", UserSchema);
-
-// Delete user request interface
-interface DeleteUserRequest {
-  userId: string;
-}
-
-// Delete user response interface
-interface DeleteUserResponse {
-  success: boolean;
-  message: string;
-  error?: string;
-}
+const User = mongoose.model("User", UserSchema);
 
 // JWT verification utility
-const verifyJWT = (token: string): { userId: string; role: string; isAdmin: boolean } | null => {
+const verifyJWT = (token) => {
   try {
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
-    const decoded = jwt.verify(token, jwtSecret) as any;
+    const decoded = jwt.verify(token, jwtSecret);
     
     if (!decoded.userId || !decoded.role) {
       return null;
@@ -119,7 +92,7 @@ const verifyJWT = (token: string): { userId: string; role: string; isAdmin: bool
   }
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req, res) {
   // CORS設定
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
@@ -141,7 +114,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(405).json({
       success: false,
       error: 'Method not allowed',
-    } as DeleteUserResponse);
+    });
     return;
   }
 
@@ -158,7 +131,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         success: false,
         message: '認証が必要です',
         error: 'Authorization header missing or invalid',
-      } as DeleteUserResponse);
+      });
     }
 
     const token = authHeader.substring(7);
@@ -168,7 +141,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         success: false,
         message: '無効なトークンです',
         error: 'Invalid token',
-      } as DeleteUserResponse);
+      });
     }
 
     // 管理者権限の確認
@@ -177,17 +150,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         success: false,
         message: '管理者権限が必要です',
         error: 'Admin access required',
-      } as DeleteUserResponse);
+      });
     }
 
     // リクエストボディの取得
-    const { userId } = req.body as DeleteUserRequest;
+    const { userId } = req.body;
     if (!userId) {
       return res.status(400).json({
         success: false,
         message: 'ユーザーIDが必要です',
         error: 'User ID is required',
-      } as DeleteUserResponse);
+      });
     }
 
     // 自分自身の削除を防ぐ
@@ -196,7 +169,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         success: false,
         message: '自分自身を削除することはできません',
         error: 'Cannot delete yourself',
-      } as DeleteUserResponse);
+      });
     }
 
     // ユーザーの存在確認
@@ -206,7 +179,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         success: false,
         message: 'ユーザーが見つかりません',
         error: 'User not found',
-      } as DeleteUserResponse);
+      });
     }
 
     // ユーザーを削除
@@ -218,12 +191,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     // レスポンスの構築
-    const response: DeleteUserResponse = {
+    res.status(200).json({
       success: true,
       message: 'ユーザーを削除しました',
-    };
-
-    res.status(200).json(response);
+    });
   } catch (error) {
     console.error('❌ User delete error:', error);
     res.status(500).json({
@@ -232,6 +203,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       error: process.env.NODE_ENV === 'development' 
         ? (error instanceof Error ? error.message : String(error))
         : 'Internal server error',
-    } as DeleteUserResponse);
+    });
   }
 }
