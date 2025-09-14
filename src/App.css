@@ -770,3 +770,213 @@ tr:hover {
 .cancel-button:hover {
   background-color: #5a6268;
 }
+
+/* 本棚セクション */
+.bookshelf-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.bookshelf-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.bookshelf-section h2 {
+  margin: 0;
+  color: #333;
+}
+
+.toggle-bookshelf-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.toggle-bookshelf-button:hover {
+  background: #0056b3;
+}
+
+.bookshelf-content {
+  margin-top: 20px;
+}
+
+.bookshelf-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.bookshelf-actions {
+  margin-bottom: 20px;
+}
+
+.add-book-button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-book-button:hover {
+  background: #218838;
+}
+
+.book-form {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.book-form h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 1.2em;
+}
+
+.book-form .form-group {
+  margin-bottom: 15px;
+}
+
+.book-form .form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #555;
+}
+
+.book-form .form-group input,
+.book-form .form-group select,
+.book-form .form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.book-form .form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.books-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.book-item {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.book-info h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 1.1em;
+}
+
+.book-author {
+  margin: 0 0 10px 0;
+  color: #666;
+  font-style: italic;
+}
+
+.book-meta {
+  margin: 0 0 10px 0;
+  color: #888;
+  font-size: 0.9em;
+}
+
+.book-notes {
+  margin: 0 0 15px 0;
+  color: #555;
+  font-size: 0.9em;
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.reading-progress {
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #007bff;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.8em;
+  color: #666;
+}
+
+.book-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.book-actions .edit-button {
+  background: #ffc107;
+  color: #212529;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.book-actions .edit-button:hover {
+  background: #e0a800;
+}
+
+.book-actions .delete-button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.book-actions .delete-button:hover {
+  background: #c82333;
+}
+
+.no-books {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 40px;
+  grid-column: 1 / -1;
+}

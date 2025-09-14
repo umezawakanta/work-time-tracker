@@ -55,6 +55,22 @@ interface AdminUser {
   updatedAt: string;
 }
 
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  isbn: string;
+  publishedYear: number;
+  totalPages: number;
+  readPages: number;
+  category: string;
+  rating: number;
+  notes: string;
+  lentTo: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -88,6 +104,19 @@ function App() {
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+
+  // 本棚関連の状態
+  const [books, setBooks] = useState<Book[]>([]);
+  const [showBookshelf, setShowBookshelf] = useState(false);
+  const [showBookForm, setShowBookForm] = useState(false);
+  const [editingBook, setEditingBook] = useState<Book | null>(null);
+  const [bookTitle, setBookTitle] = useState("");
+  const [bookAuthor, setBookAuthor] = useState("");
+  const [bookIsbn, setBookIsbn] = useState("");
+  const [bookPublishedYear, setBookPublishedYear] = useState(new Date().getFullYear());
+  const [bookTotalPages, setBookTotalPages] = useState(0);
+  const [bookCategory, setBookCategory] = useState("");
+  const [bookNotes, setBookNotes] = useState("");
 
   // ログイン状態をチェック
   useEffect(() => {
@@ -407,6 +436,160 @@ function App() {
       // 削除中の状態をクリア
       setDeletingUserId(null);
     }
+  };
+
+  // 本棚関連の関数
+  const loadBooks = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/books", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setBooks(data.books || []);
+      } else {
+        setMessage(`本の一覧取得失敗: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Failed to load books:", error);
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+
+  const handleCreateBook = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!bookTitle || !bookAuthor || !bookIsbn || !bookCategory) {
+      setMessage("必須フィールドを入力してください");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/books", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: bookTitle,
+          author: bookAuthor,
+          isbn: bookIsbn,
+          publishedYear: bookPublishedYear,
+          totalPages: bookTotalPages,
+          category: bookCategory,
+          notes: bookNotes,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("本を追加しました！");
+        setBookTitle("");
+        setBookAuthor("");
+        setBookIsbn("");
+        setBookPublishedYear(new Date().getFullYear());
+        setBookTotalPages(0);
+        setBookCategory("");
+        setBookNotes("");
+        setShowBookForm(false);
+        loadBooks();
+      } else {
+        setMessage(`本の追加失敗: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+
+  const handleEditBook = (book: Book) => {
+    setEditingBook(book);
+    setBookTitle(book.title);
+    setBookAuthor(book.author);
+    setBookIsbn(book.isbn);
+    setBookPublishedYear(book.publishedYear);
+    setBookTotalPages(book.totalPages);
+    setBookCategory(book.category);
+    setBookNotes(book.notes);
+    setShowBookForm(true);
+  };
+
+  const handleUpdateBook = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!editingBook) return;
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/books/${editingBook.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: bookTitle,
+          author: bookAuthor,
+          isbn: bookIsbn,
+          publishedYear: bookPublishedYear,
+          totalPages: bookTotalPages,
+          category: bookCategory,
+          notes: bookNotes,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("本を更新しました！");
+        setEditingBook(null);
+        setShowBookForm(false);
+        loadBooks();
+      } else {
+        setMessage(`本の更新失敗: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+
+  const handleDeleteBook = async (bookId: string, bookTitle: string) => {
+    if (!window.confirm(`「${bookTitle}」を削除してもよろしいですか？`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/books/${bookId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("本を削除しました");
+        loadBooks();
+      } else {
+        setMessage(`本の削除失敗: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+
+  const getReadingProgress = (book: Book) => {
+    if (book.totalPages === 0) return 0;
+    return Math.round((book.readPages / book.totalPages) * 100);
   };
 
   const handleLogout = () => {
@@ -861,6 +1044,202 @@ function App() {
                 )}
               </div>
             )}
+
+            {/* 本棚セクション */}
+            <div className="bookshelf-section">
+              <div className="section-header">
+                <h2>本棚</h2>
+                <button 
+                  onClick={() => {
+                    setShowBookshelf(!showBookshelf);
+                    if (!showBookshelf && books.length === 0) {
+                      loadBooks();
+                    }
+                  }}
+                  className="toggle-bookshelf-button"
+                >
+                  {showBookshelf ? "本棚を閉じる" : "本棚を表示"}
+                </button>
+              </div>
+
+              {showBookshelf && (
+                <div className="bookshelf-content">
+                  <div className="bookshelf-stats">
+                    <div className="stat-card">
+                      <h3>総冊数</h3>
+                      <p className="stat-value">{books.length}</p>
+                    </div>
+                    <div className="stat-card">
+                      <h3>読了済み</h3>
+                      <p className="stat-value">{books.filter(book => book.readPages >= book.totalPages && book.totalPages > 0).length}</p>
+                    </div>
+                    <div className="stat-card">
+                      <h3>読書中</h3>
+                      <p className="stat-value">{books.filter(book => book.readPages > 0 && book.readPages < book.totalPages).length}</p>
+                    </div>
+                  </div>
+
+                  <div className="bookshelf-actions">
+                    <button 
+                      onClick={() => {
+                        setEditingBook(null);
+                        setShowBookForm(!showBookForm);
+                        if (!showBookForm) {
+                          setBookTitle("");
+                          setBookAuthor("");
+                          setBookIsbn("");
+                          setBookPublishedYear(new Date().getFullYear());
+                          setBookTotalPages(0);
+                          setBookCategory("");
+                          setBookNotes("");
+                        }
+                      }}
+                      className="add-book-button"
+                    >
+                      {showBookForm ? "キャンセル" : "本を追加"}
+                    </button>
+                  </div>
+
+                  {showBookForm && (
+                    <form onSubmit={editingBook ? handleUpdateBook : handleCreateBook} className="book-form">
+                      <h3>{editingBook ? "本を編集" : "本を追加"}</h3>
+                      <div className="form-group">
+                        <label htmlFor="bookTitle">タイトル *</label>
+                        <input
+                          type="text"
+                          id="bookTitle"
+                          value={bookTitle}
+                          onChange={(e) => setBookTitle(e.target.value)}
+                          required
+                          disabled={loading}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="bookAuthor">著者 *</label>
+                        <input
+                          type="text"
+                          id="bookAuthor"
+                          value={bookAuthor}
+                          onChange={(e) => setBookAuthor(e.target.value)}
+                          required
+                          disabled={loading}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="bookIsbn">ISBN *</label>
+                        <input
+                          type="text"
+                          id="bookIsbn"
+                          value={bookIsbn}
+                          onChange={(e) => setBookIsbn(e.target.value)}
+                          required
+                          disabled={loading}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="bookPublishedYear">出版年 *</label>
+                        <input
+                          type="number"
+                          id="bookPublishedYear"
+                          value={bookPublishedYear}
+                          onChange={(e) => setBookPublishedYear(parseInt(e.target.value) || new Date().getFullYear())}
+                          required
+                          disabled={loading}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="bookTotalPages">総ページ数 *</label>
+                        <input
+                          type="number"
+                          id="bookTotalPages"
+                          value={bookTotalPages}
+                          onChange={(e) => setBookTotalPages(parseInt(e.target.value) || 0)}
+                          required
+                          disabled={loading}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="bookCategory">カテゴリ *</label>
+                        <select
+                          id="bookCategory"
+                          value={bookCategory}
+                          onChange={(e) => setBookCategory(e.target.value)}
+                          required
+                          disabled={loading}
+                        >
+                          <option value="">選択してください</option>
+                          <option value="小説">小説</option>
+                          <option value="ノンフィクション">ノンフィクション</option>
+                          <option value="技術書">技術書</option>
+                          <option value="ビジネス">ビジネス</option>
+                          <option value="自己啓発">自己啓発</option>
+                          <option value="その他">その他</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="bookNotes">メモ</label>
+                        <textarea
+                          id="bookNotes"
+                          value={bookNotes}
+                          onChange={(e) => setBookNotes(e.target.value)}
+                          disabled={loading}
+                          rows={3}
+                        />
+                      </div>
+                      <button type="submit" disabled={loading} className="submit-button">
+                        {loading ? "処理中..." : (editingBook ? "更新" : "追加")}
+                      </button>
+                    </form>
+                  )}
+
+                  <div className="books-list">
+                    {books.length === 0 ? (
+                      <p className="no-books">本が登録されていません</p>
+                    ) : (
+                      books.map((book) => (
+                        <div key={book.id} className="book-item">
+                          <div className="book-info">
+                            <h3>{book.title}</h3>
+                            <p className="book-author">{book.author}</p>
+                            <p className="book-meta">
+                              {book.publishedYear}年 | {book.category} | {book.totalPages}ページ
+                            </p>
+                            {book.notes && (
+                              <p className="book-notes">{book.notes}</p>
+                            )}
+                            <div className="reading-progress">
+                              <div className="progress-bar">
+                                <div 
+                                  className="progress-fill" 
+                                  style={{ width: `${getReadingProgress(book)}%` }}
+                                ></div>
+                              </div>
+                              <span className="progress-text">
+                                {book.readPages} / {book.totalPages} ページ ({getReadingProgress(book)}%)
+                              </span>
+                            </div>
+                          </div>
+                          <div className="book-actions">
+                            <button 
+                              onClick={() => handleEditBook(book)}
+                              className="edit-button"
+                            >
+                              編集
+                            </button>
+                            <button
+                              onClick={() => handleDeleteBook(book.id, book.title)}
+                              className="delete-button"
+                            >
+                              削除
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </main>
         </div>
       </div>
