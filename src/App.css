@@ -4129,6 +4129,20 @@ input:checked + .toggle-slider:before {
 
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
+  .work-records-tabs {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .tab-button {
+    flex: 1;
+    min-width: calc(50% - 0.125rem);
+    padding: 8px 12px;
+    font-size: 12px;
+    text-align: center;
+  }
+  
   .bottom-right-character {
     width: 60px;
     height: 60px;
@@ -4688,5 +4702,24 @@ input:checked + .toggle-slider:before {
   .monthly-summary {
     margin-top: 1rem;
     padding: 1rem;
+  }
+}
+
+/* タブのモバイル対応（480px以下） */
+@media (max-width: 480px) {
+  .work-records-tabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  
+  .tab-button {
+    flex: 1;
+    min-width: calc(50% - 0.125rem);
+    padding: 6px 8px;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
