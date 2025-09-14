@@ -2913,43 +2913,32 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   --header-title-gradient: linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1);
 }
 
-/* 時間記録アイコンの走るアニメーション */
+/* 時間記録アイコンの転ぶアニメーション */
 .time-tracking-icon-animation {
   position: relative;
   display: inline-block;
   margin: 0 10px;
   height: 30px;
-  width: 80px;
-  overflow: hidden;
+  width: 40px;
+  overflow: visible;
 }
 
-.running-icon {
+.falling-icon {
   position: absolute;
   font-size: 20px;
   z-index: 2;
-}
-
-.running-icon-1 {
-  animation: runAcross 3s ease-in-out infinite;
-}
-
-.running-icon-2 {
-  animation: runAcross 3s ease-in-out infinite 1s;
-}
-
-.running-icon-3 {
-  animation: runAcross 3s ease-in-out infinite 2s;
+  animation: fallDown 120s ease-in-out infinite;
 }
 
 /* ミニキャラクターのスタイル */
-.running-icon .mini-character {
+.falling-icon .mini-character {
   width: 20px;
   height: 20px;
   position: relative;
   transform: scale(0.8);
 }
 
-.running-icon .mini-character-face {
+.falling-icon .mini-character-face {
   width: 16px;
   height: 16px;
   background: #ffeb3b;
@@ -2958,7 +2947,7 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   z-index: 3;
 }
 
-.running-icon .mini-character-eyes {
+.falling-icon .mini-character-eyes {
   position: absolute;
   top: 4px;
   left: 2px;
@@ -2967,14 +2956,14 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   justify-content: space-between;
 }
 
-.running-icon .mini-eye {
+.falling-icon .mini-eye {
   width: 2px;
   height: 2px;
   background: #000;
   border-radius: 50%;
 }
 
-.running-icon .mini-character-mouth {
+.falling-icon .mini-character-mouth {
   position: absolute;
   bottom: 3px;
   left: 50%;
@@ -2985,7 +2974,7 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   border-radius: 0 0 6px 6px;
 }
 
-.running-icon .mini-character-body {
+.falling-icon .mini-character-body {
   position: absolute;
   top: 12px;
   left: 50%;
@@ -2997,7 +2986,7 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   z-index: 2;
 }
 
-.running-icon .mini-character-headphones {
+.falling-icon .mini-character-headphones {
   position: absolute;
   top: 2px;
   left: 50%;
@@ -3009,92 +2998,67 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   z-index: 4;
 }
 
-.running-trail {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(255, 255, 255, 0.3) 20%, 
-    rgba(255, 255, 255, 0.6) 50%, 
-    rgba(255, 255, 255, 0.3) 80%, 
-    transparent 100%
-  );
-  transform: translateY(-50%);
-  animation: trailGlow 3s ease-in-out infinite;
-}
-
-@keyframes runAcross {
+/* 2分おきに転ぶアニメーション */
+@keyframes fallDown {
   0% {
-    left: -20px;
-    transform: scale(1) rotate(0deg) translateY(0);
+    transform: translateY(0) rotate(0deg);
   }
-  10% {
-    transform: scale(1.1) rotate(2deg) translateY(-2px);
+  0.5% {
+    transform: translateY(0) rotate(0deg);
   }
-  20% {
-    transform: scale(1) rotate(0deg) translateY(0);
+  1% {
+    transform: translateY(5px) rotate(15deg);
   }
-  30% {
-    transform: scale(1.1) rotate(-2deg) translateY(-2px);
+  1.5% {
+    transform: translateY(8px) rotate(30deg);
   }
-  40% {
-    transform: scale(1) rotate(0deg) translateY(0);
+  2% {
+    transform: translateY(10px) rotate(45deg);
   }
-  50% {
-    left: 50%;
-    transform: scale(1.2) rotate(5deg) translateY(-3px);
+  2.5% {
+    transform: translateY(12px) rotate(60deg);
   }
-  60% {
-    transform: scale(1) rotate(0deg) translateY(0);
+  3% {
+    transform: translateY(15px) rotate(90deg);
   }
-  70% {
-    transform: scale(1.1) rotate(-2deg) translateY(-2px);
+  3.5% {
+    transform: translateY(18px) rotate(120deg);
   }
-  80% {
-    transform: scale(1) rotate(0deg) translateY(0);
+  4% {
+    transform: translateY(20px) rotate(180deg);
   }
-  90% {
-    transform: scale(1.1) rotate(2deg) translateY(-2px);
+  4.5% {
+    transform: translateY(18px) rotate(240deg);
+  }
+  5% {
+    transform: translateY(15px) rotate(270deg);
+  }
+  5.5% {
+    transform: translateY(12px) rotate(300deg);
+  }
+  6% {
+    transform: translateY(10px) rotate(330deg);
+  }
+  6.5% {
+    transform: translateY(8px) rotate(360deg);
+  }
+  7% {
+    transform: translateY(5px) rotate(360deg);
+  }
+  7.5% {
+    transform: translateY(0) rotate(360deg);
+  }
+  8% {
+    transform: translateY(0) rotate(0deg);
   }
   100% {
-    left: 100%;
-    transform: scale(1) rotate(0deg) translateY(0);
-  }
-}
-
-@keyframes trailGlow {
-  0% {
-    opacity: 0;
-    transform: translateY(-50%) scaleX(0);
-  }
-  25% {
-    opacity: 1;
-    transform: translateY(-50%) scaleX(1);
-  }
-  75% {
-    opacity: 1;
-    transform: translateY(-50%) scaleX(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-50%) scaleX(0);
+    transform: translateY(0) rotate(0deg);
   }
 }
 
 /* アクティブな時間記録時のスタイル */
-.time-tracking-icon-animation.active-tracking .running-icon-1 {
-  animation: runAcross 2s ease-in-out infinite;
-}
-
-.time-tracking-icon-animation.active-tracking .running-icon-2 {
-  animation: runAcross 2s ease-in-out infinite 0.7s;
-}
-
-.time-tracking-icon-animation.active-tracking .running-icon-3 {
-  animation: runAcross 2s ease-in-out infinite 1.4s;
+.time-tracking-icon-animation.active-tracking .falling-icon {
+  animation: fallDown 60s ease-in-out infinite;
 }
 
 .time-tracking-icon-animation.active-tracking .mini-character-face {
@@ -3105,17 +3069,6 @@ figure, figcaption, details, summary, mark, small, sub, sup,
 .time-tracking-icon-animation.active-tracking .mini-character-body {
   background: #ff9800;
   box-shadow: 0 0 8px rgba(255, 152, 0, 0.8);
-}
-
-.time-tracking-icon-animation.active-tracking .running-trail {
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(255, 107, 107, 0.3) 20%, 
-    rgba(255, 107, 107, 0.8) 50%, 
-    rgba(255, 107, 107, 0.3) 80%, 
-    transparent 100%
-  );
-  animation: trailGlow 2s ease-in-out infinite;
 }
 
 .tracking-pulse {
@@ -3151,14 +3104,14 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   .time-tracking-icon-animation {
     margin: 0 5px;
     height: 25px;
-    width: 60px;
+    width: 30px;
   }
   
-  .running-icon {
+  .falling-icon {
     font-size: 16px;
   }
   
-  .running-icon .mini-character {
+  .falling-icon .mini-character {
     transform: scale(0.6);
   }
   
