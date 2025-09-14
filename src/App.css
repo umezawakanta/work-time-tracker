@@ -2919,15 +2919,94 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   display: inline-block;
   margin: 0 10px;
   height: 30px;
-  width: 60px;
+  width: 80px;
   overflow: hidden;
 }
 
 .running-icon {
   position: absolute;
   font-size: 20px;
-  animation: runAcross 3s ease-in-out infinite;
   z-index: 2;
+}
+
+.running-icon-1 {
+  animation: runAcross 3s ease-in-out infinite;
+}
+
+.running-icon-2 {
+  animation: runAcross 3s ease-in-out infinite 1s;
+}
+
+.running-icon-3 {
+  animation: runAcross 3s ease-in-out infinite 2s;
+}
+
+/* ミニキャラクターのスタイル */
+.running-icon .mini-character {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  transform: scale(0.8);
+}
+
+.running-icon .mini-character-face {
+  width: 16px;
+  height: 16px;
+  background: #ffeb3b;
+  border-radius: 50%;
+  position: relative;
+  z-index: 3;
+}
+
+.running-icon .mini-character-eyes {
+  position: absolute;
+  top: 4px;
+  left: 2px;
+  right: 2px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.running-icon .mini-eye {
+  width: 2px;
+  height: 2px;
+  background: #000;
+  border-radius: 50%;
+}
+
+.running-icon .mini-character-mouth {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 3px;
+  background: #000;
+  border-radius: 0 0 6px 6px;
+}
+
+.running-icon .mini-character-body {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 8px;
+  background: #4caf50;
+  border-radius: 0 0 6px 6px;
+  z-index: 2;
+}
+
+.running-icon .mini-character-headphones {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 8px;
+  border: 2px solid #ff9800;
+  border-radius: 10px;
+  z-index: 4;
 }
 
 .running-trail {
@@ -2950,21 +3029,39 @@ figure, figcaption, details, summary, mark, small, sub, sup,
 @keyframes runAcross {
   0% {
     left: -20px;
-    transform: scale(1) rotate(0deg);
+    transform: scale(1) rotate(0deg) translateY(0);
   }
-  25% {
-    transform: scale(1.2) rotate(5deg);
+  10% {
+    transform: scale(1.1) rotate(2deg) translateY(-2px);
+  }
+  20% {
+    transform: scale(1) rotate(0deg) translateY(0);
+  }
+  30% {
+    transform: scale(1.1) rotate(-2deg) translateY(-2px);
+  }
+  40% {
+    transform: scale(1) rotate(0deg) translateY(0);
   }
   50% {
     left: 50%;
-    transform: scale(1) rotate(0deg);
+    transform: scale(1.2) rotate(5deg) translateY(-3px);
   }
-  75% {
-    transform: scale(1.2) rotate(-5deg);
+  60% {
+    transform: scale(1) rotate(0deg) translateY(0);
+  }
+  70% {
+    transform: scale(1.1) rotate(-2deg) translateY(-2px);
+  }
+  80% {
+    transform: scale(1) rotate(0deg) translateY(0);
+  }
+  90% {
+    transform: scale(1.1) rotate(2deg) translateY(-2px);
   }
   100% {
     left: 100%;
-    transform: scale(1) rotate(0deg);
+    transform: scale(1) rotate(0deg) translateY(0);
   }
 }
 
@@ -2988,10 +3085,26 @@ figure, figcaption, details, summary, mark, small, sub, sup,
 }
 
 /* アクティブな時間記録時のスタイル */
-.time-tracking-icon-animation.active-tracking .running-icon {
+.time-tracking-icon-animation.active-tracking .running-icon-1 {
   animation: runAcross 2s ease-in-out infinite;
-  color: #ff6b6b;
-  text-shadow: 0 0 10px rgba(255, 107, 107, 0.8);
+}
+
+.time-tracking-icon-animation.active-tracking .running-icon-2 {
+  animation: runAcross 2s ease-in-out infinite 0.7s;
+}
+
+.time-tracking-icon-animation.active-tracking .running-icon-3 {
+  animation: runAcross 2s ease-in-out infinite 1.4s;
+}
+
+.time-tracking-icon-animation.active-tracking .mini-character-face {
+  background: #ff6b6b;
+  box-shadow: 0 0 8px rgba(255, 107, 107, 0.8);
+}
+
+.time-tracking-icon-animation.active-tracking .mini-character-body {
+  background: #ff9800;
+  box-shadow: 0 0 8px rgba(255, 152, 0, 0.8);
 }
 
 .time-tracking-icon-animation.active-tracking .running-trail {
@@ -3038,11 +3151,15 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   .time-tracking-icon-animation {
     margin: 0 5px;
     height: 25px;
-    width: 50px;
+    width: 60px;
   }
   
   .running-icon {
     font-size: 16px;
+  }
+  
+  .running-icon .mini-character {
+    transform: scale(0.6);
   }
   
   .tracking-pulse {

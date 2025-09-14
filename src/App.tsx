@@ -2186,7 +2186,46 @@ function App() {
               <span>👋 こんにちは、{user?.displayName || user?.email}さん！</span>
               {/* 時間記録アイコンの走るアニメーション */}
               <div className={`time-tracking-icon-animation ${isTracking ? 'active-tracking' : ''}`}>
-                <div className="running-icon">⏰</div>
+                {/* 複数のキャラクターが走る */}
+                <div className="running-icon running-icon-1">
+                  <div className="mini-character">
+                    <div className="mini-character-face">
+                      <div className="mini-character-eyes">
+                        <div className="mini-eye left-mini-eye"></div>
+                        <div className="mini-eye right-mini-eye"></div>
+                      </div>
+                      <div className="mini-character-mouth"></div>
+                    </div>
+                    <div className="mini-character-body"></div>
+                    <div className="mini-character-headphones"></div>
+                  </div>
+                </div>
+                <div className="running-icon running-icon-2">
+                  <div className="mini-character">
+                    <div className="mini-character-face">
+                      <div className="mini-character-eyes">
+                        <div className="mini-eye left-mini-eye"></div>
+                        <div className="mini-eye right-mini-eye"></div>
+                      </div>
+                      <div className="mini-character-mouth"></div>
+                    </div>
+                    <div className="mini-character-body"></div>
+                    <div className="mini-character-headphones"></div>
+                  </div>
+                </div>
+                <div className="running-icon running-icon-3">
+                  <div className="mini-character">
+                    <div className="mini-character-face">
+                      <div className="mini-character-eyes">
+                        <div className="mini-eye left-mini-eye"></div>
+                        <div className="mini-eye right-mini-eye"></div>
+                      </div>
+                      <div className="mini-character-mouth"></div>
+                    </div>
+                    <div className="mini-character-body"></div>
+                    <div className="mini-character-headphones"></div>
+                  </div>
+                </div>
                 <div className="running-trail"></div>
                 {isTracking && <div className="tracking-pulse"></div>}
               </div>
