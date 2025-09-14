@@ -92,6 +92,34 @@ interface Reply {
   createdAt: string;
 }
 
+// 給料記録の型定義
+interface SalaryRecord {
+  _id: string;
+  userId: string;
+  date: string;
+  salary: number;
+  transportation: number;
+  overtime: number;
+  bonus: number;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 日記の型定義
+interface WorkDiary {
+  _id: string;
+  userId: string;
+  date: string;
+  title: string;
+  content: string;
+  mood: string;
+  tags: string[];
+  isPrivate: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -174,6 +202,31 @@ function App() {
   // 返信機能の状態
   const [replyingToMemo, setReplyingToMemo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
+
+  // お仕事記録の状態
+  const [showWorkRecords, setShowWorkRecords] = useState(false);
+  const [salaryRecords, setSalaryRecords] = useState<SalaryRecord[]>([]);
+  const [workDiaries, setWorkDiaries] = useState<WorkDiary[]>([]);
+  const [showSalaryForm, setShowSalaryForm] = useState(false);
+  const [showDiaryForm, setShowDiaryForm] = useState(false);
+  const [editingSalaryRecord, setEditingSalaryRecord] = useState<SalaryRecord | null>(null);
+  const [editingDiary, setEditingDiary] = useState<WorkDiary | null>(null);
+  
+  // 給料記録フォームの状態
+  const [salaryDate, setSalaryDate] = useState("");
+  const [salary, setSalary] = useState("");
+  const [transportation, setTransportation] = useState("");
+  const [overtime, setOvertime] = useState("");
+  const [bonus, setBonus] = useState("");
+  const [salaryNotes, setSalaryNotes] = useState("");
+  
+  // 日記フォームの状態
+  const [diaryDate, setDiaryDate] = useState("");
+  const [diaryTitle, setDiaryTitle] = useState("");
+  const [diaryContent, setDiaryContent] = useState("");
+  const [diaryMood, setDiaryMood] = useState("😊");
+  const [diaryTags, setDiaryTags] = useState("");
+  const [diaryIsPrivate, setDiaryIsPrivate] = useState(true);
 
   // 利用可能なテーマ一覧
   const availableThemes = [
@@ -410,6 +463,143 @@ function App() {
     }, 100);
   };
 
+  // お仕事記録の関数
+  const loadSalaryRecords = async () => {
+    try {
+      const response = await fetch(`/api/work-records/salary?userId=${user?.id}`);
+      const data = await response.json();
+      if (data.success) {
+        setSalaryRecords(data.records);
+      }
+    } catch (error) {
+      console.error('Failed to load salary records:', error);
+    }
+  };
+
+  const loadWorkDiaries = async () => {
+    try {
+      const response = await fetch(`/api/work-records/diary?userId=${user?.id}`);
+      const data = await response.json();
+      if (data.success) {
+        setWorkDiaries(data.diaries);
+      }
+    } catch (error) {
+      console.error('Failed to load work diaries:', error);
+    }
+  };
+
+  const handleCreateSalaryRecord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id) return;
+
+    try {
+      const response = await fetch('/api/work-records/salary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          date: salaryDate,
+          salary: Number(salary),
+          transportation: Number(transportation) || 0,
+          overtime: Number(overtime) || 0,
+          bonus: Number(bonus) || 0,
+          notes: salaryNotes
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setMessage('給料記録が作成されました！');
+        setSalaryDate('');
+        setSalary('');
+        setTransportation('');
+        setOvertime('');
+        setBonus('');
+        setSalaryNotes('');
+        setShowSalaryForm(false);
+        loadSalaryRecords();
+      } else {
+        setMessage(`エラー: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const handleCreateDiary = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id) return;
+
+    try {
+      const response = await fetch('/api/work-records/diary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          date: diaryDate,
+          title: diaryTitle,
+          content: diaryContent,
+          mood: diaryMood,
+          tags: diaryTags.split(',').map(tag => tag.trim()).filter(tag => tag),
+          isPrivate: diaryIsPrivate
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setMessage('日記が作成されました！');
+        setDiaryDate('');
+        setDiaryTitle('');
+        setDiaryContent('');
+        setDiaryMood('😊');
+        setDiaryTags('');
+        setDiaryIsPrivate(true);
+        setShowDiaryForm(false);
+        loadWorkDiaries();
+      } else {
+        setMessage(`エラー: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const handleDeleteSalaryRecord = async (id: string) => {
+    try {
+      const response = await fetch(`/api/work-records/salary?id=${id}`, {
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setMessage('給料記録が削除されました！');
+        loadSalaryRecords();
+      } else {
+        setMessage(`エラー: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const handleDeleteDiary = async (id: string) => {
+    try {
+      const response = await fetch(`/api/work-records/diary?id=${id}`, {
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setMessage('日記が削除されました！');
+        loadWorkDiaries();
+      } else {
+        setMessage(`エラー: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
   // カスタムジャンル管理関数
   const handleAddGenre = () => {
     if (newGenreName.trim() && !customGenres.includes(newGenreName.trim())) {
@@ -556,6 +746,8 @@ function App() {
         }
         loadProjects(); // プロジェクトを読み込み
         loadReportSummary(); // レポートを読み込み
+        loadSalaryRecords(); // 給料記録を読み込み
+        loadWorkDiaries(); // 日記を読み込み
         console.log("Login successful:", data);
       } else {
         setMessage(`ログイン失敗: ${data.message}`);
@@ -2450,6 +2642,298 @@ function App() {
                       ))
                     )}
                   </div>
+                </div>
+              )}
+            </div>
+
+            {/* お仕事記録セクション */}
+            <div className="work-records-section">
+              <div className="section-header">
+                <h2>
+                  <span className="section-icon">
+                    <div className="mini-character">
+                      <div className="mini-character-halo"></div>
+                      <div className="mini-character-wings">
+                        <div className="mini-wing left-mini-wing"></div>
+                        <div className="mini-wing right-mini-wing"></div>
+                      </div>
+                      <div className="mini-character-face">
+                        <div className="mini-character-eyes">
+                          <div className="mini-eye left-mini-eye"></div>
+                          <div className="mini-eye right-mini-eye"></div>
+                        </div>
+                        <div className="mini-character-mouth"></div>
+                      </div>
+                      <div className="mini-character-body"></div>
+                      <div className="mini-sparkles">
+                        <div className="mini-sparkle mini-sparkle-1"></div>
+                        <div className="mini-sparkle mini-sparkle-2"></div>
+                      </div>
+                    </div>
+                  </span>
+                  お仕事記録
+                </h2>
+                <button 
+                  onClick={() => setShowWorkRecords(!showWorkRecords)}
+                  className="show-work-records-button"
+                >
+                  {showWorkRecords ? "💼 お仕事記録を閉じる" : "💼 お仕事記録を表示"}
+                </button>
+              </div>
+
+              {showWorkRecords && (
+                <div className="work-records-content">
+                  <div className="work-records-tabs">
+                    <button 
+                      className={`tab-button ${!showSalaryForm && !showDiaryForm ? 'active' : ''}`}
+                      onClick={() => {
+                        setShowSalaryForm(false);
+                        setShowDiaryForm(false);
+                      }}
+                    >
+                      📊 記録一覧
+                    </button>
+                    <button 
+                      className={`tab-button ${showSalaryForm ? 'active' : ''}`}
+                      onClick={() => {
+                        setShowSalaryForm(true);
+                        setShowDiaryForm(false);
+                      }}
+                    >
+                      💰 給料記録
+                    </button>
+                    <button 
+                      className={`tab-button ${showDiaryForm ? 'active' : ''}`}
+                      onClick={() => {
+                        setShowSalaryForm(false);
+                        setShowDiaryForm(true);
+                      }}
+                    >
+                      📝 日記
+                    </button>
+                  </div>
+
+                  {/* 給料記録フォーム */}
+                  {showSalaryForm && (
+                    <form onSubmit={handleCreateSalaryRecord} className="salary-form">
+                      <h3>💰 給料・交通費記録</h3>
+                      <div className="form-group">
+                        <label htmlFor="salaryDate">日付</label>
+                        <input
+                          type="date"
+                          id="salaryDate"
+                          value={salaryDate}
+                          onChange={(e) => setSalaryDate(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="salary">給料 (円)</label>
+                        <input
+                          type="number"
+                          id="salary"
+                          value={salary}
+                          onChange={(e) => setSalary(e.target.value)}
+                          placeholder="例: 250000"
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="transportation">交通費 (円)</label>
+                        <input
+                          type="number"
+                          id="transportation"
+                          value={transportation}
+                          onChange={(e) => setTransportation(e.target.value)}
+                          placeholder="例: 15000"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="overtime">残業代 (円)</label>
+                        <input
+                          type="number"
+                          id="overtime"
+                          value={overtime}
+                          onChange={(e) => setOvertime(e.target.value)}
+                          placeholder="例: 30000"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="bonus">ボーナス (円)</label>
+                        <input
+                          type="number"
+                          id="bonus"
+                          value={bonus}
+                          onChange={(e) => setBonus(e.target.value)}
+                          placeholder="例: 100000"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="salaryNotes">メモ</label>
+                        <textarea
+                          id="salaryNotes"
+                          value={salaryNotes}
+                          onChange={(e) => setSalaryNotes(e.target.value)}
+                          placeholder="給料についてのメモ"
+                          rows={3}
+                        />
+                      </div>
+                      <button type="submit" className="submit-button">
+                        💰 給料記録を保存
+                      </button>
+                    </form>
+                  )}
+
+                  {/* 日記フォーム */}
+                  {showDiaryForm && (
+                    <form onSubmit={handleCreateDiary} className="diary-form">
+                      <h3>📝 お仕事日記</h3>
+                      <div className="form-group">
+                        <label htmlFor="diaryDate">日付</label>
+                        <input
+                          type="date"
+                          id="diaryDate"
+                          value={diaryDate}
+                          onChange={(e) => setDiaryDate(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="diaryTitle">タイトル</label>
+                        <input
+                          type="text"
+                          id="diaryTitle"
+                          value={diaryTitle}
+                          onChange={(e) => setDiaryTitle(e.target.value)}
+                          placeholder="例: 今日のプロジェクト会議"
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="diaryMood">気分</label>
+                        <select
+                          id="diaryMood"
+                          value={diaryMood}
+                          onChange={(e) => setDiaryMood(e.target.value)}
+                        >
+                          <option value="😊">😊 楽しい</option>
+                          <option value="😐">😐 普通</option>
+                          <option value="😔">😔 疲れた</option>
+                          <option value="😤">😤 イライラ</option>
+                          <option value="😴">😴 眠い</option>
+                          <option value="🤔">🤔 悩み中</option>
+                          <option value="😍">😍 最高</option>
+                          <option value="😢">😢 悲しい</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="diaryContent">内容</label>
+                        <textarea
+                          id="diaryContent"
+                          value={diaryContent}
+                          onChange={(e) => setDiaryContent(e.target.value)}
+                          placeholder="今日の仕事の内容や感想を書いてください"
+                          rows={5}
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="diaryTags">タグ (カンマ区切り)</label>
+                        <input
+                          type="text"
+                          id="diaryTags"
+                          value={diaryTags}
+                          onChange={(e) => setDiaryTags(e.target.value)}
+                          placeholder="例: 会議, プロジェクト, 残業"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={diaryIsPrivate}
+                            onChange={(e) => setDiaryIsPrivate(e.target.checked)}
+                          />
+                          プライベートにする
+                        </label>
+                      </div>
+                      <button type="submit" className="submit-button">
+                        📝 日記を保存
+                      </button>
+                    </form>
+                  )}
+
+                  {/* 記録一覧 */}
+                  {!showSalaryForm && !showDiaryForm && (
+                    <div className="records-list">
+                      <div className="salary-records">
+                        <h3>💰 給料記録 ({salaryRecords.length}件)</h3>
+                        {salaryRecords.length > 0 ? (
+                          <div className="records-grid">
+                            {salaryRecords.map((record) => (
+                              <div key={record._id} className="salary-record-item">
+                                <div className="record-header">
+                                  <h4>{new Date(record.date).toLocaleDateString('ja-JP')}</h4>
+                                  <button 
+                                    onClick={() => handleDeleteSalaryRecord(record._id)}
+                                    className="delete-button"
+                                  >
+                                    🗑️
+                                  </button>
+                                </div>
+                                <div className="record-details">
+                                  <p><strong>給料:</strong> ¥{record.salary.toLocaleString()}</p>
+                                  {record.transportation > 0 && <p><strong>交通費:</strong> ¥{record.transportation.toLocaleString()}</p>}
+                                  {record.overtime > 0 && <p><strong>残業代:</strong> ¥{record.overtime.toLocaleString()}</p>}
+                                  {record.bonus > 0 && <p><strong>ボーナス:</strong> ¥{record.bonus.toLocaleString()}</p>}
+                                  {record.notes && <p><strong>メモ:</strong> {record.notes}</p>}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p>給料記録がありません</p>
+                        )}
+                      </div>
+
+                      <div className="work-diaries">
+                        <h3>📝 日記 ({workDiaries.length}件)</h3>
+                        {workDiaries.length > 0 ? (
+                          <div className="diaries-list">
+                            {workDiaries.map((diary) => (
+                              <div key={diary._id} className="diary-item">
+                                <div className="diary-header">
+                                  <h4>{diary.title}</h4>
+                                  <div className="diary-meta">
+                                    <span className="diary-mood">{diary.mood}</span>
+                                    <span className="diary-date">{new Date(diary.date).toLocaleDateString('ja-JP')}</span>
+                                    <button 
+                                      onClick={() => handleDeleteDiary(diary._id)}
+                                      className="delete-button"
+                                    >
+                                      🗑️
+                                    </button>
+                                  </div>
+                                </div>
+                                <div className="diary-content">
+                                  <p>{diary.content}</p>
+                                  {diary.tags && diary.tags.length > 0 && (
+                                    <div className="diary-tags">
+                                      {diary.tags.map((tag, index) => (
+                                        <span key={index} className="tag">#{tag}</span>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p>日記がありません</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

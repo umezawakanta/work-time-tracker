@@ -2843,3 +2843,183 @@ figure, figcaption, details, summary, mark, small, sub, sup {
   --bg-color: #ecfdf5;
   --card-bg: linear-gradient(145deg, #d1fae5 0%, #a7f3d0 100%);
 }
+
+/* お仕事記録セクション */
+.work-records-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 15px;
+  border: 2px solid #f59e0b;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+}
+
+.show-work-records-button {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+.show-work-records-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+}
+
+.work-records-content {
+  margin-top: 1.5rem;
+}
+
+.work-records-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #f59e0b;
+}
+
+.tab-button {
+  background: transparent;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #92400e;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.tab-button.active {
+  color: #f59e0b;
+  border-bottom-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.salary-form, .diary-form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.salary-form h3, .diary-form h3 {
+  margin-top: 0;
+  color: #92400e;
+  margin-bottom: 1.5rem;
+}
+
+.records-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.salary-records h3, .work-diaries h3 {
+  color: #92400e;
+  margin-bottom: 1rem;
+}
+
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.salary-record-item {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #f59e0b;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.record-header h4 {
+  margin: 0;
+  color: #92400e;
+}
+
+.record-details p {
+  margin: 0.25rem 0;
+  color: #374151;
+}
+
+.diaries-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.diary-item {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #10b981;
+}
+
+.diary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.diary-header h4 {
+  margin: 0;
+  color: #065f46;
+  flex: 1;
+}
+
+.diary-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.diary-mood {
+  font-size: 1.2rem;
+}
+
+.diary-date {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.diary-content p {
+  margin: 0.5rem 0;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.diary-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.diary-tags .tag {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
