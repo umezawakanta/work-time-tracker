@@ -1,18 +1,18 @@
 {
   "version": 2,
-  "buildCommand": "pnpm run vercel-build-ci",
+  "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
   "framework": null,
-  "installCommand": "pnpm config set store-dir .pnpm-store && pnpm install --prefer-offline --frozen-lockfile=false",
+  "installCommand": "pnpm install --frozen-lockfile",
   "devCommand": "pnpm run dev",
   "functions": {
     "api/auth/*.ts": {
       "includeFiles": "src/server/**",
       "maxDuration": 30
     },
-    "api/health.ts": {
+    "api/time/*.ts": {
       "includeFiles": "src/server/**",
-      "maxDuration": 10
+      "maxDuration": 30
     }
   },
   "rewrites": [
