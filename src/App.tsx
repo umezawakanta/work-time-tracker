@@ -1254,7 +1254,25 @@ function App() {
       <div className="app">
         <div className="dashboard">
           <header className="dashboard-header">
-            <h1>⏰ Work Time Tracker 📚</h1>
+            <div className="header-left">
+              <div className="character-container">
+                <div className="character">
+                  <div className="character-face">
+                    <div className="character-eyes">
+                      <div className="eye left-eye"></div>
+                      <div className="eye right-eye"></div>
+                    </div>
+                    <div className="character-mouth"></div>
+                  </div>
+                  <div className="character-body"></div>
+                  <div className="character-arms">
+                    <div className="arm left-arm"></div>
+                    <div className="arm right-arm"></div>
+                  </div>
+                </div>
+              </div>
+              <h1>⏰ Work Time Tracker 📚</h1>
+            </div>
             <div className="user-info">
               <span>👋 こんにちは、{user?.displayName || user?.email}さん！</span>
               <button 
