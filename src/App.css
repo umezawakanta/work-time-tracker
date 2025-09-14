@@ -1517,6 +1517,10 @@ tr:hover {
 }
 
 /* アプリ全体のフォント適用 */
+* {
+  font-family: var(--app-font-family, inherit) !important;
+}
+
 .app {
   font-family: var(--app-font-family, inherit);
 }
