@@ -294,6 +294,85 @@ function App() {
   const applyTheme = (themeValue: string) => {
     const root = document.documentElement;
     root.setAttribute("data-theme", themeValue);
+    
+    // デバッグ用ログ
+    console.log("Applying theme:", themeValue);
+    console.log("Root element:", root);
+    console.log("Data-theme attribute:", root.getAttribute("data-theme"));
+    
+    // 強制的にCSS変数を適用
+    if (themeValue === "dark") {
+      root.style.setProperty("--primary-color", "linear-gradient(135deg, #2d3748 0%, #4a5568 50%, #68d391 100%)");
+      root.style.setProperty("--secondary-color", "linear-gradient(145deg, #4a5568 0%, #68d391 100%)");
+      root.style.setProperty("--accent-color", "#68d391");
+      root.style.setProperty("--text-color", "#e2e8f0");
+      root.style.setProperty("--bg-color", "#1a202c");
+      root.style.setProperty("--card-bg", "linear-gradient(145deg, #2d3748 0%, #4a5568 100%)");
+    } else if (themeValue === "ocean") {
+      root.style.setProperty("--primary-color", "linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #06b6d4 100%)");
+      root.style.setProperty("--secondary-color", "linear-gradient(145deg, #0284c7 0%, #06b6d4 100%)");
+      root.style.setProperty("--accent-color", "#06b6d4");
+      root.style.setProperty("--text-color", "#0f172a");
+      root.style.setProperty("--bg-color", "#f0f9ff");
+      root.style.setProperty("--card-bg", "linear-gradient(145deg, #e0f2fe 0%, #bae6fd 100%)");
+    } else if (themeValue === "forest") {
+      root.style.setProperty("--primary-color", "linear-gradient(135deg, #16a34a 0%, #15803d 50%, #22c55e 100%)");
+      root.style.setProperty("--secondary-color", "linear-gradient(145deg, #15803d 0%, #22c55e 100%)");
+      root.style.setProperty("--accent-color", "#22c55e");
+      root.style.setProperty("--text-color", "#14532d");
+      root.style.setProperty("--bg-color", "#f0fdf4");
+      root.style.setProperty("--card-bg", "linear-gradient(145deg, #dcfce7 0%, #bbf7d0 100%)");
+    } else if (themeValue === "sunset") {
+      root.style.setProperty("--primary-color", "linear-gradient(135deg, #f97316 0%, #ea580c 50%, #fb923c 100%)");
+      root.style.setProperty("--secondary-color", "linear-gradient(145deg, #ea580c 0%, #fb923c 100%)");
+      root.style.setProperty("--accent-color", "#fb923c");
+      root.style.setProperty("--text-color", "#9a3412");
+      root.style.setProperty("--bg-color", "#fff7ed");
+      root.style.setProperty("--card-bg", "linear-gradient(145deg, #fed7aa 0%, #fdba74 100%)");
+    } else if (themeValue === "rainbow") {
+      root.style.setProperty("--primary-color", "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #a78bfa 100%)");
+      root.style.setProperty("--secondary-color", "linear-gradient(145deg, #7c3aed 0%, #a78bfa 100%)");
+      root.style.setProperty("--accent-color", "#a78bfa");
+      root.style.setProperty("--text-color", "#581c87");
+      root.style.setProperty("--bg-color", "#faf5ff");
+      root.style.setProperty("--card-bg", "linear-gradient(145deg, #e9d5ff 0%, #ddd6fe 100%)");
+    } else if (themeValue === "space") {
+      root.style.setProperty("--primary-color", "linear-gradient(135deg, #1e293b 0%, #334155 50%, #6366f1 100%)");
+      root.style.setProperty("--secondary-color", "linear-gradient(145deg, #334155 0%, #6366f1 100%)");
+      root.style.setProperty("--accent-color", "#6366f1");
+      root.style.setProperty("--text-color", "#e2e8f0");
+      root.style.setProperty("--bg-color", "#0f172a");
+      root.style.setProperty("--card-bg", "linear-gradient(145deg, #1e293b 0%, #334155 100%)");
+    } else if (themeValue === "candy") {
+      root.style.setProperty("--primary-color", "linear-gradient(135deg, #ec4899 0%, #db2777 50%, #f472b6 100%)");
+      root.style.setProperty("--secondary-color", "linear-gradient(145deg, #db2777 0%, #f472b6 100%)");
+      root.style.setProperty("--accent-color", "#f472b6");
+      root.style.setProperty("--text-color", "#831843");
+      root.style.setProperty("--bg-color", "#fdf2f8");
+      root.style.setProperty("--card-bg", "linear-gradient(145deg, #fce7f3 0%, #fbcfe8 100%)");
+    } else if (themeValue === "pastel") {
+      root.style.setProperty("--primary-color", "linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #c4b5fd 100%)");
+      root.style.setProperty("--secondary-color", "linear-gradient(145deg, #8b5cf6 0%, #c4b5fd 100%)");
+      root.style.setProperty("--accent-color", "#c4b5fd");
+      root.style.setProperty("--text-color", "#6b21a8");
+      root.style.setProperty("--bg-color", "#faf5ff");
+      root.style.setProperty("--card-bg", "linear-gradient(145deg, #f3e8ff 0%, #ede9fe 100%)");
+    } else if (themeValue === "neon") {
+      root.style.setProperty("--primary-color", "linear-gradient(135deg, #10b981 0%, #059669 50%, #34d399 100%)");
+      root.style.setProperty("--secondary-color", "linear-gradient(145deg, #059669 0%, #34d399 100%)");
+      root.style.setProperty("--accent-color", "#34d399");
+      root.style.setProperty("--text-color", "#064e3b");
+      root.style.setProperty("--bg-color", "#ecfdf5");
+      root.style.setProperty("--card-bg", "linear-gradient(145deg, #d1fae5 0%, #a7f3d0 100%)");
+    } else {
+      // デフォルトテーマ（ピンク）
+      root.style.setProperty("--primary-color", "linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 50%, #ffa8a8 100%)");
+      root.style.setProperty("--secondary-color", "linear-gradient(145deg, #fef3c7 0%, #fde68a 100%)");
+      root.style.setProperty("--accent-color", "#ffb6c1");
+      root.style.setProperty("--text-color", "#333");
+      root.style.setProperty("--bg-color", "linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)");
+      root.style.setProperty("--card-bg", "linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%)");
+    }
   };
 
   // テーマ変更ハンドラー
@@ -301,6 +380,34 @@ function App() {
     setSelectedTheme(themeValue);
     applyTheme(themeValue);
     localStorage.setItem("selectedTheme", themeValue);
+    
+    // 強制的にスタイルを再適用
+    setTimeout(() => {
+      applyTheme(themeValue);
+      // さらに強制的にDOM要素のスタイルを更新
+      const body = document.body;
+      const dashboard = document.querySelector('.dashboard');
+      const header = document.querySelector('.dashboard-header');
+      const timeSection = document.querySelector('.time-tracking-section');
+      
+      if (body) {
+        body.style.background = getComputedStyle(document.documentElement).getPropertyValue('--bg-color') || 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)';
+        body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-color') || '#333';
+      }
+      
+      if (dashboard) {
+        (dashboard as HTMLElement).style.background = getComputedStyle(document.documentElement).getPropertyValue('--card-bg') || 'linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%)';
+      }
+      
+      if (header) {
+        (header as HTMLElement).style.background = getComputedStyle(document.documentElement).getPropertyValue('--primary-color') || 'linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 50%, #ffa8a8 100%)';
+        (header as HTMLElement).style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-color') || 'white';
+      }
+      
+      if (timeSection) {
+        (timeSection as HTMLElement).style.background = getComputedStyle(document.documentElement).getPropertyValue('--secondary-color') || 'linear-gradient(145deg, #fef3c7 0%, #fde68a 100%)';
+      }
+    }, 100);
   };
 
   // カスタムジャンル管理関数

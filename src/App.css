@@ -8,11 +8,11 @@
 body {
   font-family: var(--app-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif);
+    sans-serif) !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: var(--bg-color, linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%));
-  color: var(--text-color, #333);
+  background: var(--bg-color, linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)) !important;
+  color: var(--text-color, #333) !important;
   min-height: 100vh;
 }
 
@@ -115,7 +115,7 @@ body {
 .dashboard {
   width: 100%;
   max-width: 1200px;
-  background: var(--card-bg, linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%));
+  background: var(--card-bg, linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%)) !important;
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(255, 182, 193, 0.3);
   overflow: hidden;
@@ -123,8 +123,8 @@ body {
 }
 
 .dashboard-header {
-  background: var(--primary-color, linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 50%, #ffa8a8 100%));
-  color: var(--text-color, white);
+  background: var(--primary-color, linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 50%, #ffa8a8 100%)) !important;
+  color: var(--text-color, white) !important;
   padding: 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -166,7 +166,7 @@ body {
 .time-tracking-section {
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: var(--secondary-color, linear-gradient(145deg, #fef3c7 0%, #fde68a 100%));
+  background: var(--secondary-color, linear-gradient(145deg, #fef3c7 0%, #fde68a 100%)) !important;
   border-radius: 15px;
   border: 2px solid #f59e0b;
   box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
