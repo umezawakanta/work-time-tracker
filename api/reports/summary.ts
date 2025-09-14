@@ -1,12 +1,12 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+// VercelRequest, VercelResponse types are not needed in CommonJS
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
 // Database connection utility
-const ensureDatabaseConnection = async (): Promise<void> => {
+const ensureDatabaseConnection = async () => {
   const isConnected = mongoose.connection.readyState === 1;
   if (isConnected) {
     return;
@@ -107,7 +107,7 @@ interface SummaryReportResponse {
   error?: string;
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+module.exports = async function handler(req, res) {
   // CORS設定
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];

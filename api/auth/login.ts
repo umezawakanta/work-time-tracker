@@ -1,8 +1,8 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { serialize } from 'cookie';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { serialize } = require('cookie');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -318,4 +318,4 @@ async function handler(req, res) {
   }
 }
 
-export default handler;
+module.exports = handler;

@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -91,7 +91,7 @@ const verifyJWT = (token) => {
   }
 };
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS設定
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
