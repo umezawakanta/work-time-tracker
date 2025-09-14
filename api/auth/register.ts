@@ -193,7 +193,7 @@ module.exports = async function handler(req, res) {
     const passwordErrors = validatePassword(password);
     if (passwordErrors) {
       return sendErrorResponse(res, 400, createValidationError(
-        passwordErrors.join(', '),
+        'パスワードの条件を満たしていません',
         'password',
         null
       ));
