@@ -201,11 +201,19 @@ function App() {
   // フォント適用関数
   const applyFont = (fontValue: string) => {
     const root = document.documentElement;
+    const body = document.body;
+    
     if (fontValue === "system") {
       root.style.setProperty("--app-font-family", "");
+      body.style.fontFamily = "";
     } else {
       root.style.setProperty("--app-font-family", fontValue);
+      body.style.fontFamily = fontValue;
     }
+    
+    // デバッグ用ログ
+    console.log("Applied font:", fontValue);
+    console.log("CSS variable:", root.style.getPropertyValue("--app-font-family"));
   };
 
   // フォント変更ハンドラー
