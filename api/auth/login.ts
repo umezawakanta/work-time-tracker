@@ -56,7 +56,7 @@ const ensureDatabaseConnection = async (): Promise<void> => {
     });
   } catch (error) {
     console.error('[auth/login] Failed to connect to database:', error);
-    throw new Error('Database connection failed', { cause: error });
+    throw new Error('Database connection failed: ' + (error && error.message ? error.message : String(error)));
   }
 };
 

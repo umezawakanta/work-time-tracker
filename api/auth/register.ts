@@ -169,12 +169,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       } as RegisterResponse);
     }
 
-    // パスワードの長さチェック
-    if (password.length < 6) {
+    // パスワードの長さと複雑性チェック
+    if (password.length < 8) {
       return res.status(400).json({
         success: false,
-        message: 'パスワードは6文字以上で入力してください',
-        error: 'Password must be at least 6 characters',
+        message: 'パスワードは8文字以上で入力してください',
+        error: 'Password must be at least 8 characters',
+      } as RegisterResponse);
+    }
+
+    // パスワードの複雑性チェック（大文字、小文字、数字を含む）
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'パスワードは大文字、小文字、数字を含む8文字以上である必要があります',
+        error: 'Password must contain at least one uppercase letter, one lowercase letter, and one number',
       } as RegisterResponse);
     }
 

@@ -170,7 +170,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // 管理者権限の確認
-    if (userInfo.role !== 'admin' && !userInfo.isAdmin) {
+    if (userInfo.role !== 'admin' || !userInfo.isAdmin) {
       return res.status(403).json({
         success: false,
         message: '管理者権限が必要です',
