@@ -137,14 +137,18 @@ module.exports = async function handler(req, res) {
   const isAllowedOrigin = origin
     && origin !== "null"
     && origin !== null
+    && origin !== undefined
+    && origin.length > 0
     && (allowedOrigins.includes(origin) || isPreview);
 
-  if (isAllowedOrigin && origin) {
+  // 認証情報を含むリクエストの場合は厳格なオリジンチェック
+  if (isAllowedOrigin) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   } else {
     // 許可されていないオリジンの場合は認証情報を送信しない
     res.setHeader('Access-Control-Allow-Origin', '*');
+    // 認証情報を送信しない場合はCredentialsヘッダーを設定しない
   }
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
