@@ -55,7 +55,17 @@ MemoSchema.pre('save', function(next) {
   next();
 });
 
+// Reply Schema
+const ReplySchema = new mongoose.Schema({
+  memoId: { type: String, required: true },
+  content: { type: String, required: true },
+  authorName: { type: String, required: true },
+  authorEmail: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
 const Memo = mongoose.model('Memo', MemoSchema);
+const Reply = mongoose.model('Reply', ReplySchema);
 
 // CORS設定
 const setCorsHeaders = (res, origin) => {
@@ -104,8 +114,30 @@ module.exports = async (req, res) => {
 
       const memos = await Memo.find(query).sort({ updatedAt: -1 });
 
+      // 各メモの返信を取得
+      const memosWithReplies = await Promise.all(
+        memos.map(async (memo) => {
+          const replies = await Reply.find({ memoId: memo._id.toString() }).sort({ createdAt: 1 });
+          return {
+            id: memo._id.toString(),
+            title: memo.title,
+            content: memo.content,
+            category: memo.category,
+            tags: memo.tags || [],
+            createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
+            updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
+            replies: replies.map(reply => ({
+              id: reply._id.toString(),
+              content: reply.content,
+              authorName: reply.authorName,
+              createdAt: reply.createdAt.toISOString()
+            }))
+          };
+        })
+      );
+
       console.log('✅ Public memos list retrieved:', {
-        count: memos.length,
+        count: memosWithReplies.length,
         category,
         search,
       });
@@ -113,16 +145,7 @@ module.exports = async (req, res) => {
       res.status(200).json({
         success: true,
         message: '公開メモの一覧を取得しました',
-        memos: memos.map(memo => ({
-          id: memo._id.toString(),
-          title: memo.title,
-          content: memo.content,
-          category: memo.category,
-          tags: memo.tags || [],
-          createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
-          updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
-          // ユーザー情報は含めない（プライバシー保護）
-        })),
+        memos: memosWithReplies,
       });
     } else {
       res.status(405).json({

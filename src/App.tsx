@@ -80,6 +80,16 @@ interface Memo {
   isPublic: boolean;
   createdAt: string;
   updatedAt: string;
+  replies?: Reply[];
+}
+
+interface Reply {
+  id: string;
+  memoId: string;
+  content: string;
+  authorName: string;
+  authorEmail: string;
+  createdAt: string;
 }
 
 function App() {
@@ -156,6 +166,12 @@ function App() {
   const [customGenres, setCustomGenres] = useState<string[]>([]);
   const [showGenreManager, setShowGenreManager] = useState(false);
   const [newGenreName, setNewGenreName] = useState("");
+
+  // 返信機能の状態
+  const [replyingToMemo, setReplyingToMemo] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState("");
+  const [replyAuthorName, setReplyAuthorName] = useState("");
+  const [replyAuthorEmail, setReplyAuthorEmail] = useState("");
 
   // 利用可能なフォント一覧（小学生向けかわいいフォント中心）
   const availableFonts = [
@@ -271,6 +287,53 @@ function App() {
       "仕事", "学習", "趣味", "健康", "家族", "旅行", "読書", "映画", "音楽", "スポーツ", "料理", "その他"
     ];
     return [...defaultGenres, ...customGenres];
+  };
+
+  // 返信機能の関数
+  const handleReplySubmit = async (memoId: string) => {
+    if (!replyContent.trim() || !replyAuthorName.trim() || !replyAuthorEmail.trim()) {
+      setMessage("返信内容、お名前、メールアドレスをすべて入力してください");
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/memos/reply', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          memoId,
+          content: replyContent.trim(),
+          authorName: replyAuthorName.trim(),
+          authorEmail: replyAuthorEmail.trim()
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("返信を投稿しました！");
+        setReplyContent("");
+        setReplyAuthorName("");
+        setReplyAuthorEmail("");
+        setReplyingToMemo(null);
+        // 公開メモを再読み込み
+        loadPublicMemos();
+      } else {
+        setMessage(data.message || "返信の投稿に失敗しました");
+      }
+    } catch (error) {
+      console.error("Reply submission error:", error);
+      setMessage("返信の投稿中にエラーが発生しました");
+    }
+  };
+
+  const handleReplyCancel = () => {
+    setReplyingToMemo(null);
+    setReplyContent("");
+    setReplyAuthorName("");
+    setReplyAuthorEmail("");
   };
 
   // ログイン状態をチェック
@@ -1965,6 +2028,88 @@ function App() {
                             <span className="memo-date">
                               {new Date(memo.updatedAt).toLocaleDateString('ja-JP')}
                             </span>
+                          </div>
+                          
+                          {/* 返信表示 */}
+                          {memo.replies && memo.replies.length > 0 && (
+                            <div className="replies-section">
+                              <h5>💬 返信 ({memo.replies.length})</h5>
+                              {memo.replies.map((reply) => (
+                                <div key={reply.id} className="reply-item">
+                                  <div className="reply-content">{reply.content}</div>
+                                  <div className="reply-meta">
+                                    <span className="reply-author">👤 {reply.authorName}</span>
+                                    <span className="reply-date">
+                                      {new Date(reply.createdAt).toLocaleDateString('ja-JP')}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {/* 返信フォーム */}
+                          <div className="reply-form-section">
+                            <button 
+                              onClick={() => setReplyingToMemo(replyingToMemo === memo.id ? null : memo.id)}
+                              className="reply-button"
+                            >
+                              💬 返信する
+                            </button>
+                            
+                            {replyingToMemo === memo.id && (
+                              <div className="reply-form">
+                                <h5>💬 返信を投稿</h5>
+                                <div className="form-group">
+                                  <label htmlFor="replyAuthorName">お名前 *</label>
+                                  <input
+                                    type="text"
+                                    id="replyAuthorName"
+                                    value={replyAuthorName}
+                                    onChange={(e) => setReplyAuthorName(e.target.value)}
+                                    placeholder="お名前を入力してください"
+                                    required
+                                  />
+                                </div>
+                                <div className="form-group">
+                                  <label htmlFor="replyAuthorEmail">メールアドレス *</label>
+                                  <input
+                                    type="email"
+                                    id="replyAuthorEmail"
+                                    value={replyAuthorEmail}
+                                    onChange={(e) => setReplyAuthorEmail(e.target.value)}
+                                    placeholder="メールアドレスを入力してください"
+                                    required
+                                  />
+                                </div>
+                                <div className="form-group">
+                                  <label htmlFor="replyContent">返信内容 *</label>
+                                  <textarea
+                                    id="replyContent"
+                                    value={replyContent}
+                                    onChange={(e) => setReplyContent(e.target.value)}
+                                    placeholder="返信内容を入力してください"
+                                    rows={3}
+                                    required
+                                  />
+                                </div>
+                                <div className="reply-form-actions">
+                                  <button 
+                                    onClick={() => handleReplySubmit(memo.id)}
+                                    className="submit-reply-button"
+                                    disabled={!replyContent.trim() || !replyAuthorName.trim() || !replyAuthorEmail.trim()}
+                                  >
+                                    📤 返信を投稿
+                                  </button>
+                                  <button 
+                                    onClick={handleReplyCancel}
+                                    className="cancel-reply-button"
+                                  >
+                                    ❌ キャンセル
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))
