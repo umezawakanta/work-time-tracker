@@ -832,9 +832,13 @@ function App() {
     
     const days = [];
     
-    // 前月の日付を追加
+    // 前月の日付を追加（日曜日から始まる場合の修正）
+    const prevMonth = month === 0 ? 11 : month - 1;
+    const prevYear = month === 0 ? year - 1 : year;
+    const prevMonthLastDay = new Date(prevYear, prevMonth + 1, 0).getDate();
+    
     for (let i = startingDayOfWeek - 1; i >= 0; i--) {
-      const prevDate = new Date(year, month, -i);
+      const prevDate = new Date(prevYear, prevMonth, prevMonthLastDay - i);
       days.push({ date: prevDate, isCurrentMonth: false });
     }
     

@@ -3263,8 +3263,12 @@ input:checked + .toggle-slider:before {
 }
 
 .calendar-grid {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
   width: 100%;
   max-width: 100%;
 }
@@ -3294,14 +3298,6 @@ input:checked + .toggle-slider:before {
   box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
 }
 
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
-  background: #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
-}
 
 .calendar-weekdays {
   display: grid;
@@ -3311,6 +3307,7 @@ input:checked + .toggle-slider:before {
   overflow: hidden;
   width: 100%;
   min-width: 100%;
+  margin-bottom: 0;
 }
 
 .weekday {
@@ -3905,13 +3902,6 @@ input:checked + .toggle-slider:before {
     text-align: center;
   }
 
-  .calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    background: #e5e7eb;
-    border-radius: 0 0 8px 8px;
-    overflow: hidden;
-  }
 
   .calendar-day {
     min-height: 60px;
