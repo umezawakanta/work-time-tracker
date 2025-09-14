@@ -194,14 +194,14 @@ module.exports = async function handler(req, res) {
 
     const { userId, displayName, role, isVerified, status }: EditUserRequest = req.body;
 
-    // デバッグ用ログ
+    // デバッグ用ログ（機密情報は除外）
     console.log('📝 Edit user request body:', {
       userId,
-      displayName,
+      displayName: displayName ? displayName.substring(0, 10) + '...' : displayName, // 表示名を短縮
       role,
       isVerified,
       status,
-      bodyKeys: Object.keys(req.body || {})
+      bodyKeys: Object.keys(req.body || {}).filter(key => !['password', 'token', 'secret'].includes(key.toLowerCase()))
     });
 
     // 必須フィールドの検証

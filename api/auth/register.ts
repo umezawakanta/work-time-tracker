@@ -229,7 +229,7 @@ module.exports = async function handler(req, res) {
 
     console.log('✅ User registration successful:', {
       userId: newUser.id,
-      email: newUser.email,
+      email: newUser.email ? newUser.email.replace(/^[^@]+/, '***') : '[REDACTED]', // メールアドレスをマスク
     });
 
     // レスポンスの構築（パスワードは除外）

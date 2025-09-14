@@ -95,9 +95,43 @@ const validateDisplayName = (displayName) => {
   return null;
 };
 
+// 機密情報をサニタイズする関数
+const sanitizeErrorData = (errorData) => {
+  const sensitiveFields = ['password', 'token', 'apiKey', 'secret', 'creditCard', 'email', 'hashedPassword', 'passwordHash'];
+  
+  if (typeof errorData !== 'object' || errorData === null) {
+    return errorData;
+  }
+  
+  const sanitized = { ...errorData };
+  
+  // 機密フィールドをマスク
+  Object.keys(sanitized).forEach(key => {
+    if (sensitiveFields.some(field => key.toLowerCase().includes(field))) {
+      sanitized[key] = '[REDACTED]';
+    }
+  });
+  
+  return sanitized;
+};
+
 // エラーレスポンスを送信
 const sendErrorResponse = (res, statusCode, errorData) => {
-  console.error(`API Error [${statusCode}]:`, errorData);
+  // ログ用のデータをサニタイズ
+  const logData = {
+    statusCode,
+    error: errorData?.error || 'UNKNOWN_ERROR',
+    field: errorData?.field,
+    timestamp: new Date().toISOString(),
+    // 詳細は開発環境でのみ、かつサニタイズ済み
+    ...(process.env.NODE_ENV === 'development' && {
+      details: sanitizeErrorData(errorData)
+    })
+  };
+  
+  // 機密情報を除外してログ出力
+  console.error('API Error:', JSON.stringify(logData));
+  
   return res.status(statusCode).json(errorData);
 };
 

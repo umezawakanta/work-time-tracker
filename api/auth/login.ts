@@ -164,6 +164,7 @@ async function handler(req, res) {
       contentLength: req.headers['content-length'],
       bodyType: typeof body,
       hasEmail: Boolean(body && body.email),
+      // 機密情報は含めない
     });
     const {
       email,
@@ -311,7 +312,7 @@ async function handler(req, res) {
 
     console.log('✅ User login successful:', {
       userId: user.id,
-      email: user.email,
+      email: user.email ? user.email.replace(/^[^@]+/, '***') : '[REDACTED]', // メールアドレスをマスク
       rememberMe,
     });
 
