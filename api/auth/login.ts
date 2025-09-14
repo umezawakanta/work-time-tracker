@@ -31,6 +31,7 @@ const ensureDatabaseConnection = async (): Promise<void> => {
 
     // 接続オプションを追加してタイムアウトと再接続を最適化
     await mongoose.connect(MONGODB_URI, {
+      dbName: 'workTimeTracker',
       maxPoolSize: 10, // 接続プールサイズ
       serverSelectionTimeoutMS: 15000, // サーバー選択タイムアウト (15秒)
       socketTimeoutMS: 45000, // ソケットタイムアウト
