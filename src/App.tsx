@@ -44,6 +44,17 @@ interface ReportSummary {
   }>;
 }
 
+interface AdminUser {
+  id: string;
+  email: string;
+  displayName: string;
+  role: string;
+  isVerified: boolean;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -71,6 +82,11 @@ function App() {
   // レポート関連の状態
   const [reportSummary, setReportSummary] = useState<ReportSummary | null>(null);
   const [showReports, setShowReports] = useState(false);
+  
+  // 管理者関連の状態
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
 
   // ログイン状態をチェック
   useEffect(() => {
@@ -265,6 +281,58 @@ function App() {
       }
     } catch (error) {
       console.error("Failed to load report summary:", error);
+    }
+  };
+
+  const loadAdminUsers = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/admin/users", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setAdminUsers(data.users || []);
+      } else {
+        setMessage(`ユーザー一覧取得失敗: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Failed to load admin users:", error);
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+
+  const handleEditUser = async (user: AdminUser) => {
+    setEditingUser(user);
+  };
+
+  const handleUpdateUser = async (updatedUser: AdminUser) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/admin/user-edit", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedUser),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("ユーザー情報を更新しました");
+        loadAdminUsers();
+        setEditingUser(null);
+      } else {
+        setMessage(`ユーザー更新失敗: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   };
 
@@ -535,6 +603,91 @@ function App() {
                 </div>
               )}
             </div>
+
+            {/* 管理者パネル */}
+            {user?.role === 'admin' && (
+              <div className="admin-section">
+                <div className="section-header">
+                  <h2>管理者パネル</h2>
+                  <button 
+                    onClick={() => {
+                      setShowAdminPanel(!showAdminPanel);
+                      if (!showAdminPanel && adminUsers.length === 0) {
+                        loadAdminUsers();
+                      }
+                    }}
+                    className="toggle-admin-button"
+                  >
+                    {showAdminPanel ? "管理者パネルを閉じる" : "管理者パネルを表示"}
+                  </button>
+                </div>
+
+                {showAdminPanel && (
+                  <div className="admin-content">
+                    <div className="admin-stats">
+                      <div className="stat-card">
+                        <h3>総ユーザー数</h3>
+                        <p className="stat-value">{adminUsers.length}</p>
+                      </div>
+                      <div className="stat-card">
+                        <h3>アクティブユーザー</h3>
+                        <p className="stat-value">{adminUsers.filter(u => u.status === 'active').length}</p>
+                      </div>
+                      <div className="stat-card">
+                        <h3>管理者数</h3>
+                        <p className="stat-value">{adminUsers.filter(u => u.role === 'admin').length}</p>
+                      </div>
+                    </div>
+
+                    <div className="users-table">
+                      <h3>ユーザー一覧</h3>
+                      <div className="table-container">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>表示名</th>
+                              <th>メール</th>
+                              <th>役割</th>
+                              <th>状態</th>
+                              <th>登録日</th>
+                              <th>操作</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {adminUsers.map((user) => (
+                              <tr key={user.id}>
+                                <td>{user.displayName}</td>
+                                <td>{user.email}</td>
+                                <td>
+                                  <span className={`role-badge ${user.role}`}>
+                                    {user.role === 'admin' ? '管理者' : 'ユーザー'}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span className={`status-badge ${user.status}`}>
+                                    {user.status === 'active' ? 'アクティブ' : 
+                                     user.status === 'inactive' ? '非アクティブ' : '停止中'}
+                                  </span>
+                                </td>
+                                <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                                <td>
+                                  <button 
+                                    onClick={() => handleEditUser(user)}
+                                    className="edit-button"
+                                  >
+                                    編集
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </main>
         </div>
       </div>
