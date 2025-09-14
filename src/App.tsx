@@ -252,6 +252,11 @@ function App() {
   const [showFeatureSettings, setShowFeatureSettings] = useState(false);
   const [draggedFeature, setDraggedFeature] = useState<string | null>(null);
 
+  // カレンダーの状態
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
   // 利用可能なテーマ一覧
   const availableThemes = [
     { value: "default", label: "🌟 デフォルト (ピンク)", preview: "💕" },
@@ -786,6 +791,67 @@ function App() {
 
     handleFeatureReorder(currentOrder);
     setDraggedFeature(null);
+  };
+
+  // カレンダー関連の関数
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    
+    const days = [];
+    
+    // 前月の日付を追加
+    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+      const prevDate = new Date(year, month, -i);
+      days.push({ date: prevDate, isCurrentMonth: false });
+    }
+    
+    // 当月の日付を追加
+    for (let day = 1; day <= daysInMonth; day++) {
+      const currentDate = new Date(year, month, day);
+      days.push({ date: currentDate, isCurrentMonth: true });
+    }
+    
+    // 次月の日付を追加（42日分のグリッドを埋める）
+    const remainingDays = 42 - days.length;
+    for (let day = 1; day <= remainingDays; day++) {
+      const nextDate = new Date(year, month + 1, day);
+      days.push({ date: nextDate, isCurrentMonth: false });
+    }
+    
+    return days;
+  };
+
+  const getRecordsForDate = (date: Date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    const salaryRecords = salaryRecords.filter(record => 
+      record.date.startsWith(dateStr)
+    );
+    const diaries = workDiaries.filter(diary => 
+      diary.date.startsWith(dateStr)
+    );
+    return { salaryRecords, diaries };
+  };
+
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+    const dateStr = date.toISOString().split('T')[0];
+    setSalaryDate(dateStr);
+    setDiaryDate(dateStr);
+  };
+
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    const newDate = new Date(currentDate);
+    if (direction === 'prev') {
+      newDate.setMonth(newDate.getMonth() - 1);
+    } else {
+      newDate.setMonth(newDate.getMonth() + 1);
+    }
+    setCurrentDate(newDate);
   };
 
   // カスタムジャンル管理関数
@@ -2895,19 +2961,31 @@ function App() {
                 <div className="work-records-content">
                   <div className="work-records-tabs">
                     <button 
-                      className={`tab-button ${!showSalaryForm && !showDiaryForm ? 'active' : ''}`}
+                      className={`tab-button ${!showSalaryForm && !showDiaryForm && !showCalendar ? 'active' : ''}`}
                       onClick={() => {
                         setShowSalaryForm(false);
                         setShowDiaryForm(false);
+                        setShowCalendar(false);
                       }}
                     >
                       📊 記録一覧
+                    </button>
+                    <button 
+                      className={`tab-button ${showCalendar ? 'active' : ''}`}
+                      onClick={() => {
+                        setShowSalaryForm(false);
+                        setShowDiaryForm(false);
+                        setShowCalendar(true);
+                      }}
+                    >
+                      📅 カレンダー
                     </button>
                     <button 
                       className={`tab-button ${showSalaryForm ? 'active' : ''}`}
                       onClick={() => {
                         setShowSalaryForm(true);
                         setShowDiaryForm(false);
+                        setShowCalendar(false);
                       }}
                     >
                       💰 給料記録
@@ -2917,6 +2995,7 @@ function App() {
                       onClick={() => {
                         setShowSalaryForm(false);
                         setShowDiaryForm(true);
+                        setShowCalendar(false);
                       }}
                     >
                       📝 日記
@@ -3073,8 +3152,104 @@ function App() {
                     </form>
                   )}
 
+                  {/* カレンダー */}
+                  {showCalendar && (
+                    <div className="calendar-container">
+                      <div className="calendar-header">
+                        <button 
+                          onClick={() => navigateMonth('prev')}
+                          className="calendar-nav-button"
+                        >
+                          ←
+                        </button>
+                        <h3>
+                          {currentDate.getFullYear()}年{currentDate.getMonth() + 1}月
+                        </h3>
+                        <button 
+                          onClick={() => navigateMonth('next')}
+                          className="calendar-nav-button"
+                        >
+                          →
+                        </button>
+                      </div>
+                      
+                      <div className="calendar-grid">
+                        <div className="calendar-weekdays">
+                          <div className="weekday">日</div>
+                          <div className="weekday">月</div>
+                          <div className="weekday">火</div>
+                          <div className="weekday">水</div>
+                          <div className="weekday">木</div>
+                          <div className="weekday">金</div>
+                          <div className="weekday">土</div>
+                        </div>
+                        
+                        <div className="calendar-days">
+                          {getDaysInMonth(currentDate).map((day, index) => {
+                            const records = getRecordsForDate(day.date);
+                            const isToday = day.date.toDateString() === new Date().toDateString();
+                            const isSelected = selectedDate && day.date.toDateString() === selectedDate.toDateString();
+                            
+                            return (
+                              <div
+                                key={index}
+                                className={`calendar-day ${!day.isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
+                                onClick={() => handleDateClick(day.date)}
+                              >
+                                <div className="day-number">{day.date.getDate()}</div>
+                                <div className="day-records">
+                                  {records.salaryRecords.length > 0 && (
+                                    <div className="record-indicator salary-indicator" title="給料記録">
+                                      💰
+                                    </div>
+                                  )}
+                                  {records.diaries.length > 0 && (
+                                    <div className="record-indicator diary-indicator" title="日記">
+                                      📝
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      
+                      {selectedDate && (
+                        <div className="selected-date-info">
+                          <h4>
+                            {selectedDate.getFullYear()}年{selectedDate.getMonth() + 1}月{selectedDate.getDate()}日
+                          </h4>
+                          <div className="date-records">
+                            {getRecordsForDate(selectedDate).salaryRecords.map((record) => (
+                              <div key={record._id} className="date-record-item salary-record">
+                                <span className="record-icon">💰</span>
+                                <span className="record-content">
+                                  給料: ¥{record.salary.toLocaleString()}
+                                  {record.transportation > 0 && ` + 交通費: ¥${record.transportation.toLocaleString()}`}
+                                </span>
+                              </div>
+                            ))}
+                            {getRecordsForDate(selectedDate).diaries.map((diary) => (
+                              <div key={diary._id} className="date-record-item diary-record">
+                                <span className="record-icon">📝</span>
+                                <span className="record-content">
+                                  {diary.mood} {diary.title}
+                                </span>
+                              </div>
+                            ))}
+                            {getRecordsForDate(selectedDate).salaryRecords.length === 0 && 
+                             getRecordsForDate(selectedDate).diaries.length === 0 && (
+                              <p className="no-records">この日は記録がありません</p>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* 記録一覧 */}
-                  {!showSalaryForm && !showDiaryForm && (
+                  {!showSalaryForm && !showDiaryForm && !showCalendar && (
                     <div className="records-list">
                       <div className="salary-records">
                         <h3>💰 給料記録 ({salaryRecords.length}件)</h3>
