@@ -2983,6 +2983,90 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   cursor: not-allowed;
 }
 
+.egg-timer-sound-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-color, #f9fafb);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.egg-timer-sound-selector > label {
+  font-weight: 600;
+  color: var(--text-color, #1f2937);
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: default;
+}
+
+.sound-options {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sound-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: white;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: var(--text-color, #1f2937);
+  font-size: 0.9rem;
+}
+
+.sound-options label:hover {
+  background: var(--primary-color, #3b82f6);
+  color: white;
+  border-color: var(--primary-color, #3b82f6);
+}
+
+.sound-options input[type="radio"] {
+  margin: 0;
+  accent-color: var(--primary-color, #3b82f6);
+}
+
+.sound-options label:has(input:checked) {
+  background: var(--primary-color, #3b82f6);
+  color: white;
+  border-color: var(--primary-color, #3b82f6);
+}
+
+.test-sound-btn {
+  padding: 0.5rem 1rem;
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.test-sound-btn:hover:not(:disabled) {
+  background: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.test-sound-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .egg-timer-display {
   text-align: center;
   padding: 1.5rem;
@@ -3089,6 +3173,21 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   .egg-timer-start-btn,
   .egg-timer-stop-btn,
   .egg-timer-reset-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .sound-options {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .sound-options label {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+  }
+  
+  .test-sound-btn {
     width: 100%;
     justify-content: center;
   }

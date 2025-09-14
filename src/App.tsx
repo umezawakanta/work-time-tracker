@@ -160,6 +160,7 @@ function App() {
   const [eggTimerTime, setEggTimerTime] = useState(0); // 残り時間（秒）
   const [eggTimerInterval, setEggTimerInterval] = useState<NodeJS.Timeout | null>(null);
   const [eggTimerType, setEggTimerType] = useState<'soft' | 'medium' | 'hard'>('medium');
+  const [eggTimerSound, setEggTimerSound] = useState<'bell' | 'chime' | 'beep' | 'alarm'>('bell');
   
   // プロジェクト関連の状態
   const [projects, setProjects] = useState<Project[]>([]);
@@ -2194,23 +2195,122 @@ function App() {
   };
 
   const playEggTimerSound = () => {
-    // ブラウザの通知音を再生
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      switch (eggTimerSound) {
+        case 'bell':
+          playBellSound(audioContext);
+          break;
+        case 'chime':
+          playChimeSound(audioContext);
+          break;
+        case 'beep':
+          playBeepSound(audioContext);
+          break;
+        case 'alarm':
+          playAlarmSound(audioContext);
+          break;
+        default:
+          playBellSound(audioContext);
+      }
+    } catch (error) {
+      console.error('音声再生エラー:', error);
+      // フォールバック: ブラウザのデフォルト音
+      try {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU4k9n1unEiBS13yO/eizEIHWq+8+OWT');
+        audio.play();
+      } catch (fallbackError) {
+        console.error('フォールバック音声再生エラー:', fallbackError);
+      }
+    }
+  };
+
+  const playBellSound = (audioContext: AudioContext) => {
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
     
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
     
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-    oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+    // 鐘の音: 低い音から高い音へ
+    oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+    oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
     
     gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
     
     oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.5);
+    oscillator.stop(audioContext.currentTime + 1.0);
+  };
+
+  const playChimeSound = (audioContext: AudioContext) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // チャイム音: 上昇する音階
+    oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4
+    oscillator.frequency.setValueAtTime(554, audioContext.currentTime + 0.15); // C#5
+    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.3); // E5
+    oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.45); // A5
+    
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.8);
+  };
+
+  const playBeepSound = (audioContext: AudioContext) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // ビープ音: 短い連続音
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.1);
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.3);
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime + 0.1);
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + 0.15);
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime + 0.25);
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + 0.3);
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime + 0.4);
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + 0.45);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.6);
+  };
+
+  const playAlarmSound = (audioContext: AudioContext) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // アラーム音: 高音の連続音
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.1);
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.2);
+    oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.3);
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.4);
+    oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.5);
+    
+    gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 1.0);
   };
 
   const formatEggTimerTime = (seconds: number) => {
@@ -2416,6 +2516,59 @@ function App() {
                       />
                       固ゆで (10分)
                     </label>
+                  </div>
+                  
+                  <div className="egg-timer-sound-selector">
+                    <label>🔊 通知音:</label>
+                    <div className="sound-options">
+                      <label>
+                        <input
+                          type="radio"
+                          name="eggTimerSound"
+                          value="bell"
+                          checked={eggTimerSound === 'bell'}
+                          onChange={(e) => setEggTimerSound(e.target.value as 'bell' | 'chime' | 'beep' | 'alarm')}
+                        />
+                        🔔 鐘
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="eggTimerSound"
+                          value="chime"
+                          checked={eggTimerSound === 'chime'}
+                          onChange={(e) => setEggTimerSound(e.target.value as 'bell' | 'chime' | 'beep' | 'alarm')}
+                        />
+                        🎵 チャイム
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="eggTimerSound"
+                          value="beep"
+                          checked={eggTimerSound === 'beep'}
+                          onChange={(e) => setEggTimerSound(e.target.value as 'bell' | 'chime' | 'beep' | 'alarm')}
+                        />
+                        📢 ビープ
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="eggTimerSound"
+                          value="alarm"
+                          checked={eggTimerSound === 'alarm'}
+                          onChange={(e) => setEggTimerSound(e.target.value as 'bell' | 'chime' | 'beep' | 'alarm')}
+                        />
+                        🚨 アラーム
+                      </label>
+                    </div>
+                    <button 
+                      onClick={() => playEggTimerSound()} 
+                      className="test-sound-btn"
+                      disabled={eggTimerActive}
+                    >
+                      🔊 音を試す
+                    </button>
                   </div>
                   
                   <div className="egg-timer-display">
