@@ -971,27 +971,49 @@ function App() {
   };
 
   const getRecordsForDate = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    // 日本時間での日付文字列を取得
+    const jstDateStr = new Date(date.getTime() + (9 * 60 * 60 * 1000)).toISOString().split('T')[0];
+    
     const filteredSalaryRecords = salaryRecords.filter(record => {
-      const recordDate = new Date(record.date).toISOString().split('T')[0];
-      return recordDate === dateStr;
+      // データベースの日付を日本時間に変換して比較
+      const recordDate = new Date(record.date);
+      const recordJstDateStr = new Date(recordDate.getTime() + (9 * 60 * 60 * 1000)).toISOString().split('T')[0];
+      
+      // デバッグログ
+      if (recordJstDateStr === jstDateStr) {
+        console.log(`Salary record found for JST date: ${jstDateStr}, Record JST date: ${recordJstDateStr}`);
+      }
+      
+      return recordJstDateStr === jstDateStr;
     });
+    
     const filteredDiaries = workDiaries.filter(diary => {
-      const diaryDate = new Date(diary.date).toISOString().split('T')[0];
-      return diaryDate === dateStr;
+      // データベースの日付を日本時間に変換して比較
+      const diaryDate = new Date(diary.date);
+      const diaryJstDateStr = new Date(diaryDate.getTime() + (9 * 60 * 60 * 1000)).toISOString().split('T')[0];
+      
+      // デバッグログ
+      if (diaryJstDateStr === jstDateStr) {
+        console.log(`Diary found for JST date: ${jstDateStr}, Diary JST date: ${diaryJstDateStr}`);
+      }
+      
+      return diaryJstDateStr === jstDateStr;
     });
+    
     return { salaryRecords: filteredSalaryRecords, diaries: filteredDiaries };
   };
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
-    const dateStr = date.toISOString().split('T')[0];
-    setSalaryDate(dateStr);
-    setDiaryDate(dateStr);
+    // 日本時間での日付文字列を取得
+    const jstDateStr = new Date(date.getTime() + (9 * 60 * 60 * 1000)).toISOString().split('T')[0];
+    setSalaryDate(jstDateStr);
+    setDiaryDate(jstDateStr);
   };
 
   const handleRecordClick = (type: 'salary' | 'diary', date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    // 日本時間での日付文字列を取得
+    const jstDateStr = new Date(date.getTime() + (9 * 60 * 60 * 1000)).toISOString().split('T')[0];
     setSelectedDate(date);
     
     // その日の記録を取得

@@ -79,7 +79,11 @@ export default async function handler(req, res) {
         updatedAt: new Date()
       };
 
-      if (date) { updateData.date = new Date(date); }
+      if (date) {
+        const jstDate = new Date(date);
+        const utcDate = new Date(jstDate.getTime() - (9 * 60 * 60 * 1000));
+        updateData.date = utcDate;
+      }
       if (title) { updateData.title = title; }
       if (content) { updateData.content = content; }
       if (mood) { updateData.mood = mood; }
