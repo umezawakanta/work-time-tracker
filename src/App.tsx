@@ -152,6 +152,11 @@ function App() {
   const [selectedFont, setSelectedFont] = useState("system");
   const [showFontSettings, setShowFontSettings] = useState(false);
 
+  // カスタムジャンル管理の状態
+  const [customGenres, setCustomGenres] = useState<string[]>([]);
+  const [showGenreManager, setShowGenreManager] = useState(false);
+  const [newGenreName, setNewGenreName] = useState("");
+
   // 利用可能なフォント一覧
   const availableFonts = [
     { value: "system", label: "システムデフォルト" },
@@ -198,6 +203,18 @@ function App() {
     }
   }, []);
 
+  // カスタムジャンルの読み込み
+  useEffect(() => {
+    const savedGenres = localStorage.getItem("customGenres");
+    if (savedGenres) {
+      try {
+        setCustomGenres(JSON.parse(savedGenres));
+      } catch (error) {
+        console.error("Failed to load custom genres:", error);
+      }
+    }
+  }, []);
+
   // フォント適用関数
   const applyFont = (fontValue: string) => {
     const root = document.documentElement;
@@ -221,6 +238,30 @@ function App() {
     setSelectedFont(fontValue);
     applyFont(fontValue);
     localStorage.setItem("selectedFont", fontValue);
+  };
+
+  // カスタムジャンル管理関数
+  const handleAddGenre = () => {
+    if (newGenreName.trim() && !customGenres.includes(newGenreName.trim())) {
+      const updatedGenres = [...customGenres, newGenreName.trim()];
+      setCustomGenres(updatedGenres);
+      localStorage.setItem("customGenres", JSON.stringify(updatedGenres));
+      setNewGenreName("");
+    }
+  };
+
+  const handleDeleteGenre = (genreToDelete: string) => {
+    const updatedGenres = customGenres.filter(genre => genre !== genreToDelete);
+    setCustomGenres(updatedGenres);
+    localStorage.setItem("customGenres", JSON.stringify(updatedGenres));
+  };
+
+  // 利用可能なジャンル一覧を取得（デフォルト + カスタム）
+  const getAllGenres = () => {
+    const defaultGenres = [
+      "仕事", "学習", "趣味", "健康", "家族", "旅行", "読書", "映画", "音楽", "スポーツ", "料理", "その他"
+    ];
+    return [...defaultGenres, ...customGenres];
   };
 
   // ログイン状態をチェック
@@ -860,8 +901,9 @@ function App() {
   };
 
   const getMemoCategories = () => {
-    const categories = new Set(memos.map(memo => memo.category));
-    return Array.from(categories).sort();
+    const memoCategories = new Set(memos.map(memo => memo.category));
+    const allCategories = [...memoCategories, ...getAllGenres()];
+    return Array.from(new Set(allCategories)).sort();
   };
 
   // 公開メモ関連の関数
@@ -1620,6 +1662,12 @@ function App() {
                       </select>
                     </div>
                     <button 
+                      onClick={() => setShowGenreManager(!showGenreManager)}
+                      className="genre-manager-button"
+                    >
+                      🏷️ ジャンル管理
+                    </button>
+                    <button 
                       onClick={() => {
                         setEditingMemo(null);
                         setShowMemoForm(!showMemoForm);
@@ -1753,6 +1801,65 @@ function App() {
                         </div>
                       ))
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* ジャンル管理モーダル */}
+              {showGenreManager && (
+                <div className="genre-manager-modal">
+                  <div className="genre-manager-content">
+                    <div className="genre-manager-header">
+                      <h3>ジャンル管理</h3>
+                      <button 
+                        onClick={() => setShowGenreManager(false)}
+                        className="close-button"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="genre-manager-body">
+                      <div className="add-genre-section">
+                        <h4>新しいジャンルを追加</h4>
+                        <div className="add-genre-form">
+                          <input
+                            type="text"
+                            value={newGenreName}
+                            onChange={(e) => setNewGenreName(e.target.value)}
+                            placeholder="ジャンル名を入力"
+                            className="genre-input"
+                          />
+                          <button 
+                            onClick={handleAddGenre}
+                            className="add-genre-button"
+                            disabled={!newGenreName.trim() || customGenres.includes(newGenreName.trim())}
+                          >
+                            追加
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="custom-genres-section">
+                        <h4>カスタムジャンル一覧</h4>
+                        {customGenres.length === 0 ? (
+                          <p className="no-genres">カスタムジャンルはありません</p>
+                        ) : (
+                          <div className="genres-list">
+                            {customGenres.map((genre, index) => (
+                              <div key={index} className="genre-item">
+                                <span className="genre-name">{genre}</span>
+                                <button 
+                                  onClick={() => handleDeleteGenre(genre)}
+                                  className="delete-genre-button"
+                                >
+                                  削除
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
