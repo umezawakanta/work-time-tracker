@@ -1,4 +1,6 @@
 name: Simplified CI/CD Pipeline
+permissions:
+  contents: read
 
 on:
   push:
