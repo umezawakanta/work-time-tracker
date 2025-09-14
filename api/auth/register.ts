@@ -2,6 +2,15 @@
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const { 
+  createValidationError, 
+  createResourceError, 
+  createServerError,
+  validateEmail,
+  validatePassword,
+  validateDisplayName,
+  sendErrorResponse 
+} = require('../utils/errorHandler');
 
 dotenv.config();
 
@@ -154,50 +163,51 @@ module.exports = async function handler(req, res) {
 
     // 必須フィールドの検証
     if (!email || !password || !displayName) {
-      return res.status(400).json({
-        success: false,
-        message: 'メールアドレス、パスワード、表示名が必要です',
-        error: 'Email, password, and display name are required',
-      } as RegisterResponse);
+      return sendErrorResponse(res, 400, createValidationError(
+        'メールアドレス、パスワード、表示名が必要です',
+        'email/password/displayName',
+        { email: !!email, password: !!password, displayName: !!displayName }
+      ));
     }
 
-    // メールアドレスの形式チェック
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        success: false,
-        message: '有効なメールアドレスを入力してください',
-        error: 'Invalid email format',
-      } as RegisterResponse);
+    // メールアドレスの形式検証
+    if (!validateEmail(email)) {
+      return sendErrorResponse(res, 400, createValidationError(
+        '有効なメールアドレスを入力してください',
+        'email',
+        email
+      ));
     }
 
-    // パスワードの長さと複雑性チェック
-    if (password.length < 8) {
-      return res.status(400).json({
-        success: false,
-        message: 'パスワードは8文字以上で入力してください',
-        error: 'Password must be at least 8 characters',
-      } as RegisterResponse);
+    // 表示名の検証
+    const displayNameError = validateDisplayName(displayName);
+    if (displayNameError) {
+      return sendErrorResponse(res, 400, createValidationError(
+        displayNameError,
+        'displayName',
+        displayName
+      ));
     }
 
-    // パスワードの複雑性チェック（大文字、小文字、数字を含む）
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      return res.status(400).json({
-        success: false,
-        message: 'パスワードは大文字、小文字、数字を含む8文字以上である必要があります',
-        error: 'Password must contain at least one uppercase letter, one lowercase letter, and one number',
-      } as RegisterResponse);
+    // パスワードの検証
+    const passwordErrors = validatePassword(password);
+    if (passwordErrors) {
+      return sendErrorResponse(res, 400, createValidationError(
+        passwordErrors.join(', '),
+        'password',
+        null
+      ));
     }
+
 
     // 既存ユーザーのチェック
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: 'このメールアドレスは既に登録されています',
-        error: 'User already exists',
-      } as RegisterResponse);
+      return sendErrorResponse(res, 409, createResourceError(
+        'このメールアドレスは既に登録されています',
+        'user',
+        email
+      ));
     }
 
     // パスワードのハッシュ化

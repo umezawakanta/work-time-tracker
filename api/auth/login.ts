@@ -3,6 +3,13 @@ const jwt = require('jsonwebtoken');
 const { serialize } = require('cookie');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const { 
+  createValidationError, 
+  createAuthError, 
+  createServerError,
+  validateEmail,
+  sendErrorResponse 
+} = require('../utils/errorHandler');
 
 dotenv.config();
 
@@ -170,11 +177,20 @@ async function handler(req, res) {
 
     // 必須フィールドの検証
     if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'メールアドレスとパスワードが必要です',
-        error: 'Email and password are required',
-      });
+      return sendErrorResponse(res, 400, createValidationError(
+        'メールアドレスとパスワードが必要です',
+        'email/password',
+        { email: !!email, password: !!password }
+      ));
+    }
+
+    // メールアドレスの形式検証
+    if (!validateEmail(email)) {
+      return sendErrorResponse(res, 400, createValidationError(
+        '有効なメールアドレスを入力してください',
+        'email',
+        email
+      ));
     }
 
     // ユーザーの検索
@@ -194,38 +210,34 @@ async function handler(req, res) {
     });
 
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'メールアドレスまたはパスワードが正しくありません',
-        error: 'Invalid credentials',
-      });
+      return sendErrorResponse(res, 401, createAuthError(
+        'メールアドレスまたはパスワードが正しくありません',
+        'INVALID_CREDENTIALS'
+      ));
     }
 
     // パスワードの確認
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: 'メールアドレスまたはパスワードが正しくありません',
-        error: 'Invalid credentials',
-      });
+      return sendErrorResponse(res, 401, createAuthError(
+        'メールアドレスまたはパスワードが正しくありません',
+        'INVALID_CREDENTIALS'
+      ));
     }
 
     // アカウント状態の確認
     if (user.status === 'suspended') {
-      return res.status(403).json({
-        success: false,
-        message: 'アカウントが停止されています。管理者にお問い合わせください',
-        error: 'Account suspended',
-      });
+      return sendErrorResponse(res, 403, createAuthError(
+        'アカウントが停止されています。管理者にお問い合わせください',
+        'ACCOUNT_SUSPENDED'
+      ));
     }
 
     if (user.status === 'inactive') {
-      return res.status(403).json({
-        success: false,
-        message: 'アカウントが無効です。アカウントを有効化してください',
-        error: 'Account inactive',
-      });
+      return sendErrorResponse(res, 403, createAuthError(
+        'アカウントが無効です。アカウントを有効化してください',
+        'ACCOUNT_INACTIVE'
+      ));
     }
 
     // JWTトークンの生成（管理者クレームを付与）
@@ -306,15 +318,10 @@ async function handler(req, res) {
     res.status(200).json(response);
   } catch (error) {
     console.error('❌ Login error:', error);
-
-    res.status(500).json({
-      success: false,
-      message: 'ログイン処理中にエラーが発生しました',
-      error:
-        process.env.NODE_ENV === 'development'
-          ? (error instanceof Error ? error.message : String(error))
-          : 'Internal server error',
-    });
+    return sendErrorResponse(res, 500, createServerError(
+      'ログイン処理中にエラーが発生しました',
+      error instanceof Error ? error.message : String(error)
+    ));
   }
 }
 
