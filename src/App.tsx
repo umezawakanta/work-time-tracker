@@ -120,6 +120,25 @@ interface WorkDiary {
   updatedAt: string;
 }
 
+// 機能設定の型定義
+interface UserSettings {
+  _id: string;
+  userId: string;
+  featureOrder: string[];
+  hiddenFeatures: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 機能定義
+interface Feature {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  component: React.ReactNode;
+}
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -228,6 +247,11 @@ function App() {
   const [diaryTags, setDiaryTags] = useState("");
   const [diaryIsPrivate, setDiaryIsPrivate] = useState(true);
 
+  // 機能設定の状態
+  const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
+  const [showFeatureSettings, setShowFeatureSettings] = useState(false);
+  const [draggedFeature, setDraggedFeature] = useState<string | null>(null);
+
   // 利用可能なテーマ一覧
   const availableThemes = [
     { value: "default", label: "🌟 デフォルト (ピンク)", preview: "💕" },
@@ -274,6 +298,85 @@ function App() {
     { value: "cursive", label: "✍️ Cursive (筆記体) - 手書き風" },
     { value: "fantasy", label: "🎭 Fantasy (装飾体) - おもしろい" }
   ];
+
+  // 機能定義
+  const features: Feature[] = [
+    {
+      id: 'time-tracking',
+      name: '時間管理',
+      icon: '⏰',
+      description: '作業時間の記録と管理',
+      component: null // 既存の時間管理セクション
+    },
+    {
+      id: 'projects',
+      name: 'プロジェクト',
+      icon: '📁',
+      description: 'プロジェクトの管理',
+      component: null // 既存のプロジェクトセクション
+    },
+    {
+      id: 'reports',
+      name: 'レポート',
+      icon: '📊',
+      description: '作業時間のレポート表示',
+      component: null // 既存のレポートセクション
+    },
+    {
+      id: 'admin-panel',
+      name: '管理者パネル',
+      icon: '👑',
+      description: 'ユーザー管理とシステム設定',
+      component: null // 既存の管理者パネルセクション
+    },
+    {
+      id: 'bookshelf',
+      name: '本棚',
+      icon: '📚',
+      description: '本の管理と記録',
+      component: null // 既存の本棚セクション
+    },
+    {
+      id: 'memos',
+      name: 'メモ',
+      icon: '📝',
+      description: '個人メモの管理',
+      component: null // 既存のメモセクション
+    },
+    {
+      id: 'public-memos',
+      name: '公開メモ',
+      icon: '🌐',
+      description: '公開メモの閲覧と投稿',
+      component: null // 既存の公開メモセクション
+    },
+    {
+      id: 'work-records',
+      name: 'お仕事記録',
+      icon: '💼',
+      description: '給料記録と日記',
+      component: null // 既存のお仕事記録セクション
+    }
+  ];
+
+  // 機能の表示順序を取得
+  const getFeatureOrder = () => {
+    if (!userSettings) return features.map(f => f.id);
+    return userSettings.featureOrder.filter(id => 
+      features.some(f => f.id === id)
+    );
+  };
+
+  // 表示する機能を取得
+  const getVisibleFeatures = () => {
+    const order = getFeatureOrder();
+    const hiddenFeatures = userSettings?.hiddenFeatures || [];
+    
+    return order
+      .filter(id => !hiddenFeatures.includes(id))
+      .map(id => features.find(f => f.id === id))
+      .filter(Boolean) as Feature[];
+  };
 
   // フォント設定の読み込みと適用
   useEffect(() => {
@@ -600,6 +703,91 @@ function App() {
     }
   };
 
+  // 機能設定の関数
+  const loadUserSettings = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const response = await fetch(`/api/user-settings?userId=${user.id}`);
+      const data = await response.json();
+      if (data.success) {
+        setUserSettings(data.settings);
+      }
+    } catch (error) {
+      console.error('Failed to load user settings:', error);
+    }
+  };
+
+  const updateUserSettings = async (newSettings: Partial<UserSettings>) => {
+    if (!user?.id) return;
+
+    try {
+      const response = await fetch('/api/user-settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          ...newSettings
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setUserSettings(data.settings);
+        setMessage('設定が保存されました！');
+      } else {
+        setMessage(`エラー: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const handleFeatureReorder = (newOrder: string[]) => {
+    updateUserSettings({ featureOrder: newOrder });
+  };
+
+  const handleFeatureToggle = (featureId: string) => {
+    if (!userSettings) return;
+    
+    const isHidden = userSettings.hiddenFeatures.includes(featureId);
+    const newHiddenFeatures = isHidden
+      ? userSettings.hiddenFeatures.filter(id => id !== featureId)
+      : [...userSettings.hiddenFeatures, featureId];
+    
+    updateUserSettings({ hiddenFeatures: newHiddenFeatures });
+  };
+
+  const handleDragStart = (e: React.DragEvent, featureId: string) => {
+    setDraggedFeature(featureId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, targetFeatureId: string) => {
+    e.preventDefault();
+    
+    if (!draggedFeature || !userSettings || draggedFeature === targetFeatureId) {
+      setDraggedFeature(null);
+      return;
+    }
+
+    const currentOrder = [...userSettings.featureOrder];
+    const draggedIndex = currentOrder.indexOf(draggedFeature);
+    const targetIndex = currentOrder.indexOf(targetFeatureId);
+
+    // 要素を移動
+    const [movedFeature] = currentOrder.splice(draggedIndex, 1);
+    currentOrder.splice(targetIndex, 0, movedFeature);
+
+    handleFeatureReorder(currentOrder);
+    setDraggedFeature(null);
+  };
+
   // カスタムジャンル管理関数
   const handleAddGenre = () => {
     if (newGenreName.trim() && !customGenres.includes(newGenreName.trim())) {
@@ -748,6 +936,7 @@ function App() {
         loadReportSummary(); // レポートを読み込み
         loadSalaryRecords(); // 給料記録を読み込み
         loadWorkDiaries(); // 日記を読み込み
+        loadUserSettings(); // ユーザー設定を読み込み
         console.log("Login successful:", data);
       } else {
         setMessage(`ログイン失敗: ${data.message}`);
@@ -1493,6 +1682,13 @@ function App() {
                 title="フォント設定"
               >
                 🔤 フォント
+              </button>
+              <button 
+                onClick={() => setShowFeatureSettings(true)} 
+                className="feature-settings-button"
+                title="機能設定"
+              >
+                ⚙️ 機能設定
               </button>
               <button onClick={handleLogout} className="logout-button">
                 🚪 ログアウト
@@ -3011,6 +3207,66 @@ function App() {
                       </span>
                     </label>
                   ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 機能設定モーダル */}
+        {showFeatureSettings && (
+          <div className="feature-settings-modal">
+            <div className="feature-settings-content">
+              <div className="feature-settings-header">
+                <h3>⚙️ 機能設定</h3>
+                <button 
+                  onClick={() => setShowFeatureSettings(false)}
+                  className="close-button"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="feature-settings-body">
+                <div className="feature-settings-section">
+                  <h4>📋 機能の並び順</h4>
+                  <p>ドラッグ&ドロップで機能の順序を変更できます</p>
+                  <div className="feature-list">
+                    {features.map((feature) => (
+                      <div
+                        key={feature.id}
+                        className={`feature-item ${draggedFeature === feature.id ? 'dragging' : ''}`}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, feature.id)}
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, feature.id)}
+                      >
+                        <div className="feature-drag-handle">⋮⋮</div>
+                        <div className="feature-icon">{feature.icon}</div>
+                        <div className="feature-info">
+                          <div className="feature-name">{feature.name}</div>
+                          <div className="feature-description">{feature.description}</div>
+                        </div>
+                        <div className="feature-toggle">
+                          <label className="toggle-switch">
+                            <input
+                              type="checkbox"
+                              checked={!userSettings?.hiddenFeatures.includes(feature.id)}
+                              onChange={() => handleFeatureToggle(feature.id)}
+                            />
+                            <span className="toggle-slider"></span>
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="feature-settings-actions">
+                  <button 
+                    onClick={() => setShowFeatureSettings(false)}
+                    className="save-button"
+                  >
+                    💾 設定を保存
+                  </button>
                 </div>
               </div>
             </div>
