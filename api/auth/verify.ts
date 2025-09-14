@@ -6,21 +6,29 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // CORS設定
   const origin = req.headers.origin;
-  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
-  const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
-  
-  // 明示的に"null"オリジンをブロックし、認証情報の漏洩を防ぐ
+  // Add all trusted preview origins here (explicitly enumerate if possible)
+  // (For dynamic environments, consider using env vars or a config to auto-list legitimate preview domains)
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'https://work-time-tracker-five.vercel.app',
+    // For example, explicitly list expected preview deploy URLs:
+    // 'https://work-time-tracker-five-abcde123.vercel.app',
+    // 'https://work-time-tracker-five-fghij456.vercel.app',
+  ];
+
+  // Block 'null' and only allow origins that are explicitly whitelisted.
   const isAllowedOrigin = origin
     && origin !== "null"
     && origin !== null
-    && (allowedOrigins.includes(origin) || isPreview);
+    && allowedOrigins.includes(origin);
 
   if (isAllowedOrigin && origin) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   } else {
-    // 許可されていないオリジンの場合は認証情報を送信しない
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    // Do NOT set Access-Control-Allow-Origin: '*' if credentials are involved.
+    res.setHeader('Access-Control-Allow-Origin', ''); // Set to empty string or consider omitting header entirely.
+    res.setHeader('Access-Control-Allow-Credentials', 'false');
   }
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
