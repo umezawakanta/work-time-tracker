@@ -335,6 +335,157 @@ body {
   }
 }
 
+/* ミニキャラクタースタイル - プロジェクトアイコン用 */
+.project-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.mini-character {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  animation: miniCharacterBounce 3s ease-in-out infinite;
+}
+
+.mini-character-face {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  background: #ffeb3b;
+  border: 2px solid #333;
+  border-radius: 50% 40% 50% 40%;
+  z-index: 3;
+}
+
+.mini-character-eyes {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+}
+
+.mini-eye {
+  width: 4px;
+  height: 4px;
+  background: #333;
+  border-radius: 50%;
+  position: relative;
+}
+
+.mini-eye::after {
+  content: '';
+  position: absolute;
+  top: 0.5px;
+  left: 0.5px;
+  width: 1.5px;
+  height: 1.5px;
+  background: white;
+  border-radius: 50%;
+}
+
+.mini-character-mouth {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 4px;
+  background: #333;
+  border-radius: 0 0 8px 8px;
+  animation: miniMouthMove 4s ease-in-out infinite;
+}
+
+.mini-character-body {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25px;
+  height: 20px;
+  background: #4caf50;
+  border: 2px solid #333;
+  border-radius: 12px 12px 8px 8px;
+  z-index: 2;
+}
+
+@keyframes miniCharacterBounce {
+  0%, 100% {
+    transform: translateY(0px) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(-1deg);
+  }
+}
+
+@keyframes miniMouthMove {
+  0%, 100% {
+    border-radius: 0 0 8px 8px;
+    height: 4px;
+  }
+  50% {
+    border-radius: 50%;
+    height: 6px;
+  }
+}
+
+/* セクションアイコン用のミニキャラクター */
+.section-icon {
+  display: inline-block;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.section-icon .mini-character {
+  width: 30px;
+  height: 30px;
+  animation: miniCharacterBounce 3s ease-in-out infinite;
+}
+
+.section-icon .mini-character-face {
+  width: 22px;
+  height: 22px;
+  top: 3px;
+}
+
+.section-icon .mini-character-eyes {
+  top: 6px;
+  gap: 3px;
+}
+
+.section-icon .mini-eye {
+  width: 3px;
+  height: 3px;
+}
+
+.section-icon .mini-eye::after {
+  width: 1px;
+  height: 1px;
+  top: 0.3px;
+  left: 0.3px;
+}
+
+.section-icon .mini-character-mouth {
+  top: 11px;
+  width: 6px;
+  height: 3px;
+}
+
+.section-icon .mini-character-body {
+  width: 18px;
+  height: 15px;
+  top: 18px;
+}
+
 .user-info {
   display: flex;
   align-items: center;

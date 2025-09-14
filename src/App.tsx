@@ -1297,7 +1297,21 @@ function App() {
           
           <main className="dashboard-main">
             <div className="time-tracking-section">
-              <h2>⏱️ 時間記録</h2>
+              <h2>
+                <span className="section-icon">
+                  <div className="mini-character">
+                    <div className="mini-character-face">
+                      <div className="mini-character-eyes">
+                        <div className="mini-eye left-mini-eye"></div>
+                        <div className="mini-eye right-mini-eye"></div>
+                      </div>
+                      <div className="mini-character-mouth"></div>
+                    </div>
+                    <div className="mini-character-body"></div>
+                  </div>
+                </span>
+                時間記録
+              </h2>
               
               {!isTracking ? (
                 <div className="start-tracking">
@@ -1333,7 +1347,21 @@ function App() {
             {/* プロジェクト管理セクション */}
             <div className="projects-section">
               <div className="section-header">
-                <h2>📁 プロジェクト</h2>
+                <h2>
+                  <span className="section-icon">
+                    <div className="mini-character">
+                      <div className="mini-character-face">
+                        <div className="mini-character-eyes">
+                          <div className="mini-eye left-mini-eye"></div>
+                          <div className="mini-eye right-mini-eye"></div>
+                        </div>
+                        <div className="mini-character-mouth"></div>
+                      </div>
+                      <div className="mini-character-body"></div>
+                    </div>
+                  </span>
+                  プロジェクト
+                </h2>
                 <button 
                   onClick={() => setShowProjectForm(!showProjectForm)}
                   className="add-project-button"
@@ -1388,10 +1416,18 @@ function App() {
                     className={`project-item ${selectedProject === project.id ? 'selected' : ''}`}
                     onClick={() => setSelectedProject(project.id)}
                   >
-                    <div 
-                      className="project-color" 
-                      style={{ backgroundColor: project.color }}
-                    ></div>
+                    <div className="project-icon">
+                      <div className="mini-character">
+                        <div className="mini-character-face">
+                          <div className="mini-character-eyes">
+                            <div className="mini-eye left-mini-eye"></div>
+                            <div className="mini-eye right-mini-eye"></div>
+                          </div>
+                          <div className="mini-character-mouth"></div>
+                        </div>
+                        <div className="mini-character-body"></div>
+                      </div>
+                    </div>
                     <div className="project-info">
                       <h3>{project.name}</h3>
                       {project.description && <p>{project.description}</p>}
@@ -1404,7 +1440,21 @@ function App() {
             {/* レポートセクション */}
             <div className="reports-section">
               <div className="section-header">
-                <h2>📊 レポート</h2>
+                <h2>
+                  <span className="section-icon">
+                    <div className="mini-character">
+                      <div className="mini-character-face">
+                        <div className="mini-character-eyes">
+                          <div className="mini-eye left-mini-eye"></div>
+                          <div className="mini-eye right-mini-eye"></div>
+                        </div>
+                        <div className="mini-character-mouth"></div>
+                      </div>
+                      <div className="mini-character-body"></div>
+                    </div>
+                  </span>
+                  レポート
+                </h2>
                 <button 
                   onClick={() => {
                     setShowReports(!showReports);
@@ -1469,7 +1519,21 @@ function App() {
             {user?.role === 'admin' && (
               <div className="admin-section">
                 <div className="section-header">
-                  <h2>👑 管理者パネル</h2>
+                  <h2>
+                  <span className="section-icon">
+                    <div className="mini-character">
+                      <div className="mini-character-face">
+                        <div className="mini-character-eyes">
+                          <div className="mini-eye left-mini-eye"></div>
+                          <div className="mini-eye right-mini-eye"></div>
+                        </div>
+                        <div className="mini-character-mouth"></div>
+                      </div>
+                      <div className="mini-character-body"></div>
+                    </div>
+                  </span>
+                  管理者パネル
+                </h2>
                   <button 
                     onClick={() => {
                       setShowAdminPanel(!showAdminPanel);
@@ -1653,7 +1717,21 @@ function App() {
             {/* 本棚セクション */}
             <div className="bookshelf-section">
               <div className="section-header">
-                <h2>📚 本棚</h2>
+                <h2>
+                  <span className="section-icon">
+                    <div className="mini-character">
+                      <div className="mini-character-face">
+                        <div className="mini-character-eyes">
+                          <div className="mini-eye left-mini-eye"></div>
+                          <div className="mini-eye right-mini-eye"></div>
+                        </div>
+                        <div className="mini-character-mouth"></div>
+                      </div>
+                      <div className="mini-character-body"></div>
+                    </div>
+                  </span>
+                  本棚
+                </h2>
                 <button 
                   onClick={() => {
                     setShowBookshelf(!showBookshelf);
@@ -1849,7 +1927,21 @@ function App() {
             {/* メモセクション */}
             <div className="memos-section">
               <div className="section-header">
-                <h2>📝 メモ</h2>
+                <h2>
+                  <span className="section-icon">
+                    <div className="mini-character">
+                      <div className="mini-character-face">
+                        <div className="mini-character-eyes">
+                          <div className="mini-eye left-mini-eye"></div>
+                          <div className="mini-eye right-mini-eye"></div>
+                        </div>
+                        <div className="mini-character-mouth"></div>
+                      </div>
+                      <div className="mini-character-body"></div>
+                    </div>
+                  </span>
+                  メモ
+                </h2>
                 <button 
                   onClick={() => {
                     setShowMemos(!showMemos);
@@ -2109,7 +2201,21 @@ function App() {
             {/* 公開メモセクション */}
             <div className="public-memos-section">
               <div className="section-header">
-                <h2>🌐 公開メモ</h2>
+                <h2>
+                  <span className="section-icon">
+                    <div className="mini-character">
+                      <div className="mini-character-face">
+                        <div className="mini-character-eyes">
+                          <div className="mini-eye left-mini-eye"></div>
+                          <div className="mini-eye right-mini-eye"></div>
+                        </div>
+                        <div className="mini-character-mouth"></div>
+                      </div>
+                      <div className="mini-character-body"></div>
+                    </div>
+                  </span>
+                  公開メモ
+                </h2>
                 <button 
                   onClick={() => {
                     setShowPublicMemos(!showPublicMemos);
