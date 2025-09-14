@@ -1036,6 +1036,15 @@ function App() {
     }
   };
 
+  const handleSpecificRecordClick = (record: any, type: 'salary' | 'diary') => {
+    setSelectedRecord(record);
+    setSelectedRecordType(type);
+    setShowRecordDetail(true);
+    setShowSalaryForm(false);
+    setShowDiaryForm(false);
+    setShowCalendar(false);
+  };
+
   const viewSalaryRecord = (record: any) => {
     setSelectedRecord(record);
     setSelectedRecordType('salary');
@@ -3567,7 +3576,7 @@ function App() {
                                 <div 
                                   key={record._id} 
                                   className="date-record-item salary-record clickable"
-                                  onClick={() => handleRecordClick('salary', selectedDate)}
+                                  onClick={() => handleSpecificRecordClick(record, 'salary')}
                                   title="給料記録を表示"
                                 >
                                   <span className="record-icon">💰</span>
@@ -3581,7 +3590,7 @@ function App() {
                                 <div 
                                   key={diary._id} 
                                   className="date-record-item diary-record clickable"
-                                  onClick={() => handleRecordClick('diary', selectedDate)}
+                                  onClick={() => handleSpecificRecordClick(diary, 'diary')}
                                   title="日記を表示"
                                 >
                                   <span className="record-icon">📝</span>
