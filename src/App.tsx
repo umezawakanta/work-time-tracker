@@ -857,13 +857,23 @@ function App() {
 
   // 機能設定の関数
   const loadUserSettings = async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.log('loadUserSettings: No user ID');
+      return;
+    }
+    
+    console.log('loadUserSettings: Loading settings for user:', user.id);
     
     try {
       const response = await fetch(`/api/user-settings?userId=${user.id}`);
       const data = await response.json();
+      console.log('loadUserSettings: Response:', data);
+      
       if (data.success) {
         setUserSettings(data.settings);
+        console.log('loadUserSettings: Settings loaded:', data.settings);
+      } else {
+        console.log('loadUserSettings: Failed to load settings:', data.message);
       }
     } catch (error) {
       console.error('Failed to load user settings:', error);
@@ -900,13 +910,23 @@ function App() {
     updateUserSettings({ featureOrder: newOrder });
   };
 
+  // デフォルトのユーザー設定を作成
+  const getDefaultUserSettings = (): UserSettings => ({
+    _id: '',
+    userId: user?.id || '',
+    featureOrder: features.map(f => f.id),
+    hiddenFeatures: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+
   const handleFeatureToggle = (featureId: string) => {
-    if (!userSettings) return;
+    const currentSettings = userSettings || getDefaultUserSettings();
     
-    const isHidden = userSettings.hiddenFeatures.includes(featureId);
+    const isHidden = currentSettings.hiddenFeatures.includes(featureId);
     const newHiddenFeatures = isHidden
-      ? userSettings.hiddenFeatures.filter(id => id !== featureId)
-      : [...userSettings.hiddenFeatures, featureId];
+      ? currentSettings.hiddenFeatures.filter(id => id !== featureId)
+      : [...currentSettings.hiddenFeatures, featureId];
     
     updateUserSettings({ hiddenFeatures: newHiddenFeatures });
   };
@@ -929,7 +949,7 @@ function App() {
   };
 
   const handleTouchEnd = (e: React.TouchEvent, targetFeatureId: string) => {
-    if (!draggedFeature || !userSettings || draggedFeature === targetFeatureId) {
+    if (!draggedFeature || draggedFeature === targetFeatureId) {
       console.log('Touch drop cancelled:', { draggedFeature, targetFeatureId, hasUserSettings: !!userSettings });
       setDraggedFeature(null);
       return;
@@ -937,7 +957,8 @@ function App() {
 
     console.log('Touch drop event:', { draggedFeature, targetFeatureId, userSettings: !!userSettings });
 
-    const currentOrder = [...userSettings.featureOrder];
+    const currentSettings = userSettings || getDefaultUserSettings();
+    const currentOrder = [...currentSettings.featureOrder];
     const draggedIndex = currentOrder.indexOf(draggedFeature);
     const targetIndex = currentOrder.indexOf(targetFeatureId);
 
@@ -954,9 +975,8 @@ function App() {
 
   // ボタンによる並び順変更
   const moveFeatureUp = (featureId: string) => {
-    if (!userSettings) return;
-    
-    const currentOrder = [...userSettings.featureOrder];
+    const currentSettings = userSettings || getDefaultUserSettings();
+    const currentOrder = [...currentSettings.featureOrder];
     const currentIndex = currentOrder.indexOf(featureId);
     
     if (currentIndex > 0) {
@@ -967,9 +987,8 @@ function App() {
   };
 
   const moveFeatureDown = (featureId: string) => {
-    if (!userSettings) return;
-    
-    const currentOrder = [...userSettings.featureOrder];
+    const currentSettings = userSettings || getDefaultUserSettings();
+    const currentOrder = [...currentSettings.featureOrder];
     const currentIndex = currentOrder.indexOf(featureId);
     
     if (currentIndex < currentOrder.length - 1) {
@@ -989,13 +1008,14 @@ function App() {
     e.preventDefault();
     console.log('Drop event:', { draggedFeature, targetFeatureId, userSettings: !!userSettings });
     
-    if (!draggedFeature || !userSettings || draggedFeature === targetFeatureId) {
+    if (!draggedFeature || draggedFeature === targetFeatureId) {
       console.log('Drop cancelled:', { draggedFeature, targetFeatureId, hasUserSettings: !!userSettings });
       setDraggedFeature(null);
       return;
     }
 
-    const currentOrder = [...userSettings.featureOrder];
+    const currentSettings = userSettings || getDefaultUserSettings();
+    const currentOrder = [...currentSettings.featureOrder];
     const draggedIndex = currentOrder.indexOf(draggedFeature);
     const targetIndex = currentOrder.indexOf(targetFeatureId);
 
@@ -2138,7 +2158,10 @@ function App() {
                 🔤 フォント
               </button>
               <button 
-                onClick={() => setShowFeatureSettings(true)} 
+                onClick={() => {
+                  setShowFeatureSettings(true);
+                  loadUserSettings();
+                }} 
                 className="feature-settings-button"
                 title="機能設定"
               >
@@ -4163,7 +4186,10 @@ function App() {
                   <h4>📋 機能の並び順</h4>
                   <p>ドラッグ&ドロップで機能の順序を変更できます</p>
                   <div className="feature-list">
-                    {features.map((feature) => (
+                    {getFeatureOrder().map((featureId) => {
+                      const feature = features.find(f => f.id === featureId);
+                      if (!feature) return null;
+                      return (
                       <div
                         key={feature.id}
                         className={`feature-item ${draggedFeature === feature.id ? 'dragging' : ''}`}
@@ -4210,7 +4236,8 @@ function App() {
                           </label>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
                 <div className="feature-settings-actions">
