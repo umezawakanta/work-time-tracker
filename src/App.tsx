@@ -1694,6 +1694,37 @@ function App() {
                 🚪 ログアウト
               </button>
             </div>
+            
+            {/* 犬のキャラクター */}
+            <div className="dog-character">
+              <div className="dog-body"></div>
+              <div className="dog-head">
+                <div className="dog-ears">
+                  <div className="dog-ear left-ear"></div>
+                  <div className="dog-ear right-ear"></div>
+                </div>
+                <div className="dog-face">
+                  <div className="dog-eyes">
+                    <div className="dog-eye left-eye"></div>
+                    <div className="dog-eye right-eye"></div>
+                  </div>
+                  <div className="dog-nose"></div>
+                  <div className="dog-mouth"></div>
+                </div>
+              </div>
+              <div className="dog-tail">
+                <div className="tail-wag"></div>
+              </div>
+              <div className="dog-paws">
+                <div className="dog-paw left-paw"></div>
+                <div className="dog-paw right-paw"></div>
+              </div>
+              <div className="dog-sparkles">
+                <div className="dog-sparkle sparkle-1">✨</div>
+                <div className="dog-sparkle sparkle-2">⭐</div>
+                <div className="dog-sparkle sparkle-3">💫</div>
+              </div>
+            </div>
           </header>
           
           <main className="dashboard-main">

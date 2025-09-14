@@ -3238,3 +3238,279 @@ input:checked + .toggle-slider:before {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
 }
+
+/* 犬のキャラクター */
+.dog-character {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  width: 80px;
+  height: 80px;
+  z-index: 10;
+  animation: dogBounce 3s ease-in-out infinite;
+}
+
+.dog-body {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 30px;
+  background: #8B4513;
+  border-radius: 20px 20px 15px 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dog-head {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 35px;
+  height: 35px;
+  background: #D2691E;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dog-ears {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 20px;
+}
+
+.dog-ear {
+  position: absolute;
+  width: 12px;
+  height: 20px;
+  background: #8B4513;
+  border-radius: 50% 50% 0 0;
+  top: 0;
+}
+
+.dog-ear.left-ear {
+  left: 2px;
+  transform: rotate(-20deg);
+  animation: earWiggle 2s ease-in-out infinite;
+}
+
+.dog-ear.right-ear {
+  right: 2px;
+  transform: rotate(20deg);
+  animation: earWiggle 2s ease-in-out infinite 0.5s;
+}
+
+.dog-face {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25px;
+  height: 20px;
+}
+
+.dog-eyes {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 8px;
+}
+
+.dog-eye {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #000;
+  border-radius: 50%;
+  top: 0;
+}
+
+.dog-eye.left-eye {
+  left: 2px;
+}
+
+.dog-eye.right-eye {
+  right: 2px;
+}
+
+.dog-nose {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 3px;
+  background: #000;
+  border-radius: 50%;
+}
+
+.dog-mouth {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 4px;
+  border: 2px solid #000;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
+.dog-tail {
+  position: absolute;
+  bottom: 15px;
+  right: -5px;
+  width: 20px;
+  height: 15px;
+}
+
+.tail-wag {
+  position: absolute;
+  width: 20px;
+  height: 3px;
+  background: #8B4513;
+  border-radius: 2px;
+  animation: tailWag 1s ease-in-out infinite;
+  transform-origin: left center;
+}
+
+.dog-paws {
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 10px;
+}
+
+.dog-paw {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #8B4513;
+  border-radius: 50%;
+  bottom: 0;
+}
+
+.dog-paw.left-paw {
+  left: 3px;
+}
+
+.dog-paw.right-paw {
+  right: 3px;
+}
+
+.dog-sparkles {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  pointer-events: none;
+}
+
+.dog-sparkle {
+  position: absolute;
+  font-size: 12px;
+  animation: sparkleFloat 2s ease-in-out infinite;
+}
+
+.dog-sparkle.sparkle-1 {
+  top: 10px;
+  left: 20px;
+  animation-delay: 0s;
+}
+
+.dog-sparkle.sparkle-2 {
+  top: 30px;
+  right: 15px;
+  animation-delay: 0.7s;
+}
+
+.dog-sparkle.sparkle-3 {
+  bottom: 20px;
+  left: 10px;
+  animation-delay: 1.4s;
+}
+
+/* アニメーション */
+@keyframes dogBounce {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes earWiggle {
+  0%, 100% {
+    transform: rotate(-20deg);
+  }
+  50% {
+    transform: rotate(-10deg);
+  }
+}
+
+@keyframes tailWag {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(15deg);
+  }
+  75% {
+    transform: rotate(-15deg);
+  }
+}
+
+@keyframes sparkleFloat {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0px) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.2);
+  }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .dog-character {
+    width: 60px;
+    height: 60px;
+    bottom: 5px;
+    right: 10px;
+  }
+  
+  .dog-body {
+    width: 30px;
+    height: 22px;
+  }
+  
+  .dog-head {
+    width: 26px;
+    height: 26px;
+  }
+  
+  .dog-ear {
+    width: 9px;
+    height: 15px;
+  }
+  
+  .dog-eye {
+    width: 4px;
+    height: 4px;
+  }
+  
+  .dog-sparkle {
+    font-size: 10px;
+  }
+}
