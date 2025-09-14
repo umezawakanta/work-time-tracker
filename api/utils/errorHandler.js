@@ -127,22 +127,32 @@ const sanitizeErrorData = (errorData) => {
   return sanitized;
 };
 
+// 安全なデバッグログ関数（開発環境でのみ使用）
+const safeDebugLog = (message, data = null) => {
+  if (process.env.NODE_ENV === 'development' && process.env.DEBUG_LOGGING === 'true') {
+    if (data) {
+      const sanitizedData = sanitizeErrorData(data);
+      console.log(`[DEBUG] ${message}:`, sanitizedData);
+    } else {
+      console.log(`[DEBUG] ${message}`);
+    }
+  }
+};
+
 // エラーレスポンスを送信
 const sendErrorResponse = (res, statusCode, errorData) => {
   // バリデーションエラーの場合は機密情報をログに出力しない
   if (errorData?.error === 'VALIDATION_ERROR') {
     console.error(`API Error [${statusCode}]: VALIDATION_ERROR (${errorData.field || 'unknown field'})`);
+    safeDebugLog('Validation error details', errorData);
   } else if (errorData?.error === 'AUTH_ERROR' || errorData?.error === 'PERMISSION_ERROR') {
     // 認証・権限エラーも機密情報を含む可能性があるため詳細を制限
     console.error(`API Error [${statusCode}]: ${errorData.error}`);
+    safeDebugLog('Auth/Permission error details', errorData);
   } else {
-    // その他のエラーは開発環境でのみ詳細をログ出力（サニタイズ済み）
-    if (process.env.NODE_ENV === 'development') {
-      const sanitizedData = sanitizeErrorData(errorData);
-      console.error(`API Error [${statusCode}]:`, sanitizedData);
-    } else {
-      console.error(`API Error [${statusCode}]: ${errorData?.error || 'UNKNOWN_ERROR'}`);
-    }
+    // その他のエラーも機密情報を含む可能性があるため、エラータイプのみログ出力
+    console.error(`API Error [${statusCode}]: ${errorData?.error || 'UNKNOWN_ERROR'}`);
+    safeDebugLog('Server error details', errorData);
   }
   
   return res.status(statusCode).json(errorData);
@@ -158,5 +168,6 @@ module.exports = {
   validateEmail,
   validatePassword,
   validateDisplayName,
-  sendErrorResponse
+  sendErrorResponse,
+  safeDebugLog
 };
