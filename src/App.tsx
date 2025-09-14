@@ -3259,7 +3259,7 @@ function App() {
                         setShowCalendar(false);
                       }}
                     >
-                      💰 給料記録
+                      💰 収入・支出
                     </button>
                     <button 
                       className={`tab-button ${showDiaryForm ? 'active' : ''}`}
@@ -3276,7 +3276,7 @@ function App() {
                   {/* 給料記録フォーム */}
                   {showSalaryForm && (
                     <form onSubmit={editingSalaryRecord ? handleUpdateSalaryRecord : handleCreateSalaryRecord} className="salary-form">
-                      <h3>💰 {editingSalaryRecord ? '給料記録を編集' : '給料・交通費記録'}</h3>
+                      <h3>💰 {editingSalaryRecord ? '収入・支出記録を編集' : '収入・支出記録'}</h3>
                       <div className="form-group">
                         <label htmlFor="salaryDate">日付</label>
                         <input
@@ -3288,7 +3288,24 @@ function App() {
                         />
                       </div>
                       <div className="form-group">
-                        <label htmlFor="salary">給料 (円)</label>
+                        <label htmlFor="recordType">記録タイプ</label>
+                        <select
+                          id="recordType"
+                          value={salary > 0 ? 'income' : 'expense'}
+                          onChange={(e) => {
+                            if (e.target.value === 'expense' && salary > 0) {
+                              setSalary('');
+                            } else if (e.target.value === 'income' && salary < 0) {
+                              setSalary('');
+                            }
+                          }}
+                        >
+                          <option value="income">収入</option>
+                          <option value="expense">支出</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="salary">金額 (円)</label>
                         <input
                           type="number"
                           id="salary"
@@ -3339,7 +3356,7 @@ function App() {
                         />
                       </div>
                       <button type="submit" className="submit-button">
-                        💰 {editingSalaryRecord ? '給料記録を更新' : '給料記録を保存'}
+                        💰 {editingSalaryRecord ? '収入・支出記録を更新' : '収入・支出記録を保存'}
                       </button>
                     </form>
                   )}
@@ -3478,7 +3495,7 @@ function App() {
                                   <>
                                     <div 
                                       className="record-indicator salary-indicator clickable" 
-                                      title="給料記録を表示"
+                                      title="収入・支出記録を表示"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         handleRecordClick('salary', dayItem.date);
@@ -3487,7 +3504,7 @@ function App() {
                                       <div className="record-icon">💰</div>
                                       <div className="record-amount">
                                         {dayRecords.salaryRecords.length === 1 ? (
-                                          `¥${dayRecords.salaryRecords[0].salary.toLocaleString()}`
+                                          `${dayRecords.salaryRecords[0].salary >= 0 ? '収入' : '支出'}: ¥${Math.abs(dayRecords.salaryRecords[0].salary).toLocaleString()}`
                                         ) : (
                                           `${dayRecords.salaryRecords.length}件`
                                         )}
@@ -3519,7 +3536,7 @@ function App() {
                                     {dayRecords.salaryRecords.length > 0 && (
                                       <div 
                                         className="record-indicator salary-indicator clickable" 
-                                        title="給料記録を表示"
+                                        title="収入・支出記録を表示"
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           handleRecordClick('salary', dayItem.date);
@@ -3528,9 +3545,9 @@ function App() {
                                         <div className="record-icon">💰</div>
                                         <div className="record-amount">
                                           {dayRecords.salaryRecords.length === 1 ? (
-                                            `¥${dayRecords.salaryRecords[0].salary.toLocaleString()}`
+                                            `${dayRecords.salaryRecords[0].salary >= 0 ? '収入' : '支出'}: ¥${Math.abs(dayRecords.salaryRecords[0].salary).toLocaleString()}`
                                           ) : (
-                                            `${dayRecords.salaryRecords.length}件の給料`
+                                            `${dayRecords.salaryRecords.length}件の記録`
                                           )}
                                         </div>
                                       </div>
@@ -3581,7 +3598,7 @@ function App() {
                                 >
                                   <span className="record-icon">💰</span>
                                   <span className="record-content">
-                                    給料: ¥{record.salary.toLocaleString()}
+                                    {record.salary >= 0 ? '収入' : '支出'}: ¥{Math.abs(record.salary).toLocaleString()}
                                     {record.transportation > 0 && ` + 交通費: ¥${record.transportation.toLocaleString()}`}
                                   </span>
                                 </div>
@@ -3614,7 +3631,7 @@ function App() {
                   {!showSalaryForm && !showDiaryForm && !showCalendar && !showRecordDetail && (
                     <div className="records-list">
                       <div className="salary-records">
-                        <h3>💰 給料記録 ({salaryRecords.length}件)</h3>
+                        <h3>💰 収入・支出記録 ({salaryRecords.length}件)</h3>
                         {salaryRecords.length > 0 ? (
                           <div className="records-grid">
                             {salaryRecords.map((record) => (
@@ -3654,12 +3671,12 @@ function App() {
                           </div>
                         ) : (
                           <div className="no-records-card">
-                            <p>給料記録がありません</p>
+                            <p>収入・支出記録がありません</p>
                             <button 
                               onClick={() => setShowSalaryForm(true)}
                               className="add-record-btn"
                             >
-                              給料記録を追加
+                              収入・支出記録を追加
                             </button>
                           </div>
                         )}
@@ -3737,7 +3754,7 @@ function App() {
                           ← 戻る
                         </button>
                         <h3>
-                          {selectedRecordType === 'salary' ? '💰 給料記録詳細' : '📝 日記詳細'}
+                          {selectedRecordType === 'salary' ? '💰 収入・支出記録詳細' : '📝 日記詳細'}
                         </h3>
                       </div>
                       
