@@ -3239,7 +3239,26 @@ input:checked + .toggle-slider:before {
   box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
 }
 
-/* 犬のキャラクター */
+/* 犬のキャラクター（画像版） */
+.dog-character-image {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  width: 80px;
+  height: 80px;
+  z-index: 10;
+  animation: dogBounce 3s ease-in-out infinite;
+}
+
+.dog-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  animation: dogWiggle 2s ease-in-out infinite;
+}
+
+/* 犬のキャラクター（CSS版 - 非表示） */
 .dog-character {
   position: absolute;
   bottom: 10px;
@@ -3248,6 +3267,7 @@ input:checked + .toggle-slider:before {
   height: 90px;
   z-index: 10;
   animation: dogBounce 3s ease-in-out infinite;
+  display: none; /* 画像版を使用するため非表示 */
 }
 
 .dog-body {
@@ -3537,8 +3557,30 @@ input:checked + .toggle-slider:before {
   }
 }
 
+@keyframes dogWiggle {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(2deg) scale(1.05);
+  }
+  50% {
+    transform: rotate(0deg) scale(1.1);
+  }
+  75% {
+    transform: rotate(-2deg) scale(1.05);
+  }
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
+  .dog-character-image {
+    width: 60px;
+    height: 60px;
+    bottom: 5px;
+    right: 10px;
+  }
+  
   .dog-character {
     width: 70px;
     height: 70px;

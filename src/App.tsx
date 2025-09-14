@@ -1695,30 +1695,13 @@ function App() {
               </button>
             </div>
             
-            {/* 犬のキャラクター */}
-            <div className="dog-character">
-              <div className="dog-body"></div>
-              <div className="dog-head">
-                <div className="dog-ears">
-                  <div className="dog-ear left-ear"></div>
-                  <div className="dog-ear right-ear"></div>
-                </div>
-                <div className="dog-face">
-                  <div className="dog-eyes">
-                    <div className="dog-eye left-eye"></div>
-                    <div className="dog-eye right-eye"></div>
-                  </div>
-                  <div className="dog-nose"></div>
-                  <div className="dog-mouth"></div>
-                </div>
-              </div>
-              <div className="dog-tail">
-                <div className="tail-wag"></div>
-              </div>
-              <div className="dog-paws">
-                <div className="dog-paw left-paw"></div>
-                <div className="dog-paw right-paw"></div>
-              </div>
+            {/* 犬のキャラクター（画像版） */}
+            <div className="dog-character-image">
+              <img 
+                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iMzUiIGZpbGw9IiNEMkI0OEMiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIzNSIgcj0iMjUiIGZpbGw9IiNGNEE0NjAiLz4KPGNpcmNsZSBjeD0iMzUiIGN5PSIzMCIgcj0iNCIgZmlsbD0iIzAwMCIvPgo8Y2lyY2xlIGN4PSI0NSIgY3k9IjMwIiByPSI0IiBmaWxsPSIjMDAwIi8+CjxjaXJjbGUgY3g9IjQwIiBjeT0iMzciIHI9IjIiIGZpbGw9IiMwMDAiLz4KPHBhdGggZD0iTTM1IDQwIFE0MCA0NSA0NSA0MCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz4KPGNpcmNsZSBjeD0iMzAiIGN5PSIyNSIgcj0iOCIgZmlsbD0iI0QyQjQ4QyIvPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjI1IiByPSI4IiBmaWxsPSIjRDJCOEMiLz4KPGNpcmNsZSBjeD0iMzUiIGN5PSI1NSIgcj0iNiIgZmlsbD0iI0QyQjQ4QyIvPgo8Y2lyY2xlIGN4PSI0NSIgY3k9IjU1IiByPSI2IiBmaWxsPSIjRDJCOEMiLz4KPHBhdGggZD0iTTU1IDQwIFE2MCAzNSA2NSA0MCIgc3Ryb2tlPSIjRDJCOEMiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPgo8dGV4dCB4PSI0MCIgeT0iMTUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI0ZGRiI+4p2k4p2k4p2kPC90ZXh0Pgo8L3N2Zz4K" 
+                alt="もこもこ犬キャラクター" 
+                className="dog-image"
+              />
               <div className="dog-sparkles">
                 <div className="dog-sparkle sparkle-1">✨</div>
                 <div className="dog-sparkle sparkle-2">⭐</div>
