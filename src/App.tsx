@@ -942,8 +942,9 @@ function App() {
   };
 
   const getPublicMemoCategories = () => {
-    const categories = new Set(publicMemos.map(memo => memo.category));
-    return Array.from(categories).sort();
+    const memoCategories = new Set(publicMemos.map(memo => memo.category));
+    const allCategories = [...memoCategories, ...getAllGenres()];
+    return Array.from(new Set(allCategories)).sort();
   };
 
   const handleLogout = () => {
@@ -1709,12 +1710,9 @@ function App() {
                           disabled={loading}
                         >
                           <option value="">選択してください</option>
-                          <option value="仕事">仕事</option>
-                          <option value="学習">学習</option>
-                          <option value="アイデア">アイデア</option>
-                          <option value="メモ">メモ</option>
-                          <option value="タスク">タスク</option>
-                          <option value="その他">その他</option>
+                          {getAllGenres().map(genre => (
+                            <option key={genre} value={genre}>{genre}</option>
+                          ))}
                         </select>
                       </div>
                       <div className="form-group">
