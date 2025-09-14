@@ -1257,6 +1257,11 @@ function App() {
             <div className="header-left">
               <div className="character-container">
                 <div className="character">
+                  <div className="character-halo"></div>
+                  <div className="character-wings">
+                    <div className="wing left-wing"></div>
+                    <div className="wing right-wing"></div>
+                  </div>
                   <div className="character-face">
                     <div className="character-eyes">
                       <div className="eye left-eye"></div>
@@ -1268,6 +1273,14 @@ function App() {
                   <div className="character-arms">
                     <div className="arm left-arm"></div>
                     <div className="arm right-arm"></div>
+                  </div>
+                  <div className="sparkles">
+                    <div className="sparkle sparkle-1"></div>
+                    <div className="sparkle sparkle-2"></div>
+                    <div className="sparkle sparkle-3"></div>
+                    <div className="sparkle sparkle-4"></div>
+                    <div className="sparkle sparkle-5"></div>
+                    <div className="sparkle sparkle-6"></div>
                   </div>
                 </div>
               </div>
@@ -1350,6 +1363,11 @@ function App() {
                 <h2>
                   <span className="section-icon">
                     <div className="mini-character">
+                      <div className="mini-character-halo"></div>
+                      <div className="mini-character-wings">
+                        <div className="mini-wing left-mini-wing"></div>
+                        <div className="mini-wing right-mini-wing"></div>
+                      </div>
                       <div className="mini-character-face">
                         <div className="mini-character-eyes">
                           <div className="mini-eye left-mini-eye"></div>
@@ -1358,6 +1376,10 @@ function App() {
                         <div className="mini-character-mouth"></div>
                       </div>
                       <div className="mini-character-body"></div>
+                      <div className="mini-sparkles">
+                        <div className="mini-sparkle mini-sparkle-1"></div>
+                        <div className="mini-sparkle mini-sparkle-2"></div>
+                      </div>
                     </div>
                   </span>
                   プロジェクト
@@ -1418,6 +1440,11 @@ function App() {
                   >
                     <div className="project-icon">
                       <div className="mini-character">
+                        <div className="mini-character-halo"></div>
+                        <div className="mini-character-wings">
+                          <div className="mini-wing left-mini-wing"></div>
+                          <div className="mini-wing right-mini-wing"></div>
+                        </div>
                         <div className="mini-character-face">
                           <div className="mini-character-eyes">
                             <div className="mini-eye left-mini-eye"></div>
@@ -1426,6 +1453,11 @@ function App() {
                           <div className="mini-character-mouth"></div>
                         </div>
                         <div className="mini-character-body"></div>
+                        <div className="mini-sparkles">
+                          <div className="mini-sparkle mini-sparkle-1"></div>
+                          <div className="mini-sparkle mini-sparkle-2"></div>
+                          <div className="mini-sparkle mini-sparkle-3"></div>
+                        </div>
                       </div>
                     </div>
                     <div className="project-info">
@@ -1443,6 +1475,11 @@ function App() {
                 <h2>
                   <span className="section-icon">
                     <div className="mini-character">
+                      <div className="mini-character-halo"></div>
+                      <div className="mini-character-wings">
+                        <div className="mini-wing left-mini-wing"></div>
+                        <div className="mini-wing right-mini-wing"></div>
+                      </div>
                       <div className="mini-character-face">
                         <div className="mini-character-eyes">
                           <div className="mini-eye left-mini-eye"></div>
@@ -1451,6 +1488,10 @@ function App() {
                         <div className="mini-character-mouth"></div>
                       </div>
                       <div className="mini-character-body"></div>
+                      <div className="mini-sparkles">
+                        <div className="mini-sparkle mini-sparkle-1"></div>
+                        <div className="mini-sparkle mini-sparkle-2"></div>
+                      </div>
                     </div>
                   </span>
                   レポート
@@ -1522,6 +1563,11 @@ function App() {
                   <h2>
                   <span className="section-icon">
                     <div className="mini-character">
+                      <div className="mini-character-halo"></div>
+                      <div className="mini-character-wings">
+                        <div className="mini-wing left-mini-wing"></div>
+                        <div className="mini-wing right-mini-wing"></div>
+                      </div>
                       <div className="mini-character-face">
                         <div className="mini-character-eyes">
                           <div className="mini-eye left-mini-eye"></div>
@@ -1530,6 +1576,10 @@ function App() {
                         <div className="mini-character-mouth"></div>
                       </div>
                       <div className="mini-character-body"></div>
+                      <div className="mini-sparkles">
+                        <div className="mini-sparkle mini-sparkle-1"></div>
+                        <div className="mini-sparkle mini-sparkle-2"></div>
+                      </div>
                     </div>
                   </span>
                   管理者パネル
@@ -1720,6 +1770,11 @@ function App() {
                 <h2>
                   <span className="section-icon">
                     <div className="mini-character">
+                      <div className="mini-character-halo"></div>
+                      <div className="mini-character-wings">
+                        <div className="mini-wing left-mini-wing"></div>
+                        <div className="mini-wing right-mini-wing"></div>
+                      </div>
                       <div className="mini-character-face">
                         <div className="mini-character-eyes">
                           <div className="mini-eye left-mini-eye"></div>
@@ -1728,6 +1783,10 @@ function App() {
                         <div className="mini-character-mouth"></div>
                       </div>
                       <div className="mini-character-body"></div>
+                      <div className="mini-sparkles">
+                        <div className="mini-sparkle mini-sparkle-1"></div>
+                        <div className="mini-sparkle mini-sparkle-2"></div>
+                      </div>
                     </div>
                   </span>
                   本棚
@@ -1930,6 +1989,11 @@ function App() {
                 <h2>
                   <span className="section-icon">
                     <div className="mini-character">
+                      <div className="mini-character-halo"></div>
+                      <div className="mini-character-wings">
+                        <div className="mini-wing left-mini-wing"></div>
+                        <div className="mini-wing right-mini-wing"></div>
+                      </div>
                       <div className="mini-character-face">
                         <div className="mini-character-eyes">
                           <div className="mini-eye left-mini-eye"></div>
@@ -1938,6 +2002,10 @@ function App() {
                         <div className="mini-character-mouth"></div>
                       </div>
                       <div className="mini-character-body"></div>
+                      <div className="mini-sparkles">
+                        <div className="mini-sparkle mini-sparkle-1"></div>
+                        <div className="mini-sparkle mini-sparkle-2"></div>
+                      </div>
                     </div>
                   </span>
                   メモ
@@ -2204,6 +2272,11 @@ function App() {
                 <h2>
                   <span className="section-icon">
                     <div className="mini-character">
+                      <div className="mini-character-halo"></div>
+                      <div className="mini-character-wings">
+                        <div className="mini-wing left-mini-wing"></div>
+                        <div className="mini-wing right-mini-wing"></div>
+                      </div>
                       <div className="mini-character-face">
                         <div className="mini-character-eyes">
                           <div className="mini-eye left-mini-eye"></div>
@@ -2212,6 +2285,10 @@ function App() {
                         <div className="mini-character-mouth"></div>
                       </div>
                       <div className="mini-character-body"></div>
+                      <div className="mini-sparkles">
+                        <div className="mini-sparkle mini-sparkle-1"></div>
+                        <div className="mini-sparkle mini-sparkle-2"></div>
+                      </div>
                     </div>
                   </span>
                   公開メモ

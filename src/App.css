@@ -194,6 +194,110 @@ body {
   transform: rotate(-5deg);
 }
 
+/* 天使の輪っか */
+.character-halo {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border: 4px solid #ffd700;
+  border-radius: 50%;
+  z-index: 4;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+  animation: haloGlow 2s ease-in-out infinite alternate;
+}
+
+/* 天使の羽 */
+.character-wings {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 40px;
+  z-index: 1;
+}
+
+.wing {
+  position: absolute;
+  width: 35px;
+  height: 25px;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #e6f3ff 100%);
+  border: 2px solid #333;
+  border-radius: 50% 10% 50% 10%;
+  animation: wingFlap 1.5s ease-in-out infinite;
+}
+
+.left-wing {
+  left: 0;
+  transform: rotate(-15deg);
+  animation-delay: 0s;
+}
+
+.right-wing {
+  right: 0;
+  transform: rotate(15deg);
+  animation-delay: 0.75s;
+}
+
+/* キラキラエフェクト */
+.sparkles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #ffd700;
+  border-radius: 50%;
+  animation: sparkleTwinkle 2s ease-in-out infinite;
+}
+
+.sparkle-1 {
+  top: 10%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.sparkle-2 {
+  top: 20%;
+  right: 15%;
+  animation-delay: 0.3s;
+}
+
+.sparkle-3 {
+  top: 60%;
+  left: 10%;
+  animation-delay: 0.6s;
+}
+
+.sparkle-4 {
+  top: 70%;
+  right: 20%;
+  animation-delay: 0.9s;
+}
+
+.sparkle-5 {
+  top: 40%;
+  left: 5%;
+  animation-delay: 1.2s;
+}
+
+.sparkle-6 {
+  top: 50%;
+  right: 5%;
+  animation-delay: 1.5s;
+}
+
 .character-face {
   position: absolute;
   top: 10px;
@@ -335,6 +439,51 @@ body {
   }
 }
 
+/* 天使のアニメーション */
+@keyframes haloGlow {
+  0% {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    transform: translateX(-50%) scale(1);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.9);
+    transform: translateX(-50%) scale(1.05);
+  }
+}
+
+@keyframes wingFlap {
+  0%, 100% {
+    transform: rotate(-15deg) scaleY(1);
+  }
+  50% {
+    transform: rotate(-25deg) scaleY(0.8);
+  }
+}
+
+.right-wing {
+  animation-name: wingFlapRight;
+}
+
+@keyframes wingFlapRight {
+  0%, 100% {
+    transform: rotate(15deg) scaleY(1);
+  }
+  50% {
+    transform: rotate(25deg) scaleY(0.8);
+  }
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
 /* ミニキャラクタースタイル - プロジェクトアイコン用 */
 .project-icon {
   width: 50px;
@@ -418,6 +567,90 @@ body {
   z-index: 2;
 }
 
+/* ミニキャラクターの天使要素 */
+.mini-character-halo {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 35px;
+  height: 35px;
+  border: 2px solid #ffd700;
+  border-radius: 50%;
+  z-index: 4;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+  animation: miniHaloGlow 2s ease-in-out infinite alternate;
+}
+
+.mini-character-wings {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 45px;
+  height: 20px;
+  z-index: 1;
+}
+
+.mini-wing {
+  position: absolute;
+  width: 18px;
+  height: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #e6f3ff 100%);
+  border: 1px solid #333;
+  border-radius: 50% 10% 50% 10%;
+  animation: miniWingFlap 1.8s ease-in-out infinite;
+}
+
+.left-mini-wing {
+  left: 0;
+  transform: rotate(-15deg);
+  animation-delay: 0s;
+}
+
+.right-mini-wing {
+  right: 0;
+  transform: rotate(15deg);
+  animation-delay: 0.9s;
+}
+
+.mini-sparkles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.mini-sparkle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #ffd700;
+  border-radius: 50%;
+  animation: miniSparkleTwinkle 2.5s ease-in-out infinite;
+}
+
+.mini-sparkle-1 {
+  top: 15%;
+  left: 25%;
+  animation-delay: 0s;
+}
+
+.mini-sparkle-2 {
+  top: 25%;
+  right: 20%;
+  animation-delay: 0.8s;
+}
+
+.mini-sparkle-3 {
+  top: 60%;
+  left: 15%;
+  animation-delay: 1.6s;
+}
+
 @keyframes miniCharacterBounce {
   0%, 100% {
     transform: translateY(0px) rotate(-2deg);
@@ -435,6 +668,51 @@ body {
   50% {
     border-radius: 50%;
     height: 6px;
+  }
+}
+
+/* ミニキャラクターの天使アニメーション */
+@keyframes miniHaloGlow {
+  0% {
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    transform: translateX(-50%) scale(1);
+  }
+  100% {
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.9);
+    transform: translateX(-50%) scale(1.03);
+  }
+}
+
+@keyframes miniWingFlap {
+  0%, 100% {
+    transform: rotate(-15deg) scaleY(1);
+  }
+  50% {
+    transform: rotate(-20deg) scaleY(0.7);
+  }
+}
+
+.right-mini-wing {
+  animation-name: miniWingFlapRight;
+}
+
+@keyframes miniWingFlapRight {
+  0%, 100% {
+    transform: rotate(15deg) scaleY(1);
+  }
+  50% {
+    transform: rotate(20deg) scaleY(0.7);
+  }
+}
+
+@keyframes miniSparkleTwinkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
