@@ -95,7 +95,7 @@ export default async function handler(req, res) {
   // CORS設定
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
-  const isPreview = origin && /^https://work-time-tracker-five-.*.vercel.app$/.test(origin);
+  const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
   const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
 
   res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
