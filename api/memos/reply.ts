@@ -40,7 +40,7 @@ const MemoSchema = new mongoose.Schema({
 
 const Memo = mongoose.models.Memo || mongoose.model('Memo', MemoSchema);
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS設定
   const allowedOrigins = [
     'http://localhost:3000',
