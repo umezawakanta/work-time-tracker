@@ -148,6 +148,10 @@ function App() {
   const [publicMemoSearchTerm, setPublicMemoSearchTerm] = useState("");
   const [selectedPublicMemoCategory, setSelectedPublicMemoCategory] = useState("all");
 
+  // フォント設定関連の状態
+  const [selectedFont, setSelectedFont] = useState("system");
+  const [showFontSettings, setShowFontSettings] = useState(false);
+
   // ログイン状態をチェック
   useEffect(() => {
     const token = localStorage.getItem("access_token");
