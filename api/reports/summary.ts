@@ -1,5 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -148,8 +149,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       } as SummaryReportResponse);
     }
 
-    // 簡単なユーザーID取得（実際の実装ではJWTトークンを検証）
-    const userId = 'user_' + Date.now(); // 仮のユーザーID
+    // JWTトークンを検証してユーザーIDを取得
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+    let userId: string;
+    try {
+      const token = authHeader.substring(7);
+      const decoded = jwt.verify(token, jwtSecret) as any;
+      userId = decoded.userId;
+    } catch (error) {
+      return res.status(401).json({
+        success: false,
+        message: '無効な認証トークンです',
+        error: 'Invalid authentication token',
+      } as SummaryReportResponse);
+    }
 
     // 日付範囲の計算
     const now = new Date();

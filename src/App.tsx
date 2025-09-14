@@ -76,9 +76,35 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (token) {
-      setIsLoggedIn(true);
+      // トークンの有効性を検証
+      verifyToken(token);
     }
   }, []);
+
+  const verifyToken = async (token: string) => {
+    try {
+      // 簡単なトークン検証（実際の実装ではJWTをデコード）
+      const response = await fetch("/api/projects/list", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        setIsLoggedIn(true);
+        loadProjects();
+        loadReportSummary();
+      } else {
+        // トークンが無効な場合は削除
+        localStorage.removeItem("access_token");
+        setIsLoggedIn(false);
+      }
+    } catch (error) {
+      console.error("Token verification failed:", error);
+      localStorage.removeItem("access_token");
+      setIsLoggedIn(false);
+    }
+  };
 
   // 経過時間の更新
   useEffect(() => {
