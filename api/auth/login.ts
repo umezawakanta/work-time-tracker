@@ -141,7 +141,7 @@ async function handler(req: any, res: any) {
     const maskedEmail = emailLc.replace(/^[^@]+/, '***');
     
     // Dynamic import for User model
-    const { User } = await import('../../src/server/models/User.js');
+    const { User } = await import('../../src/server/models/User');
     
     console.log('[auth/login] findOne(users) start', {
       modelReady: Boolean(User),
