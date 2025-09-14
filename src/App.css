@@ -3257,15 +3257,17 @@ input:checked + .toggle-slider:before {
   transform: translateX(-50%);
   width: 50px;
   height: 40px;
-  background: #F5DEB3;
+  background: #D2B48C;
   border-radius: 25px 25px 20px 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   /* もこもこ効果 */
   background-image: 
-    radial-gradient(circle at 20% 30%, #FFE4B5 15%, transparent 15%),
-    radial-gradient(circle at 80% 70%, #F0E68C 20%, transparent 20%),
-    radial-gradient(circle at 40% 80%, #FFF8DC 25%, transparent 25%),
-    radial-gradient(circle at 60% 20%, #F5DEB3 18%, transparent 18%);
+    radial-gradient(circle at 20% 30%, #F4A460 15%, transparent 15%),
+    radial-gradient(circle at 80% 70%, #CD853F 20%, transparent 20%),
+    radial-gradient(circle at 40% 80%, #DEB887 25%, transparent 25%),
+    radial-gradient(circle at 60% 20%, #D2B48C 18%, transparent 18%),
+    radial-gradient(circle at 10% 60%, #BC8F8F 12%, transparent 12%),
+    radial-gradient(circle at 90% 40%, #A0522D 10%, transparent 10%);
   animation: fluffMove 4s ease-in-out infinite;
 }
 
@@ -3276,15 +3278,17 @@ input:checked + .toggle-slider:before {
   transform: translateX(-50%);
   width: 45px;
   height: 45px;
-  background: #F5DEB3;
+  background: #D2B48C;
   border-radius: 50%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   /* もこもこ効果 */
   background-image: 
-    radial-gradient(circle at 25% 25%, #FFE4B5 20%, transparent 20%),
-    radial-gradient(circle at 75% 75%, #F0E68C 25%, transparent 25%),
-    radial-gradient(circle at 50% 10%, #FFF8DC 15%, transparent 15%),
-    radial-gradient(circle at 10% 60%, #F5DEB3 18%, transparent 18%);
+    radial-gradient(circle at 25% 25%, #F4A460 20%, transparent 20%),
+    radial-gradient(circle at 75% 75%, #CD853F 25%, transparent 25%),
+    radial-gradient(circle at 50% 10%, #DEB887 15%, transparent 15%),
+    radial-gradient(circle at 10% 60%, #D2B48C 18%, transparent 18%),
+    radial-gradient(circle at 80% 20%, #BC8F8F 12%, transparent 12%),
+    radial-gradient(circle at 30% 80%, #A0522D 10%, transparent 10%);
   animation: fluffMove 3s ease-in-out infinite 0.5s;
 }
 
@@ -3301,14 +3305,16 @@ input:checked + .toggle-slider:before {
   position: absolute;
   width: 15px;
   height: 25px;
-  background: #F5DEB3;
+  background: #D2B48C;
   border-radius: 50% 50% 0 0;
   top: 0;
   /* もこもこ効果 */
   background-image: 
-    radial-gradient(circle at 30% 40%, #FFE4B5 30%, transparent 30%),
-    radial-gradient(circle at 70% 60%, #F0E68C 25%, transparent 25%),
-    radial-gradient(circle at 50% 20%, #FFF8DC 20%, transparent 20%);
+    radial-gradient(circle at 30% 40%, #F4A460 30%, transparent 30%),
+    radial-gradient(circle at 70% 60%, #CD853F 25%, transparent 25%),
+    radial-gradient(circle at 50% 20%, #DEB887 20%, transparent 20%),
+    radial-gradient(circle at 20% 70%, #BC8F8F 15%, transparent 15%),
+    radial-gradient(circle at 80% 30%, #A0522D 12%, transparent 12%);
   animation: fluffMove 2.5s ease-in-out infinite;
 }
 
@@ -3394,15 +3400,17 @@ input:checked + .toggle-slider:before {
   position: absolute;
   width: 25px;
   height: 8px;
-  background: #F5DEB3;
+  background: #D2B48C;
   border-radius: 15px;
   animation: tailWag 1s ease-in-out infinite;
   transform-origin: left center;
   /* もこもこ効果 */
   background-image: 
-    radial-gradient(circle at 40% 30%, #FFE4B5 40%, transparent 40%),
-    radial-gradient(circle at 80% 70%, #F0E68C 35%, transparent 35%),
-    radial-gradient(circle at 20% 80%, #FFF8DC 30%, transparent 30%);
+    radial-gradient(circle at 40% 30%, #F4A460 40%, transparent 40%),
+    radial-gradient(circle at 80% 70%, #CD853F 35%, transparent 35%),
+    radial-gradient(circle at 20% 80%, #DEB887 30%, transparent 30%),
+    radial-gradient(circle at 60% 50%, #BC8F8F 20%, transparent 20%),
+    radial-gradient(circle at 10% 20%, #A0522D 15%, transparent 15%);
   animation: tailWag 1s ease-in-out infinite, fluffMove 3.5s ease-in-out infinite 1s;
 }
 
@@ -3419,13 +3427,15 @@ input:checked + .toggle-slider:before {
   position: absolute;
   width: 12px;
   height: 12px;
-  background: #F5DEB3;
+  background: #D2B48C;
   border-radius: 50%;
   bottom: 0;
   /* もこもこ効果 */
   background-image: 
-    radial-gradient(circle at 30% 30%, #FFE4B5 50%, transparent 50%),
-    radial-gradient(circle at 70% 70%, #F0E68C 40%, transparent 40%);
+    radial-gradient(circle at 30% 30%, #F4A460 50%, transparent 50%),
+    radial-gradient(circle at 70% 70%, #CD853F 40%, transparent 40%),
+    radial-gradient(circle at 50% 50%, #DEB887 30%, transparent 30%),
+    radial-gradient(circle at 20% 80%, #BC8F8F 25%, transparent 25%);
   animation: fluffMove 2s ease-in-out infinite;
 }
 
