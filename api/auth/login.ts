@@ -21,7 +21,7 @@ const ensureDatabaseConnection = async (): Promise<void> => {
   
   try {
     // Dynamic import for Vercel compatibility
-    const { connectDB } = await import('../../src/server/config/database.js');
+    const { connectDB } = await import('../../src/server/config/database.ts');
     await connectDB();
     console.log('[auth/login] Database connection established');
   } catch (error) {
@@ -141,7 +141,7 @@ async function handler(req: any, res: any) {
     const maskedEmail = emailLc.replace(/^[^@]+/, '***');
     
     // Dynamic import for User model
-    const { User } = await import('../../src/server/models/User');
+    const { User } = await import('../../src/server/models/User.ts');
     
     console.log('[auth/login] findOne(users) start', {
       modelReady: Boolean(User),
