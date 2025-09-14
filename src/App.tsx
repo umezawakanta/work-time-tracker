@@ -3464,38 +3464,90 @@ function App() {
                             >
                               <div className="day-number">{dayItem.date.getDate()}</div>
                               <div className="day-records">
-                                {dayRecords.salaryRecords.length > 0 && (
-                                  <div 
-                                    className="record-indicator salary-indicator clickable" 
-                                    title="給料記録を表示"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleRecordClick('salary', dayItem.date);
-                                    }}
-                                  >
-                                    <div className="record-icon">💰</div>
-                                    <div className="record-amount">
-                                      ¥{dayRecords.salaryRecords[0].salary.toLocaleString()}
+                                {dayRecords.salaryRecords.length > 0 && dayRecords.diaries.length > 0 ? (
+                                  // 両方の記録がある場合は、それぞれを表示
+                                  <>
+                                    <div 
+                                      className="record-indicator salary-indicator clickable" 
+                                      title="給料記録を表示"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleRecordClick('salary', dayItem.date);
+                                      }}
+                                    >
+                                      <div className="record-icon">💰</div>
+                                      <div className="record-amount">
+                                        {dayRecords.salaryRecords.length === 1 ? (
+                                          `¥${dayRecords.salaryRecords[0].salary.toLocaleString()}`
+                                        ) : (
+                                          `${dayRecords.salaryRecords.length}件`
+                                        )}
+                                      </div>
                                     </div>
-                                  </div>
-                                )}
-                                {dayRecords.diaries.length > 0 && (
-                                  <div 
-                                    className="record-indicator diary-indicator clickable" 
-                                    title="日記を表示"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleRecordClick('diary', dayItem.date);
-                                    }}
-                                  >
-                                    <div className="record-icon">📝</div>
-                                    <div className="record-content">
-                                      {dayRecords.diaries[0].title.length > 8 
-                                        ? dayRecords.diaries[0].title.substring(0, 8) + '...'
-                                        : dayRecords.diaries[0].title
-                                      }
+                                    <div 
+                                      className="record-indicator diary-indicator clickable" 
+                                      title="日記を表示"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleRecordClick('diary', dayItem.date);
+                                      }}
+                                    >
+                                      <div className="record-icon">📝</div>
+                                      <div className="record-content">
+                                        {dayRecords.diaries.length === 1 ? (
+                                          dayRecords.diaries[0].title.length > 6 
+                                            ? dayRecords.diaries[0].title.substring(0, 6) + '...'
+                                            : dayRecords.diaries[0].title
+                                        ) : (
+                                          `${dayRecords.diaries.length}件`
+                                        )}
+                                      </div>
                                     </div>
-                                  </div>
+                                  </>
+                                ) : (
+                                  // 片方の記録のみの場合
+                                  <>
+                                    {dayRecords.salaryRecords.length > 0 && (
+                                      <div 
+                                        className="record-indicator salary-indicator clickable" 
+                                        title="給料記録を表示"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleRecordClick('salary', dayItem.date);
+                                        }}
+                                      >
+                                        <div className="record-icon">💰</div>
+                                        <div className="record-amount">
+                                          {dayRecords.salaryRecords.length === 1 ? (
+                                            `¥${dayRecords.salaryRecords[0].salary.toLocaleString()}`
+                                          ) : (
+                                            `${dayRecords.salaryRecords.length}件の給料`
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {dayRecords.diaries.length > 0 && (
+                                      <div 
+                                        className="record-indicator diary-indicator clickable" 
+                                        title="日記を表示"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleRecordClick('diary', dayItem.date);
+                                        }}
+                                      >
+                                        <div className="record-icon">📝</div>
+                                        <div className="record-content">
+                                          {dayRecords.diaries.length === 1 ? (
+                                            dayRecords.diaries[0].title.length > 8 
+                                              ? dayRecords.diaries[0].title.substring(0, 8) + '...'
+                                              : dayRecords.diaries[0].title
+                                          ) : (
+                                            `${dayRecords.diaries.length}件の日記`
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </>
                                 )}
                               </div>
                             </div>
