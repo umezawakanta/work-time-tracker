@@ -2,6 +2,13 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const { 
+  createValidationError, 
+  createAuthError, 
+  createResourceError, 
+  createServerError,
+  sendErrorResponse 
+} = require('../utils/errorHandler');
 
 dotenv.config();
 
@@ -187,23 +194,33 @@ module.exports = async function handler(req, res) {
 
     const { userId, displayName, role, isVerified, status }: EditUserRequest = req.body;
 
+    // デバッグ用ログ
+    console.log('📝 Edit user request body:', {
+      userId,
+      displayName,
+      role,
+      isVerified,
+      status,
+      bodyKeys: Object.keys(req.body || {})
+    });
+
     // 必須フィールドの検証
     if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: 'ユーザーIDが必要です',
-        error: 'User ID is required',
-      } as EditUserResponse);
+      return sendErrorResponse(res, 400, createValidationError(
+        'ユーザーIDが必要です',
+        'userId',
+        userId
+      ));
     }
 
     // ユーザーを検索
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'ユーザーが見つかりません',
-        error: 'User not found',
-      } as EditUserResponse);
+      return sendErrorResponse(res, 404, createResourceError(
+        'ユーザーが見つかりません',
+        'user',
+        userId
+      ));
     }
 
     // 更新データの構築

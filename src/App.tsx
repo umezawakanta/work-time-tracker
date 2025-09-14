@@ -314,13 +314,23 @@ function App() {
   const handleUpdateUser = async (updatedUser: AdminUser) => {
     try {
       const token = localStorage.getItem("access_token");
+      
+      // APIが期待する形式にデータを変換
+      const requestData = {
+        userId: updatedUser.id,  // idをuserIdに変換
+        displayName: updatedUser.displayName,
+        role: updatedUser.role,
+        isVerified: updatedUser.isVerified,
+        status: updatedUser.status
+      };
+
       const response = await fetch("/api/admin/user-edit", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(updatedUser),
+        body: JSON.stringify(requestData),
       });
 
       const data = await response.json();
