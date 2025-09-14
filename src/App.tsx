@@ -195,7 +195,10 @@ function App() {
     const savedFont = localStorage.getItem("selectedFont");
     if (savedFont) {
       setSelectedFont(savedFont);
-      applyFont(savedFont);
+      // 少し遅延してからフォントを適用（DOMが完全に読み込まれてから）
+      setTimeout(() => {
+        applyFont(savedFont);
+      }, 100);
     }
   }, []);
 
@@ -219,9 +222,19 @@ function App() {
     if (fontValue === "system") {
       root.style.setProperty("--app-font-family", "");
       body.style.fontFamily = "";
+      // すべての要素にフォントをリセット
+      const allElements = document.querySelectorAll('*');
+      allElements.forEach(el => {
+        (el as HTMLElement).style.fontFamily = "";
+      });
     } else {
       root.style.setProperty("--app-font-family", fontValue);
       body.style.fontFamily = fontValue;
+      // すべての要素に直接フォントを適用
+      const allElements = document.querySelectorAll('*');
+      allElements.forEach(el => {
+        (el as HTMLElement).style.fontFamily = fontValue;
+      });
     }
     
     // デバッグ用ログ

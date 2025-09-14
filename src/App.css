@@ -1528,31 +1528,57 @@ tr:hover {
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
-/* アプリ全体のフォント適用 */
+/* アプリ全体のフォント適用 - より強力な適用 */
 * {
   font-family: var(--app-font-family, inherit) !important;
 }
 
-.app {
-  font-family: var(--app-font-family, inherit);
+html, body, .app {
+  font-family: var(--app-font-family, inherit) !important;
 }
 
-/* 重要な要素に確実にフォントを適用 */
+/* すべての要素に確実にフォントを適用 */
+*, *::before, *::after {
+  font-family: var(--app-font-family, inherit) !important;
+}
+
+/* テキスト要素の強制適用 */
 h1, h2, h3, h4, h5, h6,
-p, span, div, button, input, textarea, label,
+p, span, div, a, strong, em, b, i, u, s,
+button, input, textarea, select, option,
+label, legend, caption, th, td,
 .dashboard-header, .user-info, .time-tracking-section,
 .project-section, .reports-section, .admin-section,
-.bookshelf-section, .memos-section, .public-memos-section {
+.bookshelf-section, .memos-section, .public-memos-section,
+.section-header, .form-group, .stat-card, .memo-item,
+.public-memo-item, .book-item, .project-item,
+.feature-cards, .dashboard-main, .login-container {
   font-family: var(--app-font-family, inherit) !important;
 }
 
-/* ボタンと入力要素 */
-button, input, textarea, select {
+/* ボタンと入力要素の強制適用 */
+button, input, textarea, select, option {
   font-family: var(--app-font-family, inherit) !important;
 }
 
-/* ナビゲーション要素 */
-nav, .nav-item, .nav-link {
+/* リスト要素の強制適用 */
+ul, ol, li, dl, dt, dd {
+  font-family: var(--app-font-family, inherit) !important;
+}
+
+/* テーブル要素の強制適用 */
+table, thead, tbody, tfoot, tr, th, td {
+  font-family: var(--app-font-family, inherit) !important;
+}
+
+/* フォーム要素の強制適用 */
+form, fieldset, legend, label, input, textarea, select, option, button {
+  font-family: var(--app-font-family, inherit) !important;
+}
+
+/* その他の要素の強制適用 */
+nav, header, main, section, article, aside, footer,
+figure, figcaption, details, summary, mark, small, sub, sup {
   font-family: var(--app-font-family, inherit) !important;
 }
 
