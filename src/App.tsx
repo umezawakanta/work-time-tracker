@@ -256,6 +256,9 @@ function App() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showRecordDetail, setShowRecordDetail] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<any>(null);
+  const [selectedRecordType, setSelectedRecordType] = useState<'salary' | 'diary' | null>(null);
 
   // 利用可能なテーマ一覧
   const availableThemes = [
@@ -848,17 +851,42 @@ function App() {
     const dateStr = date.toISOString().split('T')[0];
     setSelectedDate(date);
     
-    if (type === 'salary') {
-      setSalaryDate(dateStr);
-      setShowSalaryForm(true);
+    // その日の記録を取得
+    const dayRecords = getRecordsForDate(date);
+    
+    if (type === 'salary' && dayRecords.salaryRecords.length > 0) {
+      setSelectedRecord(dayRecords.salaryRecords[0]);
+      setSelectedRecordType('salary');
+      setShowRecordDetail(true);
+      setShowSalaryForm(false);
       setShowDiaryForm(false);
       setShowCalendar(false);
-    } else if (type === 'diary') {
-      setDiaryDate(dateStr);
-      setShowDiaryForm(true);
+    } else if (type === 'diary' && dayRecords.diaries.length > 0) {
+      setSelectedRecord(dayRecords.diaries[0]);
+      setSelectedRecordType('diary');
+      setShowRecordDetail(true);
       setShowSalaryForm(false);
+      setShowDiaryForm(false);
       setShowCalendar(false);
     }
+  };
+
+  const viewSalaryRecord = (record: any) => {
+    setSelectedRecord(record);
+    setSelectedRecordType('salary');
+    setShowRecordDetail(true);
+    setShowSalaryForm(false);
+    setShowDiaryForm(false);
+    setShowCalendar(false);
+  };
+
+  const viewDiary = (diary: any) => {
+    setSelectedRecord(diary);
+    setSelectedRecordType('diary');
+    setShowRecordDetail(true);
+    setShowSalaryForm(false);
+    setShowDiaryForm(false);
+    setShowCalendar(false);
   };
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -3293,7 +3321,7 @@ function App() {
                   )}
 
                   {/* 記録一覧 */}
-                  {!showSalaryForm && !showDiaryForm && !showCalendar && (
+                  {!showSalaryForm && !showDiaryForm && !showCalendar && !showRecordDetail && (
                     <div className="records-list">
                       <div className="salary-records">
                         <h3>💰 給料記録 ({salaryRecords.length}件)</h3>
@@ -3303,12 +3331,26 @@ function App() {
                               <div key={record._id} className="salary-record-item">
                                 <div className="record-header">
                                   <h4>{new Date(record.date).toLocaleDateString('ja-JP')}</h4>
-                                  <button 
-                                    onClick={() => handleDeleteSalaryRecord(record._id)}
-                                    className="delete-button"
-                                  >
-                                    🗑️
-                                  </button>
+                                  <div className="record-actions">
+                                    <button 
+                                      onClick={() => viewSalaryRecord(record)}
+                                      className="view-button"
+                                    >
+                                      👁️
+                                    </button>
+                                    <button 
+                                      onClick={() => editSalaryRecord(record)}
+                                      className="edit-button"
+                                    >
+                                      ✏️
+                                    </button>
+                                    <button 
+                                      onClick={() => handleDeleteSalaryRecord(record._id)}
+                                      className="delete-button"
+                                    >
+                                      🗑️
+                                    </button>
+                                  </div>
                                 </div>
                                 <div className="record-details">
                                   <p><strong>給料:</strong> ¥{record.salary.toLocaleString()}</p>
@@ -3321,7 +3363,15 @@ function App() {
                             ))}
                           </div>
                         ) : (
-                          <p>給料記録がありません</p>
+                          <div className="no-records-card">
+                            <p>給料記録がありません</p>
+                            <button 
+                              onClick={() => setShowSalaryForm(true)}
+                              className="add-record-btn"
+                            >
+                              給料記録を追加
+                            </button>
+                          </div>
                         )}
                       </div>
 
@@ -3336,12 +3386,26 @@ function App() {
                                   <div className="diary-meta">
                                     <span className="diary-mood">{diary.mood}</span>
                                     <span className="diary-date">{new Date(diary.date).toLocaleDateString('ja-JP')}</span>
-                                    <button 
-                                      onClick={() => handleDeleteDiary(diary._id)}
-                                      className="delete-button"
-                                    >
-                                      🗑️
-                                    </button>
+                                    <div className="diary-actions">
+                                      <button 
+                                        onClick={() => viewDiary(diary)}
+                                        className="view-button"
+                                      >
+                                        👁️
+                                      </button>
+                                      <button 
+                                        onClick={() => editDiary(diary)}
+                                        className="edit-button"
+                                      >
+                                        ✏️
+                                      </button>
+                                      <button 
+                                        onClick={() => handleDeleteDiary(diary._id)}
+                                        className="delete-button"
+                                      >
+                                        🗑️
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                                 <div className="diary-content">
@@ -3358,7 +3422,162 @@ function App() {
                             ))}
                           </div>
                         ) : (
-                          <p>日記がありません</p>
+                          <div className="no-records-card">
+                            <p>日記がありません</p>
+                            <button 
+                              onClick={() => setShowDiaryForm(true)}
+                              className="add-record-btn"
+                            >
+                              日記を追加
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 記録詳細表示 */}
+                  {showRecordDetail && selectedRecord && (
+                    <div className="record-detail-view">
+                      <div className="detail-header">
+                        <button 
+                          onClick={() => setShowRecordDetail(false)}
+                          className="back-button"
+                        >
+                          ← 戻る
+                        </button>
+                        <h3>
+                          {selectedRecordType === 'salary' ? '💰 給料記録詳細' : '📝 日記詳細'}
+                        </h3>
+                      </div>
+                      
+                      <div className="detail-content">
+                        {selectedRecordType === 'salary' ? (
+                          <div className="salary-detail">
+                            <div className="detail-section">
+                              <h4>📅 日付</h4>
+                              <p>{new Date(selectedRecord.date).toLocaleDateString('ja-JP')}</p>
+                            </div>
+                            
+                            <div className="detail-section">
+                              <h4>💰 給料</h4>
+                              <p className="amount">¥{selectedRecord.salary.toLocaleString()}</p>
+                            </div>
+                            
+                            {selectedRecord.transportation > 0 && (
+                              <div className="detail-section">
+                                <h4>🚌 交通費</h4>
+                                <p className="amount">¥{selectedRecord.transportation.toLocaleString()}</p>
+                              </div>
+                            )}
+                            
+                            {selectedRecord.overtime > 0 && (
+                              <div className="detail-section">
+                                <h4>⏰ 残業代</h4>
+                                <p className="amount">¥{selectedRecord.overtime.toLocaleString()}</p>
+                              </div>
+                            )}
+                            
+                            {selectedRecord.bonus > 0 && (
+                              <div className="detail-section">
+                                <h4>🎁 ボーナス</h4>
+                                <p className="amount">¥{selectedRecord.bonus.toLocaleString()}</p>
+                              </div>
+                            )}
+                            
+                            {selectedRecord.notes && (
+                              <div className="detail-section">
+                                <h4>📝 メモ</h4>
+                                <p>{selectedRecord.notes}</p>
+                              </div>
+                            )}
+                            
+                            <div className="detail-actions">
+                              <button 
+                                onClick={() => {
+                                  editSalaryRecord(selectedRecord);
+                                  setShowRecordDetail(false);
+                                }}
+                                className="edit-btn"
+                              >
+                                ✏️ 編集
+                              </button>
+                              <button 
+                                onClick={() => {
+                                  handleDeleteSalaryRecord(selectedRecord._id);
+                                  setShowRecordDetail(false);
+                                }}
+                                className="delete-btn"
+                              >
+                                🗑️ 削除
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="diary-detail">
+                            <div className="detail-section">
+                              <h4>📅 日付</h4>
+                              <p>{new Date(selectedRecord.date).toLocaleDateString('ja-JP')}</p>
+                            </div>
+                            
+                            <div className="detail-section">
+                              <h4>😊 気分</h4>
+                              <p className="mood">{selectedRecord.mood}</p>
+                            </div>
+                            
+                            <div className="detail-section">
+                              <h4>📝 タイトル</h4>
+                              <p className="title">{selectedRecord.title}</p>
+                            </div>
+                            
+                            <div className="detail-section">
+                              <h4>📄 内容</h4>
+                              <div className="content">
+                                {selectedRecord.content.split('\n').map((line: string, index: number) => (
+                                  <p key={index}>{line}</p>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            {selectedRecord.tags && selectedRecord.tags.length > 0 && (
+                              <div className="detail-section">
+                                <h4>🏷️ タグ</h4>
+                                <div className="tags">
+                                  {selectedRecord.tags.map((tag: string, index: number) => (
+                                    <span key={index} className="tag">#{tag}</span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {selectedRecord.isPrivate && (
+                              <div className="detail-section">
+                                <h4>🔒 プライバシー</h4>
+                                <p>非公開</p>
+                              </div>
+                            )}
+                            
+                            <div className="detail-actions">
+                              <button 
+                                onClick={() => {
+                                  editDiary(selectedRecord);
+                                  setShowRecordDetail(false);
+                                }}
+                                className="edit-btn"
+                              >
+                                ✏️ 編集
+                              </button>
+                              <button 
+                                onClick={() => {
+                                  handleDeleteDiary(selectedRecord._id);
+                                  setShowRecordDetail(false);
+                                }}
+                                className="delete-btn"
+                              >
+                                🗑️ 削除
+                              </button>
+                            </div>
+                          </div>
                         )}
                       </div>
                     </div>
