@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // 認証情報を含むリクエストの場合は厳格なオリジンチェック
   if (isAllowedOrigin) {
     res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    // 認証情報は送信しない（セキュリティのため）
   } else {
     // 許可されていないオリジンの場合はCORSヘッダーを設定しない
     // これにより、ブラウザはCORSエラーを返す
