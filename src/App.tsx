@@ -87,6 +87,7 @@ function App() {
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+  const [deletingUser, setDeletingUser] = useState<AdminUser | null>(null);
 
   // ログイン状態をチェック
   useEffect(() => {
@@ -330,6 +331,37 @@ function App() {
         setEditingUser(null);
       } else {
         setMessage(`ユーザー更新失敗: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    if (!window.confirm(`${userName}を削除してもよろしいですか？この操作は取り消せません。`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+
+      const response = await fetch("/api/admin/user-delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("ユーザーを削除しました");
+        loadAdminUsers();
+      } else {
+        setMessage(`ユーザー削除失敗: ${data.message}`);
       }
     } catch (error) {
       setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -676,6 +708,13 @@ function App() {
                                     className="edit-button"
                                   >
                                     編集
+                                  </button>
+                                  <button 
+                                    onClick={() => handleDeleteUser(user.id, user.displayName)}
+                                    className="delete-button"
+                                    style={{ marginLeft: '8px', backgroundColor: '#dc3545' }}
+                                  >
+                                    削除
                                   </button>
                                 </td>
                               </tr>
