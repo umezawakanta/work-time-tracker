@@ -231,7 +231,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
 
     console.log('✅ User updated successfully:', {
-      userId: updatedUser?.id,
+      userId: updatedUser && updatedUser.id,
       adminUserId: userInfo.userId,
     });
 

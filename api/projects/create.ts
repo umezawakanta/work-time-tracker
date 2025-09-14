@@ -177,7 +177,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 新しいプロジェクトを作成
     const newProject = new Project({
       name: name.trim(),
-      description: description?.trim(),
+      description: description && description.trim(),
       color,
       userId,
       isActive: true,

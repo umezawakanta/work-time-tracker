@@ -154,16 +154,16 @@ async function handler(req, res) {
       contentType: req.headers['content-type'],
       contentLength: req.headers['content-length'],
       bodyType: typeof body,
-      hasEmail: Boolean(body?.email),
+      hasEmail: Boolean(body && body.email),
     });
     const {
       email,
       password,
       rememberMe = false,
     } = {
-      email: body?.email,
-      password: body?.password,
-      rememberMe: Boolean(body?.rememberMe),
+      email: body && body.email,
+      password: body && body.password,
+      rememberMe: Boolean(body && body.rememberMe),
     };
 
     // 必須フィールドの検証
@@ -181,14 +181,14 @@ async function handler(req, res) {
     
     console.log('[auth/login] findOne(users) start', {
       modelReady: Boolean(User),
-      connState: mongoose.connection?.readyState,
-      dbName: mongoose.connection?.name,
+      connState: mongoose.connection && mongoose.connection.readyState,
+      dbName: mongoose.connection && mongoose.connection.name,
       email: maskedEmail,
     });
     const user = await User.findOne({ email: emailLc });
     console.log('[auth/login] findOne(users) done', {
       found: Boolean(user),
-      id: user?._id || user?.id || null,
+      id: (user && user._id) || (user && user.id) || null,
     });
 
     if (!user) {
