@@ -1896,3 +1896,210 @@ figure, figcaption, details, summary, mark, small, sub, sup {
 .cancel-reply-button:hover {
   background: #5a6268;
 }
+
+/* テーマ設定ボタン */
+.theme-settings-button {
+  background: #9c27b0;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.theme-settings-button:hover {
+  background: #7b1fa2;
+}
+
+/* テーマ設定モーダル */
+.theme-settings-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.theme-settings-content {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.theme-settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  background: #f8f9fa;
+}
+
+.theme-settings-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.theme-settings-body {
+  padding: 20px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.theme-preview {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #eee;
+  text-align: center;
+}
+
+.theme-preview p {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.theme-option:hover {
+  border-color: #9c27b0;
+  background: #f3e5f5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.2);
+}
+
+.theme-option input[type="radio"] {
+  margin-right: 12px;
+  transform: scale(1.3);
+}
+
+.theme-preview-icon {
+  font-size: 24px;
+  margin-right: 12px;
+  min-width: 30px;
+  text-align: center;
+}
+
+.theme-label {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.theme-option:has(input:checked) {
+  border-color: #9c27b0;
+  background: #e1bee7;
+  box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.2);
+}
+
+/* テーマ別のスタイル */
+[data-theme="dark"] {
+  --primary-color: #2d3748;
+  --secondary-color: #4a5568;
+  --accent-color: #68d391;
+  --text-color: #e2e8f0;
+  --bg-color: #1a202c;
+  --card-bg: #2d3748;
+}
+
+[data-theme="ocean"] {
+  --primary-color: #0ea5e9;
+  --secondary-color: #0284c7;
+  --accent-color: #06b6d4;
+  --text-color: #0f172a;
+  --bg-color: #f0f9ff;
+  --card-bg: #e0f2fe;
+}
+
+[data-theme="forest"] {
+  --primary-color: #16a34a;
+  --secondary-color: #15803d;
+  --accent-color: #22c55e;
+  --text-color: #14532d;
+  --bg-color: #f0fdf4;
+  --card-bg: #dcfce7;
+}
+
+[data-theme="sunset"] {
+  --primary-color: #f97316;
+  --secondary-color: #ea580c;
+  --accent-color: #fb923c;
+  --text-color: #9a3412;
+  --bg-color: #fff7ed;
+  --card-bg: #fed7aa;
+}
+
+[data-theme="rainbow"] {
+  --primary-color: #8b5cf6;
+  --secondary-color: #7c3aed;
+  --accent-color: #a78bfa;
+  --text-color: #581c87;
+  --bg-color: #faf5ff;
+  --card-bg: #e9d5ff;
+}
+
+[data-theme="space"] {
+  --primary-color: #1e293b;
+  --secondary-color: #334155;
+  --accent-color: #6366f1;
+  --text-color: #e2e8f0;
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+}
+
+[data-theme="candy"] {
+  --primary-color: #ec4899;
+  --secondary-color: #db2777;
+  --accent-color: #f472b6;
+  --text-color: #831843;
+  --bg-color: #fdf2f8;
+  --card-bg: #fce7f3;
+}
+
+[data-theme="pastel"] {
+  --primary-color: #a78bfa;
+  --secondary-color: #8b5cf6;
+  --accent-color: #c4b5fd;
+  --text-color: #6b21a8;
+  --bg-color: #faf5ff;
+  --card-bg: #f3e8ff;
+}
+
+[data-theme="neon"] {
+  --primary-color: #10b981;
+  --secondary-color: #059669;
+  --accent-color: #34d399;
+  --text-color: #064e3b;
+  --bg-color: #ecfdf5;
+  --card-bg: #d1fae5;
+}

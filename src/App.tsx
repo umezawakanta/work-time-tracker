@@ -162,6 +162,10 @@ function App() {
   const [selectedFont, setSelectedFont] = useState("system");
   const [showFontSettings, setShowFontSettings] = useState(false);
 
+  // テーマ設定関連の状態
+  const [selectedTheme, setSelectedTheme] = useState("default");
+  const [showThemeSettings, setShowThemeSettings] = useState(false);
+
   // カスタムジャンル管理の状態
   const [customGenres, setCustomGenres] = useState<string[]>([]);
   const [showGenreManager, setShowGenreManager] = useState(false);
@@ -170,6 +174,20 @@ function App() {
   // 返信機能の状態
   const [replyingToMemo, setReplyingToMemo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
+
+  // 利用可能なテーマ一覧
+  const availableThemes = [
+    { value: "default", label: "🌟 デフォルト (ピンク)", preview: "💕" },
+    { value: "dark", label: "🌙 ダークテーマ", preview: "🌚" },
+    { value: "ocean", label: "🌊 オーシャン", preview: "🐠" },
+    { value: "forest", label: "🌲 フォレスト", preview: "🦋" },
+    { value: "sunset", label: "🌅 サンセット", preview: "🌇" },
+    { value: "rainbow", label: "🌈 レインボー", preview: "🦄" },
+    { value: "space", label: "🚀 スペース", preview: "🛸" },
+    { value: "candy", label: "🍭 キャンディ", preview: "🍬" },
+    { value: "pastel", label: "🌸 パステル", preview: "🦄" },
+    { value: "neon", label: "💫 ネオン", preview: "⚡" }
+  ];
 
   // 利用可能なフォント一覧（小学生向けかわいいフォント中心）
   const availableFonts = [
@@ -228,6 +246,15 @@ function App() {
     }
   }, []);
 
+  // テーマ設定の読み込みと適用
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("selectedTheme");
+    if (savedTheme) {
+      setSelectedTheme(savedTheme);
+      applyTheme(savedTheme);
+    }
+  }, []);
+
   // フォント適用関数
   const applyFont = (fontValue: string) => {
     const root = document.documentElement;
@@ -261,6 +288,19 @@ function App() {
     setSelectedFont(fontValue);
     applyFont(fontValue);
     localStorage.setItem("selectedFont", fontValue);
+  };
+
+  // テーマ適用関数
+  const applyTheme = (themeValue: string) => {
+    const root = document.documentElement;
+    root.setAttribute("data-theme", themeValue);
+  };
+
+  // テーマ変更ハンドラー
+  const handleThemeChange = (themeValue: string) => {
+    setSelectedTheme(themeValue);
+    applyTheme(themeValue);
+    localStorage.setItem("selectedTheme", themeValue);
   };
 
   // カスタムジャンル管理関数
@@ -1111,11 +1151,18 @@ function App() {
             <div className="user-info">
               <span>👋 こんにちは、{user?.displayName || user?.email}さん！</span>
               <button 
+                onClick={() => setShowThemeSettings(!showThemeSettings)} 
+                className="theme-settings-button"
+                title="テーマ設定"
+              >
+                🎨 テーマ
+              </button>
+              <button 
                 onClick={() => setShowFontSettings(!showFontSettings)} 
                 className="font-settings-button"
                 title="フォント設定"
               >
-                🎨 フォント
+                🔤 フォント
               </button>
               <button onClick={handleLogout} className="logout-button">
                 🚪 ログアウト
@@ -2101,6 +2148,43 @@ function App() {
           </main>
         </div>
         
+        {/* テーマ設定モーダル */}
+        {showThemeSettings && (
+          <div className="theme-settings-modal">
+            <div className="theme-settings-content">
+              <div className="theme-settings-header">
+                <h3>🎨 テーマ設定</h3>
+                <button 
+                  onClick={() => setShowThemeSettings(false)}
+                  className="close-button"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="theme-settings-body">
+                <div className="theme-preview">
+                  <p>現在のテーマ: {availableThemes.find(t => t.value === selectedTheme)?.preview} {availableThemes.find(t => t.value === selectedTheme)?.label}</p>
+                </div>
+                <div className="theme-options">
+                  {availableThemes.map((theme) => (
+                    <label key={theme.value} className="theme-option">
+                      <input
+                        type="radio"
+                        name="theme"
+                        value={theme.value}
+                        checked={selectedTheme === theme.value}
+                        onChange={(e) => handleThemeChange(e.target.value)}
+                      />
+                      <span className="theme-preview-icon">{theme.preview}</span>
+                      <span className="theme-label">{theme.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* フォント設定モーダル */}
         {showFontSettings && (
           <div className="font-settings-modal">
