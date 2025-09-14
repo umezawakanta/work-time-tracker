@@ -157,41 +157,37 @@ function App() {
   const [showGenreManager, setShowGenreManager] = useState(false);
   const [newGenreName, setNewGenreName] = useState("");
 
-  // 利用可能なフォント一覧
+  // 利用可能なフォント一覧（小学生向けかわいいフォント中心）
   const availableFonts = [
-    { value: "system", label: "システムデフォルト" },
-    { value: "serif", label: "Serif (明朝体)" },
-    { value: "sans-serif", label: "Sans-serif (ゴシック体)" },
-    { value: "monospace", label: "Monospace (等幅)" },
-    { value: "cursive", label: "Cursive (筆記体)" },
-    { value: "fantasy", label: "Fantasy (装飾体)" },
-    // 日本語フォント
-    { value: "Hiragino Kaku Gothic ProN, ヒラギノ角ゴ ProN W3, Meiryo, メイリオ, Osaka, MS PGothic, sans-serif", label: "ヒラギノ角ゴ (丸文字風)" },
-    { value: "Hiragino Maru Gothic ProN, ヒラギノ丸ゴ ProN W4, Meiryo, メイリオ, Osaka, MS PGothic, sans-serif", label: "ヒラギノ丸ゴ (丸文字)" },
-    { value: "Hiragino Mincho ProN, ヒラギノ明朝 ProN W3, HiraMinProN-W3, Yu Mincho, 游明朝, serif", label: "ヒラギノ明朝" },
-    { value: "Yu Gothic, 游ゴシック, Hiragino Kaku Gothic ProN, ヒラギノ角ゴ ProN W3, Meiryo, メイリオ, sans-serif", label: "游ゴシック" },
-    { value: "Yu Mincho, 游明朝, Hiragino Mincho ProN, ヒラギノ明朝 ProN W3, HiraMinProN-W3, serif", label: "游明朝" },
-    { value: "Noto Sans CJK JP, ヒラギノ角ゴ ProN W3, Hiragino Kaku Gothic ProN, メイリオ, Meiryo, sans-serif", label: "Noto Sans (丸文字風)" },
-    { value: "Noto Serif CJK JP, ヒラギノ明朝 ProN W3, Hiragino Mincho ProN, 游明朝, Yu Mincho, serif", label: "Noto Serif" },
-    { value: "M PLUS Rounded 1c, ヒラギノ角ゴ ProN W3, Hiragino Kaku Gothic ProN, メイリオ, Meiryo, sans-serif", label: "M PLUS Rounded (丸文字)" },
-    { value: "Kosugi Maru, ヒラギノ角ゴ ProN W3, Hiragino Kaku Gothic ProN, メイリオ, Meiryo, sans-serif", label: "Kosugi Maru (丸文字)" },
-    { value: "Sawarabi Mincho, ヒラギノ明朝 ProN W3, Hiragino Mincho ProN, 游明朝, Yu Mincho, serif", label: "Sawarabi Mincho" },
-    { value: "Sawarabi Gothic, ヒラギノ角ゴ ProN W3, Hiragino Kaku Gothic ProN, メイリオ, Meiryo, sans-serif", label: "Sawarabi Gothic" },
-    // 英語フォント
-    { value: "Arial", label: "Arial" },
-    { value: "Helvetica", label: "Helvetica" },
-    { value: "Times New Roman", label: "Times New Roman" },
-    { value: "Georgia", label: "Georgia" },
-    { value: "Verdana", label: "Verdana" },
-    { value: "Courier New", label: "Courier New" },
-    { value: "Impact", label: "Impact" },
-    { value: "Comic Sans MS", label: "Comic Sans MS" },
-    { value: "Trebuchet MS", label: "Trebuchet MS" },
-    { value: "Palatino", label: "Palatino" },
-    { value: "Garamond", label: "Garamond" },
-    { value: "Bookman", label: "Bookman" },
-    { value: "Avant Garde", label: "Avant Garde" },
-    { value: "Helvetica Neue", label: "Helvetica Neue" }
+    { value: "system", label: "🌟 システムデフォルト" },
+    // かわいい日本語フォント
+    { value: "Kosugi Maru, ヒラギノ角ゴ ProN W3, Hiragino Kaku Gothic ProN, メイリオ, Meiryo, sans-serif", label: "🍡 Kosugi Maru (丸文字) - おすすめ！" },
+    { value: "M PLUS Rounded 1c, ヒラギノ角ゴ ProN W3, Hiragino Kaku Gothic ProN, メイリオ, Meiryo, sans-serif", label: "🎀 M PLUS Rounded (丸文字) - かわいい！" },
+    { value: "Hiragino Maru Gothic ProN, ヒラギノ丸ゴ ProN W4, Meiryo, メイリオ, Osaka, MS PGothic, sans-serif", label: "💕 ヒラギノ丸ゴ (丸文字) - やわらかい" },
+    { value: "Nico Moji, Kosugi Maru, ヒラギノ角ゴ ProN W3, Hiragino Kaku Gothic ProN, メイリオ, Meiryo, sans-serif", label: "✨ Nico Moji (手書き風) - かわいい！" },
+    { value: "Hachi Maru Pop, Kosugi Maru, ヒラギノ角ゴ ProN W3, Hiragino Kaku Gothic ProN, メイリオ, Meiryo, sans-serif", label: "🌸 Hachi Maru Pop (丸文字) - ポップ！" },
+    { value: "Yomogi, Kosugi Maru, ヒラギノ角ゴ ProN W3, Hiragino Kaku Gothic ProN, メイリオ, Meiryo, sans-serif", label: "🌺 Yomogi (手書き風) - やさしい" },
+    { value: "Shippori Mincho, ヒラギノ明朝 ProN W3, Hiragino Mincho ProN, 游明朝, Yu Mincho, serif", label: "🎨 Shippori Mincho (手書き風) - アート" },
+    { value: "Noto Sans CJK JP, ヒラギノ角ゴ ProN W3, Hiragino Kaku Gothic ProN, メイリオ, Meiryo, sans-serif", label: "🌈 Noto Sans (丸文字風) - カラフル" },
+    { value: "Sawarabi Mincho, ヒラギノ明朝 ProN W3, Hiragino Mincho ProN, 游明朝, Yu Mincho, serif", label: "🌿 Sawarabi Mincho (手書き風) - 自然" },
+    { value: "Sawarabi Gothic, ヒラギノ角ゴ ProN W3, Hiragino Kaku Gothic ProN, メイリオ, Meiryo, sans-serif", label: "🌱 Sawarabi Gothic (やわらか) - やさしい" },
+    // かわいい英語フォント
+    { value: "Comic Sans MS, cursive", label: "🎪 Comic Sans MS (かわいい) - 楽しい！" },
+    { value: "Chalkduster, cursive", label: "🖍️ Chalkduster (チョーク風) - 学校みたい！" },
+    { value: "Marker Felt, fantasy", label: "🖊️ Marker Felt (マーカー風) - カラフル！" },
+    { value: "Bradley Hand, cursive", label: "✏️ Bradley Hand (手書き風) - やさしい" },
+    { value: "Snell Roundhand, cursive", label: "💌 Snell Roundhand (手書き風) - エレガント" },
+    { value: "Brush Script MT, cursive", label: "🖌️ Brush Script MT (ブラシ風) - アート" },
+    { value: "Lucida Handwriting, cursive", label: "📝 Lucida Handwriting (手書き風) - きれい" },
+    { value: "Papyrus, fantasy", label: "📜 Papyrus (古代風) - おもしろい！" },
+    { value: "Chalkboard, fantasy", label: "🖼️ Chalkboard (黒板風) - 学校！" },
+    { value: "Herculanum, fantasy", label: "🏛️ Herculanum (古代風) - かっこいい！" },
+    // その他のフォント
+    { value: "serif", label: "📚 Serif (明朝体) - 本みたい" },
+    { value: "sans-serif", label: "📖 Sans-serif (ゴシック体) - 読みやすい" },
+    { value: "monospace", label: "💻 Monospace (等幅) - プログラマー" },
+    { value: "cursive", label: "✍️ Cursive (筆記体) - 手書き風" },
+    { value: "fantasy", label: "🎭 Fantasy (装飾体) - おもしろい" }
   ];
 
   // フォント設定の読み込みと適用
@@ -1036,25 +1032,25 @@ function App() {
       <div className="app">
         <div className="dashboard">
           <header className="dashboard-header">
-            <h1>Work Time Tracker</h1>
+            <h1>⏰ Work Time Tracker 📚</h1>
             <div className="user-info">
-              <span>こんにちは、{user?.displayName || user?.email}さん</span>
+              <span>👋 こんにちは、{user?.displayName || user?.email}さん！</span>
               <button 
                 onClick={() => setShowFontSettings(!showFontSettings)} 
                 className="font-settings-button"
                 title="フォント設定"
               >
-                🔤
+                🎨 フォント
               </button>
               <button onClick={handleLogout} className="logout-button">
-                ログアウト
+                🚪 ログアウト
               </button>
             </div>
           </header>
           
           <main className="dashboard-main">
             <div className="time-tracking-section">
-              <h2>時間記録</h2>
+              <h2>⏱️ 時間記録</h2>
               
               {!isTracking ? (
                 <div className="start-tracking">
@@ -1069,7 +1065,7 @@ function App() {
                     />
                   </div>
                   <button onClick={handleStartTracking} className="start-button">
-                    記録開始
+                    ▶️ 記録開始
                   </button>
                 </div>
               ) : (
@@ -1080,7 +1076,7 @@ function App() {
                       {formatTime(elapsedTime)}
                     </div>
                     <button onClick={handleStopTracking} className="stop-button">
-                      記録停止
+                      ⏹️ 記録停止
                     </button>
                   </div>
                 </div>
@@ -1090,12 +1086,12 @@ function App() {
             {/* プロジェクト管理セクション */}
             <div className="projects-section">
               <div className="section-header">
-                <h2>プロジェクト</h2>
+                <h2>📁 プロジェクト</h2>
                 <button 
                   onClick={() => setShowProjectForm(!showProjectForm)}
                   className="add-project-button"
                 >
-                  {showProjectForm ? "キャンセル" : "プロジェクト追加"}
+                  {showProjectForm ? "❌ キャンセル" : "➕ プロジェクト追加"}
                 </button>
               </div>
 
@@ -1161,7 +1157,7 @@ function App() {
             {/* レポートセクション */}
             <div className="reports-section">
               <div className="section-header">
-                <h2>レポート</h2>
+                <h2>📊 レポート</h2>
                 <button 
                   onClick={() => {
                     setShowReports(!showReports);
@@ -1171,7 +1167,7 @@ function App() {
                   }}
                   className="toggle-reports-button"
                 >
-                  {showReports ? "レポートを閉じる" : "レポートを表示"}
+                  {showReports ? "📊 レポートを閉じる" : "📊 レポートを表示"}
                 </button>
               </div>
 
@@ -1226,7 +1222,7 @@ function App() {
             {user?.role === 'admin' && (
               <div className="admin-section">
                 <div className="section-header">
-                  <h2>管理者パネル</h2>
+                  <h2>👑 管理者パネル</h2>
                   <button 
                     onClick={() => {
                       setShowAdminPanel(!showAdminPanel);
@@ -1236,7 +1232,7 @@ function App() {
                     }}
                     className="toggle-admin-button"
                   >
-                    {showAdminPanel ? "管理者パネルを閉じる" : "管理者パネルを表示"}
+                    {showAdminPanel ? "👑 管理者パネルを閉じる" : "👑 管理者パネルを表示"}
                   </button>
                 </div>
 
@@ -1410,7 +1406,7 @@ function App() {
             {/* 本棚セクション */}
             <div className="bookshelf-section">
               <div className="section-header">
-                <h2>本棚</h2>
+                <h2>📚 本棚</h2>
                 <button 
                   onClick={() => {
                     setShowBookshelf(!showBookshelf);
@@ -1420,7 +1416,7 @@ function App() {
                   }}
                   className="toggle-bookshelf-button"
                 >
-                  {showBookshelf ? "本棚を閉じる" : "本棚を表示"}
+                  {showBookshelf ? "📚 本棚を閉じる" : "📚 本棚を表示"}
                 </button>
               </div>
 
@@ -1606,7 +1602,7 @@ function App() {
             {/* メモセクション */}
             <div className="memos-section">
               <div className="section-header">
-                <h2>メモ</h2>
+                <h2>📝 メモ</h2>
                 <button 
                   onClick={() => {
                     setShowMemos(!showMemos);
@@ -1616,7 +1612,7 @@ function App() {
                   }}
                   className="toggle-memos-button"
                 >
-                  {showMemos ? "メモを閉じる" : "メモを表示"}
+                  {showMemos ? "📝 メモを閉じる" : "📝 メモを表示"}
                 </button>
               </div>
 
@@ -1866,7 +1862,7 @@ function App() {
             {/* 公開メモセクション */}
             <div className="public-memos-section">
               <div className="section-header">
-                <h2>公開メモ</h2>
+                <h2>🌐 公開メモ</h2>
                 <button 
                   onClick={() => {
                     setShowPublicMemos(!showPublicMemos);
@@ -1876,7 +1872,7 @@ function App() {
                   }}
                   className="toggle-public-memos-button"
                 >
-                  {showPublicMemos ? "公開メモを閉じる" : "公開メモを表示"}
+                  {showPublicMemos ? "🌐 公開メモを閉じる" : "🌐 公開メモを表示"}
                 </button>
               </div>
 
