@@ -828,13 +828,13 @@ function App() {
 
   const getRecordsForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
-    const salaryRecords = salaryRecords.filter(record => 
+    const filteredSalaryRecords = salaryRecords.filter(record => 
       record.date.startsWith(dateStr)
     );
-    const diaries = workDiaries.filter(diary => 
+    const filteredDiaries = workDiaries.filter(diary => 
       diary.date.startsWith(dateStr)
     );
-    return { salaryRecords, diaries };
+    return { salaryRecords: filteredSalaryRecords, diaries: filteredDiaries };
   };
 
   const handleDateClick = (date: Date) => {
@@ -3185,25 +3185,25 @@ function App() {
                         </div>
                         
                         <div className="calendar-days">
-                          {getDaysInMonth(currentDate).map((day, index) => {
-                            const records = getRecordsForDate(day.date);
-                            const isToday = day.date.toDateString() === new Date().toDateString();
-                            const isSelected = selectedDate && day.date.toDateString() === selectedDate.toDateString();
+                          {getDaysInMonth(currentDate).map((dayItem, index) => {
+                            const dayRecords = getRecordsForDate(dayItem.date);
+                            const isToday = dayItem.date.toDateString() === new Date().toDateString();
+                            const isSelected = selectedDate && dayItem.date.toDateString() === selectedDate.toDateString();
                             
                             return (
                               <div
                                 key={index}
-                                className={`calendar-day ${!day.isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
-                                onClick={() => handleDateClick(day.date)}
+                                className={`calendar-day ${!dayItem.isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
+                                onClick={() => handleDateClick(dayItem.date)}
                               >
-                                <div className="day-number">{day.date.getDate()}</div>
+                                <div className="day-number">{dayItem.date.getDate()}</div>
                                 <div className="day-records">
-                                  {records.salaryRecords.length > 0 && (
+                                  {dayRecords.salaryRecords.length > 0 && (
                                     <div className="record-indicator salary-indicator" title="給料記録">
                                       💰
                                     </div>
                                   )}
-                                  {records.diaries.length > 0 && (
+                                  {dayRecords.diaries.length > 0 && (
                                     <div className="record-indicator diary-indicator" title="日記">
                                       📝
                                     </div>
@@ -3215,36 +3215,39 @@ function App() {
                         </div>
                       </div>
                       
-                      {selectedDate && (
-                        <div className="selected-date-info">
-                          <h4>
-                            {selectedDate.getFullYear()}年{selectedDate.getMonth() + 1}月{selectedDate.getDate()}日
-                          </h4>
-                          <div className="date-records">
-                            {getRecordsForDate(selectedDate).salaryRecords.map((record) => (
-                              <div key={record._id} className="date-record-item salary-record">
-                                <span className="record-icon">💰</span>
-                                <span className="record-content">
-                                  給料: ¥{record.salary.toLocaleString()}
-                                  {record.transportation > 0 && ` + 交通費: ¥${record.transportation.toLocaleString()}`}
-                                </span>
-                              </div>
-                            ))}
-                            {getRecordsForDate(selectedDate).diaries.map((diary) => (
-                              <div key={diary._id} className="date-record-item diary-record">
-                                <span className="record-icon">📝</span>
-                                <span className="record-content">
-                                  {diary.mood} {diary.title}
-                                </span>
-                              </div>
-                            ))}
-                            {getRecordsForDate(selectedDate).salaryRecords.length === 0 && 
-                             getRecordsForDate(selectedDate).diaries.length === 0 && (
-                              <p className="no-records">この日は記録がありません</p>
-                            )}
+                      {selectedDate && (() => {
+                        const selectedDateRecords = getRecordsForDate(selectedDate);
+                        return (
+                          <div className="selected-date-info">
+                            <h4>
+                              {selectedDate.getFullYear()}年{selectedDate.getMonth() + 1}月{selectedDate.getDate()}日
+                            </h4>
+                            <div className="date-records">
+                              {selectedDateRecords.salaryRecords.map((record) => (
+                                <div key={record._id} className="date-record-item salary-record">
+                                  <span className="record-icon">💰</span>
+                                  <span className="record-content">
+                                    給料: ¥{record.salary.toLocaleString()}
+                                    {record.transportation > 0 && ` + 交通費: ¥${record.transportation.toLocaleString()}`}
+                                  </span>
+                                </div>
+                              ))}
+                              {selectedDateRecords.diaries.map((diary) => (
+                                <div key={diary._id} className="date-record-item diary-record">
+                                  <span className="record-icon">📝</span>
+                                  <span className="record-content">
+                                    {diary.mood} {diary.title}
+                                  </span>
+                                </div>
+                              ))}
+                              {selectedDateRecords.salaryRecords.length === 0 && 
+                               selectedDateRecords.diaries.length === 0 && (
+                                <p className="no-records">この日は記録がありません</p>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
                     </div>
                   )}
 
