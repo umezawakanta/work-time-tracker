@@ -3244,8 +3244,8 @@ input:checked + .toggle-slider:before {
   position: absolute;
   bottom: 10px;
   right: 20px;
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   z-index: 10;
   animation: dogBounce 3s ease-in-out infinite;
 }
@@ -3255,23 +3255,37 @@ input:checked + .toggle-slider:before {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;
-  height: 30px;
-  background: #8B4513;
-  border-radius: 20px 20px 15px 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  width: 50px;
+  height: 40px;
+  background: #F5DEB3;
+  border-radius: 25px 25px 20px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* もこもこ効果 */
+  background-image: 
+    radial-gradient(circle at 20% 30%, #FFE4B5 15%, transparent 15%),
+    radial-gradient(circle at 80% 70%, #F0E68C 20%, transparent 20%),
+    radial-gradient(circle at 40% 80%, #FFF8DC 25%, transparent 25%),
+    radial-gradient(circle at 60% 20%, #F5DEB3 18%, transparent 18%);
+  animation: fluffMove 4s ease-in-out infinite;
 }
 
 .dog-head {
   position: absolute;
-  top: 5px;
+  top: 2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 35px;
-  height: 35px;
-  background: #D2691E;
+  width: 45px;
+  height: 45px;
+  background: #F5DEB3;
   border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* もこもこ効果 */
+  background-image: 
+    radial-gradient(circle at 25% 25%, #FFE4B5 20%, transparent 20%),
+    radial-gradient(circle at 75% 75%, #F0E68C 25%, transparent 25%),
+    radial-gradient(circle at 50% 10%, #FFF8DC 15%, transparent 15%),
+    radial-gradient(circle at 10% 60%, #F5DEB3 18%, transparent 18%);
+  animation: fluffMove 3s ease-in-out infinite 0.5s;
 }
 
 .dog-ears {
@@ -3285,11 +3299,17 @@ input:checked + .toggle-slider:before {
 
 .dog-ear {
   position: absolute;
-  width: 12px;
-  height: 20px;
-  background: #8B4513;
+  width: 15px;
+  height: 25px;
+  background: #F5DEB3;
   border-radius: 50% 50% 0 0;
   top: 0;
+  /* もこもこ効果 */
+  background-image: 
+    radial-gradient(circle at 30% 40%, #FFE4B5 30%, transparent 30%),
+    radial-gradient(circle at 70% 60%, #F0E68C 25%, transparent 25%),
+    radial-gradient(circle at 50% 20%, #FFF8DC 20%, transparent 20%);
+  animation: fluffMove 2.5s ease-in-out infinite;
 }
 
 .dog-ear.left-ear {
@@ -3372,12 +3392,18 @@ input:checked + .toggle-slider:before {
 
 .tail-wag {
   position: absolute;
-  width: 20px;
-  height: 3px;
-  background: #8B4513;
-  border-radius: 2px;
+  width: 25px;
+  height: 8px;
+  background: #F5DEB3;
+  border-radius: 15px;
   animation: tailWag 1s ease-in-out infinite;
   transform-origin: left center;
+  /* もこもこ効果 */
+  background-image: 
+    radial-gradient(circle at 40% 30%, #FFE4B5 40%, transparent 40%),
+    radial-gradient(circle at 80% 70%, #F0E68C 35%, transparent 35%),
+    radial-gradient(circle at 20% 80%, #FFF8DC 30%, transparent 30%);
+  animation: tailWag 1s ease-in-out infinite, fluffMove 3.5s ease-in-out infinite 1s;
 }
 
 .dog-paws {
@@ -3391,11 +3417,16 @@ input:checked + .toggle-slider:before {
 
 .dog-paw {
   position: absolute;
-  width: 8px;
-  height: 8px;
-  background: #8B4513;
+  width: 12px;
+  height: 12px;
+  background: #F5DEB3;
   border-radius: 50%;
   bottom: 0;
+  /* もこもこ効果 */
+  background-image: 
+    radial-gradient(circle at 30% 30%, #FFE4B5 50%, transparent 50%),
+    radial-gradient(circle at 70% 70%, #F0E68C 40%, transparent 40%);
+  animation: fluffMove 2s ease-in-out infinite;
 }
 
 .dog-paw.left-paw {
@@ -3481,28 +3512,43 @@ input:checked + .toggle-slider:before {
   }
 }
 
+@keyframes fluffMove {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.05) rotate(1deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(0deg);
+  }
+  75% {
+    transform: scale(1.05) rotate(-1deg);
+  }
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
   .dog-character {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     bottom: 5px;
     right: 10px;
   }
   
   .dog-body {
-    width: 30px;
-    height: 22px;
+    width: 35px;
+    height: 28px;
   }
   
   .dog-head {
-    width: 26px;
-    height: 26px;
+    width: 32px;
+    height: 32px;
   }
   
   .dog-ear {
-    width: 9px;
-    height: 15px;
+    width: 11px;
+    height: 18px;
   }
   
   .dog-eye {
