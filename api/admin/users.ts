@@ -190,14 +190,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       success: true,
       message: 'ユーザー一覧を取得しました',
       users: users.map(user => ({
-        id: user.id,
+        id: user._id.toString(),
         email: user.email,
         displayName: user.displayName,
         role: user.role,
         isVerified: user.isVerified,
         status: user.status,
-        createdAt: user.createdAt.toISOString(),
-        updatedAt: user.updatedAt.toISOString(),
+        createdAt: user.createdAt ? user.createdAt.toISOString() : new Date().toISOString(),
+        updatedAt: user.updatedAt ? user.updatedAt.toISOString() : new Date().toISOString(),
       })),
     };
 

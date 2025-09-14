@@ -229,7 +229,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       success: true,
       message: 'ユーザー情報を更新しました',
       user: {
-        id: updatedUser!.id,
+        id: updatedUser!._id.toString(),
         email: updatedUser!.email,
         displayName: updatedUser!.displayName,
         role: updatedUser!.role,
