@@ -662,6 +662,45 @@ function App() {
     }
   };
 
+  const handleUpdateSalaryRecord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id || !editingSalaryRecord) return;
+
+    try {
+      const response = await fetch(`/api/work-records/salary/${editingSalaryRecord._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          date: salaryDate,
+          salary: Number(salary),
+          transportation: Number(transportation) || 0,
+          overtime: Number(overtime) || 0,
+          bonus: Number(bonus) || 0,
+          notes: salaryNotes
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setMessage('給料記録を更新しました！');
+        setSalaryDate('');
+        setSalary('');
+        setTransportation('');
+        setOvertime('');
+        setBonus('');
+        setSalaryNotes('');
+        setEditingSalaryRecord(null);
+        setShowSalaryForm(false);
+        loadSalaryRecords();
+      } else {
+        setMessage(`エラー: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
   const handleCreateDiary = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user?.id) return;
@@ -690,6 +729,45 @@ function App() {
         setDiaryMood('😊');
         setDiaryTags('');
         setDiaryIsPrivate(true);
+        setShowDiaryForm(false);
+        loadWorkDiaries();
+      } else {
+        setMessage(`エラー: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const handleUpdateDiary = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id || !editingDiary) return;
+
+    try {
+      const response = await fetch(`/api/work-records/diary/${editingDiary._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          date: diaryDate,
+          title: diaryTitle,
+          content: diaryContent,
+          mood: diaryMood,
+          tags: diaryTags.split(',').map(tag => tag.trim()).filter(tag => tag),
+          isPrivate: diaryIsPrivate
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setMessage('日記を更新しました！');
+        setDiaryDate('');
+        setDiaryTitle('');
+        setDiaryContent('');
+        setDiaryMood('😊');
+        setDiaryTags('');
+        setDiaryIsPrivate(true);
+        setEditingDiary(null);
         setShowDiaryForm(false);
         loadWorkDiaries();
       } else {
@@ -917,6 +995,32 @@ function App() {
     setShowRecordDetail(true);
     setShowSalaryForm(false);
     setShowDiaryForm(false);
+    setShowCalendar(false);
+  };
+
+  const editSalaryRecord = (record: any) => {
+    setSalaryDate(record.date.split('T')[0]);
+    setSalary(record.salary.toString());
+    setTransportation(record.transportation.toString());
+    setOvertime(record.overtime.toString());
+    setBonus(record.bonus.toString());
+    setSalaryNotes(record.notes || '');
+    setEditingSalaryRecord(record);
+    setShowSalaryForm(true);
+    setShowDiaryForm(false);
+    setShowCalendar(false);
+  };
+
+  const editDiary = (diary: any) => {
+    setDiaryDate(diary.date.split('T')[0]);
+    setDiaryTitle(diary.title);
+    setDiaryContent(diary.content);
+    setDiaryMood(diary.mood);
+    setDiaryTags(diary.tags ? diary.tags.join(', ') : '');
+    setDiaryIsPrivate(diary.isPrivate);
+    setEditingDiary(diary);
+    setShowDiaryForm(true);
+    setShowSalaryForm(false);
     setShowCalendar(false);
   };
 
@@ -3106,8 +3210,8 @@ function App() {
 
                   {/* 給料記録フォーム */}
                   {showSalaryForm && (
-                    <form onSubmit={handleCreateSalaryRecord} className="salary-form">
-                      <h3>💰 給料・交通費記録</h3>
+                    <form onSubmit={editingSalaryRecord ? handleUpdateSalaryRecord : handleCreateSalaryRecord} className="salary-form">
+                      <h3>💰 {editingSalaryRecord ? '給料記録を編集' : '給料・交通費記録'}</h3>
                       <div className="form-group">
                         <label htmlFor="salaryDate">日付</label>
                         <input
@@ -3170,15 +3274,15 @@ function App() {
                         />
                       </div>
                       <button type="submit" className="submit-button">
-                        💰 給料記録を保存
+                        💰 {editingSalaryRecord ? '給料記録を更新' : '給料記録を保存'}
                       </button>
                     </form>
                   )}
 
                   {/* 日記フォーム */}
                   {showDiaryForm && (
-                    <form onSubmit={handleCreateDiary} className="diary-form">
-                      <h3>📝 お仕事日記</h3>
+                    <form onSubmit={editingDiary ? handleUpdateDiary : handleCreateDiary} className="diary-form">
+                      <h3>📝 {editingDiary ? '日記を編集' : 'お仕事日記'}</h3>
                       <div className="form-group">
                         <label htmlFor="diaryDate">日付</label>
                         <input
@@ -3249,7 +3353,7 @@ function App() {
                         </label>
                       </div>
                       <button type="submit" className="submit-button">
-                        📝 日記を保存
+                        📝 {editingDiary ? '日記を更新' : '日記を保存'}
                       </button>
                     </form>
                   )}
