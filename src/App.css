@@ -91,6 +91,25 @@ body {
   cursor: not-allowed;
 }
 
+.switch-button {
+  background: transparent;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.switch-button:hover {
+  background: #2563eb;
+  color: white;
+}
+
 /* ダッシュボード */
 .dashboard {
   width: 100%;

@@ -25,8 +25,10 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
   
   // 時間記録関連の状態
   const [currentTimeEntry, setCurrentTimeEntry] = useState<TimeEntry | null>(null);
@@ -83,6 +85,39 @@ function App() {
         console.log("Login successful:", data);
       } else {
         setMessage(`ログイン失敗: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, displayName }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("アカウントが作成されました！ログインしてください。");
+        setIsRegisterMode(false);
+        setEmail("");
+        setPassword("");
+        setDisplayName("");
+        console.log("Registration successful:", data);
+      } else {
+        setMessage(`登録失敗: ${data.message}`);
       }
     } catch (error) {
       setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -249,35 +284,93 @@ function App() {
     <div className="app">
       <div className="login-container">
         <h1>Work Time Tracker</h1>
-        <form onSubmit={handleLogin} className="login-form">
-          <div className="form-group">
-            <label htmlFor="email">メールアドレス</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">パスワード</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-            />
-          </div>
-          <button type="submit" disabled={loading} className="login-button">
-            {loading ? "ログイン中..." : "ログイン"}
-          </button>
-        </form>
+        
+        {isRegisterMode ? (
+          <form onSubmit={handleRegister} className="login-form">
+            <div className="form-group">
+              <label htmlFor="displayName">表示名</label>
+              <input
+                type="text"
+                id="displayName"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="email">メールアドレス</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="password">パスワード</label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+                minLength={6}
+              />
+            </div>
+            <button type="submit" disabled={loading} className="login-button">
+              {loading ? "登録中..." : "アカウント作成"}
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setIsRegisterMode(false)}
+              className="switch-button"
+            >
+              ログインに戻る
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleLogin} className="login-form">
+            <div className="form-group">
+              <label htmlFor="email">メールアドレス</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="password">パスワード</label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+            <button type="submit" disabled={loading} className="login-button">
+              {loading ? "ログイン中..." : "ログイン"}
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setIsRegisterMode(true)}
+              className="switch-button"
+            >
+              アカウント作成
+            </button>
+          </form>
+        )}
+        
         {message && (
-          <div className={`message ${message.includes("成功") ? "success" : "error"}`}>
+          <div className={`message ${message.includes("成功") || message.includes("作成") ? "success" : "error"}`}>
             {message}
           </div>
         )}
