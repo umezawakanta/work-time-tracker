@@ -13,7 +13,10 @@ const ensureDatabaseConnection = async (): Promise<void> => {
   }
   console.warn('[auth/register] Database not connected, attempting to connect...');
   try {
-    const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/workTimeTracker";
+    const MONGODB_URI = process.env.MONGODB_URI;
+    if (!MONGODB_URI) {
+      throw new Error("MONGODB_URI environment variable is required but not set.");
+    }
     
     if (MONGODB_URI === "memory://") {
       console.log("🧪 MongoDB connection skipped (memory mode for testing)");
