@@ -146,9 +146,9 @@ module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   } else {
-    // 許可されていないオリジンの場合は認証情報を送信しない
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    // 認証情報を送信しない場合はCredentialsヘッダーを設定しない
+    // 許可されていないオリジンの場合はCORSヘッダーを設定しない
+    // これにより、ブラウザはCORSエラーを返す
+    // 認証情報の漏洩を完全に防止
   }
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');

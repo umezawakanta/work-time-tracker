@@ -16,6 +16,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // 'https://work-time-tracker-five-fghij456.vercel.app',
   ];
 
+  // Check for preview deployments
+  const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
+
   // Block 'null' and only allow origins that are explicitly whitelisted.
   const isAllowedOrigin = origin
     && origin !== "null"
@@ -29,9 +32,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   } else {
-    // 許可されていないオリジンの場合は認証情報を送信しない
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    // 認証情報を送信しない場合はCredentialsヘッダーを設定しない
+    // 許可されていないオリジンの場合はCORSヘッダーを設定しない
+    // これにより、ブラウザはCORSエラーを返す
+    // 認証情報の漏洩を完全に防止
   }
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
