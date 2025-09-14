@@ -11,8 +11,8 @@ body {
     sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
-  color: #333;
+  background: var(--bg-color, linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%));
+  color: var(--text-color, #333);
   min-height: 100vh;
 }
 
@@ -115,7 +115,7 @@ body {
 .dashboard {
   width: 100%;
   max-width: 1200px;
-  background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+  background: var(--card-bg, linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%));
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(255, 182, 193, 0.3);
   overflow: hidden;
@@ -123,8 +123,8 @@ body {
 }
 
 .dashboard-header {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 50%, #ffa8a8 100%);
-  color: white;
+  background: var(--primary-color, linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 50%, #ffa8a8 100%));
+  color: var(--text-color, white);
   padding: 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -166,7 +166,7 @@ body {
 .time-tracking-section {
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: linear-gradient(145deg, #fef3c7 0%, #fde68a 100%);
+  background: var(--secondary-color, linear-gradient(145deg, #fef3c7 0%, #fde68a 100%));
   border-radius: 15px;
   border: 2px solid #f59e0b;
   box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
@@ -2024,82 +2024,82 @@ figure, figcaption, details, summary, mark, small, sub, sup {
 
 /* テーマ別のスタイル */
 [data-theme="dark"] {
-  --primary-color: #2d3748;
-  --secondary-color: #4a5568;
+  --primary-color: linear-gradient(135deg, #2d3748 0%, #4a5568 50%, #68d391 100%);
+  --secondary-color: linear-gradient(145deg, #4a5568 0%, #68d391 100%);
   --accent-color: #68d391;
   --text-color: #e2e8f0;
   --bg-color: #1a202c;
-  --card-bg: #2d3748;
+  --card-bg: linear-gradient(145deg, #2d3748 0%, #4a5568 100%);
 }
 
 [data-theme="ocean"] {
-  --primary-color: #0ea5e9;
-  --secondary-color: #0284c7;
+  --primary-color: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #06b6d4 100%);
+  --secondary-color: linear-gradient(145deg, #0284c7 0%, #06b6d4 100%);
   --accent-color: #06b6d4;
   --text-color: #0f172a;
   --bg-color: #f0f9ff;
-  --card-bg: #e0f2fe;
+  --card-bg: linear-gradient(145deg, #e0f2fe 0%, #bae6fd 100%);
 }
 
 [data-theme="forest"] {
-  --primary-color: #16a34a;
-  --secondary-color: #15803d;
+  --primary-color: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #22c55e 100%);
+  --secondary-color: linear-gradient(145deg, #15803d 0%, #22c55e 100%);
   --accent-color: #22c55e;
   --text-color: #14532d;
   --bg-color: #f0fdf4;
-  --card-bg: #dcfce7;
+  --card-bg: linear-gradient(145deg, #dcfce7 0%, #bbf7d0 100%);
 }
 
 [data-theme="sunset"] {
-  --primary-color: #f97316;
-  --secondary-color: #ea580c;
+  --primary-color: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #fb923c 100%);
+  --secondary-color: linear-gradient(145deg, #ea580c 0%, #fb923c 100%);
   --accent-color: #fb923c;
   --text-color: #9a3412;
   --bg-color: #fff7ed;
-  --card-bg: #fed7aa;
+  --card-bg: linear-gradient(145deg, #fed7aa 0%, #fdba74 100%);
 }
 
 [data-theme="rainbow"] {
-  --primary-color: #8b5cf6;
-  --secondary-color: #7c3aed;
+  --primary-color: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #a78bfa 100%);
+  --secondary-color: linear-gradient(145deg, #7c3aed 0%, #a78bfa 100%);
   --accent-color: #a78bfa;
   --text-color: #581c87;
   --bg-color: #faf5ff;
-  --card-bg: #e9d5ff;
+  --card-bg: linear-gradient(145deg, #e9d5ff 0%, #ddd6fe 100%);
 }
 
 [data-theme="space"] {
-  --primary-color: #1e293b;
-  --secondary-color: #334155;
+  --primary-color: linear-gradient(135deg, #1e293b 0%, #334155 50%, #6366f1 100%);
+  --secondary-color: linear-gradient(145deg, #334155 0%, #6366f1 100%);
   --accent-color: #6366f1;
   --text-color: #e2e8f0;
   --bg-color: #0f172a;
-  --card-bg: #1e293b;
+  --card-bg: linear-gradient(145deg, #1e293b 0%, #334155 100%);
 }
 
 [data-theme="candy"] {
-  --primary-color: #ec4899;
-  --secondary-color: #db2777;
+  --primary-color: linear-gradient(135deg, #ec4899 0%, #db2777 50%, #f472b6 100%);
+  --secondary-color: linear-gradient(145deg, #db2777 0%, #f472b6 100%);
   --accent-color: #f472b6;
   --text-color: #831843;
   --bg-color: #fdf2f8;
-  --card-bg: #fce7f3;
+  --card-bg: linear-gradient(145deg, #fce7f3 0%, #fbcfe8 100%);
 }
 
 [data-theme="pastel"] {
-  --primary-color: #a78bfa;
-  --secondary-color: #8b5cf6;
+  --primary-color: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #c4b5fd 100%);
+  --secondary-color: linear-gradient(145deg, #8b5cf6 0%, #c4b5fd 100%);
   --accent-color: #c4b5fd;
   --text-color: #6b21a8;
   --bg-color: #faf5ff;
-  --card-bg: #f3e8ff;
+  --card-bg: linear-gradient(145deg, #f3e8ff 0%, #ede9fe 100%);
 }
 
 [data-theme="neon"] {
-  --primary-color: #10b981;
-  --secondary-color: #059669;
+  --primary-color: linear-gradient(135deg, #10b981 0%, #059669 50%, #34d399 100%);
+  --secondary-color: linear-gradient(145deg, #059669 0%, #34d399 100%);
   --accent-color: #34d399;
   --text-color: #064e3b;
   --bg-color: #ecfdf5;
-  --card-bg: #d1fae5;
+  --card-bg: linear-gradient(145deg, #d1fae5 0%, #a7f3d0 100%);
 }
