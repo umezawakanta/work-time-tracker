@@ -4197,7 +4197,11 @@ function App() {
               <div className="feature-settings-body">
                 <div className="feature-settings-section">
                   <h4>📋 機能の並び順</h4>
-                  <p>ドラッグ&ドロップで機能の順序を変更できます</p>
+                  <p>ドラッグ&ドロップまたは↑↓ボタンで機能の順序を変更できます</p>
+                  <div className="mobile-hint">
+                    <span className="hint-icon">👆</span>
+                    <span className="hint-text">モバイルでは長押ししてドラッグできます</span>
+                  </div>
                   <div className="feature-list">
                     {getFeatureOrder().map((featureId) => {
                       const feature = features.find(f => f.id === featureId);
@@ -4215,38 +4219,42 @@ function App() {
                         onTouchEnd={(e) => handleTouchEnd(e, feature.id)}
                       >
                         <div className="feature-drag-handle">⋮⋮</div>
-                        <div className="feature-icon">{feature.icon}</div>
-                        <div className="feature-info">
-                          <div className="feature-name">{feature.name}</div>
-                          <div className="feature-description">{feature.description}</div>
+                        <div className="feature-item-content">
+                          <div className="feature-icon">{feature.icon}</div>
+                          <div className="feature-info">
+                            <div className="feature-name">{feature.name}</div>
+                            <div className="feature-description">{feature.description}</div>
+                          </div>
                         </div>
-                        <div className="feature-order-controls">
-                          <button 
-                            className="order-button up-button"
-                            onClick={() => moveFeatureUp(feature.id)}
-                            disabled={userSettings?.featureOrder.indexOf(feature.id) === 0}
-                            title="上に移動"
-                          >
-                            ↑
-                          </button>
-                          <button 
-                            className="order-button down-button"
-                            onClick={() => moveFeatureDown(feature.id)}
-                            disabled={userSettings?.featureOrder.indexOf(feature.id) === (userSettings?.featureOrder.length || 0) - 1}
-                            title="下に移動"
-                          >
-                            ↓
-                          </button>
-                        </div>
-                        <div className="feature-toggle">
-                          <label className="toggle-switch">
-                            <input
-                              type="checkbox"
-                              checked={!userSettings?.hiddenFeatures.includes(feature.id)}
-                              onChange={() => handleFeatureToggle(feature.id)}
-                            />
-                            <span className="toggle-slider"></span>
-                          </label>
+                        <div className="feature-controls">
+                          <div className="feature-order-controls">
+                            <button 
+                              className="order-button up-button"
+                              onClick={() => moveFeatureUp(feature.id)}
+                              disabled={userSettings?.featureOrder.indexOf(feature.id) === 0}
+                              title="上に移動"
+                            >
+                              ↑
+                            </button>
+                            <button 
+                              className="order-button down-button"
+                              onClick={() => moveFeatureDown(feature.id)}
+                              disabled={userSettings?.featureOrder.indexOf(feature.id) === (userSettings?.featureOrder.length || 0) - 1}
+                              title="下に移動"
+                            >
+                              ↓
+                            </button>
+                          </div>
+                          <div className="feature-toggle">
+                            <label className="toggle-switch">
+                              <input
+                                type="checkbox"
+                                checked={!userSettings?.hiddenFeatures.includes(feature.id)}
+                                onChange={() => handleFeatureToggle(feature.id)}
+                              />
+                              <span className="toggle-slider"></span>
+                            </label>
+                          </div>
                         </div>
                       </div>
                       );
