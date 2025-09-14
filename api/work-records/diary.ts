@@ -6,11 +6,19 @@ dotenv.config();
 // データベース接続
 const connectDB = async () => {
   try {
+    if (mongoose.connection.readyState === 1) {
+      console.log('Database already connected');
+      return;
+    }
+    
+    console.log('Connecting to database...');
     await mongoose.connect(process.env.MONGODB_URI, {
       dbName: 'workTimeTracker'
     });
+    console.log('Database connected successfully');
   } catch (error) {
     console.error('Database connection error:', error);
+    throw error;
   }
 };
 
@@ -50,6 +58,8 @@ export default async function handler(req, res) {
       // 日記一覧を取得
       const { userId, isPrivate } = req.query;
       
+      console.log('Diary API - GET request, userId:', userId);
+      
       if (!userId) {
         return res.status(400).json({ 
           success: false, 
@@ -65,6 +75,8 @@ export default async function handler(req, res) {
       const diaries = await WorkDiary.find(query)
         .sort({ date: -1 })
         .limit(50);
+
+      console.log('Diaries found:', diaries.length);
 
       res.status(200).json({
         success: true,

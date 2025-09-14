@@ -577,25 +577,57 @@ function App() {
   // お仕事記録の関数
   const loadSalaryRecords = async () => {
     try {
-      const response = await fetch(`/api/work-records/salary?userId=${user?.id}`);
+      if (!user?.id) {
+        console.log('No user ID available for loading salary records');
+        return;
+      }
+      
+      console.log('Loading salary records for user:', user.id);
+      const response = await fetch(`/api/work-records/salary?userId=${user.id}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       if (data.success) {
+        console.log('Salary records loaded:', data.records);
         setSalaryRecords(data.records);
+      } else {
+        console.error('Failed to load salary records:', data.message);
+        setMessage(`給料記録の読み込みに失敗しました: ${data.message}`);
       }
     } catch (error) {
       console.error('Failed to load salary records:', error);
+      setMessage(`給料記録の読み込みに失敗しました: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
   const loadWorkDiaries = async () => {
     try {
-      const response = await fetch(`/api/work-records/diary?userId=${user?.id}`);
+      if (!user?.id) {
+        console.log('No user ID available for loading work diaries');
+        return;
+      }
+      
+      console.log('Loading work diaries for user:', user.id);
+      const response = await fetch(`/api/work-records/diary?userId=${user.id}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       if (data.success) {
+        console.log('Work diaries loaded:', data.diaries);
         setWorkDiaries(data.diaries);
+      } else {
+        console.error('Failed to load work diaries:', data.message);
+        setMessage(`日記の読み込みに失敗しました: ${data.message}`);
       }
     } catch (error) {
       console.error('Failed to load work diaries:', error);
+      setMessage(`日記の読み込みに失敗しました: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -940,12 +972,14 @@ function App() {
 
   const getRecordsForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
-    const filteredSalaryRecords = salaryRecords.filter(record => 
-      record.date.startsWith(dateStr)
-    );
-    const filteredDiaries = workDiaries.filter(diary => 
-      diary.date.startsWith(dateStr)
-    );
+    const filteredSalaryRecords = salaryRecords.filter(record => {
+      const recordDate = new Date(record.date).toISOString().split('T')[0];
+      return recordDate === dateStr;
+    });
+    const filteredDiaries = workDiaries.filter(diary => {
+      const diaryDate = new Date(diary.date).toISOString().split('T')[0];
+      return diaryDate === dateStr;
+    });
     return { salaryRecords: filteredSalaryRecords, diaries: filteredDiaries };
   };
 
@@ -3394,6 +3428,11 @@ function App() {
                           const dayRecords = getRecordsForDate(dayItem.date);
                           const isToday = dayItem.date.toDateString() === new Date().toDateString();
                           const isSelected = selectedDate && dayItem.date.toDateString() === selectedDate.toDateString();
+                          
+                          // デバッグ用ログ
+                          if (dayRecords.salaryRecords.length > 0 || dayRecords.diaries.length > 0) {
+                            console.log(`Date: ${dayItem.date.toISOString().split('T')[0]}, Salary: ${dayRecords.salaryRecords.length}, Diaries: ${dayRecords.diaries.length}`);
+                          }
                           
                           return (
                             <div
