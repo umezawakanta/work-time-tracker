@@ -748,6 +748,94 @@ function App() {
                         </table>
                       </div>
                     </div>
+
+                    {/* ユーザー編集フォーム */}
+                    {editingUser && (
+                      <div className="edit-user-form">
+                        <h3>ユーザー編集</h3>
+                        <form onSubmit={(e) => {
+                          e.preventDefault();
+                          handleUpdateUser(editingUser);
+                        }}>
+                          <div className="form-group">
+                            <label>表示名</label>
+                            <input
+                              type="text"
+                              value={editingUser.displayName}
+                              onChange={(e) => setEditingUser({
+                                ...editingUser,
+                                displayName: e.target.value
+                              })}
+                              required
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>メールアドレス</label>
+                            <input
+                              type="email"
+                              value={editingUser.email}
+                              onChange={(e) => setEditingUser({
+                                ...editingUser,
+                                email: e.target.value
+                              })}
+                              required
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>役割</label>
+                            <select
+                              value={editingUser.role}
+                              onChange={(e) => setEditingUser({
+                                ...editingUser,
+                                role: e.target.value
+                              })}
+                            >
+                              <option value="user">ユーザー</option>
+                              <option value="admin">管理者</option>
+                            </select>
+                          </div>
+                          <div className="form-group">
+                            <label>状態</label>
+                            <select
+                              value={editingUser.status}
+                              onChange={(e) => setEditingUser({
+                                ...editingUser,
+                                status: e.target.value
+                              })}
+                            >
+                              <option value="active">アクティブ</option>
+                              <option value="inactive">非アクティブ</option>
+                              <option value="suspended">停止</option>
+                            </select>
+                          </div>
+                          <div className="form-group">
+                            <label>
+                              <input
+                                type="checkbox"
+                                checked={editingUser.isVerified}
+                                onChange={(e) => setEditingUser({
+                                  ...editingUser,
+                                  isVerified: e.target.checked
+                                })}
+                              />
+                              認証済み
+                            </label>
+                          </div>
+                          <div className="form-actions">
+                            <button type="submit" className="save-button">
+                              保存
+                            </button>
+                            <button 
+                              type="button" 
+                              onClick={() => setEditingUser(null)}
+                              className="cancel-button"
+                            >
+                              キャンセル
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
