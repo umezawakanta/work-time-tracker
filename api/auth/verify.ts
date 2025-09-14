@@ -29,15 +29,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   } else {
-<<<<<<< HEAD
-    // Do NOT set Access-Control-Allow-Origin: '*' if credentials are involved.
-    res.setHeader('Access-Control-Allow-Origin', ''); // Set to empty string or consider omitting header entirely.
-    res.setHeader('Access-Control-Allow-Credentials', 'false');
-=======
     // 許可されていないオリジンの場合は認証情報を送信しない
     res.setHeader('Access-Control-Allow-Origin', '*');
     // 認証情報を送信しない場合はCredentialsヘッダーを設定しない
->>>>>>> 4abf6393b (Enhance CORS security validation - Add additional null/undefined checks for origin validation - Add length validation to prevent empty string origins - Improve credential handling logic with explicit comments - Apply enhanced security to all auth endpoints (login, register, verify) - Address GitHub Advanced Security CodeQL findings with stricter validation)
   }
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
