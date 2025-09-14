@@ -3657,7 +3657,7 @@ function App() {
                                   key={record._id} 
                                   className="date-record-item salary-record clickable"
                                   onClick={() => handleSpecificRecordClick(record, 'salary')}
-                                  title="給料記録を表示"
+                                  title="収入・支出記録を表示"
                                 >
                                   <span className="record-icon">💰</span>
                                   <span className="record-content">
@@ -3763,7 +3763,7 @@ function App() {
                                   </div>
                                 </div>
                                 <div className="record-details">
-                                  <p><strong>給料:</strong> ¥{record.salary.toLocaleString()}</p>
+                                  <p><strong>{record.salary >= 0 ? '収入:' : '支出:'}</strong> ¥{Math.abs(record.salary).toLocaleString()}</p>
                                   {record.transportation > 0 && <p><strong>交通費:</strong> ¥{record.transportation.toLocaleString()}</p>}
                                   {record.overtime > 0 && <p><strong>残業代:</strong> ¥{record.overtime.toLocaleString()}</p>}
                                   {record.bonus > 0 && <p><strong>ボーナス:</strong> ¥{record.bonus.toLocaleString()}</p>}
@@ -3870,8 +3870,8 @@ function App() {
                             </div>
                             
                             <div className="detail-section">
-                              <h4>💰 給料</h4>
-                              <p className="amount">¥{selectedRecord.salary.toLocaleString()}</p>
+                              <h4>💰 {selectedRecord.salary >= 0 ? '収入' : '支出'}</h4>
+                              <p className="amount">¥{Math.abs(selectedRecord.salary).toLocaleString()}</p>
                             </div>
                             
                             {selectedRecord.transportation > 0 && (
