@@ -2079,17 +2079,35 @@ function App() {
               </button>
             </div>
             
-            {/* 犬のキャラクター（画像版） */}
-            <div className="dog-character-image">
-              <img 
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iMzUiIGZpbGw9IiNEMkI0OEMiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIzNSIgcj0iMjUiIGZpbGw9IiNGNEE0NjAiLz4KPGNpcmNsZSBjeD0iMzUiIGN5PSIzMCIgcj0iNCIgZmlsbD0iIzAwMCIvPgo8Y2lyY2xlIGN4PSI0NSIgY3k9IjMwIiByPSI0IiBmaWxsPSIjMDAwIi8+CjxjaXJjbGUgY3g9IjQwIiBjeT0iMzciIHI9IjIiIGZpbGw9IiMwMDAiLz4KPHBhdGggZD0iTTM1IDQwIFE0MCA0NSA0NSA0MCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz4KPGNpcmNsZSBjeD0iMzAiIGN5PSIyNSIgcj0iOCIgZmlsbD0iI0QyQjQ4QyIvPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjI1IiByPSI4IiBmaWxsPSIjRDJCOEMiLz4KPGNpcmNsZSBjeD0iMzUiIGN5PSI1NSIgcj0iNiIgZmlsbD0iI0QyQjQ4QyIvPgo8Y2lyY2xlIGN4PSI0NSIgY3k9IjU1IiByPSI2IiBmaWxsPSIjRDJCOEMiLz4KPHBhdGggZD0iTTU1IDQwIFE2MCAzNSA2NSA0MCIgc3Ryb2tlPSIjRDJCOEMiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPgo8dGV4dCB4PSI0MCIgeT0iMTUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI0ZGRiI+4p2k4p2k4p2kPC90ZXh0Pgo8L3N2Zz4K" 
-                alt="もこもこ犬キャラクター" 
-                className="dog-image"
-              />
-              <div className="dog-sparkles">
-                <div className="dog-sparkle sparkle-1">✨</div>
-                <div className="dog-sparkle sparkle-2">⭐</div>
-                <div className="dog-sparkle sparkle-3">💫</div>
+            {/* 右下のヘタウマキャラクター */}
+            <div className="bottom-right-character">
+              <div className="hetama-character">
+                <div className="hetama-halo"></div>
+                <div className="hetama-wings">
+                  <div className="hetama-wing left-hetama-wing"></div>
+                  <div className="hetama-wing right-hetama-wing"></div>
+                </div>
+                <div className="hetama-face">
+                  <div className="hetama-eyes">
+                    <div className="hetama-eye left-hetama-eye"></div>
+                    <div className="hetama-eye right-hetama-eye"></div>
+                  </div>
+                  <div className="hetama-mouth"></div>
+                </div>
+                <div className="hetama-body"></div>
+                <div className="hetama-arms">
+                  <div className="hetama-arm left-hetama-arm"></div>
+                  <div className="hetama-arm right-hetama-arm"></div>
+                </div>
+                <div className="hetama-legs">
+                  <div className="hetama-leg left-hetama-leg"></div>
+                  <div className="hetama-leg right-hetama-leg"></div>
+                </div>
+                <div className="hetama-sparkles">
+                  <div className="hetama-sparkle sparkle-1">✨</div>
+                  <div className="hetama-sparkle sparkle-2">⭐</div>
+                  <div className="hetama-sparkle sparkle-3">💫</div>
+                </div>
               </div>
             </div>
           </header>
