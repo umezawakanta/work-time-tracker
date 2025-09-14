@@ -29,6 +29,21 @@ interface Project {
   createdAt: string;
 }
 
+interface ReportSummary {
+  totalTime: number;
+  totalEntries: number;
+  averageSessionTime: number;
+  todayTime: number;
+  thisWeekTime: number;
+  thisMonthTime: number;
+  projectBreakdown: Array<{
+    projectId: string;
+    projectName: string;
+    totalTime: number;
+    entryCount: number;
+  }>;
+}
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -52,6 +67,10 @@ function App() {
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [projectColor, setProjectColor] = useState("#3b82f6");
+  
+  // レポート関連の状態
+  const [reportSummary, setReportSummary] = useState<ReportSummary | null>(null);
+  const [showReports, setShowReports] = useState(false);
 
   // ログイン状態をチェック
   useEffect(() => {
@@ -100,6 +119,7 @@ function App() {
           localStorage.setItem("access_token", data.token);
         }
         loadProjects(); // プロジェクトを読み込み
+        loadReportSummary(); // レポートを読み込み
         console.log("Login successful:", data);
       } else {
         setMessage(`ログイン失敗: ${data.message}`);
@@ -200,6 +220,25 @@ function App() {
       }
     } catch (error) {
       console.error("Failed to load projects:", error);
+    }
+  };
+
+  const loadReportSummary = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/reports/summary", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setReportSummary(data.summary);
+      }
+    } catch (error) {
+      console.error("Failed to load report summary:", error);
     }
   };
 
@@ -407,14 +446,68 @@ function App() {
               </div>
             </div>
             
-            <div className="feature-cards">
-              <div className="feature-card">
-                <h3>レポート</h3>
-                <p>時間使用状況の分析</p>
-                <button className="feature-button" disabled>
-                  準備中
+            {/* レポートセクション */}
+            <div className="reports-section">
+              <div className="section-header">
+                <h2>レポート</h2>
+                <button 
+                  onClick={() => {
+                    setShowReports(!showReports);
+                    if (!showReports && !reportSummary) {
+                      loadReportSummary();
+                    }
+                  }}
+                  className="toggle-reports-button"
+                >
+                  {showReports ? "レポートを閉じる" : "レポートを表示"}
                 </button>
               </div>
+
+              {showReports && reportSummary && (
+                <div className="report-content">
+                  <div className="report-stats">
+                    <div className="stat-card">
+                      <h3>総作業時間</h3>
+                      <p className="stat-value">{formatTime(reportSummary.totalTime)}</p>
+                    </div>
+                    <div className="stat-card">
+                      <h3>今日の作業時間</h3>
+                      <p className="stat-value">{formatTime(reportSummary.todayTime)}</p>
+                    </div>
+                    <div className="stat-card">
+                      <h3>今週の作業時間</h3>
+                      <p className="stat-value">{formatTime(reportSummary.thisWeekTime)}</p>
+                    </div>
+                    <div className="stat-card">
+                      <h3>今月の作業時間</h3>
+                      <p className="stat-value">{formatTime(reportSummary.thisMonthTime)}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="report-details">
+                    <div className="detail-section">
+                      <h3>セッション統計</h3>
+                      <p>総セッション数: {reportSummary.totalEntries}回</p>
+                      <p>平均セッション時間: {formatTime(reportSummary.averageSessionTime)}</p>
+                    </div>
+                    
+                    {reportSummary.projectBreakdown.length > 0 && (
+                      <div className="detail-section">
+                        <h3>プロジェクト別時間</h3>
+                        <div className="project-breakdown">
+                          {reportSummary.projectBreakdown.map((project) => (
+                            <div key={project.projectId} className="breakdown-item">
+                              <span className="project-name">{project.projectName}</span>
+                              <span className="project-time">{formatTime(project.totalTime)}</span>
+                              <span className="project-count">({project.entryCount}回)</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </main>
         </div>
