@@ -10,26 +10,27 @@ dotenv.config();
 
 const Project = mongoose.models.Project || mongoose.model("Project", ProjectSchema);
 
-// Create project request interface
-interface CreateProjectRequest {
-  name: string;
-  description?: string;
-  color?: string;
-}
+/**
+ * Create project request interface
+ * @typedef {Object} CreateProjectRequest
+ * @property {string} name - Project name
+ * @property {string} [description] - Project description
+ * @property {string} [color] - Project color
+ */
 
-// Create project response interface
-interface CreateProjectResponse {
-  success: boolean;
-  message: string;
-  project?: {
-    id: string;
-    name: string;
-    description?: string;
-    color: string;
-    isActive: boolean;
-  };
-  error?: string;
-}
+/**
+ * Create project response interface
+ * @typedef {Object} CreateProjectResponse
+ * @property {boolean} success - Whether the operation was successful
+ * @property {string} message - Response message
+ * @property {Object} [project] - Project object if successful
+ * @property {string} project.id - Project ID
+ * @property {string} project.name - Project name
+ * @property {string} [project.description] - Project description
+ * @property {string} project.color - Project color
+ * @property {boolean} project.isActive - Whether project is active
+ * @property {string} [error] - Error message if failed
+ */
 
 module.exports = async function handler(req, res) {
   // CORS設定
@@ -54,7 +55,7 @@ module.exports = async function handler(req, res) {
     res.status(405).json({
       success: false,
       error: 'Method not allowed',
-    } as CreateProjectResponse);
+    });
     return;
   }
 
@@ -64,7 +65,7 @@ module.exports = async function handler(req, res) {
     // Ensure database connection is established
     await ensureDatabaseConnection();
     
-    const { name, description, color = '#3B82F6' }: CreateProjectRequest = req.body;
+    const { name, description, color = '#3B82F6' } = req.body;
 
     // 必須フィールドの検証
     if (!name || !name.trim()) {
@@ -95,7 +96,7 @@ module.exports = async function handler(req, res) {
     });
 
     // レスポンスの構築
-    const response: CreateProjectResponse = {
+    const response = {
       success: true,
       message: 'プロジェクトが作成されました',
       project: {

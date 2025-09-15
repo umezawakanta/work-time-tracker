@@ -92,26 +92,27 @@ UserSchema.set("toJSON", {
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
-// Register request interface
-interface RegisterRequest {
-  email: string;
-  password: string;
-  displayName: string;
-}
+/**
+ * Register request interface
+ * @typedef {Object} RegisterRequest
+ * @property {string} email - User email address
+ * @property {string} password - User password
+ * @property {string} displayName - User display name
+ */
 
-// Register response interface
-interface RegisterResponse {
-  success: boolean;
-  message: string;
-  user?: {
-    id: string;
-    email: string;
-    displayName: string;
-    role: string;
-    isVerified: boolean;
-  };
-  error?: string;
-}
+/**
+ * Register response interface
+ * @typedef {Object} RegisterResponse
+ * @property {boolean} success - Whether the operation was successful
+ * @property {string} message - Response message
+ * @property {Object} [user] - User object if successful
+ * @property {string} user.id - User ID
+ * @property {string} user.email - User email
+ * @property {string} user.displayName - User display name
+ * @property {string} user.role - User role
+ * @property {boolean} user.isVerified - Whether user is verified
+ * @property {string} [error] - Error message if failed
+ */
 
 module.exports = async function handler(req, res) {
   // CORS設定
@@ -150,7 +151,7 @@ module.exports = async function handler(req, res) {
     res.status(405).json({
       success: false,
       error: 'Method not allowed',
-    } as RegisterResponse);
+    });
     return;
   }
 
@@ -160,7 +161,7 @@ module.exports = async function handler(req, res) {
     // Ensure database connection is established
     await ensureDatabaseConnection();
     
-    const { email, password, displayName }: RegisterRequest = req.body;
+    const { email, password, displayName } = req.body;
 
     // 必須フィールドの検証
     if (!email || !password || !displayName) {
@@ -234,7 +235,7 @@ module.exports = async function handler(req, res) {
     });
 
     // レスポンスの構築（パスワードは除外）
-    const response: RegisterResponse = {
+    const response = {
       success: true,
       message: 'アカウントが正常に作成されました',
       user: {
@@ -256,6 +257,6 @@ module.exports = async function handler(req, res) {
       error: process.env.NODE_ENV === 'development'
         ? (error instanceof Error ? error.message : String(error))
         : 'Internal server error',
-    } as RegisterResponse);
+    });
   }
 }
