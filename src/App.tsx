@@ -2259,12 +2259,19 @@ function App() {
   };
 
   const handleStartTracking = async () => {
+    console.log('▶️ 時間記録開始ボタンがクリックされました');
+    console.log('description:', description);
+    console.log('currentTimeEntry:', currentTimeEntry);
+    console.log('isTracking:', isTracking);
+    
     if (!description.trim()) {
+      console.log('❌ 作業内容が入力されていません');
       setMessage("作業内容を入力してください");
       return;
     }
 
     try {
+      console.log('🔄 時間記録開始APIを呼び出し中...');
       const response = await fetch("/api/time/start", {
         method: "POST",
         headers: {
@@ -2275,29 +2282,43 @@ function App() {
       });
 
       const data = await response.json();
+      console.log('📡 API応答:', data);
 
       if (data.success) {
+        console.log('✅ 時間記録開始成功');
         const newEntry: TimeEntry = {
           id: data.entry.id,
           description,
           startTime: new Date(data.entry.startTime),
         };
+        console.log('新しいTimeEntry:', newEntry);
         setCurrentTimeEntry(newEntry);
         setIsTracking(true);
         setElapsedTime(0);
         setMessage("時間記録を開始しました");
       } else {
+        console.log('❌ APIエラー:', data.message);
         setMessage(`エラー: ${data.message}`);
       }
     } catch (error) {
+      console.error('❌ 時間記録開始エラー:', error);
       setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   };
 
   const handleStopTracking = async () => {
-    if (!currentTimeEntry) return;
+    console.log('⏹️ 時間記録停止ボタンがクリックされました');
+    console.log('currentTimeEntry:', currentTimeEntry);
+    console.log('isTracking:', isTracking);
+    
+    if (!currentTimeEntry) {
+      console.log('❌ currentTimeEntryがnullです');
+      setMessage('エラー: 記録中の時間記録が見つかりません');
+      return;
+    }
 
     try {
+      console.log('🔄 時間記録停止APIを呼び出し中...');
       const response = await fetch("/api/time/stop", {
         method: "POST",
         headers: {
@@ -2308,19 +2329,33 @@ function App() {
       });
 
       const data = await response.json();
+      console.log('📡 API応答:', data);
 
       if (data.success) {
+        console.log('✅ 時間記録停止成功');
         setCurrentTimeEntry(null);
         setIsTracking(false);
         setElapsedTime(0);
         setDescription("");
         setMessage(`時間記録を停止しました。記録時間: ${formatTime(data.entry.duration)}`);
       } else {
+        console.log('❌ APIエラー:', data.message);
         setMessage(`エラー: ${data.message}`);
       }
     } catch (error) {
+      console.error('❌ 時間記録停止エラー:', error);
       setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
+  };
+
+  // 時間記録を強制的にリセットする関数
+  const handleResetTracking = () => {
+    console.log('🔄 時間記録を強制リセットします');
+    setCurrentTimeEntry(null);
+    setIsTracking(false);
+    setElapsedTime(0);
+    setDescription("");
+    setMessage("時間記録をリセットしました");
   };
 
   // ゆでたまごタイマーの関数
@@ -3307,21 +3342,33 @@ function App() {
               if (feature.id === 'time-tracking') {
                 return (
             <div key={feature.id} className="time-tracking-section">
-              <h2>
-                <span className="section-icon">
-                  <div className="mini-character">
-                    <div className="mini-character-face">
-                      <div className="mini-character-eyes">
-                        <div className="mini-eye left-mini-eye"></div>
-                        <div className="mini-eye right-mini-eye"></div>
+              <div className="section-header">
+                <h2>
+                  <span className="section-icon">
+                    <div className="mini-character">
+                      <div className="mini-character-face">
+                        <div className="mini-character-eyes">
+                          <div className="mini-eye left-mini-eye"></div>
+                          <div className="mini-eye right-mini-eye"></div>
+                        </div>
+                        <div className="mini-character-mouth"></div>
                       </div>
-                      <div className="mini-character-mouth"></div>
+                      <div className="mini-character-body"></div>
                     </div>
-                    <div className="mini-character-body"></div>
-                  </div>
-                </span>
-                時間記録
-              </h2>
+                  </span>
+                  時間記録
+                </h2>
+                <button 
+                  onClick={() => {
+                    const newHiddenFeatures = [...(userSettings?.hiddenFeatures || []), 'time-tracking'];
+                    updateUserSettings({ hiddenFeatures: newHiddenFeatures });
+                  }}
+                  className="close-section-button"
+                  title="セクションを閉じる"
+                >
+                  ✕
+                </button>
+              </div>
               
               {!isTracking ? (
                 <div className="start-tracking">
@@ -3346,9 +3393,14 @@ function App() {
                     <div className="elapsed-time">
                       {formatTime(elapsedTime)}
                     </div>
-                    <button onClick={handleStopTracking} className="stop-button">
-                      ⏹️ 記録停止
-                    </button>
+                    <div className="tracking-buttons">
+                      <button onClick={handleStopTracking} className="stop-button">
+                        ⏹️ 記録停止
+                      </button>
+                      <button onClick={handleResetTracking} className="reset-button">
+                        🔄 強制リセット
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -3545,7 +3597,8 @@ function App() {
                   </div>
                 </div>
               </div>
-            );
+            </div>
+              );
           } else if (feature.id === 'projects') {
             return (
               <div key={feature.id} className="projects-section">
