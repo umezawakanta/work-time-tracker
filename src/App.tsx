@@ -1360,16 +1360,21 @@ function App() {
   // ログイン状態をチェック
   useEffect(() => {
     const checkAuth = async () => {
+      console.log('🔍 Starting auth check...');
       const token = localStorage.getItem("access_token");
+      console.log('🔍 Token exists:', !!token);
+      
       if (token) {
         // トークンの有効性を検証
         await verifyToken(token);
       } else {
         // トークンがない場合は未ログイン状態に設定
+        console.log('🔍 No token, setting logged out state');
         setIsLoggedIn(false);
         setUser(null);
       }
       setIsCheckingAuth(false);
+      console.log('🔍 Auth check completed');
     };
     
     checkAuth();
@@ -1385,6 +1390,7 @@ function App() {
 
   const verifyToken = async (token: string) => {
     try {
+      console.log('🔍 Verifying token...');
       // トークンの有効性を検証
       const userResponse = await fetch("/api/auth/verify", {
         headers: {
@@ -1392,9 +1398,14 @@ function App() {
         },
       });
 
+      console.log('🔍 Token verification response:', userResponse.status);
+
       if (userResponse.ok) {
         const userData = await userResponse.json();
+        console.log('🔍 User data:', userData);
+        
         if (userData.success && userData.user) {
+          console.log('🔍 Setting user and login state');
           setUser(userData.user);
           setIsLoggedIn(true);
           // データを読み込み
@@ -1404,12 +1415,14 @@ function App() {
           loadWorkDiariesWithUserId(userData.user.id);
           loadUserSettings();
         } else {
+          console.log('🔍 Invalid user data, clearing auth');
           // トークンが無効な場合は削除
           localStorage.removeItem("access_token");
           setIsLoggedIn(false);
           setUser(null);
         }
       } else {
+        console.log('🔍 Token verification failed, clearing auth');
         // トークンが無効な場合は削除
         localStorage.removeItem("access_token");
         setIsLoggedIn(false);
@@ -2346,6 +2359,23 @@ function App() {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // デバッグログを追加
+  console.log('🔍 Auth Debug:', {
+    isCheckingAuth,
+    isLoggedIn,
+    user: user ? { id: user.id, email: user.email, displayName: user.displayName } : null,
+    hasToken: !!localStorage.getItem("access_token")
+  });
+
+  // 強制リセット関数（デバッグ用）
+  const forceReset = () => {
+    console.log('🔍 Force resetting auth state');
+    localStorage.removeItem("access_token");
+    setIsLoggedIn(false);
+    setUser(null);
+    setIsCheckingAuth(false);
+  };
+
   // 認証チェック中はローディング画面を表示
   if (isCheckingAuth) {
     return (
@@ -2354,6 +2384,124 @@ function App() {
           <div className="loading-spinner">
             <div className="spinner"></div>
             <p>認証を確認中...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ログインしていない場合はログイン画面を表示
+  if (!isLoggedIn || !user || !user.id) {
+    return (
+      <div className="app">
+        <div className="login-container">
+          <h1>Work Time Tracker</h1>
+          
+          {isRegisterMode ? (
+            <form onSubmit={handleRegister} className="login-form">
+              <div className="form-group">
+                <label htmlFor="displayName">表示名</label>
+                <input
+                  type="text"
+                  id="displayName"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="email">メールアドレス</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">パスワード</label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+              </div>
+              <button type="submit" disabled={loading} className="login-button">
+                {loading ? "登録中..." : "アカウント作成"}
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setIsRegisterMode(false)}
+                className="switch-button"
+              >
+                ログインに戻る
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleLogin} className="login-form">
+              <div className="form-group">
+                <label htmlFor="email">メールアドレス</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">パスワード</label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+              </div>
+              <button type="submit" disabled={loading} className="login-button">
+                {loading ? "ログイン中..." : "ログイン"}
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setIsRegisterMode(true)}
+                className="switch-button"
+              >
+                アカウント作成
+              </button>
+            </form>
+          )}
+          
+          {message && (
+            <div className={`message ${message.includes("成功") || message.includes("作成") ? "success" : "error"}`}>
+              {message}
+            </div>
+          )}
+          
+          {/* デバッグ用ボタン */}
+          <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+            <button 
+              onClick={forceReset}
+              style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: '#ef4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              🔄 認証状態をリセット
+            </button>
           </div>
         </div>
       </div>
@@ -2398,7 +2546,7 @@ function App() {
               <h1>⏰ Work Time Tracker 📚</h1>
             </div>
             <div className="user-info">
-              <span>👋 こんにちは、{user?.displayName || user?.email}さん！</span>
+              <span>👋 こんにちは、{user?.displayName || user?.email || 'User'}さん！</span>
               <button 
                 onClick={() => setShowThemeSettings(!showThemeSettings)} 
                 className="theme-settings-button"
