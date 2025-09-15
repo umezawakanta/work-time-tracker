@@ -141,6 +141,7 @@ interface Feature {
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -1358,11 +1359,20 @@ function App() {
 
   // ログイン状態をチェック
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      // トークンの有効性を検証
-      verifyToken(token);
-    }
+    const checkAuth = async () => {
+      const token = localStorage.getItem("access_token");
+      if (token) {
+        // トークンの有効性を検証
+        await verifyToken(token);
+      } else {
+        // トークンがない場合は未ログイン状態に設定
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+      setIsCheckingAuth(false);
+    };
+    
+    checkAuth();
   }, []);
 
   // ログイン状態が変更された時にデータを読み込み
@@ -1375,41 +1385,41 @@ function App() {
 
   const verifyToken = async (token: string) => {
     try {
-      // 簡単なトークン検証（実際の実装ではJWTをデコード）
-      const response = await fetch("/api/projects/list", {
+      // トークンの有効性を検証
+      const userResponse = await fetch("/api/auth/verify", {
         headers: {
           "Authorization": `Bearer ${token}`,
         },
       });
 
-      if (response.ok) {
-        setIsLoggedIn(true);
-        loadProjects();
-        loadReportSummary();
-        // トークン検証時にもデータを読み込み
-        const userResponse = await fetch("/api/auth/verify", {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          },
-        });
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          if (userData.success && userData.user) {
-            setUser(userData.user);
-            loadSalaryRecordsWithUserId(userData.user.id);
-            loadWorkDiariesWithUserId(userData.user.id);
-            loadUserSettings();
-          }
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        if (userData.success && userData.user) {
+          setUser(userData.user);
+          setIsLoggedIn(true);
+          // データを読み込み
+          loadProjects();
+          loadReportSummary();
+          loadSalaryRecordsWithUserId(userData.user.id);
+          loadWorkDiariesWithUserId(userData.user.id);
+          loadUserSettings();
+        } else {
+          // トークンが無効な場合は削除
+          localStorage.removeItem("access_token");
+          setIsLoggedIn(false);
+          setUser(null);
         }
       } else {
         // トークンが無効な場合は削除
         localStorage.removeItem("access_token");
         setIsLoggedIn(false);
+        setUser(null);
       }
     } catch (error) {
       console.error("Token verification failed:", error);
       localStorage.removeItem("access_token");
       setIsLoggedIn(false);
+      setUser(null);
     }
   };
 
@@ -2076,8 +2086,18 @@ function App() {
     setCurrentTimeEntry(null);
     setIsTracking(false);
     setElapsedTime(0);
+    setDescription("");
     setProjects([]);
     setSelectedProject("");
+    // その他の状態もリセット
+    setSalaryRecords([]);
+    setWorkDiaries([]);
+    setReportSummary(null);
+    setUserSettings(null);
+    setBooks([]);
+    setMemos([]);
+    setPublicMemos([]);
+    setAdminUsers([]);
   };
 
   const handleStartTracking = async () => {
@@ -2325,6 +2345,20 @@ function App() {
     const secs = seconds % 60;
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  // 認証チェック中はローディング画面を表示
+  if (isCheckingAuth) {
+    return (
+      <div className="app">
+        <div className="login-container">
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <p>認証を確認中...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoggedIn) {
     return (
