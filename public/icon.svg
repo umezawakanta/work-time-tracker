@@ -1,27 +1,25 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <!-- 背景 -->
-  <rect width="512" height="512" fill="#3b82f6" rx="80"/>
+  <!-- 角丸の背景（iOSアイコン風） -->
+  <rect width="512" height="512" fill="#1DA1F2" rx="112" ry="112"/>
   
-  <!-- キャラクターの頭（黄色） -->
-  <circle cx="256" cy="200" r="80" fill="#fbbf24" stroke="#1f2937" stroke-width="4"/>
+  <!-- 体の黒い輪郭 -->
+  <ellipse cx="256" cy="360" rx="135" ry="110" fill="#3a4556" stroke="#2c3344" stroke-width="12"/>
   
-  <!-- 目（黒い円形） -->
-  <circle cx="240" cy="180" r="6" fill="#1f2937"/>
-  <circle cx="272" cy="180" r="6" fill="#1f2937"/>
+  <!-- 体の緑色部分 -->
+  <ellipse cx="256" cy="360" rx="110" ry="85" fill="#4CAF50"/>
   
-  <!-- 目のハイライト（白い点） -->
-  <circle cx="242" cy="177" r="1.5" fill="#ffffff"/>
-  <circle cx="274" cy="177" r="1.5" fill="#ffffff"/>
+  <!-- 頭の黒い輪郭 -->
+  <circle cx="256" cy="190" r="120" fill="#3a4556" stroke="#2c3344" stroke-width="12"/>
   
-  <!-- 口（横長の楕円形） -->
-  <ellipse cx="256" cy="220" rx="15" ry="6" fill="#1f2937"/>
+  <!-- 頭の黄色い顔 -->
+  <circle cx="256" cy="190" r="95" fill="#FFD700"/>
   
-  <!-- 胴体（緑色） -->
-  <ellipse cx="256" cy="320" rx="70" ry="60" fill="#22c55e" stroke="#1f2937" stroke-width="4"/>
+  <!-- 左目 -->
+  <circle cx="225" cy="175" r="10" fill="#1a1a1a"/>
   
-  <!-- アクセント（小さな装飾） -->
-  <circle cx="150" cy="150" r="8" fill="#fbbf24" opacity="0.7"/>
-  <circle cx="362" cy="150" r="6" fill="#fbbf24" opacity="0.7"/>
-  <circle cx="120" cy="250" r="5" fill="#fbbf24" opacity="0.5"/>
-  <circle cx="392" cy="250" r="7" fill="#fbbf24" opacity="0.5"/>
+  <!-- 右目 -->
+  <circle cx="287" cy="175" r="10" fill="#1a1a1a"/>
+  
+  <!-- 口（大きく開いた黒い楕円） -->
+  <ellipse cx="256" cy="215" rx="30" ry="25" fill="#1a1a1a"/>
 </svg>
