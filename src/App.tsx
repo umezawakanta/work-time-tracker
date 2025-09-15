@@ -210,6 +210,10 @@ function App() {
       background: '#ffffff'
     }
   });
+
+  // 音声ループ再生の状態
+  const [soundLoopInterval, setSoundLoopInterval] = useState<NodeJS.Timeout | null>(null);
+  const [isSoundPlaying, setIsSoundPlaying] = useState(false);
   
   // プロジェクト関連の状態
   const [projects, setProjects] = useState<Project[]>([]);
@@ -2257,16 +2261,18 @@ function App() {
             clearInterval(interval);
             setEggTimerInterval(null);
             // タイマー終了時の通知
-            playEggTimerSound();
             const eggTypeName = eggTimerType === 'soft' ? '半熟' : eggTimerType === 'medium' ? '中半熟' : '固ゆで';
-            setMessage(`🥚 ゆでたまごタイマー終了！${eggTypeName}のできあがりです！`);
+            setMessage(`🥚 ゆでたまごタイマー終了！${eggTypeName}のできあがりです！音を停止するには「音を停止」ボタンを押してください。`);
             
             // ブラウザ通知を送信
             sendNotification(
               '🥚 ゆでたまごタイマー終了！',
-              `${eggTypeName}のゆでたまごができあがりました！`,
+              `${eggTypeName}のゆでたまごができあがりました！音を停止するには「音を停止」ボタンを押してください。`,
               '🥚'
             );
+            
+            // ループ音声を開始
+            startSoundLoop(eggTimerSound);
             
             // 履歴に追加
             addToTimerHistory(`ゆでたまご（${eggTypeName}）`, eggTimerOriginalTime, 'egg');
@@ -2292,16 +2298,18 @@ function App() {
             clearInterval(interval);
             setEggTimerInterval(null);
             // タイマー終了時の通知
-            playEggTimerSound();
             const eggTypeName = eggTimerType === 'soft' ? '半熟' : eggTimerType === 'medium' ? '中半熟' : '固ゆで';
-            setMessage(`🥚 ゆでたまごタイマー終了！${eggTypeName}のできあがりです！`);
+            setMessage(`🥚 ゆでたまごタイマー終了！${eggTypeName}のできあがりです！音を停止するには「音を停止」ボタンを押してください。`);
             
             // ブラウザ通知を送信
             sendNotification(
               '🥚 ゆでたまごタイマー終了！',
-              `${eggTypeName}のゆでたまごができあがりました！`,
+              `${eggTypeName}のゆでたまごができあがりました！音を停止するには「音を停止」ボタンを押してください。`,
               '🥚'
             );
+            
+            // ループ音声を開始
+            startSoundLoop(eggTimerSound);
             
             // 履歴に追加
             addToTimerHistory(`ゆでたまご（${eggTypeName}）`, duration, 'egg');
@@ -2530,16 +2538,18 @@ function App() {
             clearInterval(interval);
             setCustomTimerInterval(null);
             // タイマー終了時の通知
-            playCustomTimerSound();
             const timerName = customTimerName || 'カスタムタイマー';
-            setMessage(`⏰ ${timerName}終了！`);
+            setMessage(`⏰ ${timerName}終了！音を停止するには「音を停止」ボタンを押してください。`);
             
             // ブラウザ通知を送信
             sendNotification(
               '⏰ タイマー終了！',
-              `${timerName}が終了しました！`,
+              `${timerName}が終了しました！音を停止するには「音を停止」ボタンを押してください。`,
               '⏰'
             );
+            
+            // ループ音声を開始
+            startSoundLoop(customTimerSound);
             
             // 履歴に追加
             addToTimerHistory(timerName, customTimerOriginalTime, 'custom');
@@ -2570,16 +2580,18 @@ function App() {
             clearInterval(interval);
             setCustomTimerInterval(null);
             // タイマー終了時の通知
-            playCustomTimerSound();
             const timerName = customTimerName || 'カスタムタイマー';
-            setMessage(`⏰ ${timerName}終了！`);
+            setMessage(`⏰ ${timerName}終了！音を停止するには「音を停止」ボタンを押してください。`);
             
             // ブラウザ通知を送信
             sendNotification(
               '⏰ タイマー終了！',
-              `${timerName}が終了しました！`,
+              `${timerName}が終了しました！音を停止するには「音を停止」ボタンを押してください。`,
               '⏰'
             );
+            
+            // ループ音声を開始
+            startSoundLoop(customTimerSound);
             
             // 履歴に追加
             addToTimerHistory(timerName, totalSeconds, 'custom');
@@ -2672,15 +2684,17 @@ function App() {
           setCustomTimerActive(false);
           clearInterval(interval);
           setCustomTimerInterval(null);
-               playCustomTimerSound();
-               setMessage(`⏰ ${preset.name}終了！`);
+               setMessage(`⏰ ${preset.name}終了！音を停止するには「音を停止」ボタンを押してください。`);
                
                // ブラウザ通知を送信
                sendNotification(
                  '⏰ プリセットタイマー終了！',
-                 `${preset.name}が終了しました！`,
+                 `${preset.name}が終了しました！音を停止するには「音を停止」ボタンを押してください。`,
                  '⏰'
                );
+               
+               // ループ音声を開始
+               startSoundLoop(customTimerSound);
                
                addToTimerHistory(preset.name, totalSeconds, 'preset');
           return 0;
@@ -2742,6 +2756,58 @@ function App() {
         requireInteraction: true
       });
     }
+  };
+
+  // 音声のループ再生を開始
+  const startSoundLoop = (soundType: 'bell' | 'chime' | 'beep' | 'alarm') => {
+    if (!timerSettings.enableSounds || isSoundPlaying) return;
+    
+    setIsSoundPlaying(true);
+    
+    const playSound = async () => {
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume();
+        }
+        
+        switch (soundType) {
+          case 'bell':
+            playBellSound(audioContext);
+            break;
+          case 'chime':
+            playChimeSound(audioContext);
+            break;
+          case 'beep':
+            playBeepSound(audioContext);
+            break;
+          case 'alarm':
+            playAlarmSound(audioContext);
+            break;
+          default:
+            playBellSound(audioContext);
+        }
+      } catch (error) {
+        console.error('音声ループ再生エラー:', error);
+        playFallbackSound();
+      }
+    };
+    
+    // 即座に1回再生
+    playSound();
+    
+    // 3秒間隔でループ再生
+    const interval = setInterval(playSound, 3000);
+    setSoundLoopInterval(interval);
+  };
+
+  // 音声のループ再生を停止
+  const stopSoundLoop = () => {
+    if (soundLoopInterval) {
+      clearInterval(soundLoopInterval);
+      setSoundLoopInterval(null);
+    }
+    setIsSoundPlaying(false);
   };
 
   // タイマー設定の保存
@@ -2840,6 +2906,13 @@ function App() {
     initializeNotifications();
     loadTimerSettings();
     loadTimerHistory();
+  }, []);
+
+  // コンポーネントアンマウント時に音声ループを停止
+  React.useEffect(() => {
+    return () => {
+      stopSoundLoop();
+    };
   }, []);
 
   // 認証チェック中はローディング画面を表示
@@ -5144,6 +5217,22 @@ function App() {
               </div>
 
                  <div className="timers-content">
+                   {/* 音声停止ボタン */}
+                   {isSoundPlaying && (
+                     <div className="sound-stop-section">
+                       <div className="sound-stop-alert">
+                         <h3>🔊 通知音が再生中です</h3>
+                         <p>タイマーが終了しました。音を停止するには下のボタンを押してください。</p>
+                         <button 
+                           onClick={stopSoundLoop} 
+                           className="sound-stop-btn"
+                         >
+                           🔇 音を停止
+                         </button>
+                       </div>
+                     </div>
+                   )}
+
                    {/* タイマー設定 */}
                    <div className="timer-settings-section">
                      <h3>⚙️ タイマー設定</h3>

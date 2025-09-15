@@ -3390,6 +3390,71 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   padding: 2rem;
 }
 
+       /* 音声停止セクション */
+       .sound-stop-section {
+         margin-bottom: 2rem;
+         animation: pulse 2s infinite;
+       }
+
+       .sound-stop-alert {
+         padding: 2rem;
+         background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+         border-radius: 12px;
+         border: 3px solid #ef4444;
+         text-align: center;
+         box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+       }
+
+       .sound-stop-alert h3 {
+         margin: 0 0 1rem 0;
+         color: #dc2626;
+         font-size: 1.5rem;
+         font-weight: 700;
+       }
+
+       .sound-stop-alert p {
+         margin: 0 0 1.5rem 0;
+         color: #7f1d1d;
+         font-size: 1.1rem;
+         line-height: 1.5;
+       }
+
+       .sound-stop-btn {
+         padding: 1rem 2rem;
+         background: #dc2626;
+         color: white;
+         border: none;
+         border-radius: 8px;
+         font-size: 1.2rem;
+         font-weight: 700;
+         cursor: pointer;
+         transition: all 0.2s ease;
+         box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+       }
+
+       .sound-stop-btn:hover {
+         background: #b91c1c;
+         transform: translateY(-2px);
+         box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+       }
+
+       .sound-stop-btn:active {
+         transform: translateY(0);
+         box-shadow: 0 2px 10px rgba(220, 38, 38, 0.4);
+       }
+
+       @keyframes pulse {
+         0% {
+           transform: scale(1);
+         }
+         50% {
+           transform: scale(1.02);
+         }
+         100% {
+           transform: scale(1);
+         }
+       }
+
        /* タイマー設定セクション */
        .timer-settings-section {
          padding: 1.5rem;
