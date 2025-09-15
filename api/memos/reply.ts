@@ -142,13 +142,20 @@ module.exports = async function handler(req, res) {
 
     // 元のメモの所有者の普通のメモにも返信をコピー
     try {
-      // 元のメモの所有者の普通のメモを検索
+      console.log('🔍 Searching for private memo:', {
+        userId: memo.userId,
+        title: memo.title,
+        content: memo.content.substring(0, 50) + '...'
+      });
+      
+      // 元のメモの所有者の普通のメモを検索（タイトルで検索）
       const privateMemo = await Memo.findOne({
         userId: memo.userId,
         isPublic: false,
-        title: memo.title,
-        content: memo.content
+        title: memo.title
       });
+
+      console.log('🔍 Private memo found:', privateMemo ? privateMemo._id.toString() : 'None');
 
       if (privateMemo) {
         // 普通のメモにも返信を作成
@@ -161,6 +168,8 @@ module.exports = async function handler(req, res) {
 
         await privateReply.save();
         console.log('✅ Reply copied to private memo:', privateMemo._id.toString());
+      } else {
+        console.log('⚠️ No matching private memo found for copying reply');
       }
     } catch (copyError) {
       console.warn('⚠️ Failed to copy reply to private memo:', copyError);

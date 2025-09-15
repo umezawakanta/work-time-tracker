@@ -1889,6 +1889,7 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
+        console.log('📝 Memos loaded:', data.memos);
         setMemos(data.memos || []);
       } else {
         setMessage(`メモの一覧取得失敗: ${data.message}`);
@@ -3579,6 +3580,12 @@ function App() {
                                   </div>
                                 </div>
                               ))}
+                            </div>
+                          )}
+                          {/* デバッグ用：返信データの確認 */}
+                          {process.env.NODE_ENV === 'development' && (
+                            <div style={{fontSize: '10px', color: '#666', marginTop: '5px'}}>
+                              Debug: replies={memo.replies ? memo.replies.length : 'undefined'}
                             </div>
                           )}
 

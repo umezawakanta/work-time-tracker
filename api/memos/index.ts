@@ -156,10 +156,15 @@ module.exports = async (req, res) => {
         search,
       });
 
+      // デバッグ用：全返信データを確認
+      const allReplies = await Reply.find({});
+      console.log('📝 All replies in database:', allReplies.length);
+
       // 各メモの返信を取得
       const memosWithReplies = await Promise.all(
         memos.map(async (memo) => {
           const replies = await Reply.find({ memoId: memo._id.toString() }).sort({ createdAt: 1 });
+          console.log(`📝 Memo ${memo._id.toString()} replies:`, replies.length);
           return {
             id: memo._id.toString(),
             title: memo.title,
