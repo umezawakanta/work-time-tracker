@@ -1,5 +1,5 @@
 // User Document Interface
-export interface UserDocument {
+interface UserDocument {
   id: string;
   email: string;
   displayName: string;
@@ -14,7 +14,7 @@ export interface UserDocument {
 }
 
 // Book Document Interface
-export interface BookDocument {
+interface BookDocument {
   id: string;
   title: string;
   author: string;
@@ -32,7 +32,7 @@ export interface BookDocument {
 }
 
 // Work Record Document Interface
-export interface WorkRecordDocument {
+interface WorkRecordDocument {
   id: string;
   userId: string;
   type: "salary" | "diary";
@@ -47,7 +47,7 @@ export interface WorkRecordDocument {
 }
 
 // Memo Document Interface
-export interface MemoDocument {
+interface MemoDocument {
   id: string;
   title: string;
   content: string;
@@ -60,7 +60,7 @@ export interface MemoDocument {
 }
 
 // User Settings Document Interface
-export interface UserSettingsDocument {
+interface UserSettingsDocument {
   id: string;
   userId: string;
   featureOrder: string[];
@@ -72,7 +72,7 @@ export interface UserSettingsDocument {
 }
 
 // Project Document Interface
-export interface ProjectDocument {
+interface ProjectDocument {
   id: string;
   name: string;
   description?: string;
@@ -84,7 +84,7 @@ export interface ProjectDocument {
 }
 
 // Time Entry Document Interface
-export interface TimeEntryDocument {
+interface TimeEntryDocument {
   id: string;
   userId: string;
   description: string;
@@ -97,26 +97,26 @@ export interface TimeEntryDocument {
 }
 
 // API Response Interfaces
-export interface ApiResponse<T = any> {
+interface ApiResponse<T = any> {
   success: boolean;
   message: string;
   data?: T;
 }
 
-export interface LoginResponse {
+interface LoginResponse {
   success: boolean;
   message: string;
   token?: string;
   user?: UserDocument;
 }
 
-export interface RegisterResponse {
+interface RegisterResponse {
   success: boolean;
   message: string;
   user?: UserDocument;
 }
 
-export interface UsersListResponse {
+interface UsersListResponse {
   success: boolean;
   message: string;
   users?: UserDocument[];
@@ -125,7 +125,7 @@ export interface UsersListResponse {
   limit?: number;
 }
 
-export interface BooksListResponse {
+interface BooksListResponse {
   success: boolean;
   message: string;
   books?: BookDocument[];
@@ -134,7 +134,7 @@ export interface BooksListResponse {
   limit?: number;
 }
 
-export interface WorkRecordsResponse {
+interface WorkRecordsResponse {
   success: boolean;
   message: string;
   records?: WorkRecordDocument[];
@@ -143,7 +143,7 @@ export interface WorkRecordsResponse {
   limit?: number;
 }
 
-export interface MemosResponse {
+interface MemosResponse {
   success: boolean;
   message: string;
   memos?: MemoDocument[];
@@ -153,18 +153,18 @@ export interface MemosResponse {
 }
 
 // Request Interfaces
-export interface LoginRequest {
+interface LoginRequest {
   email: string;
   password: string;
 }
 
-export interface RegisterRequest {
+interface RegisterRequest {
   email: string;
   password: string;
   displayName: string;
 }
 
-export interface EditUserRequest {
+interface EditUserRequest {
   userId: string;
   displayName?: string;
   email?: string;
@@ -173,7 +173,7 @@ export interface EditUserRequest {
   status?: "active" | "inactive" | "suspended";
 }
 
-export interface CreateBookRequest {
+interface CreateBookRequest {
   title: string;
   author: string;
   isbn: string;
@@ -184,7 +184,7 @@ export interface CreateBookRequest {
   notes?: string;
 }
 
-export interface UpdateBookRequest {
+interface UpdateBookRequest {
   title?: string;
   author?: string;
   isbn?: string;
@@ -197,7 +197,7 @@ export interface UpdateBookRequest {
   notes?: string;
 }
 
-export interface CreateWorkRecordRequest {
+interface CreateWorkRecordRequest {
   type: "salary" | "diary";
   date: string;
   amount?: number; // For salary records
@@ -207,7 +207,7 @@ export interface CreateWorkRecordRequest {
   tags?: string[]; // For diary records
 }
 
-export interface UpdateWorkRecordRequest {
+interface UpdateWorkRecordRequest {
   amount?: number; // For salary records
   title?: string; // For diary records
   content?: string; // For diary records
@@ -215,7 +215,7 @@ export interface UpdateWorkRecordRequest {
   tags?: string[]; // For diary records
 }
 
-export interface CreateMemoRequest {
+interface CreateMemoRequest {
   title: string;
   content: string;
   category: string;
@@ -223,7 +223,7 @@ export interface CreateMemoRequest {
   isPublic?: boolean;
 }
 
-export interface UpdateMemoRequest {
+interface UpdateMemoRequest {
   title?: string;
   content?: string;
   category?: string;
