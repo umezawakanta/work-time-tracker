@@ -2523,6 +2523,10 @@ function App() {
               >
                 ⚙️ 機能設定
               </button>
+            </div>
+            
+            {/* 右上のログアウトボタン */}
+            <div className="logout-container">
               <button onClick={handleLogout} className="logout-button">
                 🚪 ログアウト
               </button>
