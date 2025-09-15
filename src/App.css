@@ -2040,6 +2040,61 @@ tr:hover {
   grid-column: 1 / -1;
 }
 
+/* メモの返信セクション */
+.memo-replies {
+  margin: 15px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.memo-replies h4 {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.reply-item {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.reply-item:last-child {
+  margin-bottom: 0;
+}
+
+.reply-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.reply-author {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.85em;
+}
+
+.reply-date {
+  color: #6c757d;
+  font-size: 0.8em;
+}
+
+.reply-content {
+  color: #555;
+  line-height: 1.4;
+  font-size: 0.9em;
+  white-space: pre-wrap;
+}
+
 @media (max-width: 768px) {
   .memos-controls {
     flex-direction: column;

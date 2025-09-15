@@ -140,6 +140,33 @@ module.exports = async function handler(req, res) {
 
     await reply.save();
 
+    // 元のメモの所有者の普通のメモにも返信をコピー
+    try {
+      // 元のメモの所有者の普通のメモを検索
+      const privateMemo = await Memo.findOne({
+        userId: memo.userId,
+        isPublic: false,
+        title: memo.title,
+        content: memo.content
+      });
+
+      if (privateMemo) {
+        // 普通のメモにも返信を作成
+        const privateReply = new Reply({
+          memoId: privateMemo._id.toString(),
+          content: content.trim(),
+          authorName: user.displayName || user.email,
+          authorEmail: user.email
+        });
+
+        await privateReply.save();
+        console.log('✅ Reply copied to private memo:', privateMemo._id.toString());
+      }
+    } catch (copyError) {
+      console.warn('⚠️ Failed to copy reply to private memo:', copyError);
+      // コピーに失敗してもメインの返信は成功とする
+    }
+
     res.status(201).json({
       success: true,
       message: '返信を投稿しました',

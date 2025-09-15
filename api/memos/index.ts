@@ -58,6 +58,17 @@ MemoSchema.pre('save', function(next) {
 
 const Memo = mongoose.model('Memo', MemoSchema);
 
+// 返信スキーマ
+const ReplySchema = new mongoose.Schema({
+  memoId: { type: String, required: true },
+  content: { type: String, required: true },
+  authorName: { type: String, required: true },
+  authorEmail: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Reply = mongoose.model('Reply', ReplySchema);
+
 // JWT verification utility
 const verifyJWT = async (req) => {
   const authHeader = req.headers.authorization;
@@ -145,19 +156,33 @@ module.exports = async (req, res) => {
         search,
       });
 
+      // 各メモの返信を取得
+      const memosWithReplies = await Promise.all(
+        memos.map(async (memo) => {
+          const replies = await Reply.find({ memoId: memo._id.toString() }).sort({ createdAt: 1 });
+          return {
+            id: memo._id.toString(),
+            title: memo.title,
+            content: memo.content,
+            category: memo.category,
+            tags: memo.tags || [],
+            isPublic: memo.isPublic,
+            createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
+            updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
+            replies: replies.map(reply => ({
+              id: reply._id.toString(),
+              content: reply.content,
+              authorName: reply.authorName,
+              createdAt: reply.createdAt.toISOString()
+            }))
+          };
+        })
+      );
+
       res.status(200).json({
         success: true,
         message: 'メモの一覧を取得しました',
-        memos: memos.map(memo => ({
-          id: memo._id.toString(),
-          title: memo.title,
-          content: memo.content,
-          category: memo.category,
-          tags: memo.tags || [],
-          isPublic: memo.isPublic,
-          createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
-          updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
-        })),
+        memos: memosWithReplies,
       });
     } else if (req.method === 'POST') {
       // 新しいメモを追加

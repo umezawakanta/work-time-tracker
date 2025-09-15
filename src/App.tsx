@@ -3562,6 +3562,26 @@ function App() {
                               ))}
                             </div>
                           )}
+                          {/* 返信セクション */}
+                          {memo.replies && memo.replies.length > 0 && (
+                            <div className="memo-replies">
+                              <h4>💬 返信 ({memo.replies.length})</h4>
+                              {memo.replies.map((reply) => (
+                                <div key={reply.id} className="reply-item">
+                                  <div className="reply-header">
+                                    <span className="reply-author">{reply.authorName}</span>
+                                    <span className="reply-date">
+                                      {new Date(reply.createdAt).toLocaleDateString('ja-JP')}
+                                    </span>
+                                  </div>
+                                  <div className="reply-content">
+                                    {reply.content}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
                           <div className="memo-footer">
                             <span className="memo-date">
                               {new Date(memo.updatedAt).toLocaleDateString('ja-JP')}
