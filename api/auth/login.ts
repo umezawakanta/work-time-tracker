@@ -280,6 +280,7 @@ async function handler(req, res) {
       {
         userId: user.id,
         email: user.email,
+        displayName: user.displayName,
         role: roleClaim,
         roles: rolesClaim,
         isAdmin: computedIsAdmin,
