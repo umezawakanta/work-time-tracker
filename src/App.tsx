@@ -520,11 +520,6 @@ function App() {
       features.some(f => f.id === id)
     );
     
-    // タイマー機能が含まれていない場合は強制的に追加
-    if (!order.includes('timers')) {
-      order.push('timers');
-    }
-    
     return order;
   };
 
@@ -533,11 +528,8 @@ function App() {
     const order = getFeatureOrder();
     const hiddenFeatures = userSettings?.hiddenFeatures || [];
     
-    // タイマー機能が非表示になっている場合は強制的に表示
-    const filteredHiddenFeatures = hiddenFeatures.filter(id => id !== 'timers');
-    
     const visibleFeatures = order
-      .filter(id => !filteredHiddenFeatures.includes(id))
+      .filter(id => !hiddenFeatures.includes(id))
       .map(id => features.find(f => f.id === id))
       .filter(Boolean) as Feature[];
     
