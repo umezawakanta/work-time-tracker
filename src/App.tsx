@@ -498,13 +498,6 @@ function App() {
       icon: '⏱️',
       description: 'カスタムタイマーとプリセットタイマー',
       component: null // タイマーセクション
-    },
-    {
-      id: 'character-home',
-      name: 'キャラクター達のお家',
-      icon: '🏠',
-      description: 'みんなが作ったキャラクターが集まる場所',
-      component: null // キャラクター達のお家セクション
     }
   ];
 
@@ -1088,7 +1081,10 @@ function App() {
   };
 
   const handleCharacterHomeToggle = () => {
+    console.log('🏠 キャラクター達のお家ボタンがクリックされました');
+    console.log('現在のshowCharacterHome:', showCharacterHome);
     setShowCharacterHome(!showCharacterHome);
+    console.log('新しいshowCharacterHome:', !showCharacterHome);
   };
 
   const updateUserSettings = async (newSettings: Partial<UserSettings>) => {
@@ -5809,27 +5805,34 @@ function App() {
               </div>
             </div>
               );
-            } else if (feature.id === 'character-home') {
-              return (
-                <div key={feature.id} className="character-home-section">
-                  <div className="section-header">
-                    <h2>
-                      <span className="section-icon">🏠</span>
-                      キャラクター達のお家
-                    </h2>
-                  </div>
-                  <CharacterHome 
-                    onSelectCharacter={handleSelectCharacter}
-                    currentCharacter={currentCharacter}
-                  />
-                </div>
-              );
             } else {
               return null;
             }
           })}
           </main>
         </div>
+        
+        {/* キャラクター達のお家モーダル */}
+        {showCharacterHome && (
+          <div className="character-home-modal">
+            <div className="modal-overlay" onClick={handleCharacterHomeToggle}></div>
+            <div className="character-home-modal-content">
+              <div className="character-home-modal-header">
+                <h2>🏠 キャラクター達のお家</h2>
+                <button 
+                  onClick={handleCharacterHomeToggle}
+                  className="close-button"
+                >
+                  ✕
+                </button>
+              </div>
+              <CharacterHome 
+                onSelectCharacter={handleSelectCharacter}
+                currentCharacter={currentCharacter}
+              />
+            </div>
+          </div>
+        )}
         
         {/* テーマ設定モーダル */}
         {showThemeSettings && (
