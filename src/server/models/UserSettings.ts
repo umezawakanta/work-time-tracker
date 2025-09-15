@@ -13,7 +13,8 @@ const UserSettingsSchema = new mongoose.Schema({
       'bookshelf',
       'memos',
       'public-memos',
-      'work-records'
+      'work-records',
+      'timers'
     ]
   },
   hiddenFeatures: { 
