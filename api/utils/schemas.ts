@@ -178,10 +178,63 @@ UserSettingsSchema.pre('save', function(next) {
   next();
 });
 
+// Project Schema
+const ProjectSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: { type: String, default: '' },
+  color: { type: String, default: '#3B82F6' },
+  isActive: { type: Boolean, default: true },
+  userId: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+}, {
+  timestamps: true,
+  toJSON: {
+    transform: function(doc, ret) {
+      const { _id, __v, ...cleanRet } = ret;
+      return { id: _id, ...cleanRet };
+    },
+  },
+});
+
+// Time Entry Schema
+const TimeEntrySchema = new mongoose.Schema({
+  userId: { type: String, required: true },
+  projectId: { type: String },
+  startTime: { type: Date, required: true },
+  endTime: { type: Date },
+  duration: { type: Number, default: 0 }, // in minutes
+  description: { type: String, default: '' },
+  tags: [{ type: String }],
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+}, {
+  timestamps: true,
+  toJSON: {
+    transform: function(doc, ret) {
+      const { _id, __v, ...cleanRet } = ret;
+      return { id: _id, ...cleanRet };
+    },
+  },
+});
+
+// Add pre-save middleware for updatedAt
+ProjectSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+TimeEntrySchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
+
 module.exports = {
   UserSchema,
   BookSchema,
   WorkRecordSchema,
   MemoSchema,
-  UserSettingsSchema
+  UserSettingsSchema,
+  ProjectSchema,
+  TimeEntrySchema
 };
