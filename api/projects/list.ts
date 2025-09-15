@@ -2,77 +2,15 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
+const { ProjectSchema } = require('../utils/schemas');
 const { ProjectDocument } = require('../utils/types');
 
 dotenv.config();
 
-// Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
-  if (isConnected) {
-    return;
-  }
-  console.warn('[projects/list] Database not connected, attempting to connect...');
-  try {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    if (!MONGODB_URI) {
-      throw new Error("MONGODB_URI environment variable is required but not set.");
-    }
-    
-    if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
-      return;
-    }
-
-    await mongoose.connect(MONGODB_URI, {
-      dbName: 'workTimeTracker',
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 15000,
-      socketTimeoutMS: 45000,
-      bufferCommands: false,
-      connectTimeoutMS: 10000,
-      maxIdleTimeMS: 30000,
-    });
-
-    console.log("✅ MongoDB connected successfully");
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error('[projects/list] Failed to connect to database:', message);
-    throw new Error(`Database connection failed: ${message}`);
-  }
-};
 
 
-// Project schema
-const ProjectSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    description: { type: String },
-    color: { type: String, default: '#3b82f6' },
-    userId: { type: String, required: true },
-    isActive: { type: Boolean, default: true },
-  },
-  {
-    timestamps: true,
-    versionKey: false,
-  },
-);
-
-// Virtual for project ID
-ProjectSchema.virtual("id").get(function () {
-  return this._id.toHexString();
-});
-
-// Ensure virtual fields are serialized
-ProjectSchema.set("toJSON", {
-  virtuals: true,
-  transform: function (doc, ret) {
-    const { _id, __v, ...cleanRet } = ret;
-    return cleanRet;
-  },
-});
-
-const Project = mongoose.model<ProjectDocument>("Project", ProjectSchema);
+const Project = mongoose.models.Project || mongoose.model<ProjectDocument>("Project", ProjectSchema);
 
 // List projects response interface
 interface ListProjectsResponse {
@@ -109,11 +47,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method !== 'GET') {
-    res.status(405).json({
-      success: false,
-      error: 'Method not allowed',
-    } as ListProjectsResponse);
-    return;
+    return handleError(res, { statusCode: 405, message: 'メソッドが許可されていません' });
   }
 
   try {
@@ -122,30 +56,12 @@ module.exports = async function handler(req, res) {
     // Ensure database connection is established
     await ensureDatabaseConnection();
     
-    // ユーザーIDの取得（認証トークンから）
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        message: '認証が必要です',
-        error: 'Authentication required',
-      } as ListProjectsResponse);
-    }
-
     // JWTトークンを検証してユーザーIDを取得
-    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
-    let userId: string;
-    try {
-      const token = authHeader.substring(7);
-      const decoded = jwt.verify(token, jwtSecret) as any;
-      userId = decoded.userId;
-    } catch (error) {
-      return res.status(401).json({
-        success: false,
-        message: '無効な認証トークンです',
-        error: 'Invalid authentication token',
-      } as ListProjectsResponse);
+    const userInfo = await verifyJWT(req);
+    if (!userInfo) {
+      return handleError(res, { statusCode: 401, message: '認証が必要です' });
     }
+    const userId = userInfo.userId;
 
     // プロジェクト一覧を取得
     const projects = await Project.find({ 
@@ -175,13 +91,6 @@ module.exports = async function handler(req, res) {
     res.status(200).json(response);
   } catch (error) {
     console.error('❌ Project list error:', error);
-
-    res.status(500).json({
-      success: false,
-      message: 'プロジェクト一覧取得中にエラーが発生しました',
-      error: process.env.NODE_ENV === 'development'
-        ? (error instanceof Error ? error.message : String(error))
-        : 'Internal server error',
-    } as ListProjectsResponse);
+    return handleError(res, error, 'プロジェクト一覧取得中にエラーが発生しました');
   }
 }

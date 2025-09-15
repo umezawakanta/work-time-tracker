@@ -2,78 +2,15 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
+const { TimeEntrySchema } = require('../utils/schemas');
 const { TimeEntryDocument } = require('../utils/types');
 
 dotenv.config();
 
-// Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
-  if (isConnected) {
-    return;
-  }
-  console.warn('[reports/summary] Database not connected, attempting to connect...');
-  try {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    if (!MONGODB_URI) {
-      throw new Error("MONGODB_URI environment variable is required but not set.");
-    }
-    
-    if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
-      return;
-    }
-
-    await mongoose.connect(MONGODB_URI, {
-      dbName: 'workTimeTracker',
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 15000,
-      socketTimeoutMS: 45000,
-      bufferCommands: false,
-      connectTimeoutMS: 10000,
-      maxIdleTimeMS: 30000,
-    });
-
-    console.log("✅ MongoDB connected successfully");
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error('[reports/summary] Failed to connect to database:', message);
-    throw new Error(`Database connection failed: ${message}`);
-  }
-};
 
 
-// TimeEntry schema
-const TimeEntrySchema = new mongoose.Schema(
-  {
-    userId: { type: String, required: true },
-    description: { type: String, required: true },
-    startTime: { type: Date, required: true },
-    endTime: { type: Date },
-    duration: { type: Number },
-    projectId: { type: String },
-  },
-  {
-    timestamps: true,
-    versionKey: false,
-  },
-);
-
-// Virtual for time entry ID
-TimeEntrySchema.virtual("id").get(function () {
-  return this._id.toHexString();
-});
-
-// Ensure virtual fields are serialized
-TimeEntrySchema.set("toJSON", {
-  virtuals: true,
-  transform: function (doc, ret) {
-    const { _id, __v, ...cleanRet } = ret;
-    return cleanRet;
-  },
-});
-
-const TimeEntry = mongoose.model<TimeEntryDocument>("TimeEntry", TimeEntrySchema);
+const TimeEntry = mongoose.models.TimeEntry || mongoose.model<TimeEntryDocument>("TimeEntry", TimeEntrySchema);
 
 // Summary report response interface
 interface SummaryReportResponse {
@@ -116,11 +53,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method !== 'GET') {
-    res.status(405).json({
-      success: false,
-      error: 'Method not allowed',
-    } as SummaryReportResponse);
-    return;
+    return handleError(res, { statusCode: 405, message: 'メソッドが許可されていません' });
   }
 
   try {
@@ -129,30 +62,12 @@ module.exports = async function handler(req, res) {
     // Ensure database connection is established
     await ensureDatabaseConnection();
     
-    // ユーザーIDの取得（認証トークンから）
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        message: '認証が必要です',
-        error: 'Authentication required',
-      } as SummaryReportResponse);
-    }
-
     // JWTトークンを検証してユーザーIDを取得
-    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
-    let userId: string;
-    try {
-      const token = authHeader.substring(7);
-      const decoded = jwt.verify(token, jwtSecret) as any;
-      userId = decoded.userId;
-    } catch (error) {
-      return res.status(401).json({
-        success: false,
-        message: '無効な認証トークンです',
-        error: 'Invalid authentication token',
-      } as SummaryReportResponse);
+    const userInfo = await verifyJWT(req);
+    if (!userInfo) {
+      return handleError(res, { statusCode: 401, message: '認証が必要です' });
     }
+    const userId = userInfo.userId;
 
     // 日付範囲の計算
     const now = new Date();
@@ -243,13 +158,6 @@ module.exports = async function handler(req, res) {
     res.status(200).json(response);
   } catch (error) {
     console.error('❌ Summary report error:', error);
-
-    res.status(500).json({
-      success: false,
-      message: 'サマリーレポート生成中にエラーが発生しました',
-      error: process.env.NODE_ENV === 'development'
-        ? (error instanceof Error ? error.message : String(error))
-        : 'Internal server error',
-    } as SummaryReportResponse);
+    return handleError(res, error, 'サマリーレポート生成中にエラーが発生しました');
   }
 }
