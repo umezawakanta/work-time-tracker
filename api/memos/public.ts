@@ -130,6 +130,7 @@ module.exports = async (req, res) => {
               id: reply._id.toString(),
               content: reply.content,
               authorName: reply.authorName,
+              authorEmail: reply.authorEmail,
               createdAt: reply.createdAt.toISOString()
             }))
           };
