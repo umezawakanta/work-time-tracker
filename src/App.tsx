@@ -442,7 +442,6 @@ function App() {
     // タイマー機能が含まれていない場合は強制的に追加
     if (!order.includes('timers')) {
       order.push('timers');
-      console.log('🔧 タイマー機能を強制的に追加:', order);
     }
     
     return order;
@@ -453,23 +452,13 @@ function App() {
     const order = getFeatureOrder();
     const hiddenFeatures = userSettings?.hiddenFeatures || [];
     
-    // デバッグ用ログ
-    console.log('🔍 機能表示デバッグ:');
-    console.log('  - 全機能:', features.map(f => f.id));
-    console.log('  - 機能順序:', order);
-    console.log('  - 非表示機能:', hiddenFeatures);
-    console.log('  - タイマー機能が非表示か:', hiddenFeatures.includes('timers'));
-    
     // タイマー機能が非表示になっている場合は強制的に表示
     const filteredHiddenFeatures = hiddenFeatures.filter(id => id !== 'timers');
-    console.log('  - フィルタ後の非表示機能:', filteredHiddenFeatures);
     
     const visibleFeatures = order
       .filter(id => !filteredHiddenFeatures.includes(id))
       .map(id => features.find(f => f.id === id))
       .filter(Boolean) as Feature[];
-    
-    console.log('  - 表示される機能:', visibleFeatures.map(f => f.id));
     
     return visibleFeatures;
   };
@@ -3073,11 +3062,7 @@ function App() {
           </header>
           
           <main className="dashboard-main">
-            {(() => {
-              const visibleFeatures = getVisibleFeatures();
-              console.log('📋 レンダリング対象の機能:', visibleFeatures.map(f => f.id));
-              return visibleFeatures;
-            })().map((feature) => {
+            {getVisibleFeatures().map((feature) => {
               if (feature.id === 'time-tracking') {
                 return (
             <div key={feature.id} className="time-tracking-section">
@@ -5138,7 +5123,6 @@ function App() {
             </div>
                 );
               } else if (feature.id === 'timers') {
-                console.log('🎯 タイマー機能をレンダリング中...');
                 return (
             <div key={feature.id} className="timers-section">
               <div className="section-header">
