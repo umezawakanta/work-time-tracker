@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // User Schema
-export const UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   email: { 
     type: String, 
     required: true, 
@@ -59,7 +59,7 @@ export const UserSchema = new mongoose.Schema({
 });
 
 // Book Schema
-export const BookSchema = new mongoose.Schema({
+const BookSchema = new mongoose.Schema({
   title: { type: String, required: true },
   author: { type: String, required: true },
   isbn: { type: String, required: true },
@@ -88,7 +88,7 @@ export const BookSchema = new mongoose.Schema({
 });
 
 // Work Record Schema
-export const WorkRecordSchema = new mongoose.Schema({
+const WorkRecordSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   type: { 
     type: String, 
@@ -114,7 +114,7 @@ export const WorkRecordSchema = new mongoose.Schema({
 });
 
 // Memo Schema
-export const MemoSchema = new mongoose.Schema({
+const MemoSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
   category: { type: String, required: true },
@@ -134,7 +134,7 @@ export const MemoSchema = new mongoose.Schema({
 });
 
 // User Settings Schema
-export const UserSettingsSchema = new mongoose.Schema({
+const UserSettingsSchema = new mongoose.Schema({
   userId: { type: String, required: true, unique: true },
   featureOrder: { type: [String], default: [] },
   hiddenFeatures: { type: [String], default: [] },
@@ -177,3 +177,11 @@ UserSettingsSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   next();
 });
+
+module.exports = {
+  UserSchema,
+  BookSchema,
+  WorkRecordSchema,
+  MemoSchema,
+  UserSettingsSchema
+};

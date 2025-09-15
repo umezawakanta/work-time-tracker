@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 // Database connection utility
-export const ensureDatabaseConnection = async () => {
+const ensureDatabaseConnection = async () => {
   const isConnected = mongoose.connection.readyState === 1;
   
   if (isConnected) {
@@ -35,7 +36,7 @@ export const ensureDatabaseConnection = async () => {
 };
 
 // JWT verification utility
-export const verifyJWT = async (req) => {
+const verifyJWT = async (req) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return null;
@@ -54,7 +55,7 @@ export const verifyJWT = async (req) => {
 };
 
 // Error handler utility
-export const handleError = (res, error, message = 'Internal server error') => {
+const handleError = (res, error, message = 'Internal server error') => {
   console.error('API Error:', error);
   const statusCode = error.statusCode || 500;
   const errorMessage = error.message || message;
@@ -64,4 +65,10 @@ export const handleError = (res, error, message = 'Internal server error') => {
     message: errorMessage,
     ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
   });
+};
+
+module.exports = {
+  ensureDatabaseConnection,
+  verifyJWT,
+  handleError
 };

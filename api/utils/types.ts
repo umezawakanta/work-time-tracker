@@ -230,3 +230,30 @@ export interface UpdateMemoRequest {
   tags?: string[];
   isPublic?: boolean;
 }
+
+// CommonJS export for compatibility
+module.exports = {
+  UserDocument,
+  BookDocument,
+  WorkRecordDocument,
+  MemoDocument,
+  UserSettingsDocument,
+  ProjectDocument,
+  TimeEntryDocument,
+  ApiResponse,
+  LoginResponse,
+  RegisterResponse,
+  UsersListResponse,
+  BooksListResponse,
+  WorkRecordsResponse,
+  MemosResponse,
+  LoginRequest,
+  RegisterRequest,
+  EditUserRequest,
+  CreateBookRequest,
+  UpdateBookRequest,
+  CreateWorkRecordRequest,
+  UpdateWorkRecordRequest,
+  CreateMemoRequest,
+  UpdateMemoRequest
+};
