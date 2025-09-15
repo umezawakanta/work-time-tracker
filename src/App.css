@@ -1066,6 +1066,28 @@ body {
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
+.show-section-button {
+  background: #22c55e;
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.show-section-button:hover {
+  background: #16a34a;
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -1078,6 +1100,16 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.section-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-content {
+  margin-top: 1rem;
 }
 
 /* 機能カード */

@@ -318,6 +318,9 @@ function App() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
   const [showCharacterHome, setShowCharacterHome] = useState(false);
+
+  // セクション表示状態
+  const [showTimeTracking, setShowTimeTracking] = useState(true);
   const [memoContent, setMemoContent] = useState("");
   const [memoCategory, setMemoCategory] = useState("");
   const [memoTags, setMemoTags] = useState("");
@@ -3358,17 +3361,29 @@ function App() {
                   </span>
                   時間記録
                 </h2>
-                <button 
-                  onClick={() => {
-                    const newHiddenFeatures = [...(userSettings?.hiddenFeatures || []), 'time-tracking'];
-                    updateUserSettings({ hiddenFeatures: newHiddenFeatures });
-                  }}
-                  className="close-section-button"
-                  title="セクションを閉じる"
-                >
-                  ✕
-                </button>
+                <div className="section-controls">
+                  {showTimeTracking ? (
+                    <button 
+                      onClick={() => setShowTimeTracking(false)}
+                      className="close-section-button"
+                      title="セクションを閉じる"
+                    >
+                      ✕
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => setShowTimeTracking(true)}
+                      className="show-section-button"
+                      title="セクションを表示"
+                    >
+                      ▶️
+                    </button>
+                  )}
+                </div>
               </div>
+              
+              {showTimeTracking && (
+                <div className="section-content">
               
               {!isTracking ? (
                 <div className="start-tracking">
@@ -3597,6 +3612,7 @@ function App() {
                   </div>
                 </div>
               </div>
+                )}
             </div>
               );
           } else if (feature.id === 'projects') {
