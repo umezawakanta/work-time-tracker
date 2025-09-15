@@ -319,8 +319,12 @@ function App() {
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
   const [showCharacterHome, setShowCharacterHome] = useState(false);
 
-  // セクション表示状態
+  // セクション表示状態（既存の状態変数を使用）
   const [showTimeTracking, setShowTimeTracking] = useState(true);
+  const [showCustomTimer, setShowCustomTimer] = useState(true);
+  const [showPresetTimers, setShowPresetTimers] = useState(true);
+  const [showTimerStats, setShowTimerStats] = useState(true);
+  const [showTimerHistory, setShowTimerHistory] = useState(true);
   const [memoContent, setMemoContent] = useState("");
   const [memoCategory, setMemoCategory] = useState("");
   const [memoTags, setMemoTags] = useState("");
@@ -5500,7 +5504,29 @@ function App() {
                   </span>
                   ⏱️ タイマー
                 </h2>
+                <div className="section-controls">
+                  {showTimers ? (
+                    <button 
+                      onClick={() => setShowTimers(false)}
+                      className="close-section-button"
+                      title="セクションを閉じる"
+                    >
+                      ✕
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => setShowTimers(true)}
+                      className="show-section-button"
+                      title="セクションを表示"
+                    >
+                      ▶️
+                    </button>
+                  )}
+                </div>
               </div>
+              
+              {showTimers && (
+                <div className="section-content">
 
                  <div className="timers-content">
                    {/* 音声停止ボタン */}
