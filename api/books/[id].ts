@@ -1,89 +1,13 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
+const { BookSchema } = require('../utils/schemas');
+const { BookDocument } = require('../utils/types');
 
 dotenv.config();
 
-// Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
-  
-  if (isConnected) {
-    return;
-  }
-
-  console.warn('[books/id] Database not connected, attempting to connect...');
-  
-  try {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    
-    if (!MONGODB_URI) {
-      throw new Error('MONGODB_URI environment variable is not set');
-    }
-
-    if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
-      return;
-    }
-
-    await mongoose.connect(MONGODB_URI, {
-      dbName: 'workTimeTracker',
-    });
-
-    console.log("✅ MongoDB connected successfully");
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error('[books/id] Failed to connect to database:', message);
-    throw new Error(`Database connection failed: ${message}`);
-  }
-};
-
-// Book Schema
-const BookSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  author: { type: String, required: true },
-  isbn: { type: String, required: true },
-  publishedYear: { type: Number, required: true },
-  totalPages: { type: Number, required: true },
-  readPages: { type: Number, default: 0 },
-  category: { type: String, required: true },
-  rating: { type: Number, min: 0, max: 5, default: 0 },
-  notes: { type: String, default: '' },
-  lentTo: { type: String, default: '' },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
-
-// 更新時にupdatedAtを自動更新
-BookSchema.pre('save', function(next) {
-  this.updatedAt = new Date();
-  next();
-});
-
 const Book = mongoose.models.Book || mongoose.model('Book', BookSchema);
-
-// JWT verification utility
-const verifyJWT = async (req) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-
-  try {
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      console.error('[books/id] JWT_SECRET not configured');
-      return null;
-    }
-
-    const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, jwtSecret);
-    return decoded;
-  } catch (error) {
-    console.error('[books/id] JWT verification failed:', error);
-    return null;
-  }
-};
 
 // CORS設定
 const setCorsHeaders = (res, origin) => {
@@ -116,31 +40,19 @@ module.exports = async (req, res) => {
     // Verify JWT token
     const userInfo = await verifyJWT(req);
     if (!userInfo) {
-      return res.status(401).json({
-        success: false,
-        message: '認証が必要です',
-        error: 'Authentication required',
-      });
+      return handleError(res, { statusCode: 401, message: '認証が必要です' });
     }
 
     const { id } = req.query;
     if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: '本のIDが必要です',
-        error: 'Book ID is required',
-      });
+      return handleError(res, { statusCode: 400, message: '本のIDが必要です' });
     }
 
     if (req.method === 'GET') {
       // 特定の本を取得
       const book = await Book.findById(id);
       if (!book) {
-        return res.status(404).json({
-          success: false,
-          message: '本が見つかりません',
-          error: 'Book not found',
-        });
+        return handleError(res, { statusCode: 404, message: '本が見つかりません' });
       }
 
       console.log('✅ Book retrieved:', {
@@ -179,11 +91,7 @@ module.exports = async (req, res) => {
       );
 
       if (!book) {
-        return res.status(404).json({
-          success: false,
-          message: '本が見つかりません',
-          error: 'Book not found',
-        });
+        return handleError(res, { statusCode: 404, message: '本が見つかりません' });
       }
 
       console.log('✅ Book updated successfully:', {
@@ -215,11 +123,7 @@ module.exports = async (req, res) => {
       // 本を削除
       const book = await Book.findByIdAndDelete(id);
       if (!book) {
-        return res.status(404).json({
-          success: false,
-          message: '本が見つかりません',
-          error: 'Book not found',
-        });
+        return handleError(res, { statusCode: 404, message: '本が見つかりません' });
       }
 
       console.log('✅ Book deleted successfully:', {
@@ -233,18 +137,10 @@ module.exports = async (req, res) => {
         message: '本を削除しました',
       });
     } else {
-      res.status(405).json({
-        success: false,
-        message: 'メソッドが許可されていません',
-        error: 'Method not allowed',
-      });
+      return handleError(res, { statusCode: 405, message: 'メソッドが許可されていません' });
     }
   } catch (error) {
     console.error('❌ Book detail API error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'サーバーエラーが発生しました',
-      error: 'Internal server error',
-    });
+    return handleError(res, error, 'サーバーエラーが発生しました');
   }
 };
