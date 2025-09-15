@@ -2252,35 +2252,78 @@ function App() {
     setEggTimerTime(getEggTimerDuration(eggTimerType));
   };
 
-  const playEggTimerSound = () => {
+  const playEggTimerSound = async () => {
+    console.log('🔊 ゆでたまごタイマー音声再生開始:', eggTimerSound);
     try {
+      // まずAudioContextを再開する（必要に応じて）
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      console.log('AudioContext状態:', audioContext.state);
       
-      switch (eggTimerSound) {
-        case 'bell':
-          playBellSound(audioContext);
-          break;
-        case 'chime':
-          playChimeSound(audioContext);
-          break;
-        case 'beep':
-          playBeepSound(audioContext);
-          break;
-        case 'alarm':
-          playAlarmSound(audioContext);
-          break;
-        default:
-          playBellSound(audioContext);
+      if (audioContext.state === 'suspended') {
+        console.log('AudioContextを再開中...');
+        await audioContext.resume();
+        console.log('AudioContext再開後状態:', audioContext.state);
       }
+      
+      // 音声再生を確実にするため、少し遅延を入れる
+      setTimeout(() => {
+        try {
+          console.log('音声再生実行:', eggTimerSound);
+          switch (eggTimerSound) {
+            case 'bell':
+              playBellSound(audioContext);
+              break;
+            case 'chime':
+              playChimeSound(audioContext);
+              break;
+            case 'beep':
+              playBeepSound(audioContext);
+              break;
+            case 'alarm':
+              playAlarmSound(audioContext);
+              break;
+            default:
+              playBellSound(audioContext);
+          }
+          console.log('音声再生完了');
+        } catch (innerError) {
+          console.error('音声再生エラー:', innerError);
+          playFallbackSound();
+        }
+      }, 100);
+      
     } catch (error) {
-      console.error('音声再生エラー:', error);
-      // フォールバック: ブラウザのデフォルト音
-      try {
-        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU4k9n1unEiBS13yO/eizEIHWq+8+OWT');
-        audio.play();
-      } catch (fallbackError) {
-        console.error('フォールバック音声再生エラー:', fallbackError);
-      }
+      console.error('AudioContext作成エラー:', error);
+      playFallbackSound();
+    }
+  };
+
+  const playFallbackSound = () => {
+    try {
+      // より確実なフォールバック音声
+      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU4k9n1unEiBS13yO/eizEIHWq+8+OWT');
+      audio.volume = 0.5;
+      audio.play().catch(playbackError => {
+        console.error('フォールバック音声再生エラー:', playbackError);
+        // 最後の手段: システム音を鳴らす
+        playSystemSound();
+      });
+    } catch (fallbackError) {
+      console.error('フォールバック音声作成エラー:', fallbackError);
+      playSystemSound();
+    }
+  };
+
+  const playSystemSound = () => {
+    try {
+      // システム音を鳴らす（ブラウザの制限を回避）
+      const audio = new Audio();
+      audio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU4k9n1unEiBS13yO/eizEIHWq+8+OWT';
+      audio.play().catch(() => {
+        console.warn('音声再生ができませんでした。ブラウザの設定を確認してください。');
+      });
+    } catch (error) {
+      console.error('システム音再生エラー:', error);
     }
   };
 
@@ -2433,28 +2476,42 @@ function App() {
     setCustomTimerTime(customTimerMinutes * 60 + customTimerSeconds);
   };
 
-  const playCustomTimerSound = () => {
+  const playCustomTimerSound = async () => {
     try {
+      // まずAudioContextを再開する（必要に応じて）
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
-      switch (customTimerSound) {
-        case 'bell':
-          playBellSound(audioContext);
-          break;
-        case 'chime':
-          playChimeSound(audioContext);
-          break;
-        case 'beep':
-          playBeepSound(audioContext);
-          break;
-        case 'alarm':
-          playAlarmSound(audioContext);
-          break;
-        default:
-          playBellSound(audioContext);
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
       }
+      
+      // 音声再生を確実にするため、少し遅延を入れる
+      setTimeout(() => {
+        try {
+          switch (customTimerSound) {
+            case 'bell':
+              playBellSound(audioContext);
+              break;
+            case 'chime':
+              playChimeSound(audioContext);
+              break;
+            case 'beep':
+              playBeepSound(audioContext);
+              break;
+            case 'alarm':
+              playAlarmSound(audioContext);
+              break;
+            default:
+              playBellSound(audioContext);
+          }
+        } catch (innerError) {
+          console.error('音声再生エラー:', innerError);
+          playFallbackSound();
+        }
+      }, 100);
+      
     } catch (error) {
-      console.error('音声再生エラー:', error);
+      console.error('AudioContext作成エラー:', error);
+      playFallbackSound();
     }
   };
 
@@ -2498,6 +2555,26 @@ function App() {
     setTimerHistory(prev => [newEntry, ...prev.slice(0, 49)]); // 最新50件まで保持
   };
 
+
+  // 音声再生の初期化
+  const initializeAudio = () => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      if (audioContext.state === 'suspended') {
+        // ユーザーの操作でAudioContextを再開
+        document.addEventListener('click', () => {
+          audioContext.resume();
+        }, { once: true });
+      }
+    } catch (error) {
+      console.warn('AudioContext初期化エラー:', error);
+    }
+  };
+
+  // コンポーネントマウント時に音声を初期化
+  React.useEffect(() => {
+    initializeAudio();
+  }, []);
 
   // 認証チェック中はローディング画面を表示
   if (isCheckingAuth) {
@@ -2853,13 +2930,20 @@ function App() {
                         🚨 アラーム
                       </label>
                     </div>
-                    <button 
-                      onClick={() => playEggTimerSound()} 
-                      className="test-sound-btn"
-                      disabled={eggTimerActive}
-                    >
-                      🔊 音を試す
-                    </button>
+                        <button 
+                          onClick={async () => {
+                            try {
+                              await playEggTimerSound();
+                            } catch (error) {
+                              console.error('音声テストエラー:', error);
+                              setMessage('音声の再生に失敗しました。ブラウザの設定を確認してください。');
+                            }
+                          }} 
+                          className="test-sound-btn"
+                          disabled={eggTimerActive}
+                        >
+                          🔊 音を試す
+                        </button>
                   </div>
                   
                   <div className="egg-timer-display">
@@ -4848,7 +4932,14 @@ function App() {
                           ))}
                         </div>
                         <button 
-                          onClick={() => playCustomTimerSound()} 
+                          onClick={async () => {
+                            try {
+                              await playCustomTimerSound();
+                            } catch (error) {
+                              console.error('音声テストエラー:', error);
+                              setMessage('音声の再生に失敗しました。ブラウザの設定を確認してください。');
+                            }
+                          }} 
                           className="test-sound-btn"
                         >
                           🔊 音を試す
