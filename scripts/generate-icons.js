@@ -1,82 +1,80 @@
 const fs = require('fs');
 const path = require('path');
+const { createCanvas, loadImage } = require('canvas');
 
-// SVGアイコンの内容
+// SVGアイコンの内容（最新のデザイン）
 const svgIcon = `<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <!-- 背景 -->
-  <rect width="512" height="512" fill="#3b82f6" rx="80"/>
+  <!-- 角丸の背景（iOSアイコン風） -->
+  <rect width="512" height="512" fill="#1DA1F2" rx="112" ry="112"/>
   
-  <!-- メインキャラクターの体 -->
-  <circle cx="256" cy="320" r="80" fill="#ffffff"/>
+  <!-- 体の黒い輪郭 -->
+  <ellipse cx="256" cy="360" rx="135" ry="110" fill="#3a4556" stroke="#2c3344" stroke-width="12"/>
   
-  <!-- 頭 -->
-  <circle cx="256" cy="200" r="60" fill="#ffffff"/>
+  <!-- 体の緑色部分 -->
+  <ellipse cx="256" cy="360" rx="110" ry="85" fill="#4CAF50"/>
   
-  <!-- 目 -->
-  <circle cx="240" cy="185" r="8" fill="#3b82f6"/>
-  <circle cx="272" cy="185" r="8" fill="#3b82f6"/>
+  <!-- 頭の黒い輪郭 -->
+  <circle cx="256" cy="190" r="120" fill="#3a4556" stroke="#2c3344" stroke-width="12"/>
   
-  <!-- 口 -->
-  <path d="M 240 210 Q 256 225 272 210" stroke="#3b82f6" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- 頭の黄色い顔 -->
+  <circle cx="256" cy="190" r="95" fill="#FFD700"/>
   
-  <!-- 腕 -->
-  <circle cx="200" cy="280" r="25" fill="#ffffff"/>
-  <circle cx="312" cy="280" r="25" fill="#ffffff"/>
+  <!-- 左目 -->
+  <circle cx="225" cy="175" r="10" fill="#1a1a1a"/>
   
-  <!-- 手 -->
-  <circle cx="200" cy="280" r="15" fill="#3b82f6"/>
-  <circle cx="312" cy="280" r="15" fill="#3b82f6"/>
+  <!-- 右目 -->
+  <circle cx="287" cy="175" r="10" fill="#1a1a1a"/>
   
-  <!-- 足 -->
-  <circle cx="230" cy="380" r="20" fill="#ffffff"/>
-  <circle cx="282" cy="380" r="20" fill="#ffffff"/>
-  
-  <!-- 靴 -->
-  <ellipse cx="230" cy="400" rx="25" ry="15" fill="#1e40af"/>
-  <ellipse cx="282" cy="400" rx="25" ry="15" fill="#1e40af"/>
-  
-  <!-- 時計の装飾 -->
-  <circle cx="256" cy="320" r="50" fill="#f3f4f6" stroke="#3b82f6" stroke-width="3"/>
-  <circle cx="256" cy="320" r="5" fill="#3b82f6"/>
-  
-  <!-- 時計の針 -->
-  <line x1="256" y1="320" x2="256" y2="280" stroke="#3b82f6" stroke-width="4" stroke-linecap="round"/>
-  <line x1="256" y1="320" x2="280" y2="320" stroke="#3b82f6" stroke-width="3" stroke-linecap="round"/>
-  
-  <!-- 時計の数字（12時） -->
-  <text x="256" y="275" text-anchor="middle" fill="#3b82f6" font-family="Arial, sans-serif" font-size="12" font-weight="bold">12</text>
-  
-  <!-- 帽子 -->
-  <ellipse cx="256" cy="160" rx="45" ry="20" fill="#1e40af"/>
-  <rect x="211" y="160" width="90" height="15" fill="#1e40af"/>
-  
-  <!-- 帽子の装飾 -->
-  <circle cx="256" cy="150" r="3" fill="#ffffff"/>
-  
-  <!-- アクセント -->
-  <circle cx="180" cy="120" r="8" fill="#fbbf24" opacity="0.8"/>
-  <circle cx="332" cy="120" r="6" fill="#fbbf24" opacity="0.8"/>
-  <circle cx="150" cy="200" r="5" fill="#fbbf24" opacity="0.6"/>
-  <circle cx="362" cy="200" r="7" fill="#fbbf24" opacity="0.6"/>
+  <!-- 口（大きく開いた黒い楕円） -->
+  <ellipse cx="256" cy="215" rx="30" ry="25" fill="#1a1a1a"/>
 </svg>`;
 
 // 必要なサイズ
 const sizes = [120, 152, 180, 192, 512];
 
-// 各サイズのアイコンを生成
-sizes.forEach(size => {
-  const scaledSvg = svgIcon.replace('width="512" height="512"', `width="${size}" height="${size}"`);
-  const filename = `icon-${size}x${size}.png`;
-  const filepath = path.join(__dirname, '..', 'public', filename);
+// SVGをPNGに変換する関数
+async function convertSvgToPng(svgContent, size) {
+  const canvas = createCanvas(size, size);
+  const ctx = canvas.getContext('2d');
   
   // SVGをBase64エンコードしてdata URLに変換
-  const base64 = Buffer.from(scaledSvg).toString('base64');
+  const base64 = Buffer.from(svgContent).toString('base64');
   const dataUrl = `data:image/svg+xml;base64,${base64}`;
   
-  // 簡易的なPNG変換（実際のプロダクションではsharpやcanvasを使用）
-  console.log(`Generated ${filename} (${size}x${size})`);
-  console.log(`Data URL: ${dataUrl.substring(0, 100)}...`);
-});
+  try {
+    // SVGを画像として読み込み
+    const img = await loadImage(dataUrl);
+    ctx.drawImage(img, 0, 0, size, size);
+    
+    // PNGとして保存
+    const buffer = canvas.toBuffer('image/png');
+    return buffer;
+  } catch (error) {
+    console.error(`Error converting SVG to PNG for size ${size}:`, error);
+    return null;
+  }
+}
 
-console.log('Icon generation completed!');
-console.log('Note: This script generates SVG data URLs. For actual PNG files, use a proper image conversion library like sharp.');
+// 各サイズのアイコンを生成
+async function generateIcons() {
+  for (const size of sizes) {
+    const scaledSvg = svgIcon.replace('width="512" height="512"', `width="${size}" height="${size}"`);
+    const filename = `icon-${size}x${size}.png`;
+    const filepath = path.join(__dirname, '..', 'public', filename);
+    
+    console.log(`Generating ${filename} (${size}x${size})...`);
+    
+    const pngBuffer = await convertSvgToPng(scaledSvg, size);
+    if (pngBuffer) {
+      fs.writeFileSync(filepath, pngBuffer);
+      console.log(`✅ Generated ${filename}`);
+    } else {
+      console.error(`❌ Failed to generate ${filename}`);
+    }
+  }
+  
+  console.log('🎉 Icon generation completed!');
+}
+
+// アイコン生成を実行
+generateIcons().catch(console.error);
