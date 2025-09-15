@@ -68,7 +68,7 @@ UserSchema.set("toJSON", {
   },
 });
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 // JWT verification utility
 const verifyJWT = (token) => {

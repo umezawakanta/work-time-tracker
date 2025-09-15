@@ -60,7 +60,7 @@ BookSchema.pre('save', function(next) {
   next();
 });
 
-const Book = mongoose.model('Book', BookSchema);
+const Book = mongoose.models.Book || mongoose.model('Book', BookSchema);
 
 // JWT verification utility
 const verifyJWT = async (req) => {

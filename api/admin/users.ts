@@ -92,7 +92,7 @@ UserSchema.set("toJSON", {
   },
 });
 
-const User = mongoose.model<UserDocument>("User", UserSchema);
+const User = mongoose.models.User || mongoose.model<UserDocument>("User", UserSchema);
 
 // Users list response interface
 interface UsersListResponse {

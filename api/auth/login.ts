@@ -102,7 +102,7 @@ UserSchema.set("toJSON", {
   },
 });
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 // Robust JSON reader for Vercel Node (handles object, string, or raw stream)
 async function readJson(req) {
