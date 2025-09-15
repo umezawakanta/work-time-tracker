@@ -1,259 +1,134 @@
-// User Document Interface
-interface UserDocument {
-  id: string;
-  email: string;
-  displayName: string;
-  password: string;
-  role: string;
-  isVerified: boolean;
-  avatar?: string;
-  preferences: any;
-  status: "active" | "inactive" | "suspended";
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Type definitions for the work time tracker API
+// This file provides type information for CommonJS modules
 
-// Book Document Interface
-interface BookDocument {
-  id: string;
-  title: string;
-  author: string;
-  isbn: string;
-  publishedYear: number;
-  totalPages: number;
-  readPages: number;
-  category: string;
-  rating: number;
-  status: "not-started" | "reading" | "completed" | "paused";
-  notes: string;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Note: These are not actual TypeScript interfaces but rather documentation
+// for the expected structure of documents in the database
 
-// Work Record Document Interface
-interface WorkRecordDocument {
-  id: string;
-  userId: string;
-  type: "salary" | "diary";
-  date: Date;
-  amount?: number; // For salary records
-  title?: string; // For diary records
-  content?: string; // For diary records
-  category?: string; // For diary records
-  tags?: string[]; // For diary records
-  createdAt: Date;
-  updatedAt: Date;
-}
+// User Document Structure
+// {
+//   id: string,
+//   email: string,
+//   displayName: string,
+//   password: string,
+//   role: string,
+//   isVerified: boolean,
+//   avatar?: string,
+//   preferences: any,
+//   status: "active" | "inactive" | "suspended",
+//   createdAt: Date,
+//   updatedAt: Date
+// }
 
-// Memo Document Interface
-interface MemoDocument {
-  id: string;
-  title: string;
-  content: string;
-  category: string;
-  tags: string[];
-  isPublic: boolean;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Book Document Structure
+// {
+//   id: string,
+//   title: string,
+//   author: string,
+//   isbn: string,
+//   status: "want_to_read" | "reading" | "read",
+//   rating: number (1-5),
+//   notes: string,
+//   userId: string,
+//   createdAt: Date,
+//   updatedAt: Date
+// }
 
-// User Settings Document Interface
-interface UserSettingsDocument {
-  id: string;
-  userId: string;
-  featureOrder: string[];
-  hiddenFeatures: string[];
-  theme: string;
-  font: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Work Record Document Structure
+// {
+//   id: string,
+//   userId: string,
+//   date: Date,
+//   type: "salary" | "diary",
+//   title: string,
+//   content: string,
+//   salary: number,
+//   recordType: "income" | "expense",
+//   createdAt: Date,
+//   updatedAt: Date
+// }
 
-// Project Document Interface
-interface ProjectDocument {
-  id: string;
-  name: string;
-  description?: string;
-  color: string;
-  userId: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Memo Document Structure
+// {
+//   id: string,
+//   userId: string,
+//   title: string,
+//   content: string,
+//   isPublic: boolean,
+//   tags: string[],
+//   createdAt: Date,
+//   updatedAt: Date
+// }
 
-// Time Entry Document Interface
-interface TimeEntryDocument {
-  id: string;
-  userId: string;
-  description: string;
-  startTime: Date;
-  endTime?: Date;
-  duration?: number;
-  projectId?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// User Settings Document Structure
+// {
+//   id: string,
+//   userId: string,
+//   featureOrder: string[],
+//   hiddenFeatures: string[],
+//   theme: string,
+//   font: string,
+//   createdAt: Date,
+//   updatedAt: Date
+// }
 
-// API Response Interfaces
-interface ApiResponse<T = any> {
-  success: boolean;
-  message: string;
-  data?: T;
-}
+// Project Document Structure
+// {
+//   id: string,
+//   userId: string,
+//   name: string,
+//   description: string,
+//   color: string,
+//   isActive: boolean,
+//   createdAt: Date,
+//   updatedAt: Date
+// }
 
-interface LoginResponse {
-  success: boolean;
-  message: string;
-  token?: string;
-  user?: UserDocument;
-}
+// Time Entry Document Structure
+// {
+//   id: string,
+//   userId: string,
+//   projectId: string,
+//   startTime: Date,
+//   endTime: Date,
+//   duration: number,
+//   description: string,
+//   createdAt: Date,
+//   updatedAt: Date
+// }
 
-interface RegisterResponse {
-  success: boolean;
-  message: string;
-  user?: UserDocument;
-}
+// API Request/Response Types
+// These are documented for reference but not used as actual validation schemas
 
-interface UsersListResponse {
-  success: boolean;
-  message: string;
-  users?: UserDocument[];
-  total?: number;
-  page?: number;
-  limit?: number;
-}
-
-interface BooksListResponse {
-  success: boolean;
-  message: string;
-  books?: BookDocument[];
-  total?: number;
-  page?: number;
-  limit?: number;
-}
-
-interface WorkRecordsResponse {
-  success: boolean;
-  message: string;
-  records?: WorkRecordDocument[];
-  total?: number;
-  page?: number;
-  limit?: number;
-}
-
-interface MemosResponse {
-  success: boolean;
-  message: string;
-  memos?: MemoDocument[];
-  total?: number;
-  page?: number;
-  limit?: number;
-}
-
-// Request Interfaces
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface RegisterRequest {
-  email: string;
-  password: string;
-  displayName: string;
-}
-
-interface EditUserRequest {
-  userId: string;
-  displayName?: string;
-  email?: string;
-  role?: string;
-  isVerified?: boolean;
-  status?: "active" | "inactive" | "suspended";
-}
-
-interface CreateBookRequest {
-  title: string;
-  author: string;
-  isbn: string;
-  publishedYear: number;
-  totalPages: number;
-  category: string;
-  rating?: number;
-  notes?: string;
-}
-
-interface UpdateBookRequest {
-  title?: string;
-  author?: string;
-  isbn?: string;
-  publishedYear?: number;
-  totalPages?: number;
-  readPages?: number;
-  category?: string;
-  rating?: number;
-  status?: "not-started" | "reading" | "completed" | "paused";
-  notes?: string;
-}
-
-interface CreateWorkRecordRequest {
-  type: "salary" | "diary";
-  date: string;
-  amount?: number; // For salary records
-  title?: string; // For diary records
-  content?: string; // For diary records
-  category?: string; // For diary records
-  tags?: string[]; // For diary records
-}
-
-interface UpdateWorkRecordRequest {
-  amount?: number; // For salary records
-  title?: string; // For diary records
-  content?: string; // For diary records
-  category?: string; // For diary records
-  tags?: string[]; // For diary records
-}
-
-interface CreateMemoRequest {
-  title: string;
-  content: string;
-  category: string;
-  tags?: string[];
-  isPublic?: boolean;
-}
-
-interface UpdateMemoRequest {
-  title?: string;
-  content?: string;
-  category?: string;
-  tags?: string[];
-  isPublic?: boolean;
-}
+// LoginRequest: { email: string, password: string }
+// RegisterRequest: { email: string, password: string, displayName: string }
+// EditUserRequest: { displayName?: string, email?: string, role?: string, status?: string }
+// CreateBookRequest: { title: string, author: string, isbn?: string, status?: string, rating?: number, notes?: string }
+// UpdateBookRequest: { title?: string, author?: string, isbn?: string, status?: string, rating?: number, notes?: string }
+// CreateWorkRecordRequest: { type: "salary" | "diary", title: string, content?: string, salary?: number, recordType?: "income" | "expense" }
+// UpdateWorkRecordRequest: { title?: string, content?: string, salary?: number, recordType?: "income" | "expense" }
+// CreateMemoRequest: { title: string, content: string, isPublic?: boolean, tags?: string[] }
+// UpdateMemoRequest: { title?: string, content?: string, isPublic?: boolean, tags?: string[] }
 
 // CommonJS export for compatibility
+// These exports are placeholders for TypeScript compatibility
 module.exports = {
-  UserDocument,
-  BookDocument,
-  WorkRecordDocument,
-  MemoDocument,
-  UserSettingsDocument,
-  ProjectDocument,
-  TimeEntryDocument,
-  ApiResponse,
-  LoginResponse,
-  RegisterResponse,
-  UsersListResponse,
-  BooksListResponse,
-  WorkRecordsResponse,
-  MemosResponse,
-  LoginRequest,
-  RegisterRequest,
-  EditUserRequest,
-  CreateBookRequest,
-  UpdateBookRequest,
-  CreateWorkRecordRequest,
-  UpdateWorkRecordRequest,
-  CreateMemoRequest,
-  UpdateMemoRequest
+  // Document types (for reference only)
+  UserDocument: 'UserDocument',
+  BookDocument: 'BookDocument',
+  WorkRecordDocument: 'WorkRecordDocument',
+  MemoDocument: 'MemoDocument',
+  UserSettingsDocument: 'UserSettingsDocument',
+  ProjectDocument: 'ProjectDocument',
+  TimeEntryDocument: 'TimeEntryDocument',
+  
+  // Request types (for reference only)
+  LoginRequest: 'LoginRequest',
+  RegisterRequest: 'RegisterRequest',
+  EditUserRequest: 'EditUserRequest',
+  CreateBookRequest: 'CreateBookRequest',
+  UpdateBookRequest: 'UpdateBookRequest',
+  CreateWorkRecordRequest: 'CreateWorkRecordRequest',
+  UpdateWorkRecordRequest: 'UpdateWorkRecordRequest',
+  CreateMemoRequest: 'CreateMemoRequest',
+  UpdateMemoRequest: 'UpdateMemoRequest'
 };

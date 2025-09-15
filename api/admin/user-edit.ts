@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
-const { UserDocument } = require('../utils/types');
+// Type definitions are now in comments for reference
 const { 
   createValidationError, 
   createAuthError, 
@@ -86,7 +86,7 @@ UserSchema.set("toJSON", {
   },
 });
 
-const User = mongoose.models.User || mongoose.model<UserDocument>("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 // Edit user request interface
 interface EditUserRequest {

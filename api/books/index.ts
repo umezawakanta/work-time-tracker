@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
 const { BookSchema } = require('../utils/schemas');
-const { BookDocument } = require('../utils/types');
+// Type definitions are now in comments for reference
 
 dotenv.config();
 

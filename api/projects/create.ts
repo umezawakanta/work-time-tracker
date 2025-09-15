@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
-const { ProjectDocument } = require('../utils/types');
+// Type definitions are now in comments for reference
 
 dotenv.config();
 
@@ -72,7 +72,7 @@ ProjectSchema.set("toJSON", {
   },
 });
 
-const Project = mongoose.model<ProjectDocument>("Project", ProjectSchema);
+const Project = mongoose.models.Project || mongoose.model("Project", ProjectSchema);
 
 // Create project request interface
 interface CreateProjectRequest {

@@ -4,13 +4,13 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
 const { TimeEntrySchema } = require('../utils/schemas');
-const { TimeEntryDocument } = require('../utils/types');
+// Type definitions are now in comments for reference
 
 dotenv.config();
 
 
 
-const TimeEntry = mongoose.models.TimeEntry || mongoose.model<TimeEntryDocument>("TimeEntry", TimeEntrySchema);
+const TimeEntry = mongoose.models.TimeEntry || mongoose.model("TimeEntry", TimeEntrySchema);
 
 // Summary report response interface
 interface SummaryReportResponse {

@@ -2,7 +2,7 @@
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const { UserDocument } = require('../utils/types');
+// Type definitions are now in comments for reference
 const { 
   createValidationError, 
   createResourceError, 
@@ -90,7 +90,7 @@ UserSchema.set("toJSON", {
   },
 });
 
-const User = mongoose.models.User || mongoose.model<UserDocument>("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 // Register request interface
 interface RegisterRequest {

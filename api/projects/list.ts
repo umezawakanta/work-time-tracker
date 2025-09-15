@@ -4,13 +4,13 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
 const { ProjectSchema } = require('../utils/schemas');
-const { ProjectDocument } = require('../utils/types');
+// Type definitions are now in comments for reference
 
 dotenv.config();
 
 
 
-const Project = mongoose.models.Project || mongoose.model<ProjectDocument>("Project", ProjectSchema);
+const Project = mongoose.models.Project || mongoose.model("Project", ProjectSchema);
 
 // List projects response interface
 interface ListProjectsResponse {
