@@ -81,22 +81,22 @@ UserSchema.set("toJSON", {
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
-// Users list response interface
-interface UsersListResponse {
-  success: boolean;
-  message: string;
-  users?: Array<{
-    id: string;
-    email: string;
-    displayName: string;
-    role: string;
-    isVerified: boolean;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-  }>;
-  error?: string;
-}
+/**
+ * Users list response object structure:
+ * @typedef {Object} UsersListResponse
+ * @property {boolean} success
+ * @property {string} message
+ * @property {Array<Object>} [users]
+ * @property {string} users[].id
+ * @property {string} users[].email
+ * @property {string} users[].displayName
+ * @property {string} users[].role
+ * @property {boolean} users[].isVerified
+ * @property {string} users[].status
+ * @property {string} users[].createdAt
+ * @property {string} users[].updatedAt
+ * @property {string} [error]
+ */
 
 module.exports = async function handler(req, res) {
   // CORS設定
