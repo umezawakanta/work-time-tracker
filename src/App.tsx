@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
+import CharacterHome from "./components/CharacterHome";
 
 interface User {
   id: string;
@@ -90,6 +91,18 @@ interface Reply {
   authorName: string;
   authorEmail: string;
   createdAt: string;
+}
+
+interface Character {
+  id: string;
+  name: string;
+  author: string;
+  svg: string;
+  description: string;
+  likes: number;
+  createdAt: string;
+  isPublic: boolean;
+  tags: string[];
 }
 
 // 給料記録の型定義
@@ -300,6 +313,11 @@ function App() {
   const [showMemoForm, setShowMemoForm] = useState(false);
   const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
   const [memoTitle, setMemoTitle] = useState("");
+
+  // キャラクター関連の状態
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
+  const [showCharacterHome, setShowCharacterHome] = useState(false);
   const [memoContent, setMemoContent] = useState("");
   const [memoCategory, setMemoCategory] = useState("");
   const [memoTags, setMemoTags] = useState("");
@@ -480,6 +498,13 @@ function App() {
       icon: '⏱️',
       description: 'カスタムタイマーとプリセットタイマー',
       component: null // タイマーセクション
+    },
+    {
+      id: 'character-home',
+      name: 'キャラクター達のお家',
+      icon: '🏠',
+      description: 'みんなが作ったキャラクターが集まる場所',
+      component: null // キャラクター達のお家セクション
     }
   ];
 
@@ -1047,6 +1072,23 @@ function App() {
     } catch (error) {
       console.error('Failed to load user settings:', error);
     }
+  };
+
+  // キャラクター関連の関数
+  const loadCharacters = () => {
+    const savedCharacters = localStorage.getItem('characters');
+    if (savedCharacters) {
+      setCharacters(JSON.parse(savedCharacters));
+    }
+  };
+
+  const handleSelectCharacter = (character: Character) => {
+    setCurrentCharacter(character);
+    localStorage.setItem('currentCharacter', JSON.stringify(character));
+  };
+
+  const handleCharacterHomeToggle = () => {
+    setShowCharacterHome(!showCharacterHome);
   };
 
   const updateUserSettings = async (newSettings: Partial<UserSettings>) => {
@@ -3008,6 +3050,13 @@ function App() {
     initializeNotifications();
     loadTimerSettings();
     loadTimerHistory();
+    loadCharacters();
+    
+    // 現在のキャラクターを読み込み
+    const savedCharacter = localStorage.getItem('currentCharacter');
+    if (savedCharacter) {
+      setCurrentCharacter(JSON.parse(savedCharacter));
+    }
   }, []);
 
   // コンポーネントアンマウント時に音声ループを停止
@@ -3169,21 +3218,42 @@ function App() {
               <h1>⏰ Work Time Tracker 📚</h1>
             </div>
             <div className="user-info">
-              <span>👋 こんにちは、{user?.displayName || user?.email || 'User'}さん！</span>
-              <button 
-                onClick={() => setShowThemeSettings(!showThemeSettings)} 
-                className="theme-settings-button"
-                title="テーマ設定"
-              >
-                🎨 テーマ
-              </button>
-              <button 
-                onClick={() => setShowFontSettings(!showFontSettings)} 
-                className="font-settings-button"
-                title="フォント設定"
-              >
-                🔤 フォント
-              </button>
+              <div className="user-greeting">
+                <div className="header-character">
+                  {currentCharacter ? (
+                    <div 
+                      className="current-character-svg"
+                      dangerouslySetInnerHTML={{ __html: currentCharacter.svg }}
+                    />
+                  ) : (
+                    <div className="default-character">👋</div>
+                  )}
+                </div>
+                <span>こんにちは、{user?.displayName || user?.email || 'User'}さん！</span>
+              </div>
+              <div className="header-buttons">
+                <button 
+                  onClick={handleCharacterHomeToggle}
+                  className="character-home-button"
+                  title="キャラクター達のお家"
+                >
+                  🏠 キャラクター
+                </button>
+                <button 
+                  onClick={() => setShowThemeSettings(!showThemeSettings)} 
+                  className="theme-settings-button"
+                  title="テーマ設定"
+                >
+                  🎨 テーマ
+                </button>
+                <button 
+                  onClick={() => setShowFontSettings(!showFontSettings)} 
+                  className="font-settings-button"
+                  title="フォント設定"
+                >
+                  🔤 フォント
+                </button>
+              </div>
               <button 
                 onClick={() => {
                   setShowFeatureSettings(true);
@@ -5738,6 +5808,21 @@ function App() {
                    </div>
               </div>
             </div>
+              );
+            } else if (feature.id === 'character-home') {
+              return (
+                <div key={feature.id} className="character-home-section">
+                  <div className="section-header">
+                    <h2>
+                      <span className="section-icon">🏠</span>
+                      キャラクター達のお家
+                    </h2>
+                  </div>
+                  <CharacterHome 
+                    onSelectCharacter={handleSelectCharacter}
+                    currentCharacter={currentCharacter}
+                  />
+                </div>
               );
             } else {
               return null;
