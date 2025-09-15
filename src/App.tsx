@@ -2072,10 +2072,13 @@ function App() {
   const handleCreateMemo = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!memoTitle || !memoContent || !memoCategory) {
-      setMessage("タイトル、内容、カテゴリは必須です");
+    if (!memoContent || !memoCategory) {
+      setMessage("内容、カテゴリは必須です");
       return;
     }
+
+    // タイトルがない場合は内容の一行目をタイトルとして使用
+    const finalTitle = memoTitle.trim() || memoContent.split('\n')[0].trim() || '無題';
 
     try {
       const token = localStorage.getItem("access_token");
@@ -2088,7 +2091,7 @@ function App() {
           "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: memoTitle,
+          title: finalTitle,
           content: memoContent,
           category: memoCategory,
           tags,
@@ -2115,6 +2118,16 @@ function App() {
     }
   };
 
+  // メモのタイトルを取得するヘルパー関数
+  const getMemoTitle = (memo: Memo): string => {
+    if (memo.title && memo.title.trim()) {
+      return memo.title;
+    }
+    // タイトルが空の場合は内容の一行目を返す
+    const firstLine = memo.content.split('\n')[0].trim();
+    return firstLine || '無題';
+  };
+
   const handleEditMemo = (memo: Memo) => {
     setEditingMemo(memo);
     setMemoTitle(memo.title);
@@ -2130,6 +2143,9 @@ function App() {
     
     if (!editingMemo) return;
 
+    // タイトルがない場合は内容の一行目をタイトルとして使用
+    const finalTitle = memoTitle.trim() || memoContent.split('\n')[0].trim() || '無題';
+
     try {
       const token = localStorage.getItem("access_token");
       const tags = memoTags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
@@ -2141,7 +2157,7 @@ function App() {
           "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: memoTitle,
+          title: finalTitle,
           content: memoContent,
           category: memoCategory,
           tags,
@@ -4448,14 +4464,14 @@ function App() {
                     <form onSubmit={editingMemo ? handleUpdateMemo : handleCreateMemo} className="memo-form">
                       <h3>{editingMemo ? "メモを編集" : "メモを追加"}</h3>
                       <div className="form-group">
-                        <label htmlFor="memoTitle">タイトル *</label>
+                        <label htmlFor="memoTitle">タイトル（空欄の場合は内容の一行目が使用されます）</label>
                         <input
                           type="text"
                           id="memoTitle"
                           value={memoTitle}
                           onChange={(e) => setMemoTitle(e.target.value)}
-                          required
                           disabled={loading}
+                          placeholder="タイトルを入力（省略可）"
                         />
                       </div>
                       <div className="form-group">
@@ -4519,7 +4535,7 @@ function App() {
                       memos.map((memo) => (
                         <div key={memo.id} className="memo-item">
                           <div className="memo-header">
-                            <h3>{memo.title}</h3>
+                            <h3>{getMemoTitle(memo)}</h3>
                             <div className="memo-meta">
                               <span className="memo-category">{memo.category}</span>
                               {memo.isPublic && <span className="public-badge">公開</span>}
@@ -4573,7 +4589,7 @@ function App() {
                                 編集
                               </button>
                               <button
-                                onClick={() => handleDeleteMemo(memo.id, memo.title)}
+                                onClick={() => handleDeleteMemo(memo.id, getMemoTitle(memo))}
                                 className="delete-button"
                               >
                                 削除
@@ -4759,7 +4775,7 @@ function App() {
                       publicMemos.map((memo) => (
                         <div key={memo.id} className="public-memo-item">
                           <div className="memo-header">
-                            <h3>{memo.title}</h3>
+                            <h3>{getMemoTitle(memo)}</h3>
                             <div className="memo-meta">
                               <span className="memo-category">{memo.category}</span>
                               <span className="public-badge">公開</span>
