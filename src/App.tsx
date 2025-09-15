@@ -1360,21 +1360,17 @@ function App() {
   // ログイン状態をチェック
   useEffect(() => {
     const checkAuth = async () => {
-      console.log('🔍 Starting auth check...');
       const token = localStorage.getItem("access_token");
-      console.log('🔍 Token exists:', !!token);
       
       if (token) {
         // トークンの有効性を検証
         await verifyToken(token);
       } else {
         // トークンがない場合は未ログイン状態に設定
-        console.log('🔍 No token, setting logged out state');
         setIsLoggedIn(false);
         setUser(null);
       }
       setIsCheckingAuth(false);
-      console.log('🔍 Auth check completed');
     };
     
     checkAuth();
@@ -1383,14 +1379,16 @@ function App() {
   // ログイン状態が変更された時にデータを読み込み
   useEffect(() => {
     if (isLoggedIn && user?.id) {
+      loadProjects();
+      loadReportSummary();
       loadSalaryRecords();
       loadWorkDiaries();
+      loadUserSettings();
     }
   }, [isLoggedIn, user?.id]);
 
   const verifyToken = async (token: string) => {
     try {
-      console.log('🔍 Verifying token...');
       // トークンの有効性を検証
       const userResponse = await fetch("/api/auth/verify", {
         headers: {
@@ -1398,31 +1396,19 @@ function App() {
         },
       });
 
-      console.log('🔍 Token verification response:', userResponse.status);
-
       if (userResponse.ok) {
         const userData = await userResponse.json();
-        console.log('🔍 User data:', userData);
         
         if (userData.success && userData.user) {
-          console.log('🔍 Setting user and login state');
           setUser(userData.user);
           setIsLoggedIn(true);
-          // データを読み込み
-          loadProjects();
-          loadReportSummary();
-          loadSalaryRecordsWithUserId(userData.user.id);
-          loadWorkDiariesWithUserId(userData.user.id);
-          loadUserSettings();
         } else {
-          console.log('🔍 Invalid user data, clearing auth');
           // トークンが無効な場合は削除
           localStorage.removeItem("access_token");
           setIsLoggedIn(false);
           setUser(null);
         }
       } else {
-        console.log('🔍 Token verification failed, clearing auth');
         // トークンが無効な場合は削除
         localStorage.removeItem("access_token");
         setIsLoggedIn(false);
@@ -2359,22 +2345,6 @@ function App() {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // デバッグログを追加
-  console.log('🔍 Auth Debug:', {
-    isCheckingAuth,
-    isLoggedIn,
-    user: user ? { id: user.id, email: user.email, displayName: user.displayName } : null,
-    hasToken: !!localStorage.getItem("access_token")
-  });
-
-  // 強制リセット関数（デバッグ用）
-  const forceReset = () => {
-    console.log('🔍 Force resetting auth state');
-    localStorage.removeItem("access_token");
-    setIsLoggedIn(false);
-    setUser(null);
-    setIsCheckingAuth(false);
-  };
 
   // 認証チェック中はローディング画面を表示
   if (isCheckingAuth) {
@@ -2485,24 +2455,6 @@ function App() {
               {message}
             </div>
           )}
-          
-          {/* デバッグ用ボタン */}
-          <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-            <button 
-              onClick={forceReset}
-              style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: '#ef4444',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '0.9rem'
-              }}
-            >
-              🔄 認証状態をリセット
-            </button>
-          </div>
         </div>
       </div>
     );
