@@ -164,6 +164,9 @@ function App() {
   const [eggTimerType, setEggTimerType] = useState<'soft' | 'medium' | 'hard'>('medium');
   const [eggTimerSound, setEggTimerSound] = useState<'bell' | 'chime' | 'beep' | 'alarm'>('bell');
   const [eggTimerOriginalTime, setEggTimerOriginalTime] = useState(0); // 元の時間を保存
+  const [eggTimerPhase, setEggTimerPhase] = useState<'heating' | 'boiling' | 'cooking'>('heating'); // 現在の段階
+  const [eggTimerPhaseTime, setEggTimerPhaseTime] = useState(0); // 現在の段階の残り時間
+  const [eggTimerPhaseName, setEggTimerPhaseName] = useState(''); // 現在の段階名
   
   // カスタムタイマーの状態
   const [customTimerActive, setCustomTimerActive] = useState(false);
@@ -193,6 +196,51 @@ function App() {
     completedAt: Date;
     type: 'custom' | 'egg' | 'preset';
   }>>([]);
+
+  // 料理レシピの定義
+  const cookingRecipes = {
+    'egg': {
+      name: 'ゆでたまご',
+      phases: [
+        { name: '水を沸騰させる', duration: 8 * 60, description: '中火で水を沸騰させます' },
+        { name: '半熟ゆで', duration: 6 * 60, description: '沸騰したお湯に卵を入れ、半熟にゆでます' },
+        { name: '中半熟ゆで', duration: 8 * 60, description: '沸騰したお湯に卵を入れ、中半熟にゆでます' },
+        { name: '固ゆで', duration: 10 * 60, description: '沸騰したお湯に卵を入れ、固ゆでにゆでます' }
+      ]
+    },
+    'potato-salad': {
+      name: 'ポテトサラダ用じゃがいも',
+      phases: [
+        { name: '水を沸騰させる', duration: 8 * 60, description: '中火で水を沸騰させます' },
+        { name: 'じゃがいもをゆでる', duration: 15 * 60, description: '沸騰したお湯にじゃがいもを入れ、柔らかくなるまでゆでます' }
+      ]
+    },
+    'ramen': {
+      name: 'ラーメン用麺',
+      phases: [
+        { name: '水を沸騰させる', duration: 8 * 60, description: '強火で水を沸騰させます' },
+        { name: '麺をゆでる', duration: 3 * 60, description: '沸騰したお湯に麺を入れ、アルデンテにゆでます' }
+      ]
+    },
+    'pasta': {
+      name: 'パスタ',
+      phases: [
+        { name: '水を沸騰させる', duration: 8 * 60, description: '強火で水を沸騰させます' },
+        { name: 'パスタをゆでる', duration: 8 * 60, description: '沸騰したお湯にパスタを入れ、アルデンテにゆでます' }
+      ]
+    },
+    'vegetables': {
+      name: '野菜の下茹で',
+      phases: [
+        { name: '水を沸騰させる', duration: 8 * 60, description: '中火で水を沸騰させます' },
+        { name: '野菜をゆでる', duration: 5 * 60, description: '沸騰したお湯に野菜を入れ、適度な硬さにゆでます' }
+      ]
+    }
+  };
+
+  // 選択された料理レシピ
+  const [selectedRecipe, setSelectedRecipe] = useState<keyof typeof cookingRecipes>('egg');
+  const [selectedEggType, setSelectedEggType] = useState<'soft' | 'medium' | 'hard'>('medium');
 
   // タイマー設定の状態
   const [timerSettings, setTimerSettings] = useState({
@@ -2247,8 +2295,34 @@ function App() {
     }
   };
 
-  const startEggTimer = () => {
+  // 料理レシピの段階を取得
+  const getRecipePhases = (recipeKey: keyof typeof cookingRecipes, eggType?: 'soft' | 'medium' | 'hard') => {
+    const recipe = cookingRecipes[recipeKey];
+    if (recipeKey === 'egg' && eggType) {
+      // ゆでたまごの場合は段階を動的に生成
+      return [
+        { name: '水を沸騰させる', duration: 8 * 60, description: '中火で水を沸騰させます' },
+        { 
+          name: eggType === 'soft' ? '半熟ゆで' : eggType === 'medium' ? '中半熟ゆで' : '固ゆで', 
+          duration: getEggTimerDuration(eggType), 
+          description: `沸騰したお湯に卵を入れ、${eggType === 'soft' ? '半熟' : eggType === 'medium' ? '中半熟' : '固ゆで'}にゆでます` 
+        }
+      ];
+    }
+    return recipe.phases;
+  };
+
+  // 料理タイマーの総時間を計算
+  const getTotalCookingTime = (recipeKey: keyof typeof cookingRecipes, eggType?: 'soft' | 'medium' | 'hard') => {
+    const phases = getRecipePhases(recipeKey, eggType);
+    return phases.reduce((total, phase) => total + phase.duration, 0);
+  };
+
+  const startCookingTimer = () => {
     if (eggTimerActive && !eggTimerPaused) return;
+    
+    const phases = getRecipePhases(selectedRecipe, selectedRecipe === 'egg' ? selectedEggType : undefined);
+    const totalTime = getTotalCookingTime(selectedRecipe, selectedRecipe === 'egg' ? selectedEggType : undefined);
     
     if (eggTimerPaused) {
       // 一時停止から再開
@@ -2261,21 +2335,21 @@ function App() {
             clearInterval(interval);
             setEggTimerInterval(null);
             // タイマー終了時の通知
-            const eggTypeName = eggTimerType === 'soft' ? '半熟' : eggTimerType === 'medium' ? '中半熟' : '固ゆで';
-            setMessage(`🥚 ゆでたまごタイマー終了！${eggTypeName}のできあがりです！音を停止するには「音を停止」ボタンを押してください。`);
+            const recipeName = cookingRecipes[selectedRecipe].name;
+            setMessage(`🍳 ${recipeName}タイマー終了！できあがりです！音を停止するには「音を停止」ボタンを押してください。`);
             
             // ブラウザ通知を送信
             sendNotification(
-              '🥚 ゆでたまごタイマー終了！',
-              `${eggTypeName}のゆでたまごができあがりました！音を停止するには「音を停止」ボタンを押してください。`,
-              '🥚'
+              `🍳 ${recipeName}タイマー終了！`,
+              `${recipeName}ができあがりました！音を停止するには「音を停止」ボタンを押してください。`,
+              '🍳'
             );
             
             // ループ音声を開始
             startSoundLoop(eggTimerSound);
             
             // 履歴に追加
-            addToTimerHistory(`ゆでたまご（${eggTypeName}）`, eggTimerOriginalTime, 'egg');
+            addToTimerHistory(recipeName, eggTimerOriginalTime, 'egg');
             return 0;
           }
           return prev - 1;
@@ -2284,11 +2358,15 @@ function App() {
       setEggTimerInterval(interval);
     } else {
       // 新規開始
-      const duration = getEggTimerDuration(eggTimerType);
-      setEggTimerTime(duration);
-      setEggTimerOriginalTime(duration);
+      setEggTimerTime(totalTime);
+      setEggTimerOriginalTime(totalTime);
       setEggTimerActive(true);
       setEggTimerPaused(false);
+      setEggTimerPhase('heating');
+      setEggTimerPhaseTime(phases[0].duration);
+      setEggTimerPhaseName(phases[0].name);
+      
+      let currentPhaseIndex = 0;
       
       const interval = setInterval(() => {
         setEggTimerTime(prev => {
@@ -2298,24 +2376,48 @@ function App() {
             clearInterval(interval);
             setEggTimerInterval(null);
             // タイマー終了時の通知
-            const eggTypeName = eggTimerType === 'soft' ? '半熟' : eggTimerType === 'medium' ? '中半熟' : '固ゆで';
-            setMessage(`🥚 ゆでたまごタイマー終了！${eggTypeName}のできあがりです！音を停止するには「音を停止」ボタンを押してください。`);
+            const recipeName = cookingRecipes[selectedRecipe].name;
+            setMessage(`🍳 ${recipeName}タイマー終了！できあがりです！音を停止するには「音を停止」ボタンを押してください。`);
             
             // ブラウザ通知を送信
             sendNotification(
-              '🥚 ゆでたまごタイマー終了！',
-              `${eggTypeName}のゆでたまごができあがりました！音を停止するには「音を停止」ボタンを押してください。`,
-              '🥚'
+              `🍳 ${recipeName}タイマー終了！`,
+              `${recipeName}ができあがりました！音を停止するには「音を停止」ボタンを押してください。`,
+              '🍳'
             );
             
             // ループ音声を開始
             startSoundLoop(eggTimerSound);
             
             // 履歴に追加
-            addToTimerHistory(`ゆでたまご（${eggTypeName}）`, duration, 'egg');
+            addToTimerHistory(recipeName, totalTime, 'egg');
             return 0;
           }
-          return prev - 1;
+          
+          // 段階の更新チェック
+          const remainingTime = prev - 1;
+          let phaseTimeRemaining = remainingTime;
+          let newPhaseIndex = 0;
+          
+          for (let i = 0; i < phases.length; i++) {
+            if (phaseTimeRemaining <= phases[i].duration) {
+              newPhaseIndex = i;
+              break;
+            }
+            phaseTimeRemaining -= phases[i].duration;
+          }
+          
+          if (newPhaseIndex !== currentPhaseIndex) {
+            currentPhaseIndex = newPhaseIndex;
+            setEggTimerPhase(newPhaseIndex === 0 ? 'heating' : newPhaseIndex === phases.length - 1 ? 'cooking' : 'boiling');
+            setEggTimerPhaseTime(phaseTimeRemaining);
+            setEggTimerPhaseName(phases[newPhaseIndex].name);
+            
+            // 段階変更の通知
+            setMessage(`🔄 ${phases[newPhaseIndex].name}に移行しました！`);
+          }
+          
+          return remainingTime;
         });
       }, 1000);
       
@@ -3185,45 +3287,85 @@ function App() {
                 </div>
               )}
               
-              {/* ゆでたまごタイマー */}
-              <div className="egg-timer-section">
-                <h3>🥚 ゆでたまごタイマー</h3>
-                <div className="egg-timer-controls">
-                  <div className="egg-timer-type-selector">
-                    <label>
-                      <input
-                        type="radio"
-                        name="eggTimerType"
-                        value="soft"
-                        checked={eggTimerType === 'soft'}
-                        onChange={(e) => setEggTimerType(e.target.value as 'soft' | 'medium' | 'hard')}
-                        disabled={eggTimerActive}
-                      />
-                      半熟 (6分)
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="eggTimerType"
-                        value="medium"
-                        checked={eggTimerType === 'medium'}
-                        onChange={(e) => setEggTimerType(e.target.value as 'soft' | 'medium' | 'hard')}
-                        disabled={eggTimerActive}
-                      />
-                      中半熟 (8分)
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="eggTimerType"
-                        value="hard"
-                        checked={eggTimerType === 'hard'}
-                        onChange={(e) => setEggTimerType(e.target.value as 'soft' | 'medium' | 'hard')}
-                        disabled={eggTimerActive}
-                      />
-                      固ゆで (10分)
-                    </label>
+              {/* 料理タイマー */}
+              <div className="cooking-timer-section">
+                <h3>🍳 料理タイマー</h3>
+                
+                <div className="recipe-selector">
+                  <h4>📋 料理を選択</h4>
+                  <div className="recipe-options">
+                    {Object.entries(cookingRecipes).map(([key, recipe]) => (
+                      <label key={key} className="recipe-option">
+                        <input
+                          type="radio"
+                          name="recipe"
+                          value={key}
+                          checked={selectedRecipe === key}
+                          onChange={(e) => setSelectedRecipe(e.target.value as keyof typeof cookingRecipes)}
+                          disabled={eggTimerActive}
+                        />
+                        <span className="recipe-name">{recipe.name}</span>
+                      </label>
+                    ))}
                   </div>
+                </div>
+
+                {selectedRecipe === 'egg' && (
+                  <div className="egg-type-selector">
+                    <h4>🥚 ゆで加減を選択</h4>
+                    <div className="egg-type-options">
+                      <label>
+                        <input
+                          type="radio"
+                          name="eggType"
+                          value="soft"
+                          checked={selectedEggType === 'soft'}
+                          onChange={(e) => setSelectedEggType(e.target.value as 'soft' | 'medium' | 'hard')}
+                          disabled={eggTimerActive}
+                        />
+                        <span>🥚 半熟</span>
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="eggType"
+                          value="medium"
+                          checked={selectedEggType === 'medium'}
+                          onChange={(e) => setSelectedEggType(e.target.value as 'soft' | 'medium' | 'hard')}
+                          disabled={eggTimerActive}
+                        />
+                        <span>🥚 中半熟</span>
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="eggType"
+                          value="hard"
+                          checked={selectedEggType === 'hard'}
+                          onChange={(e) => setSelectedEggType(e.target.value as 'soft' | 'medium' | 'hard')}
+                          disabled={eggTimerActive}
+                        />
+                        <span>🥚 固ゆで</span>
+                      </label>
+                    </div>
+                  </div>
+                )}
+
+                <div className="cooking-phases">
+                  <h4>📝 調理手順</h4>
+                  <div className="phases-list">
+                    {getRecipePhases(selectedRecipe, selectedRecipe === 'egg' ? selectedEggType : undefined).map((phase, index) => (
+                      <div key={index} className={`phase-item ${eggTimerPhase === (index === 0 ? 'heating' : index === getRecipePhases(selectedRecipe, selectedRecipe === 'egg' ? selectedEggType : undefined).length - 1 ? 'cooking' : 'boiling') ? 'active' : ''}`}>
+                        <div className="phase-number">{index + 1}</div>
+                        <div className="phase-content">
+                          <div className="phase-name">{phase.name}</div>
+                          <div className="phase-duration">{formatTime(phase.duration)}</div>
+                          <div className="phase-description">{phase.description}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
                   
                   <div className="egg-timer-sound-selector">
                     <label>🔊 通知音:</label>
@@ -3285,41 +3427,51 @@ function App() {
                         </button>
                   </div>
                   
-                  <div className="egg-timer-display">
-                    <div className="egg-timer-time">
-                      {formatEggTimerTime(eggTimerTime)}
+                  <div className="cooking-timer-display">
+                    <div className="timer-time">
+                      {formatTime(eggTimerTime)}
                     </div>
-                    <div className="egg-timer-status">
-                      {eggTimerActive ? '🍳 ゆで中...' : '🥚 待機中'}
+                    <div className="timer-status">
+                      {eggTimerActive ? `🍳 ${eggTimerPhaseName}中...` : '🍳 待機中'}
                     </div>
+                    {eggTimerActive && (
+                      <div className="phase-progress">
+                        <div className="current-phase">
+                          現在の段階: {eggTimerPhaseName}
+                        </div>
+                        <div className="phase-time">
+                          残り時間: {formatTime(eggTimerPhaseTime)}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
-                  <div className="egg-timer-buttons">
+                  <div className="cooking-timer-buttons">
                     {!eggTimerActive ? (
-                      <button onClick={startEggTimer} className="egg-timer-start-btn">
-                        ▶️ タイマー開始
+                      <button onClick={startCookingTimer} className="cooking-timer-start-btn">
+                        ▶️ 料理タイマー開始
                       </button>
                     ) : eggTimerPaused ? (
                       <>
-                        <button onClick={startEggTimer} className="egg-timer-start-btn">
+                        <button onClick={startCookingTimer} className="cooking-timer-start-btn">
                           ▶️ 再開
                         </button>
-                        <button onClick={stopEggTimer} className="egg-timer-stop-btn">
+                        <button onClick={stopEggTimer} className="cooking-timer-stop-btn">
                           ⏹️ ストップ
                         </button>
-                        <button onClick={resetEggTimer} className="egg-timer-reset-btn">
+                        <button onClick={resetEggTimer} className="cooking-timer-reset-btn">
                           🔄 リセット
                         </button>
                       </>
                     ) : (
                       <>
-                        <button onClick={pauseEggTimer} className="egg-timer-pause-btn">
+                        <button onClick={pauseEggTimer} className="cooking-timer-pause-btn">
                           ⏸️ 一時停止
                         </button>
-                        <button onClick={stopEggTimer} className="egg-timer-stop-btn">
+                        <button onClick={stopEggTimer} className="cooking-timer-stop-btn">
                           ⏹️ ストップ
                         </button>
-                        <button onClick={resetEggTimer} className="egg-timer-reset-btn">
+                        <button onClick={resetEggTimer} className="cooking-timer-reset-btn">
                           🔄 リセット
                         </button>
                       </>
@@ -3327,11 +3479,10 @@ function App() {
                   </div>
                 </div>
               </div>
-            </div>
-                );
-              } else if (feature.id === 'projects') {
-                return (
-            <div key={feature.id} className="projects-section">
+            );
+          } else if (feature.id === 'projects') {
+            return (
+              <div key={feature.id} className="projects-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -3441,10 +3592,10 @@ function App() {
                 ))}
               </div>
             </div>
-                );
-              } else if (feature.id === 'reports') {
-                return (
-            <div key={feature.id} className="reports-section">
+              );
+            } else if (feature.id === 'reports') {
+            return (
+              <div key={feature.id} className="reports-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -3529,10 +3680,10 @@ function App() {
                 </div>
               )}
             </div>
-                );
-              } else if (feature.id === 'admin-panel' && user?.role === 'admin') {
-                return (
-            <div key={feature.id} className="admin-section">
+              );
+            } else if (feature.id === 'admin-panel' && user?.role === 'admin') {
+            return (
+              <div key={feature.id} className="admin-section">
                 <div className="section-header">
                   <h2>
                   <span className="section-icon">
@@ -3736,10 +3887,10 @@ function App() {
                   </div>
                 )}
               </div>
-                );
-              } else if (feature.id === 'bookshelf') {
-                return (
-            <div key={feature.id} className="bookshelf-section">
+              );
+            } else if (feature.id === 'bookshelf') {
+            return (
+              <div key={feature.id} className="bookshelf-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -3956,10 +4107,10 @@ function App() {
                 </div>
               )}
             </div>
-                );
-              } else if (feature.id === 'memos') {
-                return (
-            <div key={feature.id} className="memos-section">
+              );
+            } else if (feature.id === 'memos') {
+            return (
+              <div key={feature.id} className="memos-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -4266,10 +4417,10 @@ function App() {
                 </div>
               )}
             </div>
-                );
-              } else if (feature.id === 'public-memos') {
-                return (
-            <div key={feature.id} className="public-memos-section">
+              );
+            } else if (feature.id === 'public-memos') {
+            return (
+              <div key={feature.id} className="public-memos-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -4455,10 +4606,10 @@ function App() {
                 </div>
               )}
             </div>
-                );
-              } else if (feature.id === 'work-records') {
-                return (
-            <div key={feature.id} className="work-records-section">
+              );
+            } else if (feature.id === 'work-records') {
+            return (
+              <div key={feature.id} className="work-records-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -5194,10 +5345,10 @@ function App() {
                 </div>
               )}
             </div>
-                );
-              } else if (feature.id === 'timers') {
-                return (
-            <div key={feature.id} className="timers-section">
+              );
+            } else if (feature.id === 'timers') {
+            return (
+              <div key={feature.id} className="timers-section">
               <div className="section-header">
                 <h2>
                   <span className="section-icon">
@@ -5587,11 +5738,11 @@ function App() {
                    </div>
               </div>
             </div>
-                );
-              } else {
-                return null;
-              }
-            })}
+              );
+            } else {
+              return null;
+            }
+          })}
           </main>
         </div>
         

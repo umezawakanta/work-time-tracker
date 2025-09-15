@@ -3631,6 +3631,311 @@ figure, figcaption, details, summary, mark, small, sub, sup,
          font-weight: 500;
        }
 
+       /* 料理タイマーセクション */
+       .cooking-timer-section {
+         margin-bottom: 2rem;
+         padding: 1.5rem;
+         background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+         border-radius: 12px;
+         border: 2px solid #f59e0b;
+       }
+
+       .cooking-timer-section h3 {
+         margin: 0 0 1.5rem 0;
+         color: #92400e;
+         font-size: 1.5rem;
+         font-weight: 600;
+         text-align: center;
+       }
+
+       .recipe-selector {
+         margin-bottom: 1.5rem;
+       }
+
+       .recipe-selector h4 {
+         margin: 0 0 1rem 0;
+         color: #92400e;
+         font-size: 1.1rem;
+         font-weight: 600;
+       }
+
+       .recipe-options {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+         gap: 0.75rem;
+       }
+
+       .recipe-option {
+         display: flex;
+         align-items: center;
+         gap: 0.5rem;
+         padding: 0.75rem 1rem;
+         background: white;
+         border: 2px solid #f59e0b;
+         border-radius: 8px;
+         cursor: pointer;
+         transition: all 0.2s ease;
+         font-weight: 500;
+         color: #92400e;
+       }
+
+       .recipe-option:hover {
+         background: #f59e0b;
+         color: white;
+         border-color: #f59e0b;
+       }
+
+       .recipe-option input[type="radio"] {
+         margin: 0;
+         accent-color: #f59e0b;
+       }
+
+       .recipe-option:has(input:checked) {
+         background: #f59e0b;
+         color: white;
+         border-color: #f59e0b;
+       }
+
+       .egg-type-selector {
+         margin-bottom: 1.5rem;
+         padding: 1rem;
+         background: white;
+         border-radius: 8px;
+         border: 1px solid #f59e0b;
+       }
+
+       .egg-type-selector h4 {
+         margin: 0 0 1rem 0;
+         color: #92400e;
+         font-size: 1.1rem;
+         font-weight: 600;
+       }
+
+       .egg-type-options {
+         display: flex;
+         gap: 1rem;
+         flex-wrap: wrap;
+       }
+
+       .egg-type-options label {
+         display: flex;
+         align-items: center;
+         gap: 0.5rem;
+         padding: 0.5rem 1rem;
+         background: #fef3c7;
+         border: 2px solid #f59e0b;
+         border-radius: 6px;
+         cursor: pointer;
+         transition: all 0.2s ease;
+         font-weight: 500;
+         color: #92400e;
+       }
+
+       .egg-type-options label:hover {
+         background: #f59e0b;
+         color: white;
+         border-color: #f59e0b;
+       }
+
+       .egg-type-options input[type="radio"] {
+         margin: 0;
+         accent-color: #f59e0b;
+       }
+
+       .egg-type-options label:has(input:checked) {
+         background: #f59e0b;
+         color: white;
+         border-color: #f59e0b;
+       }
+
+       .cooking-phases {
+         margin-bottom: 1.5rem;
+       }
+
+       .cooking-phases h4 {
+         margin: 0 0 1rem 0;
+         color: #92400e;
+         font-size: 1.1rem;
+         font-weight: 600;
+       }
+
+       .phases-list {
+         display: flex;
+         flex-direction: column;
+         gap: 0.75rem;
+       }
+
+       .phase-item {
+         display: flex;
+         align-items: center;
+         gap: 1rem;
+         padding: 1rem;
+         background: white;
+         border: 2px solid #e5e7eb;
+         border-radius: 8px;
+         transition: all 0.2s ease;
+       }
+
+       .phase-item.active {
+         background: #fef3c7;
+         border-color: #f59e0b;
+         box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+       }
+
+       .phase-number {
+         width: 32px;
+         height: 32px;
+         background: #f59e0b;
+         color: white;
+         border-radius: 50%;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         font-weight: bold;
+         font-size: 0.9rem;
+         flex-shrink: 0;
+       }
+
+       .phase-item.active .phase-number {
+         background: #d97706;
+         animation: pulse 2s infinite;
+       }
+
+       .phase-content {
+         flex: 1;
+       }
+
+       .phase-name {
+         font-weight: 600;
+         color: #92400e;
+         margin-bottom: 0.25rem;
+       }
+
+       .phase-duration {
+         font-size: 0.9rem;
+         color: #6b7280;
+         font-family: 'Courier New', monospace;
+         margin-bottom: 0.25rem;
+       }
+
+       .phase-description {
+         font-size: 0.85rem;
+         color: #6b7280;
+         line-height: 1.4;
+       }
+
+       .cooking-timer-display {
+         text-align: center;
+         padding: 2rem;
+         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+         border-radius: 12px;
+         border: 2px solid #f59e0b;
+         margin-bottom: 1.5rem;
+       }
+
+       .cooking-timer-display .timer-time {
+         font-size: 3rem;
+         font-weight: bold;
+         color: #92400e;
+         font-family: 'Courier New', monospace;
+         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+         margin-bottom: 0.5rem;
+       }
+
+       .cooking-timer-display .timer-status {
+         font-size: 1.25rem;
+         color: #92400e;
+         font-weight: 600;
+         margin-bottom: 1rem;
+       }
+
+       .phase-progress {
+         background: #fef3c7;
+         padding: 1rem;
+         border-radius: 8px;
+         border: 1px solid #f59e0b;
+       }
+
+       .current-phase {
+         font-weight: 600;
+         color: #92400e;
+         margin-bottom: 0.5rem;
+       }
+
+       .phase-time {
+         font-size: 1.1rem;
+         color: #d97706;
+         font-family: 'Courier New', monospace;
+         font-weight: 600;
+       }
+
+       .cooking-timer-buttons {
+         display: flex;
+         gap: 1rem;
+         justify-content: center;
+         flex-wrap: wrap;
+       }
+
+       .cooking-timer-start-btn,
+       .cooking-timer-stop-btn,
+       .cooking-timer-reset-btn,
+       .cooking-timer-pause-btn {
+         padding: 0.75rem 1.5rem;
+         border: none;
+         border-radius: 8px;
+         font-size: 1rem;
+         font-weight: 600;
+         cursor: pointer;
+         transition: all 0.2s ease;
+         display: flex;
+         align-items: center;
+         gap: 0.5rem;
+       }
+
+       .cooking-timer-start-btn {
+         background: #10b981;
+         color: white;
+       }
+
+       .cooking-timer-start-btn:hover:not(:disabled) {
+         background: #059669;
+         transform: translateY(-1px);
+         box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+       }
+
+       .cooking-timer-stop-btn {
+         background: #ef4444;
+         color: white;
+       }
+
+       .cooking-timer-stop-btn:hover:not(:disabled) {
+         background: #dc2626;
+         transform: translateY(-1px);
+         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+       }
+
+       .cooking-timer-reset-btn {
+         background: #6b7280;
+         color: white;
+       }
+
+       .cooking-timer-reset-btn:hover:not(:disabled) {
+         background: #4b5563;
+         transform: translateY(-1px);
+         box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+       }
+
+       .cooking-timer-pause-btn {
+         background: #f59e0b;
+         color: white;
+       }
+
+       .cooking-timer-pause-btn:hover:not(:disabled) {
+         background: #d97706;
+         transform: translateY(-1px);
+         box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+       }
+
        /* モバイル対応 */
        @media (max-width: 768px) {
          .timers-content {
@@ -3680,6 +3985,27 @@ figure, figcaption, details, summary, mark, small, sub, sup,
          .setting-group .time-inputs {
            flex-direction: column;
            align-items: flex-start;
+         }
+
+         .recipe-options {
+           grid-template-columns: 1fr;
+         }
+
+         .egg-type-options {
+           flex-direction: column;
+         }
+
+         .cooking-timer-buttons {
+           flex-direction: column;
+         }
+
+         .phase-item {
+           flex-direction: column;
+           text-align: center;
+         }
+
+         .phase-number {
+           align-self: center;
          }
        }
 
