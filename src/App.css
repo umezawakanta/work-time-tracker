@@ -1112,6 +1112,38 @@ body {
   margin-top: 1rem;
 }
 
+/* サブセクション用のスタイル */
+.subsection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.subsection-header h3 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subsection-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subsection-content {
+  margin-top: 1rem;
+}
+
+/* プロジェクトセクション用のスタイル */
+.projects-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
 /* 機能カード */
 .feature-cards {
   display: grid;

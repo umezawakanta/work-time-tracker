@@ -321,6 +321,7 @@ function App() {
 
   // セクション表示状態（既存の状態変数を使用）
   const [showTimeTracking, setShowTimeTracking] = useState(true);
+  const [showProjects, setShowProjects] = useState(true);
   const [showCustomTimer, setShowCustomTimer] = useState(true);
   const [showPresetTimers, setShowPresetTimers] = useState(true);
   const [showTimerStats, setShowTimerStats] = useState(true);
@@ -3647,13 +3648,37 @@ function App() {
                   </span>
                   プロジェクト
                 </h2>
-                <button 
-                  onClick={() => setShowProjectForm(!showProjectForm)}
-                  className="add-project-button"
-                >
-                  {showProjectForm ? "❌ キャンセル" : "➕ プロジェクト追加"}
-                </button>
+                <div className="section-controls">
+                  {showProjects ? (
+                    <button 
+                      onClick={() => setShowProjects(false)}
+                      className="close-section-button"
+                      title="セクションを閉じる"
+                    >
+                      ✕
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => setShowProjects(true)}
+                      className="show-section-button"
+                      title="セクションを表示"
+                    >
+                      ▶️
+                    </button>
+                  )}
+                </div>
               </div>
+              
+              {showProjects && (
+                <div className="section-content">
+                  <div className="projects-header">
+                    <button 
+                      onClick={() => setShowProjectForm(!showProjectForm)}
+                      className="add-project-button"
+                    >
+                      {showProjectForm ? "❌ キャンセル" : "➕ プロジェクト追加"}
+                    </button>
+                  </div>
 
               {showProjectForm && (
                 <form onSubmit={handleCreateProject} className="project-form">
@@ -3730,6 +3755,7 @@ function App() {
                   </div>
                 ))}
               </div>
+                )}
             </div>
               );
             } else if (feature.id === 'reports') {
@@ -3760,17 +3786,32 @@ function App() {
                   </span>
                   レポート
                 </h2>
-                <button 
-                  onClick={() => {
-                    setShowReports(!showReports);
-                    if (!showReports && !reportSummary) {
-                      loadReportSummary();
-                    }
-                  }}
-                  className="toggle-reports-button"
-                >
-                  {showReports ? "📊 レポートを閉じる" : "📊 レポートを表示"}
-                </button>
+                <div className="section-controls">
+                  {showReports ? (
+                    <button 
+                      onClick={() => {
+                        setShowReports(false);
+                      }}
+                      className="close-section-button"
+                      title="セクションを閉じる"
+                    >
+                      ✕
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        setShowReports(true);
+                        if (!reportSummary) {
+                          loadReportSummary();
+                        }
+                      }}
+                      className="show-section-button"
+                      title="セクションを表示"
+                    >
+                      ▶️
+                    </button>
+                  )}
+                </div>
               </div>
 
               {showReports && reportSummary && (
@@ -3848,17 +3889,32 @@ function App() {
                   </span>
                   管理者パネル
                 </h2>
-                  <button 
-                    onClick={() => {
-                      setShowAdminPanel(!showAdminPanel);
-                      if (!showAdminPanel && adminUsers.length === 0) {
-                        loadAdminUsers();
-                      }
-                    }}
-                    className="toggle-admin-button"
-                  >
-                    {showAdminPanel ? "👑 管理者パネルを閉じる" : "👑 管理者パネルを表示"}
-                  </button>
+                  <div className="section-controls">
+                    {showAdminPanel ? (
+                      <button 
+                        onClick={() => {
+                          setShowAdminPanel(false);
+                        }}
+                        className="close-section-button"
+                        title="セクションを閉じる"
+                      >
+                        ✕
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => {
+                          setShowAdminPanel(true);
+                          if (adminUsers.length === 0) {
+                            loadAdminUsers();
+                          }
+                        }}
+                        className="show-section-button"
+                        title="セクションを表示"
+                      >
+                        ▶️
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {showAdminPanel && (
@@ -4055,17 +4111,32 @@ function App() {
                   </span>
                   本棚
                 </h2>
-                <button 
-                  onClick={() => {
-                    setShowBookshelf(!showBookshelf);
-                    if (!showBookshelf && books.length === 0) {
-                      loadBooks();
-                    }
-                  }}
-                  className="toggle-bookshelf-button"
-                >
-                  {showBookshelf ? "📚 本棚を閉じる" : "📚 本棚を表示"}
-                </button>
+                <div className="section-controls">
+                  {showBookshelf ? (
+                    <button 
+                      onClick={() => {
+                        setShowBookshelf(false);
+                      }}
+                      className="close-section-button"
+                      title="セクションを閉じる"
+                    >
+                      ✕
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        setShowBookshelf(true);
+                        if (books.length === 0) {
+                          loadBooks();
+                        }
+                      }}
+                      className="show-section-button"
+                      title="セクションを表示"
+                    >
+                      ▶️
+                    </button>
+                  )}
+                </div>
               </div>
 
               {showBookshelf && (
@@ -4275,17 +4346,32 @@ function App() {
                   </span>
                   メモ
                 </h2>
-                <button 
-                  onClick={() => {
-                    setShowMemos(!showMemos);
-                    if (!showMemos && memos.length === 0) {
-                      loadMemos();
-                    }
-                  }}
-                  className="toggle-memos-button"
-                >
-                  {showMemos ? "📝 メモを閉じる" : "📝 メモを表示"}
-                </button>
+                <div className="section-controls">
+                  {showMemos ? (
+                    <button 
+                      onClick={() => {
+                        setShowMemos(false);
+                      }}
+                      className="close-section-button"
+                      title="セクションを閉じる"
+                    >
+                      ✕
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        setShowMemos(true);
+                        if (memos.length === 0) {
+                          loadMemos();
+                        }
+                      }}
+                      className="show-section-button"
+                      title="セクションを表示"
+                    >
+                      ▶️
+                    </button>
+                  )}
+                </div>
               </div>
 
               {showMemos && (
@@ -4585,17 +4671,32 @@ function App() {
                   </span>
                   公開メモ
                 </h2>
-                <button 
-                  onClick={() => {
-                    setShowPublicMemos(!showPublicMemos);
-                    if (!showPublicMemos && publicMemos.length === 0) {
-                      loadPublicMemos();
-                    }
-                  }}
-                  className="toggle-public-memos-button"
-                >
-                  {showPublicMemos ? "🌐 公開メモを閉じる" : "🌐 公開メモを表示"}
-                </button>
+                <div className="section-controls">
+                  {showPublicMemos ? (
+                    <button 
+                      onClick={() => {
+                        setShowPublicMemos(false);
+                      }}
+                      className="close-section-button"
+                      title="セクションを閉じる"
+                    >
+                      ✕
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        setShowPublicMemos(true);
+                        if (publicMemos.length === 0) {
+                          loadPublicMemos();
+                        }
+                      }}
+                      className="show-section-button"
+                      title="セクションを表示"
+                    >
+                      ▶️
+                    </button>
+                  )}
+                </div>
               </div>
 
               {showPublicMemos && (
@@ -4774,12 +4875,25 @@ function App() {
                   </span>
                   お仕事記録
                 </h2>
-                <button 
-                  onClick={() => setShowWorkRecords(!showWorkRecords)}
-                  className="show-work-records-button"
-                >
-                  {showWorkRecords ? "💼 お仕事記録を閉じる" : "💼 お仕事記録を表示"}
-                </button>
+                <div className="section-controls">
+                  {showWorkRecords ? (
+                    <button 
+                      onClick={() => setShowWorkRecords(false)}
+                      className="close-section-button"
+                      title="セクションを閉じる"
+                    >
+                      ✕
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => setShowWorkRecords(true)}
+                      className="show-section-button"
+                      title="セクションを表示"
+                    >
+                      ▶️
+                    </button>
+                  )}
+                </div>
               </div>
 
               {showWorkRecords && (
@@ -5686,7 +5800,31 @@ function App() {
 
                    {/* カスタムタイマー */}
                    <div className="custom-timer-section">
-                  <h3>🎯 カスタムタイマー</h3>
+                  <div className="subsection-header">
+                    <h3>🎯 カスタムタイマー</h3>
+                    <div className="subsection-controls">
+                      {showCustomTimer ? (
+                        <button 
+                          onClick={() => setShowCustomTimer(false)}
+                          className="close-section-button"
+                          title="セクションを閉じる"
+                        >
+                          ✕
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => setShowCustomTimer(true)}
+                          className="show-section-button"
+                          title="セクションを表示"
+                        >
+                          ▶️
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {showCustomTimer && (
+                    <div className="subsection-content">
                   
                   <div className="timer-display">
                     <div className="timer-time">
@@ -5802,11 +5940,37 @@ function App() {
                          </>
                        )}
                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* プリセットタイマー */}
                 <div className="preset-timers-section">
-                  <h3>⚡ プリセットタイマー</h3>
+                  <div className="subsection-header">
+                    <h3>⚡ プリセットタイマー</h3>
+                    <div className="subsection-controls">
+                      {showPresetTimers ? (
+                        <button 
+                          onClick={() => setShowPresetTimers(false)}
+                          className="close-section-button"
+                          title="セクションを閉じる"
+                        >
+                          ✕
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => setShowPresetTimers(true)}
+                          className="show-section-button"
+                          title="セクションを表示"
+                        >
+                          ▶️
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {showPresetTimers && (
+                    <div className="subsection-content">
                   <div className="preset-grid">
                     {timerPresets.map((preset) => (
                       <div key={preset.id} className="preset-item" style={{ borderColor: preset.color }}>
@@ -5825,11 +5989,37 @@ function App() {
                       </div>
                     ))}
                   </div>
+                    </div>
+                  )}
                 </div>
 
                    {/* タイマー統計 */}
                    <div className="timer-stats-section">
-                     <h3>📈 タイマー統計</h3>
+                     <div className="subsection-header">
+                       <h3>📈 タイマー統計</h3>
+                       <div className="subsection-controls">
+                         {showTimerStats ? (
+                           <button 
+                             onClick={() => setShowTimerStats(false)}
+                             className="close-section-button"
+                             title="セクションを閉じる"
+                           >
+                             ✕
+                           </button>
+                         ) : (
+                           <button 
+                             onClick={() => setShowTimerStats(true)}
+                             className="show-section-button"
+                             title="セクションを表示"
+                           >
+                             ▶️
+                           </button>
+                         )}
+                       </div>
+                     </div>
+                     
+                     {showTimerStats && (
+                       <div className="subsection-content">
                      <div className="stats-grid">
                        <div className="stat-card">
                          <div className="stat-value">{timerHistory.length}</div>
@@ -5869,11 +6059,37 @@ function App() {
                          <div className="stat-label">平均実行時間</div>
                        </div>
                      </div>
+                       </div>
+                     )}
                    </div>
 
                    {/* タイマー履歴 */}
                    <div className="timer-history-section">
-                     <h3>📊 タイマー履歴</h3>
+                     <div className="subsection-header">
+                       <h3>📊 タイマー履歴</h3>
+                       <div className="subsection-controls">
+                         {showTimerHistory ? (
+                           <button 
+                             onClick={() => setShowTimerHistory(false)}
+                             className="close-section-button"
+                             title="セクションを閉じる"
+                           >
+                             ✕
+                           </button>
+                         ) : (
+                           <button 
+                             onClick={() => setShowTimerHistory(true)}
+                             className="show-section-button"
+                             title="セクションを表示"
+                           >
+                             ▶️
+                           </button>
+                         )}
+                       </div>
+                     </div>
+                     
+                     {showTimerHistory && (
+                       <div className="subsection-content">
                      {timerHistory.length > 0 ? (
                        <div className="history-list">
                          {timerHistory.slice(0, 10).map((entry) => (
@@ -5896,8 +6112,12 @@ function App() {
                      ) : (
                        <p className="no-history">まだタイマーの履歴がありません</p>
                      )}
+                       </div>
+                     )}
                    </div>
+                </div>
               </div>
+                )}
             </div>
               );
             } else {
