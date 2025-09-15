@@ -88,29 +88,22 @@ UserSchema.set("toJSON", {
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
-// Edit user request interface
-interface EditUserRequest {
-  userId: string;
-  displayName?: string;
-  role?: string;
-  isVerified?: boolean;
-  status?: "active" | "inactive" | "suspended";
-}
+/**
+ * @typedef {Object} EditUserRequest
+ * @property {string} userId
+ * @property {string} [displayName]
+ * @property {string} [role]
+ * @property {boolean} [isVerified]
+ * @property {"active"|"inactive"|"suspended"} [status]
+ */
 
-// Edit user response interface
-interface EditUserResponse {
-  success: boolean;
-  message: string;
-  user?: {
-    id: string;
-    email: string;
-    displayName: string;
-    role: string;
-    isVerified: boolean;
-    status: string;
-  };
-  error?: string;
-}
+/**
+ * @typedef {Object} EditUserResponse
+ * @property {boolean} success
+ * @property {string} message
+ * @property {{id: string, email: string, displayName: string, role: string, isVerified: boolean, status: string}} [user]
+ * @property {string} [error]
+ */
 
 module.exports = async function handler(req, res) {
   // CORS設定
