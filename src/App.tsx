@@ -158,19 +158,23 @@ function App() {
 
   // ゆでたまごタイマーの状態
   const [eggTimerActive, setEggTimerActive] = useState(false);
+  const [eggTimerPaused, setEggTimerPaused] = useState(false);
   const [eggTimerTime, setEggTimerTime] = useState(0); // 残り時間（秒）
   const [eggTimerInterval, setEggTimerInterval] = useState<NodeJS.Timeout | null>(null);
   const [eggTimerType, setEggTimerType] = useState<'soft' | 'medium' | 'hard'>('medium');
   const [eggTimerSound, setEggTimerSound] = useState<'bell' | 'chime' | 'beep' | 'alarm'>('bell');
+  const [eggTimerOriginalTime, setEggTimerOriginalTime] = useState(0); // 元の時間を保存
   
   // カスタムタイマーの状態
   const [customTimerActive, setCustomTimerActive] = useState(false);
+  const [customTimerPaused, setCustomTimerPaused] = useState(false);
   const [customTimerTime, setCustomTimerTime] = useState(0); // 残り時間（秒）
   const [customTimerInterval, setCustomTimerInterval] = useState<NodeJS.Timeout | null>(null);
   const [customTimerMinutes, setCustomTimerMinutes] = useState(5);
   const [customTimerSeconds, setCustomTimerSeconds] = useState(0);
   const [customTimerName, setCustomTimerName] = useState('');
   const [customTimerSound, setCustomTimerSound] = useState<'bell' | 'chime' | 'beep' | 'alarm'>('bell');
+  const [customTimerOriginalTime, setCustomTimerOriginalTime] = useState(0); // 元の時間を保存
   
   // タイマープリセットの状態
   const [timerPresets, setTimerPresets] = useState([
@@ -189,6 +193,23 @@ function App() {
     completedAt: Date;
     type: 'custom' | 'egg' | 'preset';
   }>>([]);
+
+  // タイマー設定の状態
+  const [timerSettings, setTimerSettings] = useState({
+    eggTimerSound: 'bell' as 'bell' | 'chime' | 'beep' | 'alarm',
+    customTimerSound: 'bell' as 'bell' | 'chime' | 'beep' | 'alarm',
+    enableNotifications: true,
+    enableSounds: true,
+    defaultCustomMinutes: 5,
+    defaultCustomSeconds: 0,
+    theme: 'default' as 'default' | 'dark' | 'colorful' | 'minimal',
+    customColors: {
+      primary: '#3b82f6',
+      secondary: '#10b981',
+      accent: '#f59e0b',
+      background: '#ffffff'
+    }
+  });
   
   // プロジェクト関連の状態
   const [projects, setProjects] = useState<Project[]>([]);
@@ -2210,32 +2231,83 @@ function App() {
   };
 
   const startEggTimer = () => {
-    if (eggTimerActive) return;
+    if (eggTimerActive && !eggTimerPaused) return;
     
-    const duration = getEggTimerDuration(eggTimerType);
-    setEggTimerTime(duration);
-    setEggTimerActive(true);
-    
-    const interval = setInterval(() => {
-      setEggTimerTime(prev => {
-        if (prev <= 1) {
-          setEggTimerActive(false);
-          clearInterval(interval);
-          setEggTimerInterval(null);
-          // タイマー終了時の通知
-          playEggTimerSound();
-          const eggTypeName = eggTimerType === 'soft' ? '半熟' : eggTimerType === 'medium' ? '中半熟' : '固ゆで';
-          setMessage(`🥚 ゆでたまごタイマー終了！${eggTypeName}のできあがりです！`);
-          
-          // 履歴に追加
-          addToTimerHistory(`ゆでたまご（${eggTypeName}）`, duration, 'egg');
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    setEggTimerInterval(interval);
+    if (eggTimerPaused) {
+      // 一時停止から再開
+      setEggTimerPaused(false);
+      const interval = setInterval(() => {
+        setEggTimerTime(prev => {
+          if (prev <= 1) {
+            setEggTimerActive(false);
+            setEggTimerPaused(false);
+            clearInterval(interval);
+            setEggTimerInterval(null);
+            // タイマー終了時の通知
+            playEggTimerSound();
+            const eggTypeName = eggTimerType === 'soft' ? '半熟' : eggTimerType === 'medium' ? '中半熟' : '固ゆで';
+            setMessage(`🥚 ゆでたまごタイマー終了！${eggTypeName}のできあがりです！`);
+            
+            // ブラウザ通知を送信
+            sendNotification(
+              '🥚 ゆでたまごタイマー終了！',
+              `${eggTypeName}のゆでたまごができあがりました！`,
+              '🥚'
+            );
+            
+            // 履歴に追加
+            addToTimerHistory(`ゆでたまご（${eggTypeName}）`, eggTimerOriginalTime, 'egg');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      setEggTimerInterval(interval);
+    } else {
+      // 新規開始
+      const duration = getEggTimerDuration(eggTimerType);
+      setEggTimerTime(duration);
+      setEggTimerOriginalTime(duration);
+      setEggTimerActive(true);
+      setEggTimerPaused(false);
+      
+      const interval = setInterval(() => {
+        setEggTimerTime(prev => {
+          if (prev <= 1) {
+            setEggTimerActive(false);
+            setEggTimerPaused(false);
+            clearInterval(interval);
+            setEggTimerInterval(null);
+            // タイマー終了時の通知
+            playEggTimerSound();
+            const eggTypeName = eggTimerType === 'soft' ? '半熟' : eggTimerType === 'medium' ? '中半熟' : '固ゆで';
+            setMessage(`🥚 ゆでたまごタイマー終了！${eggTypeName}のできあがりです！`);
+            
+            // ブラウザ通知を送信
+            sendNotification(
+              '🥚 ゆでたまごタイマー終了！',
+              `${eggTypeName}のゆでたまごができあがりました！`,
+              '🥚'
+            );
+            
+            // 履歴に追加
+            addToTimerHistory(`ゆでたまご（${eggTypeName}）`, duration, 'egg');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      setEggTimerInterval(interval);
+    }
+  };
+
+  const pauseEggTimer = () => {
+    if (eggTimerInterval) {
+      clearInterval(eggTimerInterval);
+      setEggTimerInterval(null);
+    }
+    setEggTimerPaused(true);
   };
 
   const stopEggTimer = () => {
@@ -2244,6 +2316,7 @@ function App() {
       setEggTimerInterval(null);
     }
     setEggTimerActive(false);
+    setEggTimerPaused(false);
     setEggTimerTime(0);
   };
 
@@ -2253,6 +2326,8 @@ function App() {
   };
 
   const playEggTimerSound = async () => {
+    if (!timerSettings.enableSounds) return;
+    
     console.log('🔊 ゆでたまごタイマー音声再生開始:', eggTimerSound);
     try {
       // まずAudioContextを再開する（必要に応じて）
@@ -2429,37 +2504,88 @@ function App() {
 
   // カスタムタイマーの関数
   const startCustomTimer = () => {
-    if (customTimerActive) return;
+    if (customTimerActive && !customTimerPaused) return;
     
-    const totalSeconds = customTimerMinutes * 60 + customTimerSeconds;
-    if (totalSeconds <= 0) {
-      setMessage('タイマー時間を設定してください');
-      return;
+    if (customTimerPaused) {
+      // 一時停止から再開
+      setCustomTimerPaused(false);
+      const interval = setInterval(() => {
+        setCustomTimerTime(prev => {
+          if (prev <= 1) {
+            setCustomTimerActive(false);
+            setCustomTimerPaused(false);
+            clearInterval(interval);
+            setCustomTimerInterval(null);
+            // タイマー終了時の通知
+            playCustomTimerSound();
+            const timerName = customTimerName || 'カスタムタイマー';
+            setMessage(`⏰ ${timerName}終了！`);
+            
+            // ブラウザ通知を送信
+            sendNotification(
+              '⏰ タイマー終了！',
+              `${timerName}が終了しました！`,
+              '⏰'
+            );
+            
+            // 履歴に追加
+            addToTimerHistory(timerName, customTimerOriginalTime, 'custom');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      setCustomTimerInterval(interval);
+    } else {
+      // 新規開始
+      const totalSeconds = customTimerMinutes * 60 + customTimerSeconds;
+      if (totalSeconds <= 0) {
+        setMessage('タイマー時間を設定してください');
+        return;
+      }
+      
+      setCustomTimerTime(totalSeconds);
+      setCustomTimerOriginalTime(totalSeconds);
+      setCustomTimerActive(true);
+      setCustomTimerPaused(false);
+      
+      const interval = setInterval(() => {
+        setCustomTimerTime(prev => {
+          if (prev <= 1) {
+            setCustomTimerActive(false);
+            setCustomTimerPaused(false);
+            clearInterval(interval);
+            setCustomTimerInterval(null);
+            // タイマー終了時の通知
+            playCustomTimerSound();
+            const timerName = customTimerName || 'カスタムタイマー';
+            setMessage(`⏰ ${timerName}終了！`);
+            
+            // ブラウザ通知を送信
+            sendNotification(
+              '⏰ タイマー終了！',
+              `${timerName}が終了しました！`,
+              '⏰'
+            );
+            
+            // 履歴に追加
+            addToTimerHistory(timerName, totalSeconds, 'custom');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      setCustomTimerInterval(interval);
     }
-    
-    setCustomTimerTime(totalSeconds);
-    setCustomTimerActive(true);
-    
-    const interval = setInterval(() => {
-      setCustomTimerTime(prev => {
-        if (prev <= 1) {
-          setCustomTimerActive(false);
-          clearInterval(interval);
-          setCustomTimerInterval(null);
-          // タイマー終了時の通知
-          playCustomTimerSound();
-          const timerName = customTimerName || 'カスタムタイマー';
-          setMessage(`⏰ ${timerName}終了！`);
-          
-          // 履歴に追加
-          addToTimerHistory(timerName, totalSeconds, 'custom');
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    setCustomTimerInterval(interval);
+  };
+
+  const pauseCustomTimer = () => {
+    if (customTimerInterval) {
+      clearInterval(customTimerInterval);
+      setCustomTimerInterval(null);
+    }
+    setCustomTimerPaused(true);
   };
 
   const stopCustomTimer = () => {
@@ -2468,6 +2594,7 @@ function App() {
       setCustomTimerInterval(null);
     }
     setCustomTimerActive(false);
+    setCustomTimerPaused(false);
     setCustomTimerTime(0);
   };
 
@@ -2477,6 +2604,8 @@ function App() {
   };
 
   const playCustomTimerSound = async () => {
+    if (!timerSettings.enableSounds) return;
+    
     try {
       // まずAudioContextを再開する（必要に応じて）
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -2530,10 +2659,17 @@ function App() {
           setCustomTimerActive(false);
           clearInterval(interval);
           setCustomTimerInterval(null);
-          playCustomTimerSound();
-          setMessage(`⏰ ${preset.name}終了！`);
-          
-          addToTimerHistory(preset.name, totalSeconds, 'preset');
+               playCustomTimerSound();
+               setMessage(`⏰ ${preset.name}終了！`);
+               
+               // ブラウザ通知を送信
+               sendNotification(
+                 '⏰ プリセットタイマー終了！',
+                 `${preset.name}が終了しました！`,
+                 '⏰'
+               );
+               
+               addToTimerHistory(preset.name, totalSeconds, 'preset');
           return 0;
         }
         return prev - 1;
@@ -2552,7 +2688,9 @@ function App() {
       completedAt: new Date(),
       type
     };
-    setTimerHistory(prev => [newEntry, ...prev.slice(0, 49)]); // 最新50件まで保持
+    const newHistory = [newEntry, ...timerHistory.slice(0, 49)]; // 最新50件まで保持
+    setTimerHistory(newHistory);
+    saveTimerHistory(newHistory);
   };
 
 
@@ -2571,9 +2709,124 @@ function App() {
     }
   };
 
-  // コンポーネントマウント時に音声を初期化
+  // ブラウザ通知の初期化
+  const initializeNotifications = async () => {
+    if ('Notification' in window) {
+      if (Notification.permission === 'default') {
+        await Notification.requestPermission();
+      }
+    }
+  };
+
+  // ブラウザ通知を送信
+  const sendNotification = (title: string, body: string, icon?: string) => {
+    if (timerSettings.enableNotifications && 'Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, {
+        body,
+        icon: icon || '🥚',
+        badge: '⏰',
+        tag: 'timer-notification',
+        requireInteraction: true
+      });
+    }
+  };
+
+  // タイマー設定の保存
+  const saveTimerSettings = (newSettings: typeof timerSettings) => {
+    setTimerSettings(newSettings);
+    localStorage.setItem('timerSettings', JSON.stringify(newSettings));
+  };
+
+  // タイマー設定の読み込み
+  const loadTimerSettings = () => {
+    try {
+      const saved = localStorage.getItem('timerSettings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setTimerSettings(parsed);
+        // 設定を反映
+        setEggTimerSound(parsed.eggTimerSound || 'bell');
+        setCustomTimerSound(parsed.customTimerSound || 'bell');
+        setCustomTimerMinutes(parsed.defaultCustomMinutes || 5);
+        setCustomTimerSeconds(parsed.defaultCustomSeconds || 0);
+        // テーマを適用
+        applyTimerTheme(parsed.theme || 'default', parsed.customColors);
+      }
+    } catch (error) {
+      console.error('タイマー設定の読み込みエラー:', error);
+    }
+  };
+
+  // タイマーテーマの適用
+  const applyTimerTheme = (theme: string, customColors?: any) => {
+    const root = document.documentElement;
+    
+    switch (theme) {
+      case 'dark':
+        root.style.setProperty('--timer-primary', '#60a5fa');
+        root.style.setProperty('--timer-secondary', '#34d399');
+        root.style.setProperty('--timer-accent', '#fbbf24');
+        root.style.setProperty('--timer-background', '#1f2937');
+        root.style.setProperty('--timer-text', '#f9fafb');
+        break;
+      case 'colorful':
+        root.style.setProperty('--timer-primary', '#ec4899');
+        root.style.setProperty('--timer-secondary', '#8b5cf6');
+        root.style.setProperty('--timer-accent', '#f59e0b');
+        root.style.setProperty('--timer-background', '#fef3c7');
+        root.style.setProperty('--timer-text', '#1f2937');
+        break;
+      case 'minimal':
+        root.style.setProperty('--timer-primary', '#6b7280');
+        root.style.setProperty('--timer-secondary', '#9ca3af');
+        root.style.setProperty('--timer-accent', '#d1d5db');
+        root.style.setProperty('--timer-background', '#ffffff');
+        root.style.setProperty('--timer-text', '#374151');
+        break;
+      default:
+        if (customColors) {
+          root.style.setProperty('--timer-primary', customColors.primary);
+          root.style.setProperty('--timer-secondary', customColors.secondary);
+          root.style.setProperty('--timer-accent', customColors.accent);
+          root.style.setProperty('--timer-background', customColors.background);
+        } else {
+          root.style.setProperty('--timer-primary', '#3b82f6');
+          root.style.setProperty('--timer-secondary', '#10b981');
+          root.style.setProperty('--timer-accent', '#f59e0b');
+          root.style.setProperty('--timer-background', '#ffffff');
+        }
+        root.style.setProperty('--timer-text', '#1f2937');
+        break;
+    }
+  };
+
+  // タイマー履歴の保存
+  const saveTimerHistory = (history: typeof timerHistory) => {
+    localStorage.setItem('timerHistory', JSON.stringify(history));
+  };
+
+  // タイマー履歴の読み込み
+  const loadTimerHistory = () => {
+    try {
+      const saved = localStorage.getItem('timerHistory');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setTimerHistory(parsed.map((item: any) => ({
+          ...item,
+          completedAt: new Date(item.completedAt)
+        })));
+      }
+    } catch (error) {
+      console.error('タイマー履歴の読み込みエラー:', error);
+    }
+  };
+
+  // コンポーネントマウント時に音声と通知を初期化
   React.useEffect(() => {
     initializeAudio();
+    initializeNotifications();
+    loadTimerSettings();
+    loadTimerHistory();
   }, []);
 
   // 認証チェック中はローディング画面を表示
@@ -2960,14 +3213,31 @@ function App() {
                       <button onClick={startEggTimer} className="egg-timer-start-btn">
                         ▶️ タイマー開始
                       </button>
+                    ) : eggTimerPaused ? (
+                      <>
+                        <button onClick={startEggTimer} className="egg-timer-start-btn">
+                          ▶️ 再開
+                        </button>
+                        <button onClick={stopEggTimer} className="egg-timer-stop-btn">
+                          ⏹️ ストップ
+                        </button>
+                        <button onClick={resetEggTimer} className="egg-timer-reset-btn">
+                          🔄 リセット
+                        </button>
+                      </>
                     ) : (
-                      <button onClick={stopEggTimer} className="egg-timer-stop-btn">
-                        ⏹️ タイマー停止
-                      </button>
+                      <>
+                        <button onClick={pauseEggTimer} className="egg-timer-pause-btn">
+                          ⏸️ 一時停止
+                        </button>
+                        <button onClick={stopEggTimer} className="egg-timer-stop-btn">
+                          ⏹️ ストップ
+                        </button>
+                        <button onClick={resetEggTimer} className="egg-timer-reset-btn">
+                          🔄 リセット
+                        </button>
+                      </>
                     )}
-                    <button onClick={resetEggTimer} className="egg-timer-reset-btn">
-                      🔄 リセット
-                    </button>
                   </div>
                 </div>
               </div>
@@ -4860,9 +5130,148 @@ function App() {
                 </h2>
               </div>
 
-              <div className="timers-content">
-                {/* カスタムタイマー */}
-                <div className="custom-timer-section">
+                 <div className="timers-content">
+                   {/* タイマー設定 */}
+                   <div className="timer-settings-section">
+                     <h3>⚙️ タイマー設定</h3>
+                     <div className="settings-grid">
+                       <div className="setting-group">
+                         <label>
+                           <input
+                             type="checkbox"
+                             checked={timerSettings.enableSounds}
+                             onChange={(e) => saveTimerSettings({
+                               ...timerSettings,
+                               enableSounds: e.target.checked
+                             })}
+                           />
+                           🔊 音声を有効にする
+                         </label>
+                       </div>
+                       <div className="setting-group">
+                         <label>
+                           <input
+                             type="checkbox"
+                             checked={timerSettings.enableNotifications}
+                             onChange={(e) => saveTimerSettings({
+                               ...timerSettings,
+                               enableNotifications: e.target.checked
+                             })}
+                           />
+                           🔔 ブラウザ通知を有効にする
+                         </label>
+                       </div>
+                       <div className="setting-group">
+                         <label>デフォルトのカスタムタイマー時間</label>
+                         <div className="time-inputs">
+                           <input
+                             type="number"
+                             value={timerSettings.defaultCustomMinutes}
+                             onChange={(e) => saveTimerSettings({
+                               ...timerSettings,
+                               defaultCustomMinutes: Math.max(0, parseInt(e.target.value) || 0)
+                             })}
+                             min="0"
+                             max="999"
+                           />
+                           <span>分</span>
+                           <input
+                             type="number"
+                             value={timerSettings.defaultCustomSeconds}
+                             onChange={(e) => saveTimerSettings({
+                               ...timerSettings,
+                               defaultCustomSeconds: Math.max(0, Math.min(59, parseInt(e.target.value) || 0))
+                             })}
+                             min="0"
+                             max="59"
+                           />
+                           <span>秒</span>
+                         </div>
+                       </div>
+                       <div className="setting-group">
+                         <label>タイマーテーマ</label>
+                         <select
+                           value={timerSettings.theme}
+                           onChange={(e) => {
+                             const newSettings = {
+                               ...timerSettings,
+                               theme: e.target.value as 'default' | 'dark' | 'colorful' | 'minimal'
+                             };
+                             saveTimerSettings(newSettings);
+                             applyTimerTheme(e.target.value, timerSettings.customColors);
+                           }}
+                           className="theme-selector"
+                         >
+                           <option value="default">🎨 デフォルト</option>
+                           <option value="dark">🌙 ダーク</option>
+                           <option value="colorful">🌈 カラフル</option>
+                           <option value="minimal">⚪ ミニマル</option>
+                         </select>
+                       </div>
+                       <div className="setting-group">
+                         <label>カスタムカラー</label>
+                         <div className="color-inputs">
+                           <div className="color-input">
+                             <label>プライマリ</label>
+                             <input
+                               type="color"
+                               value={timerSettings.customColors.primary}
+                               onChange={(e) => {
+                                 const newSettings = {
+                                   ...timerSettings,
+                                   customColors: {
+                                     ...timerSettings.customColors,
+                                     primary: e.target.value
+                                   }
+                                 };
+                                 saveTimerSettings(newSettings);
+                                 applyTimerTheme('default', newSettings.customColors);
+                               }}
+                             />
+                           </div>
+                           <div className="color-input">
+                             <label>セカンダリ</label>
+                             <input
+                               type="color"
+                               value={timerSettings.customColors.secondary}
+                               onChange={(e) => {
+                                 const newSettings = {
+                                   ...timerSettings,
+                                   customColors: {
+                                     ...timerSettings.customColors,
+                                     secondary: e.target.value
+                                   }
+                                 };
+                                 saveTimerSettings(newSettings);
+                                 applyTimerTheme('default', newSettings.customColors);
+                               }}
+                             />
+                           </div>
+                           <div className="color-input">
+                             <label>アクセント</label>
+                             <input
+                               type="color"
+                               value={timerSettings.customColors.accent}
+                               onChange={(e) => {
+                                 const newSettings = {
+                                   ...timerSettings,
+                                   customColors: {
+                                     ...timerSettings.customColors,
+                                     accent: e.target.value
+                                   }
+                                 };
+                                 saveTimerSettings(newSettings);
+                                 applyTimerTheme('default', newSettings.customColors);
+                               }}
+                             />
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+
+                   {/* カスタムタイマー */}
+                   <div className="custom-timer-section">
                   <h3>🎯 カスタムタイマー</h3>
                   
                   <div className="timer-display">
@@ -4948,22 +5357,37 @@ function App() {
                     </div>
                   )}
 
-                  <div className="timer-buttons">
-                    {!customTimerActive ? (
-                      <button onClick={startCustomTimer} className="timer-start-btn">
-                        ▶️ スタート
-                      </button>
-                    ) : (
-                      <>
-                        <button onClick={stopCustomTimer} className="timer-stop-btn">
-                          ⏹️ ストップ
-                        </button>
-                        <button onClick={resetCustomTimer} className="timer-reset-btn">
-                          🔄 リセット
-                        </button>
-                      </>
-                    )}
-                  </div>
+                     <div className="timer-buttons">
+                       {!customTimerActive ? (
+                         <button onClick={startCustomTimer} className="timer-start-btn">
+                           ▶️ スタート
+                         </button>
+                       ) : customTimerPaused ? (
+                         <>
+                           <button onClick={startCustomTimer} className="timer-start-btn">
+                             ▶️ 再開
+                           </button>
+                           <button onClick={stopCustomTimer} className="timer-stop-btn">
+                             ⏹️ ストップ
+                           </button>
+                           <button onClick={resetCustomTimer} className="timer-reset-btn">
+                             🔄 リセット
+                           </button>
+                         </>
+                       ) : (
+                         <>
+                           <button onClick={pauseCustomTimer} className="timer-pause-btn">
+                             ⏸️ 一時停止
+                           </button>
+                           <button onClick={stopCustomTimer} className="timer-stop-btn">
+                             ⏹️ ストップ
+                           </button>
+                           <button onClick={resetCustomTimer} className="timer-reset-btn">
+                             🔄 リセット
+                           </button>
+                         </>
+                       )}
+                     </div>
                 </div>
 
                 {/* プリセットタイマー */}
@@ -4989,32 +5413,76 @@ function App() {
                   </div>
                 </div>
 
-                {/* タイマー履歴 */}
-                <div className="timer-history-section">
-                  <h3>📊 タイマー履歴</h3>
-                  {timerHistory.length > 0 ? (
-                    <div className="history-list">
-                      {timerHistory.slice(0, 10).map((entry) => (
-                        <div key={entry.id} className="history-item">
-                          <div className="history-info">
-                            <span className="history-name">{entry.name}</span>
-                            <span className="history-duration">{formatTime(entry.duration)}</span>
-                          </div>
-                          <div className="history-meta">
-                            <span className="history-type">
-                              {entry.type === 'custom' ? '🎯' : entry.type === 'preset' ? '⚡' : '🥚'}
-                            </span>
-                            <span className="history-date">
-                              {new Date(entry.completedAt).toLocaleDateString('ja-JP')}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="no-history">まだタイマーの履歴がありません</p>
-                  )}
-                </div>
+                   {/* タイマー統計 */}
+                   <div className="timer-stats-section">
+                     <h3>📈 タイマー統計</h3>
+                     <div className="stats-grid">
+                       <div className="stat-card">
+                         <div className="stat-value">{timerHistory.length}</div>
+                         <div className="stat-label">総実行回数</div>
+                       </div>
+                       <div className="stat-card">
+                         <div className="stat-value">
+                           {formatTime(timerHistory.reduce((total, entry) => total + entry.duration, 0))}
+                         </div>
+                         <div className="stat-label">総実行時間</div>
+                       </div>
+                       <div className="stat-card">
+                         <div className="stat-value">
+                           {timerHistory.filter(entry => entry.type === 'custom').length}
+                         </div>
+                         <div className="stat-label">カスタムタイマー</div>
+                       </div>
+                       <div className="stat-card">
+                         <div className="stat-value">
+                           {timerHistory.filter(entry => entry.type === 'preset').length}
+                         </div>
+                         <div className="stat-label">プリセットタイマー</div>
+                       </div>
+                       <div className="stat-card">
+                         <div className="stat-value">
+                           {timerHistory.filter(entry => entry.type === 'egg').length}
+                         </div>
+                         <div className="stat-label">ゆでたまごタイマー</div>
+                       </div>
+                       <div className="stat-card">
+                         <div className="stat-value">
+                           {timerHistory.length > 0 ? 
+                             formatTime(Math.round(timerHistory.reduce((total, entry) => total + entry.duration, 0) / timerHistory.length)) : 
+                             '00:00:00'
+                           }
+                         </div>
+                         <div className="stat-label">平均実行時間</div>
+                       </div>
+                     </div>
+                   </div>
+
+                   {/* タイマー履歴 */}
+                   <div className="timer-history-section">
+                     <h3>📊 タイマー履歴</h3>
+                     {timerHistory.length > 0 ? (
+                       <div className="history-list">
+                         {timerHistory.slice(0, 10).map((entry) => (
+                           <div key={entry.id} className="history-item">
+                             <div className="history-info">
+                               <span className="history-name">{entry.name}</span>
+                               <span className="history-duration">{formatTime(entry.duration)}</span>
+                             </div>
+                             <div className="history-meta">
+                               <span className="history-type">
+                                 {entry.type === 'custom' ? '🎯' : entry.type === 'preset' ? '⚡' : '🥚'}
+                               </span>
+                               <span className="history-date">
+                                 {new Date(entry.completedAt).toLocaleDateString('ja-JP')}
+                               </span>
+                             </div>
+                           </div>
+                         ))}
+                       </div>
+                     ) : (
+                       <p className="no-history">まだタイマーの履歴がありません</p>
+                     )}
+                   </div>
               </div>
             </div>
                 );
