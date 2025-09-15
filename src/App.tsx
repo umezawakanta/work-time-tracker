@@ -4915,7 +4915,12 @@ function App() {
                           {memo.replies && memo.replies.length > 0 && (
                             <div className="replies-section">
                               <h5>💬 返信 ({memo.replies.length})</h5>
-                              {memo.replies.map((reply) => (
+                              {memo.replies.map((reply) => {
+                                // デバッグ用: 返信データをログ出力
+                                if (process.env.NODE_ENV === 'development') {
+                                  console.log('Reply data:', reply);
+                                }
+                                return (
                                 <div key={reply.id} className="reply-item">
                                   {editingReply === reply.id ? (
                                     <div className="reply-edit-form">
@@ -4949,7 +4954,7 @@ function App() {
                                         <span className="reply-date">
                                           {new Date(reply.createdAt).toLocaleDateString('ja-JP')}
                                         </span>
-                                        {user && user.email === reply.authorEmail && (
+                                        {user && (user.email === reply.authorEmail || user.id === reply.authorEmail) && (
                                           <div className="reply-actions">
                                             <button
                                               onClick={() => handleEditReply(reply.id, reply.content)}
@@ -4967,11 +4972,18 @@ function App() {
                                             </button>
                                           </div>
                                         )}
+                                        {/* デバッグ用: 条件を確認 */}
+                                        {process.env.NODE_ENV === 'development' && (
+                                          <div style={{fontSize: '10px', color: '#999', marginTop: '5px'}}>
+                                            Debug: user.email={user?.email}, reply.authorEmail={reply.authorEmail}, user.id={user?.id}, match={user?.email === reply.authorEmail || user?.id === reply.authorEmail}
+                                          </div>
+                                        )}
                                       </div>
                                     </>
                                   )}
                                 </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           )}
                           
