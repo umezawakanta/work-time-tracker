@@ -71,6 +71,31 @@ export interface UserSettingsDocument {
   updatedAt: Date;
 }
 
+// Project Document Interface
+export interface ProjectDocument {
+  id: string;
+  name: string;
+  description?: string;
+  color: string;
+  userId: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Time Entry Document Interface
+export interface TimeEntryDocument {
+  id: string;
+  userId: string;
+  description: string;
+  startTime: Date;
+  endTime?: Date;
+  duration?: number;
+  projectId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // API Response Interfaces
 export interface ApiResponse<T = any> {
   success: boolean;

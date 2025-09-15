@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const { ProjectDocument } = require('../utils/types');
 
 dotenv.config();
 
@@ -41,17 +42,6 @@ const ensureDatabaseConnection = async () => {
   }
 };
 
-// Project document interface
-interface ProjectDocument extends mongoose.Document {
-  id: string;
-  name: string;
-  description?: string;
-  color: string;
-  userId: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 // Project schema
 const ProjectSchema = new mongoose.Schema(

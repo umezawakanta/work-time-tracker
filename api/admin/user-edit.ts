@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const { UserDocument } = require('../utils/types');
 const { 
   createValidationError, 
   createAuthError, 
@@ -48,20 +49,6 @@ const ensureDatabaseConnection = async () => {
   }
 };
 
-// User document interface
-interface UserDocument extends mongoose.Document {
-  id: string;
-  email: string;
-  displayName: string;
-  password: string;
-  role: string;
-  isVerified: boolean;
-  avatar?: string;
-  preferences: any;
-  status: "active" | "inactive" | "suspended";
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 // User schema
 const UserSchema = new mongoose.Schema(

@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const { TimeEntryDocument } = require('../utils/types');
 
 dotenv.config();
 
@@ -41,18 +42,6 @@ const ensureDatabaseConnection = async () => {
   }
 };
 
-// TimeEntry document interface
-interface TimeEntryDocument extends mongoose.Document {
-  id: string;
-  userId: string;
-  description: string;
-  startTime: Date;
-  endTime?: Date;
-  duration?: number;
-  projectId?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 // TimeEntry schema
 const TimeEntrySchema = new mongoose.Schema(
