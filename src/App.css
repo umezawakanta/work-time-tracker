@@ -872,6 +872,15 @@ body {
   padding: 2rem;
 }
 
+/* 機能セクションの共通スタイル */
+.dashboard-main > div:first-child {
+  margin-top: 0 !important;
+}
+
+.dashboard-main > div:not(:first-child) {
+  margin-top: 2rem !important;
+}
+
 /* 時間記録セクション */
 .time-tracking-section {
   margin-bottom: 2rem;
@@ -1078,7 +1087,7 @@ body {
 
 /* プロジェクト管理 */
 .projects-section {
-  margin: 2rem 0;
+  margin-bottom: 2rem;
   padding: 1.5rem;
   background: #f8fafc;
   border-radius: 8px;
@@ -1219,7 +1228,7 @@ body {
 
 /* レポート機能 */
 .reports-section {
-  margin: 2rem 0;
+  margin-bottom: 2rem;
   padding: 1.5rem;
   background: #f8fafc;
   border-radius: 8px;
@@ -1327,7 +1336,7 @@ body {
 
 /* 管理者パネル */
 .admin-section {
-  margin: 2rem 0;
+  margin-bottom: 2rem;
   padding: 1.5rem;
   background: #f8fafc;
   border-radius: 8px;
@@ -1542,7 +1551,7 @@ tr:hover {
 
 /* 本棚セクション */
 .bookshelf-section {
-  margin-top: 30px;
+  margin-bottom: 2rem;
   padding: 20px;
   background: #f8f9fa;
   border-radius: 8px;
@@ -1752,7 +1761,7 @@ tr:hover {
 
 /* メモセクション */
 .memos-section {
-  margin-top: 30px;
+  margin-bottom: 2rem;
   padding: 20px;
   background: #f8f9fa;
   border-radius: 8px;
@@ -3894,7 +3903,7 @@ input:checked + .toggle-slider:before {
     min-width: 0;
   }
   
-  .feature-name {
+  .feature-na
     font-size: 1rem;
     font-weight: 600;
     color: #92400e;
