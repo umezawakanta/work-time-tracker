@@ -2894,6 +2894,86 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   color: #999;
 }
 
+.reply-actions {
+  display: flex;
+  gap: 5px;
+  margin-left: 10px;
+}
+
+.edit-reply-button,
+.delete-reply-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 3px;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.edit-reply-button:hover {
+  background: #f8f9fa;
+}
+
+.delete-reply-button:hover {
+  background: #f8d7da;
+}
+
+.reply-edit-form {
+  margin-top: 10px;
+}
+
+.reply-edit-textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 60px;
+  margin-bottom: 10px;
+}
+
+.reply-edit-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.save-reply-button,
+.cancel-reply-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.save-reply-button {
+  background: #28a745;
+  color: white;
+}
+
+.save-reply-button:hover:not(:disabled) {
+  background: #218838;
+}
+
+.save-reply-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.cancel-reply-button {
+  background: #6c757d;
+  color: white;
+}
+
+.cancel-reply-button:hover {
+  background: #5a6268;
+}
+
 .reply-form-section {
   margin-top: 15px;
   padding-top: 15px;

@@ -361,6 +361,8 @@ function App() {
   // 返信機能の状態
   const [replyingToMemo, setReplyingToMemo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
+  const [editingReply, setEditingReply] = useState<string | null>(null);
+  const [editReplyContent, setEditReplyContent] = useState("");
 
   // お仕事記録の状態
   const [showWorkRecords, setShowWorkRecords] = useState(false);
@@ -1513,6 +1515,83 @@ function App() {
     } catch (error) {
       console.error("Reply submission error:", error);
       setMessage("返信の投稿中にエラーが発生しました");
+    }
+  };
+
+  // 返信編集の開始
+  const handleEditReply = (replyId: string, currentContent: string) => {
+    setEditingReply(replyId);
+    setEditReplyContent(currentContent);
+  };
+
+  // 返信編集のキャンセル
+  const handleCancelEditReply = () => {
+    setEditingReply(null);
+    setEditReplyContent("");
+  };
+
+  // 返信編集の保存
+  const handleSaveEditReply = async (replyId: string) => {
+    if (!editReplyContent.trim()) {
+      setMessage("返信内容を入力してください");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/memos/reply/${replyId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          content: editReplyContent.trim()
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("返信を更新しました！");
+        setEditingReply(null);
+        setEditReplyContent("");
+        loadMemos();
+        loadPublicMemos();
+      } else {
+        setMessage(`エラー: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+
+  // 返信削除
+  const handleDeleteReply = async (replyId: string) => {
+    if (!confirm("この返信を削除しますか？")) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/memos/reply/${replyId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("返信を削除しました！");
+        loadMemos();
+        loadPublicMemos();
+      } else {
+        setMessage(`エラー: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   };
 
@@ -4838,13 +4917,59 @@ function App() {
                               <h5>💬 返信 ({memo.replies.length})</h5>
                               {memo.replies.map((reply) => (
                                 <div key={reply.id} className="reply-item">
-                                  <div className="reply-content">{reply.content}</div>
-                                  <div className="reply-meta">
-                                    <span className="reply-author">👤 {reply.authorName}</span>
-                                    <span className="reply-date">
-                                      {new Date(reply.createdAt).toLocaleDateString('ja-JP')}
-                                    </span>
-                                  </div>
+                                  {editingReply === reply.id ? (
+                                    <div className="reply-edit-form">
+                                      <textarea
+                                        value={editReplyContent}
+                                        onChange={(e) => setEditReplyContent(e.target.value)}
+                                        className="reply-edit-textarea"
+                                        rows={3}
+                                      />
+                                      <div className="reply-edit-actions">
+                                        <button
+                                          onClick={() => handleSaveEditReply(reply.id)}
+                                          className="save-reply-button"
+                                          disabled={!editReplyContent.trim()}
+                                        >
+                                          💾 保存
+                                        </button>
+                                        <button
+                                          onClick={handleCancelEditReply}
+                                          className="cancel-reply-button"
+                                        >
+                                          ❌ キャンセル
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <div className="reply-content">{reply.content}</div>
+                                      <div className="reply-meta">
+                                        <span className="reply-author">👤 {reply.authorName}</span>
+                                        <span className="reply-date">
+                                          {new Date(reply.createdAt).toLocaleDateString('ja-JP')}
+                                        </span>
+                                        {user && user.email === reply.authorEmail && (
+                                          <div className="reply-actions">
+                                            <button
+                                              onClick={() => handleEditReply(reply.id, reply.content)}
+                                              className="edit-reply-button"
+                                              title="編集"
+                                            >
+                                              ✏️
+                                            </button>
+                                            <button
+                                              onClick={() => handleDeleteReply(reply.id)}
+                                              className="delete-reply-button"
+                                              title="削除"
+                                            >
+                                              🗑️
+                                            </button>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </>
+                                  )}
                                 </div>
                               ))}
                             </div>
