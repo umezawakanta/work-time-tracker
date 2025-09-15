@@ -192,6 +192,9 @@ function App() {
   const [customTimerSound, setCustomTimerSound] = useState<'bell' | 'chime' | 'beep' | 'alarm'>('bell');
   const [customTimerOriginalTime, setCustomTimerOriginalTime] = useState(0); // 元の時間を保存
   
+  // タイマーセクションの表示状態
+  const [showTimers, setShowTimers] = useState(true);
+  
   // タイマープリセットの状態
   const [timerPresets, setTimerPresets] = useState([
     { id: 1, name: 'ポモドーロ', minutes: 25, seconds: 0, color: '#ef4444' },
