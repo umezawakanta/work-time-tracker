@@ -341,6 +341,9 @@ function App() {
   const [showPublicMemos, setShowPublicMemos] = useState(false);
   const [publicMemoSearchTerm, setPublicMemoSearchTerm] = useState("");
   const [selectedPublicMemoCategory, setSelectedPublicMemoCategory] = useState("all");
+  const [publicMemoViewMode, setPublicMemoViewMode] = useState<'list' | 'calendar'>('list');
+  const [publicMemoCurrentDate, setPublicMemoCurrentDate] = useState(new Date());
+  const [publicMemoSelectedDate, setPublicMemoSelectedDate] = useState<Date | null>(null);
 
   // フォント設定関連の状態
   const [selectedFont, setSelectedFont] = useState("system");
@@ -2118,6 +2121,31 @@ function App() {
     // タイトルが空の場合は内容の一行目を返す
     const firstLine = memo.content.split('\n')[0].trim();
     return firstLine || '無題';
+  };
+
+  // 公開メモ用のカレンダー関数
+  const getPublicMemosForDate = (date: Date) => {
+    const dateString = date.toDateString();
+    return publicMemos.filter(memo => {
+      const memoDate = new Date(memo.createdAt).toDateString();
+      return memoDate === dateString;
+    });
+  };
+
+  const navigatePublicMemoMonth = (direction: 'prev' | 'next') => {
+    setPublicMemoCurrentDate(prevDate => {
+      const newDate = new Date(prevDate);
+      if (direction === 'prev') {
+        newDate.setMonth(newDate.getMonth() - 1);
+      } else {
+        newDate.setMonth(newDate.getMonth() + 1);
+      }
+      return newDate;
+    });
+  };
+
+  const handlePublicMemoDateClick = (date: Date) => {
+    setPublicMemoSelectedDate(date);
   };
 
   const handleEditMemo = (memo: Memo) => {
@@ -4758,13 +4786,28 @@ function App() {
                         ))}
                       </select>
                     </div>
+                    <div className="view-controls">
+                      <button 
+                        onClick={() => setPublicMemoViewMode('list')}
+                        className={`view-button ${publicMemoViewMode === 'list' ? 'active' : ''}`}
+                      >
+                        📋 リスト
+                      </button>
+                      <button 
+                        onClick={() => setPublicMemoViewMode('calendar')}
+                        className={`view-button ${publicMemoViewMode === 'calendar' ? 'active' : ''}`}
+                      >
+                        📅 カレンダー
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="public-memos-list">
-                    {publicMemos.length === 0 ? (
-                      <p className="no-public-memos">公開メモがありません</p>
-                    ) : (
-                      publicMemos.map((memo) => (
+                  {publicMemoViewMode === 'list' ? (
+                    <div className="public-memos-list">
+                      {publicMemos.length === 0 ? (
+                        <p className="no-public-memos">公開メモがありません</p>
+                      ) : (
+                        publicMemos.map((memo) => (
                         <div key={memo.id} className="public-memo-item">
                           <div className="memo-header">
                             <h3>{getMemoTitle(memo)}</h3>
@@ -4854,7 +4897,97 @@ function App() {
                         </div>
                       ))
                     )}
-                  </div>
+                    </div>
+                  ) : (
+                    <div className="calendar-container">
+                      <div className="calendar-header">
+                        <button 
+                          onClick={() => navigatePublicMemoMonth('prev')}
+                          className="calendar-nav-button"
+                        >
+                          ←
+                        </button>
+                        <h3>
+                          {publicMemoCurrentDate.getFullYear()}年{publicMemoCurrentDate.getMonth() + 1}月
+                        </h3>
+                        <button 
+                          onClick={() => navigatePublicMemoMonth('next')}
+                          className="calendar-nav-button"
+                        >
+                          →
+                        </button>
+                      </div>
+                      
+                      <div className="calendar-weekdays">
+                        <div className="weekday">日</div>
+                        <div className="weekday">月</div>
+                        <div className="weekday">火</div>
+                        <div className="weekday">水</div>
+                        <div className="weekday">木</div>
+                        <div className="weekday">金</div>
+                        <div className="weekday">土</div>
+                      </div>
+                      
+                      <div className="calendar-days">
+                        {getDaysInMonth(publicMemoCurrentDate).map((dayItem, index) => {
+                          const dayMemos = getPublicMemosForDate(dayItem.date);
+                          const isToday = dayItem.date.toDateString() === new Date().toDateString();
+                          const isSelected = publicMemoSelectedDate && dayItem.date.toDateString() === publicMemoSelectedDate.toDateString();
+                          
+                          return (
+                            <div
+                              key={index}
+                              className={`calendar-day ${!dayItem.isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
+                              onClick={() => handlePublicMemoDateClick(dayItem.date)}
+                            >
+                              <div className="day-number">{dayItem.date.getDate()}</div>
+                              <div className="day-records">
+                                {dayMemos.map((memo, memoIndex) => (
+                                  <div key={memoIndex} className="record-indicator clickable">
+                                    <div className="record-content">{getMemoTitle(memo)}</div>
+                                    <div className="record-amount">{memo.category}</div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      
+                      {publicMemoSelectedDate && (
+                        <div className="selected-date-info">
+                          <h4>
+                            📅 {publicMemoSelectedDate.getFullYear()}年{publicMemoSelectedDate.getMonth() + 1}月{publicMemoSelectedDate.getDate()}日の公開メモ
+                          </h4>
+                          <div className="date-records">
+                            {getPublicMemosForDate(publicMemoSelectedDate).length === 0 ? (
+                              <p>この日の公開メモはありません</p>
+                            ) : (
+                              getPublicMemosForDate(publicMemoSelectedDate).map((memo) => (
+                                <div key={memo.id} className="date-record-item">
+                                  <div className="record-icon">📝</div>
+                                  <div className="record-content">
+                                    <h5>{getMemoTitle(memo)}</h5>
+                                    <p>{memo.content}</p>
+                                    <div className="record-meta">
+                                      <span className="memo-category">{memo.category}</span>
+                                      {memo.tags && memo.tags.length > 0 && (
+                                        <div className="memo-tags">
+                                          {memo.tags.map((tag, index) => (
+                                            <span key={index} className="tag">{tag}</span>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

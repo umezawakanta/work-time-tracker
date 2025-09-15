@@ -2363,6 +2363,38 @@ tr:hover {
   align-items: center;
 }
 
+.view-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.view-button {
+  background: #e9ecef;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.view-button:hover {
+  background: #dee2e6;
+  border-color: #adb5bd;
+}
+
+.view-button.active {
+  background: #1976d2;
+  color: white;
+  border-color: #1976d2;
+}
+
+.view-button.active:hover {
+  background: #1565c0;
+  border-color: #1565c0;
+}
+
 .public-memos-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
