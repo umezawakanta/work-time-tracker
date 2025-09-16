@@ -1091,6 +1091,12 @@ function App() {
   const handleCharacterHomeToggle = () => {
     console.log('🏠 キャラクター達のお家ボタンがクリックされました');
     console.log('現在のshowCharacterHome:', showCharacterHome);
+    
+    if (!showCharacterHome) {
+      // 開く場合は他の機能を閉じる
+      closeOtherFeatures('character');
+    }
+    
     setShowCharacterHome(!showCharacterHome);
     console.log('新しいshowCharacterHome:', !showCharacterHome);
   };
@@ -1144,6 +1150,56 @@ function App() {
       : [...currentSettings.hiddenFeatures, featureId];
     
     updateUserSettings({ hiddenFeatures: newHiddenFeatures });
+  };
+
+  // 他の機能を閉じる関数
+  const closeOtherFeatures = (activeFeature: string) => {
+    // 時間記録関連
+    if (activeFeature !== 'time-tracking') {
+      setShowTimeTracking(false);
+    }
+    if (activeFeature !== 'projects') {
+      setShowProjects(false);
+    }
+    if (activeFeature !== 'custom-timer') {
+      setShowCustomTimer(false);
+    }
+    if (activeFeature !== 'preset-timers') {
+      setShowPresetTimers(false);
+    }
+    if (activeFeature !== 'timer-stats') {
+      setShowTimerStats(false);
+    }
+    if (activeFeature !== 'timer-history') {
+      setShowTimerHistory(false);
+    }
+    
+    // メモ関連
+    if (activeFeature !== 'memos') {
+      setShowMemos(false);
+      setShowMemoForm(false);
+    }
+    
+    // 本棚関連
+    if (activeFeature !== 'bookshelf') {
+      setShowBookshelf(false);
+      setShowBookForm(false);
+    }
+    
+    // レポート関連
+    if (activeFeature !== 'reports') {
+      setShowReports(false);
+    }
+    
+    // 管理者関連
+    if (activeFeature !== 'admin') {
+      setShowAdminPanel(false);
+    }
+    
+    // キャラクター関連
+    if (activeFeature !== 'character') {
+      setShowCharacterHome(false);
+    }
   };
 
   const handleDragStart = (e: React.DragEvent, featureId: string) => {
@@ -3495,7 +3551,10 @@ function App() {
                     </button>
                   ) : (
                     <button 
-                      onClick={() => setShowTimeTracking(true)}
+                      onClick={() => {
+                        closeOtherFeatures('time-tracking');
+                        setShowTimeTracking(true);
+                      }}
                       className="show-section-button"
                       title="セクションを表示"
                     >
@@ -3777,7 +3836,10 @@ function App() {
                     </button>
                   ) : (
                     <button 
-                      onClick={() => setShowProjects(true)}
+                      onClick={() => {
+                        closeOtherFeatures('projects');
+                        setShowProjects(true);
+                      }}
                       className="show-section-button"
                       title="セクションを表示"
                     >
@@ -3919,6 +3981,7 @@ function App() {
                   ) : (
                     <button 
                       onClick={() => {
+                        closeOtherFeatures('reports');
                         setShowReports(true);
                         if (!reportSummary) {
                           loadReportSummary();
@@ -4022,6 +4085,7 @@ function App() {
                     ) : (
                       <button 
                         onClick={() => {
+                          closeOtherFeatures('admin');
                           setShowAdminPanel(true);
                           if (adminUsers.length === 0) {
                             loadAdminUsers();
@@ -4244,6 +4308,7 @@ function App() {
                   ) : (
                     <button 
                       onClick={() => {
+                        closeOtherFeatures('bookshelf');
                         setShowBookshelf(true);
                         if (books.length === 0) {
                           loadBooks();
@@ -4479,6 +4544,7 @@ function App() {
                   ) : (
                     <button 
                       onClick={() => {
+                        closeOtherFeatures('memos');
                         setShowMemos(true);
                         if (memos.length === 0) {
                           loadMemos();
@@ -6083,7 +6149,10 @@ function App() {
                         </button>
                       ) : (
                         <button 
-                          onClick={() => setShowCustomTimer(true)}
+                          onClick={() => {
+                            closeOtherFeatures('custom-timer');
+                            setShowCustomTimer(true);
+                          }}
                           className="show-section-button"
                           title="セクションを表示"
                         >
@@ -6229,7 +6298,10 @@ function App() {
                         </button>
                       ) : (
                         <button 
-                          onClick={() => setShowPresetTimers(true)}
+                          onClick={() => {
+                            closeOtherFeatures('preset-timers');
+                            setShowPresetTimers(true);
+                          }}
                           className="show-section-button"
                           title="セクションを表示"
                         >
@@ -6278,7 +6350,10 @@ function App() {
                            </button>
                          ) : (
                            <button 
-                             onClick={() => setShowTimerStats(true)}
+                             onClick={() => {
+                               closeOtherFeatures('timer-stats');
+                               setShowTimerStats(true);
+                             }}
                              className="show-section-button"
                              title="セクションを表示"
                            >
@@ -6348,7 +6423,10 @@ function App() {
                            </button>
                          ) : (
                            <button 
-                             onClick={() => setShowTimerHistory(true)}
+                             onClick={() => {
+                               closeOtherFeatures('timer-history');
+                               setShowTimerHistory(true);
+                             }}
                              className="show-section-button"
                              title="セクションを表示"
                            >
