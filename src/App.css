@@ -2027,6 +2027,57 @@ tr:hover {
   background: #0056b3;
 }
 
+/* 更新ボタンのスタイル */
+.refresh-button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 36px;
+}
+
+.refresh-button:hover {
+  background: #218838;
+  transform: rotate(180deg);
+}
+
+.refresh-button:active {
+  transform: rotate(360deg);
+}
+
+/* 各機能のヘッダースタイル */
+.projects-header,
+.bookshelf-header,
+.work-records-header,
+.self-analysis-header,
+.admin-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 8px 0;
+}
+
+.projects-header {
+  justify-content: space-between;
+}
+
+.bookshelf-header,
+.work-records-header,
+.self-analysis-header,
+.admin-header {
+  justify-content: flex-end;
+}
+
 .category-controls {
   min-width: 200px;
 }

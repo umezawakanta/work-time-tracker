@@ -4478,6 +4478,13 @@ function App() {
                     >
                       {showProjectForm ? "❌ キャンセル" : "➕ プロジェクト追加"}
                     </button>
+                    <button 
+                      onClick={loadProjects}
+                      className="refresh-button"
+                      title="プロジェクトを更新"
+                    >
+                      🔄
+                    </button>
                   </div>
 
               {showProjectForm && (
@@ -4722,6 +4729,15 @@ function App() {
 
                 {showAdminPanel && (
                   <div className="admin-content">
+                    <div className="admin-header">
+                      <button 
+                        onClick={loadAdminUsers}
+                        className="refresh-button"
+                        title="管理者データを更新"
+                      >
+                        🔄
+                      </button>
+                    </div>
                     <div className="admin-stats">
                       <div className="stat-card">
                         <h3>総ユーザー数</h3>
@@ -4945,6 +4961,15 @@ function App() {
 
               {showBookshelf && (
                 <div className="bookshelf-content">
+                  <div className="bookshelf-header">
+                    <button 
+                      onClick={loadBooks}
+                      className="refresh-button"
+                      title="本棚を更新"
+                    >
+                      🔄
+                    </button>
+                  </div>
                   <div className="bookshelf-stats">
                     <div className="stat-card">
                       <h3>総冊数</h3>
@@ -5300,6 +5325,13 @@ function App() {
                       <button onClick={handleMemoSearch} className="search-button">
                         検索
                       </button>
+                      <button 
+                        onClick={loadMemos}
+                        className="refresh-button"
+                        title="メモを更新"
+                      >
+                        🔄
+                      </button>
                     </div>
                     <div className="category-controls">
                       <select
@@ -5571,6 +5603,13 @@ function App() {
                       />
                       <button onClick={handlePublicMemoSearch} className="search-button">
                         検索
+                      </button>
+                      <button 
+                        onClick={loadPublicMemos}
+                        className="refresh-button"
+                        title="公開メモを更新"
+                      >
+                        🔄
                       </button>
                     </div>
                     <div className="category-controls">
@@ -5893,6 +5932,18 @@ function App() {
 
               {showWorkRecords && (
                 <div className="work-records-content">
+                  <div className="work-records-header">
+                    <button 
+                      onClick={() => {
+                        loadSalaryRecords();
+                        loadWorkDiaries();
+                      }}
+                      className="refresh-button"
+                      title="勤務記録を更新"
+                    >
+                      🔄
+                    </button>
+                  </div>
                   <div className="work-records-tabs">
                     <button 
                       className={`tab-button ${!showSalaryForm && !showDiaryForm && !showCalendar ? 'active' : ''}`}
@@ -7162,6 +7213,19 @@ function App() {
 
                   {showSelfAnalysis && (
                     <div className="self-analysis-content">
+                      <div className="self-analysis-header">
+                        <button 
+                          onClick={() => {
+                            // じぶん図鑑のデータは主にローカルストレージに保存されているため、
+                            // ページをリロードしてデータを再読み込み
+                            window.location.reload();
+                          }}
+                          className="refresh-button"
+                          title="じぶん図鑑を更新"
+                        >
+                          🔄
+                        </button>
+                      </div>
                       <div className="analysis-tabs">
                         <button 
                           className={`tab-button ${selfAnalysisTab === 'dashboard' ? 'active' : ''}`}
