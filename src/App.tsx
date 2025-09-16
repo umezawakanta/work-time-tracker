@@ -1076,18 +1076,33 @@ function App() {
       features.some(f => f.id === id)
     );
     
+    // 「じぶん図鑑」が含まれていない場合は追加
+    if (!order.includes('self-analysis')) {
+      order.push('self-analysis');
+    }
+    
     return order;
   };
 
   // 表示する機能を取得
   const getVisibleFeatures = () => {
     const order = getFeatureOrder();
-    const hiddenFeatures = userSettings?.hiddenFeatures || [];
+    let hiddenFeatures = userSettings?.hiddenFeatures || [];
+    
+    // 「じぶん図鑑」が隠されている場合は表示に戻す
+    if (hiddenFeatures.includes('self-analysis')) {
+      hiddenFeatures = hiddenFeatures.filter(id => id !== 'self-analysis');
+    }
     
     const visibleFeatures = order
       .filter(id => !hiddenFeatures.includes(id))
       .map(id => features.find(f => f.id === id))
       .filter(Boolean) as Feature[];
+    
+    // デバッグ用ログ
+    console.log('Visible features:', visibleFeatures.map(f => f.name));
+    console.log('Feature order:', order);
+    console.log('Hidden features:', hiddenFeatures);
     
     return visibleFeatures;
   };
@@ -4122,6 +4137,7 @@ function App() {
           
           <main className="dashboard-main">
             {getVisibleFeatures().map((feature) => {
+              console.log('Rendering feature:', feature.name, feature.id);
               if (feature.id === 'time-tracking') {
                 return (
             <div key={feature.id} className="time-tracking-section">
@@ -7109,6 +7125,7 @@ function App() {
             </div>
               );
             } else if (feature.id === 'self-analysis') {
+              console.log('Rendering self-analysis feature');
               return (
                 <div key={feature.id} className="self-analysis-section">
                   <div className="section-header">
@@ -8240,9 +8257,10 @@ function App() {
                 </div>
               );
             } else {
+              console.log('Unknown feature:', feature.name, feature.id);
               return null;
             }
-          })})
+          })}
           </main>
         </div>
         
