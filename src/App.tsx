@@ -525,6 +525,22 @@ function App() {
   });
   const [newActivity, setNewActivity] = useState('');
 
+  // 目標管理関連の状態
+  const [showGoalForm, setShowGoalForm] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<string | null>(null);
+  const [goalForm, setGoalForm] = useState({
+    title: '',
+    description: '',
+    category: 'personal',
+    priority: 'medium' as 'low' | 'medium' | 'high',
+    status: 'not-started' as 'not-started' | 'in-progress' | 'completed' | 'paused',
+    startDate: new Date().toISOString().split('T')[0],
+    targetDate: '',
+    progress: 0,
+    milestones: [] as { id: string; title: string; description: string; completed: boolean }[]
+  });
+  const [newMilestone, setNewMilestone] = useState('');
+
   // プロフィール管理関数
   const addToProfile = (field: keyof typeof personalProfile, value: string) => {
     if (!value.trim()) return;
@@ -746,6 +762,182 @@ function App() {
   const getAverageMood = () => {
     if (moodLogs.length === 0) return 0;
     return moodLogs.reduce((sum, log) => sum + log.mood, 0) / moodLogs.length;
+  };
+
+  // 目標管理関数
+  const addGoal = () => {
+    if (!goalForm.title.trim()) return;
+    
+    const goalId = Date.now().toString();
+    const newGoal: Goal = {
+      id: goalId,
+      title: goalForm.title.trim(),
+      description: goalForm.description,
+      category: goalForm.category,
+      priority: goalForm.priority,
+      status: goalForm.status,
+      startDate: goalForm.startDate,
+      targetDate: goalForm.targetDate,
+      progress: goalForm.progress,
+      milestones: goalForm.milestones.map(m => ({
+        id: m.id,
+        title: m.title,
+        description: m.description,
+        completed: m.completed,
+        completedDate: m.completed ? new Date().toISOString() : undefined
+      })),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    setGoals(prev => [...prev, newGoal]);
+    resetGoalForm();
+  };
+
+  const updateGoal = (goalId: string, updates: Partial<Goal>) => {
+    setGoals(prev => prev.map(goal => 
+      goal.id === goalId 
+        ? { ...goal, ...updates, updatedAt: new Date().toISOString() }
+        : goal
+    ));
+  };
+
+  const deleteGoal = (goalId: string) => {
+    setGoals(prev => prev.filter(goal => goal.id !== goalId));
+  };
+
+  const resetGoalForm = () => {
+    setGoalForm({
+      title: '',
+      description: '',
+      category: 'personal',
+      priority: 'medium',
+      status: 'not-started',
+      startDate: new Date().toISOString().split('T')[0],
+      targetDate: '',
+      progress: 0,
+      milestones: []
+    });
+    setNewMilestone('');
+    setShowGoalForm(false);
+    setEditingGoal(null);
+  };
+
+  const addMilestone = () => {
+    if (!newMilestone.trim()) return;
+    
+    const milestoneId = Date.now().toString();
+    setGoalForm(prev => ({
+      ...prev,
+      milestones: [...prev.milestones, {
+        id: milestoneId,
+        title: newMilestone.trim(),
+        description: '',
+        completed: false
+      }]
+    }));
+    setNewMilestone('');
+  };
+
+  const removeMilestone = (milestoneId: string) => {
+    setGoalForm(prev => ({
+      ...prev,
+      milestones: prev.milestones.filter(m => m.id !== milestoneId)
+    }));
+  };
+
+  const toggleMilestone = (milestoneId: string) => {
+    setGoalForm(prev => ({
+      ...prev,
+      milestones: prev.milestones.map(m => 
+        m.id === milestoneId 
+          ? { ...m, completed: !m.completed }
+          : m
+      )
+    }));
+  };
+
+  const editGoal = (goal: Goal) => {
+    setGoalForm({
+      title: goal.title,
+      description: goal.description,
+      category: goal.category,
+      priority: goal.priority,
+      status: goal.status,
+      startDate: goal.startDate,
+      targetDate: goal.targetDate,
+      progress: goal.progress,
+      milestones: goal.milestones.map(m => ({
+        id: m.id,
+        title: m.title,
+        description: m.description,
+        completed: m.completed
+      }))
+    });
+    setEditingGoal(goal.id);
+    setShowGoalForm(true);
+  };
+
+  const saveGoal = () => {
+    if (editingGoal) {
+      updateGoal(editingGoal, {
+        title: goalForm.title,
+        description: goalForm.description,
+        category: goalForm.category,
+        priority: goalForm.priority,
+        status: goalForm.status,
+        startDate: goalForm.startDate,
+        targetDate: goalForm.targetDate,
+        progress: goalForm.progress,
+        milestones: goalForm.milestones.map(m => ({
+          id: m.id,
+          title: m.title,
+          description: m.description,
+          completed: m.completed,
+          completedDate: m.completed ? new Date().toISOString() : undefined
+        }))
+      });
+    } else {
+      addGoal();
+    }
+  };
+
+  const getGoalStatusColor = (status: string) => {
+    switch (status) {
+      case 'not-started': return '#666';
+      case 'in-progress': return '#ff9800';
+      case 'completed': return '#4caf50';
+      case 'paused': return '#f44336';
+      default: return '#666';
+    }
+  };
+
+  const getGoalStatusText = (status: string) => {
+    switch (status) {
+      case 'not-started': return '未開始';
+      case 'in-progress': return '進行中';
+      case 'completed': return '完了';
+      case 'paused': return '一時停止';
+      default: return '不明';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'low': return '#4caf50';
+      case 'medium': return '#ff9800';
+      case 'high': return '#f44336';
+      default: return '#666';
+    }
+  };
+
+  const getPriorityText = (priority: string) => {
+    switch (priority) {
+      case 'low': return '低';
+      case 'medium': return '中';
+      case 'high': return '高';
+      default: return '不明';
+    }
   };
 
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -7730,15 +7922,317 @@ function App() {
 
                     {selfAnalysisTab === 'goals' && (
                       <div className="goals-content">
-                        <h3>🎯 目標管理</h3>
-                        <p>目標管理機能は準備中です...</p>
+                        <div className="goals-header">
+                          <h3>🎯 目標・夢の管理</h3>
+                          <button 
+                            className="add-goal-button"
+                            onClick={() => setShowGoalForm(true)}
+                          >
+                            + 新しい目標
+                          </button>
+                        </div>
+
+                        {/* 目標フォーム */}
+                        {showGoalForm && (
+                          <div className="goal-form">
+                            <div className="form-group">
+                              <label>目標タイトル</label>
+                              <input
+                                type="text"
+                                value={goalForm.title}
+                                onChange={(e) => setGoalForm(prev => ({ ...prev, title: e.target.value }))}
+                                placeholder="例: 英語を話せるようになる"
+                              />
+                            </div>
+
+                            <div className="form-group">
+                              <label>説明</label>
+                              <textarea
+                                value={goalForm.description}
+                                onChange={(e) => setGoalForm(prev => ({ ...prev, description: e.target.value }))}
+                                placeholder="目標の詳細を記述..."
+                                rows={3}
+                              />
+                            </div>
+
+                            <div className="form-row">
+                              <div className="form-group">
+                                <label>カテゴリ</label>
+                                <select
+                                  value={goalForm.category}
+                                  onChange={(e) => setGoalForm(prev => ({ ...prev, category: e.target.value }))}
+                                >
+                                  <option value="personal">個人</option>
+                                  <option value="career">キャリア</option>
+                                  <option value="health">健康</option>
+                                  <option value="learning">学習</option>
+                                  <option value="relationship">人間関係</option>
+                                  <option value="financial">財務</option>
+                                  <option value="hobby">趣味</option>
+                                </select>
+                              </div>
+
+                              <div className="form-group">
+                                <label>優先度</label>
+                                <select
+                                  value={goalForm.priority}
+                                  onChange={(e) => setGoalForm(prev => ({ ...prev, priority: e.target.value as 'low' | 'medium' | 'high' }))}
+                                >
+                                  <option value="low">低</option>
+                                  <option value="medium">中</option>
+                                  <option value="high">高</option>
+                                </select>
+                              </div>
+
+                              <div className="form-group">
+                                <label>ステータス</label>
+                                <select
+                                  value={goalForm.status}
+                                  onChange={(e) => setGoalForm(prev => ({ ...prev, status: e.target.value as 'not-started' | 'in-progress' | 'completed' | 'paused' }))}
+                                >
+                                  <option value="not-started">未開始</option>
+                                  <option value="in-progress">進行中</option>
+                                  <option value="completed">完了</option>
+                                  <option value="paused">一時停止</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            <div className="form-row">
+                              <div className="form-group">
+                                <label>開始日</label>
+                                <input
+                                  type="date"
+                                  value={goalForm.startDate}
+                                  onChange={(e) => setGoalForm(prev => ({ ...prev, startDate: e.target.value }))}
+                                />
+                              </div>
+
+                              <div className="form-group">
+                                <label>目標日</label>
+                                <input
+                                  type="date"
+                                  value={goalForm.targetDate}
+                                  onChange={(e) => setGoalForm(prev => ({ ...prev, targetDate: e.target.value }))}
+                                />
+                              </div>
+
+                              <div className="form-group">
+                                <label>進捗率 (%)</label>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  value={goalForm.progress}
+                                  onChange={(e) => setGoalForm(prev => ({ ...prev, progress: parseInt(e.target.value) || 0 }))}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="form-actions">
+                              <button 
+                                onClick={saveGoal}
+                                className="save-button"
+                              >
+                                {editingGoal ? '更新' : '保存'}
+                              </button>
+                              <button 
+                                onClick={resetGoalForm}
+                                className="cancel-button"
+                              >
+                                キャンセル
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* 目標一覧 */}
+                        <div className="goals-list">
+                          {goals.length === 0 ? (
+                            <div className="empty-state">
+                              <p>まだ目標が設定されていません</p>
+                              <p>「+ 新しい目標」ボタンから目標を設定してください</p>
+                            </div>
+                          ) : (
+                            <div className="goals-grid">
+                              {goals.map(goal => (
+                                <div key={goal.id} className="goal-card">
+                                  <div className="goal-header">
+                                    <h4 className="goal-title">{goal.title}</h4>
+                                    <div className="goal-actions">
+                                      <button
+                                        onClick={() => editGoal(goal)}
+                                        className="edit-button"
+                                      >
+                                        ✏️
+                                      </button>
+                                      <button
+                                        onClick={() => deleteGoal(goal.id)}
+                                        className="delete-button"
+                                      >
+                                        🗑️
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  {goal.description && (
+                                    <div className="goal-description">
+                                      <p>{goal.description}</p>
+                                    </div>
+                                  )}
+
+                                  <div className="goal-progress">
+                                    <div className="progress-header">
+                                      <span className="progress-label">進捗率</span>
+                                      <span className="progress-value">{goal.progress}%</span>
+                                    </div>
+                                    <div className="progress-bar">
+                                      <div 
+                                        className="progress-fill" 
+                                        style={{width: `${goal.progress}%`}}
+                                      ></div>
+                                    </div>
+                                  </div>
+
+                                  <div className="goal-dates">
+                                    <div className="date-item">
+                                      <span className="date-label">開始日:</span>
+                                      <span className="date-value">{goal.startDate}</span>
+                                    </div>
+                                    {goal.targetDate && (
+                                      <div className="date-item">
+                                        <span className="date-label">目標日:</span>
+                                        <span className="date-value">{goal.targetDate}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
 
                     {selfAnalysisTab === 'learning' && (
                       <div className="learning-content">
-                        <h3>📚 学習記録</h3>
-                        <p>学習記録機能は準備中です...</p>
+                        <div className="learning-header">
+                          <h3>📚 学習記録</h3>
+                          <button 
+                            className="add-learning-button"
+                            onClick={() => {/* 学習記録追加機能 */}}
+                          >
+                            + 新しい学習記録
+                          </button>
+                        </div>
+
+                        <div className="learning-stats">
+                          <div className="stats-grid">
+                            <div className="stat-card">
+                              <div className="stat-value">{learningRecords.length}</div>
+                              <div className="stat-label">総学習記録数</div>
+                            </div>
+                            <div className="stat-card">
+                              <div className="stat-value">
+                                {learningRecords.filter(r => r.status === 'completed').length}
+                              </div>
+                              <div className="stat-label">完了済み</div>
+                            </div>
+                            <div className="stat-card">
+                              <div className="stat-value">
+                                {learningRecords.filter(r => r.status === 'in-progress').length}
+                              </div>
+                              <div className="stat-label">進行中</div>
+                            </div>
+                            <div className="stat-card">
+                              <div className="stat-value">
+                                {learningRecords.length > 0 
+                                  ? Math.round(learningRecords.reduce((sum, r) => sum + r.rating, 0) / learningRecords.length * 10) / 10
+                                  : 0
+                                }
+                              </div>
+                              <div className="stat-label">平均評価</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="learning-list">
+                          {learningRecords.length === 0 ? (
+                            <div className="empty-state">
+                              <p>まだ学習記録がありません</p>
+                              <p>「+ 新しい学習記録」ボタンから学習内容を記録してください</p>
+                            </div>
+                          ) : (
+                            <div className="learning-grid">
+                              {learningRecords.map(record => (
+                                <div key={record.id} className="learning-card">
+                                  <div className="learning-header">
+                                    <h4 className="learning-title">{record.title}</h4>
+                                    <div className="learning-type">
+                                      {record.type === 'book' && '📖'}
+                                      {record.type === 'course' && '🎓'}
+                                      {record.type === 'video' && '🎥'}
+                                      {record.type === 'article' && '📄'}
+                                      {record.type === 'practice' && '💪'}
+                                      {record.type === 'other' && '📝'}
+                                    </div>
+                                  </div>
+
+                                  <div className="learning-description">
+                                    <p>{record.description}</p>
+                                  </div>
+
+                                  <div className="learning-meta">
+                                    <div className="learning-category">
+                                      <span className="category-label">カテゴリ:</span>
+                                      <span className="category-value">{record.category}</span>
+                                    </div>
+                                    <div className="learning-rating">
+                                      <span className="rating-label">評価:</span>
+                                      <span className="rating-value">
+                                        {'★'.repeat(record.rating)}{'☆'.repeat(5 - record.rating)}
+                                      </span>
+                                    </div>
+                                    <div className="learning-status">
+                                      <span className={`status-badge ${record.status}`}>
+                                        {record.status === 'not-started' && '未開始'}
+                                        {record.status === 'in-progress' && '進行中'}
+                                        {record.status === 'completed' && '完了'}
+                                        {record.status === 'paused' && '一時停止'}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  {record.skills.length > 0 && (
+                                    <div className="learning-skills">
+                                      <h5>習得スキル</h5>
+                                      <div className="skills-tags">
+                                        {record.skills.map((skill, index) => (
+                                          <span key={index} className="skill-tag">
+                                            {skill}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  <div className="learning-dates">
+                                    <div className="date-item">
+                                      <span className="date-label">開始日:</span>
+                                      <span className="date-value">{record.startDate}</span>
+                                    </div>
+                                    {record.completedDate && (
+                                      <div className="date-item">
+                                        <span className="date-label">完了日:</span>
+                                        <span className="date-value">{record.completedDate}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                     </div>
