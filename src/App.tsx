@@ -476,6 +476,7 @@ function App() {
 
   // じぶん図鑑関連の状態
   const [showSelfAnalysis, setShowSelfAnalysis] = useState(false);
+  const [selfAnalysisTab, setSelfAnalysisTab] = useState('dashboard');
   const [personalProfile, setPersonalProfile] = useState({
     values: [] as string[],
     goals: [] as string[],
@@ -483,9 +484,141 @@ function App() {
     interests: [] as string[],
     strengths: [] as string[],
     weaknesses: [] as string[],
-    vision: '',
-    mission: ''
+    personality: '',
+    lifestyle: '',
+    workStyle: '',
+    learningStyle: '',
+    motivation: '',
+    challenges: [] as string[],
+    achievements: [] as string[],
+    futureVision: '',
+    notes: ''
   });
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [newValue, setNewValue] = useState('');
+  const [newGoal, setNewGoal] = useState('');
+  const [newSkill, setNewSkill] = useState('');
+  const [newInterest, setNewInterest] = useState('');
+  const [newStrength, setNewStrength] = useState('');
+  const [newWeakness, setNewWeakness] = useState('');
+  const [newChallenge, setNewChallenge] = useState('');
+  const [newAchievement, setNewAchievement] = useState('');
+
+  // 習慣トラッカー関連の状態
+  const [newHabit, setNewHabit] = useState('');
+  const [editingHabit, setEditingHabit] = useState<string | null>(null);
+  const [habitStreak, setHabitStreak] = useState<{[key: string]: number}>({});
+  const [habitHistory, setHabitHistory] = useState<{[key: string]: string[]}>({});
+
+  // プロフィール管理関数
+  const addToProfile = (field: keyof typeof personalProfile, value: string) => {
+    if (!value.trim()) return;
+    
+    setPersonalProfile(prev => ({
+      ...prev,
+      [field]: [...(prev[field] as string[]), value.trim()]
+    }));
+  };
+
+  const removeFromProfile = (field: keyof typeof personalProfile, index: number) => {
+    setPersonalProfile(prev => ({
+      ...prev,
+      [field]: (prev[field] as string[]).filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateProfileField = (field: keyof typeof personalProfile, value: string) => {
+    setPersonalProfile(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // 習慣トラッカー管理関数
+  const addHabit = () => {
+    if (!newHabit.trim()) return;
+    
+    const habitId = Date.now().toString();
+    const newHabitObj: Habit = {
+      id: habitId,
+      name: newHabit.trim(),
+      description: '',
+      frequency: 'daily',
+      targetDays: 7,
+      category: 'personal',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    setHabits(prev => [...prev, newHabitObj]);
+    setHabitStreak(prev => ({ ...prev, [habitId]: 0 }));
+    setHabitHistory(prev => ({ ...prev, [habitId]: [] }));
+    setNewHabit('');
+  };
+
+  const updateHabit = (habitId: string, updates: Partial<Habit>) => {
+    setHabits(prev => prev.map(habit => 
+      habit.id === habitId 
+        ? { ...habit, ...updates, updatedAt: new Date() }
+        : habit
+    ));
+  };
+
+  const deleteHabit = (habitId: string) => {
+    setHabits(prev => prev.filter(habit => habit.id !== habitId));
+    setHabitStreak(prev => {
+      const newStreak = { ...prev };
+      delete newStreak[habitId];
+      return newStreak;
+    });
+    setHabitHistory(prev => {
+      const newHistory = { ...prev };
+      delete newHistory[habitId];
+      return newHistory;
+    });
+  };
+
+  const toggleHabitToday = (habitId: string) => {
+    const today = new Date().toISOString().split('T')[0];
+    const habit = habits.find(h => h.id === habitId);
+    if (!habit) return;
+
+    const history = habitHistory[habitId] || [];
+    const isCompletedToday = history.includes(today);
+
+    if (isCompletedToday) {
+      // 今日の記録を削除
+      setHabitHistory(prev => ({
+        ...prev,
+        [habitId]: history.filter(date => date !== today)
+      }));
+      setHabitStreak(prev => ({
+        ...prev,
+        [habitId]: Math.max(0, (prev[habitId] || 0) - 1)
+      }));
+    } else {
+      // 今日の記録を追加
+      setHabitHistory(prev => ({
+        ...prev,
+        [habitId]: [...history, today]
+      }));
+      setHabitStreak(prev => ({
+        ...prev,
+        [habitId]: (prev[habitId] || 0) + 1
+      }));
+    }
+  };
+
+  const getHabitCompletionRate = (habitId: string) => {
+    const habit = habits.find(h => h.id === habitId);
+    if (!habit) return 0;
+    
+    const history = habitHistory[habitId] || [];
+    const daysSinceStart = Math.ceil((Date.now() - habit.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+    return daysSinceStart > 0 ? (history.length / daysSinceStart) * 100 : 0;
+  };
+
   const [habits, setHabits] = useState<Habit[]>([]);
   const [moodLogs, setMoodLogs] = useState<MoodLog[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -6689,28 +6822,47 @@ function App() {
                   {showSelfAnalysis && (
                     <div className="self-analysis-content">
                       <div className="analysis-tabs">
-                        <button className="tab-button active">
+                        <button 
+                          className={`tab-button ${selfAnalysisTab === 'dashboard' ? 'active' : ''}`}
+                          onClick={() => setSelfAnalysisTab('dashboard')}
+                        >
                           📊 分析ダッシュボード
                         </button>
-                        <button className="tab-button">
+                        <button 
+                          className={`tab-button ${selfAnalysisTab === 'profile' ? 'active' : ''}`}
+                          onClick={() => setSelfAnalysisTab('profile')}
+                        >
                           👤 プロフィール
                         </button>
-                        <button className="tab-button">
+                        <button 
+                          className={`tab-button ${selfAnalysisTab === 'habits' ? 'active' : ''}`}
+                          onClick={() => setSelfAnalysisTab('habits')}
+                        >
                           📈 習慣トラッカー
                         </button>
-                        <button className="tab-button">
+                        <button 
+                          className={`tab-button ${selfAnalysisTab === 'mood' ? 'active' : ''}`}
+                          onClick={() => setSelfAnalysisTab('mood')}
+                        >
                           😊 感情ログ
                         </button>
-                        <button className="tab-button">
+                        <button 
+                          className={`tab-button ${selfAnalysisTab === 'goals' ? 'active' : ''}`}
+                          onClick={() => setSelfAnalysisTab('goals')}
+                        >
                           🎯 目標管理
                         </button>
-                        <button className="tab-button">
+                        <button 
+                          className={`tab-button ${selfAnalysisTab === 'learning' ? 'active' : ''}`}
+                          onClick={() => setSelfAnalysisTab('learning')}
+                        >
                           📚 学習記録
                         </button>
                       </div>
 
-                      <div className="analysis-dashboard">
-                        <div className="dashboard-grid">
+                      {selfAnalysisTab === 'dashboard' && (
+                        <div className="analysis-dashboard">
+                          <div className="dashboard-grid">
                           <div className="analysis-card">
                             <h3>📊 時間の使い方分析</h3>
                             <div className="analysis-content">
@@ -6875,6 +7027,591 @@ function App() {
                           </div>
                         </div>
                       </div>
+                    )}
+
+                    {selfAnalysisTab === 'profile' && (
+                      <div className="profile-content">
+                        <div className="profile-header">
+                          <h3>👤 パーソナルプロフィール</h3>
+                          <button 
+                            className="edit-profile-button"
+                            onClick={() => setEditingProfile(!editingProfile)}
+                          >
+                            {editingProfile ? '保存' : '編集'}
+                          </button>
+                        </div>
+
+                        <div className="profile-sections">
+                          {/* 価値観 */}
+                          <div className="profile-section">
+                            <h4>💎 価値観</h4>
+                            <div className="profile-items">
+                              {personalProfile.values.map((value, index) => (
+                                <div key={index} className="profile-item">
+                                  <span>{value}</span>
+                                  {editingProfile && (
+                                    <button 
+                                      className="remove-item-button"
+                                      onClick={() => removeFromProfile('values', index)}
+                                    >
+                                      ✕
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                              {editingProfile && (
+                                <div className="add-item-form">
+                                  <input
+                                    type="text"
+                                    value={newValue}
+                                    onChange={(e) => setNewValue(e.target.value)}
+                                    placeholder="価値観を追加..."
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        addToProfile('values', newValue);
+                                        setNewValue('');
+                                      }
+                                    }}
+                                  />
+                                  <button 
+                                    onClick={() => {
+                                      addToProfile('values', newValue);
+                                      setNewValue('');
+                                    }}
+                                    className="add-item-button"
+                                  >
+                                    追加
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* 目標 */}
+                          <div className="profile-section">
+                            <h4>🎯 目標</h4>
+                            <div className="profile-items">
+                              {personalProfile.goals.map((goal, index) => (
+                                <div key={index} className="profile-item">
+                                  <span>{goal}</span>
+                                  {editingProfile && (
+                                    <button 
+                                      className="remove-item-button"
+                                      onClick={() => removeFromProfile('goals', index)}
+                                    >
+                                      ✕
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                              {editingProfile && (
+                                <div className="add-item-form">
+                                  <input
+                                    type="text"
+                                    value={newGoal}
+                                    onChange={(e) => setNewGoal(e.target.value)}
+                                    placeholder="目標を追加..."
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        addToProfile('goals', newGoal);
+                                        setNewGoal('');
+                                      }
+                                    }}
+                                  />
+                                  <button 
+                                    onClick={() => {
+                                      addToProfile('goals', newGoal);
+                                      setNewGoal('');
+                                    }}
+                                    className="add-item-button"
+                                  >
+                                    追加
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* スキル */}
+                          <div className="profile-section">
+                            <h4>🛠️ スキル</h4>
+                            <div className="profile-items">
+                              {personalProfile.skills.map((skill, index) => (
+                                <div key={index} className="profile-item">
+                                  <span>{skill}</span>
+                                  {editingProfile && (
+                                    <button 
+                                      className="remove-item-button"
+                                      onClick={() => removeFromProfile('skills', index)}
+                                    >
+                                      ✕
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                              {editingProfile && (
+                                <div className="add-item-form">
+                                  <input
+                                    type="text"
+                                    value={newSkill}
+                                    onChange={(e) => setNewSkill(e.target.value)}
+                                    placeholder="スキルを追加..."
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        addToProfile('skills', newSkill);
+                                        setNewSkill('');
+                                      }
+                                    }}
+                                  />
+                                  <button 
+                                    onClick={() => {
+                                      addToProfile('skills', newSkill);
+                                      setNewSkill('');
+                                    }}
+                                    className="add-item-button"
+                                  >
+                                    追加
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* 興味・関心 */}
+                          <div className="profile-section">
+                            <h4>🌟 興味・関心</h4>
+                            <div className="profile-items">
+                              {personalProfile.interests.map((interest, index) => (
+                                <div key={index} className="profile-item">
+                                  <span>{interest}</span>
+                                  {editingProfile && (
+                                    <button 
+                                      className="remove-item-button"
+                                      onClick={() => removeFromProfile('interests', index)}
+                                    >
+                                      ✕
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                              {editingProfile && (
+                                <div className="add-item-form">
+                                  <input
+                                    type="text"
+                                    value={newInterest}
+                                    onChange={(e) => setNewInterest(e.target.value)}
+                                    placeholder="興味・関心を追加..."
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        addToProfile('interests', newInterest);
+                                        setNewInterest('');
+                                      }
+                                    }}
+                                  />
+                                  <button 
+                                    onClick={() => {
+                                      addToProfile('interests', newInterest);
+                                      setNewInterest('');
+                                    }}
+                                    className="add-item-button"
+                                  >
+                                    追加
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* 強み */}
+                          <div className="profile-section">
+                            <h4>💪 強み</h4>
+                            <div className="profile-items">
+                              {personalProfile.strengths.map((strength, index) => (
+                                <div key={index} className="profile-item">
+                                  <span>{strength}</span>
+                                  {editingProfile && (
+                                    <button 
+                                      className="remove-item-button"
+                                      onClick={() => removeFromProfile('strengths', index)}
+                                    >
+                                      ✕
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                              {editingProfile && (
+                                <div className="add-item-form">
+                                  <input
+                                    type="text"
+                                    value={newStrength}
+                                    onChange={(e) => setNewStrength(e.target.value)}
+                                    placeholder="強みを追加..."
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        addToProfile('strengths', newStrength);
+                                        setNewStrength('');
+                                      }
+                                    }}
+                                  />
+                                  <button 
+                                    onClick={() => {
+                                      addToProfile('strengths', newStrength);
+                                      setNewStrength('');
+                                    }}
+                                    className="add-item-button"
+                                  >
+                                    追加
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* 改善点 */}
+                          <div className="profile-section">
+                            <h4>🔧 改善点</h4>
+                            <div className="profile-items">
+                              {personalProfile.weaknesses.map((weakness, index) => (
+                                <div key={index} className="profile-item">
+                                  <span>{weakness}</span>
+                                  {editingProfile && (
+                                    <button 
+                                      className="remove-item-button"
+                                      onClick={() => removeFromProfile('weaknesses', index)}
+                                    >
+                                      ✕
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                              {editingProfile && (
+                                <div className="add-item-form">
+                                  <input
+                                    type="text"
+                                    value={newWeakness}
+                                    onChange={(e) => setNewWeakness(e.target.value)}
+                                    placeholder="改善点を追加..."
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        addToProfile('weaknesses', newWeakness);
+                                        setNewWeakness('');
+                                      }
+                                    }}
+                                  />
+                                  <button 
+                                    onClick={() => {
+                                      addToProfile('weaknesses', newWeakness);
+                                      setNewWeakness('');
+                                    }}
+                                    className="add-item-button"
+                                  >
+                                    追加
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* テキストフィールド */}
+                          <div className="profile-section">
+                            <h4>📝 詳細情報</h4>
+                            <div className="profile-text-fields">
+                              <div className="text-field">
+                                <label>性格・特徴</label>
+                                <textarea
+                                  value={personalProfile.personality}
+                                  onChange={(e) => updateProfileField('personality', e.target.value)}
+                                  placeholder="あなたの性格や特徴を記述してください..."
+                                  disabled={!editingProfile}
+                                />
+                              </div>
+                              <div className="text-field">
+                                <label>ライフスタイル</label>
+                                <textarea
+                                  value={personalProfile.lifestyle}
+                                  onChange={(e) => updateProfileField('lifestyle', e.target.value)}
+                                  placeholder="あなたのライフスタイルを記述してください..."
+                                  disabled={!editingProfile}
+                                />
+                              </div>
+                              <div className="text-field">
+                                <label>仕事スタイル</label>
+                                <textarea
+                                  value={personalProfile.workStyle}
+                                  onChange={(e) => updateProfileField('workStyle', e.target.value)}
+                                  placeholder="あなたの仕事スタイルを記述してください..."
+                                  disabled={!editingProfile}
+                                />
+                              </div>
+                              <div className="text-field">
+                                <label>学習スタイル</label>
+                                <textarea
+                                  value={personalProfile.learningStyle}
+                                  onChange={(e) => updateProfileField('learningStyle', e.target.value)}
+                                  placeholder="あなたの学習スタイルを記述してください..."
+                                  disabled={!editingProfile}
+                                />
+                              </div>
+                              <div className="text-field">
+                                <label>モチベーション</label>
+                                <textarea
+                                  value={personalProfile.motivation}
+                                  onChange={(e) => updateProfileField('motivation', e.target.value)}
+                                  placeholder="あなたのモチベーションの源泉を記述してください..."
+                                  disabled={!editingProfile}
+                                />
+                              </div>
+                              <div className="text-field">
+                                <label>将来のビジョン</label>
+                                <textarea
+                                  value={personalProfile.futureVision}
+                                  onChange={(e) => updateProfileField('futureVision', e.target.value)}
+                                  placeholder="将来のビジョンや夢を記述してください..."
+                                  disabled={!editingProfile}
+                                />
+                              </div>
+                              <div className="text-field">
+                                <label>メモ・その他</label>
+                                <textarea
+                                  value={personalProfile.notes}
+                                  onChange={(e) => updateProfileField('notes', e.target.value)}
+                                  placeholder="その他のメモや気づきを記述してください..."
+                                  disabled={!editingProfile}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {selfAnalysisTab === 'habits' && (
+                      <div className="habits-content">
+                        <div className="habits-header">
+                          <h3>📈 習慣トラッカー</h3>
+                          <button 
+                            className="add-habit-button"
+                            onClick={() => setEditingHabit('new')}
+                          >
+                            + 新しい習慣
+                          </button>
+                        </div>
+
+                        {/* 習慣追加フォーム */}
+                        {editingHabit === 'new' && (
+                          <div className="habit-form">
+                            <div className="form-group">
+                              <label>習慣名</label>
+                              <input
+                                type="text"
+                                value={newHabit}
+                                onChange={(e) => setNewHabit(e.target.value)}
+                                placeholder="例: 毎日読書する"
+                                onKeyPress={(e) => {
+                                  if (e.key === 'Enter') {
+                                    addHabit();
+                                    setEditingHabit(null);
+                                  }
+                                }}
+                              />
+                            </div>
+                            <div className="form-actions">
+                              <button 
+                                onClick={() => {
+                                  addHabit();
+                                  setEditingHabit(null);
+                                }}
+                                className="save-button"
+                              >
+                                追加
+                              </button>
+                              <button 
+                                onClick={() => {
+                                  setEditingHabit(null);
+                                  setNewHabit('');
+                                }}
+                                className="cancel-button"
+                              >
+                                キャンセル
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* 習慣一覧 */}
+                        <div className="habits-list">
+                          {habits.length === 0 ? (
+                            <div className="empty-state">
+                              <p>まだ習慣が登録されていません</p>
+                              <p>「+ 新しい習慣」ボタンから習慣を追加してください</p>
+                            </div>
+                          ) : (
+                            habits.map(habit => {
+                              const today = new Date().toISOString().split('T')[0];
+                              const isCompletedToday = habitHistory[habit.id]?.includes(today) || false;
+                              const streak = habitStreak[habit.id] || 0;
+                              const completionRate = getHabitCompletionRate(habit.id);
+
+                              return (
+                                <div key={habit.id} className="habit-card">
+                                  <div className="habit-header">
+                                    <div className="habit-info">
+                                      <h4>{habit.name}</h4>
+                                      <div className="habit-stats">
+                                        <span className="streak">🔥 {streak}日連続</span>
+                                        <span className="rate">📊 {completionRate.toFixed(1)}%</span>
+                                      </div>
+                                    </div>
+                                    <div className="habit-actions">
+                                      <button
+                                        className={`toggle-button ${isCompletedToday ? 'completed' : ''}`}
+                                        onClick={() => toggleHabitToday(habit.id)}
+                                      >
+                                        {isCompletedToday ? '✅' : '⭕'}
+                                      </button>
+                                      <button
+                                        className="edit-button"
+                                        onClick={() => setEditingHabit(habit.id)}
+                                      >
+                                        ✏️
+                                      </button>
+                                      <button
+                                        className="delete-button"
+                                        onClick={() => deleteHabit(habit.id)}
+                                      >
+                                        🗑️
+                                      </button>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="habit-progress">
+                                    <div className="progress-bar">
+                                      <div 
+                                        className="progress-fill" 
+                                        style={{width: `${completionRate}%`}}
+                                      ></div>
+                                    </div>
+                                    <span className="progress-text">{completionRate.toFixed(1)}%</span>
+                                  </div>
+
+                                  {/* 習慣編集フォーム */}
+                                  {editingHabit === habit.id && (
+                                    <div className="habit-edit-form">
+                                      <div className="form-group">
+                                        <label>習慣名</label>
+                                        <input
+                                          type="text"
+                                          value={habit.name}
+                                          onChange={(e) => updateHabit(habit.id, { name: e.target.value })}
+                                        />
+                                      </div>
+                                      <div className="form-group">
+                                        <label>説明</label>
+                                        <textarea
+                                          value={habit.description}
+                                          onChange={(e) => updateHabit(habit.id, { description: e.target.value })}
+                                          placeholder="習慣の詳細を記述..."
+                                        />
+                                      </div>
+                                      <div className="form-group">
+                                        <label>頻度</label>
+                                        <select
+                                          value={habit.frequency}
+                                          onChange={(e) => updateHabit(habit.id, { frequency: e.target.value as 'daily' | 'weekly' | 'monthly' })}
+                                        >
+                                          <option value="daily">毎日</option>
+                                          <option value="weekly">毎週</option>
+                                          <option value="monthly">毎月</option>
+                                        </select>
+                                      </div>
+                                      <div className="form-group">
+                                        <label>カテゴリ</label>
+                                        <select
+                                          value={habit.category}
+                                          onChange={(e) => updateHabit(habit.id, { category: e.target.value as 'personal' | 'health' | 'work' | 'learning' | 'social' })}
+                                        >
+                                          <option value="personal">個人</option>
+                                          <option value="health">健康</option>
+                                          <option value="work">仕事</option>
+                                          <option value="learning">学習</option>
+                                          <option value="social">社交</option>
+                                        </select>
+                                      </div>
+                                      <div className="form-actions">
+                                        <button 
+                                          onClick={() => setEditingHabit(null)}
+                                          className="save-button"
+                                        >
+                                          保存
+                                        </button>
+                                        <button 
+                                          onClick={() => setEditingHabit(null)}
+                                          className="cancel-button"
+                                        >
+                                          キャンセル
+                                        </button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })
+                          )}
+                        </div>
+
+                        {/* 習慣統計 */}
+                        {habits.length > 0 && (
+                          <div className="habits-stats">
+                            <h4>📊 習慣統計</h4>
+                            <div className="stats-grid">
+                              <div className="stat-card">
+                                <div className="stat-value">{habits.length}</div>
+                                <div className="stat-label">登録済み習慣</div>
+                              </div>
+                              <div className="stat-card">
+                                <div className="stat-value">
+                                  {Object.values(habitStreak).reduce((sum, streak) => sum + streak, 0)}
+                                </div>
+                                <div className="stat-label">総達成回数</div>
+                              </div>
+                              <div className="stat-card">
+                                <div className="stat-value">
+                                  {habits.length > 0 ? (Object.values(habitStreak).reduce((sum, streak) => sum + streak, 0) / habits.length).toFixed(1) : 0}
+                                </div>
+                                <div className="stat-label">平均達成回数</div>
+                              </div>
+                              <div className="stat-card">
+                                <div className="stat-value">
+                                  {Math.max(...Object.values(habitStreak), 0)}
+                                </div>
+                                <div className="stat-label">最高連続記録</div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {selfAnalysisTab === 'mood' && (
+                      <div className="mood-content">
+                        <h3>😊 感情ログ</h3>
+                        <p>感情ログ機能は準備中です...</p>
+                      </div>
+                    )}
+
+                    {selfAnalysisTab === 'goals' && (
+                      <div className="goals-content">
+                        <h3>🎯 目標管理</h3>
+                        <p>目標管理機能は準備中です...</p>
+                      </div>
+                    )}
+
+                    {selfAnalysisTab === 'learning' && (
+                      <div className="learning-content">
+                        <h3>📚 学習記録</h3>
+                        <p>学習記録機能は準備中です...</p>
+                      </div>
+                    )}
                     </div>
                   )}
                 </div>
@@ -6882,7 +7619,7 @@ function App() {
             } else {
               return null;
             }
-          })}
+          })})
           </main>
         </div>
         

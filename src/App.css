@@ -7357,6 +7357,552 @@ input:checked + .toggle-slider:before {
   line-height: 1.4;
 }
 
+/* プロフィールコンテンツ */
+.profile-content {
+  margin-top: 1.5rem;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #0288d1;
+}
+
+.profile-header h3 {
+  margin: 0;
+  color: #01579b;
+  font-size: 1.5rem;
+}
+
+.edit-profile-button {
+  background: linear-gradient(135deg, #0288d1 0%, #03a9f4 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-profile-button:hover {
+  background: linear-gradient(135deg, #01579b 0%, #0288d1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(2, 136, 209, 0.3);
+}
+
+.profile-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.profile-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e3f2fd;
+}
+
+.profile-section h4 {
+  margin: 0 0 1rem 0;
+  color: #01579b;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.profile-item {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  color: #01579b;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #90caf9;
+  transition: all 0.3s ease;
+}
+
+.profile-item:hover {
+  background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(2, 136, 209, 0.2);
+}
+
+.remove-item-button {
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.remove-item-button:hover {
+  background: #d32f2f;
+  transform: scale(1.1);
+}
+
+.add-item-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.add-item-form input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid #e3f2fd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.add-item-form input:focus {
+  outline: none;
+  border-color: #0288d1;
+  box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.1);
+}
+
+.add-item-button {
+  background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-item-button:hover {
+  background: linear-gradient(135deg, #388e3c 0%, #4caf50 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.profile-text-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.text-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.text-field label {
+  font-weight: 600;
+  color: #01579b;
+  font-size: 0.9rem;
+}
+
+.text-field textarea {
+  padding: 12px;
+  border: 2px solid #e3f2fd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  transition: all 0.3s ease;
+}
+
+.text-field textarea:focus {
+  outline: none;
+  border-color: #0288d1;
+  box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.1);
+}
+
+.text-field textarea:disabled {
+  background: #f5f5f5;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* 習慣トラッカー */
+.habits-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e3f2fd;
+}
+
+.habits-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #0288d1;
+}
+
+.habits-header h3 {
+  margin: 0;
+  color: #01579b;
+  font-size: 1.5rem;
+}
+
+.add-habit-button {
+  background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-habit-button:hover {
+  background: linear-gradient(135deg, #388e3c 0%, #4caf50 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.habit-form {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid #e3f2fd;
+}
+
+.habit-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.habit-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #01579b;
+}
+
+.habit-form input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e3f2fd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.habit-form input:focus {
+  outline: none;
+  border-color: #0288d1;
+  box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.save-button {
+  background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-button:hover {
+  background: linear-gradient(135deg, #388e3c 0%, #4caf50 100%);
+  transform: translateY(-1px);
+}
+
+.cancel-button {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button:hover {
+  background: #d32f2f;
+  transform: translateY(-1px);
+}
+
+.habits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+.empty-state p {
+  margin: 0.5rem 0;
+}
+
+.habit-card {
+  background: white;
+  border: 1px solid #e3f2fd;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.habit-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.habit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.habit-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #01579b;
+  font-size: 1.2rem;
+}
+
+.habit-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.streak {
+  color: #ff6b35;
+  font-weight: 600;
+}
+
+.rate {
+  color: #0288d1;
+  font-weight: 600;
+}
+
+.habit-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.toggle-button {
+  background: #f5f5f5;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-button:hover {
+  background: #e3f2fd;
+  border-color: #0288d1;
+}
+
+.toggle-button.completed {
+  background: #4caf50;
+  border-color: #4caf50;
+  color: white;
+}
+
+.edit-button,
+.delete-button {
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.edit-button:hover {
+  background: #e3f2fd;
+  border-color: #0288d1;
+}
+
+.delete-button:hover {
+  background: #ffebee;
+  border-color: #f44336;
+}
+
+.habit-progress {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.habit-progress .progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e3f2fd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.habit-progress .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #66bb6a);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0288d1;
+  min-width: 50px;
+  text-align: right;
+}
+
+.habit-edit-form {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  border: 1px solid #e3f2fd;
+}
+
+.habit-edit-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.habit-edit-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #01579b;
+}
+
+.habit-edit-form input,
+.habit-edit-form textarea,
+.habit-edit-form select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e3f2fd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.habit-edit-form input:focus,
+.habit-edit-form textarea:focus,
+.habit-edit-form select:focus {
+  outline: none;
+  border-color: #0288d1;
+  box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.1);
+}
+
+.habit-edit-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.habits-stats {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e3f2fd;
+}
+
+.habits-stats h4 {
+  margin: 0 0 1rem 0;
+  color: #01579b;
+  font-size: 1.2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #e3f2fd;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0288d1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* 他のタブコンテンツ */
+.mood-content,
+.goals-content,
+.learning-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e3f2fd;
+  text-align: center;
+  color: #666;
+}
+
+.mood-content h3,
+.goals-content h3,
+.learning-content h3 {
+  color: #01579b;
+  margin-bottom: 1rem;
+}
+
 /* モバイル対応 */
 @media (max-width: 768px) {
   .dashboard-grid {
@@ -7397,5 +7943,24 @@ input:checked + .toggle-slider:before {
   .recommendation-item {
     flex-direction: column;
     gap: 0.8rem;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .profile-items {
+    flex-direction: column;
+  }
+
+  .add-item-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .profile-text-fields {
+    gap: 1rem;
   }
 }
