@@ -118,8 +118,45 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // リクエストボディの解析（POST/PUTリクエストの場合）
+  if (req.method === 'POST' || req.method === 'PUT') {
+    try {
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk.toString();
+      });
+      
+      req.on('end', async () => {
+        try {
+          req.body = JSON.parse(body);
+          await handleRequest(req, res);
+        } catch (parseError) {
+          console.error('❌ JSON parse error:', parseError);
+          res.status(400).json({
+            success: false,
+            message: 'リクエストデータの解析に失敗しました',
+            error: 'Invalid JSON'
+          });
+        }
+      });
+    } catch (error) {
+      console.error('❌ Request body parsing error:', error);
+      res.status(400).json({
+        success: false,
+        message: 'リクエストの処理に失敗しました',
+        error: 'Request parsing failed'
+      });
+    }
+  } else {
+    await handleRequest(req, res);
+  }
+};
+
+async function handleRequest(req, res) {
   try {
     console.log('📝 Memos API request started');
+    console.log('📝 Request method:', req.method);
+    console.log('📝 Request headers:', req.headers);
     
     // Ensure database connection
     await ensureDatabaseConnection();
@@ -127,12 +164,15 @@ module.exports = async (req, res) => {
     // Verify JWT token
     const userInfo = await verifyJWT(req);
     if (!userInfo) {
+      console.log('❌ Authentication failed');
       return res.status(401).json({
         success: false,
         message: '認証が必要です',
         error: 'Authentication required',
       });
     }
+
+    console.log('✅ User authenticated:', { userId: userInfo.userId });
 
     if (req.method === 'GET') {
       // メモの一覧を取得
@@ -236,50 +276,73 @@ module.exports = async (req, res) => {
       });
     } else if (req.method === 'POST') {
       // 新しいメモを追加
-      const { title, content, category, tags, isPublic, isFamilyOnly, isAdminOnly } = req.body;
+      try {
+        console.log('📝 Creating new memo with data:', req.body);
+        console.log('📝 Request body type:', typeof req.body);
+        console.log('📝 Request body keys:', Object.keys(req.body || {}));
+        
+        const { title, content, category, tags, isPublic, isFamilyOnly, isAdminOnly } = req.body;
 
-      // 必須フィールドの検証
-      if (!title || !content || !category) {
-        return res.status(400).json({
+        // 必須フィールドの検証
+        if (!title || !content || !category) {
+          console.log('❌ Missing required fields:', { title: !!title, content: !!content, category: !!category });
+          return res.status(400).json({
+            success: false,
+            message: 'タイトル、内容、カテゴリは必須です',
+            error: 'Missing required fields',
+          });
+        }
+
+        const newMemo = new Memo({
+          title: title.trim(),
+          content: content.trim(),
+          category: category.trim(),
+          tags: Array.isArray(tags) ? tags : (tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : []),
+          isPublic: Boolean(isPublic),
+          isFamilyOnly: Boolean(isFamilyOnly),
+          isAdminOnly: Boolean(isAdminOnly),
+          userId: userInfo.userId,
+        });
+
+        console.log('📝 Saving memo to database...');
+        const savedMemo = await newMemo.save();
+
+        console.log('✅ Memo created successfully:', {
+          memoId: savedMemo._id.toString(),
+          title: savedMemo.title,
+          userId: userInfo.userId,
+        });
+
+        res.status(201).json({
+          success: true,
+          message: 'メモを追加しました',
+          memo: {
+            id: savedMemo._id.toString(),
+            title: savedMemo.title,
+            content: savedMemo.content,
+            category: savedMemo.category,
+            tags: savedMemo.tags || [],
+            isPublic: savedMemo.isPublic,
+            isFamilyOnly: savedMemo.isFamilyOnly || false,
+            isAdminOnly: savedMemo.isAdminOnly || false,
+            createdAt: savedMemo.createdAt ? savedMemo.createdAt.toISOString() : new Date().toISOString(),
+            updatedAt: savedMemo.updatedAt ? savedMemo.updatedAt.toISOString() : new Date().toISOString(),
+          },
+        });
+      } catch (memoCreateError) {
+        console.error('❌ Error creating memo:', memoCreateError);
+        
+        if (memoCreateError instanceof Error) {
+          console.error('Error message:', memoCreateError.message);
+          console.error('Error stack:', memoCreateError.stack);
+        }
+        
+        res.status(500).json({
           success: false,
-          message: 'タイトル、内容、カテゴリは必須です',
-          error: 'Missing required fields',
+          message: 'メモの作成に失敗しました',
+          error: memoCreateError instanceof Error ? memoCreateError.message : 'Unknown error',
         });
       }
-
-      const newMemo = new Memo({
-        title,
-        content,
-        category,
-        tags: tags || [],
-        isPublic: isPublic || false,
-        isFamilyOnly: isFamilyOnly || false,
-        isAdminOnly: isAdminOnly || false,
-        userId: userInfo.userId,
-      });
-
-      const savedMemo = await newMemo.save();
-
-      console.log('✅ Memo created successfully:', {
-        memoId: savedMemo._id.toString(),
-        title: savedMemo.title,
-        userId: userInfo.userId,
-      });
-
-      res.status(201).json({
-        success: true,
-        message: 'メモを追加しました',
-        memo: {
-          id: savedMemo._id.toString(),
-          title: savedMemo.title,
-          content: savedMemo.content,
-          category: savedMemo.category,
-          tags: savedMemo.tags || [],
-          isPublic: savedMemo.isPublic,
-          createdAt: savedMemo.createdAt ? savedMemo.createdAt.toISOString() : new Date().toISOString(),
-          updatedAt: savedMemo.updatedAt ? savedMemo.updatedAt.toISOString() : new Date().toISOString(),
-        },
-      });
     } else {
       res.status(405).json({
         success: false,
@@ -302,4 +365,4 @@ module.exports = async (req, res) => {
       error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
-};
+}
