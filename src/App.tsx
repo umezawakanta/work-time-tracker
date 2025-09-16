@@ -1085,6 +1085,18 @@ function App() {
   };
 
   // 表示する機能を取得
+  // ユーティリティ関数
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('ja-JP', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   const getVisibleFeatures = () => {
     const order = getFeatureOrder();
     let hiddenFeatures = userSettings?.hiddenFeatures || [];
@@ -5410,7 +5422,7 @@ function App() {
                                   <div className="reply-header">
                                     <span className="reply-author">{reply.authorName}</span>
                                     <span className="reply-date">
-                                      {new Date(reply.createdAt).toLocaleDateString('ja-JP')}
+                                      {formatDateTime(reply.createdAt)}
                                     </span>
                                   </div>
                                   <div className="reply-content">
@@ -5429,7 +5441,7 @@ function App() {
 
                           <div className="memo-footer">
                             <span className="memo-date">
-                              {new Date(memo.updatedAt).toLocaleDateString('ja-JP')}
+                              {formatDateTime(memo.updatedAt)}
                             </span>
                             <div className="memo-actions">
                               <button 
@@ -5585,7 +5597,7 @@ function App() {
                       <h3>最新更新</h3>
                       <p className="stat-value">
                         {publicMemos.length > 0 
-                          ? new Date(Math.max(...publicMemos.map(memo => new Date(memo.updatedAt).getTime()))).toLocaleDateString('ja-JP')
+                          ? formatDateTime(new Date(Math.max(...publicMemos.map(memo => new Date(memo.updatedAt).getTime()))).toISOString())
                           : '-'
                         }
                       </p>
@@ -5668,7 +5680,7 @@ function App() {
                           )}
                           <div className="memo-footer">
                             <span className="memo-date">
-                              {new Date(memo.updatedAt).toLocaleDateString('ja-JP')}
+                              {formatDateTime(memo.updatedAt)}
                             </span>
                           </div>
                           
@@ -5708,7 +5720,7 @@ function App() {
                                       <div className="reply-meta">
                                         <span className="reply-author">👤 {reply.authorName}</span>
                                         <span className="reply-date">
-                                          {new Date(reply.createdAt).toLocaleDateString('ja-JP')}
+                                          {formatDateTime(reply.createdAt)}
                                         </span>
                                         {user && (user.email === reply.authorEmail || user.id === reply.authorEmail) && (
                                           <div className="reply-actions">
