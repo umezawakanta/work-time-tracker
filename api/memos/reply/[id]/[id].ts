@@ -47,6 +47,8 @@ const MemoSchema = new mongoose.Schema(
     category: { type: String, required: true },
     tags: [{ type: String }],
     isPublic: { type: Boolean, default: false },
+    isFamilyOnly: { type: Boolean, default: false },
+    isAdminOnly: { type: Boolean, default: false },
     authorId: { type: String, required: true },
     authorName: { type: String, required: true },
     authorEmail: { type: String, required: true },
