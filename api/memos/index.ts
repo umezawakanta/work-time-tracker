@@ -52,17 +52,6 @@ const MemoSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-// Reply Schema (独立したコレクション)
-const ReplySchema = new mongoose.Schema({
-  content: { type: String, required: true },
-  authorName: { type: String, required: true },
-  authorEmail: { type: String, required: true },
-  memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
-  userId: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
-
 // 更新時にupdatedAtを自動更新
 MemoSchema.pre('save', function(next) {
   this.updatedAt = new Date();
@@ -71,7 +60,7 @@ MemoSchema.pre('save', function(next) {
 
 const Memo = mongoose.model('Memo', MemoSchema);
 
-// 返信スキーマ (独立したコレクション)
+// Reply Schema (独立したコレクション)
 const ReplySchema = new mongoose.Schema({
   content: { type: String, required: true },
   authorName: { type: String, required: true },
@@ -171,36 +160,74 @@ module.exports = async (req, res) => {
         search,
       });
 
-      // デバッグ用：全返信データを確認
-      const allReplies = await Reply.find({});
-      console.log('📝 All replies in database:', allReplies.length);
+      // 各メモの返信を取得（エラーハンドリング付き）
+      let memosWithReplies = [];
+      
+      try {
+        // デバッグ用：全返信データを確認
+        const allReplies = await Reply.find({});
+        console.log('📝 All replies in database:', allReplies.length);
 
-      // 各メモの返信を取得
-      const memosWithReplies = await Promise.all(
-        memos.map(async (memo) => {
-          const replies = await Reply.find({ memoId: memo._id.toString() }).sort({ createdAt: 1 });
-          console.log(`📝 Memo ${memo._id.toString()} replies:`, replies.length);
-          return {
-            id: memo._id.toString(),
-            title: memo.title,
-            content: memo.content,
-            category: memo.category,
-            tags: memo.tags || [],
-            isPublic: memo.isPublic,
-            isFamilyOnly: memo.isFamilyOnly || false,
-            isAdminOnly: memo.isAdminOnly || false,
-            createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
-            updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
-            replies: replies.map(reply => ({
-              id: reply._id.toString(),
-              content: reply.content,
-              authorName: reply.authorName,
-              authorEmail: reply.authorEmail,
-              createdAt: reply.createdAt.toISOString()
-            }))
-          };
-        })
-      );
+        memosWithReplies = await Promise.all(
+          memos.map(async (memo) => {
+            try {
+              const replies = await Reply.find({ memoId: memo._id.toString() }).sort({ createdAt: 1 });
+              console.log(`📝 Memo ${memo._id.toString()} replies:`, replies.length);
+              return {
+                id: memo._id.toString(),
+                title: memo.title,
+                content: memo.content,
+                category: memo.category,
+                tags: memo.tags || [],
+                isPublic: memo.isPublic,
+                isFamilyOnly: memo.isFamilyOnly || false,
+                isAdminOnly: memo.isAdminOnly || false,
+                createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
+                updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
+                replies: replies.map(reply => ({
+                  id: reply._id.toString(),
+                  content: reply.content,
+                  authorName: reply.authorName,
+                  authorEmail: reply.authorEmail,
+                  createdAt: reply.createdAt ? reply.createdAt.toISOString() : new Date().toISOString()
+                }))
+              };
+            } catch (replyError) {
+              console.error(`❌ Error loading replies for memo ${memo._id.toString()}:`, replyError);
+              // 返信の取得に失敗した場合は空の配列を返す
+              return {
+                id: memo._id.toString(),
+                title: memo.title,
+                content: memo.content,
+                category: memo.category,
+                tags: memo.tags || [],
+                isPublic: memo.isPublic,
+                isFamilyOnly: memo.isFamilyOnly || false,
+                isAdminOnly: memo.isAdminOnly || false,
+                createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
+                updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
+                replies: []
+              };
+            }
+          })
+        );
+      } catch (replyCollectionError) {
+        console.error('❌ Error accessing Reply collection:', replyCollectionError);
+        // Replyコレクションにアクセスできない場合は、返信なしでメモのみを返す
+        memosWithReplies = memos.map(memo => ({
+          id: memo._id.toString(),
+          title: memo.title,
+          content: memo.content,
+          category: memo.category,
+          tags: memo.tags || [],
+          isPublic: memo.isPublic,
+          isFamilyOnly: memo.isFamilyOnly || false,
+          isAdminOnly: memo.isAdminOnly || false,
+          createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
+          updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
+          replies: []
+        }));
+      }
 
       res.status(200).json({
         success: true,
@@ -262,10 +289,17 @@ module.exports = async (req, res) => {
     }
   } catch (error) {
     console.error('❌ Memos API error:', error);
+    
+    // エラーの詳細をログに記録
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
+    
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
-      error: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 };
