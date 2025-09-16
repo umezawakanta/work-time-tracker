@@ -172,6 +172,8 @@ module.exports = async (req, res) => {
             category: memo.category,
             tags: memo.tags || [],
             isPublic: memo.isPublic,
+            isFamilyOnly: memo.isFamilyOnly || false,
+            isAdminOnly: memo.isAdminOnly || false,
             createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
             updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
             replies: replies.map(reply => ({
@@ -192,7 +194,7 @@ module.exports = async (req, res) => {
       });
     } else if (req.method === 'POST') {
       // 新しいメモを追加
-      const { title, content, category, tags, isPublic } = req.body;
+      const { title, content, category, tags, isPublic, isFamilyOnly, isAdminOnly } = req.body;
 
       // 必須フィールドの検証
       if (!title || !content || !category) {
@@ -209,6 +211,8 @@ module.exports = async (req, res) => {
         category,
         tags: tags || [],
         isPublic: isPublic || false,
+        isFamilyOnly: isFamilyOnly || false,
+        isAdminOnly: isAdminOnly || false,
         userId: userInfo.userId,
       });
 

@@ -6952,3 +6952,26 @@ input:checked + .toggle-slider:before {
     font-size: 14px;
   }
 }
+
+/* 新しいバッジスタイル */
+.family-badge {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 4px;
+  display: inline-block;
+}
+
+.admin-badge {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 4px;
+  display: inline-block;
+}

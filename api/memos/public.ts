@@ -124,6 +124,9 @@ module.exports = async (req, res) => {
             content: memo.content,
             category: memo.category,
             tags: memo.tags || [],
+            isPublic: memo.isPublic,
+            isFamilyOnly: memo.isFamilyOnly || false,
+            isAdminOnly: memo.isAdminOnly || false,
             createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
             updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
             replies: replies.map(reply => ({

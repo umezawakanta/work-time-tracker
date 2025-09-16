@@ -79,6 +79,8 @@ interface Memo {
   category: string;
   tags: string[];
   isPublic: boolean;
+  isFamilyOnly?: boolean;
+  isAdminOnly?: boolean;
   createdAt: string;
   updatedAt: string;
   replies?: Reply[];
@@ -333,6 +335,8 @@ function App() {
   const [memoCategory, setMemoCategory] = useState("");
   const [memoTags, setMemoTags] = useState("");
   const [memoIsPublic, setMemoIsPublic] = useState(false);
+  const [memoIsFamilyOnly, setMemoIsFamilyOnly] = useState(false);
+  const [memoIsAdminOnly, setMemoIsAdminOnly] = useState(false);
   const [memoSearchTerm, setMemoSearchTerm] = useState("");
   const [selectedMemoCategory, setSelectedMemoCategory] = useState("all");
 
@@ -1554,7 +1558,7 @@ function App() {
   // 利用可能なジャンル一覧を取得（デフォルト + カスタム）
   const getAllGenres = () => {
     const defaultGenres = [
-      "仕事", "学習", "趣味", "健康", "家族", "旅行", "読書", "映画", "音楽", "スポーツ", "料理", "その他"
+      "仕事", "学習", "趣味", "健康", "家族", "旅行", "読書", "映画", "音楽", "スポーツ", "料理", "要望、リクエスト", "その他"
     ];
     return [...defaultGenres, ...customGenres];
   };
@@ -2254,6 +2258,8 @@ function App() {
           category: memoCategory,
           tags,
           isPublic: memoIsPublic,
+          isFamilyOnly: memoIsFamilyOnly,
+          isAdminOnly: memoIsAdminOnly,
         }),
       });
 
@@ -2266,6 +2272,8 @@ function App() {
         setMemoCategory("");
         setMemoTags("");
         setMemoIsPublic(false);
+        setMemoIsFamilyOnly(false);
+        setMemoIsAdminOnly(false);
         setShowMemoForm(false);
         loadMemos();
       } else {
@@ -2318,6 +2326,8 @@ function App() {
     setMemoCategory(memo.category);
     setMemoTags(memo.tags.join(', '));
     setMemoIsPublic(memo.isPublic);
+    setMemoIsFamilyOnly(memo.isFamilyOnly || false);
+    setMemoIsAdminOnly(memo.isAdminOnly || false);
     setShowMemoForm(true);
   };
 
@@ -2345,6 +2355,8 @@ function App() {
           category: memoCategory,
           tags,
           isPublic: memoIsPublic,
+          isFamilyOnly: memoIsFamilyOnly,
+          isAdminOnly: memoIsAdminOnly,
         }),
       });
 
@@ -4677,6 +4689,30 @@ function App() {
                           公開メモにする
                         </label>
                       </div>
+                      <div className="form-group">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={memoIsFamilyOnly}
+                            onChange={(e) => setMemoIsFamilyOnly(e.target.checked)}
+                            disabled={loading}
+                          />
+                          家族のみ共有
+                        </label>
+                      </div>
+                      {user?.role === 'admin' && (
+                        <div className="form-group">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={memoIsAdminOnly}
+                              onChange={(e) => setMemoIsAdminOnly(e.target.checked)}
+                              disabled={loading}
+                            />
+                            管理者のみ投稿可能
+                          </label>
+                        </div>
+                      )}
                       <button type="submit" disabled={loading} className="submit-button">
                         {loading ? "処理中..." : (editingMemo ? "更新" : "追加")}
                       </button>
@@ -4729,6 +4765,8 @@ function App() {
                           setMemoCategory("");
                           setMemoTags("");
                           setMemoIsPublic(false);
+        setMemoIsFamilyOnly(false);
+        setMemoIsAdminOnly(false);
                         }
                       }}
                       className="add-memo-button"
@@ -4748,6 +4786,8 @@ function App() {
                             <div className="memo-meta">
                               <span className="memo-category">{memo.category}</span>
                               {memo.isPublic && <span className="public-badge">公開</span>}
+                              {memo.isFamilyOnly && <span className="family-badge">家族のみ</span>}
+                              {memo.isAdminOnly && <span className="admin-badge">管理者専用</span>}
                             </div>
                           </div>
                           <div className="memo-content">
@@ -5004,6 +5044,8 @@ function App() {
                             <div className="memo-meta">
                               <span className="memo-category">{memo.category}</span>
                               <span className="public-badge">公開</span>
+                              {memo.isFamilyOnly && <span className="family-badge">家族のみ</span>}
+                              {memo.isAdminOnly && <span className="admin-badge">管理者専用</span>}
                             </div>
                           </div>
                           <div className="memo-content">
