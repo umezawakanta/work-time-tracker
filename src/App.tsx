@@ -1097,6 +1097,66 @@ function App() {
     });
   };
 
+  // PWA Badge機能
+  const updateAppBadge = (count: number) => {
+    if ('serviceWorker' in navigator && 'setAppBadge' in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
+        if (registration.active) {
+          registration.active.postMessage({
+            type: 'SET_BADGE',
+            count: count
+          });
+        }
+      }).catch((error) => {
+        console.error('Failed to update app badge:', error);
+      });
+    }
+  };
+
+  // 通知件数を計算する関数
+  const calculateNotificationCount = () => {
+    let count = 0;
+    
+    // 未読の返信数をカウント（例：自分のメモへの返信）
+    if (memos) {
+      memos.forEach(memo => {
+        if (memo.replies && memo.replies.length > 0) {
+          // 今日の返信数をカウント
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          const todayReplies = memo.replies.filter(reply => {
+            const replyDate = new Date(reply.createdAt);
+            replyDate.setHours(0, 0, 0, 0);
+            return replyDate.getTime() === today.getTime();
+          });
+          
+          count += todayReplies.length;
+        }
+      });
+    }
+    
+    // 公開メモの新しい返信もカウント
+    if (publicMemos) {
+      publicMemos.forEach(memo => {
+        if (memo.replies && memo.replies.length > 0) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          const todayReplies = memo.replies.filter(reply => {
+            const replyDate = new Date(reply.createdAt);
+            replyDate.setHours(0, 0, 0, 0);
+            return replyDate.getTime() === today.getTime();
+          });
+          
+          count += todayReplies.length;
+        }
+      });
+    }
+    
+    return count;
+  };
+
   const getVisibleFeatures = () => {
     const order = getFeatureOrder();
     let hiddenFeatures = userSettings?.hiddenFeatures || [];
@@ -2285,7 +2345,26 @@ function App() {
     };
     
     checkAuth();
+
+    // Service Workerの登録
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered successfully:', registration);
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
+    }
   }, []);
+
+  // バッジの更新
+  useEffect(() => {
+    if (isLoggedIn && (memos || publicMemos)) {
+      const count = calculateNotificationCount();
+      updateAppBadge(count);
+    }
+  }, [memos, publicMemos, isLoggedIn]);
 
   // ログイン状態が変更された時にデータを読み込み
   useEffect(() => {
@@ -4741,15 +4820,26 @@ function App() {
 
                 {showAdminPanel && (
                   <div className="admin-content">
-                    <div className="admin-header">
-                      <button 
-                        onClick={loadAdminUsers}
-                        className="refresh-button"
-                        title="管理者データを更新"
-                      >
-                        🔄
-                      </button>
-                    </div>
+                  <div className="admin-header">
+                    <button 
+                      onClick={loadAdminUsers}
+                      className="refresh-button"
+                      title="管理者データを更新"
+                    >
+                      🔄
+                    </button>
+                    <button 
+                      onClick={() => {
+                        const count = calculateNotificationCount();
+                        updateAppBadge(count);
+                        setMessage(`バッジを更新しました: ${count}件`);
+                      }}
+                      className="refresh-button"
+                      title="バッジを更新"
+                    >
+                      🔔
+                    </button>
+                  </div>
                     <div className="admin-stats">
                       <div className="stat-card">
                         <h3>総ユーザー数</h3>

@@ -7,6 +7,9 @@
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
   "orientation": "portrait-primary",
+  "scope": "/",
+  "id": "work-time-tracker",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-192x192.png",
