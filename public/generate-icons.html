@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アイコン生成</title>
+</head>
+<body>
+    <h1>PWAアイコン生成</h1>
+    <p>以下のキャンバスでアイコンを生成し、右クリックで保存してください。</p>
+    
+    <div id="canvas-container"></div>
+    
+    <script>
+        // 必要なサイズ
+        const sizes = [120, 152, 180, 192, 512];
+        
+        // SVGアイコンの内容
+        const svgContent = `<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+          <!-- 背景 -->
+          <rect width="512" height="512" fill="#3b82f6" rx="80"/>
+          
+          <!-- キャラクターの頭（明るい黄色） -->
+          <circle cx="256" cy="220" r="100" fill="#ffff00" stroke="#1f2937" stroke-width="8"/>
+          
+          <!-- 目（大きな黒い円形） -->
+          <circle cx="230" cy="200" r="12" fill="#1f2937"/>
+          <circle cx="282" cy="200" r="12" fill="#1f2937"/>
+          
+          <!-- 目のハイライト（白い点） -->
+          <circle cx="235" cy="195" r="3" fill="#ffffff"/>
+          <circle cx="287" cy="195" r="3" fill="#ffffff"/>
+          
+          <!-- 口（上下逆さまの半円形） -->
+          <path d="M 220 240 A 20 15 0 0 0 292 240" fill="#1f2937"/>
+          
+          <!-- 舌（白い楕円形） -->
+          <ellipse cx="256" cy="235" rx="8" ry="5" fill="#ffffff"/>
+          
+          <!-- 胴体（緑色、小さく） -->
+          <ellipse cx="256" cy="370" rx="50" ry="40" fill="#22c55e" stroke="#1f2937" stroke-width="8"/>
+        </svg>`;
+        
+        // 各サイズのキャンバスを生成
+        sizes.forEach(size => {
+            const container = document.getElementById('canvas-container');
+            
+            // タイトル
+            const title = document.createElement('h3');
+            title.textContent = `${size}x${size} アイコン`;
+            container.appendChild(title);
+            
+            // キャンバス
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            canvas.style.border = '1px solid #ccc';
+            canvas.style.margin = '10px';
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            
+            // SVGを画像として描画
+            const img = new Image();
+            const svgBlob = new Blob([svgContent], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(svgBlob);
+            
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, size, size);
+                URL.revokeObjectURL(url);
+            };
+            
+            img.src = url;
+            
+            // ダウンロードボタン
+            const button = document.createElement('button');
+            button.textContent = `ダウンロード (${size}x${size})`;
+            button.style.margin = '5px';
+            button.onclick = function() {
+                const link = document.createElement('a');
+                link.download = `icon-${size}x${size}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            };
+            container.appendChild(button);
+            
+            // 改行
+            container.appendChild(document.createElement('br'));
+        });
+    </script>
+</body>
+</html>

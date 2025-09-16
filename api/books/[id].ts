@@ -1,45 +1,146 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { cors } from '../../lib/cors';
-import { connectDB } from '../../src/server/config/database';
-import { Book } from '../../src/server/models/Book';
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
+const { BookSchema } = require('../utils/schemas');
+// Type definitions are now in comments for reference
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  await cors(req, res);
-  if (req.method === 'OPTIONS') return res.status(200).end();
+dotenv.config();
 
-  const { id } = req.query as { id?: string };
-  if (!id) return res.status(400).json({ success: false, error: 'Missing id' });
+const Book = mongoose.models.Book || mongoose.model('Book', BookSchema);
 
-  let dbConnected = true;
-  try {
-    await connectDB();
-  } catch {
-    dbConnected = false;
+// CORS設定
+const setCorsHeaders = (res, origin) => {
+  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
+  const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
+  const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
+
+  res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Cache-Control', 'no-store');
+};
+
+module.exports = async (req, res) => {
+  const origin = req.headers.origin;
+  setCorsHeaders(res, origin);
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
   }
-  if (!dbConnected) return res.status(503).json({ success: false, error: 'DB unavailable' });
 
   try {
+    console.log('📚 Book detail API request started');
+    
+    // Ensure database connection
+    await ensureDatabaseConnection();
+
+    // Verify JWT token
+    const userInfo = await verifyJWT(req);
+    if (!userInfo) {
+      return handleError(res, { statusCode: 401, message: '認証が必要です' });
+    }
+
+    const { id } = req.query;
+    if (!id) {
+      return handleError(res, { statusCode: 400, message: '本のIDが必要です' });
+    }
+
     if (req.method === 'GET') {
+      // 特定の本を取得
       const book = await Book.findById(id);
-      if (!book) return res.status(404).json({ success: false, error: 'Not found' });
-      return res.status(200).json(book);
-    }
+      if (!book) {
+        return handleError(res, { statusCode: 404, message: '本が見つかりません' });
+      }
 
-    if (req.method === 'PUT') {
-      const update = req.body || {};
-      const book = await Book.findByIdAndUpdate(id, update, { new: true });
-      if (!book) return res.status(404).json({ success: false, error: 'Not found' });
-      return res.status(200).json({ message: 'Book updated successfully', book });
-    }
+      console.log('✅ Book retrieved:', {
+        bookId: book._id.toString(),
+        title: book.title,
+        userId: userInfo.userId,
+      });
 
-    if (req.method === 'DELETE') {
-      await Book.findByIdAndDelete(id);
-      return res.status(204).end();
-    }
+      res.status(200).json({
+        success: true,
+        message: '本の詳細を取得しました',
+        book: {
+          id: book._id.toString(),
+          title: book.title,
+          author: book.author,
+          isbn: book.isbn,
+          publishedYear: book.publishedYear,
+          totalPages: book.totalPages,
+          readPages: book.readPages,
+          category: book.category,
+          rating: book.rating,
+          notes: book.notes || '',
+          lentTo: book.lentTo || '',
+          createdAt: book.createdAt ? book.createdAt.toISOString() : new Date().toISOString(),
+          updatedAt: book.updatedAt ? book.updatedAt.toISOString() : new Date().toISOString(),
+        },
+      });
+    } else if (req.method === 'PUT') {
+      // 本を更新
+      const updateData = req.body || {};
+      
+      const book = await Book.findByIdAndUpdate(
+        id,
+        { ...updateData, updatedAt: new Date() },
+        { new: true, runValidators: true }
+      );
 
-    return res.status(405).json({ success: false, error: 'Method not allowed' });
+      if (!book) {
+        return handleError(res, { statusCode: 404, message: '本が見つかりません' });
+      }
+
+      console.log('✅ Book updated successfully:', {
+        bookId: book._id.toString(),
+        title: book.title,
+        userId: userInfo.userId,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: '本を更新しました',
+        book: {
+          id: book._id.toString(),
+          title: book.title,
+          author: book.author,
+          isbn: book.isbn,
+          publishedYear: book.publishedYear,
+          totalPages: book.totalPages,
+          readPages: book.readPages,
+          category: book.category,
+          rating: book.rating,
+          notes: book.notes || '',
+          lentTo: book.lentTo || '',
+          createdAt: book.createdAt ? book.createdAt.toISOString() : new Date().toISOString(),
+          updatedAt: book.updatedAt ? book.updatedAt.toISOString() : new Date().toISOString(),
+        },
+      });
+    } else if (req.method === 'DELETE') {
+      // 本を削除
+      const book = await Book.findByIdAndDelete(id);
+      if (!book) {
+        return handleError(res, { statusCode: 404, message: '本が見つかりません' });
+      }
+
+      console.log('✅ Book deleted successfully:', {
+        bookId: book._id.toString(),
+        title: book.title,
+        userId: userInfo.userId,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: '本を削除しました',
+      });
+    } else {
+      return handleError(res, { statusCode: 405, message: 'メソッドが許可されていません' });
+    }
   } catch (error) {
-    console.error('Error in /api/books/:id', error);
-    return res.status(500).json({ success: false, error: 'Internal server error' });
+    console.error('❌ Book detail API error:', error);
+    return handleError(res, error, 'サーバーエラーが発生しました');
   }
-}
+};

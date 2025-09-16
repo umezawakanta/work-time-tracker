@@ -1,0 +1,25 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- 角丸の背景（iOSアイコン風） -->
+  <rect width="512" height="512" fill="#1DA1F2" rx="112" ry="112"/>
+  
+  <!-- 体の黒い輪郭 -->
+  <ellipse cx="256" cy="360" rx="135" ry="110" fill="#3a4556" stroke="#2c3344" stroke-width="12"/>
+  
+  <!-- 体の緑色部分 -->
+  <ellipse cx="256" cy="360" rx="110" ry="85" fill="#4CAF50"/>
+  
+  <!-- 頭の黒い輪郭 -->
+  <circle cx="256" cy="190" r="120" fill="#3a4556" stroke="#2c3344" stroke-width="12"/>
+  
+  <!-- 頭の黄色い顔 -->
+  <circle cx="256" cy="190" r="95" fill="#FFD700"/>
+  
+  <!-- 左目 -->
+  <circle cx="225" cy="175" r="10" fill="#1a1a1a"/>
+  
+  <!-- 右目 -->
+  <circle cx="287" cy="175" r="10" fill="#1a1a1a"/>
+  
+  <!-- 口（大きく開いた黒い楕円） -->
+  <ellipse cx="256" cy="215" rx="30" ry="25" fill="#1a1a1a"/>
+</svg>

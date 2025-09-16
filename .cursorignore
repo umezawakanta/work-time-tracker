@@ -1,9 +1,9 @@
-dist/
-coverage/
 node_modules/
-.pnpm-store/
+dist/
+.vercel/
+.git/
+*.log
+.env*
+coverage/
 .vscode/
 .idea/
-*.log
-**/*.map
-public/dev-status.json

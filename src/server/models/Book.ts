@@ -10,7 +10,10 @@ export interface IBook extends mongoose.Document {
   readPages: number;
   category: string;
   rating: number;
+  notes?: string;
+  lentTo?: string;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 const BookSchema = new mongoose.Schema<IBook>({
@@ -22,7 +25,16 @@ const BookSchema = new mongoose.Schema<IBook>({
   readPages: { type: Number, default: 0 },
   category: { type: String, required: true },
   rating: { type: Number, min: 0, max: 5, default: 0 },
+  notes: { type: String, default: '' },
+  lentTo: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+// 更新時にupdatedAtを自動更新
+BookSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
 });
 
 export const Book = mongoose.model<IBook>('Book', BookSchema);

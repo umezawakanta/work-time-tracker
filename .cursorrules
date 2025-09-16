@@ -1,25 +1,25 @@
-# Tech baseline
+# Work Time Tracker - Cursor Rules
+
+## Tech Stack
 - React 18 + Vite + TypeScript
-- Tailwind + shadcn/ui
-- React Router
-- Cypress (E2E), Jest (unit)
-- featuresRegistry を唯一の仕様ソースとする
-- Mobile first、CLS=0、iPhone SE 幅で崩れないこと
+- MongoDB + Mongoose
+- Vercel Serverless Functions
+- JWT Authentication
 
-# Coding standards
-- ESLint/TypeScript のエラーは 0。any を避ける
-- 関数は副作用を最小化、早期 return
-- UI: MobileHeader を共通使用、タップ領域は最小 32x32
-- API は既存 hooks 経由。新規は仕様合意後
-- テストは最低 1 つ（unit か E2E）。重要経路は E2E
+## Coding Standards
+- TypeScript strict mode enabled
+- No `any` types allowed
+- Functions should be pure when possible
+- Early returns for error handling
+- Mobile-first responsive design
 
-# PR rules
-- 1 PR = 1 目的 / 300行前後まで
-- 変更範囲は最小限。不要な rename/format 大量差分禁止
-- Conventional Commits を使う（feat/fix/chore/refactor/docs/test 等）
-- 受け入れ条件は PR 本文で明記。iPhone SE スクショ歓迎
+## File Structure
+- `src/` - React application
+- `api/` - Vercel API routes
+- `src/server/` - Database models and config
 
-# Tasks for Agent Auto
-- 仕様は src/config/featuresRegistry.ts を読み、実装ギャップを列挙
-- 変更ファイル一覧 → 差分 → テスト → 動作確認手順 → リスク/ロールバック を出力
-- ESLint/TS/test:ci を通すまで自動修正を継続
+## Development Guidelines
+- Keep components simple and focused
+- Use meaningful variable names
+- Add comments for complex logic
+- Test manually before committing

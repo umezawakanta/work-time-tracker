@@ -1,9 +1,0 @@
-node_modules
-dist
-build
-coverage
-.next
-.cache
-public
-*.min.js
-*.min.css

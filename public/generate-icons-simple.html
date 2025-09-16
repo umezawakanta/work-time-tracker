@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNGアイコン生成ツール</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            margin: 20px; 
+            background-color: #f4f4f4; 
+        }
+        h1 { color: #333; }
+        .icon-container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 20px; 
+            margin-top: 20px; 
+        }
+        .icon-item { 
+            background-color: #fff; 
+            padding: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            text-align: center; 
+        }
+        canvas { 
+            border: 1px solid #ccc; 
+            display: block; 
+            margin: 10px auto; 
+        }
+        button { 
+            background-color: #007bff; 
+            color: white; 
+            padding: 10px 15px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin-top: 10px; 
+        }
+        button:hover { background-color: #0056b3; }
+        .download-all-btn { 
+            background-color: #28a745; 
+            margin-top: 30px; 
+        }
+        .download-all-btn:hover { background-color: #218838; }
+        .instructions {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <h1>PNGアイコン生成ツール</h1>
+    <div class="instructions">
+        <h3>📱 iPhoneのホーム画面アイコンを更新する手順：</h3>
+        <ol>
+            <li>各サイズの「Generate & Download」ボタンをクリックしてPNGファイルをダウンロード</li>
+            <li>ダウンロードしたPNGファイルを<code>public/</code>フォルダに配置</li>
+            <li>開発サーバーを起動してアプリにアクセス</li>
+            <li>Safariで「ホーム画面に追加」を実行</li>
+        </ol>
+    </div>
+    <div id="canvas-container" class="icon-container"></div>
+    <button id="download-all" class="download-all-btn">すべてのPNGをダウンロード</button>
+    
+    <script>
+        // 必要なサイズ
+        const sizes = [120, 152, 180, 192, 512];
+        
+        // SVGアイコンの内容（最新のデザイン）
+        const svgContent = `<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+          <!-- 角丸の背景（iOSアイコン風） -->
+          <rect width="512" height="512" fill="#1DA1F2" rx="112" ry="112"/>
+          
+          <!-- 体の黒い輪郭 -->
+          <ellipse cx="256" cy="360" rx="135" ry="110" fill="#3a4556" stroke="#2c3344" stroke-width="12"/>
+          
+          <!-- 体の緑色部分 -->
+          <ellipse cx="256" cy="360" rx="110" ry="85" fill="#4CAF50"/>
+          
+          <!-- 頭の黒い輪郭 -->
+          <circle cx="256" cy="190" r="120" fill="#3a4556" stroke="#2c3344" stroke-width="12"/>
+          
+          <!-- 頭の黄色い顔 -->
+          <circle cx="256" cy="190" r="95" fill="#FFD700"/>
+          
+          <!-- 左目 -->
+          <circle cx="225" cy="175" r="10" fill="#1a1a1a"/>
+          
+          <!-- 右目 -->
+          <circle cx="287" cy="175" r="10" fill="#1a1a1a"/>
+          
+          <!-- 口（大きく開いた黒い楕円） -->
+          <ellipse cx="256" cy="215" rx="30" ry="25" fill="#1a1a1a"/>
+        </svg>`;
+        
+        // 各サイズのキャンバスを生成
+        sizes.forEach(size => {
+            const container = document.getElementById('canvas-container');
+            const item = document.createElement('div');
+            item.className = 'icon-item';
+            item.innerHTML = `
+                <h3>${size}x${size}</h3>
+                <canvas id="canvas-${size}" width="${size}" height="${size}"></canvas>
+                <button id="download-${size}">Generate & Download</button>
+            `;
+            container.appendChild(item);
+
+            const canvas = document.getElementById(`canvas-${size}`);
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            const svgBlob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(svgBlob);
+
+            img.onload = () => {
+                ctx.clearRect(0, 0, size, size);
+                ctx.drawImage(img, 0, 0, size, size);
+                URL.revokeObjectURL(url);
+            };
+            img.src = url;
+
+            document.getElementById(`download-${size}`).addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.download = `icon-${size}x${size}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+
+        // すべてダウンロードボタン
+        document.getElementById('download-all').addEventListener('click', async () => {
+            const JSZip = await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js');
+            const zip = new JSZip.default();
+
+            for (const size of sizes) {
+                const canvas = document.getElementById(`canvas-${size}`);
+                const dataUrl = canvas.toDataURL('image/png');
+                const base64Data = dataUrl.replace(/^data:image\/(png|jpg);base64,/, '');
+                zip.file(`icon-${size}x${size}.png`, base64Data, { base64: true });
+            }
+
+            zip.generateAsync({ type: "blob" })
+                .then(function(content) {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(content);
+                    link.download = "pwa-icons.zip";
+                    link.click();
+                });
+        });
+    </script>
+</body>
+</html>

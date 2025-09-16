@@ -1,190 +1,38 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="shortcut icon" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon-180x180.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Work Time Tracker</title>
     
-    <!-- ⚡ Performance Optimization -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="dns-prefetch" href="https://api.openai.com" />
-    <link rel="dns-prefetch" href="https://firebaseapp.com" />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
     
-    <!-- 🎨 Core Styles Preload (non-blocking) -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
-    </noscript>
+    <!-- iOS Safari PWA Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Work Time Tracker" />
+    <link rel="apple-touch-icon" href="/icon-180x180.png" />
     
-    <!-- 📱 PWA & Meta Tags -->
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="background-color" content="#ffffff" />
-    <meta name="description" content="生成AIと連携したパーソナル秘書サービス。IQ/MBTIの診断結果に基づき、あなた専用に最適化。仕事・学習・生活をこのサイトだけで統合管理。" />
-    <meta name="keywords" content="勤怠管理,タスク管理,生産性,時間管理,ワークタイム" />
-    <meta name="author" content="Work Time Tracker" />
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="msapplication-TileColor" content="#3b82f6" />
+    <meta name="msapplication-TileImage" content="/icon-152x152.png" />
     
+    <!-- Additional PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Work Time Tracker" />
     
-    <!-- 🔍 SEO Optimization -->
-    <link rel="canonical" href="https://work-time-tracker-five.vercel.app/" />
-    <link rel="alternate" href="https://work-time-tracker-five.vercel.app/" hreflang="ja" />
-    <link rel="alternate" href="https://work-time-tracker-five.vercel.app/" hreflang="x-default" />
-    <meta property="og:site_name" content="Work Time Tracker" />
-    <meta property="og:title" content="Work Time Tracker | 人生のコントロールを取り戻そう" />
-    <meta property="og:description" content="生成AIパーソナル秘書 × IQ/MBTI自己診断で、あなた専用に最適化。仕事・学習・生活をこのサイトで一元管理。" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://work-time-tracker-five.vercel.app" />
-    <meta property="og:image" content="/og-banner.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Work Time Tracker | 人生のコントロールを取り戻そう" />
-    <meta name="twitter:description" content="生成AIパーソナル秘書 × IQ/MBTI自己診断で、あなた専用に最適化。仕事・学習・生活をこのサイトで一元管理。" />
-    <meta name="twitter:image" content="/og-banner.png" />
-    
-    <!-- 📦 JSON-LD Schema.org -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Work Time Tracker",
-        "url": "https://work-time-tracker-five.vercel.app/",
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://work-time-tracker-five.vercel.app/?q={search_term_string}",
-          "query-input": "required name=search_term_string"
-        }
-      }
-    </script>
-    
-    <!-- 🔐 Security -->
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
-    
-    <!-- 🏠 Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" sizes="any" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
-    
-    <title>Work Time Tracker｜生成AIパーソナル秘書で人生の再設計</title>
-    
-    <!-- 🚀 Critical CSS Inline (将来的な最適化のため) -->
-    <style>
-      /* Critical styles for initial render */
-      body {
-        margin: 0;
-        font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        background: linear-gradient(to bottom right, #f8fafc, #e0f2fe, #f3e8ff);
-        min-height: 100vh;
-        width: 100vw;
-        max-width: 100vw;
-        overflow-x: hidden;
-        box-sizing: border-box;
-      }
-      
-      #root {
-        min-height: 100vh;
-        width: 100vw;
-        max-width: 100vw;
-        overflow-x: hidden;
-        box-sizing: border-box;
-      }
-      
-      /* モバイル表示を強制 */
-      @media (max-width: 768px) {
-        body, #root {
-          width: 100vw !important;
-          max-width: 100vw !important;
-          overflow-x: hidden !important;
-        }
-        
-        * {
-          max-width: 100% !important;
-          box-sizing: border-box !important;
-        }
-      }
-      
-      /* Loading state styles */
-      .loading-screen {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background: linear-gradient(to bottom right, #f8fafc, #e0f2fe, #f3e8ff);
-      }
-      
-      .loading-spinner {
-        width: 40px;
-        height: 40px;
-        border: 3px solid #e2e8f0;
-        border-top: 3px solid #1976d2;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    </style>
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
   </head>
   <body>
-    <!-- 📱 No Script Fallback -->
-    <noscript>
-      <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f8fafc; font-family: 'Roboto', sans-serif; color: #334155; text-align: center; padding: 20px;">
-        <div>
-          <h1>JavaScript が必要です</h1>
-          <p>このアプリケーションを使用するには JavaScript を有効にしてください。</p>
-        </div>
-      </div>
-    </noscript>
-    
-    <!-- 🏠 Main App Container -->
-    <div id="root">
-      <!-- ⚡ Initial Loading State -->
-      <div class="loading-screen">
-        <div>
-          <div class="loading-spinner"></div>
-          <p style="margin-top: 16px; color: #64748b; font-size: 14px;">Work Time Tracker を読み込み中...</p>
-        </div>
-      </div>
-    </div>
-    
-    <!-- 🚀 Main Script -->
-    <script type="module" src="./src/main.tsx" defer></script>
-    
-    <!-- 🧹 Service Worker Killer (one-time) -->
-    <script defer>
-      (function killStaleSW(){
-        if (!('serviceWorker' in navigator)) return;
-        if (localStorage.getItem('sw_killed') === '1') return;
-        // Try to register a killer SW at root scope once to evict old SW/caches
-        navigator.serviceWorker.register('/sw-kill.js', { scope: '/' })
-          .then(() => {
-            localStorage.setItem('sw_killed', '1');
-            console.log('[SW-KILL] registered');
-          })
-          .catch(() => {});
-      })();
-    </script>
-    
-    <!-- 📊 Service Worker Registration (一時的に無効化) -->
-    <script>
-      // Service Workerを一時的に無効化（デバッグのため）
-      // if ('serviceWorker' in navigator) {
-      //   window.addEventListener('load', () => {
-      //     navigator.serviceWorker.register('/sw.js')
-      //       .then((registration) => {
-      //         console.log('Service Worker registered successfully:', registration.scope);
-      //       })
-      //       .catch((error) => {
-      //         console.log('Service Worker registration failed:', error);
-      //       });
-      //   });
-      // }
-    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
