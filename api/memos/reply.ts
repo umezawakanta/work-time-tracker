@@ -90,6 +90,41 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  // リクエストボディの解析（POSTリクエストの場合）
+  if (req.method === 'POST') {
+    try {
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk.toString();
+      });
+      
+      req.on('end', async () => {
+        try {
+          req.body = JSON.parse(body);
+          await handleReplyRequest(req, res);
+        } catch (parseError) {
+          console.error('❌ JSON parse error:', parseError);
+          res.status(400).json({
+            success: false,
+            message: 'リクエストデータの解析に失敗しました',
+            error: 'Invalid JSON'
+          });
+        }
+      });
+    } catch (error) {
+      console.error('❌ Request body parsing error:', error);
+      res.status(400).json({
+        success: false,
+        message: 'リクエストの処理に失敗しました',
+        error: 'Request parsing failed'
+      });
+    }
+  } else {
+    await handleReplyRequest(req, res);
+  }
+};
+
+async function handleReplyRequest(req, res) {
   try {
     console.log(`📝 Reply ${req.method} operation started`);
     
@@ -144,9 +179,19 @@ module.exports = async function handler(req, res) {
 
     } else if (req.method === 'POST') {
       // Create new reply
+      console.log('📝 Creating new reply with data:', req.body);
+      console.log('📝 Request body type:', typeof req.body);
+      console.log('📝 Request body keys:', Object.keys(req.body || {}));
+      
       const { memoId, content, authorName, authorEmail, userId } = req.body;
       
       if (!memoId || !content || !authorName || !authorEmail) {
+        console.log('❌ Missing required fields:', { 
+          memoId: !!memoId, 
+          content: !!content, 
+          authorName: !!authorName, 
+          authorEmail: !!authorEmail 
+        });
         return res.status(400).json({
           success: false,
           message: 'memoId, content, authorName, and authorEmail are required',
@@ -157,10 +202,11 @@ module.exports = async function handler(req, res) {
         content: content.trim(),
         authorName: authorName.trim(),
         authorEmail: authorEmail.trim(),
-        memoId: memoId,
+        memoId: new mongoose.Types.ObjectId(memoId), // ObjectIdに変換
         userId: userId || null // userIdが提供されない場合はnullを設定
       });
 
+      console.log('📝 Saving reply to database...');
       await newReply.save();
 
       console.log('✅ Reply created successfully:', {

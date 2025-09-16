@@ -207,12 +207,28 @@ async function handleRequest(req, res) {
         // デバッグ用：全返信データを確認
         const allReplies = await Reply.find({});
         console.log('📝 All replies in database:', allReplies.length);
+        console.log('📝 Sample reply data:', allReplies.slice(0, 2));
 
         memosWithReplies = await Promise.all(
           memos.map(async (memo) => {
             try {
-              const replies = await Reply.find({ memoId: memo._id.toString() }).sort({ createdAt: 1 });
+              // ObjectIdで検索する場合と文字列で検索する場合の両方を試す
+              const replies = await Reply.find({ 
+                $or: [
+                  { memoId: memo._id },
+                  { memoId: memo._id.toString() }
+                ]
+              }).sort({ createdAt: 1 });
+              
               console.log(`📝 Memo ${memo._id.toString()} replies:`, replies.length);
+              if (replies.length > 0) {
+                console.log(`📝 Sample reply for memo ${memo._id.toString()}:`, {
+                  id: replies[0]._id.toString(),
+                  memoId: replies[0].memoId,
+                  content: replies[0].content.substring(0, 50) + '...'
+                });
+              }
+              
               return {
                 id: memo._id.toString(),
                 title: memo.title,
