@@ -545,10 +545,13 @@ function App() {
       description: '',
       frequency: 'daily',
       targetDays: 7,
+      completedDays: 0,
+      streak: 0,
+      bestStreak: 0,
       category: 'personal',
       isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
     
     setHabits(prev => [...prev, newHabitObj]);
@@ -560,7 +563,7 @@ function App() {
   const updateHabit = (habitId: string, updates: Partial<Habit>) => {
     setHabits(prev => prev.map(habit => 
       habit.id === habitId 
-        ? { ...habit, ...updates, updatedAt: new Date() }
+        ? { ...habit, ...updates, updatedAt: new Date().toISOString() }
         : habit
     ));
   };
@@ -615,7 +618,7 @@ function App() {
     if (!habit) return 0;
     
     const history = habitHistory[habitId] || [];
-    const daysSinceStart = Math.ceil((Date.now() - habit.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+    const daysSinceStart = Math.ceil((Date.now() - new Date(habit.createdAt).getTime()) / (1000 * 60 * 60 * 24));
     return daysSinceStart > 0 ? (history.length / daysSinceStart) * 100 : 0;
   };
 
