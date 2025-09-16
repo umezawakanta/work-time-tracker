@@ -95,6 +95,75 @@ interface Reply {
   createdAt: string;
 }
 
+interface Habit {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  frequency: 'daily' | 'weekly' | 'monthly';
+  targetDays: number;
+  completedDays: number;
+  streak: number;
+  bestStreak: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface MoodLog {
+  id: string;
+  date: string;
+  mood: number; // 1-10 scale
+  energy: number; // 1-10 scale
+  stress: number; // 1-10 scale
+  notes: string;
+  activities: string[];
+  weather: string;
+  sleep: number; // hours
+  createdAt: string;
+}
+
+interface Goal {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  priority: 'low' | 'medium' | 'high';
+  status: 'not-started' | 'in-progress' | 'completed' | 'paused';
+  startDate: string;
+  targetDate: string;
+  completedDate?: string;
+  progress: number; // 0-100
+  milestones: Milestone[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Milestone {
+  id: string;
+  title: string;
+  description: string;
+  completed: boolean;
+  completedDate?: string;
+}
+
+interface LearningRecord {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  type: 'book' | 'course' | 'video' | 'article' | 'practice' | 'other';
+  status: 'not-started' | 'in-progress' | 'completed' | 'paused';
+  startDate: string;
+  completedDate?: string;
+  rating: number; // 1-5
+  notes: string;
+  skills: string[];
+  resources: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface Character {
   id: string;
   name: string;
@@ -404,6 +473,23 @@ function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showRecordDetail, setShowRecordDetail] = useState(false);
+
+  // じぶん図鑑関連の状態
+  const [showSelfAnalysis, setShowSelfAnalysis] = useState(false);
+  const [personalProfile, setPersonalProfile] = useState({
+    values: [] as string[],
+    goals: [] as string[],
+    skills: [] as string[],
+    interests: [] as string[],
+    strengths: [] as string[],
+    weaknesses: [] as string[],
+    vision: '',
+    mission: ''
+  });
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const [moodLogs, setMoodLogs] = useState<MoodLog[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [learningRecords, setLearningRecords] = useState<LearningRecord[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [selectedRecordType, setSelectedRecordType] = useState<'salary' | 'diary' | null>(null);
 
@@ -518,6 +604,13 @@ function App() {
       icon: '⏱️',
       description: 'カスタムタイマーとプリセットタイマー',
       component: null // タイマーセクション
+    },
+    {
+      id: 'self-analysis',
+      name: 'じぶん図鑑',
+      icon: '🔍',
+      description: '自分自身を深く理解するための分析ツール',
+      component: null // 自己分析セクション
     }
   ];
 
@@ -1231,6 +1324,9 @@ function App() {
     }
     if (activeFeature !== 'record-detail') {
       setShowRecordDetail(false);
+    }
+    if (activeFeature !== 'self-analysis') {
+      setShowSelfAnalysis(false);
     }
   };
 
@@ -6557,6 +6653,231 @@ function App() {
               </div>
                 )}
             </div>
+              );
+            } else if (feature.id === 'self-analysis') {
+              return (
+                <div key={feature.id} className="self-analysis-section">
+                  <div className="section-header">
+                    <h2>
+                      <span className="section-icon">🔍</span>
+                      じぶん図鑑
+                    </h2>
+                    <div className="section-controls">
+                      {showSelfAnalysis ? (
+                        <button 
+                          onClick={() => setShowSelfAnalysis(false)}
+                          className="close-section-button"
+                          title="セクションを閉じる"
+                        >
+                          ✕
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => {
+                            closeOtherFeatures('self-analysis');
+                            setShowSelfAnalysis(true);
+                          }}
+                          className="show-section-button"
+                          title="セクションを表示"
+                        >
+                          ▶️
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {showSelfAnalysis && (
+                    <div className="self-analysis-content">
+                      <div className="analysis-tabs">
+                        <button className="tab-button active">
+                          📊 分析ダッシュボード
+                        </button>
+                        <button className="tab-button">
+                          👤 プロフィール
+                        </button>
+                        <button className="tab-button">
+                          📈 習慣トラッカー
+                        </button>
+                        <button className="tab-button">
+                          😊 感情ログ
+                        </button>
+                        <button className="tab-button">
+                          🎯 目標管理
+                        </button>
+                        <button className="tab-button">
+                          📚 学習記録
+                        </button>
+                      </div>
+
+                      <div className="analysis-dashboard">
+                        <div className="dashboard-grid">
+                          <div className="analysis-card">
+                            <h3>📊 時間の使い方分析</h3>
+                            <div className="analysis-content">
+                              <div className="time-breakdown">
+                                <div className="time-category">
+                                  <span className="category-label">仕事</span>
+                                  <div className="progress-bar">
+                                    <div className="progress-fill" style={{width: '60%'}}></div>
+                                  </div>
+                                  <span className="time-value">6.0h</span>
+                                </div>
+                                <div className="time-category">
+                                  <span className="category-label">学習</span>
+                                  <div className="progress-bar">
+                                    <div className="progress-fill" style={{width: '20%'}}></div>
+                                  </div>
+                                  <span className="time-value">2.0h</span>
+                                </div>
+                                <div className="time-category">
+                                  <span className="category-label">休憩</span>
+                                  <div className="progress-bar">
+                                    <div className="progress-fill" style={{width: '20%'}}></div>
+                                  </div>
+                                  <span className="time-value">2.0h</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="analysis-card">
+                            <h3>📈 生産性トレンド</h3>
+                            <div className="analysis-content">
+                              <div className="productivity-chart">
+                                <div className="chart-placeholder">
+                                  📈 過去7日間の生産性グラフ
+                                </div>
+                                <div className="productivity-stats">
+                                  <div className="stat">
+                                    <span className="stat-label">平均集中時間</span>
+                                    <span className="stat-value">2.5h</span>
+                                  </div>
+                                  <div className="stat">
+                                    <span className="stat-label">最高記録</span>
+                                    <span className="stat-value">4.2h</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="analysis-card">
+                            <h3>🎯 目標達成率</h3>
+                            <div className="analysis-content">
+                              <div className="goals-overview">
+                                <div className="goal-progress">
+                                  <span className="goal-label">今月の目標</span>
+                                  <div className="circular-progress">
+                                    <div className="progress-circle">
+                                      <span className="progress-text">75%</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="goals-list">
+                                  <div className="goal-item completed">
+                                    ✅ 毎日読書する
+                                  </div>
+                                  <div className="goal-item in-progress">
+                                    🔄 新しいスキルを学ぶ
+                                  </div>
+                                  <div className="goal-item pending">
+                                    ⏳ 運動習慣をつける
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="analysis-card">
+                            <h3>😊 感情・体調分析</h3>
+                            <div className="analysis-content">
+                              <div className="mood-overview">
+                                <div className="mood-average">
+                                  <span className="mood-label">平均気分</span>
+                                  <div className="mood-scale">
+                                    <div className="mood-indicator" style={{left: '70%'}}>😊</div>
+                                    <div className="scale-line"></div>
+                                  </div>
+                                  <span className="mood-value">7.2/10</span>
+                                </div>
+                                <div className="mood-factors">
+                                  <div className="factor">
+                                    <span className="factor-label">睡眠</span>
+                                    <span className="factor-value">7.5h</span>
+                                  </div>
+                                  <div className="factor">
+                                    <span className="factor-label">ストレス</span>
+                                    <span className="factor-value">3.2/10</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="analysis-card">
+                            <h3>📚 学習・成長記録</h3>
+                            <div className="analysis-content">
+                              <div className="learning-stats">
+                                <div className="learning-summary">
+                                  <div className="summary-item">
+                                    <span className="summary-label">今月の学習時間</span>
+                                    <span className="summary-value">24.5h</span>
+                                  </div>
+                                  <div className="summary-item">
+                                    <span className="summary-label">完了したコース</span>
+                                    <span className="summary-value">3</span>
+                                  </div>
+                                  <div className="summary-item">
+                                    <span className="summary-label">読んだ本</span>
+                                    <span className="summary-value">2冊</span>
+                                  </div>
+                                </div>
+                                <div className="recent-learning">
+                                  <h4>最近の学習</h4>
+                                  <div className="learning-item">
+                                    📖 React開発の基礎
+                                  </div>
+                                  <div className="learning-item">
+                                    🎥 TypeScript入門
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="analysis-card">
+                            <h3>💡 おすすめアクション</h3>
+                            <div className="analysis-content">
+                              <div className="recommendations">
+                                <div className="recommendation-item">
+                                  <div className="recommendation-icon">⏰</div>
+                                  <div className="recommendation-text">
+                                    <strong>集中時間を増やしましょう</strong>
+                                    <p>午前中の集中力が高い傾向があります。重要なタスクを午前に配置することをお勧めします。</p>
+                                  </div>
+                                </div>
+                                <div className="recommendation-item">
+                                  <div className="recommendation-icon">😴</div>
+                                  <div className="recommendation-text">
+                                    <strong>睡眠パターンを改善</strong>
+                                    <p>睡眠時間が少ない日は生産性が下がる傾向があります。7-8時間の睡眠を心がけましょう。</p>
+                                  </div>
+                                </div>
+                                <div className="recommendation-item">
+                                  <div className="recommendation-icon">🎯</div>
+                                  <div className="recommendation-text">
+                                    <strong>小さな目標を設定</strong>
+                                    <p>大きな目標を小さなステップに分けることで、達成感を得やすくなります。</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               );
             } else {
               return null;
