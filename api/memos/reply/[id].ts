@@ -39,26 +39,14 @@ const ensureDatabaseConnection = async () => {
   }
 };
 
-// Memo schema
-const MemoSchema = new mongoose.Schema(
+// Reply schema (独立したコレクション)
+const ReplySchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
     content: { type: String, required: true },
-    category: { type: String, required: true },
-    tags: [{ type: String }],
-    isPublic: { type: Boolean, default: false },
-    isFamilyOnly: { type: Boolean, default: false },
-    isAdminOnly: { type: Boolean, default: false },
-    authorId: { type: String, required: true },
     authorName: { type: String, required: true },
     authorEmail: { type: String, required: true },
-    replies: [{
-      id: { type: String, required: true },
-      content: { type: String, required: true },
-      authorName: { type: String, required: true },
-      authorEmail: { type: String, required: true },
-      createdAt: { type: Date, default: Date.now }
-    }]
+    memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
+    userId: { type: String, required: true }
   },
   {
     timestamps: true,
@@ -66,7 +54,7 @@ const MemoSchema = new mongoose.Schema(
   },
 );
 
-const Memo = mongoose.models.Memo || mongoose.model("Memo", MemoSchema);
+const Reply = mongoose.models.Reply || mongoose.model("Reply", ReplySchema);
 
 /**
  * Update reply request interface
@@ -151,20 +139,13 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Find the memo containing the reply
-    const memo = await Memo.findOne({ 'replies.id': replyId });
-    
-    if (!memo) {
-      return res.status(404).json({
-        success: false,
-        message: 'Reply not found',
-      });
-    }
-
-    // Find the specific reply
-    const reply = memo.replies.find(r => r.id === replyId);
+    // Find the reply directly by ID
+    console.log('🔍 Searching for reply with ID:', replyId);
+    const reply = await Reply.findById(replyId);
+    console.log('💬 Found reply:', reply ? 'yes' : 'no');
     
     if (!reply) {
+      console.log('❌ No reply found with replyId:', replyId);
       return res.status(404).json({
         success: false,
         message: 'Reply not found',
@@ -184,12 +165,11 @@ module.exports = async function handler(req, res) {
 
       // Update the reply content
       reply.content = content.trim();
-      memo.markModified('replies');
-      await memo.save();
+      await reply.save();
 
       console.log('✅ Reply updated successfully:', {
         replyId,
-        memoId: memo._id,
+        memoId: reply.memoId,
       });
 
       res.status(200).json({
@@ -199,12 +179,11 @@ module.exports = async function handler(req, res) {
 
     } else if (req.method === 'DELETE') {
       // Delete reply
-      memo.replies = memo.replies.filter(r => r.id !== replyId);
-      await memo.save();
+      await Reply.findByIdAndDelete(replyId);
 
       console.log('✅ Reply deleted successfully:', {
         replyId,
-        memoId: memo._id,
+        memoId: reply.memoId,
       });
 
       res.status(200).json({

@@ -45,6 +45,19 @@ const MemoSchema = new mongoose.Schema({
   category: { type: String, required: true },
   tags: [{ type: String }],
   isPublic: { type: Boolean, default: false },
+  isFamilyOnly: { type: Boolean, default: false },
+  isAdminOnly: { type: Boolean, default: false },
+  userId: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+// Reply Schema (独立したコレクション)
+const ReplySchema = new mongoose.Schema({
+  content: { type: String, required: true },
+  authorName: { type: String, required: true },
+  authorEmail: { type: String, required: true },
+  memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
   userId: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
@@ -58,13 +71,15 @@ MemoSchema.pre('save', function(next) {
 
 const Memo = mongoose.model('Memo', MemoSchema);
 
-// 返信スキーマ
+// 返信スキーマ (独立したコレクション)
 const ReplySchema = new mongoose.Schema({
-  memoId: { type: String, required: true },
   content: { type: String, required: true },
   authorName: { type: String, required: true },
   authorEmail: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
+  memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
+  userId: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
 });
 
 const Reply = mongoose.model('Reply', ReplySchema);

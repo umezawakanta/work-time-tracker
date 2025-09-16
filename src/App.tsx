@@ -2150,7 +2150,10 @@ function App() {
         },
         body: JSON.stringify({
           memoId,
-          content: replyContent.trim()
+          content: replyContent.trim(),
+          authorName: user?.displayName || 'Unknown',
+          authorEmail: user?.email || 'unknown@example.com',
+          userId: user?.id || ''
         })
       });
 
