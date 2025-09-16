@@ -4510,55 +4510,6 @@ function App() {
                     </div>
                   </div>
 
-                  <div className="memos-controls">
-                    <div className="search-controls">
-                      <input
-                        type="text"
-                        placeholder="メモを検索..."
-                        value={memoSearchTerm}
-                        onChange={(e) => setMemoSearchTerm(e.target.value)}
-                        className="search-input"
-                      />
-                      <button onClick={handleMemoSearch} className="search-button">
-                        検索
-                      </button>
-                    </div>
-                    <div className="category-controls">
-                      <select
-                        value={selectedMemoCategory}
-                        onChange={(e) => handleMemoCategoryChange(e.target.value)}
-                        className="category-select"
-                      >
-                        <option value="all">すべてのカテゴリ</option>
-                        {getMemoCategories().map(category => (
-                          <option key={category} value={category}>{category}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <button 
-                      onClick={() => setShowGenreManager(!showGenreManager)}
-                      className="genre-manager-button"
-                    >
-                      🏷️ ジャンル管理
-                    </button>
-                    <button 
-                      onClick={() => {
-                        setEditingMemo(null);
-                        setShowMemoForm(!showMemoForm);
-                        if (!showMemoForm) {
-                          setMemoTitle("");
-                          setMemoContent("");
-                          setMemoCategory("");
-                          setMemoTags("");
-                          setMemoIsPublic(false);
-                        }
-                      }}
-                      className="add-memo-button"
-                    >
-                      {showMemoForm ? "キャンセル" : "メモを追加"}
-                    </button>
-                  </div>
-
                   {showMemoForm && (
                     <form onSubmit={editingMemo ? handleUpdateMemo : handleCreateMemo} className="memo-form">
                       <h3>{editingMemo ? "メモを編集" : "メモを追加"}</h3>
@@ -4626,6 +4577,55 @@ function App() {
                       </button>
                     </form>
                   )}
+
+                  <div className="memos-controls">
+                    <div className="search-controls">
+                      <input
+                        type="text"
+                        placeholder="メモを検索..."
+                        value={memoSearchTerm}
+                        onChange={(e) => setMemoSearchTerm(e.target.value)}
+                        className="search-input"
+                      />
+                      <button onClick={handleMemoSearch} className="search-button">
+                        検索
+                      </button>
+                    </div>
+                    <div className="category-controls">
+                      <select
+                        value={selectedMemoCategory}
+                        onChange={(e) => handleMemoCategoryChange(e.target.value)}
+                        className="category-select"
+                      >
+                        <option value="all">すべてのカテゴリ</option>
+                        {getMemoCategories().map(category => (
+                          <option key={category} value={category}>{category}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <button 
+                      onClick={() => setShowGenreManager(!showGenreManager)}
+                      className="genre-manager-button"
+                    >
+                      🏷️ ジャンル管理
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setEditingMemo(null);
+                        setShowMemoForm(!showMemoForm);
+                        if (!showMemoForm) {
+                          setMemoTitle("");
+                          setMemoContent("");
+                          setMemoCategory("");
+                          setMemoTags("");
+                          setMemoIsPublic(false);
+                        }
+                      }}
+                      className="add-memo-button"
+                    >
+                      {showMemoForm ? "キャンセル" : "メモを追加"}
+                    </button>
+                  </div>
 
                   <div className="memos-list">
                     {memos.length === 0 ? (
