@@ -510,6 +510,21 @@ function App() {
   const [habitStreak, setHabitStreak] = useState<{[key: string]: number}>({});
   const [habitHistory, setHabitHistory] = useState<{[key: string]: string[]}>({});
 
+  // 感情ログ関連の状態
+  const [showMoodForm, setShowMoodForm] = useState(false);
+  const [editingMoodLog, setEditingMoodLog] = useState<string | null>(null);
+  const [moodForm, setMoodForm] = useState({
+    date: new Date().toISOString().split('T')[0],
+    mood: 5,
+    energy: 5,
+    stress: 5,
+    notes: '',
+    activities: [] as string[],
+    weather: 'sunny',
+    sleep: 8
+  });
+  const [newActivity, setNewActivity] = useState('');
+
   // プロフィール管理関数
   const addToProfile = (field: keyof typeof personalProfile, value: string) => {
     if (!value.trim()) return;
@@ -620,6 +635,117 @@ function App() {
     const history = habitHistory[habitId] || [];
     const daysSinceStart = Math.ceil((Date.now() - new Date(habit.createdAt).getTime()) / (1000 * 60 * 60 * 24));
     return daysSinceStart > 0 ? (history.length / daysSinceStart) * 100 : 0;
+  };
+
+  // 感情ログ管理関数
+  const addMoodLog = () => {
+    if (!moodForm.date) return;
+    
+    const moodLogId = Date.now().toString();
+    const newMoodLog: MoodLog = {
+      id: moodLogId,
+      date: moodForm.date,
+      mood: moodForm.mood,
+      energy: moodForm.energy,
+      stress: moodForm.stress,
+      notes: moodForm.notes,
+      activities: moodForm.activities,
+      weather: moodForm.weather,
+      sleep: moodForm.sleep,
+      createdAt: new Date().toISOString()
+    };
+    
+    setMoodLogs(prev => [...prev, newMoodLog]);
+    resetMoodForm();
+  };
+
+  const updateMoodLog = (moodLogId: string, updates: Partial<MoodLog>) => {
+    setMoodLogs(prev => prev.map(log => 
+      log.id === moodLogId 
+        ? { ...log, ...updates }
+        : log
+    ));
+  };
+
+  const deleteMoodLog = (moodLogId: string) => {
+    setMoodLogs(prev => prev.filter(log => log.id !== moodLogId));
+  };
+
+  const resetMoodForm = () => {
+    setMoodForm({
+      date: new Date().toISOString().split('T')[0],
+      mood: 5,
+      energy: 5,
+      stress: 5,
+      notes: '',
+      activities: [],
+      weather: 'sunny',
+      sleep: 8
+    });
+    setNewActivity('');
+    setShowMoodForm(false);
+    setEditingMoodLog(null);
+  };
+
+  const addActivity = () => {
+    if (!newActivity.trim()) return;
+    setMoodForm(prev => ({
+      ...prev,
+      activities: [...prev.activities, newActivity.trim()]
+    }));
+    setNewActivity('');
+  };
+
+  const removeActivity = (index: number) => {
+    setMoodForm(prev => ({
+      ...prev,
+      activities: prev.activities.filter((_, i) => i !== index)
+    }));
+  };
+
+  const editMoodLog = (log: MoodLog) => {
+    setMoodForm({
+      date: log.date,
+      mood: log.mood,
+      energy: log.energy,
+      stress: log.stress,
+      notes: log.notes,
+      activities: log.activities,
+      weather: log.weather,
+      sleep: log.sleep
+    });
+    setEditingMoodLog(log.id);
+    setShowMoodForm(true);
+  };
+
+  const saveMoodLog = () => {
+    if (editingMoodLog) {
+      updateMoodLog(editingMoodLog, {
+        date: moodForm.date,
+        mood: moodForm.mood,
+        energy: moodForm.energy,
+        stress: moodForm.stress,
+        notes: moodForm.notes,
+        activities: moodForm.activities,
+        weather: moodForm.weather,
+        sleep: moodForm.sleep
+      });
+    } else {
+      addMoodLog();
+    }
+  };
+
+  const getMoodEmoji = (mood: number) => {
+    if (mood <= 2) return '😢';
+    if (mood <= 4) return '😔';
+    if (mood <= 6) return '😐';
+    if (mood <= 8) return '😊';
+    return '😄';
+  };
+
+  const getAverageMood = () => {
+    if (moodLogs.length === 0) return 0;
+    return moodLogs.reduce((sum, log) => sum + log.mood, 0) / moodLogs.length;
   };
 
   const [habits, setHabits] = useState<Habit[]>([]);
