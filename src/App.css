@@ -7883,8 +7883,406 @@ input:checked + .toggle-slider:before {
   font-weight: 500;
 }
 
+/* 感情ログ */
+.mood-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e3f2fd;
+}
+
+.mood-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #0288d1;
+}
+
+.mood-header h3 {
+  margin: 0;
+  color: #01579b;
+  font-size: 1.5rem;
+}
+
+.add-mood-button {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-mood-button:hover {
+  background: linear-gradient(135deg, #ff5252 0%, #ff6b6b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.mood-form {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid #e3f2fd;
+}
+
+.mood-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.mood-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #01579b;
+}
+
+.mood-form input,
+.mood-form select,
+.mood-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e3f2fd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.mood-form input:focus,
+.mood-form select:focus,
+.mood-form textarea:focus {
+  outline: none;
+  border-color: #0288d1;
+  box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.1);
+}
+
+.mood-scales {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.scale-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scale-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.scale-label {
+  font-size: 1.2rem;
+  min-width: 30px;
+  text-align: center;
+}
+
+.mood-slider {
+  flex: 1;
+  height: 6px;
+  background: #e3f2fd;
+  border-radius: 3px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.mood-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #0288d1;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(2, 136, 209, 0.3);
+}
+
+.mood-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #0288d1;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(2, 136, 209, 0.3);
+}
+
+.scale-value {
+  font-weight: 600;
+  color: #0288d1;
+  min-width: 30px;
+  text-align: center;
+}
+
+.activities-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activities-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.activity-item {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  color: #01579b;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #90caf9;
+}
+
+.remove-activity-button {
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.remove-activity-button:hover {
+  background: #d32f2f;
+  transform: scale(1.1);
+}
+
+.add-activity-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.add-activity-form input {
+  flex: 1;
+}
+
+.add-activity-button {
+  background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-activity-button:hover {
+  background: linear-gradient(135deg, #388e3c 0%, #4caf50 100%);
+  transform: translateY(-1px);
+}
+
+.mood-logs {
+  margin-bottom: 2rem;
+}
+
+.mood-logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.mood-log-card {
+  background: white;
+  border: 1px solid #e3f2fd;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.mood-log-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.mood-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e3f2fd;
+}
+
+.mood-log-date {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mood-log-date .date {
+  font-weight: 600;
+  color: #01579b;
+  font-size: 1.1rem;
+}
+
+.mood-emoji {
+  font-size: 1.5rem;
+}
+
+.mood-log-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mood-log-actions .edit-button,
+.mood-log-actions .delete-button {
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.mood-log-actions .edit-button:hover {
+  background: #e3f2fd;
+  border-color: #0288d1;
+}
+
+.mood-log-actions .delete-button:hover {
+  background: #ffebee;
+  border-color: #f44336;
+}
+
+.mood-log-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mood-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.mood-stats .stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e3f2fd;
+}
+
+.mood-stats .stat-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.mood-stats .stat-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0288d1;
+}
+
+.activities {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.activities-label {
+  font-weight: 600;
+  color: #01579b;
+  font-size: 0.9rem;
+}
+
+.activities-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.activity-tag {
+  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+  color: #2e7d32;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  border: 1px solid #a5d6a7;
+}
+
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.notes-label {
+  font-weight: 600;
+  color: #01579b;
+  font-size: 0.9rem;
+}
+
+.notes-content {
+  margin: 0;
+  color: #333;
+  line-height: 1.5;
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e3f2fd;
+}
+
+.weather {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.weather-label {
+  font-weight: 600;
+  color: #01579b;
+  font-size: 0.9rem;
+}
+
+.weather-value {
+  font-size: 1.1rem;
+}
+
+.mood-stats-summary {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e3f2fd;
+}
+
+.mood-stats-summary h4 {
+  margin: 0 0 1rem 0;
+  color: #01579b;
+  font-size: 1.2rem;
+}
+
 /* 他のタブコンテンツ */
-.mood-content,
 .goals-content,
 .learning-content {
   background: white;
@@ -7896,7 +8294,6 @@ input:checked + .toggle-slider:before {
   color: #666;
 }
 
-.mood-content h3,
 .goals-content h3,
 .learning-content h3 {
   color: #01579b;
@@ -7962,5 +8359,32 @@ input:checked + .toggle-slider:before {
 
   .profile-text-fields {
     gap: 1rem;
+  }
+
+  .mood-scales {
+    gap: 1rem;
+  }
+
+  .scale-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .mood-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+
+  .mood-stats .stat {
+    padding: 0.8rem;
+  }
+
+  .activities-tags {
+    flex-direction: column;
+  }
+
+  .add-activity-form {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
