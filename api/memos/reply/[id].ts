@@ -46,7 +46,7 @@ const ReplySchema = new mongoose.Schema(
     authorName: { type: String, required: true },
     authorEmail: { type: String, required: true },
     memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
-    userId: { type: String, required: true }
+    userId: { type: String, required: false } // 既存データとの互換性のためオプショナルに変更
   },
   {
     timestamps: true,
@@ -163,13 +163,29 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      // Update the reply content
-      reply.content = content.trim();
-      await reply.save();
+      // Update the reply content using findByIdAndUpdate to avoid validation issues
+      const updatedReply = await Reply.findByIdAndUpdate(
+        replyId,
+        { 
+          content: content.trim(),
+          updatedAt: new Date()
+        },
+        { 
+          new: true,
+          runValidators: false // バリデーションをスキップして既存データを更新
+        }
+      );
+
+      if (!updatedReply) {
+        return res.status(404).json({
+          success: false,
+          message: 'Reply not found',
+        });
+      }
 
       console.log('✅ Reply updated successfully:', {
         replyId,
-        memoId: reply.memoId,
+        memoId: updatedReply.memoId,
       });
 
       res.status(200).json({

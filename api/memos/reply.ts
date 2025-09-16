@@ -46,7 +46,7 @@ const ReplySchema = new mongoose.Schema(
     authorName: { type: String, required: true },
     authorEmail: { type: String, required: true },
     memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
-    userId: { type: String, required: true }
+    userId: { type: String, required: false } // 既存データとの互換性のためオプショナルに変更
   },
   {
     timestamps: true,
@@ -146,10 +146,10 @@ module.exports = async function handler(req, res) {
       // Create new reply
       const { memoId, content, authorName, authorEmail, userId } = req.body;
       
-      if (!memoId || !content || !authorName || !authorEmail || !userId) {
+      if (!memoId || !content || !authorName || !authorEmail) {
         return res.status(400).json({
           success: false,
-          message: 'All fields are required',
+          message: 'memoId, content, authorName, and authorEmail are required',
         });
       }
 
@@ -158,7 +158,7 @@ module.exports = async function handler(req, res) {
         authorName: authorName.trim(),
         authorEmail: authorEmail.trim(),
         memoId: memoId,
-        userId: userId
+        userId: userId || null // userIdが提供されない場合はnullを設定
       });
 
       await newReply.save();

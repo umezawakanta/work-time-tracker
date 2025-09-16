@@ -77,7 +77,7 @@ const ReplySchema = new mongoose.Schema({
   authorName: { type: String, required: true },
   authorEmail: { type: String, required: true },
   memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
-  userId: { type: String, required: true },
+  userId: { type: String, required: false }, // 既存データとの互換性のためオプショナルに変更
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
