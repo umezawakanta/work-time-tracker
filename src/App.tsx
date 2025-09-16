@@ -1200,6 +1200,34 @@ function App() {
     if (activeFeature !== 'character') {
       setShowCharacterHome(false);
     }
+    
+    // お仕事記録関連
+    if (activeFeature !== 'work-records') {
+      setShowWorkRecords(false);
+    }
+    
+    // その他の機能
+    if (activeFeature !== 'public-memos') {
+      setShowPublicMemos(false);
+    }
+    if (activeFeature !== 'font-settings') {
+      setShowFontSettings(false);
+    }
+    if (activeFeature !== 'theme-settings') {
+      setShowThemeSettings(false);
+    }
+    if (activeFeature !== 'genre-manager') {
+      setShowGenreManager(false);
+    }
+    if (activeFeature !== 'feature-settings') {
+      setShowFeatureSettings(false);
+    }
+    if (activeFeature !== 'calendar') {
+      setShowCalendar(false);
+    }
+    if (activeFeature !== 'record-detail') {
+      setShowRecordDetail(false);
+    }
   };
 
   const handleDragStart = (e: React.DragEvent, featureId: string) => {
@@ -3453,14 +3481,24 @@ function App() {
                   🏠 キャラクター
                 </button>
                 <button 
-                  onClick={() => setShowThemeSettings(!showThemeSettings)} 
+                  onClick={() => {
+                    if (!showThemeSettings) {
+                      closeOtherFeatures('theme-settings');
+                    }
+                    setShowThemeSettings(!showThemeSettings);
+                  }} 
                   className="theme-settings-button"
                   title="テーマ設定"
                 >
                   🎨 テーマ
                 </button>
                 <button 
-                  onClick={() => setShowFontSettings(!showFontSettings)} 
+                  onClick={() => {
+                    if (!showFontSettings) {
+                      closeOtherFeatures('font-settings');
+                    }
+                    setShowFontSettings(!showFontSettings);
+                  }} 
                   className="font-settings-button"
                   title="フォント設定"
                 >
@@ -3469,6 +3507,7 @@ function App() {
               </div>
               <button 
                 onClick={() => {
+                  closeOtherFeatures('feature-settings');
                   setShowFeatureSettings(true);
                   loadUserSettings();
                 }} 
@@ -4670,7 +4709,12 @@ function App() {
                       </select>
                     </div>
                     <button 
-                      onClick={() => setShowGenreManager(!showGenreManager)}
+                      onClick={() => {
+                        if (!showGenreManager) {
+                          closeOtherFeatures('genre-manager');
+                        }
+                        setShowGenreManager(!showGenreManager);
+                      }}
                       className="genre-manager-button"
                     >
                       🏷️ ジャンル管理
@@ -4870,6 +4914,7 @@ function App() {
                   ) : (
                     <button 
                       onClick={() => {
+                        closeOtherFeatures('public-memos');
                         setShowPublicMemos(true);
                         if (publicMemos.length === 0) {
                           loadPublicMemos();
@@ -5222,7 +5267,10 @@ function App() {
                     </button>
                   ) : (
                     <button 
-                      onClick={() => setShowWorkRecords(true)}
+                      onClick={() => {
+                        closeOtherFeatures('work-records');
+                        setShowWorkRecords(true);
+                      }}
                       className="show-section-button"
                       title="セクションを表示"
                     >
