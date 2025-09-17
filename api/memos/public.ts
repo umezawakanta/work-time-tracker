@@ -115,31 +115,49 @@ module.exports = async (req, res) => {
 
       const memos = await Memo.find(query).sort({ updatedAt: -1 });
 
-      // 各メモの返信を取得（ObjectIdで検索）
-      const memosWithReplies = await Promise.all(
-        memos.map(async (memo) => {
-          const replies = await Reply.find({ memoId: memo._id }).sort({ createdAt: 1 });
-          return {
-            id: memo._id.toString(),
-            title: memo.title,
-            content: memo.content,
-            category: memo.category,
-            tags: memo.tags || [],
-            isPublic: memo.isPublic,
-            isFamilyOnly: memo.isFamilyOnly || false,
-            isAdminOnly: memo.isAdminOnly || false,
-            createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
-            updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
-            replies: replies.map(reply => ({
-              id: reply._id.toString(),
-              content: reply.content,
-              authorName: reply.authorName,
-              authorEmail: reply.authorEmail,
-              createdAt: reply.createdAt ? reply.createdAt.toISOString() : new Date().toISOString()
-            }))
-          };
-        })
-      );
+      // 全メモのIDを取得
+      const memoIds = memos.map(memo => memo._id);
+      
+      // 一度のクエリで全返信を取得（パフォーマンス向上）
+      const allReplies = await Reply.find({ 
+        memoId: { $in: memoIds } 
+      }).sort({ createdAt: 1 });
+      
+      // 返信をメモIDごとにグループ化
+      const repliesByMemoId = allReplies.reduce((acc, reply) => {
+        const memoIdStr = reply.memoId.toString();
+        if (!acc[memoIdStr]) {
+          acc[memoIdStr] = [];
+        }
+        acc[memoIdStr].push(reply);
+        return acc;
+      }, {} as Record<string, any[]>);
+
+      // 各メモに返信を関連付け
+      const memosWithReplies = memos.map(memo => {
+        const memoIdStr = memo._id.toString();
+        const replies = repliesByMemoId[memoIdStr] || [];
+        
+        return {
+          id: memo._id.toString(),
+          title: memo.title,
+          content: memo.content,
+          category: memo.category,
+          tags: memo.tags || [],
+          isPublic: memo.isPublic,
+          isFamilyOnly: memo.isFamilyOnly || false,
+          isAdminOnly: memo.isAdminOnly || false,
+          createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
+          updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
+          replies: replies.map(reply => ({
+            id: reply._id.toString(),
+            content: reply.content,
+            authorName: reply.authorName,
+            authorEmail: reply.authorEmail,
+            createdAt: reply.createdAt ? reply.createdAt.toISOString() : new Date().toISOString()
+          }))
+        };
+      });
 
 
       res.status(200).json({

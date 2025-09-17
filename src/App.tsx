@@ -2185,9 +2185,38 @@ function App() {
         setMessage("返信を投稿しました！");
         setReplyContent("");
         setReplyingToMemo(null);
-        // メモと公開メモを再読み込み
-        loadMemos();
-        loadPublicMemos();
+        
+        // 即座にローカル状態を更新（UX向上）
+        const newReply = {
+          id: data.reply.id,
+          content: replyContent.trim(),
+          authorName: user?.displayName || 'Unknown',
+          authorEmail: user?.email || 'unknown@example.com',
+          createdAt: data.reply.createdAt
+        };
+        
+        // メモの返信を即座に更新
+        setMemos(prevMemos => 
+          prevMemos.map(memo => 
+            memo.id === memoId 
+              ? { ...memo, replies: [...(memo.replies || []), newReply] }
+              : memo
+          )
+        );
+        
+        // 公開メモの返信を即座に更新
+        setPublicMemos(prevMemos => 
+          prevMemos.map(memo => 
+            memo.id === memoId 
+              ? { ...memo, replies: [...(memo.replies || []), newReply] }
+              : memo
+          )
+        );
+        
+        // バックグラウンドでデータを再読み込み（整合性確保）
+        Promise.all([loadMemos(), loadPublicMemos()]).catch(error => {
+          console.error('Background reload failed:', error);
+        });
       } else {
         setMessage(data.message || "返信の投稿に失敗しました");
       }
