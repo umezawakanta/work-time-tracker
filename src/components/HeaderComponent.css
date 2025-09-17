@@ -931,11 +931,12 @@
 @media (max-width: 768px) {
   .dashboard-header {
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
     text-align: center;
-    padding: 1rem 0.75rem;
-    min-height: 100px;
+    padding: 1.25rem 1rem;
+    min-height: 160px;
     position: relative;
+    border-radius: 20px 20px 0 0;
   }
   
   .header-left {
@@ -943,39 +944,189 @@
     justify-content: center;
     position: relative;
     z-index: 2;
+    order: 1;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 1.6rem;
+    margin: 0;
+    line-height: 1.2;
+  }
+  
+  .character-container {
+    width: 70px;
+    height: 70px;
   }
   
   .user-info {
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
     align-items: center;
     max-width: 100%;
     margin-top: 0;
     justify-content: center;
+    order: 2;
   }
   
   .user-greeting {
-    padding: 0.65rem 1rem;
-    border-radius: 16px;
+    padding: 0.8rem 1.25rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 6px 20px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
   }
   
   .user-info span {
-    font-size: 0.95rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  
+  .header-character {
+    width: 48px;
+    height: 48px;
   }
   
   .header-buttons {
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
   }
   
   .character-home-button,
-  .logout-button {
-    font-size: 0.8rem;
-    padding: 0.6rem 1rem;
-    border-radius: 10px;
+  .theme-settings-button,
+  .font-settings-button {
+    font-size: 0.85rem;
+    padding: 0.7rem 1.1rem;
+    border-radius: 12px;
+    min-width: 100px;
+    font-weight: 600;
+  }
+  
+  .feature-settings-button {
+    font-size: 0.85rem;
+    padding: 0.7rem 1.1rem;
+    border-radius: 12px;
+    min-width: 120px;
+    font-weight: 600;
+    margin-top: 0.5rem;
   }
   
   /* モバイル時のログアウトボタン */
+  .logout-container {
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+  }
+  
+  .logout-container .logout-button {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  
+  /* モバイル時のヘタウマキャラクター */
+  .bottom-right-character {
+    width: 60px;
+    height: 60px;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1;
+  }
+  
+  .hetama-character {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .hetama-face {
+    width: 45px;
+    height: 36px;
+  }
+  
+  .hetama-body {
+    width: 32px;
+    height: 24px;
+  }
+  
+  .hetama-wing {
+    width: 28px;
+    height: 22px;
+  }
+  
+  .hetama-sparkle {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 1rem 0.75rem;
+    min-height: 140px;
+    gap: 0.75rem;
+    border-radius: 16px 16px 0 0;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 1.4rem;
+    margin: 0;
+    line-height: 1.1;
+  }
+  
+  .character-container {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .user-greeting {
+    padding: 0.6rem 1rem;
+    gap: 0.5rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(20px);
+  }
+  
+  .user-info span {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  
+  .user-info {
+    gap: 0.6rem;
+  }
+  
+  .header-character {
+    width: 42px;
+    height: 42px;
+  }
+  
+  .header-buttons {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .character-home-button,
+  .theme-settings-button,
+  .font-settings-button {
+    font-size: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    min-width: 85px;
+    border-radius: 10px;
+  }
+  
+  .feature-settings-button {
+    font-size: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    min-width: 100px;
+    border-radius: 10px;
+    margin-top: 0.25rem;
+  }
+  
   .logout-container {
     top: 0.75rem;
     right: 0.75rem;
@@ -983,21 +1134,16 @@
   
   .logout-container .logout-button {
     font-size: 0.7rem;
-    padding: 0.4rem 0.75rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 8px;
   }
   
-  /* モバイル時のヘタウマキャラクター */
+  /* 480px以下でのヘタウマキャラクター */
   .bottom-right-character {
     width: 50px;
     height: 50px;
     bottom: 15px;
     right: 15px;
-    z-index: 1;
-  }
-  
-  .hetama-character {
-    width: 100%;
-    height: 100%;
   }
   
   .hetama-face {
@@ -1018,61 +1164,68 @@
   .hetama-sparkle {
     font-size: 8px;
   }
-  
-  /* 480px以下でのヘタウマキャラクター */
-  .bottom-right-character {
-    width: 40px;
-    height: 40px;
-    bottom: 10px;
-    right: 10px;
-  }
 }
 
-@media (max-width: 480px) {
-  .dashboard-header {
-    padding: 0.75rem 0.5rem;
-    min-height: 90px;
-    gap: 0.5rem;
-  }
-  
-  .dashboard-header h1 {
-    font-size: 1.4rem;
-    margin: 0;
-  }
-  
-  .character-container {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .user-greeting {
-    padding: 0.4rem 0.75rem;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-  }
-  
-  .user-info {
-    gap: 0.4rem;
-  }
-  
-  .header-character {
-    width: 38px;
-    height: 38px;
-  }
-  
-  .header-buttons {
-    gap: 0.25rem;
-  }
-  
+/* モバイル用のタッチ最適化 */
+@media (max-width: 768px) {
   .character-home-button,
+  .theme-settings-button,
+  .font-settings-button,
+  .feature-settings-button,
   .logout-button {
-    font-size: 0.65rem;
-    padding: 0.35rem 0.6rem;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 44px; /* タッチターゲットの最小サイズ */
   }
   
-  .logout-container {
-    top: 0.6rem;
-    right: 0.6rem;
+  .character-home-button:active,
+  .theme-settings-button:active,
+  .font-settings-button:active,
+  .feature-settings-button:active,
+  .logout-button:active {
+    transform: scale(0.95);
+  }
+  
+  /* モバイル用のボタンホバー効果を無効化 */
+  .character-home-button:hover,
+  .theme-settings-button:hover,
+  .font-settings-button:hover,
+  .feature-settings-button:hover,
+  .logout-button:hover {
+    transform: none;
+  }
+  
+  /* モバイル用のユーザーグリーティングタッチ最適化 */
+  .user-greeting {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* モバイル用のキャラクタータッチ最適化 */
+  .character-container,
+  .header-character {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* モバイル用のスクロール最適化 */
+  .dashboard-header {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  /* モバイル用のテキスト選択最適化 */
+  .dashboard-header h1,
+  .user-info span {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 }
 
