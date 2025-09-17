@@ -136,12 +136,9 @@ module.exports = async function handler(req, res) {
     }
 
     // Find the reply directly by ID
-    console.log('🔍 Searching for reply with ID:', replyId);
     const reply = await Reply.findById(replyId);
-    console.log('💬 Found reply:', reply ? 'yes' : 'no');
     
     if (!reply) {
-      console.log('❌ No reply found with replyId:', replyId);
       return res.status(404).json({
         success: false,
         message: 'Reply not found',
@@ -179,10 +176,6 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      console.log('✅ Reply updated successfully:', {
-        replyId,
-        memoId: updatedReply.memoId,
-      });
 
       res.status(200).json({
         success: true,
@@ -193,10 +186,6 @@ module.exports = async function handler(req, res) {
       // Delete reply
       await Reply.findByIdAndDelete(replyId);
 
-      console.log('✅ Reply deleted successfully:', {
-        replyId,
-        memoId: reply.memoId,
-      });
 
       res.status(200).json({
         success: true,

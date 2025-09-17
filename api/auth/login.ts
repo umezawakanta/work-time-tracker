@@ -29,7 +29,6 @@ const ensureDatabaseConnection = async () => {
     }
     
     if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
       return;
     }
 
@@ -44,7 +43,6 @@ const ensureDatabaseConnection = async () => {
       maxIdleTimeMS: 30000, // 最大アイドル時間
     });
 
-    console.log("✅ MongoDB connected successfully");
 
     // 接続状態の監視
     mongoose.connection.on("error", (error) => {
@@ -165,20 +163,12 @@ async function handler(req, res) {
   }
 
   try {
-    console.log('🔐 User login started');
 
     // Ensure database connection is established
     await ensureDatabaseConnection();
 
     // Read JSON body safely across environments
     const body = await readJson(req);
-    console.log('📥 Login request meta', {
-      contentType: req.headers['content-type'],
-      contentLength: req.headers['content-length'],
-      bodyType: typeof body,
-      hasEmail: Boolean(body && body.email),
-      // 機密情報は含めない
-    });
     const {
       email,
       password,
@@ -211,17 +201,7 @@ async function handler(req, res) {
     const emailLc = (email || '').toLowerCase();
     const maskedEmail = emailLc.replace(/^[^@]+/, '***');
     
-    console.log('[auth/login] findOne(users) start', {
-      modelReady: Boolean(User),
-      connState: mongoose.connection && mongoose.connection.readyState,
-      dbName: mongoose.connection && mongoose.connection.name,
-      email: maskedEmail,
-    });
     const user = await User.findOne({ email: emailLc });
-    console.log('[auth/login] findOne(users) done', {
-      found: Boolean(user),
-      id: (user && user._id) || (user && user.id) || null,
-    });
 
     if (!user) {
       return sendErrorResponse(res, 401, createAuthError(
@@ -324,11 +304,6 @@ async function handler(req, res) {
       console.warn('⚠️ Failed to set auth cookie:', e);
     }
 
-    console.log('✅ User login successful:', {
-      userId: user.id,
-      email: user.email ? user.email.replace(/^[^@]+/, '***') : '[REDACTED]', // メールアドレスをマスク
-      rememberMe,
-    });
 
     res.status(200).json(response);
   } catch (error) {

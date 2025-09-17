@@ -29,7 +29,6 @@ const ensureDatabaseConnection = async () => {
     }
     
     if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
       return;
     }
 
@@ -43,7 +42,6 @@ const ensureDatabaseConnection = async () => {
       maxIdleTimeMS: 30000,
     });
 
-    console.log("✅ MongoDB connected successfully");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[auth/register] Failed to connect to database:', message);
@@ -156,7 +154,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    console.log('📝 User registration started');
     
     // Ensure database connection is established
     await ensureDatabaseConnection();
@@ -229,10 +226,6 @@ module.exports = async function handler(req, res) {
 
     await newUser.save();
 
-    console.log('✅ User registration successful:', {
-      userId: newUser.id,
-      email: newUser.email ? newUser.email.replace(/^[^@]+/, '***') : '[REDACTED]', // メールアドレスをマスク
-    });
 
     // レスポンスの構築（パスワードは除外）
     const response = {
