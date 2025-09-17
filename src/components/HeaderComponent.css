@@ -4,16 +4,20 @@
 .dashboard-header {
   background: var(--primary-color, linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fad0c4 100%)) !important;
   color: var(--text-color, #333) !important;
-  padding: 2.5rem 2rem;
+  padding: 2rem 2.5rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  border-radius: 25px 25px 0 0;
-  box-shadow: 0 8px 25px rgba(255, 154, 158, 0.4);
+  align-items: flex-start;
+  border-radius: 28px 28px 0 0;
+  box-shadow: 
+    0 10px 30px rgba(255, 154, 158, 0.3),
+    0 4px 15px rgba(255, 154, 158, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
   position: relative;
   overflow: hidden;
-  min-height: 120px;
-  transition: all 0.3s ease;
+  min-height: 140px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
 }
 
 /* 右上のログアウトボタンコンテナ */
@@ -31,31 +35,54 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
   pointer-events: none;
+  z-index: 1;
+}
+
+.dashboard-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 2;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
   position: relative;
-  z-index: 1;
+  z-index: 3;
+  flex: 1;
+  max-width: 60%;
 }
 
 .dashboard-header h1 {
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: 2.2rem;
+  font-weight: 900;
   margin: 0;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.05),
+    0 0 20px rgba(255, 255, 255, 0.3);
   position: relative;
-  z-index: 1;
-  background: var(--header-title-gradient, linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1));
-  background-size: 200% 200%;
+  z-index: 3;
+  background: var(--header-title-gradient, linear-gradient(135deg, #ff6b9d 0%, #4ecdc4 50%, #45b7d1 100%));
+  background-size: 300% 300%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: gradientShift 3s ease-in-out infinite;
+  animation: gradientShift 4s ease-in-out infinite;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 @keyframes gradientShift {
@@ -376,22 +403,42 @@
 .user-info {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: flex-end;
+  gap: 1.5rem;
   position: relative;
-  z-index: 1;
+  z-index: 3;
   flex-wrap: wrap;
+  flex: 1;
+  max-width: 40%;
+  margin-top: 0.5rem;
 }
 
 .user-greeting {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1.25rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.user-greeting:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .header-character {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -399,6 +446,13 @@
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   border: 2px solid #3b82f6;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.header-character:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .current-character-svg {
@@ -424,62 +478,85 @@
 .header-buttons {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
+  margin-top: 0.5rem;
 }
 
 .user-info span {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  font-weight: 700;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.01em;
 }
 
 .character-home-button {
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 12px rgba(245, 158, 11, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.character-home-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
 }
 
 .character-home-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 20px rgba(245, 158, 11, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.15);
   background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
 }
 
+.character-home-button:hover::before {
+  left: 100%;
+}
+
+.character-home-button:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 4px 12px rgba(245, 158, 11, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .logout-button {
-  background: var(--secondary-color, linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%));
-  color: var(--text-color, #333);
-  border: none;
-  padding: 10px 16px;
-  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 12px rgba(220, 38, 38, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
   white-space: nowrap;
-}
-
-/* 右上配置時のログアウトボタン */
-.logout-container .logout-button {
-  background: rgba(255, 255, 255, 0.9);
-  color: #dc2626;
-  border: 2px solid #dc2626;
-  font-weight: 700;
-  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
-  backdrop-filter: blur(10px);
 }
 
 .logout-button::before {
@@ -494,12 +571,23 @@
 }
 
 .logout-button:hover {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6);
+  box-shadow: 
+    0 8px 20px rgba(220, 38, 38, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .logout-button:hover::before {
   left: 100%;
+}
+
+.logout-button:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 4px 12px rgba(220, 38, 38, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* 右下のヘタウマキャラクター */
@@ -814,57 +902,84 @@
 
 /* レスポンシブデザイン */
 @media (max-width: 1024px) {
+  .dashboard-header {
+    padding: 1.75rem 2rem;
+    min-height: 120px;
+  }
+  
   .dashboard-header h1 {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
+  }
+  
+  .header-left {
+    gap: 1.25rem;
+    max-width: 65%;
   }
   
   .user-info {
-    gap: 0.8rem;
+    gap: 1rem;
+    max-width: 35%;
   }
   
-  .theme-settings-button,
-  .font-settings-button,
+  .character-home-button,
   .logout-button {
-    font-size: 12px;
-    padding: 9px 14px;
+    font-size: 0.85rem;
+    padding: 0.65rem 1rem;
   }
 }
 
 @media (max-width: 768px) {
   .dashboard-header {
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
     text-align: center;
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 1.25rem;
+    min-height: 160px;
+  }
+  
+  .header-left {
+    max-width: 100%;
+    justify-content: center;
   }
   
   .user-info {
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 1rem;
     align-items: center;
+    max-width: 100%;
+    margin-top: 0;
+  }
+  
+  .user-greeting {
+    padding: 0.65rem 1rem;
+    border-radius: 16px;
   }
   
   .user-info span {
-    font-size: 14px;
-    padding: 0.4rem 0.8rem;
+    font-size: 0.95rem;
   }
   
-  .theme-settings-button,
-  .font-settings-button {
-    font-size: 12px;
-    padding: 8px 12px;
-    margin: 2px;
+  .header-buttons {
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .character-home-button,
+  .logout-button {
+    font-size: 0.8rem;
+    padding: 0.6rem 1rem;
+    border-radius: 10px;
   }
   
   /* モバイル時のログアウトボタン */
   .logout-container {
-    top: 0.5rem;
-    right: 0.5rem;
+    top: 0.75rem;
+    right: 0.75rem;
   }
   
   .logout-container .logout-button {
-    font-size: 11px;
-    padding: 6px 10px;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.875rem;
   }
   
   /* モバイル時のヘタウマキャラクター */
@@ -897,6 +1012,42 @@
   
   .hetama-sparkle {
     font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 1.25rem 1rem;
+    min-height: 140px;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 1.6rem;
+  }
+  
+  .character-container {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .user-greeting {
+    padding: 0.5rem 0.875rem;
+    gap: 0.75rem;
+  }
+  
+  .header-character {
+    width: 38px;
+    height: 38px;
+  }
+  
+  .header-buttons {
+    gap: 0.375rem;
+  }
+  
+  .character-home-button,
+  .logout-button {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.875rem;
   }
 }
 
