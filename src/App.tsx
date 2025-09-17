@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import CharacterHome from "./components/CharacterHome";
+import CustomTimer from "./components/CustomTimer";
 
 import type {
   User,
@@ -6862,153 +6863,12 @@ function App() {
                    </div>
 
                    {/* カスタムタイマー */}
-                   <div className="custom-timer-section">
-                  <div className="subsection-header">
-                    <h3>🎯 カスタムタイマー</h3>
-                    <div className="subsection-controls">
-                      {showCustomTimer ? (
-                        <button 
-                          onClick={() => setShowCustomTimer(false)}
-                          className="close-section-button"
-                          title="セクションを閉じる"
-                        >
-                          ✕
-                        </button>
-                      ) : (
-                        <button 
-                          onClick={() => {
-                            closeOtherFeatures('custom-timer');
-                            setShowCustomTimer(true);
-                          }}
-                          className="show-section-button"
-                          title="セクションを表示"
-                        >
-                          ▶️
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {showCustomTimer && (
-                    <div className="subsection-content">
-                  
-                  <div className="timer-display">
-                    <div className="timer-time">
-                      {formatTime(customTimerTime)}
-                    </div>
-                    <div className="timer-status">
-                      {customTimerActive ? 
-                        (customTimerName ? `${customTimerName} 実行中` : 'タイマー実行中') : 
-                        'タイマー停止中'
-                      }
-                    </div>
-                  </div>
-
-                  {!customTimerActive && (
-                    <div className="timer-setup">
-                      <div className="form-group">
-                        <label htmlFor="customTimerName">タイマー名</label>
-                        <input
-                          type="text"
-                          id="customTimerName"
-                          value={customTimerName}
-                          onChange={(e) => setCustomTimerName(e.target.value)}
-                          placeholder="例: 集中作業"
-                        />
-                      </div>
-                      
-                      <div className="time-inputs">
-                        <div className="form-group">
-                          <label htmlFor="customTimerMinutes">分</label>
-                          <input
-                            type="number"
-                            id="customTimerMinutes"
-                            value={customTimerMinutes}
-                            onChange={(e) => setCustomTimerMinutes(Math.max(0, parseInt(e.target.value) || 0))}
-                            min="0"
-                            max="999"
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label htmlFor="customTimerSeconds">秒</label>
-                          <input
-                            type="number"
-                            id="customTimerSeconds"
-                            value={customTimerSeconds}
-                            onChange={(e) => setCustomTimerSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                            min="0"
-                            max="59"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="sound-selector">
-                        <label>通知音</label>
-                        <div className="sound-options">
-                          {(['bell', 'chime', 'beep', 'alarm'] as const).map(sound => (
-                            <label key={sound} className="sound-option">
-                              <input
-                                type="radio"
-                                name="customTimerSound"
-                                value={sound}
-                                checked={customTimerSound === sound}
-                                onChange={(e) => setCustomTimerSound(e.target.value as any)}
-                              />
-                              <span>{sound === 'bell' ? '🔔 ベル' : sound === 'chime' ? '🎵 チャイム' : sound === 'beep' ? '📢 ビープ' : '🚨 アラーム'}</span>
-                            </label>
-                          ))}
-                        </div>
-                        <button 
-                          onClick={async () => {
-                            try {
-                              await playCustomTimerSound();
-                            } catch (error) {
-                              console.error('音声テストエラー:', error);
-                              setMessage('音声の再生に失敗しました。ブラウザの設定を確認してください。');
-                            }
-                          }} 
-                          className="test-sound-btn"
-                        >
-                          🔊 音を試す
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                     <div className="timer-buttons">
-                       {!customTimerActive ? (
-                         <button onClick={startCustomTimer} className="timer-start-btn">
-                           ▶️ スタート
-                         </button>
-                       ) : customTimerPaused ? (
-                         <>
-                           <button onClick={startCustomTimer} className="timer-start-btn">
-                             ▶️ 再開
-                           </button>
-                           <button onClick={stopCustomTimer} className="timer-stop-btn">
-                             ⏹️ ストップ
-                           </button>
-                           <button onClick={resetCustomTimer} className="timer-reset-btn">
-                             🔄 リセット
-                           </button>
-                         </>
-                       ) : (
-                         <>
-                           <button onClick={pauseCustomTimer} className="timer-pause-btn">
-                             ⏸️ 一時停止
-                           </button>
-                           <button onClick={stopCustomTimer} className="timer-stop-btn">
-                             ⏹️ ストップ
-                           </button>
-                           <button onClick={resetCustomTimer} className="timer-reset-btn">
-                             🔄 リセット
-                           </button>
-                         </>
-                       )}
-                     </div>
-                    </div>
-                  )}
-                </div>
+                   <CustomTimer
+                     showCustomTimer={showCustomTimer}
+                     setShowCustomTimer={setShowCustomTimer}
+                     closeOtherFeatures={closeOtherFeatures}
+                     setMessage={setMessage}
+                   />
 
                 {/* プリセットタイマー */}
                 <div className="preset-timers-section">
