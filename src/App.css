@@ -22,6 +22,8 @@ body {
   align-items: center;
   justify-content: center;
   padding: 20px;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* ログイン画面 */
@@ -151,6 +153,8 @@ body {
   box-shadow: 0 8px 32px rgba(255, 182, 193, 0.3);
   overflow: hidden;
   border: 3px solid #ffb6c1;
+  max-width: 100vw;
+  box-sizing: border-box;
 }
 
 .dashboard-header {
@@ -1220,6 +1224,13 @@ body {
 @media (max-width: 768px) {
   .app {
     padding: 10px;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .dashboard {
+    max-width: 100vw;
+    margin: 0;
   }
 
   .dashboard-header {
@@ -2164,6 +2175,8 @@ tr:hover {
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   transition: box-shadow 0.2s ease;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .memo-item:hover {
@@ -2214,6 +2227,9 @@ tr:hover {
   color: #555;
   line-height: 1.5;
   white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .memo-tags {
@@ -2339,6 +2355,9 @@ tr:hover {
   line-height: 1.4;
   font-size: 0.9em;
   white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -2357,6 +2376,16 @@ tr:hover {
   
   .memos-list {
     grid-template-columns: 1fr;
+  }
+  
+  .memo-item {
+    padding: 15px;
+    margin: 0 5px;
+  }
+  
+  .memo-content p {
+    word-break: break-word;
+    hyphens: auto;
   }
 }
 
@@ -2459,6 +2488,8 @@ tr:hover {
   padding: 20px;
   box-shadow: 0 2px 4px rgba(25, 118, 210, 0.1);
   transition: box-shadow 0.2s ease;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .public-memo-item:hover {
@@ -2481,6 +2512,16 @@ tr:hover {
   
   .public-memos-list {
     grid-template-columns: 1fr;
+  }
+  
+  .public-memo-item {
+    padding: 15px;
+    margin: 0 5px;
+  }
+  
+  .public-memo-item p {
+    word-break: break-word;
+    hyphens: auto;
   }
 }
 
