@@ -1578,6 +1578,9 @@ function App() {
     if (activeFeature !== 'timer-history') {
       setShowTimerHistory(false);
     }
+    if (activeFeature !== 'cooking-timer') {
+      setShowCookingTimer(false);
+    }
     
     // メモ関連
     if (activeFeature !== 'memos') {
