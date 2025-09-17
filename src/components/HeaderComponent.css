@@ -457,19 +457,28 @@
 }
 
 .logout-button {
-  background: var(--secondary-color, linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%));
-  color: var(--text-color, #333);
-  border: none;
-  padding: 10px 16px;
-  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 1.2rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   overflow: hidden;
-  white-space: nowrap;
+}
+
+.logout-button svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* 右上配置時のログアウトボタン */
@@ -477,7 +486,6 @@
   background: rgba(255, 255, 255, 0.9);
   color: #dc2626;
   border: 2px solid #dc2626;
-  font-weight: 700;
   box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
   backdrop-filter: blur(10px);
 }
@@ -870,7 +878,6 @@
     border-radius: 50%;
     width: 44px;
     height: 44px;
-    font-size: 1.2rem;
     padding: 0;
     display: flex;
     align-items: center;
@@ -878,6 +885,11 @@
     box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
+  }
+  
+  .logout-container .logout-button svg {
+    width: 20px;
+    height: 20px;
   }
   
   .logout-container .logout-button:hover {
