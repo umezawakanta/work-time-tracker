@@ -64,7 +64,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             </div>
           </div>
         </div>
-        <h1>⏰ Work Time Tracker 📚</h1>
+        <h1>Work Time</h1>
       </div>
       <div className="user-info">
         <div className="user-greeting">
@@ -87,7 +87,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             className="character-home-button"
             title="キャラクター達のお家"
           >
-            🏠 キャラクター
+            🏠
           </button>
           <button 
             onClick={() => {
@@ -99,7 +99,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             className="theme-settings-button"
             title="テーマ設定"
           >
-            🎨 テーマ
+            🎨
           </button>
           <button 
             onClick={() => {
@@ -111,7 +111,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             className="font-settings-button"
             title="フォント設定"
           >
-            🔤 フォント
+            🔤
           </button>
         </div>
         <button 
@@ -123,14 +123,14 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
           className="feature-settings-button"
           title="機能設定"
         >
-          ⚙️ 機能設定
+          ⚙️
         </button>
       </div>
       
       {/* 右上のログアウトボタン */}
       <div className="logout-container">
         <button onClick={handleLogout} className="logout-button">
-          🚪 ログアウト
+          🚪
         </button>
       </div>
       
