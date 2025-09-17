@@ -389,6 +389,7 @@ function App() {
   const [bookTotalPages, setBookTotalPages] = useState(0);
   const [bookCategory, setBookCategory] = useState("");
   const [bookNotes, setBookNotes] = useState("");
+  const [selectedBookCategory, setSelectedBookCategory] = useState("all");
 
   // メモ関連の状態
   const [memos, setMemos] = useState<Memo[]>([]);
@@ -2702,7 +2703,14 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        setBooks(data.books || []);
+        let filteredBooks = data.books || [];
+        
+        // ジャンルフィルターを適用
+        if (selectedBookCategory !== 'all') {
+          filteredBooks = filteredBooks.filter((book: any) => book.category === selectedBookCategory);
+        }
+        
+        setBooks(filteredBooks);
       } else {
         setMessage(`本の一覧取得失敗: ${data.message}`);
       }
@@ -2843,6 +2851,16 @@ function App() {
   const getReadingProgress = (book: Book) => {
     if (book.totalPages === 0) return 0;
     return Math.round((book.readPages / book.totalPages) * 100);
+  };
+
+  const handleBookCategoryChange = (category: string) => {
+    setSelectedBookCategory(category);
+    loadBooks();
+  };
+
+  const getBookCategories = () => {
+    const bookCategories = new Set(books.map(book => book.category));
+    return Array.from(bookCategories).sort();
   };
 
   // メモ関連の関数
@@ -5044,13 +5062,40 @@ function App() {
               {showBookshelf && (
                 <div className="bookshelf-content">
                   <div className="bookshelf-header">
-                    <button 
-                      onClick={loadBooks}
-                      className="refresh-button"
-                      title="本棚を更新"
-                    >
-                      🔄
-                    </button>
+                    <div className="bookshelf-controls">
+                      <div className="category-controls">
+                        <label htmlFor="bookCategoryFilter">カテゴリ:</label>
+                        <select
+                          id="bookCategoryFilter"
+                          value={selectedBookCategory}
+                          onChange={(e) => handleBookCategoryChange(e.target.value)}
+                        >
+                          <option value="all">すべて</option>
+                          {getBookCategories().map(category => (
+                            <option key={category} value={category}>{category}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <button 
+                        onClick={loadBooks}
+                        className="refresh-button"
+                        title="本棚を更新"
+                      >
+                        🔄
+                      </button>
+                      {selectedBookCategory !== 'all' && (
+                        <button 
+                          onClick={() => {
+                            setSelectedBookCategory('all');
+                            loadBooks();
+                          }}
+                          className="reset-button"
+                          title="フィルターをリセット"
+                        >
+                          🔄 リセット
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="bookshelf-stats">
                     <div className="stat-card">
@@ -5195,7 +5240,13 @@ function App() {
                             <h3>{book.title}</h3>
                             <p className="book-author">{book.author}</p>
                             <p className="book-meta">
-                              {book.publishedYear}年 | {book.category} | {book.totalPages}ページ
+                              {book.publishedYear}年 | <span 
+                                className="book-category clickable" 
+                                onClick={() => handleBookCategoryChange(book.category)}
+                                title={`${book.category}でフィルター`}
+                              >
+                                {book.category}
+                              </span> | {book.totalPages}ページ
                             </p>
                             {book.notes && (
                               <p className="book-notes">{book.notes}</p>
@@ -5419,6 +5470,19 @@ function App() {
                       >
                         🔄
                       </button>
+                      {(selectedMemoCategory !== 'all' || memoSearchTerm) && (
+                        <button 
+                          onClick={() => {
+                            setSelectedMemoCategory('all');
+                            setMemoSearchTerm('');
+                            loadMemos();
+                          }}
+                          className="reset-button"
+                          title="フィルターをリセット"
+                        >
+                          🔄 リセット
+                        </button>
+                      )}
                     </div>
                     <div className="category-controls">
                       <select
@@ -5477,7 +5541,13 @@ function App() {
                           <div className="memo-header">
                             <h3>{getMemoTitle(memo)}</h3>
                             <div className="memo-meta">
-                              <span className="memo-category">{memo.category}</span>
+                              <span 
+                                className="memo-category clickable" 
+                                onClick={() => handleMemoCategoryChange(memo.category)}
+                                title={`${memo.category}でフィルター`}
+                              >
+                                {memo.category}
+                              </span>
                               {memo.isPublic && <span className="public-badge">公開</span>}
                               {memo.isFamilyOnly && <span className="family-badge">家族のみ</span>}
                               {memo.isAdminOnly && <span className="admin-badge">管理者専用</span>}
@@ -5489,7 +5559,17 @@ function App() {
                           {memo.tags && memo.tags.length > 0 && (
                             <div className="memo-tags">
                               {memo.tags.map((tag, index) => (
-                                <span key={index} className="tag">{tag}</span>
+                                <span 
+                                  key={index} 
+                                  className="tag clickable" 
+                                  onClick={() => {
+                                    setMemoSearchTerm(tag);
+                                    loadMemos();
+                                  }}
+                                  title={`${tag}で検索`}
+                                >
+                                  {tag}
+                                </span>
                               ))}
                             </div>
                           )}
@@ -5703,6 +5783,19 @@ function App() {
                       >
                         🔄
                       </button>
+                      {(selectedPublicMemoCategory !== 'all' || publicMemoSearchTerm) && (
+                        <button 
+                          onClick={() => {
+                            setSelectedPublicMemoCategory('all');
+                            setPublicMemoSearchTerm('');
+                            loadPublicMemos();
+                          }}
+                          className="reset-button"
+                          title="フィルターをリセット"
+                        >
+                          🔄 リセット
+                        </button>
+                      )}
                     </div>
                     <div className="category-controls">
                       <select
@@ -5747,7 +5840,13 @@ function App() {
                           <div className="memo-header">
                             <h3>{getMemoTitle(memo)}</h3>
                             <div className="memo-meta">
-                              <span className="memo-category">{memo.category}</span>
+                              <span 
+                                className="memo-category clickable" 
+                                onClick={() => handlePublicMemoCategoryChange(memo.category)}
+                                title={`${memo.category}でフィルター`}
+                              >
+                                {memo.category}
+                              </span>
                               <span className="public-badge">公開</span>
                               {memo.isFamilyOnly && <span className="family-badge">家族のみ</span>}
                               {memo.isAdminOnly && <span className="admin-badge">管理者専用</span>}
@@ -5759,7 +5858,17 @@ function App() {
                           {memo.tags && memo.tags.length > 0 && (
                             <div className="memo-tags">
                               {memo.tags.map((tag, index) => (
-                                <span key={index} className="tag">{tag}</span>
+                                <span 
+                                  key={index} 
+                                  className="tag clickable" 
+                                  onClick={() => {
+                                    setPublicMemoSearchTerm(tag);
+                                    loadPublicMemos();
+                                  }}
+                                  title={`${tag}で検索`}
+                                >
+                                  {tag}
+                                </span>
                               ))}
                             </div>
                           )}
