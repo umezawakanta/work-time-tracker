@@ -5,6 +5,7 @@ import CustomTimer from "./components/CustomTimer";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts } from "./constants/fonts";
+import { cookingRecipes } from "./constants/cookingRecipes";
 
 import type {
   User,
@@ -97,49 +98,9 @@ function App() {
     type: 'custom' | 'egg' | 'preset';
   }>>([]);
 
-  // 料理レシピの定義
-  const cookingRecipes = {
-    'egg': {
-      name: 'ゆでたまご',
-      phases: [
-        { name: '水を沸騰させる', duration: 8 * 60, description: '中火で水を沸騰させます' },
-        { name: '半熟ゆで', duration: 6 * 60, description: '沸騰したお湯に卵を入れ、半熟にゆでます' },
-        { name: '中半熟ゆで', duration: 8 * 60, description: '沸騰したお湯に卵を入れ、中半熟にゆでます' },
-        { name: '固ゆで', duration: 10 * 60, description: '沸騰したお湯に卵を入れ、固ゆでにゆでます' }
-      ]
-    },
-    'potato-salad': {
-      name: 'ポテトサラダ用じゃがいも',
-      phases: [
-        { name: '水を沸騰させる', duration: 8 * 60, description: '中火で水を沸騰させます' },
-        { name: 'じゃがいもをゆでる', duration: 15 * 60, description: '沸騰したお湯にじゃがいもを入れ、柔らかくなるまでゆでます' }
-      ]
-    },
-    'ramen': {
-      name: 'ラーメン用麺',
-      phases: [
-        { name: '水を沸騰させる', duration: 8 * 60, description: '強火で水を沸騰させます' },
-        { name: '麺をゆでる', duration: 3 * 60, description: '沸騰したお湯に麺を入れ、アルデンテにゆでます' }
-      ]
-    },
-    'pasta': {
-      name: 'パスタ',
-      phases: [
-        { name: '水を沸騰させる', duration: 8 * 60, description: '強火で水を沸騰させます' },
-        { name: 'パスタをゆでる', duration: 8 * 60, description: '沸騰したお湯にパスタを入れ、アルデンテにゆでます' }
-      ]
-    },
-    'vegetables': {
-      name: '野菜の下茹で',
-      phases: [
-        { name: '水を沸騰させる', duration: 8 * 60, description: '中火で水を沸騰させます' },
-        { name: '野菜をゆでる', duration: 5 * 60, description: '沸騰したお湯に野菜を入れ、適度な硬さにゆでます' }
-      ]
-    }
-  };
 
   // 選択された料理レシピ
-  const [selectedRecipe, setSelectedRecipe] = useState<keyof typeof cookingRecipes>('egg');
+  const [selectedRecipe, setSelectedRecipe] = useState<string>('egg');
   const [selectedEggType, setSelectedEggType] = useState<'soft' | 'medium' | 'hard'>('medium');
 
   // タイマー設定の状態

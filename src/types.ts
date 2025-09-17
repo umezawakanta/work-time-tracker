@@ -227,3 +227,19 @@ export interface LearningRecord {
   createdAt: string;
   updatedAt: string;
 }
+
+// 料理レシピ関連の型定義
+export interface CookingPhase {
+  name: string;
+  duration: number;
+  description: string;
+}
+
+export interface CookingRecipe {
+  name: string;
+  phases: CookingPhase[];
+}
+
+export interface CookingRecipes {
+  [key: string]: CookingRecipe;
+}

@@ -1,5 +1,7 @@
 // 料理タイマー関連のユーティリティ関数
 
+import type { CookingRecipes } from '../types';
+
 export interface CookingTimerState {
     eggTimerActive: boolean;
     eggTimerPaused: boolean;
@@ -26,16 +28,6 @@ export interface CookingTimerSetters {
     sendNotification: (title: string, body: string, icon?: string) => void;
     startSoundLoop: (soundType: 'bell' | 'chime' | 'beep' | 'alarm') => void;
     addToTimerHistory: (name: string, duration: number, type: 'custom' | 'egg' | 'preset') => void;
-}
-
-export interface CookingRecipes {
-    [key: string]: {
-        name: string;
-        phases: Array<{
-            name: string;
-            duration: number;
-        }>;
-    };
 }
 
 export const startCookingTimer = (
