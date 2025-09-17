@@ -1,43 +1,6 @@
+const { ensureDatabaseConnection } = require('../utils/database');
+
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-
-dotenv.config();
-
-// Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
-  if (isConnected) {
-    return;
-  }
-  console.warn('[memos/reply] Database not connected, attempting to connect...');
-  try {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    if (!MONGODB_URI) {
-      throw new Error("MONGODB_URI environment variable is required but not set.");
-    }
-    
-    if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
-      return;
-    }
-
-    await mongoose.connect(MONGODB_URI, {
-      dbName: 'workTimeTracker',
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 15000,
-      socketTimeoutMS: 45000,
-      bufferCommands: false,
-      connectTimeoutMS: 10000,
-      maxIdleTimeMS: 30000,
-    });
-
-    console.log("✅ MongoDB connected successfully");
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error('[memos/reply] Failed to connect to database:', message);
-    throw new Error(`Database connection failed: ${message}`);
-  }
-};
 
 // Reply schema (独立したコレクション)
 const ReplySchema = new mongoose.Schema(
