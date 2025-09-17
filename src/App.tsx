@@ -2205,6 +2205,7 @@ function App() {
         // 即座にローカル状態を更新（UX向上）
         const newReply = {
           id: data.reply.id,
+          memoId: memoId,
           content: replyContent.trim(),
           authorName: user?.displayName || 'Unknown',
           authorEmail: user?.email || 'unknown@example.com',
