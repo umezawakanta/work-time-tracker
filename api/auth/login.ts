@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const { serialize } = require('cookie');
-const mongoose = require('mongoose');
+const { mongoose, jwt } = require('../utils/database');
 const dotenv = require('dotenv');
 const { 
   createValidationError, 

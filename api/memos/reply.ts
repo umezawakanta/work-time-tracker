@@ -1,6 +1,4 @@
-const { ensureDatabaseConnection } = require('../utils/database');
-
-const mongoose = require('mongoose');
+const { ensureDatabaseConnection, mongoose } = require('../utils/database');
 
 // Reply schema (独立したコレクション)
 const ReplySchema = new mongoose.Schema(
