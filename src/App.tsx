@@ -4923,13 +4923,64 @@ function App() {
                                 <div key={reply.id} className="reply-item">
                                   <div className="reply-header">
                                     <span className="reply-author">{reply.authorName}</span>
-                                    <span className="reply-date">
-                                      {formatDateTime(reply.createdAt)}
-                                    </span>
+                                    <div className="reply-meta">
+                                      <span className="reply-date">
+                                        {formatDateTime(reply.createdAt)}
+                                      </span>
+                                      {/* 自分がした返信の場合のみ編集・削除ボタンを表示 */}
+                                      {user && (user.email === reply.authorEmail || user.id === reply.authorEmail) && (
+                                        <div className="reply-actions">
+                                          {editingReply === reply.id ? (
+                                            <div className="reply-edit-form">
+                                              <textarea
+                                                value={editReplyContent}
+                                                onChange={(e) => setEditReplyContent(e.target.value)}
+                                                className="reply-edit-textarea"
+                                                placeholder="返信内容を入力してください"
+                                              />
+                                              <div className="reply-edit-actions">
+                                                <button
+                                                  onClick={() => handleSaveEditReply(reply.id)}
+                                                  className="save-reply-button"
+                                                  disabled={!editReplyContent.trim()}
+                                                >
+                                                  保存
+                                                </button>
+                                                <button
+                                                  onClick={handleCancelEditReply}
+                                                  className="cancel-reply-button"
+                                                >
+                                                  キャンセル
+                                                </button>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <>
+                                              <button
+                                                onClick={() => handleEditReply(reply.id, reply.content)}
+                                                className="edit-reply-button"
+                                                title="編集"
+                                              >
+                                                ✏️
+                                              </button>
+                                              <button
+                                                onClick={() => handleDeleteReply(reply.id)}
+                                                className="delete-reply-button"
+                                                title="削除"
+                                              >
+                                                🗑️
+                                              </button>
+                                            </>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
-                                  <div className="reply-content">
-                                    {reply.content}
-                                  </div>
+                                  {editingReply !== reply.id && (
+                                    <div className="reply-content">
+                                      {reply.content}
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>

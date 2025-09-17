@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface TimerPreset {
   id: number;
@@ -23,7 +23,7 @@ const PresetTimersSection: React.FC<PresetTimersSectionProps> = ({
   closeOtherFeatures,
   timerPresets,
   customTimerActive,
-  startPresetTimer
+  startPresetTimer,
 }) => {
   return (
     <div className="preset-timers-section">
@@ -31,7 +31,7 @@ const PresetTimersSection: React.FC<PresetTimersSectionProps> = ({
         <h3>⚡ プリセットタイマー</h3>
         <div className="subsection-controls">
           {showPresetTimers ? (
-            <button 
+            <button
               onClick={() => setShowPresetTimers(false)}
               className="close-section-button"
               title="セクションを閉じる"
@@ -39,9 +39,9 @@ const PresetTimersSection: React.FC<PresetTimersSectionProps> = ({
               ✕
             </button>
           ) : (
-            <button 
+            <button
               onClick={() => {
-                closeOtherFeatures('preset-timers');
+                closeOtherFeatures("preset-timers");
                 setShowPresetTimers(true);
               }}
               className="show-section-button"
@@ -52,17 +52,24 @@ const PresetTimersSection: React.FC<PresetTimersSectionProps> = ({
           )}
         </div>
       </div>
-      
+
       {showPresetTimers && (
         <div className="subsection-content">
           <div className="preset-grid">
             {timerPresets.map((preset) => (
-              <div key={preset.id} className="preset-item" style={{ borderColor: preset.color }}>
+              <div
+                key={preset.id}
+                className="preset-item"
+                style={{ borderColor: preset.color }}
+              >
                 <div className="preset-header">
                   <h4 style={{ color: preset.color }}>{preset.name}</h4>
-                  <span className="preset-time">{preset.minutes}:{preset.seconds.toString().padStart(2, '0')}</span>
+                  <span className="preset-time">
+                    {preset.minutes}:
+                    {preset.seconds.toString().padStart(2, "0")}
+                  </span>
                 </div>
-                <button 
+                <button
                   onClick={() => startPresetTimer(preset)}
                   disabled={customTimerActive}
                   className="preset-start-btn"
