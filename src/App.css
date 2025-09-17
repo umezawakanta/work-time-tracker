@@ -1333,17 +1333,17 @@ body {
   }
 
   .dashboard-header {
-    flex-direction: column;
-    gap: 0.8rem;
-    text-align: center;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     padding: 1.2rem 1rem;
     min-height: auto;
   }
   
   .header-left {
-    flex-direction: column;
-    gap: 0.5rem;
+    display: flex;
     align-items: center;
+    gap: 1rem;
   }
   
   .dashboard-header h1 {
@@ -1352,16 +1352,18 @@ body {
   }
   
   .user-info {
+    display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    align-items: center;
-    width: 100%;
+    align-items: flex-end;
+    min-width: 0;
   }
   
   .user-greeting {
+    display: flex;
     flex-direction: column;
     gap: 0.3rem;
-    align-items: center;
+    align-items: flex-end;
   }
   
   .user-greeting span {
@@ -1370,11 +1372,13 @@ body {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 15px;
     backdrop-filter: blur(10px);
+    white-space: nowrap;
   }
   
   .header-buttons {
+    display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 0.3rem;
     margin-top: 0.5rem;
   }
@@ -1408,7 +1412,7 @@ body {
   /* バージョン情報のモバイル調整 */
   .version-info {
     margin-left: 0;
-    margin-top: 0.5rem;
+    margin-top: 0.3rem;
   }
   
   .version-display {
@@ -1421,27 +1425,27 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    min-width: 260px;
+    min-width: 280px;
     max-width: 95vw;
-    padding: 12px;
+    padding: 16px;
   }
   
   .version-detail-item {
     font-size: 0.8rem;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
   
   .version-actions {
     flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 6px;
+    gap: 8px;
+    margin-top: 8px;
   }
   
   .check-update-button,
   .refresh-button,
   .close-details-button {
-    font-size: 0.7rem;
-    padding: 3px 6px;
+    font-size: 0.75rem;
+    padding: 6px 12px;
   }
 }
 
@@ -1498,28 +1502,6 @@ body {
     padding: 2px 5px;
   }
   
-  /* ヘッダーキャラクターのモバイル調整 */
-  .character-container {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .character {
-    width: 100%;
-    height: 100%;
-  }
-  
-  .header-character {
-    width: 30px;
-    height: 30px;
-  }
-  
-  .current-character-svg,
-  .default-character {
-    width: 100%;
-    height: 100%;
-    font-size: 1.2rem;
-  }
   
   .feature-cards {
     grid-template-columns: 1fr;
@@ -9694,44 +9676,77 @@ input:checked + .toggle-slider:before {
 .check-update-button,
 .refresh-button,
 .close-details-button {
-  padding: 4px 8px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  border-radius: 25px;
+  font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .check-update-button {
-  background: #4ecdc4;
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
   color: white;
+  box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
 }
 
 .check-update-button:hover:not(:disabled) {
-  background: #45b7b8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(78, 205, 196, 0.6);
 }
 
 .check-update-button:disabled {
   background: #ccc;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .refresh-button {
-  background: #ff6b6b;
+  background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
   color: white;
+  box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
 }
 
 .refresh-button:hover {
-  background: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.6);
 }
 
 .close-details-button {
-  background: #6c757d;
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
   color: white;
+  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
 }
 
 .close-details-button:hover {
-  background: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(108, 117, 125, 0.6);
+}
+
+/* ボタンのホバーエフェクト */
+.check-update-button::before,
+.refresh-button::before,
+.close-details-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.check-update-button:hover::before,
+.refresh-button:hover::before,
+.close-details-button:hover::before {
+  left: 100%;
 }
 
 @keyframes pulse {
