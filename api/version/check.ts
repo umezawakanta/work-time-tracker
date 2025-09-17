@@ -36,13 +36,18 @@ const ensureDatabaseConnection = async () => {
       return;
     }
 
+    // 接続タイムアウトを短縮してより早くフォールバックに移行
     await mongooseInstance.connect(MONGODB_URI, {
       dbName: 'workTimeTracker',
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 15000,
-      socketTimeoutMS: 45000,
+      maxPoolSize: 5,
+      serverSelectionTimeoutMS: 5000, // 5秒に短縮
+      socketTimeoutMS: 10000, // 10秒に短縮
+      connectTimeoutMS: 5000, // 5秒に短縮
       bufferCommands: false,
+      maxIdleTimeMS: 10000,
     });
+    
+    console.log('[version/check] Database connected successfully');
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[version/check] Database connection failed:', message);
@@ -68,9 +73,12 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    await ensureDatabaseConnection();
+    // VercelのAPIルートでは、クエリパラメータをURLから直接取得する必要がある
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const version = url.searchParams.get('version');
+    const buildId = url.searchParams.get('buildId');
 
-    const { version, buildId } = req.query;
+    console.log('[version/check] Received parameters:', { version, buildId });
 
     if (!version) {
       return res.status(400).json({
@@ -79,43 +87,69 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 最新バージョンを取得
-    const latestVersion = await Version.findOne({ isLatest: true }).sort({ createdAt: -1 });
-    
-    if (!latestVersion) {
-      // 最新バージョンが存在しない場合は、現在のバージョンを最新として登録
-      const currentVersion = new Version({
-        version: version,
-        buildId: buildId || `build-${Date.now()}`,
-        buildDate: new Date().toISOString(),
-        isLatest: true
-      });
-      
-      await currentVersion.save();
-      
-      return res.status(200).json({
-        success: true,
-        hasUpdate: false,
-        currentVersion: version,
-        latestVersion: version,
-        message: 'Version registered as latest'
-      });
+    // データベース接続を試行
+    let databaseConnected = false;
+    try {
+      await ensureDatabaseConnection();
+      databaseConnected = true;
+    } catch (dbError) {
+      console.warn('[version/check] Database connection failed, using fallback response:', dbError.message);
     }
 
-    // バージョン比較
-    const hasUpdate = compareVersions(version, latestVersion.version) < 0;
+    // データベースが利用可能な場合のみバージョン比較を実行
+    if (databaseConnected) {
+      try {
+        // 最新バージョンを取得
+        const latestVersion = await Version.findOne({ isLatest: true }).sort({ createdAt: -1 });
+        
+        if (!latestVersion) {
+          // 最新バージョンが存在しない場合は、現在のバージョンを最新として登録
+          const currentVersion = new Version({
+            version: version,
+            buildId: buildId || `build-${Date.now()}`,
+            buildDate: new Date().toISOString(),
+            isLatest: true
+          });
+          
+          await currentVersion.save();
+          
+          return res.status(200).json({
+            success: true,
+            hasUpdate: false,
+            currentVersion: version,
+            latestVersion: version,
+            message: 'Version registered as latest'
+          });
+        }
 
+        // バージョン比較
+        const hasUpdate = compareVersions(version, latestVersion.version) < 0;
+
+        return res.status(200).json({
+          success: true,
+          hasUpdate,
+          currentVersion: version,
+          latestVersion: latestVersion.version,
+          latestBuildId: latestVersion.buildId,
+          latestBuildDate: latestVersion.buildDate
+        });
+      } catch (dbOperationError) {
+        console.warn('[version/check] Database operation failed, using fallback response:', dbOperationError.message);
+      }
+    }
+
+    // データベースが利用できない場合のフォールバック応答
     return res.status(200).json({
       success: true,
-      hasUpdate,
+      hasUpdate: false,
       currentVersion: version,
-      latestVersion: latestVersion.version,
-      latestBuildId: latestVersion.buildId,
-      latestBuildDate: latestVersion.buildDate
+      latestVersion: version,
+      message: 'Database unavailable, assuming current version is latest',
+      fallback: true
     });
 
   } catch (error) {
-    console.error('[version/check] Error:', error);
+    console.error('[version/check] Unexpected error:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',

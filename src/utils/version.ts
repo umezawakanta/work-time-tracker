@@ -100,11 +100,11 @@ export const compareVersions = (version1: string, version2: string): number => {
 };
 
 // 更新が必要かどうかをチェック
-export const checkForUpdates = async (): Promise<{ hasUpdate: boolean; latestVersion?: string }> => {
+export const checkForUpdates = async (version: string, buildId: string): Promise<{ hasUpdate: boolean; latestVersion?: string }> => {
   try {
-    // 実際のアプリケーションでは、ここでサーバーから最新バージョンを取得
-    // 今回はモックとして、現在のバージョンより新しいバージョンがあるかチェック
-    const response = await fetch('/api/version/check', {
+    console.log('Checking for updates with version:', version, 'buildId:', buildId);
+    
+    const response = await fetch(`/api/version/check?version=${encodeURIComponent(version)}&buildId=${encodeURIComponent(buildId)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -113,15 +113,22 @@ export const checkForUpdates = async (): Promise<{ hasUpdate: boolean; latestVer
     
     if (response.ok) {
       const data = await response.json();
+      console.log('Version check response:', data);
+      
       return {
         hasUpdate: data.hasUpdate || false,
         latestVersion: data.latestVersion
       };
+    } else {
+      console.warn('Version check failed with status:', response.status);
+      const errorData = await response.json().catch(() => ({}));
+      console.warn('Error response:', errorData);
+      // サーバーエラーの場合は更新なしとして扱う
+      return { hasUpdate: false };
     }
-    
-    return { hasUpdate: false };
   } catch (error) {
     console.error('Failed to check for updates:', error);
+    // ネットワークエラーやその他のエラーの場合は更新なしとして扱う
     return { hasUpdate: false };
   }
 };

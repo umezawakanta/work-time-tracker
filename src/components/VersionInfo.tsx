@@ -30,7 +30,7 @@ const VersionInfoComponent: React.FC<VersionInfoProps> = ({ className = '' }) =>
 
     setIsChecking(true);
     try {
-      const result = await checkForUpdates();
+      const result = await checkForUpdates(versionInfo.version, versionInfo.buildId);
       setHasUpdate(result.hasUpdate);
       setLatestVersion(result.latestVersion || null);
 
