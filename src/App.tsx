@@ -2214,6 +2214,14 @@ function App() {
 
     try {
       const token = localStorage.getItem("access_token");
+      console.log('📝 Creating reply for memo:', memoId);
+      console.log('📝 Reply content:', replyContent.trim());
+      console.log('📝 User info:', { 
+        displayName: user?.displayName, 
+        email: user?.email, 
+        id: user?.id 
+      });
+      
       const response = await fetch('/api/memos/reply', {
         method: 'POST',
         headers: {
@@ -2229,13 +2237,16 @@ function App() {
         })
       });
 
+      console.log('📝 Reply response status:', response.status);
       const data = await response.json();
+      console.log('📝 Reply response data:', data);
 
       if (data.success) {
         setMessage("返信を投稿しました！");
         setReplyContent("");
         setReplyingToMemo(null);
-        // 公開メモを再読み込み
+        // メモと公開メモを再読み込み
+        loadMemos();
         loadPublicMemos();
       } else {
         setMessage(data.message || "返信の投稿に失敗しました");
@@ -2879,7 +2890,8 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        console.log('📝 Memos loaded:', data.memos);
+        console.log('📝 Memos loaded:', data.memos?.length || 0);
+        console.log('📝 Sample memo with replies:', data.memos?.find(m => m.replies && m.replies.length > 0));
         setMemos(data.memos || []);
       } else {
         setMessage(`メモの一覧取得失敗: ${data.message}`);

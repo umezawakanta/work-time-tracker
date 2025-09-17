@@ -131,6 +131,17 @@ async function handleReplyRequest(req, res) {
     // Ensure database connection is established
     await ensureDatabaseConnection();
     
+    // データベース接続状態を確認
+    console.log('📝 Database connection state:', mongoose.connection.readyState);
+    console.log('📝 Database name:', mongoose.connection.db?.databaseName);
+    
+    // Replyコレクションの存在確認
+    const collections = await mongoose.connection.db?.listCollections().toArray();
+    console.log('📝 Available collections:', collections?.map(c => c.name));
+    
+    const replyCollectionExists = collections?.some(c => c.name === 'replies');
+    console.log('📝 Reply collection exists:', replyCollectionExists);
+    
     // Get authorization token
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -207,7 +218,32 @@ async function handleReplyRequest(req, res) {
       });
 
       console.log('📝 Saving reply to database...');
-      await newReply.save();
+      console.log('📝 Reply data before save:', {
+        content: newReply.content,
+        authorName: newReply.authorName,
+        authorEmail: newReply.authorEmail,
+        memoId: newReply.memoId,
+        userId: newReply.userId
+      });
+      
+      const savedReply = await newReply.save();
+      console.log('📝 Reply saved to database:', {
+        _id: savedReply._id,
+        memoId: savedReply.memoId,
+        content: savedReply.content,
+        createdAt: savedReply.createdAt
+      });
+
+      // 保存後にデータベースから確認
+      const verifyReply = await Reply.findById(savedReply._id);
+      console.log('📝 Verification - Reply found in DB:', verifyReply ? 'YES' : 'NO');
+      if (verifyReply) {
+        console.log('📝 Verification - Reply data:', {
+          _id: verifyReply._id,
+          memoId: verifyReply.memoId,
+          content: verifyReply.content
+        });
+      }
 
       console.log('✅ Reply created successfully:', {
         replyId: newReply._id,
