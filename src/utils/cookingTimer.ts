@@ -35,7 +35,7 @@ export const startCookingTimer = (
     setters: CookingTimerSetters,
     cookingRecipes: CookingRecipes,
     getRecipePhases: (recipeKey: string, eggType?: 'soft' | 'medium' | 'hard') => Array<{ name: string; duration: number }>,
-    getTotalCookingTime: (recipeKey: string, eggType?: string) => number
+    getTotalCookingTime: (recipeKey: string, eggType?: 'soft' | 'medium' | 'hard') => number
 ) => {
     const {
         eggTimerActive,
