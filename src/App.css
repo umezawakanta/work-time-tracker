@@ -9449,6 +9449,16 @@ input:checked + .toggle-slider:before {
   color: #666;
 }
 
+.version-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+}
+
 .version-display {
   cursor: pointer;
   padding: 4px 8px;
@@ -9481,17 +9491,20 @@ input:checked + .toggle-slider:before {
 }
 
 .version-details {
-  position: absolute;
-  top: 100%;
-  right: 0;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: white;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  min-width: 200px;
-  margin-top: 4px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  min-width: 280px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .version-detail-item {
@@ -9530,7 +9543,8 @@ input:checked + .toggle-slider:before {
 }
 
 .check-update-button,
-.refresh-button {
+.refresh-button,
+.close-details-button {
   padding: 4px 8px;
   border: none;
   border-radius: 4px;
@@ -9560,6 +9574,15 @@ input:checked + .toggle-slider:before {
 
 .refresh-button:hover {
   background: #ff5252;
+}
+
+.close-details-button {
+  background: #6c757d;
+  color: white;
+}
+
+.close-details-button:hover {
+  background: #5a6268;
 }
 
 @keyframes pulse {

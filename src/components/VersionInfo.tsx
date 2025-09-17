@@ -84,43 +84,52 @@ const VersionInfoComponent: React.FC<VersionInfoProps> = ({ className = '' }) =>
       </div>
 
       {showDetails && (
-        <div className="version-details">
-          <div className="version-detail-item">
-            <span className="detail-label">バージョン:</span>
-            <span className="detail-value">v{versionInfo.version}</span>
-          </div>
-          <div className="version-detail-item">
-            <span className="detail-label">ビルドID:</span>
-            <span className="detail-value">{versionInfo.buildId}</span>
-          </div>
-          <div className="version-detail-item">
-            <span className="detail-label">ビルド日時:</span>
-            <span className="detail-value">{formatBuildDate(versionInfo.buildDate)}</span>
-          </div>
-          {latestVersion && latestVersion !== versionInfo.version && (
+        <>
+          <div className="version-backdrop" onClick={() => setShowDetails(false)} />
+          <div className="version-details">
             <div className="version-detail-item">
-              <span className="detail-label">最新バージョン:</span>
-              <span className="detail-value latest-version">v{latestVersion}</span>
+              <span className="detail-label">バージョン:</span>
+              <span className="detail-value">v{versionInfo.version}</span>
             </div>
-          )}
-          <div className="version-actions">
-            <button
-              onClick={checkForUpdatesAsync}
-              disabled={isChecking}
-              className="check-update-button"
-            >
-              {isChecking ? 'チェック中...' : '更新確認'}
-            </button>
-            {hasUpdate && (
-              <button
-                onClick={handleRefresh}
-                className="refresh-button"
-              >
-                更新
-              </button>
+            <div className="version-detail-item">
+              <span className="detail-label">ビルドID:</span>
+              <span className="detail-value">{versionInfo.buildId}</span>
+            </div>
+            <div className="version-detail-item">
+              <span className="detail-label">ビルド日時:</span>
+              <span className="detail-value">{formatBuildDate(versionInfo.buildDate)}</span>
+            </div>
+            {latestVersion && latestVersion !== versionInfo.version && (
+              <div className="version-detail-item">
+                <span className="detail-label">最新バージョン:</span>
+                <span className="detail-value latest-version">v{latestVersion}</span>
+              </div>
             )}
+            <div className="version-actions">
+              <button
+                onClick={checkForUpdatesAsync}
+                disabled={isChecking}
+                className="check-update-button"
+              >
+                {isChecking ? 'チェック中...' : '更新確認'}
+              </button>
+              {hasUpdate && (
+                <button
+                  onClick={handleRefresh}
+                  className="refresh-button"
+                >
+                  更新
+                </button>
+              )}
+              <button
+                onClick={() => setShowDetails(false)}
+                className="close-details-button"
+              >
+                閉じる
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
