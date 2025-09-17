@@ -437,18 +437,22 @@
   backdrop-filter: blur(10px);
 }
 
-.character-home-button {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+  .character-home-button {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
 .character-home-button:hover {
   transform: translateY(-1px);
@@ -824,6 +828,7 @@
 @media (max-width: 1024px) {
   .dashboard-header h1 {
     font-size: 1.6rem;
+    white-space: nowrap;
   }
   
   .user-info {
@@ -856,10 +861,25 @@
     font-size: 14px;
     padding: 0.4rem 0.8rem;
     margin-bottom: 0.8rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
   }
   
   .version-info {
     margin-top: 0.8rem;
+  }
+  
+  .version-display {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    font-weight: 500;
   }
   
   .header-buttons {
@@ -870,12 +890,26 @@
     margin-top: 0.8rem;
   }
   
-  .theme-settings-button,
-  .font-settings-button,
+  .design-settings-button,
   .feature-settings-button {
     font-size: 12px;
     padding: 8px 12px;
     margin: 0;
+  }
+  
+  .design-settings-button {
+    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
+  }
+  
+  .design-settings-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(139, 92, 246, 0.4);
+    background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
   }
   
   /* モバイル時のログアウトボタン - アイコン表示 */

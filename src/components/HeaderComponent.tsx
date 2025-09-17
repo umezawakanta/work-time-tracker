@@ -87,7 +87,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             className="character-home-button"
             title="キャラクター達のお家"
           >
-            🏠 キャラクター
+            🏠
           </button>
           <button 
             onClick={() => {
@@ -96,22 +96,10 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
               }
               setShowThemeSettings(!showThemeSettings);
             }} 
-            className="theme-settings-button"
-            title="テーマ設定"
+            className="design-settings-button"
+            title="デザイン設定"
           >
-            🎨 テーマ
-          </button>
-          <button 
-            onClick={() => {
-              if (!showFontSettings) {
-                closeOtherFeatures('font-settings');
-              }
-              setShowFontSettings(!showFontSettings);
-            }} 
-            className="font-settings-button"
-            title="フォント設定"
-          >
-            🔤 フォント
+            🎨 デザイン
           </button>
         </div>
         <button 
