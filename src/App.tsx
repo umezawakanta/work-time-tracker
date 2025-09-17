@@ -7,6 +7,7 @@ import CookingTimerSection from "./components/CookingTimerSection";
 import TimeTrackingSection from "./components/TimeTrackingSection";
 import LoginForm from "./components/LoginForm";
 import PresetTimersSection from "./components/PresetTimersSection";
+import VersionInfoComponent from "./components/VersionInfo";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts } from "./constants/fonts";
@@ -3827,6 +3828,7 @@ function App() {
                 </div>
                 <span>こんにちは、{user?.displayName || user?.email || 'User'}さん！</span>
               </div>
+              <VersionInfoComponent />
               <div className="header-buttons">
                 <button 
                   onClick={handleCharacterHomeToggle}

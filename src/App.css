@@ -9437,6 +9437,137 @@ input:checked + .toggle-slider:before {
 
   .add-activity-form {
     flex-direction: column;
-    align-items: stretch;
   }
+}
+
+/* バージョン情報のスタイル */
+.version-info {
+  position: relative;
+  display: inline-block;
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.version-display {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.version-display:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.version-text {
+  font-weight: 500;
+}
+
+.update-indicator {
+  color: #ff6b6b;
+  animation: pulse 2s infinite;
+}
+
+.checking-indicator {
+  color: #4ecdc4;
+  animation: spin 1s linear infinite;
+}
+
+.version-details {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 200px;
+  margin-top: 4px;
+}
+
+.version-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.version-detail-item:last-of-type {
+  margin-bottom: 12px;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.detail-value {
+  color: #666;
+  font-family: monospace;
+}
+
+.latest-version {
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+.version-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.check-update-button,
+.refresh-button {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.check-update-button {
+  background: #4ecdc4;
+  color: white;
+}
+
+.check-update-button:hover:not(:disabled) {
+  background: #45b7b8;
+}
+
+.check-update-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.refresh-button {
+  background: #ff6b6b;
+  color: white;
+}
+
+.refresh-button:hover {
+  background: #ff5252;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
