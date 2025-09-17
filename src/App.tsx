@@ -5,6 +5,7 @@ import CustomTimer from "./components/CustomTimer";
 import ProjectsSection from "./components/ProjectsSection";
 import CookingTimerSection from "./components/CookingTimerSection";
 import TimeTrackingSection from "./components/TimeTrackingSection";
+import LoginForm from "./components/LoginForm";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts } from "./constants/fonts";
@@ -1439,14 +1440,14 @@ function App() {
         const existingHidden = settings.hiddenFeatures || [];
         
         // 存在しない機能を除外し、新しい機能を追加
-        const updatedOrder = existingOrder.filter(id => currentFeatureIds.includes(id));
+        const updatedOrder = existingOrder.filter((id: string) => currentFeatureIds.includes(id));
         currentFeatureIds.forEach(featureId => {
           if (!updatedOrder.includes(featureId)) {
             updatedOrder.push(featureId);
           }
         });
         
-        const updatedHidden = existingHidden.filter(id => currentFeatureIds.includes(id));
+        const updatedHidden = existingHidden.filter((id: string) => currentFeatureIds.includes(id));
         
         // 設定が更新された場合は保存
         if (updatedOrder.length !== existingOrder.length || 
@@ -7999,101 +8000,20 @@ function App() {
   }
 
   return (
-    <div className="app">
-      <div className="login-container">
-        <h1>Work Time Tracker</h1>
-        
-        {isRegisterMode ? (
-          <form onSubmit={handleRegister} className="login-form">
-            <div className="form-group">
-              <label htmlFor="displayName">表示名</label>
-              <input
-                type="text"
-                id="displayName"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="email">メールアドレス</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">パスワード</label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-                minLength={6}
-              />
-            </div>
-            <button type="submit" disabled={loading} className="login-button">
-              {loading ? "登録中..." : "アカウント作成"}
-            </button>
-            <button 
-              type="button" 
-              onClick={() => setIsRegisterMode(false)}
-              className="switch-button"
-            >
-              ログインに戻る
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleLogin} className="login-form">
-            <div className="form-group">
-              <label htmlFor="email">メールアドレス</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">パスワード</label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
-            <button type="submit" disabled={loading} className="login-button">
-              {loading ? "ログイン中..." : "ログイン"}
-            </button>
-            <button 
-              type="button" 
-              onClick={() => setIsRegisterMode(true)}
-              className="switch-button"
-            >
-              アカウント作成
-            </button>
-          </form>
-        )}
-        
-        {message && (
-          <div className={`message ${message.includes("成功") || message.includes("作成") ? "success" : "error"}`}>
-            {message}
-          </div>
-        )}
-      </div>
-    </div>
+    <LoginForm
+      isRegisterMode={isRegisterMode}
+      setIsRegisterMode={setIsRegisterMode}
+      email={email}
+      setEmail={setEmail}
+      password={password}
+      setPassword={setPassword}
+      displayName={displayName}
+      setDisplayName={setDisplayName}
+      loading={loading}
+      message={message}
+      handleLogin={handleLogin}
+      handleRegister={handleRegister}
+    />
   );
 }
 
