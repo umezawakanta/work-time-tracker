@@ -1,6 +1,6 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
 const bcrypt = require('bcryptjs');
-const mongoose = require('mongoose');
+const { mongoose, jwt } = require('../utils/database');
 const dotenv = require('dotenv');
 // Type definitions are now in comments for reference
 const { 
