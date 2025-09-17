@@ -5104,6 +5104,13 @@ function App() {
                             </span>
                             <div className="memo-actions">
                               <button 
+                                onClick={() => setReplyingToMemo(replyingToMemo === memo.id ? null : memo.id)}
+                                className="reply-button"
+                                title="返信する"
+                              >
+                                💬 返信
+                              </button>
+                              <button 
                                 onClick={() => handleEditMemo(memo)}
                                 className="edit-button"
                               >
@@ -5117,6 +5124,38 @@ function App() {
                               </button>
                             </div>
                           </div>
+                          
+                          {/* 返信フォーム */}
+                          {replyingToMemo === memo.id && (
+                            <div className="reply-form">
+                              <h4>💬 返信を投稿</h4>
+                              <textarea
+                                value={replyContent}
+                                onChange={(e) => setReplyContent(e.target.value)}
+                                placeholder="返信内容を入力してください..."
+                                rows={3}
+                                className="reply-textarea"
+                              />
+                              <div className="reply-form-actions">
+                                <button
+                                  onClick={() => handleReplySubmit(memo.id)}
+                                  disabled={!replyContent.trim() || loading}
+                                  className="submit-reply-button"
+                                >
+                                  {loading ? "投稿中..." : "返信を投稿"}
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setReplyingToMemo(null);
+                                    setReplyContent("");
+                                  }}
+                                  className="cancel-reply-button"
+                                >
+                                  キャンセル
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))
                     )}

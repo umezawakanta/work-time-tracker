@@ -2393,6 +2393,20 @@ tr:hover {
   background: #c82333;
 }
 
+.memo-actions .reply-button {
+  background: #17a2b8;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.memo-actions .reply-button:hover {
+  background: #138496;
+}
+
 .no-memos {
   text-align: center;
   color: #666;
@@ -2457,6 +2471,79 @@ tr:hover {
   word-wrap: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
+}
+
+/* 返信フォーム */
+.reply-form {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.reply-form h4 {
+  margin: 0 0 10px 0;
+  color: #495057;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.reply-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 60px;
+  margin-bottom: 10px;
+}
+
+.reply-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.reply-form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.submit-reply-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.submit-reply-button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.submit-reply-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.cancel-reply-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.cancel-reply-button:hover {
+  background: #545b62;
 }
 
 @media (max-width: 768px) {
