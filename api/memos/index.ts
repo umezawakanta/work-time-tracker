@@ -21,7 +21,6 @@ const ensureDatabaseConnection = async () => {
     }
 
     if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
       return;
     }
 
@@ -29,7 +28,6 @@ const ensureDatabaseConnection = async () => {
       dbName: 'workTimeTracker',
     });
 
-    console.log("✅ MongoDB connected successfully");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[memos] Failed to connect to database:', message);
@@ -153,25 +151,18 @@ module.exports = async (req, res) => {
 
 async function handleRequest(req, res) {
   try {
-    console.log('📝 Memos API request started');
-    console.log('📝 Request method:', req.method);
-    console.log('📝 Request headers:', req.headers);
-    
     // Ensure database connection
     await ensureDatabaseConnection();
 
     // Verify JWT token
     const userInfo = await verifyJWT(req);
     if (!userInfo) {
-      console.log('❌ Authentication failed');
       return res.status(401).json({
         success: false,
         message: '認証が必要です',
         error: 'Authentication required',
       });
     }
-
-    console.log('✅ User authenticated:', { userId: userInfo.userId });
 
     if (req.method === 'GET') {
       // メモの一覧を取得
@@ -192,30 +183,11 @@ async function handleRequest(req, res) {
 
       const memos = await Memo.find(query).sort({ updatedAt: -1 });
 
-      console.log('✅ Memos list retrieved:', {
-        count: memos.length,
-        userId: userInfo.userId,
-        category,
-        search,
-      });
 
       // 各メモの返信を取得（エラーハンドリング付き）
       let memosWithReplies = [];
       
       try {
-        // デバッグ用：全返信データを確認
-        const allReplies = await Reply.find({});
-        console.log('📝 All replies in database:', allReplies.length);
-        console.log('📝 Sample reply data:', allReplies.slice(0, 2));
-        
-        // 各返信のmemoIdを確認
-        allReplies.forEach((reply, index) => {
-          console.log(`📝 Reply ${index + 1}:`, {
-            _id: reply._id.toString(),
-            memoId: reply.memoId.toString(),
-            content: reply.content.substring(0, 30) + '...'
-          });
-        });
 
         memosWithReplies = await Promise.all(
           memos.map(async (memo) => {
@@ -225,15 +197,6 @@ async function handleRequest(req, res) {
                 memoId: memo._id
               }).sort({ createdAt: 1 });
               
-              console.log(`📝 Memo ${memo._id.toString()} replies:`, replies.length);
-              
-              if (replies.length > 0) {
-                console.log(`📝 Sample reply for memo ${memo._id.toString()}:`, {
-                  id: replies[0]._id.toString(),
-                  memoId: replies[0].memoId.toString(),
-                  content: replies[0].content.substring(0, 50) + '...'
-                });
-              }
               
               return {
                 id: memo._id.toString(),
@@ -299,15 +262,10 @@ async function handleRequest(req, res) {
     } else if (req.method === 'POST') {
       // 新しいメモを追加
       try {
-        console.log('📝 Creating new memo with data:', req.body);
-        console.log('📝 Request body type:', typeof req.body);
-        console.log('📝 Request body keys:', Object.keys(req.body || {}));
-        
         const { title, content, category, tags, isPublic, isFamilyOnly, isAdminOnly } = req.body;
 
         // 必須フィールドの検証
         if (!title || !content || !category) {
-          console.log('❌ Missing required fields:', { title: !!title, content: !!content, category: !!category });
           return res.status(400).json({
             success: false,
             message: 'タイトル、内容、カテゴリは必須です',
@@ -326,14 +284,7 @@ async function handleRequest(req, res) {
           userId: userInfo.userId,
         });
 
-        console.log('📝 Saving memo to database...');
         const savedMemo = await newMemo.save();
-
-        console.log('✅ Memo created successfully:', {
-          memoId: savedMemo._id.toString(),
-          title: savedMemo.title,
-          userId: userInfo.userId,
-        });
 
         res.status(201).json({
           success: true,

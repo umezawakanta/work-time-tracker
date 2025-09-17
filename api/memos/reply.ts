@@ -87,21 +87,9 @@ module.exports = async function handler(req, res) {
 
 async function handleReplyRequest(req, res) {
   try {
-    console.log(`📝 Reply ${req.method} operation started`);
-    
     // Ensure database connection is established
     await ensureDatabaseConnection();
     
-    // データベース接続状態を確認
-    console.log('📝 Database connection state:', mongoose.connection.readyState);
-    console.log('📝 Database name:', mongoose.connection.db?.databaseName);
-    
-    // Replyコレクションの存在確認
-    const collections = await mongoose.connection.db?.listCollections().toArray();
-    console.log('📝 Available collections:', collections?.map(c => c.name));
-    
-    const replyCollectionExists = collections?.some(c => c.name === 'replies');
-    console.log('📝 Reply collection exists:', replyCollectionExists);
     
     // Get authorization token
     const authHeader = req.headers.authorization;
@@ -134,8 +122,6 @@ async function handleReplyRequest(req, res) {
       }
 
       const replies = await Reply.find({ memoId }).sort({ createdAt: 1 });
-      
-      console.log('✅ Replies retrieved successfully:', replies.length);
 
       res.status(200).json({
         success: true,
@@ -151,19 +137,9 @@ async function handleReplyRequest(req, res) {
 
     } else if (req.method === 'POST') {
       // Create new reply
-      console.log('📝 Creating new reply with data:', req.body);
-      console.log('📝 Request body type:', typeof req.body);
-      console.log('📝 Request body keys:', Object.keys(req.body || {}));
-      
       const { memoId, content, authorName, authorEmail, userId } = req.body;
       
       if (!memoId || !content || !authorName || !authorEmail) {
-        console.log('❌ Missing required fields:', { 
-          memoId: !!memoId, 
-          content: !!content, 
-          authorName: !!authorName, 
-          authorEmail: !!authorEmail 
-        });
         return res.status(400).json({
           success: false,
           message: 'memoId, content, authorName, and authorEmail are required',
@@ -178,38 +154,7 @@ async function handleReplyRequest(req, res) {
         userId: userId || null // userIdが提供されない場合はnullを設定
       });
 
-      console.log('📝 Saving reply to database...');
-      console.log('📝 Reply data before save:', {
-        content: newReply.content,
-        authorName: newReply.authorName,
-        authorEmail: newReply.authorEmail,
-        memoId: newReply.memoId,
-        userId: newReply.userId
-      });
-      
       const savedReply = await newReply.save();
-      console.log('📝 Reply saved to database:', {
-        _id: savedReply._id,
-        memoId: savedReply.memoId,
-        content: savedReply.content,
-        createdAt: savedReply.createdAt
-      });
-
-      // 保存後にデータベースから確認
-      const verifyReply = await Reply.findById(savedReply._id);
-      console.log('📝 Verification - Reply found in DB:', verifyReply ? 'YES' : 'NO');
-      if (verifyReply) {
-        console.log('📝 Verification - Reply data:', {
-          _id: verifyReply._id,
-          memoId: verifyReply.memoId,
-          content: verifyReply.content
-        });
-      }
-
-      console.log('✅ Reply created successfully:', {
-        replyId: newReply._id,
-        memoId: memoId,
-      });
 
       res.status(201).json({
         success: true,

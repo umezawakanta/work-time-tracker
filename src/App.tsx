@@ -1171,10 +1171,6 @@ function App() {
       .map(id => features.find(f => f.id === id))
       .filter(Boolean) as Feature[];
     
-    // デバッグ用ログ
-    console.log('Visible features:', visibleFeatures.map(f => f.name));
-    console.log('Feature order:', order);
-    console.log('Hidden features:', hiddenFeatures);
     
     return visibleFeatures;
   };
@@ -1266,9 +1262,6 @@ function App() {
       });
     });
     
-    // デバッグ用ログ
-    console.log("Applied font:", fontValue);
-    console.log("CSS variable:", root.style.getPropertyValue("--app-font-family"));
   };
 
   // フォント変更ハンドラー
@@ -1293,10 +1286,6 @@ function App() {
     const root = document.documentElement;
     root.setAttribute("data-theme", themeValue);
     
-    // デバッグ用ログ
-    console.log("Applying theme:", themeValue);
-    console.log("Root element:", root);
-    console.log("Data-theme attribute:", root.getAttribute("data-theme"));
     
     // 強制的にCSS変数を適用
     if (themeValue === "dark") {
@@ -1412,11 +1401,8 @@ function App() {
   const loadSalaryRecords = async () => {
     try {
       if (!user?.id) {
-        console.log('No user ID available for loading salary records');
         return;
       }
-      
-      console.log('Loading salary records for user:', user.id);
       const response = await fetch(`/api/work-records/salary?userId=${user.id}`);
       
       if (!response.ok) {
@@ -1425,7 +1411,6 @@ function App() {
       
       const data = await response.json();
       if (data.success) {
-        console.log('Salary records loaded:', data.records);
         setSalaryRecords(data.records);
       } else {
         console.error('Failed to load salary records:', data.message);
@@ -1440,11 +1425,8 @@ function App() {
   const loadWorkDiaries = async () => {
     try {
       if (!user?.id) {
-        console.log('No user ID available for loading work diaries');
         return;
       }
-      
-      console.log('Loading work diaries for user:', user.id);
       const response = await fetch(`/api/work-records/diary?userId=${user.id}`);
       
       if (!response.ok) {
@@ -1453,7 +1435,6 @@ function App() {
       
       const data = await response.json();
       if (data.success) {
-        console.log('Work diaries loaded:', data.diaries);
         setWorkDiaries(data.diaries);
       } else {
         console.error('Failed to load work diaries:', data.message);
@@ -1691,22 +1672,17 @@ function App() {
   // 機能設定の関数
   const loadUserSettings = async () => {
     if (!user?.id) {
-      console.log('loadUserSettings: No user ID');
       return;
     }
-    
-    console.log('loadUserSettings: Loading settings for user:', user.id);
     
     try {
       const response = await fetch(`/api/user-settings?userId=${user.id}`);
       const data = await response.json();
-      console.log('loadUserSettings: Response:', data);
       
       if (data.success) {
         setUserSettings(data.settings);
-        console.log('loadUserSettings: Settings loaded:', data.settings);
       } else {
-        console.log('loadUserSettings: Failed to load settings:', data.message);
+        console.error('Failed to load settings:', data.message);
       }
     } catch (error) {
       console.error('Failed to load user settings:', error);
@@ -1727,16 +1703,12 @@ function App() {
   };
 
   const handleCharacterHomeToggle = () => {
-    console.log('🏠 キャラクター達のお家ボタンがクリックされました');
-    console.log('現在のshowCharacterHome:', showCharacterHome);
-    
     if (!showCharacterHome) {
       // 開く場合は他の機能を閉じる
       closeOtherFeatures('character');
     }
     
     setShowCharacterHome(!showCharacterHome);
-    console.log('新しいshowCharacterHome:', !showCharacterHome);
   };
 
   const updateUserSettings = async (newSettings: Partial<UserSettings>) => {
@@ -1765,7 +1737,6 @@ function App() {
   };
 
   const handleFeatureReorder = (newOrder: string[]) => {
-    console.log('Updating feature order:', newOrder);
     updateUserSettings({ featureOrder: newOrder });
   };
 
@@ -1872,14 +1843,12 @@ function App() {
   };
 
   const handleDragStart = (e: React.DragEvent, featureId: string) => {
-    console.log('Drag started:', featureId);
     setDraggedFeature(featureId);
     e.dataTransfer.effectAllowed = 'move';
   };
 
   // タッチイベント用のハンドラー
   const handleTouchStart = (e: React.TouchEvent, featureId: string) => {
-    console.log('Touch started:', featureId);
     setDraggedFeature(featureId);
   };
 
@@ -1890,25 +1859,19 @@ function App() {
 
   const handleTouchEnd = (e: React.TouchEvent, targetFeatureId: string) => {
     if (!draggedFeature || draggedFeature === targetFeatureId) {
-      console.log('Touch drop cancelled:', { draggedFeature, targetFeatureId, hasUserSettings: !!userSettings });
       setDraggedFeature(null);
       return;
     }
-
-    console.log('Touch drop event:', { draggedFeature, targetFeatureId, userSettings: !!userSettings });
 
     const currentSettings = userSettings || getDefaultUserSettings();
     const currentOrder = [...currentSettings.featureOrder];
     const draggedIndex = currentOrder.indexOf(draggedFeature);
     const targetIndex = currentOrder.indexOf(targetFeatureId);
 
-    console.log('Touch reordering:', { currentOrder, draggedIndex, targetIndex });
-
     // 要素を移動
     const [movedFeature] = currentOrder.splice(draggedIndex, 1);
     currentOrder.splice(targetIndex, 0, movedFeature);
 
-    console.log('Touch new order:', currentOrder);
     handleFeatureReorder(currentOrder);
     setDraggedFeature(null);
   };
@@ -1941,15 +1904,12 @@ function App() {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    console.log('Drag over');
   };
 
   const handleDrop = (e: React.DragEvent, targetFeatureId: string) => {
     e.preventDefault();
-    console.log('Drop event:', { draggedFeature, targetFeatureId, userSettings: !!userSettings });
     
     if (!draggedFeature || draggedFeature === targetFeatureId) {
-      console.log('Drop cancelled:', { draggedFeature, targetFeatureId, hasUserSettings: !!userSettings });
       setDraggedFeature(null);
       return;
     }
@@ -1959,13 +1919,10 @@ function App() {
     const draggedIndex = currentOrder.indexOf(draggedFeature);
     const targetIndex = currentOrder.indexOf(targetFeatureId);
 
-    console.log('Reordering:', { currentOrder, draggedIndex, targetIndex });
-
     // 要素を移動
     const [movedFeature] = currentOrder.splice(draggedIndex, 1);
     currentOrder.splice(targetIndex, 0, movedFeature);
 
-    console.log('New order:', currentOrder);
     handleFeatureReorder(currentOrder);
     setDraggedFeature(null);
   };
@@ -2018,10 +1975,6 @@ function App() {
       const recordDate = new Date(record.date);
       const recordJstDateStr = new Date(recordDate.getTime() + (9 * 60 * 60 * 1000)).toISOString().split('T')[0];
       
-      // デバッグログ
-      if (recordJstDateStr === jstDateStr) {
-        console.log(`Salary record found for JST date: ${jstDateStr}, Record JST date: ${recordJstDateStr}`);
-      }
       
       return recordJstDateStr === jstDateStr;
     });
@@ -2031,10 +1984,6 @@ function App() {
       const diaryDate = new Date(diary.date);
       const diaryJstDateStr = new Date(diaryDate.getTime() + (9 * 60 * 60 * 1000)).toISOString().split('T')[0];
       
-      // デバッグログ
-      if (diaryJstDateStr === jstDateStr) {
-        console.log(`Diary found for JST date: ${jstDateStr}, Diary JST date: ${diaryJstDateStr}`);
-      }
       
       return diaryJstDateStr === jstDateStr;
     });
@@ -2214,13 +2163,6 @@ function App() {
 
     try {
       const token = localStorage.getItem("access_token");
-      console.log('📝 Creating reply for memo:', memoId);
-      console.log('📝 Reply content:', replyContent.trim());
-      console.log('📝 User info:', { 
-        displayName: user?.displayName, 
-        email: user?.email, 
-        id: user?.id 
-      });
       
       const response = await fetch('/api/memos/reply', {
         method: 'POST',
@@ -2237,9 +2179,7 @@ function App() {
         })
       });
 
-      console.log('📝 Reply response status:', response.status);
       const data = await response.json();
-      console.log('📝 Reply response data:', data);
 
       if (data.success) {
         setMessage("返信を投稿しました！");
@@ -2361,7 +2301,7 @@ function App() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
-          console.log('Service Worker registered successfully:', registration);
+          // Service Worker registered successfully
         })
         .catch((error) => {
           console.error('Service Worker registration failed:', error);
@@ -2469,7 +2409,6 @@ function App() {
         loadSalaryRecordsWithUserId(userId); // 給料記録を読み込み
         loadWorkDiariesWithUserId(userId); // 日記を読み込み
         loadUserSettings(); // ユーザー設定を読み込み
-        console.log("Login successful:", data);
       } else {
         setMessage(`ログイン失敗: ${data.message}`);
       }
@@ -2502,7 +2441,6 @@ function App() {
         setEmail("");
         setPassword("");
         setDisplayName("");
-        console.log("Registration successful:", data);
       } else {
         setMessage(`登録失敗: ${data.message}`);
       }
@@ -2542,7 +2480,6 @@ function App() {
         setProjectColor("#3b82f6");
         setShowProjectForm(false);
         loadProjects();
-        console.log("Project creation successful:", data);
       } else {
         setMessage(`プロジェクト作成失敗: ${data.message}`);
       }
@@ -2603,8 +2540,6 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        console.log('🔍 Debug - loaded users:', data.users);
-        console.log('🔍 Debug - first user id:', data.users && data.users[0] ? data.users[0].id : 'no users');
         setAdminUsers(data.users || []);
       } else {
         setMessage(`ユーザー一覧取得失敗: ${data.message}`);
@@ -2616,18 +2551,12 @@ function App() {
   };
 
   const handleEditUser = async (user: AdminUser) => {
-    console.log('🔍 Debug - handleEditUser called with:', user);
-    console.log('🔍 Debug - user.id:', user.id);
     setEditingUser(user);
   };
 
   const handleUpdateUser = async (updatedUser: AdminUser) => {
     try {
       const token = localStorage.getItem("access_token");
-      
-      // デバッグログ：送信前のデータを確認
-      console.log('🔍 Debug - updatedUser:', updatedUser);
-      console.log('🔍 Debug - updatedUser.id:', updatedUser.id);
       
       // APIが期待する形式にデータを変換
       const requestData = {
@@ -2637,9 +2566,6 @@ function App() {
         isVerified: updatedUser.isVerified,
         status: updatedUser.status
       };
-
-      // デバッグログ：送信するデータを確認
-      console.log('🔍 Debug - requestData:', requestData);
 
       const response = await fetch("/api/admin/user-edit", {
         method: "PUT",
@@ -2890,8 +2816,6 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        console.log('📝 Memos loaded:', data.memos?.length || 0);
-        console.log('📝 Sample memo with replies:', data.memos?.find(m => m.replies && m.replies.length > 0));
         setMemos(data.memos || []);
       } else {
         setMessage(`メモの一覧取得失敗: ${data.message}`);
@@ -3152,19 +3076,12 @@ function App() {
   };
 
   const handleStartTracking = async () => {
-    console.log('▶️ 時間記録開始ボタンがクリックされました');
-    console.log('description:', description);
-    console.log('currentTimeEntry:', currentTimeEntry);
-    console.log('isTracking:', isTracking);
-    
     if (!description.trim()) {
-      console.log('❌ 作業内容が入力されていません');
       setMessage("作業内容を入力してください");
       return;
     }
 
     try {
-      console.log('🔄 時間記録開始APIを呼び出し中...');
       const response = await fetch("/api/time/start", {
         method: "POST",
         headers: {
@@ -3175,22 +3092,18 @@ function App() {
       });
 
       const data = await response.json();
-      console.log('📡 API応答:', data);
 
       if (data.success) {
-        console.log('✅ 時間記録開始成功');
         const newEntry: TimeEntry = {
           id: data.entry.id,
           description,
           startTime: new Date(data.entry.startTime),
         };
-        console.log('新しいTimeEntry:', newEntry);
         setCurrentTimeEntry(newEntry);
         setIsTracking(true);
         setElapsedTime(0);
         setMessage("時間記録を開始しました");
       } else {
-        console.log('❌ APIエラー:', data.message);
         setMessage(`エラー: ${data.message}`);
       }
     } catch (error) {
@@ -3200,18 +3113,13 @@ function App() {
   };
 
   const handleStopTracking = async () => {
-    console.log('⏹️ 時間記録停止ボタンがクリックされました');
-    console.log('currentTimeEntry:', currentTimeEntry);
-    console.log('isTracking:', isTracking);
     
     if (!currentTimeEntry) {
-      console.log('❌ currentTimeEntryがnullです');
       setMessage('エラー: 記録中の時間記録が見つかりません');
       return;
     }
 
     try {
-      console.log('🔄 時間記録停止APIを呼び出し中...');
       const response = await fetch("/api/time/stop", {
         method: "POST",
         headers: {
@@ -3222,17 +3130,14 @@ function App() {
       });
 
       const data = await response.json();
-      console.log('📡 API応答:', data);
 
       if (data.success) {
-        console.log('✅ 時間記録停止成功');
         setCurrentTimeEntry(null);
         setIsTracking(false);
         setElapsedTime(0);
         setDescription("");
         setMessage(`時間記録を停止しました。記録時間: ${formatTime(data.entry.duration)}`);
       } else {
-        console.log('❌ APIエラー:', data.message);
         setMessage(`エラー: ${data.message}`);
       }
     } catch (error) {
