@@ -221,38 +221,19 @@ async function handleRequest(req, res) {
         memosWithReplies = await Promise.all(
           memos.map(async (memo) => {
             try {
-              // ObjectIdで検索する場合と文字列で検索する場合の両方を試す
+              // ObjectIdで検索（型を統一）
               const replies = await Reply.find({ 
-                $or: [
-                  { memoId: memo._id },
-                  { memoId: memo._id.toString() }
-                ]
+                memoId: memo._id
               }).sort({ createdAt: 1 });
               
               console.log(`📝 Memo ${memo._id.toString()} replies:`, replies.length);
-              console.log(`📝 Memo ID type:`, typeof memo._id, memo._id.constructor.name);
-              console.log(`📝 Memo ID value:`, memo._id.toString());
               
               if (replies.length > 0) {
                 console.log(`📝 Sample reply for memo ${memo._id.toString()}:`, {
                   id: replies[0]._id.toString(),
-                  memoId: replies[0].memoId,
-                  memoIdType: typeof replies[0].memoId,
-                  memoIdConstructor: replies[0].memoId.constructor.name,
+                  memoId: replies[0].memoId.toString(),
                   content: replies[0].content.substring(0, 50) + '...'
                 });
-              } else {
-                // 返信が見つからない場合のデバッグ
-                console.log(`📝 No replies found for memo ${memo._id.toString()}`);
-                console.log(`📝 Searching for memoId:`, memo._id);
-                console.log(`📝 Searching for memoId string:`, memo._id.toString());
-                
-                // 直接検索を試す
-                const directSearch = await Reply.find({ memoId: memo._id });
-                console.log(`📝 Direct search result:`, directSearch.length);
-                
-                const stringSearch = await Reply.find({ memoId: memo._id.toString() });
-                console.log(`📝 String search result:`, stringSearch.length);
               }
               
               return {
