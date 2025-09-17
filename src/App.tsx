@@ -3912,7 +3912,6 @@ function App() {
           
           <main className="dashboard-main">
             {getVisibleFeatures().map((feature) => {
-              console.log('Rendering feature:', feature.name, feature.id);
               if (feature.id === 'time-tracking') {
                 return (
                   <TimeTrackingSection
