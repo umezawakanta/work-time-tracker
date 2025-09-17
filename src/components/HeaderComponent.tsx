@@ -64,8 +64,8 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             </div>
           </div>
         </div>
-        <h1>⏰ Work Time Tracker 📚</h1>
       </div>
+      <h1>⏰ Work Time Tracker 📚</h1>
       <div className="user-info">
         <div className="user-greeting">
           <div className="header-character">
