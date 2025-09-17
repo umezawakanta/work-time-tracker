@@ -5,7 +5,7 @@ import CustomTimer from "./components/CustomTimer";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts } from "./constants/fonts";
-import { cookingRecipes } from "./constants/cookingRecipes";
+import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
 
 import type {
   User,
@@ -2961,25 +2961,9 @@ function App() {
     }
   };
 
-  // 料理レシピの段階を取得
-  const getRecipePhases = (recipeKey: keyof typeof cookingRecipes, eggType?: 'soft' | 'medium' | 'hard') => {
-    const recipe = cookingRecipes[recipeKey];
-    if (recipeKey === 'egg' && eggType) {
-      // ゆでたまごの場合は段階を動的に生成
-      return [
-        { name: '水を沸騰させる', duration: 8 * 60, description: '中火で水を沸騰させます' },
-        { 
-          name: eggType === 'soft' ? '半熟ゆで' : eggType === 'medium' ? '中半熟ゆで' : '固ゆで', 
-          duration: getEggTimerDuration(eggType), 
-          description: `沸騰したお湯に卵を入れ、${eggType === 'soft' ? '半熟' : eggType === 'medium' ? '中半熟' : '固ゆで'}にゆでます` 
-        }
-      ];
-    }
-    return recipe.phases;
-  };
 
   // 料理タイマーの総時間を計算
-  const getTotalCookingTime = (recipeKey: keyof typeof cookingRecipes, eggType?: 'soft' | 'medium' | 'hard') => {
+  const getTotalCookingTime = (recipeKey: string, eggType?: 'soft' | 'medium' | 'hard') => {
     const phases = getRecipePhases(recipeKey, eggType);
     return phases.reduce((total, phase) => total + phase.duration, 0);
   };

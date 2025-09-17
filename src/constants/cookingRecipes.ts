@@ -67,18 +67,47 @@ export const getRecipeTotalTime = (recipeKey: string): number => {
 
 // 卵の種類に応じたレシピの段階を取得
 export const getEggRecipePhases = (eggType: 'soft' | 'medium' | 'hard'): CookingPhase[] => {
-    const recipe = getRecipeByKey('egg');
-    if (!recipe) return [];
+  const recipe = getRecipeByKey('egg');
+  if (!recipe) return [];
+  
+  // 卵の種類に応じて適切な段階を選択
+  switch (eggType) {
+    case 'soft':
+      return recipe.phases.slice(0, 2); // 水を沸騰させる + 半熟ゆで
+    case 'medium':
+      return recipe.phases.slice(0, 3); // 水を沸騰させる + 半熟ゆで + 中半熟ゆで
+    case 'hard':
+      return recipe.phases; // 全ての段階
+    default:
+      return recipe.phases;
+  }
+};
 
-    // 卵の種類に応じて適切な段階を選択
-    switch (eggType) {
-        case 'soft':
-            return recipe.phases.slice(0, 2); // 水を沸騰させる + 半熟ゆで
-        case 'medium':
-            return recipe.phases.slice(0, 3); // 水を沸騰させる + 半熟ゆで + 中半熟ゆで
-        case 'hard':
-            return recipe.phases; // 全ての段階
-        default:
-            return recipe.phases;
-    }
+// 卵の種類に応じたタイマー時間を取得
+const getEggTimerDuration = (type: 'soft' | 'medium' | 'hard'): number => {
+  switch (type) {
+    case 'soft': return 6 * 60;  // 6分
+    case 'medium': return 8 * 60; // 8分
+    case 'hard': return 10 * 60;  // 10分
+    default: return 8 * 60;
+  }
+};
+
+// 料理レシピの段階を取得
+export const getRecipePhases = (recipeKey: string, eggType?: 'soft' | 'medium' | 'hard'): CookingPhase[] => {
+  const recipe = getRecipeByKey(recipeKey);
+  if (!recipe) return [];
+  
+  if (recipeKey === 'egg' && eggType) {
+    // ゆでたまごの場合は段階を動的に生成
+    return [
+      { name: '水を沸騰させる', duration: 8 * 60, description: '中火で水を沸騰させます' },
+      { 
+        name: eggType === 'soft' ? '半熟ゆで' : eggType === 'medium' ? '中半熟ゆで' : '固ゆで', 
+        duration: getEggTimerDuration(eggType), 
+        description: `沸騰したお湯に卵を入れ、${eggType === 'soft' ? '半熟' : eggType === 'medium' ? '中半熟' : '固ゆで'}にゆでます` 
+      }
+    ];
+  }
+  return recipe.phases;
 };
