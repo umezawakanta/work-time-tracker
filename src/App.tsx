@@ -3,6 +3,8 @@ import "./App.css";
 import CharacterHome from "./components/CharacterHome";
 import CustomTimer from "./components/CustomTimer";
 import ProjectsSection from "./components/ProjectsSection";
+import CookingTimerSection from "./components/CookingTimerSection";
+import TimeTrackingSection from "./components/TimeTrackingSection";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts } from "./constants/fonts";
@@ -173,6 +175,7 @@ function App() {
   const [showTimeTracking, setShowTimeTracking] = useState(true);
   const [showProjects, setShowProjects] = useState(true);
   const [showCustomTimer, setShowCustomTimer] = useState(true);
+  const [showCookingTimer, setShowCookingTimer] = useState(true);
   const [showPresetTimers, setShowPresetTimers] = useState(true);
   const [showTimerStats, setShowTimerStats] = useState(true);
   const [showTimerHistory, setShowTimerHistory] = useState(true);
@@ -733,6 +736,13 @@ function App() {
       icon: '⏰',
       description: '作業時間の記録と管理',
       component: null // 既存の時間管理セクション
+    },
+    {
+      id: 'cooking-timer',
+      name: '料理タイマー',
+      icon: '🍳',
+      description: '料理の調理時間管理',
+      component: null // 料理タイマーセクション
     },
     {
       id: 'projects',
@@ -3856,280 +3866,64 @@ function App() {
               console.log('Rendering feature:', feature.name, feature.id);
               if (feature.id === 'time-tracking') {
                 return (
-            <div key={feature.id} className="time-tracking-section">
-              <div className="section-header">
-                <h2>
-                  <span className="section-icon">
-                    <div className="mini-character">
-                      <div className="mini-character-face">
-                        <div className="mini-character-eyes">
-                          <div className="mini-eye left-mini-eye"></div>
-                          <div className="mini-eye right-mini-eye"></div>
-                        </div>
-                        <div className="mini-character-mouth"></div>
-                      </div>  {/* mini-character-face */}
-                      <div className="mini-character-body"></div>
-                    </div>  {/* mini-character */}
-                  </span>
-                  時間記録
-                </h2>
-                <div className="section-controls">
-                  {showTimeTracking ? (
-                    <button 
-                      onClick={() => setShowTimeTracking(false)}
-                      className="close-section-button"
-                      title="セクションを閉じる"
-                    >
-                      ✕
-                    </button>
-                  ) : (
-                    <button 
-                      onClick={() => {
-                        closeOtherFeatures('time-tracking');
-                        setShowTimeTracking(true);
-                      }}
-                      className="show-section-button"
-                      title="セクションを表示"
-                    >
-                      ▶️
-                    </button>
-                  )}
-                </div>
-              </div>
-              
-              {showTimeTracking && (
-                <div className="section-content">
-              
-              {!isTracking ? (
-                <div className="start-tracking">
-                  <div className="form-group">
-                    <label htmlFor="description">作業内容</label>
-                    <input
-                      type="text"
-                      id="description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="作業内容を入力してください"
-                    />
-                  </div>
-                  <button onClick={handleStartTracking} className="start-button">
-                    ▶️ 記録開始
-                  </button>
-                </div>
-              ) : (
-                <div className="tracking-active">
-                  <div className="current-entry">
-                    <h3>記録中: {currentTimeEntry?.description}</h3>
-                    <div className="elapsed-time">
-                      {formatTime(elapsedTime)}
-                    </div>
-                    <div className="tracking-buttons">
-                      <button onClick={handleStopTracking} className="stop-button">
-                        ⏹️ 記録停止
-                      </button>
-                      <button onClick={handleResetTracking} className="reset-button">
-                        🔄 強制リセット
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* 料理タイマー */}
-              <div className="cooking-timer-section">
-                <h3>🍳 料理タイマー</h3>
-                
-                <div className="recipe-selector">
-                  <h4>📋 料理を選択</h4>
-                  <div className="recipe-options">
-                    {Object.entries(cookingRecipes).map(([key, recipe]) => (
-                      <label key={key} className="recipe-option">
-                        <input
-                          type="radio"
-                          name="recipe"
-                          value={key}
-                          checked={selectedRecipe === key}
-                          onChange={(e) => setSelectedRecipe(e.target.value)}
-                          disabled={eggTimerActive}
-                        />
-                        <span className="recipe-name">{recipe.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {selectedRecipe === 'egg' && (
-                  <div className="egg-type-selector">
-                    <h4>🥚 ゆで加減を選択</h4>
-                    <div className="egg-type-options">
-                      <label>
-                        <input
-                          type="radio"
-                          name="eggType"
-                          value="soft"
-                          checked={selectedEggType === 'soft'}
-                          onChange={(e) => setSelectedEggType(e.target.value as 'soft' | 'medium' | 'hard')}
-                          disabled={eggTimerActive}
-                        />
-                        <span>🥚 半熟</span>
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name="eggType"
-                          value="medium"
-                          checked={selectedEggType === 'medium'}
-                          onChange={(e) => setSelectedEggType(e.target.value as 'soft' | 'medium' | 'hard')}
-                          disabled={eggTimerActive}
-                        />
-                        <span>🥚 中半熟</span>
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name="eggType"
-                          value="hard"
-                          checked={selectedEggType === 'hard'}
-                          onChange={(e) => setSelectedEggType(e.target.value as 'soft' | 'medium' | 'hard')}
-                          disabled={eggTimerActive}
-                        />
-                        <span>🥚 固ゆで</span>
-                      </label>
-                    </div>
-                  </div>
-                )}
-
-                <div className="cooking-phases">
-                  <h4>📝 調理手順</h4>
-                  <div className="phases-list">
-                    {getRecipePhases(selectedRecipe, selectedRecipe === 'egg' ? selectedEggType : undefined).map((phase, index) => (
-                      <div key={index} className={`phase-item ${eggTimerPhase === (index === 0 ? 'heating' : index === getRecipePhases(selectedRecipe, selectedRecipe === 'egg' ? selectedEggType : undefined).length - 1 ? 'cooking' : 'boiling') ? 'active' : ''}`}>
-                        <div className="phase-number">{index + 1}</div>
-                        <div className="phase-content">
-                          <div className="phase-name">{phase.name}</div>
-                          <div className="phase-duration">{formatTime(phase.duration)}</div>
-                          <div className="phase-description">{phase.description}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                  
-                  <div className="egg-timer-sound-selector">
-                    <label>🔊 通知音:</label>
-                    <div className="sound-options">
-                      <label>
-                        <input
-                          type="radio"
-                          name="eggTimerSound"
-                          value="bell"
-                          checked={eggTimerSound === 'bell'}
-                          onChange={(e) => setEggTimerSound(e.target.value as 'bell' | 'chime' | 'beep' | 'alarm')}
-                        />
-                        🔔 鐘
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name="eggTimerSound"
-                          value="chime"
-                          checked={eggTimerSound === 'chime'}
-                          onChange={(e) => setEggTimerSound(e.target.value as 'bell' | 'chime' | 'beep' | 'alarm')}
-                        />
-                        🎵 チャイム
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name="eggTimerSound"
-                          value="beep"
-                          checked={eggTimerSound === 'beep'}
-                          onChange={(e) => setEggTimerSound(e.target.value as 'bell' | 'chime' | 'beep' | 'alarm')}
-                        />
-                        📢 ビープ
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name="eggTimerSound"
-                          value="alarm"
-                          checked={eggTimerSound === 'alarm'}
-                          onChange={(e) => setEggTimerSound(e.target.value as 'bell' | 'chime' | 'beep' | 'alarm')}
-                        />
-                        🚨 アラーム
-                      </label>
-                    </div>
-                        <button 
-                          onClick={async () => {
-                            try {
-                              await playEggTimerSound();
-                            } catch (error) {
-                              console.error('音声テストエラー:', error);
-                              setMessage('音声の再生に失敗しました。ブラウザの設定を確認してください。');
-                            }
-                          }} 
-                          className="test-sound-btn"
-                          disabled={eggTimerActive}
-                        >
-                          🔊 音を試す
-                        </button>
-                  </div>
-                  
-                  <div className="cooking-timer-display">
-                    <div className="timer-time">
-                      {formatTime(eggTimerTime)}
-                    </div>
-                    <div className="timer-status">
-                      {eggTimerActive ? `🍳 ${eggTimerPhaseName}中...` : '🍳 待機中'}
-                    </div>
-                    {eggTimerActive && (
-                      <div className="phase-progress">
-                        <div className="current-phase">
-                          現在の段階: {eggTimerPhaseName}
-                        </div>
-                        <div className="phase-time">
-                          残り時間: {formatTime(eggTimerPhaseTime)}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="cooking-timer-buttons">
-                    {!eggTimerActive ? (
-                      <button onClick={handleStartCookingTimer} className="cooking-timer-start-btn">
-                        ▶️ 料理タイマー開始
-                      </button>
-                    ) : eggTimerPaused ? (
-                      <>
-                        <button onClick={handleStartCookingTimer} className="cooking-timer-start-btn">
-                          ▶️ 再開
-                        </button>
-                        <button onClick={stopEggTimer} className="cooking-timer-stop-btn">
-                          ⏹️ ストップ
-                        </button>
-                        <button onClick={resetEggTimer} className="cooking-timer-reset-btn">
-                          🔄 リセット
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button onClick={pauseEggTimer} className="cooking-timer-pause-btn">
-                          ⏸️ 一時停止
-                        </button>
-                        <button onClick={stopEggTimer} className="cooking-timer-stop-btn">
-                          ⏹️ ストップ
-                        </button>
-                        <button onClick={resetEggTimer} className="cooking-timer-reset-btn">
-                          🔄 リセット
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-                )}
-            </div>
-              );
+                  <TimeTrackingSection
+                    key={feature.id}
+                    showTimeTracking={showTimeTracking}
+                    setShowTimeTracking={setShowTimeTracking}
+                    closeOtherFeatures={closeOtherFeatures}
+                    isTracking={isTracking}
+                    description={description}
+                    setDescription={setDescription}
+                    currentTimeEntry={currentTimeEntry}
+                    elapsedTime={elapsedTime}
+                    handleStartTracking={handleStartTracking}
+                    handleStopTracking={handleStopTracking}
+                    handleResetTracking={handleResetTracking}
+                    formatTime={formatTime}
+                  />
+                );
+          } else if (feature.id === 'cooking-timer') {
+            return (
+              <CookingTimerSection
+                key={feature.id}
+                showCookingTimer={showCookingTimer}
+                setShowCookingTimer={setShowCookingTimer}
+                closeOtherFeatures={closeOtherFeatures}
+                selectedRecipe={selectedRecipe}
+                setSelectedRecipe={setSelectedRecipe}
+                selectedEggType={selectedEggType}
+                setSelectedEggType={(type: 'soft' | 'medium' | 'hard') => setSelectedEggType(type)}
+                eggTimerActive={eggTimerActive}
+                eggTimerPaused={eggTimerPaused}
+                eggTimerTime={eggTimerTime}
+                eggTimerOriginalTime={eggTimerOriginalTime}
+                eggTimerPhase={eggTimerPhase}
+                eggTimerPhaseTime={eggTimerPhaseTime}
+                eggTimerPhaseName={eggTimerPhaseName}
+                eggTimerSound={eggTimerSound}
+                setEggTimerSound={setEggTimerSound}
+                setEggTimerTime={setEggTimerTime}
+                setEggTimerOriginalTime={setEggTimerOriginalTime}
+                setEggTimerActive={setEggTimerActive}
+                setEggTimerPaused={setEggTimerPaused}
+                setEggTimerPhase={setEggTimerPhase}
+                setEggTimerPhaseTime={setEggTimerPhaseTime}
+                setEggTimerPhaseName={setEggTimerPhaseName}
+                setEggTimerInterval={setEggTimerInterval}
+                setMessage={setMessage}
+                sendNotification={sendNotification}
+                startSoundLoop={startSoundLoop}
+                addToTimerHistory={addToTimerHistory}
+                playEggTimerSound={playEggTimerSound}
+                pauseEggTimer={pauseEggTimer}
+                stopEggTimer={stopEggTimer}
+                resetEggTimer={resetEggTimer}
+                getEggTimerDuration={getEggTimerDuration}
+                getTotalCookingTime={getTotalCookingTime}
+                formatTime={formatTime}
+                eggTimerType={eggTimerType}
+              />
+            );
           } else if (feature.id === 'projects') {
             return (
               <ProjectsSection

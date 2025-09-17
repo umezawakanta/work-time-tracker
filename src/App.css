@@ -3760,6 +3760,360 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   gap: 2rem;
 }
 
+/* 料理タイマーセクション */
+.cooking-timer-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--secondary-color, linear-gradient(145deg, #fef3c7 0%, #fde68a 100%)) !important;
+  border-radius: 15px;
+  border: 2px solid #f59e0b;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+}
+
+.cooking-timer-section h2 {
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+}
+
+.cooking-timer-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.recipe-selector {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.recipe-selector h4 {
+  margin: 0 0 1rem 0;
+  color: #374151;
+}
+
+.recipe-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.recipe-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.recipe-option:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.recipe-option input[type="radio"] {
+  margin: 0;
+}
+
+.recipe-option input[type="radio"]:checked + .recipe-name {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.recipe-name {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.egg-type-selector {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.egg-type-selector h4 {
+  margin: 0 0 1rem 0;
+  color: #374151;
+}
+
+.egg-type-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.egg-type-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.egg-type-options label:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.egg-type-options input[type="radio"] {
+  margin: 0;
+}
+
+.cooking-phases {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.cooking-phases h4 {
+  margin: 0 0 1rem 0;
+  color: #374151;
+}
+
+.phases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.phase-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.phase-item.active {
+  background: #dbeafe;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.phase-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.phase-content {
+  flex: 1;
+}
+
+.phase-name {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.phase-duration {
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-family: 'Courier New', monospace;
+}
+
+.phase-description {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.egg-timer-sound-selector {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.egg-timer-sound-selector label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.sound-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.sound-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0;
+}
+
+.sound-options label:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.sound-options input[type="radio"] {
+  margin: 0;
+}
+
+.test-sound-btn {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.test-sound-btn:hover:not(:disabled) {
+  background: #4b5563;
+}
+
+.test-sound-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+.cooking-timer-display {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.timer-time {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #1f2937;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 0.5rem;
+}
+
+.timer-status {
+  font-size: 1.2rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.phase-progress {
+  background: #f3f4f6;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.current-phase {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.phase-time {
+  font-size: 1.1rem;
+  color: #6b7280;
+  font-family: 'Courier New', monospace;
+}
+
+.cooking-timer-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cooking-timer-start-btn,
+.cooking-timer-pause-btn,
+.cooking-timer-resume-btn,
+.cooking-timer-stop-btn,
+.cooking-timer-reset-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cooking-timer-start-btn,
+.cooking-timer-resume-btn {
+  background: #10b981;
+  color: white;
+}
+
+.cooking-timer-start-btn:hover,
+.cooking-timer-resume-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.cooking-timer-pause-btn {
+  background: #f59e0b;
+  color: white;
+}
+
+.cooking-timer-pause-btn:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+.cooking-timer-stop-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.cooking-timer-stop-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.cooking-timer-reset-btn {
+  background: #6b7280;
+  color: white;
+}
+
+.cooking-timer-reset-btn:hover {
+  background: #4b5563;
+  transform: translateY(-1px);
+}
+
+.timer-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 /* カスタムタイマーセクション */
 .custom-timer-section {
   padding: 1.5rem;
