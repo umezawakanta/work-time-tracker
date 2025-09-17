@@ -513,7 +513,7 @@
 /* 右下のヘタウマキャラクター */
 .bottom-right-character {
   position: absolute;
-  bottom: 30px;
+  bottom: 50px;
   right: 20px;
   width: 80px;
   height: 80px;
@@ -848,20 +848,34 @@
   
   .user-info {
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 0.5rem;
     align-items: center;
   }
   
   .user-info span {
     font-size: 14px;
     padding: 0.4rem 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .version-info {
+    margin-top: 0.5rem;
+  }
+  
+  .header-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 0.5rem;
   }
   
   .theme-settings-button,
-  .font-settings-button {
+  .font-settings-button,
+  .feature-settings-button {
     font-size: 12px;
     padding: 8px 12px;
-    margin: 2px;
+    margin: 0;
   }
   
   /* モバイル時のログアウトボタン - アイコン表示 */
@@ -901,7 +915,7 @@
   .bottom-right-character {
     width: 60px;
     height: 60px;
-    bottom: 25px;
+    bottom: 40px;
     right: 10px;
   }
   
