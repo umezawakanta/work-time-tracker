@@ -12,7 +12,7 @@ export interface CookingTimerState {
     eggTimerPhaseName: string;
     eggTimerSound: string;
     selectedRecipe: string;
-    selectedEggType?: string;
+    selectedEggType?: 'soft' | 'medium' | 'hard';
 }
 
 export interface CookingTimerSetters {
