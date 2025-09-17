@@ -60,7 +60,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    console.log('📝 Project creation started');
     
     // Ensure database connection is established
     await ensureDatabaseConnection();
@@ -90,10 +89,6 @@ module.exports = async function handler(req, res) {
 
     await newProject.save();
 
-    console.log('✅ Project creation successful:', {
-      projectId: newProject.id,
-      name: newProject.name,
-    });
 
     // レスポンスの構築
     const response = {

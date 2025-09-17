@@ -49,7 +49,6 @@ module.exports = async function handler(req, res) {
 
     await timeEntry.save();
 
-    console.log('[time/start] Time entry created:', timeEntry._id);
 
     return res.status(200).json({
       success: true,

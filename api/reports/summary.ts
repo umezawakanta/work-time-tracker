@@ -57,7 +57,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    console.log('📊 Summary report request started');
     
     // Ensure database connection is established
     await ensureDatabaseConnection();
@@ -134,11 +133,6 @@ module.exports = async function handler(req, res) {
 
     const projectBreakdownArray = Object.values(projectBreakdown);
 
-    console.log('✅ Summary report generated:', {
-      totalTime,
-      totalEntries,
-      userId,
-    });
 
     // レスポンスの構築
     const response: SummaryReportResponse = {

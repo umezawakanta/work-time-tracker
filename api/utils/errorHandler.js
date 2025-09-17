@@ -131,10 +131,9 @@ const sanitizeErrorData = (errorData) => {
 const safeDebugLog = (message, data = null) => {
   if (process.env.NODE_ENV === 'development' && process.env.DEBUG_LOGGING === 'true') {
     if (data) {
-      const sanitizedData = sanitizeErrorData(data);
-      console.log(`[DEBUG] ${message}:`, sanitizedData);
+      // Debug logging removed for production
     } else {
-      console.log(`[DEBUG] ${message}`);
+      // Debug logging removed for production
     }
   }
 };

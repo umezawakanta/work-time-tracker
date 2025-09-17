@@ -27,7 +27,6 @@ const ensureDatabaseConnection = async () => {
     }
     
     if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
       return;
     }
 
@@ -41,7 +40,6 @@ const ensureDatabaseConnection = async () => {
       maxIdleTimeMS: 30000,
     });
 
-    console.log("✅ MongoDB connected successfully");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[admin/user-edit] Failed to connect to database:', message);
@@ -133,7 +131,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    console.log('✏️ Admin user edit request started');
     
     // Ensure database connection is established
     await ensureDatabaseConnection();
@@ -175,14 +172,6 @@ module.exports = async function handler(req, res) {
     const { userId, displayName, role, isVerified, status }: EditUserRequest = req.body;
 
     // デバッグ用ログ（機密情報は除外）
-    console.log('📝 Edit user request body:', {
-      userId,
-      displayName: displayName ? displayName.substring(0, 10) + '...' : displayName, // 表示名を短縮
-      role,
-      isVerified,
-      status,
-      bodyKeys: Object.keys(req.body || {}).filter(key => !['password', 'token', 'secret'].includes(key.toLowerCase()))
-    });
 
     // 必須フィールドの検証
     if (!userId) {
@@ -227,10 +216,6 @@ module.exports = async function handler(req, res) {
       { new: true, runValidators: true }
     );
 
-    console.log('✅ User updated successfully:', {
-      userId: updatedUser && updatedUser.id,
-      adminUserId: userInfo.userId,
-    });
 
     // レスポンスの構築
     const response: EditUserResponse = {

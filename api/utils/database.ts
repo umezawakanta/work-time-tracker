@@ -19,7 +19,6 @@ const ensureDatabaseConnection = async () => {
     }
 
     if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
       return;
     }
 
@@ -27,7 +26,6 @@ const ensureDatabaseConnection = async () => {
       dbName: 'workTimeTracker',
     });
 
-    console.log("✅ MongoDB connected successfully");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[database] Failed to connect to database:', message);

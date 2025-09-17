@@ -20,7 +20,6 @@ const ensureDatabaseConnection = async () => {
     }
     
     if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
       return;
     }
 
@@ -34,7 +33,6 @@ const ensureDatabaseConnection = async () => {
       maxIdleTimeMS: 30000,
     });
 
-    console.log("✅ MongoDB connected successfully");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[admin/users] Failed to connect to database:', message);
@@ -126,7 +124,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    console.log('👥 Admin users list request started');
     
     // Ensure database connection is established
     await ensureDatabaseConnection();
@@ -168,10 +165,6 @@ module.exports = async function handler(req, res) {
     // ユーザー一覧を取得
     const users = await User.find({}).sort({ createdAt: -1 });
 
-    console.log('✅ Users list retrieved:', {
-      count: users.length,
-      adminUserId: userInfo.userId,
-    });
 
     // レスポンスの構築
     const response: UsersListResponse = {

@@ -141,11 +141,6 @@ module.exports = async (req, res) => {
         })
       );
 
-      console.log('✅ Public memos list retrieved:', {
-        count: memosWithReplies.length,
-        category,
-        search,
-      });
 
       res.status(200).json({
         success: true,

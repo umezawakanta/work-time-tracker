@@ -18,7 +18,6 @@ const ensureDatabaseConnection = async () => {
     }
     
     if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
       return;
     }
 
@@ -32,7 +31,6 @@ const ensureDatabaseConnection = async () => {
       maxIdleTimeMS: 30000,
     });
 
-    console.log("✅ MongoDB connected successfully");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[admin/user-delete] Failed to connect to database:', message);
@@ -118,7 +116,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    console.log('🗑️ Admin user delete request started');
 
     // Ensure database connection
     await ensureDatabaseConnection();
@@ -184,10 +181,6 @@ module.exports = async function handler(req, res) {
     // ユーザーを削除
     await User.findByIdAndDelete(userId);
 
-    console.log('✅ User deleted successfully:', {
-      deletedUserId: userId,
-      adminUserId: userInfo.userId,
-    });
 
     // レスポンスの構築
     res.status(200).json({

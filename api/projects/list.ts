@@ -51,7 +51,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    console.log('📋 Project list request started');
     
     // Ensure database connection is established
     await ensureDatabaseConnection();
@@ -69,10 +68,6 @@ module.exports = async function handler(req, res) {
       isActive: true 
     }).sort({ createdAt: -1 });
 
-    console.log('✅ Project list retrieved:', {
-      count: projects.length,
-      userId,
-    });
 
     // レスポンスの構築
     const response: ListProjectsResponse = {

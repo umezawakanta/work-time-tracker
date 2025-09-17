@@ -22,7 +22,6 @@ const ensureDatabaseConnection = async () => {
     }
 
     if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
       return;
     }
 
@@ -30,7 +29,6 @@ const ensureDatabaseConnection = async () => {
       dbName: 'workTimeTracker',
     });
 
-    console.log("✅ MongoDB connected successfully");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[memos/id] Failed to connect to database:', message);
@@ -106,7 +104,6 @@ module.exports = async (req, res) => {
   }
 
   try {
-    console.log('📝 Memo detail API request started');
     
     // Ensure database connection
     await ensureDatabaseConnection();
@@ -141,11 +138,6 @@ module.exports = async (req, res) => {
         });
       }
 
-      console.log('✅ Memo retrieved:', {
-        memoId: memo._id.toString(),
-        title: memo.title,
-        userId: userInfo.userId,
-      });
 
       res.status(200).json({
         success: true,
@@ -181,11 +173,6 @@ module.exports = async (req, res) => {
         });
       }
 
-      console.log('✅ Memo updated successfully:', {
-        memoId: memo._id.toString(),
-        title: memo.title,
-        userId: userInfo.userId,
-      });
 
       res.status(200).json({
         success: true,
@@ -214,11 +201,6 @@ module.exports = async (req, res) => {
         });
       }
 
-      console.log('✅ Memo deleted successfully:', {
-        memoId: memo._id.toString(),
-        title: memo.title,
-        userId: userInfo.userId,
-      });
 
       res.status(200).json({
         success: true,
