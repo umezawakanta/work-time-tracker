@@ -1,12 +1,12 @@
-const { ensureDatabaseConnection, mongoose } = require('../utils/database');
+const { ensureDatabaseConnection: ensureDBConnection, mongoose: mongooseInstance } = require('../utils/database');
 
 // Reply schema (独立したコレクション)
-const ReplySchema = new mongoose.Schema(
+const ReplySchema = new mongooseInstance.Schema(
   {
     content: { type: String, required: true },
     authorName: { type: String, required: true },
     authorEmail: { type: String, required: true },
-    memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
+    memoId: { type: mongooseInstance.Schema.Types.ObjectId, ref: 'Memo', required: true },
     userId: { type: String, required: false } // 既存データとの互換性のためオプショナルに変更
   },
   {
@@ -15,7 +15,7 @@ const ReplySchema = new mongoose.Schema(
   },
 );
 
-const Reply = mongoose.models.Reply || mongoose.model("Reply", ReplySchema);
+const Reply = mongooseInstance.models.Reply || mongooseInstance.model("Reply", ReplySchema);
 
 module.exports = async function handler(req, res) {
   // CORS設定
@@ -88,7 +88,7 @@ module.exports = async function handler(req, res) {
 async function handleReplyRequest(req, res) {
   try {
     // Ensure database connection is established
-    await ensureDatabaseConnection();
+    await ensureDBConnection();
     
     
     // Get authorization token
@@ -150,7 +150,7 @@ async function handleReplyRequest(req, res) {
         content: content.trim(),
         authorName: authorName.trim(),
         authorEmail: authorEmail.trim(),
-        memoId: new mongoose.Types.ObjectId(memoId), // ObjectIdに変換
+        memoId: new mongooseInstance.Types.ObjectId(memoId), // ObjectIdに変換
         userId: userId || null // userIdが提供されない場合はnullを設定
       });
 
