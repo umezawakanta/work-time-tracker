@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { serialize } = require('cookie');
-const { mongoose, jwt } = require('../utils/database');
+const { mongoose: mongooseInstance, jwt } = require('../utils/database');
 const dotenv = require('dotenv');
 const { 
   createValidationError, 
@@ -14,7 +14,7 @@ dotenv.config();
 
 // Database connection utility
 const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
+  const isConnected = mongooseInstance.connection.readyState === 1;
   
   if (isConnected) {
     return;
@@ -33,7 +33,7 @@ const ensureDatabaseConnection = async () => {
     }
 
     // 接続オプションを追加してタイムアウトと再接続を最適化
-    await mongoose.connect(MONGODB_URI, {
+    await mongooseInstance.connect(MONGODB_URI, {
       dbName: 'workTimeTracker',
       maxPoolSize: 10, // 接続プールサイズ
       serverSelectionTimeoutMS: 15000, // サーバー選択タイムアウト (15秒)
@@ -45,15 +45,15 @@ const ensureDatabaseConnection = async () => {
 
 
     // 接続状態の監視
-    mongoose.connection.on("error", (error) => {
+    mongooseInstance.connection.on("error", (error) => {
       console.error("❌ MongoDB connection error:", error);
     });
 
-    mongoose.connection.on("disconnected", () => {
+    mongooseInstance.connection.on("disconnected", () => {
       console.warn("⚠️ MongoDB disconnected");
     });
 
-    mongoose.connection.on("reconnected", () => {
+    mongooseInstance.connection.on("reconnected", () => {
       console.log("🔄 MongoDB reconnected");
     });
   } catch (error) {
@@ -63,7 +63,7 @@ const ensureDatabaseConnection = async () => {
 };
 
 // User schema
-const UserSchema = new mongoose.Schema(
+const UserSchema = new mongooseInstance.Schema(
   {
     email: { type: String, required: true, unique: true, index: true },
     displayName: { type: String, required: true },
@@ -73,7 +73,7 @@ const UserSchema = new mongoose.Schema(
     isAdmin: { type: Boolean, default: false },
     roles: [{ type: String }],
     avatar: { type: String },
-    preferences: { type: mongoose.Schema.Types.Mixed, default: {} },
+    preferences: { type: mongooseInstance.Schema.Types.Mixed, default: {} },
     status: {
       type: String,
       enum: ["active", "inactive", "suspended"],
@@ -99,7 +99,7 @@ UserSchema.set("toJSON", {
   },
 });
 
-const User = mongoose.models.User || mongoose.model("User", UserSchema);
+const User = mongooseInstance.models.User || mongooseInstance.model("User", UserSchema);
 
 // Robust JSON reader for Vercel Node (handles object, string, or raw stream)
 async function readJson(req) {
