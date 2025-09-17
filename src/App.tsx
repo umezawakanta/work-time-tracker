@@ -813,14 +813,18 @@ function App() {
   const getFeatureOrder = () => {
     if (!userSettings) return features.map(f => f.id);
     
-    let order = userSettings.featureOrder.filter(id => 
-      features.some(f => f.id === id)
-    );
+    // 既存の順序を保持しつつ、新しい機能を追加
+    let order = [...userSettings.featureOrder];
     
-    // 「じぶん図鑑」が含まれていない場合は追加
-    if (!order.includes('self-analysis')) {
-      order.push('self-analysis');
-    }
+    // featuresに存在するが、orderに含まれていない機能を追加
+    features.forEach(feature => {
+      if (!order.includes(feature.id)) {
+        order.push(feature.id);
+      }
+    });
+    
+    // 存在しない機能を除外
+    order = order.filter(id => features.some(f => f.id === id));
     
     return order;
   };
@@ -1427,7 +1431,50 @@ function App() {
       const data = await response.json();
       
       if (data.success) {
-        setUserSettings(data.settings);
+        const settings = data.settings;
+        
+        // 新しい機能を追加（既存の設定を保持）
+        const currentFeatureIds = features.map(f => f.id);
+        const existingOrder = settings.featureOrder || [];
+        const existingHidden = settings.hiddenFeatures || [];
+        
+        // 存在しない機能を除外し、新しい機能を追加
+        const updatedOrder = existingOrder.filter(id => currentFeatureIds.includes(id));
+        currentFeatureIds.forEach(featureId => {
+          if (!updatedOrder.includes(featureId)) {
+            updatedOrder.push(featureId);
+          }
+        });
+        
+        const updatedHidden = existingHidden.filter(id => currentFeatureIds.includes(id));
+        
+        // 設定が更新された場合は保存
+        if (updatedOrder.length !== existingOrder.length || 
+            updatedHidden.length !== existingHidden.length) {
+          const updatedSettings = {
+            ...settings,
+            featureOrder: updatedOrder,
+            hiddenFeatures: updatedHidden
+          };
+          setUserSettings(updatedSettings);
+          
+          // サーバーに保存
+          try {
+            await fetch('/api/user-settings', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: user.id,
+                featureOrder: updatedOrder,
+                hiddenFeatures: updatedHidden
+              })
+            });
+          } catch (error) {
+            console.error('Failed to update settings with new features:', error);
+          }
+        } else {
+          setUserSettings(settings);
+        }
       } else {
         console.error('Failed to load settings:', data.message);
       }
