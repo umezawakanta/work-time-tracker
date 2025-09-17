@@ -97,9 +97,21 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
               setShowThemeSettings(!showThemeSettings);
             }} 
             className="design-settings-button"
-            title="デザイン設定"
+            title="テーマ設定"
           >
-            🎨 デザイン
+            🎨
+          </button>
+          <button 
+            onClick={() => {
+              if (!showFontSettings) {
+                closeOtherFeatures('font-settings');
+              }
+              setShowFontSettings(!showFontSettings);
+            }} 
+            className="font-settings-button"
+            title="フォント設定"
+          >
+            🔤
           </button>
         </div>
         <button 
@@ -111,7 +123,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
           className="feature-settings-button"
           title="機能設定"
         >
-          ⚙️ 機能設定
+          ⚙️
         </button>
       </div>
       

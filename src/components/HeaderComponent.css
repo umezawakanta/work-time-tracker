@@ -41,6 +41,7 @@
   gap: 1rem;
   position: relative;
   z-index: 1;
+  padding-left: 0.5rem;
 }
 
 .dashboard-header h1 {
@@ -846,9 +847,10 @@
 @media (max-width: 768px) {
   .dashboard-header {
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1rem;
     text-align: center;
-    padding: 2rem 1rem;
+    padding: 1.5rem 1rem;
+    min-height: auto;
   }
   
   .user-info {
@@ -872,14 +874,15 @@
   }
   
   .version-display {
-    background: none;
-    padding: 0;
-    border-radius: 0;
-    box-shadow: none;
-    backdrop-filter: none;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 12px;
-    font-weight: 500;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
   
   .header-buttons {
@@ -891,23 +894,28 @@
   }
   
   .design-settings-button,
+  .font-settings-button,
   .feature-settings-button {
-    font-size: 12px;
-    padding: 8px 12px;
-    margin: 0;
-  }
-  
-  .design-settings-button {
     background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-weight: 600;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
     box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
   }
   
-  .design-settings-button:hover {
-    transform: translateY(-1px);
+  .design-settings-button:hover,
+  .font-settings-button:hover,
+  .feature-settings-button:hover {
+    transform: translateY(-1px) scale(1.05);
     box-shadow: 0 4px 8px rgba(139, 92, 246, 0.4);
     background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
   }
