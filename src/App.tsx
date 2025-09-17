@@ -234,6 +234,15 @@ function App() {
   const [message, setMessage] = useState("");
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   
+  // 各機能のローディング状態
+  const [memosLoading, setMemosLoading] = useState(false);
+  const [publicMemosLoading, setPublicMemosLoading] = useState(false);
+  const [projectsLoading, setProjectsLoading] = useState(false);
+  const [booksLoading, setBooksLoading] = useState(false);
+  const [workRecordsLoading, setWorkRecordsLoading] = useState(false);
+  const [salaryLoading, setSalaryLoading] = useState(false);
+  const [diaryLoading, setDiaryLoading] = useState(false);
+  
   // 時間記録関連の状態
   const [currentTimeEntry, setCurrentTimeEntry] = useState<TimeEntry | null>(null);
   const [isTracking, setIsTracking] = useState(false);
@@ -1399,6 +1408,7 @@ function App() {
 
   // お仕事記録の関数
   const loadSalaryRecords = async () => {
+    setSalaryLoading(true);
     try {
       if (!user?.id) {
         return;
@@ -1419,10 +1429,13 @@ function App() {
     } catch (error) {
       console.error('Failed to load salary records:', error);
       setMessage(`給料記録の読み込みに失敗しました: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setSalaryLoading(false);
     }
   };
 
   const loadWorkDiaries = async () => {
+    setDiaryLoading(true);
     try {
       if (!user?.id) {
         return;
@@ -1443,6 +1456,8 @@ function App() {
     } catch (error) {
       console.error('Failed to load work diaries:', error);
       setMessage(`日記の読み込みに失敗しました: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setDiaryLoading(false);
     }
   };
 
@@ -2520,6 +2535,7 @@ function App() {
   };
 
   const loadProjects = async () => {
+    setProjectsLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/projects/list", {
@@ -2535,6 +2551,8 @@ function App() {
       }
     } catch (error) {
       console.error("Failed to load projects:", error);
+    } finally {
+      setProjectsLoading(false);
     }
   };
 
@@ -2672,6 +2690,7 @@ function App() {
 
   // 本棚関連の関数
   const loadBooks = async () => {
+    setBooksLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/books", {
@@ -2690,6 +2709,8 @@ function App() {
     } catch (error) {
       console.error("Failed to load books:", error);
       setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    } finally {
+      setBooksLoading(false);
     }
   };
 
@@ -2826,6 +2847,7 @@ function App() {
 
   // メモ関連の関数
   const loadMemos = async () => {
+    setMemosLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const params = new URLSearchParams();
@@ -2852,6 +2874,8 @@ function App() {
     } catch (error) {
       console.error("Failed to load memos:", error);
       setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    } finally {
+      setMemosLoading(false);
     }
   };
 
@@ -3043,6 +3067,7 @@ function App() {
 
   // 公開メモ関連の関数
   const loadPublicMemos = async () => {
+    setPublicMemosLoading(true);
     try {
       const params = new URLSearchParams();
       if (selectedPublicMemoCategory !== 'all') {
@@ -3064,6 +3089,8 @@ function App() {
     } catch (error) {
       console.error("Failed to load public memos:", error);
       setMessage(`エラー: ${error instanceof Error ? error.message : "Unknown error"}`);
+    } finally {
+      setPublicMemosLoading(false);
     }
   };
 
@@ -4564,7 +4591,15 @@ function App() {
               )}
 
               <div className="projects-list">
-                {projects.map((project) => (
+                {projectsLoading ? (
+                  <div className="data-loading">
+                    <div className="spinner"></div>
+                    <p>プロジェクトを読み込み中...</p>
+                  </div>
+                ) : projects.length === 0 ? (
+                  <p className="no-projects">プロジェクトが登録されていません</p>
+                ) : (
+                  projects.map((project) => (
                   <div 
                     key={project.id} 
                     className={`project-item ${selectedProject === project.id ? 'selected' : ''}`}
@@ -4597,13 +4632,12 @@ function App() {
                       {project.description && <p>{project.description}</p>}
                     </div>
                   </div>
-                ))}
-                </div>
-              </div>
+                ))
                 )}
+              </div>
             </div>
-              );
-            } else if (feature.id === 'reports') {
+            );
+          } else if (feature.id === 'reports') {
             return (
               <div key={feature.id} className="reports-section">
               <div className="section-header">
@@ -4706,8 +4740,8 @@ function App() {
                 </div>
               )}
             </div>
-              );
-            } else if (feature.id === 'admin-panel' && user?.role === 'admin') {
+            );
+          } else if (feature.id === 'admin-panel' && user?.role === 'admin') {
             return (
               <div key={feature.id} className="admin-section">
                 <div className="section-header">
@@ -5147,7 +5181,12 @@ function App() {
                   )}
 
                   <div className="books-list">
-                    {books.length === 0 ? (
+                    {booksLoading ? (
+                      <div className="data-loading">
+                        <div className="spinner"></div>
+                        <p>本を読み込み中...</p>
+                      </div>
+                    ) : books.length === 0 ? (
                       <p className="no-books">本が登録されていません</p>
                     ) : (
                       books.map((book) => (
@@ -5425,7 +5464,12 @@ function App() {
                   </div>
 
                   <div className="memos-list">
-                    {memos.length === 0 ? (
+                    {memosLoading ? (
+                      <div className="data-loading">
+                        <div className="spinner"></div>
+                        <p>メモを読み込み中...</p>
+                      </div>
+                    ) : memos.length === 0 ? (
                       <p className="no-memos">メモが登録されていません</p>
                     ) : (
                       memos.map((memo) => (
@@ -5690,7 +5734,12 @@ function App() {
 
                   {publicMemoViewMode === 'list' ? (
                     <div className="public-memos-list">
-                      {publicMemos.length === 0 ? (
+                      {publicMemosLoading ? (
+                        <div className="data-loading">
+                          <div className="spinner"></div>
+                          <p>公開メモを読み込み中...</p>
+                        </div>
+                      ) : publicMemos.length === 0 ? (
                         <p className="no-public-memos">公開メモがありません</p>
                       ) : (
                         publicMemos.map((memo) => (
@@ -6432,7 +6481,12 @@ function App() {
                     <div className="records-list">
                       <div className="salary-records">
                         <h3>💰 収入・支出記録 ({salaryRecords.length}件)</h3>
-                        {salaryRecords.length > 0 ? (
+                        {salaryLoading ? (
+                          <div className="section-loading">
+                            <div className="spinner"></div>
+                            <p>収入・支出記録を読み込み中...</p>
+                          </div>
+                        ) : salaryRecords.length > 0 ? (
                           <div className="records-grid">
                             {salaryRecords.map((record) => (
                               <div key={record._id} className="salary-record-item">
@@ -6484,7 +6538,12 @@ function App() {
 
                       <div className="work-diaries">
                         <h3>📝 日記 ({workDiaries.length}件)</h3>
-                        {workDiaries.length > 0 ? (
+                        {diaryLoading ? (
+                          <div className="section-loading">
+                            <div className="spinner"></div>
+                            <p>日記を読み込み中...</p>
+                          </div>
+                        ) : workDiaries.length > 0 ? (
                           <div className="diaries-list">
                             {workDiaries.map((diary) => (
                               <div key={diary._id} className="diary-item">
