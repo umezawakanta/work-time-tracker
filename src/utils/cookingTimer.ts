@@ -34,7 +34,7 @@ export const startCookingTimer = (
     state: CookingTimerState,
     setters: CookingTimerSetters,
     cookingRecipes: CookingRecipes,
-    getRecipePhases: (recipeKey: string, eggType?: string) => Array<{ name: string; duration: number }>,
+    getRecipePhases: (recipeKey: string, eggType?: 'soft' | 'medium' | 'hard') => Array<{ name: string; duration: number }>,
     getTotalCookingTime: (recipeKey: string, eggType?: string) => number
 ) => {
     const {
