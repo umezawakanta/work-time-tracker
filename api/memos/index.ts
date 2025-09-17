@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
+const { mongoose, jwt } = require('../utils/database');
 const dotenv = require('dotenv');
 
 dotenv.config();
