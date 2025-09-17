@@ -44,6 +44,8 @@ const MemoSchema = new mongoose.Schema({
   category: { type: String, required: true },
   tags: [{ type: String }],
   isPublic: { type: Boolean, default: false },
+  isFamilyOnly: { type: Boolean, default: false },
+  isAdminOnly: { type: Boolean, default: false },
   userId: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
@@ -55,13 +57,15 @@ MemoSchema.pre('save', function(next) {
   next();
 });
 
-// Reply Schema
+// Reply Schema (独立したコレクション)
 const ReplySchema = new mongoose.Schema({
-  memoId: { type: String, required: true },
   content: { type: String, required: true },
   authorName: { type: String, required: true },
   authorEmail: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
+  memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
+  userId: { type: String, required: false },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
 });
 
 const Memo = mongoose.model('Memo', MemoSchema);
@@ -114,10 +118,10 @@ module.exports = async (req, res) => {
 
       const memos = await Memo.find(query).sort({ updatedAt: -1 });
 
-      // 各メモの返信を取得
+      // 各メモの返信を取得（ObjectIdで検索）
       const memosWithReplies = await Promise.all(
         memos.map(async (memo) => {
-          const replies = await Reply.find({ memoId: memo._id.toString() }).sort({ createdAt: 1 });
+          const replies = await Reply.find({ memoId: memo._id }).sort({ createdAt: 1 });
           return {
             id: memo._id.toString(),
             title: memo.title,
@@ -134,7 +138,7 @@ module.exports = async (req, res) => {
               content: reply.content,
               authorName: reply.authorName,
               authorEmail: reply.authorEmail,
-              createdAt: reply.createdAt.toISOString()
+              createdAt: reply.createdAt ? reply.createdAt.toISOString() : new Date().toISOString()
             }))
           };
         })
