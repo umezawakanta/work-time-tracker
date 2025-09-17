@@ -1,0 +1,873 @@
+/* HeaderComponent.css - ヘッダーコンポーネント専用のスタイル */
+
+/* ダッシュボードヘッダー */
+.dashboard-header {
+  background: var(--primary-color, linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fad0c4 100%)) !important;
+  color: var(--text-color, #333) !important;
+  padding: 2.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 25px 25px 0 0;
+  box-shadow: 0 8px 25px rgba(255, 154, 158, 0.4);
+  position: relative;
+  overflow: hidden;
+  min-height: 120px;
+  transition: all 0.3s ease;
+}
+
+/* 右上のログアウトボタンコンテナ */
+.logout-container {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+}
+
+.dashboard-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
+  background: var(--header-title-gradient, linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* キャラクタースタイル - 蛭子能収風ヘタウマ */
+.character-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  animation: characterBounce 2s ease-in-out infinite;
+}
+
+.character {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-5deg);
+}
+
+/* 天使の輪っか */
+.character-halo {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border: 4px solid #ffd700;
+  border-radius: 50%;
+  z-index: 4;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+  animation: haloGlow 2s ease-in-out infinite alternate;
+}
+
+/* 天使の羽 */
+.character-wings {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 40px;
+  z-index: 1;
+}
+
+.wing {
+  position: absolute;
+  width: 35px;
+  height: 25px;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #e6f3ff 100%);
+  border: 2px solid #333;
+  border-radius: 50% 10% 50% 10%;
+  animation: wingFlap 1.5s ease-in-out infinite;
+}
+
+.left-wing {
+  left: 0;
+  transform: rotate(-15deg);
+  animation-delay: 0s;
+}
+
+.right-wing {
+  right: 0;
+  transform: rotate(15deg);
+  animation-delay: 0.75s;
+}
+
+/* キラキラエフェクト */
+.sparkles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #ffd700;
+  border-radius: 50%;
+  animation: sparkleTwinkle 2s ease-in-out infinite;
+}
+
+.sparkle-1 {
+  top: 10%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.sparkle-2 {
+  top: 20%;
+  right: 15%;
+  animation-delay: 0.3s;
+}
+
+.sparkle-3 {
+  top: 60%;
+  left: 10%;
+  animation-delay: 0.6s;
+}
+
+.sparkle-4 {
+  top: 70%;
+  right: 20%;
+  animation-delay: 0.9s;
+}
+
+.sparkle-5 {
+  top: 40%;
+  left: 5%;
+  animation-delay: 1.2s;
+}
+
+.sparkle-6 {
+  top: 50%;
+  right: 5%;
+  animation-delay: 1.5s;
+}
+
+.character-face {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 50px;
+  background: #ffeb3b;
+  border: 3px solid #333;
+  border-radius: 50% 40% 50% 40%;
+  z-index: 3;
+}
+
+.character-eyes {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.eye {
+  width: 8px;
+  height: 8px;
+  background: #333;
+  border-radius: 50%;
+  position: relative;
+}
+
+.eye::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 3px;
+  height: 3px;
+  background: white;
+  border-radius: 50%;
+}
+
+.character-mouth {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15px;
+  height: 8px;
+  background: #333;
+  border-radius: 0 0 15px 15px;
+  animation: mouthMove 3s ease-in-out infinite;
+}
+
+.character-body {
+  position: absolute;
+  top: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 35px;
+  background: #4caf50;
+  border: 3px solid #333;
+  border-radius: 20px 20px 15px 15px;
+  z-index: 2;
+}
+
+.character-arms {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 20px;
+  z-index: 1;
+}
+
+.arm {
+  position: absolute;
+  width: 15px;
+  height: 25px;
+  background: #ffeb3b;
+  border: 2px solid #333;
+  border-radius: 8px;
+  animation: armWave 2s ease-in-out infinite;
+}
+
+.left-arm {
+  left: -5px;
+  transform: rotate(-20deg);
+  animation-delay: 0s;
+}
+
+.right-arm {
+  right: -5px;
+  transform: rotate(20deg);
+  animation-delay: 1s;
+}
+
+/* キャラクターアニメーション */
+@keyframes characterBounce {
+  0%, 100% {
+    transform: translateY(0px) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-3deg);
+  }
+}
+
+@keyframes mouthMove {
+  0%, 100% {
+    border-radius: 0 0 15px 15px;
+    height: 8px;
+  }
+  50% {
+    border-radius: 50%;
+    height: 12px;
+  }
+}
+
+@keyframes armWave {
+  0%, 100% {
+    transform: rotate(-20deg);
+  }
+  50% {
+    transform: rotate(-40deg);
+  }
+}
+
+.right-arm {
+  animation-name: armWaveRight;
+}
+
+@keyframes armWaveRight {
+  0%, 100% {
+    transform: rotate(20deg);
+  }
+  50% {
+    transform: rotate(40deg);
+  }
+}
+
+/* 天使のアニメーション */
+@keyframes haloGlow {
+  0% {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    transform: translateX(-50%) scale(1);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.9);
+    transform: translateX(-50%) scale(1.05);
+  }
+}
+
+@keyframes wingFlap {
+  0%, 100% {
+    transform: rotate(-15deg) scaleY(1);
+  }
+  50% {
+    transform: rotate(-25deg) scaleY(0.8);
+  }
+}
+
+.right-wing {
+  animation-name: wingFlapRight;
+}
+
+@keyframes wingFlapRight {
+  0%, 100% {
+    transform: rotate(15deg) scaleY(1);
+  }
+  50% {
+    transform: rotate(25deg) scaleY(0.8);
+  }
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* ユーザー情報セクション */
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+.user-greeting {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-character {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 2px solid #3b82f6;
+  overflow: hidden;
+}
+
+.current-character-svg {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.current-character-svg svg {
+  width: 32px;
+  height: 32px;
+  max-width: 32px;
+  max-height: 32px;
+}
+
+.default-character {
+  font-size: 1.5rem;
+  color: #3b82f6;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.user-info span {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.character-home-button {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.character-home-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
+.logout-button {
+  background: var(--secondary-color, linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%));
+  color: var(--text-color, #333);
+  border: none;
+  padding: 10px 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* 右上配置時のログアウトボタン */
+.logout-container .logout-button {
+  background: rgba(255, 255, 255, 0.9);
+  color: #dc2626;
+  border: 2px solid #dc2626;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.logout-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.logout-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6);
+}
+
+.logout-button:hover::before {
+  left: 100%;
+}
+
+/* 右下のヘタウマキャラクター */
+.bottom-right-character {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  width: 80px;
+  height: 80px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.hetama-character {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: hetamaWiggle 2s ease-in-out infinite;
+}
+
+/* ヘタウマキャラクターの天使の輪っか */
+.hetama-halo {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border: 3px solid #ffd700;
+  border-radius: 50%;
+  z-index: 4;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+  animation: hetamaHaloGlow 2s ease-in-out infinite alternate;
+}
+
+/* ヘタウマキャラクターの羽 */
+.hetama-wings {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 35px;
+  z-index: 1;
+}
+
+.hetama-wing {
+  position: absolute;
+  width: 30px;
+  height: 25px;
+  background: linear-gradient(135deg, #FFB6C1, #FFC0CB, #FFB6C1);
+  border-radius: 50% 10% 50% 10%;
+  border: 2px solid #333;
+  animation: hetamaWingFlap 1.8s ease-in-out infinite;
+}
+
+.left-hetama-wing {
+  left: 0;
+  transform-origin: right center;
+  animation-delay: 0s;
+}
+
+.right-hetama-wing {
+  right: 0;
+  transform-origin: left center;
+  animation-delay: 0.75s;
+}
+
+/* ヘタウマキャラクターの顔 */
+.hetama-face {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 50px;
+  background: #FFE4E1;
+  border: 3px solid #333;
+  border-radius: 50% 40% 50% 40%;
+  z-index: 3;
+}
+
+.hetama-eyes {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 20px;
+}
+
+.hetama-eye {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #333;
+  border-radius: 50%;
+}
+
+.left-hetama-eye {
+  left: 8px;
+  top: 2px;
+}
+
+.right-hetama-eye {
+  right: 8px;
+  top: 2px;
+}
+
+/* ヘタウマキャラクターの口 */
+.hetama-mouth {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 6px;
+  background: #333;
+  border-radius: 0 0 12px 12px;
+  animation: hetamaMouthMove 3s ease-in-out infinite;
+}
+
+/* ヘタウマキャラクターの体 */
+.hetama-body {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 35px;
+  height: 30px;
+  background: linear-gradient(135deg, #FFB6C1, #FFC0CB);
+  border: 3px solid #333;
+  border-radius: 15px 15px 10px 10px;
+  z-index: 2;
+}
+
+/* ヘタウマキャラクターの腕 */
+.hetama-arms {
+  position: absolute;
+  top: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 20px;
+  z-index: 1;
+}
+
+.hetama-arm {
+  position: absolute;
+  width: 12px;
+  height: 20px;
+  background: linear-gradient(135deg, #FFE4E1, #FFF0F5);
+  border-radius: 50% 20% 50% 20%;
+  border: 2px solid #333;
+  animation: hetamaArmWave 2.5s ease-in-out infinite;
+}
+
+.left-hetama-arm {
+  left: -2px;
+  transform: rotate(-15deg);
+  animation-delay: 0s;
+}
+
+.right-hetama-arm {
+  right: -2px;
+  transform: rotate(15deg);
+  animation-delay: 1.25s;
+}
+
+/* ヘタウマキャラクターの足 */
+.hetama-legs {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 15px;
+  z-index: 1;
+}
+
+.hetama-leg {
+  position: absolute;
+  width: 10px;
+  height: 15px;
+  background: linear-gradient(135deg, #FFE4E1, #FFF0F5);
+  border-radius: 50% 20% 50% 20%;
+  border: 2px solid #333;
+  animation: hetamaLegBounce 2s ease-in-out infinite;
+}
+
+.left-hetama-leg {
+  left: 5px;
+  animation-delay: 0s;
+}
+
+.right-hetama-leg {
+  right: 5px;
+  animation-delay: 1s;
+}
+
+/* ヘタウマキャラクターのキラキラ */
+.hetama-sparkles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.hetama-sparkle {
+  position: absolute;
+  font-size: 12px;
+  animation: hetamaSparkleTwinkle 2.5s ease-in-out infinite;
+}
+
+.hetama-sparkle.sparkle-1 {
+  top: 15%;
+  left: 25%;
+  animation-delay: 0s;
+}
+
+.hetama-sparkle.sparkle-2 {
+  top: 25%;
+  right: 20%;
+  animation-delay: 0.8s;
+}
+
+.hetama-sparkle.sparkle-3 {
+  top: 60%;
+  left: 15%;
+  animation-delay: 1.6s;
+}
+
+/* ヘタウマキャラクターのアニメーション */
+@keyframes hetamaWiggle {
+  0%, 100% {
+    transform: translateY(0px) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(2deg);
+  }
+}
+
+@keyframes hetamaHaloGlow {
+  0% {
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+    transform: translateX(-50%) scale(1);
+  }
+  100% {
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.9);
+    transform: translateX(-50%) scale(1.03);
+  }
+}
+
+@keyframes hetamaWingFlap {
+  0%, 100% {
+    transform: rotate(0deg) scaleY(1);
+  }
+  50% {
+    transform: rotate(-10deg) scaleY(0.7);
+  }
+}
+
+@keyframes hetamaMouthMove {
+  0%, 100% {
+    border-radius: 0 0 12px 12px;
+    height: 6px;
+  }
+  50% {
+    border-radius: 50%;
+    height: 8px;
+  }
+}
+
+@keyframes hetamaArmWave {
+  0%, 100% {
+    transform: rotate(-15deg);
+  }
+  50% {
+    transform: rotate(-30deg);
+  }
+}
+
+@keyframes hetamaLegBounce {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes hetamaSparkleTwinkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 1024px) {
+  .dashboard-header h1 {
+    font-size: 1.6rem;
+  }
+  
+  .user-info {
+    gap: 0.8rem;
+  }
+  
+  .theme-settings-button,
+  .font-settings-button,
+  .logout-button {
+    font-size: 12px;
+    padding: 9px 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+    padding: 1.5rem 1rem;
+  }
+  
+  .user-info {
+    flex-direction: column;
+    gap: 0.8rem;
+    align-items: center;
+  }
+  
+  .user-info span {
+    font-size: 14px;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .theme-settings-button,
+  .font-settings-button {
+    font-size: 12px;
+    padding: 8px 12px;
+    margin: 2px;
+  }
+  
+  /* モバイル時のログアウトボタン */
+  .logout-container {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  .logout-container .logout-button {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+}
+
+/* フォント設定の強制適用 */
+.dashboard-header,
+.dashboard-header h1,
+.dashboard-header .user-info,
+.dashboard-header .header-right,
+.dashboard-header .header-right button,
+.dashboard-header .header-right span,
+.dashboard-header .header-right div {
+  font-family: var(--app-font-family, inherit) !important;
+}

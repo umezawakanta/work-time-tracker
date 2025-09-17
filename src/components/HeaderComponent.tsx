@@ -1,4 +1,5 @@
 import React from 'react';
+import './HeaderComponent.css';
 import VersionInfoComponent from './VersionInfo';
 import type { User, Character } from '../types';
 
