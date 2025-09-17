@@ -3948,7 +3948,7 @@ function App() {
                           name="recipe"
                           value={key}
                           checked={selectedRecipe === key}
-                          onChange={(e) => setSelectedRecipe(e.target.value as keyof typeof cookingRecipes)}
+                          onChange={(e) => setSelectedRecipe(e.target.value)}
                           disabled={eggTimerActive}
                         />
                         <span className="recipe-name">{recipe.name}</span>
