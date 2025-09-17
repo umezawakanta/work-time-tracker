@@ -1,11 +1,11 @@
-const { mongoose } = require('../../utils/database');
+const { mongoose: mongooseInstance } = require('../../utils/database');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
 // Database connection utility
 const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
+  const isConnected = mongooseInstance.connection.readyState === 1;
   if (isConnected) {
     return;
   }
@@ -20,7 +20,7 @@ const ensureDatabaseConnection = async () => {
       return;
     }
 
-    await mongoose.connect(MONGODB_URI, {
+    await mongooseInstance.connect(MONGODB_URI, {
       dbName: 'workTimeTracker',
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 15000,
@@ -38,12 +38,12 @@ const ensureDatabaseConnection = async () => {
 };
 
 // Reply schema (独立したコレクション)
-const ReplySchema = new mongoose.Schema(
+const ReplySchema = new mongooseInstance.Schema(
   {
     content: { type: String, required: true },
     authorName: { type: String, required: true },
     authorEmail: { type: String, required: true },
-    memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
+    memoId: { type: mongooseInstance.Schema.Types.ObjectId, ref: 'Memo', required: true },
     userId: { type: String, required: false } // 既存データとの互換性のためオプショナルに変更
   },
   {
@@ -52,7 +52,7 @@ const ReplySchema = new mongoose.Schema(
   },
 );
 
-const Reply = mongoose.models.Reply || mongoose.model("Reply", ReplySchema);
+const Reply = mongooseInstance.models.Reply || mongooseInstance.model("Reply", ReplySchema);
 
 /**
  * Update reply request interface
