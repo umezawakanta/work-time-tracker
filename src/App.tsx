@@ -2129,11 +2129,41 @@ function App() {
     
     checkAuth();
 
-    // Service Workerの登録
+    // Service Workerの登録（Safari対応改善）
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
+      // Safariでのキャッシュ問題を解決するため、古いキャッシュをクリア
+      if ('caches' in window) {
+        caches.keys().then((cacheNames) => {
+          cacheNames.forEach((cacheName) => {
+            if (cacheName.includes('work-time-tracker')) {
+              caches.delete(cacheName);
+              console.log('Cleared old cache:', cacheName);
+            }
+          });
+        });
+      }
+      
+      navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+        updateViaCache: 'none' // キャッシュを無効化して常に最新版を取得
+      })
         .then((registration) => {
-          // Service Worker registered successfully
+          console.log('Service Worker registered successfully:', registration);
+          
+          // 新しいサービスワーカーが利用可能な場合の処理
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // 新しいバージョンが利用可能
+                  console.log('New service worker available');
+                  // 必要に応じてユーザーに更新を促す
+                  window.location.reload();
+                }
+              });
+            }
+          });
         })
         .catch((error) => {
           console.error('Service Worker registration failed:', error);
@@ -3455,7 +3485,7 @@ function App() {
       id: Date.now().toString(),
       name,
       duration,
-      completedAt: new Date().toISOString(),
+      completedAt: new Date(),
       type
     };
     const newHistory = [newEntry, ...timerHistory.slice(0, 49)]; // 最新50件まで保持
@@ -3624,7 +3654,11 @@ function App() {
 
   // タイマー履歴の保存
   const saveTimerHistory = (history: typeof timerHistory) => {
-    localStorage.setItem('timerHistory', JSON.stringify(history));
+    const serializedHistory = history.map(item => ({
+      ...item,
+      completedAt: item.completedAt.toISOString()
+    }));
+    localStorage.setItem('timerHistory', JSON.stringify(serializedHistory));
   };
 
   // タイマー履歴の読み込み
@@ -3635,7 +3669,7 @@ function App() {
         const parsed = JSON.parse(saved);
         setTimerHistory(parsed.map((item: any) => ({
           ...item,
-          completedAt: typeof item.completedAt === 'string' ? item.completedAt : new Date(item.completedAt).toISOString()
+          completedAt: typeof item.completedAt === 'string' ? new Date(item.completedAt) : new Date(item.completedAt)
         })));
       }
     } catch (error) {

@@ -2,7 +2,7 @@
   "name": "Work Time Tracker",
   "short_name": "WTT",
   "description": "作業時間管理と料理タイマー機能付きのワークトラッカー",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
@@ -10,6 +10,10 @@
   "scope": "/",
   "id": "work-time-tracker",
   "prefer_related_applications": false,
+  "display_override": ["window-controls-overlay", "standalone"],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
   "icons": [
     {
       "src": "/icon-192x192.png",

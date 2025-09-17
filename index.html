@@ -4,8 +4,6 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="shortcut icon" href="/icon.svg" />
-    <link rel="apple-touch-icon" href="/icon-180x180.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Work Time Tracker</title>
     
     <!-- PWA Manifest -->
@@ -29,10 +27,18 @@
     <!-- PWA Badge Support -->
     <meta name="apple-mobile-web-app-badge" content="true" />
     
-    <!-- Cache Control -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <!-- Cache Control for Safari PWA -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+    
+    <!-- Safari PWA specific fixes -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="apple-mobile-web-app-orientations" content="portrait" />
+    
+    <!-- Prevent zoom on input focus for Safari -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   </head>
   <body>
     <div id="root"></div>
