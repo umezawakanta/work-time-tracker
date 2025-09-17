@@ -3,6 +3,7 @@ import "./App.css";
 import CharacterHome from "./components/CharacterHome";
 import CustomTimer from "./components/CustomTimer";
 import { startCookingTimer } from "./utils/cookingTimer";
+import { availableThemes } from "./constants/themes";
 
 import type {
   User,
@@ -759,19 +760,6 @@ function App() {
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [selectedRecordType, setSelectedRecordType] = useState<'salary' | 'diary' | null>(null);
 
-  // 利用可能なテーマ一覧
-  const availableThemes = [
-    { value: "default", label: "🌟 デフォルト (ピンク)", preview: "💕" },
-    { value: "dark", label: "🌙 ダークテーマ", preview: "🌚" },
-    { value: "ocean", label: "🌊 オーシャン", preview: "🐠" },
-    { value: "forest", label: "🌲 フォレスト", preview: "🦋" },
-    { value: "sunset", label: "🌅 サンセット", preview: "🌇" },
-    { value: "rainbow", label: "🌈 レインボー", preview: "🦄" },
-    { value: "space", label: "🚀 スペース", preview: "🛸" },
-    { value: "candy", label: "🍭 キャンディ", preview: "🍬" },
-    { value: "pastel", label: "🌸 パステル", preview: "🦄" },
-    { value: "neon", label: "💫 ネオン", preview: "⚡" }
-  ];
 
   // 利用可能なフォント一覧（小学生向けかわいいフォント中心）
   const availableFonts = [
