@@ -24,6 +24,12 @@ const ensureDatabaseConnection = async () => {
 
     await mongoose.connect(MONGODB_URI, {
       dbName: 'workTimeTracker',
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 15000,
+      socketTimeoutMS: 45000,
+      bufferCommands: false,
+      connectTimeoutMS: 10000,
+      maxIdleTimeMS: 30000,
     });
 
   } catch (error) {

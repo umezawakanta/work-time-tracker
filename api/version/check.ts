@@ -42,7 +42,6 @@ const ensureDatabaseConnection = async () => {
       serverSelectionTimeoutMS: 15000,
       socketTimeoutMS: 45000,
       bufferCommands: false,
-      bufferMaxEntries: 0,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
