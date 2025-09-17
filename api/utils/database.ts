@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
+const jsonwebtoken = require('jsonwebtoken');
 
 // Database connection utility
 const ensureDatabaseConnection = async () => {
@@ -44,7 +44,7 @@ const verifyJWT = async (req) => {
   
   try {
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
-    const decoded = jwt.verify(token, jwtSecret);
+    const decoded = jsonwebtoken.verify(token, jwtSecret);
     return decoded;
   } catch (error) {
     console.error('JWT verification failed:', error);
@@ -70,5 +70,5 @@ module.exports = {
   verifyJWT,
   handleError,
   mongoose,
-  jwt
+  jwt: jsonwebtoken
 };
