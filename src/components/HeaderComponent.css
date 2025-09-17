@@ -856,15 +856,33 @@
     margin: 2px;
   }
   
-  /* モバイル時のログアウトボタン */
+  /* モバイル時のログアウトボタン - アイコン表示 */
   .logout-container {
-    top: 0.5rem;
-    right: 0.5rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
   }
   
   .logout-container .logout-button {
-    font-size: 11px;
-    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #dc2626;
+    border: 2px solid #dc2626;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+  
+  .logout-container .logout-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
   }
   
   /* モバイル時のヘタウマキャラクター */
