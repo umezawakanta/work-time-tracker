@@ -32,6 +32,7 @@
 @media (min-width: 1400px) {
   .user-info {
     gap: 1.5rem;
+    align-items: flex-end;
   }
   
   .user-info span {
@@ -45,6 +46,7 @@
 @media (max-width: 1399px) and (min-width: 1200px) {
   .user-info {
     gap: 1.2rem;
+    align-items: flex-end;
   }
   
   .user-info span {
@@ -57,6 +59,7 @@
 @media (max-width: 1199px) and (min-width: 1024px) {
   .user-info {
     gap: 1rem;
+    align-items: flex-end;
   }
   
   .user-info span {

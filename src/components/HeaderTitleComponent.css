@@ -34,26 +34,29 @@
 /* 大画面 (1400px以上) */
 @media (min-width: 1400px) {
   .header-title {
-    font-size: 4rem;
+    font-size: 4.5rem;
     letter-spacing: -0.03em;
     line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 
 /* 大画面 (1200px - 1399px) */
 @media (max-width: 1399px) and (min-width: 1200px) {
   .header-title {
-    font-size: 3.5rem;
+    font-size: 4rem;
     letter-spacing: -0.025em;
     line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 
 @media (max-width: 1199px) and (min-width: 1024px) {
   .header-title {
-    font-size: 3rem;
+    font-size: 3.5rem;
     letter-spacing: -0.02em;
     line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 

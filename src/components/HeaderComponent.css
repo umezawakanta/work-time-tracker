@@ -21,6 +21,7 @@
   gap: 1rem;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .dashboard-header::before {
@@ -30,10 +31,15 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 100%);
   pointer-events: none;
   z-index: 0;
   border-radius: inherit;
+  transition: opacity 0.3s ease;
+}
+
+.dashboard-header:hover::before {
+  opacity: 0.8;
 }
 
 /* ヘッダー内のすべての要素をz-indexで前面に */
@@ -90,38 +96,44 @@
 /* PCサイズでのヘッダーレイアウト最適化 */
 @media (min-width: 1024px) {
   .dashboard-header {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
-    grid-template-rows: auto auto;
-    grid-template-areas: 
-      "left title right"
-      "left title right";
-    align-items: center;
-    justify-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     padding: 2.5rem 3rem;
     position: relative;
-    gap: 1rem;
+    min-height: 140px;
   }
   
+  /* 左側エリア */
   .dashboard-header .header-left {
-    grid-area: left;
-    justify-self: start;
-    align-self: start;
+    flex: 0 0 auto;
+    order: 1;
+    align-self: flex-start;
   }
   
+  /* 中央エリア */
   .dashboard-header .header-title {
-    grid-area: title;
-    justify-self: center;
-    align-self: center;
+    flex: 1;
+    order: 2;
     text-align: center;
+    align-self: center;
+    margin: 0 2rem;
+    position: relative;
+    z-index: 2;
   }
   
+  /* 右側エリア */
   .dashboard-header .user-info {
-    grid-area: right;
-    justify-self: end;
-    align-self: start;
+    flex: 0 0 auto;
+    order: 3;
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
   }
   
+  /* ログアウトボタン */
   .dashboard-header .logout-container {
     position: absolute;
     top: 1.5rem;
@@ -129,6 +141,7 @@
     z-index: 10;
   }
   
+  /* ヘタマキャラクター */
   .dashboard-header .hetama-character {
     position: absolute;
     bottom: 1rem;
@@ -151,8 +164,14 @@
   .dashboard-header {
     padding: 3.5rem 4rem;
     min-height: 160px;
-    grid-template-columns: 1fr 3fr 1fr;
-    gap: 2rem;
+  }
+  
+  .dashboard-header .header-title {
+    margin: 0 3rem;
+  }
+  
+  .dashboard-header .user-info {
+    gap: 0.75rem;
   }
   
   .dashboard-header .logout-container {
@@ -171,8 +190,14 @@
   .dashboard-header {
     padding: 3rem 3rem;
     min-height: 140px;
-    grid-template-columns: 1fr 2.5fr 1fr;
-    gap: 1.5rem;
+  }
+  
+  .dashboard-header .header-title {
+    margin: 0 2.5rem;
+  }
+  
+  .dashboard-header .user-info {
+    gap: 0.625rem;
   }
   
   .dashboard-header .logout-container {
@@ -191,8 +216,14 @@
   .dashboard-header {
     padding: 2.5rem 2rem;
     min-height: 130px;
-    grid-template-columns: 1fr 2fr 1fr;
-    gap: 1rem;
+  }
+  
+  .dashboard-header .header-title {
+    margin: 0 2rem;
+  }
+  
+  .dashboard-header .user-info {
+    gap: 0.5rem;
   }
   
   .dashboard-header .logout-container {
