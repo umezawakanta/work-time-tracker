@@ -1,6 +1,6 @@
 import React from "react";
 import "./HeaderComponent.css";
-import CharacterComponent from "./CharacterComponent";
+import HeaderLeftComponent from "./HeaderLeftComponent";
 import HetamaCharacterComponent from "./HetamaCharacterComponent";
 import HeaderTitleComponent from "./HeaderTitleComponent";
 import LogoutButtonComponent from "./LogoutButtonComponent";
@@ -38,9 +38,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
 }) => {
   return (
     <header className="dashboard-header">
-      <div className="header-left">
-        <CharacterComponent />
-      </div>
+      <HeaderLeftComponent />
       <HeaderTitleComponent />
       <UserInfoComponent
         user={user}

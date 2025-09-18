@@ -1,0 +1,10 @@
+/* HeaderLeftComponent.css - ヘッダー左側コンポーネント専用のスタイル */
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+  padding-left: 0.5rem;
+}
