@@ -97,7 +97,9 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
 
   // 日時フォーマット関数
   const formatDateTime = (dateString: string) => {
+    if (!dateString) return '日付不明';
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '無効な日付';
     return date.toLocaleString("ja-JP", {
       year: "numeric",
       month: "2-digit",
