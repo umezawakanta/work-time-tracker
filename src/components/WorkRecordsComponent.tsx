@@ -185,6 +185,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 月の統計を計算
   const getMonthlySummary = (year: number, month: number) => {
+    if (!currentMonth) return { totalSalary: 0, averageMood: 0, salaryRecordsCount: 0, diariesCount: 0 };
     const monthlySalaryRecords = salaryRecords.filter(record => {
       const recordDate = new Date(record.date);
       return recordDate.getFullYear() === year && recordDate.getMonth() === month;
@@ -256,7 +257,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     setter(prev => prev.filter((_, i) => i !== index));
   };
 
-  const monthlySummary = getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth());
+  const monthlySummary = currentMonth ? getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth()) : { totalSalary: 0, averageMood: 0, salaryRecordsCount: 0, diariesCount: 0 };
 
   return (
     <div className="work-records-section">
