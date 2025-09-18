@@ -100,7 +100,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
     category: "personal",
     priority: "medium",
     status: "not-started",
-    milestones: [] as Array<{ id: string; text: string; completed: boolean }>,
+    milestones: [] as Array<{ id: string; title: string; description: string; completed: boolean }>,
   });
   const [newMilestone, setNewMilestone] = useState("");
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
@@ -358,7 +358,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
       ...prev,
       milestones: [
         ...prev.milestones,
-        { id: milestoneId, text: newMilestone.trim(), completed: false },
+        { id: milestoneId, title: newMilestone.trim(), description: "", completed: false },
       ],
     }));
     setNewMilestone("");

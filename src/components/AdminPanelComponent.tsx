@@ -32,7 +32,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [editingUserData, setEditingUserData] = useState<Partial<AdminUser>>({});
   const [showUserForm, setShowUserForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'name' | 'email' | 'role' | 'createdAt'>('createdAt');
+  const [sortBy, setSortBy] = useState<'email' | 'role' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   // ユーザー編集フォームの初期化

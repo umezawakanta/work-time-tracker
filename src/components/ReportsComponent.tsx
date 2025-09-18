@@ -46,8 +46,8 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
 
     // 基本統計を計算
     const totalSalary = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.salary || 0), 0) : 0;
-    const totalOvertime = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.overtime || 0), 0) : 0;
-    const totalBonus = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.bonus || 0), 0) : 0;
+    const totalOvertime = 0; // overtimeプロパティが存在しないため0に設定
+    const totalBonus = 0; // bonusプロパティが存在しないため0に設定
     const totalMiscellaneous = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.miscellaneous || 0), 0) : 0;
     const totalOther = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.other || 0), 0) : 0;
 

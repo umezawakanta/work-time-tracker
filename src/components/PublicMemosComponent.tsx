@@ -223,7 +223,11 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
           <div className="public-memo-calendar">
             <div className="calendar-header">
               <button
-                onClick={() => navigatePublicMemoMonth("prev")}
+                onClick={() => {
+                  const newMonth = new Date(publicMemoCurrentMonth);
+                  newMonth.setMonth(newMonth.getMonth() - 1);
+                  setPublicMemoCurrentMonth(newMonth);
+                }}
                 className="calendar-nav-button"
               >
                 ← 前月
@@ -232,7 +236,11 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                 {publicMemoCurrentMonth.getFullYear()}年{publicMemoCurrentMonth.getMonth() + 1}月
               </h3>
               <button
-                onClick={() => navigatePublicMemoMonth("next")}
+                onClick={() => {
+                  const newMonth = new Date(publicMemoCurrentMonth);
+                  newMonth.setMonth(newMonth.getMonth() + 1);
+                  setPublicMemoCurrentMonth(newMonth);
+                }}
                 className="calendar-nav-button"
               >
                 次月 →

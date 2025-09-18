@@ -512,6 +512,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     value={diaryDate}
                     onChange={(e) => setDiaryDate(e.target.value)}
                     required
+                    aria-label="日記の日付"
                   />
                 </div>
                 <div className="form-group">

@@ -183,7 +183,10 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                           保存
                         </button>
                         <button
-                          onClick={handleCancelGenreEdit}
+                          onClick={() => {
+                            setEditingGenre(null);
+                            setEditingGenreName("");
+                          }}
                           className="cancel-genre-button"
                         >
                           キャンセル

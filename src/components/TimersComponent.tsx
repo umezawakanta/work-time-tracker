@@ -371,7 +371,7 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
                       name="timerSound"
                       value={sound}
                       checked={customTimerSound === sound}
-                      onChange={(e) => setCustomTimerSound(e.target.value)}
+                      onChange={(e) => setCustomTimerSound(e.target.value as "bell" | "chime" | "beep" | "alarm")}
                     />
                     <span className="sound-label">
                       {sound === 'bell' && '🔔 ベル'}
