@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { serialize } = require('cookie');
-const { mongoose, jwt, ensureDatabaseConnection: connectDB, User } = require('../utils/database');
+const { mongoose, jwt, ensureDatabaseConnection: initDB, User: UserModel } = require('../utils/database');
 const { 
   createValidationError, 
   createAuthError, 
@@ -28,9 +28,9 @@ async function readJson(req) {
       req.on('end', () => resolve(data));
       req.on('error', reject);
     });
-    return raw ? JSON.parse(raw) : null;
+    return raw && (raw as string).trim() ? JSON.parse(raw as string) : null;
   } catch {
-    throw Object.assign(new Error('Invalid JSON'), { statusCode: 400 });
+    throw Object.assign(new Error('Invalid JSON'), { statusCode: 400 } as any);
   }
 }
 
@@ -77,7 +77,7 @@ async function handler(req, res) {
   try {
 
     // Ensure database connection is established
-    await connectDB();
+    await initDB();
 
     // Read JSON body safely across environments
     const body = await readJson(req);
@@ -113,7 +113,7 @@ async function handler(req, res) {
     const emailLc = (email || '').toLowerCase();
     const maskedEmail = emailLc.replace(/^[^@]+/, '***');
     
-    const user = await User.findOne({ email: emailLc });
+    const user = await UserModel.findOne({ email: emailLc });
 
     if (!user) {
       return sendErrorResponse(res, 401, createAuthError(

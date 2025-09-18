@@ -900,8 +900,7 @@
     margin-right: auto;
   }
   
-  .design-settings-button,
-  .font-settings-button {
+  .design-settings-button {
     background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
     color: white;
     border: none;
@@ -916,6 +915,26 @@
     align-items: center;
     justify-content: center;
     margin: 0;
+  }
+
+  .font-settings-button {
+    background: var(--accent-color, linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%));
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 16px;
+    margin: 0 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .feature-settings-button {
@@ -938,11 +957,30 @@
     right: 4rem;
   }
   
-  .design-settings-button:hover,
-  .font-settings-button:hover {
+  .design-settings-button:hover {
     transform: translateY(-1px) scale(1.05);
     box-shadow: 0 4px 8px rgba(139, 92, 246, 0.4);
     background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
+  }
+
+  .font-settings-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .font-settings-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.6);
+  }
+
+  .font-settings-button:hover::before {
+    left: 100%;
   }
   
   .feature-settings-button:hover {

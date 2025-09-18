@@ -10,7 +10,7 @@ const connectDB = async () => {
       return;
     }
     
-    await mongoose.connect(process.env.MONGODB_URI, {
+    await mongoose.connect(process.env.MONGODB_URI || '', {
       dbName: 'workTimeTracker'
     });
   } catch (error) {
@@ -63,7 +63,7 @@ export default async function handler(req, res) {
         });
       }
 
-      const query = { userId };
+      const query: any = { userId };
       if (isPrivate !== undefined) {
         query.isPrivate = isPrivate === 'true';
       }
