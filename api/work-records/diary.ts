@@ -122,7 +122,7 @@ export default async function handler(req, res) {
         });
       }
 
-      const updateData = {
+      const updateData: any = {
         updatedAt: new Date()
       };
 
