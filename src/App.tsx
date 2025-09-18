@@ -2599,7 +2599,6 @@ function App() {
     setDiaryTitle("");
     setDiaryContent("");
     setDiaryMood("");
-    setDiaryWeather("");
     setDiaryActivities([]);
     setDiaryNotes("");
     setDiaryGoals("");
