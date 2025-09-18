@@ -3,6 +3,23 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+// Reply schema (独立したコレクション)
+const ReplySchema = new mongoose.Schema(
+  {
+    content: { type: String, required: true },
+    authorName: { type: String, required: true },
+    authorEmail: { type: String, required: true },
+    memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
+    userId: { type: String, required: false }
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
+);
+
+const Reply = mongoose.models.Reply || mongoose.model("Reply", ReplySchema);
+
 // Database connection utility
 const ensureDatabaseConnection = async () => {
   const isConnected = mongoose.connection.readyState === 1;
