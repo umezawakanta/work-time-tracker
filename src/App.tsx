@@ -15,7 +15,8 @@ import BookshelfComponent from "./components/BookshelfComponent";
 import HeaderComponent from "./components/HeaderComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
-import { availableFonts } from "./constants/fonts";
+import { availableFonts, FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
+import LanguageFontSettings from "./components/LanguageFontSettings";
 import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
 
 import type {
@@ -235,7 +236,9 @@ function App() {
 
   // フォント設定関連の状態
   const [selectedFont, setSelectedFont] = useState("system");
+  const [fontSettings, setFontSettings] = useState<FontSettings>(DEFAULT_FONT_SETTINGS);
   const [showFontSettings, setShowFontSettings] = useState(false);
+  const [showLanguageFontSettings, setShowLanguageFontSettings] = useState(false);
 
   // テーマ設定関連の状態
   const [selectedTheme, setSelectedTheme] = useState("default");
@@ -1009,7 +1012,17 @@ function App() {
   // フォント設定の読み込みと適用
   useEffect(() => {
     const savedFont = localStorage.getItem("selectedFont");
-    if (savedFont) {
+    const savedFontSettings = localStorage.getItem("fontSettings");
+    
+    if (savedFontSettings) {
+      try {
+        const settings = JSON.parse(savedFontSettings);
+        setFontSettings(settings);
+        applyLanguageFonts(settings);
+      } catch (error) {
+        console.error("フォント設定の読み込みに失敗しました:", error);
+      }
+    } else if (savedFont) {
       setSelectedFont(savedFont);
       // 少し遅延してからフォントを適用（DOMが完全に読み込まれてから）
       setTimeout(() => {
@@ -1100,6 +1113,51 @@ function App() {
     });
   };
 
+  // 言語別フォント適用関数
+  const applyLanguageFonts = (settings: FontSettings) => {
+    const root = document.documentElement;
+    const css = generateFontCSS(settings);
+    
+    // 既存のフォントCSSを削除
+    const existingStyle = document.getElementById('language-font-styles');
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+    
+    // 新しいフォントCSSを追加
+    const style = document.createElement('style');
+    style.id = 'language-font-styles';
+    style.textContent = css;
+    document.head.appendChild(style);
+    
+    // 日本語テキストに日本語フォントを適用
+    const japaneseFont = settings.japanese === 'system' 
+      ? 'var(--japanese-font)'
+      : settings.japanese;
+    
+    // 英語テキストに英語フォントを適用
+    const englishFont = settings.english === 'system'
+      ? 'var(--english-font)'
+      : settings.english;
+    
+    // 全要素に言語別フォントを適用
+    const allElements = document.querySelectorAll('*');
+    allElements.forEach(element => {
+      const text = element.textContent || '';
+      const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
+      const hasEnglish = /[a-zA-Z]/.test(text);
+      
+      if (hasJapanese && hasEnglish) {
+        // 日本語と英語が混在する場合は日本語フォントを優先
+        (element as HTMLElement).style.fontFamily = japaneseFont;
+      } else if (hasJapanese) {
+        (element as HTMLElement).style.fontFamily = japaneseFont;
+      } else if (hasEnglish) {
+        (element as HTMLElement).style.fontFamily = englishFont;
+      }
+    });
+  };
+
   // フォント変更ハンドラー
   const handleFontChange = (fontValue: string) => {
     setSelectedFont(fontValue);
@@ -1115,6 +1173,13 @@ function App() {
     setTimeout(() => {
       applyFont(fontValue);
     }, 500);
+  };
+
+  // 言語別フォント設定保存ハンドラー
+  const handleLanguageFontSave = (settings: FontSettings) => {
+    setFontSettings(settings);
+    applyLanguageFonts(settings);
+    localStorage.setItem("fontSettings", JSON.stringify(settings));
   };
 
   // テーマ適用関数
@@ -7418,12 +7483,23 @@ function App() {
             <div className="font-settings-content">
               <div className="font-settings-header">
                 <h3>フォント設定</h3>
-                <button
-                  onClick={() => setShowFontSettings(false)}
-                  className="close-button"
-                >
-                  ×
-                </button>
+                <div className="header-buttons">
+                  <button
+                    onClick={() => {
+                      setShowFontSettings(false);
+                      setShowLanguageFontSettings(true);
+                    }}
+                    className="language-font-button"
+                  >
+                    🌐 言語別設定
+                  </button>
+                  <button
+                    onClick={() => setShowFontSettings(false)}
+                    className="close-button"
+                  >
+                    ×
+                  </button>
+                </div>
               </div>
               <div className="font-settings-body">
                 <div className="font-preview">
@@ -7501,6 +7577,14 @@ function App() {
             </div>
           </div>
         )}
+
+        {/* 言語別フォント設定モーダル */}
+        <LanguageFontSettings
+          isOpen={showLanguageFontSettings}
+          onClose={() => setShowLanguageFontSettings(false)}
+          onSave={handleLanguageFontSave}
+          currentSettings={fontSettings}
+        />
 
         {/* 機能設定モーダル */}
         {showFeatureSettings && (
