@@ -1,12 +1,10 @@
 import React from "react";
 import "./HeaderComponent.css";
-import VersionInfoComponent from "./VersionInfo";
 import CharacterComponent from "./CharacterComponent";
 import HetamaCharacterComponent from "./HetamaCharacterComponent";
-import UserGreetingComponent from "./UserGreetingComponent";
-import HeaderButtonsComponent from "./HeaderButtonsComponent";
 import HeaderTitleComponent from "./HeaderTitleComponent";
 import LogoutButtonComponent from "./LogoutButtonComponent";
+import UserInfoComponent from "./UserInfoComponent";
 import type { User, Character } from "../types";
 
 interface HeaderComponentProps {
@@ -44,35 +42,35 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
         <CharacterComponent />
       </div>
       <HeaderTitleComponent />
-      <div className="user-info">
-        <UserGreetingComponent 
-          user={user}
-          currentCharacter={currentCharacter}
-        />
-        <VersionInfoComponent />
-        <HeaderButtonsComponent
-          onCharacterHomeToggle={handleCharacterHomeToggle}
-          showThemeSettings={showThemeSettings}
-          onThemeSettingsToggle={() => {
-            if (!showThemeSettings) {
-              closeOtherFeatures("theme-settings");
-            }
-            setShowThemeSettings(!showThemeSettings);
-          }}
-          showFontSettings={showFontSettings}
-          onFontSettingsToggle={() => {
-            if (!showFontSettings) {
-              closeOtherFeatures("font-settings");
-            }
-            setShowFontSettings(!showFontSettings);
-          }}
-          onFeatureSettingsToggle={() => {
-            closeOtherFeatures("feature-settings");
-            setShowFeatureSettings(true);
-            loadUserSettings();
-          }}
-        />
-      </div>
+      <UserInfoComponent
+        user={user}
+        currentCharacter={currentCharacter}
+        onCharacterHomeToggle={handleCharacterHomeToggle}
+        showThemeSettings={showThemeSettings}
+        onThemeSettingsToggle={() => {
+          if (!showThemeSettings) {
+            closeOtherFeatures("theme-settings");
+          }
+          setShowThemeSettings(!showThemeSettings);
+        }}
+        showFontSettings={showFontSettings}
+        onFontSettingsToggle={() => {
+          if (!showFontSettings) {
+            closeOtherFeatures("font-settings");
+          }
+          setShowFontSettings(!showFontSettings);
+        }}
+        onFeatureSettingsToggle={() => {
+          closeOtherFeatures("feature-settings");
+          setShowFeatureSettings(true);
+          loadUserSettings();
+        }}
+        closeOtherFeatures={closeOtherFeatures}
+        setShowThemeSettings={setShowThemeSettings}
+        setShowFontSettings={setShowFontSettings}
+        setShowFeatureSettings={setShowFeatureSettings}
+        loadUserSettings={loadUserSettings}
+      />
 
       <LogoutButtonComponent onLogout={handleLogout} />
 

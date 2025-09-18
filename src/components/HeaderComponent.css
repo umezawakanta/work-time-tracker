@@ -39,27 +39,6 @@
 
 
 
-/* ユーザー情報セクション */
-.user-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  position: relative;
-  z-index: 1;
-  flex-wrap: wrap;
-}
-
-
-
-.user-info span {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-}
 
 
 
@@ -67,9 +46,6 @@
 /* レスポンシブデザイン */
 @media (max-width: 1024px) {
   
-  .user-info {
-    gap: 0.8rem;
-  }
   
 }
 
@@ -83,24 +59,6 @@
     position: relative;
   }
   
-  .user-info {
-    flex-direction: row;
-    gap: 1rem;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .user-info span {
-    font-size: 14px;
-    padding: 0.5rem 1rem;
-    margin: 0;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 25px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
   
   .version-info {
     margin: 0;
@@ -124,7 +82,6 @@
 
 /* フォント設定の強制適用 */
 .dashboard-header,
-.dashboard-header .user-info,
 .dashboard-header .header-right,
 .dashboard-header .header-right button,
 .dashboard-header .header-right span,
