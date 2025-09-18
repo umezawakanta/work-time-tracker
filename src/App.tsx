@@ -76,6 +76,9 @@ function App() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [description, setDescription] = useState("");
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
+  const [timeEntriesLoading, setTimeEntriesLoading] = useState(false);
+  const [currentProject, setCurrentProject] = useState<string>("");
+  const [startTime, setStartTime] = useState<Date | null>(null);
 
   // ゆでたまごタイマーの状態
   const [eggTimerActive, setEggTimerActive] = useState(false);
@@ -191,11 +194,13 @@ function App() {
     null
   );
   const [showReports, setShowReports] = useState(false);
+  const [reportsLoading, setReportsLoading] = useState(false);
 
   // 管理者関連の状態
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+  const [adminUsersLoading, setAdminUsersLoading] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
   // 本棚関連の状態
@@ -1563,6 +1568,7 @@ function App() {
 
   // 時間記録の履歴を取得
   const loadTimeEntries = async () => {
+    setTimeEntriesLoading(true);
     try {
       const response = await fetch("/api/time/entries", {
         headers: {
@@ -1587,6 +1593,8 @@ function App() {
     } catch (error) {
       console.warn("時間記録の読み込みに失敗しました。モックデータを使用します。", error);
       setTimeEntries([]);
+    } finally {
+      setTimeEntriesLoading(false);
     }
   };
 
@@ -3102,6 +3110,7 @@ function App() {
   };
 
   const loadReportSummary = async () => {
+    setReportsLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/reports/summary", {
@@ -3117,10 +3126,13 @@ function App() {
       }
     } catch (error) {
       console.error("Failed to load report summary:", error);
+    } finally {
+      setReportsLoading(false);
     }
   };
 
   const loadAdminUsers = async () => {
+    setAdminUsersLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/admin/users", {
@@ -3141,6 +3153,8 @@ function App() {
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
+    } finally {
+      setAdminUsersLoading(false);
     }
   };
 
