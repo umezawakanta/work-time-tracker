@@ -18,6 +18,7 @@ import HetamaIconComponent from "./components/HetamaIconComponent";
 import MemosComponent from "./components/MemosComponent";
 import ReportsComponent from "./components/ReportsComponent";
 import AdminPanelComponent from "./components/AdminPanelComponent";
+import LoginComponent from "./components/LoginComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts, FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
@@ -302,6 +303,7 @@ function App() {
   const [diaryTitle, setDiaryTitle] = useState("");
   const [diaryContent, setDiaryContent] = useState("");
   const [diaryMood, setDiaryMood] = useState("😊");
+  const [diaryActivities, setDiaryActivities] = useState<string[]>([]);
   const [diaryTags, setDiaryTags] = useState("");
   const [diaryIsPrivate, setDiaryIsPrivate] = useState(true);
   
@@ -4738,106 +4740,22 @@ function App() {
   // ログインしていない場合はログイン画面を表示
   if (!isLoggedIn || !user || !user.id) {
     return (
-      <div className="app">
-        <div className="login-container">
-          <h1>Work Time Tracker</h1>
-
-          {isRegisterMode ? (
-            <form onSubmit={handleRegister} className="login-form">
-              <div className="form-group">
-                <label htmlFor="displayName">表示名</label>
-                <input
-                  type="text"
-                  id="displayName"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  required
-                  disabled={loading}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="email">メールアドレス</label>
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={loading}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="password">パスワード</label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={loading}
-                />
-              </div>
-              <button type="submit" disabled={loading} className="login-button">
-                {loading ? "登録中..." : "アカウント作成"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsRegisterMode(false)}
-                className="switch-button"
-              >
-                ログインに戻る
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleLogin} className="login-form">
-              <div className="form-group">
-                <label htmlFor="email">メールアドレス</label>
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={loading}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="password">パスワード</label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={loading}
-                />
-              </div>
-              <button type="submit" disabled={loading} className="login-button">
-                {loading ? "ログイン中..." : "ログイン"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsRegisterMode(true)}
-                className="switch-button"
-              >
-                アカウント作成
-              </button>
-            </form>
-          )}
-
-          {message && (
-            <div
-              className={`message ${
-                message.includes("成功") || message.includes("作成")
-                  ? "success"
-                  : "error"
-              }`}
-            >
-              {message}
-            </div>
-          )}
-        </div>
-      </div>
+      <LoginComponent
+        onLogin={handleLogin}
+        onRegister={handleRegister}
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        confirmPassword={password} // 確認パスワードは同じ値を使用
+        setConfirmPassword={setPassword}
+        name={displayName}
+        setName={setDisplayName}
+        isLogin={!isRegisterMode}
+        setIsLogin={(isLogin) => setIsRegisterMode(!isLogin)}
+        loading={loading}
+        message={message}
+      />
     );
   }
 
