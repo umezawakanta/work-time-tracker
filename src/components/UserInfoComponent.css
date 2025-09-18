@@ -1,4 +1,4 @@
-/* UserInfoComponent.css - 超シンプルユーザー情報デザイン */
+/* UserInfoComponent.css - 究極シンプルユーザー情報デザイン */
 
 .user-info {
   display: flex;
@@ -17,7 +17,6 @@
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
-  font-family: var(--app-font-family, inherit) !important;
   transition: all 0.3s ease;
   white-space: nowrap;
   max-width: 200px;

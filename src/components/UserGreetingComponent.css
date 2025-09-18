@@ -1,4 +1,4 @@
-/* UserGreetingComponent.css - 超シンプル挨拶デザイン */
+/* UserGreetingComponent.css - 究極シンプル挨拶デザイン */
 
 .user-greeting {
   display: flex;
@@ -34,8 +34,7 @@
 .greeting-text {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-color, #333);
-  font-family: var(--app-font-family, inherit) !important;
+  color: #333;
 }
 
 /* レスポンシブ */

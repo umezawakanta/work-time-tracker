@@ -1,9 +1,9 @@
-/* HeaderComponent.css - 超シンプルヘッダーデザイン */
+/* HeaderComponent.css - 究極シンプルヘッダーデザイン */
 
 /* メインヘッダー */
 .dashboard-header {
-  background: var(--primary-color, linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fad0c4 100%));
-  color: var(--text-color, #333);
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fad0c4 100%);
+  color: #333;
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -18,11 +18,11 @@
 
 /* シンプルテーマ用 */
 [data-theme="simple"] .dashboard-header {
-  background: var(--header-bg, #f8f6f0) !important;
-  color: var(--text-color, #333) !important;
+  background: #f8f6f0 !important;
+  color: #333 !important;
   border-radius: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid var(--header-border, #e0ddd6);
+  border-bottom: 1px solid #e0ddd6;
 }
 
 /* ヘッダー左側 */

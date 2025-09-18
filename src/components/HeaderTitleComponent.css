@@ -1,17 +1,16 @@
-/* HeaderTitleComponent.css - 超シンプルタイトルデザイン */
+/* HeaderTitleComponent.css - 究極シンプルタイトルデザイン */
 
 .header-title {
   font-size: 2rem;
   font-weight: 800;
   margin: 0;
   text-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-  background: var(--header-title-gradient, linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1));
+  background: linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: gradientShift 3s ease-in-out infinite;
-  font-family: var(--app-font-family, inherit) !important;
   line-height: 1.2;
   text-align: center;
   width: 100%;
@@ -27,7 +26,7 @@
 [data-theme="simple"] .header-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--header-title-gradient, #333);
+  color: #333;
   background: none;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
