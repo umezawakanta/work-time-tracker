@@ -2,26 +2,24 @@
 
 /* ダッシュボードヘッダー */
 .dashboard-header {
-  background: var(--primary-color, linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fad0c4 100%)) !important;
-  color: var(--text-color, #333) !important;
-  padding: 1.5rem 2rem;
+  background: #f8f6f0 !important;
+  color: #333 !important;
+  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 25px 25px 0 0;
-  box-shadow: 0 8px 25px rgba(255, 154, 158, 0.4);
+  border-radius: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: relative;
-  overflow: hidden;
-  min-height: 100px;
+  overflow: visible;
+  min-height: 80px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   flex-wrap: nowrap;
-  gap: 1rem;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  gap: 2rem;
+  border-bottom: 1px solid #e0ddd6;
   
   /* パフォーマンス最適化 */
   will-change: transform, box-shadow;
@@ -31,24 +29,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.dashboard-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 100%);
-  pointer-events: none;
-  z-index: 0;
-  border-radius: inherit;
-  transition: opacity 0.3s ease;
-}
-
-.dashboard-header:hover::before {
-  opacity: 0.8;
 }
 
 /* ヘッダー内のすべての要素をz-indexで前面に */
@@ -73,7 +53,7 @@
   flex: 0 0 auto;
   min-width: 0;
   z-index: 2;
-  margin-right: 0.5rem;
+  margin-right: 1rem;
 }
 
 /* ヘッダー中央エリア */
@@ -84,31 +64,37 @@
   flex: 1 1 auto;
   min-width: 0;
   z-index: 2;
-  padding: 0 0.5rem;
+  padding: 0 2rem;
 }
 
 /* ヘッダー右側エリア */
 .header-right {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-start;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
   flex: 0 0 auto;
   min-width: 0;
-  gap: 0.5rem;
+  gap: 1rem;
   z-index: 2;
   position: relative;
-  padding-top: 0.5rem;
+}
+
+/* ヘッダーナビゲーション */
+.header-navigation {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 /* クロスブラウザ対応 */
 .dashboard-header {
   /* Safari対応 */
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   
   /* Firefox対応 */
-  -moz-box-shadow: 0 8px 25px rgba(255, 154, 158, 0.4);
+  -moz-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   
   /* IE対応 */
   -ms-flex-direction: row;
@@ -141,35 +127,36 @@
 /* ダークモード対応 */
 @media (prefers-color-scheme: dark) {
   .dashboard-header {
-    background: var(--primary-color, linear-gradient(145deg, #1a1a2e 0%, #16213e 100%)) !important;
-    color: var(--text-color, #ffffff) !important;
+    background: #2a2a2a !important;
+    color: #ffffff !important;
+    border-bottom-color: #444;
   }
 }
 
 /* PCサイズでのヘッダーレイアウト最適化 */
 @media (min-width: 1024px) {
   .dashboard-header {
-    padding: 2rem 3rem;
-    min-height: 120px;
-    gap: 0.5rem;
+    padding: 1.5rem 3rem;
+    min-height: 90px;
+    gap: 3rem;
   }
   
   .header-left {
     flex: 0 0 120px;
     max-width: 120px;
-    margin-right: 1rem;
+    margin-right: 2rem;
   }
   
   .header-center {
     flex: 1 1 auto;
     max-width: 600px;
-    padding: 0 1rem;
+    padding: 0 3rem;
   }
   
   .header-right {
-    flex: 0 0 200px;
-    max-width: 200px;
-    gap: 0.6rem;
+    flex: 0 0 300px;
+    max-width: 300px;
+    gap: 1.5rem;
   }
   
   .dashboard-header .logout-container {
@@ -181,26 +168,26 @@
 /* 大画面 (1400px以上) */
 @media (min-width: 1400px) {
   .dashboard-header {
-    padding: 2.5rem 4rem;
-    min-height: 140px;
-    gap: 1rem;
+    padding: 2rem 4rem;
+    min-height: 100px;
+    gap: 4rem;
   }
   
   .header-left {
     flex: 0 0 140px;
     max-width: 140px;
-    margin-right: 1.5rem;
+    margin-right: 2.5rem;
   }
   
   .header-center {
     max-width: 800px;
-    padding: 0 1.5rem;
+    padding: 0 4rem;
   }
   
   .header-right {
-    flex: 0 0 250px;
-    max-width: 250px;
-    gap: 0.8rem;
+    flex: 0 0 350px;
+    max-width: 350px;
+    gap: 2rem;
   }
   
   .dashboard-header .logout-container {
@@ -212,26 +199,26 @@
 /* 大画面 (1200px - 1399px) */
 @media (max-width: 1399px) and (min-width: 1200px) {
   .dashboard-header {
-    padding: 2rem 3rem;
-    min-height: 130px;
-    gap: 0.8rem;
+    padding: 1.5rem 3rem;
+    min-height: 90px;
+    gap: 3rem;
   }
   
   .header-left {
     flex: 0 0 130px;
     max-width: 130px;
-    margin-right: 1.2rem;
+    margin-right: 2rem;
   }
   
   .header-center {
     max-width: 700px;
-    padding: 0 1.2rem;
+    padding: 0 3rem;
   }
   
   .header-right {
-    flex: 0 0 220px;
-    max-width: 220px;
-    gap: 0.7rem;
+    flex: 0 0 320px;
+    max-width: 320px;
+    gap: 1.8rem;
   }
   
   .dashboard-header .logout-container {
@@ -243,26 +230,26 @@
 /* デスクトップ (1024px - 1199px) */
 @media (max-width: 1199px) and (min-width: 1024px) {
   .dashboard-header {
-    padding: 1.8rem 2.5rem;
-    min-height: 120px;
-    gap: 0.6rem;
+    padding: 1.2rem 2.5rem;
+    min-height: 85px;
+    gap: 2.5rem;
   }
   
   .header-left {
     flex: 0 0 120px;
     max-width: 120px;
-    margin-right: 1rem;
+    margin-right: 1.5rem;
   }
   
   .header-center {
     max-width: 600px;
-    padding: 0 1rem;
+    padding: 0 2.5rem;
   }
   
   .header-right {
-    flex: 0 0 200px;
-    max-width: 200px;
-    gap: 0.6rem;
+    flex: 0 0 280px;
+    max-width: 280px;
+    gap: 1.5rem;
   }
   
   .dashboard-header .logout-container {
@@ -277,9 +264,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2rem 1.5rem;
-    min-height: 140px;
-    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+    min-height: 120px;
+    gap: 1rem;
     position: relative;
     width: 100%;
     max-width: 100%;
@@ -295,6 +282,7 @@
     align-items: center;
     flex: none;
     max-width: none;
+    margin-right: 0;
   }
   
   .header-center {
@@ -316,6 +304,13 @@
     flex: none;
     max-width: none;
   }
+  
+  .dashboard-header .logout-container {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+  }
 }
 
 /* モバイル (480px - 767px) */
@@ -324,10 +319,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1rem;
     text-align: center;
-    padding: 2rem 1rem;
-    min-height: 120px;
+    padding: 1rem 1.5rem;
+    min-height: 100px;
     position: relative;
     width: 100%;
     max-width: 100%;
@@ -343,6 +338,7 @@
     align-items: center;
     flex: none;
     max-width: none;
+    margin-right: 0;
   }
   
   .header-center {
@@ -364,6 +360,13 @@
     flex: none;
     max-width: none;
   }
+  
+  .dashboard-header .logout-container {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 10;
+  }
 }
 
 /* 小画面モバイル (320px - 479px) */
@@ -372,12 +375,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
     text-align: center;
-    padding: 1.5rem 0.75rem;
-    min-height: 100px;
+    padding: 0.75rem 1rem;
+    min-height: 90px;
     position: relative;
-    border-radius: 20px 20px 0 0;
+    border-radius: 0;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -392,6 +395,7 @@
     align-items: center;
     flex: none;
     max-width: none;
+    margin-right: 0;
   }
   
   .header-center {
@@ -413,14 +417,20 @@
     flex: none;
     max-width: none;
   }
+  
+  .dashboard-header .logout-container {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 10;
+  }
 }
 
 /* 超小画面 (320px未満) */
 @media (max-width: 319px) {
   .dashboard-header {
-    padding: 1rem 0.5rem;
-    gap: 0.75rem;
-    border-radius: 15px 15px 0 0;
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
   }
   
   .header-center {
@@ -455,11 +465,7 @@
     background: #ffffff !important;
     color: #000000 !important;
     border: 3px solid #000000;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  }
-  
-  .dashboard-header::before {
-    display: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -467,10 +473,6 @@
 @media (prefers-reduced-motion: reduce) {
   .dashboard-header {
     transition: none;
-  }
-  
-  .dashboard-header::before {
-    animation: none;
   }
   
   .dashboard-header * {
@@ -482,9 +484,9 @@
 /* ダークモード対応 */
 @media (prefers-color-scheme: dark) {
   .dashboard-header {
-    background: var(--primary-color, linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)) !important;
-    color: var(--text-color, #ffffff) !important;
-    box-shadow: 0 8px 25px rgba(26, 26, 46, 0.4);
+    background: #2a2a2a !important;
+    color: #ffffff !important;
+    border-bottom-color: #444;
   }
 }
 
@@ -495,84 +497,5 @@
     color: #000000 !important;
     box-shadow: none !important;
     border: 1px solid #000000 !important;
-  }
-}
-
-/* OS別最適化 */
-
-/* Windows */
-@media screen and (-ms-high-contrast: active) {
-  .dashboard-header {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: 2px solid #000000 !important;
-  }
-}
-
-/* Windows 11 */
-@media screen and (min-width: 1024px) and (-ms-high-contrast: none) {
-  .dashboard-header {
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-}
-
-/* macOS */
-@media screen and (-webkit-min-device-pixel-ratio: 2) {
-  .dashboard-header {
-    -webkit-backdrop-filter: blur(15px);
-    backdrop-filter: blur(15px);
-  }
-}
-
-/* iOS Safari */
-@supports (-webkit-touch-callout: none) {
-  .dashboard-header {
-    -webkit-backdrop-filter: blur(15px);
-    backdrop-filter: blur(15px);
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  /* iOS Safari PCサイズ対応 */
-  @media (min-width: 1024px) {
-    .dashboard-header {
-      -webkit-backdrop-filter: blur(20px);
-      backdrop-filter: blur(20px);
-    }
-  }
-}
-
-/* Android Chrome */
-@media screen and (max-width: 768px) and (orientation: portrait) {
-  .dashboard-header {
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-  }
-}
-
-/* Android Chrome PCサイズ対応 */
-@media screen and (min-width: 1024px) and (-webkit-min-device-pixel-ratio: 1) {
-  .dashboard-header {
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-  }
-}
-
-/* Firefox */
-@-moz-document url-prefix() {
-  .dashboard-header {
-    -moz-backdrop-filter: blur(15px);
-    backdrop-filter: blur(15px);
-  }
-}
-
-/* Edge */
-@supports (-ms-ime-align: auto) {
-  .dashboard-header {
-    -ms-backdrop-filter: blur(15px);
-    backdrop-filter: blur(15px);
   }
 }

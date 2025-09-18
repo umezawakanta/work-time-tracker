@@ -47,35 +47,37 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       </div>
       
       <div className="header-right">
-        <UserInfoComponent
-          user={user}
-          currentCharacter={currentCharacter}
-          onCharacterHomeToggle={handleCharacterHomeToggle}
-          showThemeSettings={showThemeSettings}
-          onThemeSettingsToggle={() => {
-            if (!showThemeSettings) {
-              closeOtherFeatures("theme-settings");
-            }
-            setShowThemeSettings(!showThemeSettings);
-          }}
-          showFontSettings={showFontSettings}
-          onFontSettingsToggle={() => {
-            if (!showFontSettings) {
-              closeOtherFeatures("font-settings");
-            }
-            setShowFontSettings(!showFontSettings);
-          }}
-          onFeatureSettingsToggle={() => {
-            closeOtherFeatures("feature-settings");
-            setShowFeatureSettings(true);
-            loadUserSettings();
-          }}
-          closeOtherFeatures={closeOtherFeatures}
-          setShowThemeSettings={setShowThemeSettings}
-          setShowFontSettings={setShowFontSettings}
-          setShowFeatureSettings={setShowFeatureSettings}
-          loadUserSettings={loadUserSettings}
-        />
+        <div className="header-navigation">
+          <UserInfoComponent
+            user={user}
+            currentCharacter={currentCharacter}
+            onCharacterHomeToggle={handleCharacterHomeToggle}
+            showThemeSettings={showThemeSettings}
+            onThemeSettingsToggle={() => {
+              if (!showThemeSettings) {
+                closeOtherFeatures("theme-settings");
+              }
+              setShowThemeSettings(!showThemeSettings);
+            }}
+            showFontSettings={showFontSettings}
+            onFontSettingsToggle={() => {
+              if (!showFontSettings) {
+                closeOtherFeatures("font-settings");
+              }
+              setShowFontSettings(!showFontSettings);
+            }}
+            onFeatureSettingsToggle={() => {
+              closeOtherFeatures("feature-settings");
+              setShowFeatureSettings(true);
+              loadUserSettings();
+            }}
+            closeOtherFeatures={closeOtherFeatures}
+            setShowThemeSettings={setShowThemeSettings}
+            setShowFontSettings={setShowFontSettings}
+            setShowFeatureSettings={setShowFeatureSettings}
+            loadUserSettings={loadUserSettings}
+          />
+        </div>
         <LogoutButtonComponent onLogout={handleLogout} />
       </div>
 
