@@ -5007,301 +5007,6 @@ function App() {
                     closeOtherFeatures={closeOtherFeatures}
                   />
                 );
-              } else if (feature.id === "timers") {
-                return (
-                  <div key={feature.id} className="timers-section">
-                    <div className="section-header">
-                      <h2>
-                        <span className="section-icon">
-                          <div className="mini-character">
-                            <div className="mini-character-halo"></div>
-                            <div className="mini-character-wings">
-                              <div className="mini-wing left-mini-wing"></div>
-                              <div className="mini-wing right-mini-wing"></div>
-                            </div>
-                            <div className="mini-character-face">
-                              <div className="mini-character-eyes">
-                                <div className="mini-eye left-mini-eye"></div>
-                                <div className="mini-eye right-mini-eye"></div>
-                              </div>
-                              <div className="mini-character-mouth"></div>
-                            </div>
-                            <div className="mini-character-body"></div>
-                            <div className="mini-sparkles">
-                              <div className="mini-sparkle mini-sparkle-1"></div>
-                              <div className="mini-sparkle mini-sparkle-2"></div>
-                            </div>
-                          </div>
-                        </span>
-                        管理者パネル
-                      </h2>
-                      <div className="section-controls">
-                        {showAdminPanel ? (
-                          <button
-                            onClick={() => {
-                              setShowAdminPanel(false);
-                            }}
-                            className="close-section-button"
-                            title="セクションを閉じる"
-                          >
-                            ✕
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              closeOtherFeatures("admin");
-                              setShowAdminPanel(true);
-                              if (adminUsers.length === 0) {
-                                loadAdminUsers();
-                              }
-                            }}
-                            className="show-section-button"
-                            title="セクションを表示"
-                          >
-                            ▶️
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {showAdminPanel && (
-                      <div className="admin-content">
-                        <div className="admin-header">
-                          <button
-                            onClick={loadAdminUsers}
-                            className="refresh-button"
-                            title="管理者データを更新"
-                          >
-                            🔄
-                          </button>
-                          <button
-                            onClick={() => {
-                              const count = calculateNotificationCount();
-                              updateAppBadge(count);
-                              setMessage(`バッジを更新しました: ${count}件`);
-                            }}
-                            className="refresh-button"
-                            title="バッジを更新"
-                          >
-                            🔔
-                          </button>
-                        </div>
-                        <div className="admin-stats">
-                          <div className="stat-card">
-                            <h3>総ユーザー数</h3>
-                            <p className="stat-value">{adminUsers.length}</p>
-                          </div>
-                          <div className="stat-card">
-                            <h3>アクティブユーザー</h3>
-                            <p className="stat-value">
-                              {
-                                adminUsers.filter((u) => u.status === "active")
-                                  .length
-                              }
-                            </p>
-                          </div>
-                          <div className="stat-card">
-                            <h3>管理者数</h3>
-                            <p className="stat-value">
-                              {
-                                adminUsers.filter((u) => u.role === "admin")
-                                  .length
-                              }
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="users-table">
-                          <h3>ユーザー一覧</h3>
-                          <div className="table-container">
-                            <table>
-                              <thead>
-                                <tr>
-                                  <th>表示名</th>
-                                  <th>メール</th>
-                                  <th>役割</th>
-                                  <th>状態</th>
-                                  <th>登録日</th>
-                                  <th>操作</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {adminUsers.map((user) => (
-                                  <tr key={user.id}>
-                                    <td>{user.displayName}</td>
-                                    <td>{user.email}</td>
-                                    <td>
-                                      <span
-                                        className={`role-badge ${user.role}`}
-                                      >
-                                        {user.role === "admin"
-                                          ? "管理者"
-                                          : "ユーザー"}
-                                      </span>
-                                    </td>
-                                    <td>
-                                      <span
-                                        className={`status-badge ${user.status}`}
-                                      >
-                                        {user.status === "active"
-                                          ? "アクティブ"
-                                          : user.status === "inactive"
-                                          ? "非アクティブ"
-                                          : "停止中"}
-                                      </span>
-                                    </td>
-                                    <td>
-                                      {new Date(
-                                        user.createdAt
-                                      ).toLocaleDateString()}
-                                    </td>
-                                    <td>
-                                      <button
-                                        onClick={() => handleEditUser(user)}
-                                        className="edit-button"
-                                      >
-                                        編集
-                                      </button>
-                                      <button
-                                        onClick={() =>
-                                          handleDeleteUser(
-                                            user.id,
-                                            user.displayName
-                                          )
-                                        }
-                                        className="delete-button"
-                                        style={{
-                                          marginLeft: "8px",
-                                          backgroundColor:
-                                            deletingUserId === user.id
-                                              ? "#6c757d"
-                                              : "#dc3545",
-                                          opacity:
-                                            deletingUserId === user.id
-                                              ? 0.7
-                                              : 1,
-                                        }}
-                                        disabled={deletingUserId === user.id}
-                                      >
-                                        {deletingUserId === user.id
-                                          ? "削除中..."
-                                          : "削除"}
-                                      </button>
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-
-                        {/* ユーザー編集フォーム */}
-                        {editingUser && (
-                          <div className="edit-user-form">
-                            <h3>ユーザー編集</h3>
-                            <form
-                              onSubmit={(e) => {
-                                e.preventDefault();
-                                handleUpdateUser(editingUser);
-                              }}
-                            >
-                              <div className="form-group">
-                                <label>表示名</label>
-                                <input
-                                  type="text"
-                                  value={editingUser.displayName}
-                                  placeholder="表示名を入力してください"
-                                  onChange={(e) =>
-                                    setEditingUser({
-                                      ...editingUser,
-                                      displayName: e.target.value,
-                                    })
-                                  }
-                                  required
-                                />
-                              </div>
-                              <div className="form-group">
-                                <label>メールアドレス</label>
-                                <input
-                                  type="email"
-                                  value={editingUser.email}
-                                  placeholder="メールアドレスを入力してください"
-                                  onChange={(e) =>
-                                    setEditingUser({
-                                      ...editingUser,
-                                      email: e.target.value,
-                                    })
-                                  }
-                                  required
-                                />
-                              </div>
-                              <div className="form-group">
-                                <label>役割</label>
-                                <select
-                                  value={editingUser.role}
-                                  aria-label="ユーザー役割"
-                                  onChange={(e) =>
-                                    setEditingUser({
-                                      ...editingUser,
-                                      role: e.target.value,
-                                    })
-                                  }
-                                >
-                                  <option value="user">ユーザー</option>
-                                  <option value="admin">管理者</option>
-                                </select>
-                              </div>
-                              <div className="form-group">
-                                <label>状態</label>
-                                <select
-                                  value={editingUser.status}
-                                  aria-label="ユーザー状態"
-                                  onChange={(e) =>
-                                    setEditingUser({
-                                      ...editingUser,
-                                      status: e.target.value,
-                                    })
-                                  }
-                                >
-                                  <option value="active">アクティブ</option>
-                                  <option value="inactive">非アクティブ</option>
-                                  <option value="suspended">停止</option>
-                                </select>
-                              </div>
-                              <div className="form-group">
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    checked={editingUser.isVerified}
-                                    onChange={(e) =>
-                                      setEditingUser({
-                                        ...editingUser,
-                                        isVerified: e.target.checked,
-                                      })
-                                    }
-                                  />
-                                  認証済み
-                                </label>
-                              </div>
-                              <div className="form-actions">
-                                <button type="submit" className="save-button">
-                                  保存
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setEditingUser(null)}
-                                  className="cancel-button"
-                                >
-                                  キャンセル
-                                </button>
-                              </div>
-                            </form>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
               } else if (feature.id === "bookshelf") {
                 return (
                   <BookshelfComponent
@@ -5386,7 +5091,6 @@ function App() {
                     closeOtherFeatures={closeOtherFeatures}
                   />
                 );
-              } else if (feature.id === "public-memos") {
                 return (
                   <div key={feature.id} className="public-memos-section">
                     <div className="section-header">
@@ -6101,7 +5805,6 @@ function App() {
                     closeOtherFeatures={closeOtherFeatures}
                   />
                 );
-              } else if (feature.id === "public-memos-old") {
                 return (
                   <div key={feature.id} className="public-memos-section">
                     <div className="section-header">
@@ -8308,7 +8011,7 @@ function App() {
                     setShowTimers={setShowTimers}
                     customTimerTime={customTimerTime}
                     setCustomTimerTime={setCustomTimerTime}
-                    customTimerActive={customTimerActive}
+                            customTimerActive={customTimerActive}
                     setCustomTimerActive={setCustomTimerActive}
                     customTimerPaused={customTimerPaused}
                     setCustomTimerPaused={setCustomTimerPaused}
@@ -8326,7 +8029,7 @@ function App() {
                     resetCustomTimer={resetCustomTimer}
                     playCustomTimerSound={playCustomTimerSound}
                     addToTimerHistory={addToTimerHistory}
-                    closeOtherFeatures={closeOtherFeatures}
+                            closeOtherFeatures={closeOtherFeatures}
                   />
                 );
               } else if (feature.id === "self-analysis") {
@@ -8476,12 +8179,12 @@ function App() {
                   >
                     🌐 言語別設定
                   </button>
-                  <button
-                    onClick={() => setShowFontSettings(false)}
-                    className="close-button"
-                  >
-                    ×
-                  </button>
+                <button
+                  onClick={() => setShowFontSettings(false)}
+                  className="close-button"
+                >
+                  ×
+                </button>
                 </div>
               </div>
               <div className="font-settings-body">
