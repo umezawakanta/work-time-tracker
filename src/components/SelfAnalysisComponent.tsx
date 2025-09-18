@@ -26,6 +26,8 @@ interface SelfAnalysisComponentProps {
   learningRecords: LearningRecord[];
   timeEntries: any[];
   calculateTimeBreakdown: () => { [key: string]: number };
+  calculateProductivityTrend: () => Array<{date: string, workHours: number, dayOfWeek: string}>;
+  calculateProductivityStats: () => {averageHours: number, maxHours: number, totalHours: number, productiveDays: number, productivityRate: number};
   loadTimeEntries: () => void;
   editingProfile: boolean;
   setEditingProfile: (editing: boolean) => void;
@@ -70,6 +72,8 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   learningRecords,
   timeEntries,
   calculateTimeBreakdown,
+  calculateProductivityTrend,
+  calculateProductivityStats,
   loadTimeEntries,
   editingProfile,
   setEditingProfile,
@@ -235,19 +239,62 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                   <h3>📈 生産性トレンド</h3>
                   <div className="analysis-content">
                     <div className="productivity-chart">
-                      <div className="chart-placeholder">
-                        📈 過去7日間の生産性グラフ
-                      </div>
-                      <div className="productivity-stats">
-                        <div className="stat">
-                          <span className="stat-label">平均集中時間</span>
-                          <span className="stat-value">2.5h</span>
-                        </div>
-                        <div className="stat">
-                          <span className="stat-label">最高記録</span>
-                          <span className="stat-value">4.2h</span>
-                        </div>
-                      </div>
+                      {(() => {
+                        const productivityData = calculateProductivityTrend();
+                        const stats = calculateProductivityStats();
+                        
+                        if (stats.totalHours === 0) {
+                          return (
+                            <div className="no-data-message">
+                              <p>📝 過去7日間の作業記録がありません</p>
+                              <p>時間記録機能を使って作業時間を記録してみましょう！</p>
+                            </div>
+                          );
+                        }
+                        
+                        return (
+                          <>
+                            <div className="productivity-graph">
+                              <div className="graph-container">
+                                {productivityData.map((day, index) => {
+                                  const maxHours = Math.max(...productivityData.map(d => d.workHours));
+                                  const height = maxHours > 0 ? (day.workHours / maxHours) * 100 : 0;
+                                  
+                                  return (
+                                    <div key={day.date} className="graph-bar">
+                                      <div 
+                                        className="bar-fill"
+                                        style={{height: `${height}%`}}
+                                        title={`${day.dayOfWeek} ${day.workHours.toFixed(1)}h`}
+                                      ></div>
+                                      <div className="bar-label">{day.dayOfWeek}</div>
+                                      <div className="bar-value">{day.workHours > 0 ? `${day.workHours.toFixed(1)}h` : ''}</div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                            <div className="productivity-stats">
+                              <div className="stat">
+                                <span className="stat-label">平均作業時間</span>
+                                <span className="stat-value">{stats.averageHours.toFixed(1)}h</span>
+                              </div>
+                              <div className="stat">
+                                <span className="stat-label">最高記録</span>
+                                <span className="stat-value">{stats.maxHours.toFixed(1)}h</span>
+                              </div>
+                              <div className="stat">
+                                <span className="stat-label">生産性日数</span>
+                                <span className="stat-value">{stats.productiveDays}/7日</span>
+                              </div>
+                              <div className="stat">
+                                <span className="stat-label">生産性率</span>
+                                <span className="stat-value">{stats.productivityRate.toFixed(0)}%</span>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>

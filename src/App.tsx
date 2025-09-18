@@ -1604,6 +1604,71 @@ function App() {
     return categories;
   };
 
+  // 過去7日間の生産性データを計算
+  const calculateProductivityTrend = () => {
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6); // 7日間（今日含む）
+    
+    const productivityData = [];
+    
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(sevenDaysAgo);
+      date.setDate(sevenDaysAgo.getDate() + i);
+      
+      const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const endOfDay = new Date(startOfDay);
+      endOfDay.setDate(startOfDay.getDate() + 1);
+      
+      // その日の時間記録をフィルタリング
+      const dayEntries = timeEntries.filter(entry => {
+        const entryDate = new Date(entry.startTime);
+        return entryDate >= startOfDay && entryDate < endOfDay && entry.endTime;
+      });
+      
+      // その日の総作業時間を計算（仕事と学習の時間）
+      const totalWorkHours = dayEntries.reduce((total, entry) => {
+        const duration = entry.duration || 0;
+        const hours = duration / 3600;
+        const description = entry.description.toLowerCase();
+        
+        // 仕事と学習の時間のみをカウント
+        if (description.includes('仕事') || description.includes('work') || description.includes('作業') ||
+            description.includes('学習') || description.includes('study') || description.includes('勉強') || description.includes('読書')) {
+          return total + hours;
+        }
+        return total;
+      }, 0);
+      
+      productivityData.push({
+        date: date.toISOString().split('T')[0],
+        workHours: totalWorkHours,
+        dayOfWeek: ['日', '月', '火', '水', '木', '金', '土'][date.getDay()]
+      });
+    }
+    
+    return productivityData;
+  };
+
+  // 生産性統計を計算
+  const calculateProductivityStats = () => {
+    const productivityData = calculateProductivityTrend();
+    const workHours = productivityData.map(day => day.workHours);
+    
+    const totalHours = workHours.reduce((sum, hours) => sum + hours, 0);
+    const averageHours = totalHours / workHours.length;
+    const maxHours = Math.max(...workHours);
+    const productiveDays = workHours.filter(hours => hours > 0).length;
+    
+    return {
+      averageHours: averageHours,
+      maxHours: maxHours,
+      totalHours: totalHours,
+      productiveDays: productiveDays,
+      productivityRate: (productiveDays / workHours.length) * 100
+    };
+  };
+
   const handleCreateSalaryRecord = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user?.id) return;
@@ -8331,50 +8396,52 @@ function App() {
                 );
               } else if (feature.id === "self-analysis") {
                 return (
-                  <SelfAnalysisComponent
-                    key={feature.id}
-                    showSelfAnalysis={showSelfAnalysis}
-                    setShowSelfAnalysis={setShowSelfAnalysis}
-                    selfAnalysisTab={selfAnalysisTab}
-                    setSelfAnalysisTab={setSelfAnalysisTab}
-                    personalProfile={personalProfile}
-                    habits={habits}
-                    habitHistory={habitHistory}
-                    moodLogs={moodLogs}
-                    goals={goals}
-                    learningRecords={learningRecords}
-                    timeEntries={timeEntries}
-                    calculateTimeBreakdown={calculateTimeBreakdown}
-                    loadTimeEntries={loadTimeEntries}
-                    editingProfile={editingProfile}
-                    setEditingProfile={setEditingProfile}
-                    newValue={newValue}
-                    setNewValue={setNewValue}
-                    newGoal={newGoal}
-                    setNewGoal={setNewGoal}
-                    newSkill={newSkill}
-                    setNewSkill={setNewSkill}
-                    newInterest={newInterest}
-                    setNewInterest={setNewInterest}
-                    newStrength={newStrength}
-                    setNewStrength={setNewStrength}
-                    newWeakness={newWeakness}
-                    setNewWeakness={setNewWeakness}
-                    newPersonality={newPersonality}
-                    setNewPersonality={setNewPersonality}
-                    addToProfile={addToProfile}
-                    removeFromProfile={removeFromProfile}
-                    addHabit={addHabit}
-                    toggleHabitCompletion={toggleHabitCompletion}
-                    deleteHabit={deleteHabit}
-                    addGoal={addGoal}
-                    updateGoal={updateGoal}
-                    deleteGoal={deleteGoal}
-                    addLearningRecord={addLearningRecord}
-                    updateLearningRecord={updateLearningRecord}
-                    deleteLearningRecord={deleteLearningRecord}
-                    closeOtherFeatures={closeOtherFeatures}
-                  />
+        <SelfAnalysisComponent
+          key={feature.id}
+          showSelfAnalysis={showSelfAnalysis}
+          setShowSelfAnalysis={setShowSelfAnalysis}
+          selfAnalysisTab={selfAnalysisTab}
+          setSelfAnalysisTab={setSelfAnalysisTab}
+          personalProfile={personalProfile}
+          habits={habits}
+          habitHistory={habitHistory}
+          moodLogs={moodLogs}
+          goals={goals}
+          learningRecords={learningRecords}
+          timeEntries={timeEntries}
+          calculateTimeBreakdown={calculateTimeBreakdown}
+          calculateProductivityTrend={calculateProductivityTrend}
+          calculateProductivityStats={calculateProductivityStats}
+          loadTimeEntries={loadTimeEntries}
+          editingProfile={editingProfile}
+          setEditingProfile={setEditingProfile}
+          newValue={newValue}
+          setNewValue={setNewValue}
+          newGoal={newGoal}
+          setNewGoal={setNewGoal}
+          newSkill={newSkill}
+          setNewSkill={setNewSkill}
+          newInterest={newInterest}
+          setNewInterest={setNewInterest}
+          newStrength={newStrength}
+          setNewStrength={setNewStrength}
+          newWeakness={newWeakness}
+          setNewWeakness={setNewWeakness}
+          newPersonality={newPersonality}
+          setNewPersonality={setNewPersonality}
+          addToProfile={addToProfile}
+          removeFromProfile={removeFromProfile}
+          addHabit={addHabit}
+          toggleHabitCompletion={toggleHabitCompletion}
+          deleteHabit={deleteHabit}
+          addGoal={addGoal}
+          updateGoal={updateGoal}
+          deleteGoal={deleteGoal}
+          addLearningRecord={addLearningRecord}
+          updateLearningRecord={updateLearningRecord}
+          deleteLearningRecord={deleteLearningRecord}
+          closeOtherFeatures={closeOtherFeatures}
+        />
                 );
               } else {
                 console.log("Unknown feature:", feature.name, feature.id);
