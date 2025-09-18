@@ -47,14 +47,6 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
   const [selectedEggType, setSelectedEggType] = useState<"soft" | "medium" | "hard">("medium");
   const [eggTimerPhaseName, setEggTimerPhaseName] = useState("");
 
-  // プリセットタイマー
-  const timerPresets = [
-    { name: "ポモドーロ", minutes: 25 },
-    { name: "短休憩", minutes: 5 },
-    { name: "長休憩", minutes: 15 },
-    { name: "集中時間", minutes: 45 },
-    { name: "作業時間", minutes: 60 },
-  ];
   const [selectedPreset, setSelectedPreset] = useState<string>('');
   const [showHistory, setShowHistory] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
