@@ -11,6 +11,14 @@ interface PersonalProfile {
   strengths: string[];
   weaknesses: string[];
   personality: string;
+  lifestyle: string;
+  workStyle: string;
+  learningStyle: string;
+  motivation: string;
+  challenges: string[];
+  achievements: string[];
+  futureVision: string;
+  notes: string;
 }
 
 interface SelfAnalysisComponentProps {
