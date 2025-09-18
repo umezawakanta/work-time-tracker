@@ -7,34 +7,8 @@ interface PublicMemosComponentProps {
   publicMemosLoading: boolean;
   showPublicMemos: boolean;
   setShowPublicMemos: (show: boolean) => void;
-  publicMemoSelectedDate: Date | null;
-  setPublicMemoSelectedDate: (date: Date | null) => void;
-  publicMemoCurrentMonth: Date;
-  setPublicMemoCurrentMonth: (date: Date) => void;
-  selectedPublicMemoCategory: string;
-  setSelectedPublicMemoCategory: (category: string) => void;
-  publicMemoSearchTerm: string;
-  setPublicMemoSearchTerm: (term: string) => void;
-  replyingToMemo: string | null;
-  setReplyingToMemo: (memoId: string | null) => void;
-  replyContent: string;
-  setReplyContent: (content: string) => void;
-  editingReply: string | null;
-  setEditingReply: (replyId: string | null) => void;
-  editingReplyContent: string;
-  setEditingReplyContent: (content: string) => void;
-  user: any;
+  user: User | null;
   loadPublicMemos: () => void;
-  handlePublicMemoSearch: () => void;
-  handlePublicMemoCategoryChange: (category: string) => void;
-  navigatePublicMemoMonth: (direction: "prev" | "next") => void;
-  handlePublicMemoDateClick: (date: Date) => void;
-  handleReplySubmit: (memoId: string) => void;
-  handleEditReply: (replyId: string, currentContent: string) => void;
-  handleCancelEditReply: () => void;
-  handleSaveEditReply: (replyId: string) => void;
-  handleDeleteReply: (replyId: string) => void;
-  handleReplyCancel: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
 }
 
@@ -43,36 +17,19 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   publicMemosLoading,
   showPublicMemos,
   setShowPublicMemos,
-  publicMemoSelectedDate,
-  setPublicMemoSelectedDate,
-  publicMemoCurrentMonth,
-  setPublicMemoCurrentMonth,
-  selectedPublicMemoCategory,
-  setSelectedPublicMemoCategory,
-  publicMemoSearchTerm,
-  setPublicMemoSearchTerm,
-  replyingToMemo,
-  setReplyingToMemo,
-  replyContent,
-  setReplyContent,
-  editingReply,
-  setEditingReply,
-  editingReplyContent,
-  setEditingReplyContent,
   user,
   loadPublicMemos,
-  handlePublicMemoSearch,
-  handlePublicMemoCategoryChange,
-  navigatePublicMemoMonth,
-  handlePublicMemoDateClick,
-  handleReplySubmit,
-  handleEditReply,
-  handleCancelEditReply,
-  handleSaveEditReply,
-  handleDeleteReply,
-  handleReplyCancel,
   closeOtherFeatures,
 }) => {
+  // 内部状態
+  const [publicMemoSelectedDate, setPublicMemoSelectedDate] = useState<Date | null>(null);
+  const [publicMemoCurrentMonth, setPublicMemoCurrentMonth] = useState(new Date());
+  const [selectedPublicMemoCategory, setSelectedPublicMemoCategory] = useState("all");
+  const [publicMemoSearchTerm, setPublicMemoSearchTerm] = useState("");
+  const [replyingToMemo, setReplyingToMemo] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState("");
+  const [editingReply, setEditingReply] = useState<string | null>(null);
+  const [editingReplyContent, setEditingReplyContent] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
