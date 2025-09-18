@@ -42,9 +42,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   return (
     <header className="dashboard-header">
       {/* 左側：キャラクター（絶対保持） */}
-      <div className="header-left">
-        <HeaderLeftComponent isTimeTrackingActive={isTimeTrackingActive} />
-      </div>
+      <HeaderLeftComponent isTimeTrackingActive={isTimeTrackingActive} />
       
       {/* 中央：タイトルのみ */}
       <div className="header-center">
