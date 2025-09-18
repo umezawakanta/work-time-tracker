@@ -183,7 +183,7 @@ function App() {
   const [showCookingTimer, setShowCookingTimer] = useState(true);
   const [showPresetTimers, setShowPresetTimers] = useState(true);
   const [showTimerStats, setShowTimerStats] = useState(true);
-  const [showTimerHistory, setShowTimerHistory] = useState(true);
+  const [showTimerHistory, setShowTimerHistory] = useState(false);
   const [memoContent, setMemoContent] = useState("");
   const [memoCategory, setMemoCategory] = useState("");
   const [memoTags, setMemoTags] = useState("");
@@ -6435,7 +6435,10 @@ function App() {
                      showTimerStats={showTimerStats}
                      setShowTimerStats={setShowTimerStats}
                      closeOtherFeatures={closeOtherFeatures}
-                     timerHistory={timerHistory}
+                     timerHistory={timerHistory.map(item => ({
+                       ...item,
+                       completedAt: item.completedAt.toISOString()
+                     }))}
                      formatTime={formatTime}
                    />
 
