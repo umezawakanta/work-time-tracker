@@ -98,8 +98,8 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
         if (prev <= 1) {
           setCustomTimerActive(false);
           setCustomTimerPaused(false);
-          playCustomTimerSound();
-          addToTimerHistory(preset.name, preset.duration, 'preset');
+          // playCustomTimerSound();
+          // addToTimerHistory(preset.name, preset.duration, 'preset');
           clearInterval(interval);
           setCustomTimerInterval(null);
           return 0;
@@ -113,21 +113,27 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
 
   // カスタムタイマーの時間を設定
   const handleTimeChange = (type: 'hours' | 'minutes' | 'seconds', value: number) => {
-    const newTime = { ...customTimerTime };
+    const hours = Math.floor(customTimerTime / 3600);
+    const minutes = Math.floor((customTimerTime % 3600) / 60);
+    const seconds = customTimerTime % 60;
+    
+    let newHours = hours;
+    let newMinutes = minutes;
+    let newSeconds = seconds;
     
     switch (type) {
       case 'hours':
-        newTime.hours = Math.max(0, Math.min(23, value));
+        newHours = Math.max(0, Math.min(23, value));
         break;
       case 'minutes':
-        newTime.minutes = Math.max(0, Math.min(59, value));
+        newMinutes = Math.max(0, Math.min(59, value));
         break;
       case 'seconds':
-        newTime.seconds = Math.max(0, Math.min(59, value));
+        newSeconds = Math.max(0, Math.min(59, value));
         break;
     }
     
-    const totalSeconds = newTime.hours * 3600 + newTime.minutes * 60 + newTime.seconds;
+    const totalSeconds = newHours * 3600 + newMinutes * 60 + newSeconds;
     setCustomTimerTime(totalSeconds);
     
     if (!customTimerActive) {
@@ -242,7 +248,10 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
             <div className="timer-controls">
               {!customTimerActive ? (
                 <button
-                  onClick={startCustomTimer}
+                  onClick={() => {
+                    setCustomTimerActive(true);
+                    setCustomTimerPaused(false);
+                  }}
                   className="start-button"
                   disabled={customTimerTime === 0}
                 >
@@ -251,7 +260,7 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
               ) : (
                 <div className="active-controls">
                   {!customTimerPaused ? (
-                    <button onClick={pauseCustomTimer} className="pause-button">
+                    <button onClick={() => setCustomTimerPaused(true)} className="pause-button">
                       ⏸️ 一時停止
                     </button>
                   ) : (

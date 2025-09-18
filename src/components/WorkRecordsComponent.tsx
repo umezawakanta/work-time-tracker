@@ -196,9 +196,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       return diaryDate.getFullYear() === year && diaryDate.getMonth() === month;
     });
     
-    const totalSalary = monthlySalaryRecords.length > 0 ? monthlySalaryRecords.reduce((sum, record) => sum + record.amount, 0) : 0;
+    const totalSalary = monthlySalaryRecords.length > 0 ? monthlySalaryRecords.reduce((sum, record) => sum + (record.salary || 0), 0) : 0;
     const averageMood = monthlyDiaries.length > 0 
-      ? monthlyDiaries.reduce((sum, diary) => sum + (diary.mood || 0), 0) / monthlyDiaries.length 
+      ? monthlyDiaries.reduce((sum, diary) => sum + (Number(diary.mood) || 0), 0) / monthlyDiaries.length 
       : 0;
     
     return {

@@ -344,6 +344,8 @@ function App() {
   const [diaryBreakTime, setDiaryBreakTime] = useState(0);
   const [diaryProductivity, setDiaryProductivity] = useState(5);
   const [diaryNotes, setDiaryNotes] = useState("");
+  const [diaryGratitude, setDiaryGratitude] = useState("");
+  const [diaryReflection, setDiaryReflection] = useState("");
 
   // 配列項目の一時入力状態
   const [newAchievement, setNewAchievement] = useState("");
