@@ -80,43 +80,6 @@
   flex-wrap: wrap;
 }
 
-.user-greeting {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.header-character {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 2px solid #3b82f6;
-  overflow: hidden;
-}
-
-.current-character-svg {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.current-character-svg svg {
-  width: 32px;
-  height: 32px;
-  max-width: 32px;
-  max-height: 32px;
-}
-
-.default-character {
-  font-size: 1.5rem;
-  color: #3b82f6;
-}
 
 .header-buttons {
   display: flex;

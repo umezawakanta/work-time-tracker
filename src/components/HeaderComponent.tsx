@@ -3,6 +3,7 @@ import "./HeaderComponent.css";
 import VersionInfoComponent from "./VersionInfo";
 import CharacterComponent from "./CharacterComponent";
 import HetamaCharacterComponent from "./HetamaCharacterComponent";
+import UserGreetingComponent from "./UserGreetingComponent";
 import type { User, Character } from "../types";
 
 interface HeaderComponentProps {
@@ -41,21 +42,10 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       </div>
       <h1>⏰ Work Time Tracker 📚</h1>
       <div className="user-info">
-        <div className="user-greeting">
-          <div className="header-character">
-            {currentCharacter ? (
-              <div
-                className="current-character-svg"
-                dangerouslySetInnerHTML={{ __html: currentCharacter.svg }}
-              />
-            ) : (
-              <div className="default-character">👋</div>
-            )}
-          </div>
-          <span>
-            こんにちは、{user?.displayName || user?.email || "User"}さん！
-          </span>
-        </div>
+        <UserGreetingComponent 
+          user={user}
+          currentCharacter={currentCharacter}
+        />
         <VersionInfoComponent />
         <div className="header-buttons">
           <button
