@@ -42,15 +42,12 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       <div className="header-left">
         <HeaderLeftComponent />
       </div>
-
+      
       <div className="header-center">
         <HeaderTitleComponent />
-        <UserGreetingComponent
-          user={user}
-          currentCharacter={currentCharacter}
-        />
+        <UserGreetingComponent user={user} currentCharacter={currentCharacter} />
       </div>
-
+      
       <div className="header-right">
         <div className="header-navigation">
           <UserInfoComponent
