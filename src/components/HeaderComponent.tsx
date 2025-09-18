@@ -4,6 +4,8 @@ import VersionInfoComponent from "./VersionInfo";
 import CharacterComponent from "./CharacterComponent";
 import HetamaCharacterComponent from "./HetamaCharacterComponent";
 import UserGreetingComponent from "./UserGreetingComponent";
+import HeaderButtonsComponent from "./HeaderButtonsComponent";
+import HeaderTitleComponent from "./HeaderTitleComponent";
 import type { User, Character } from "../types";
 
 interface HeaderComponentProps {
@@ -40,57 +42,35 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       <div className="header-left">
         <CharacterComponent />
       </div>
-      <h1>⏰ Work Time Tracker 📚</h1>
+      <HeaderTitleComponent />
       <div className="user-info">
         <UserGreetingComponent 
           user={user}
           currentCharacter={currentCharacter}
         />
         <VersionInfoComponent />
-        <div className="header-buttons">
-          <button
-            onClick={handleCharacterHomeToggle}
-            className="character-home-button"
-            title="キャラクター達のお家"
-          >
-            🏠
-          </button>
-          <button
-            onClick={() => {
-              if (!showThemeSettings) {
-                closeOtherFeatures("theme-settings");
-              }
-              setShowThemeSettings(!showThemeSettings);
-            }}
-            className="design-settings-button"
-            title="テーマ設定"
-          >
-            🎨
-          </button>
-          <button
-            onClick={() => {
-              if (!showFontSettings) {
-                closeOtherFeatures("font-settings");
-              }
-              setShowFontSettings(!showFontSettings);
-            }}
-            className="font-settings-button"
-            title="フォント設定"
-          >
-            🔤
-          </button>
-          <button
-            onClick={() => {
-              closeOtherFeatures("feature-settings");
-              setShowFeatureSettings(true);
-              loadUserSettings();
-            }}
-            className="feature-settings-button"
-            title="機能設定"
-          >
-            ⚙️
-          </button>
-        </div>
+        <HeaderButtonsComponent
+          onCharacterHomeToggle={handleCharacterHomeToggle}
+          showThemeSettings={showThemeSettings}
+          onThemeSettingsToggle={() => {
+            if (!showThemeSettings) {
+              closeOtherFeatures("theme-settings");
+            }
+            setShowThemeSettings(!showThemeSettings);
+          }}
+          showFontSettings={showFontSettings}
+          onFontSettingsToggle={() => {
+            if (!showFontSettings) {
+              closeOtherFeatures("font-settings");
+            }
+            setShowFontSettings(!showFontSettings);
+          }}
+          onFeatureSettingsToggle={() => {
+            closeOtherFeatures("feature-settings");
+            setShowFeatureSettings(true);
+            loadUserSettings();
+          }}
+        />
       </div>
 
       {/* 右上のログアウトボタン */}

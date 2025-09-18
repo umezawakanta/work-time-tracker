@@ -1,0 +1,34 @@
+/* HeaderTitleComponent.css - ヘッダータイトルコンポーネント専用のスタイル */
+
+.header-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
+  background: var(--header-title-gradient, linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease-in-out infinite;
+  font-family: var(--app-font-family, inherit) !important;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 1024px) {
+  .header-title {
+    font-size: 1.6rem;
+    white-space: nowrap;
+  }
+}

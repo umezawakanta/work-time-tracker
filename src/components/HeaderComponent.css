@@ -44,29 +44,6 @@
   padding-left: 0.5rem;
 }
 
-.dashboard-header h1 {
-  font-size: 2rem;
-  font-weight: 800;
-  margin: 0;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-  position: relative;
-  z-index: 1;
-  background: var(--header-title-gradient, linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1));
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradientShift 3s ease-in-out infinite;
-}
-
-@keyframes gradientShift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
 
 
 /* ユーザー情報セクション */
@@ -81,12 +58,6 @@
 }
 
 
-.header-buttons {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
 
 .user-info span {
   background: rgba(255, 255, 255, 0.9);
@@ -97,28 +68,6 @@
   backdrop-filter: blur(10px);
 }
 
-  .character-home-button {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    color: white;
-    border: none;
-    padding: 0.5rem;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-.character-home-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-}
 
 .logout-button {
   background: rgba(255, 255, 255, 0.2);
@@ -177,17 +126,11 @@
 
 /* レスポンシブデザイン */
 @media (max-width: 1024px) {
-  .dashboard-header h1 {
-    font-size: 1.6rem;
-    white-space: nowrap;
-  }
   
   .user-info {
     gap: 0.8rem;
   }
   
-  .theme-settings-button,
-  .font-settings-button,
   .logout-button {
     font-size: 12px;
     padding: 9px 14px;
@@ -239,121 +182,6 @@
     border: 1px solid rgba(255, 255, 255, 0.3);
   }
   
-  .header-buttons {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    justify-content: center;
-    margin-top: 1.2rem;
-    max-width: 200px;
-    margin-left: 10px;
-    margin-right: auto;
-  }
-  
-  .design-settings-button {
-    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-  }
-
-  .font-settings-button {
-    background: var(--accent-color, linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%));
-    color: white;
-    border: none;
-    border-radius: 25px;
-    padding: 10px 16px;
-    margin: 0 4px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
-    position: relative;
-    overflow: hidden;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .feature-settings-button {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    position: absolute;
-    top: 1rem;
-    right: 4rem;
-    overflow: hidden;
-  }
-
-  .feature-settings-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-  
-  .design-settings-button:hover {
-    transform: translateY(-1px) scale(1.05);
-    box-shadow: 0 4px 8px rgba(139, 92, 246, 0.4);
-    background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
-  }
-
-  .font-settings-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-
-  .font-settings-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.6);
-  }
-
-  .font-settings-button:hover::before {
-    left: 100%;
-  }
-  
-  .feature-settings-button:hover {
-    transform: translateY(-1px) scale(1.05);
-    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  }
-
-  .feature-settings-button:hover::before {
-    left: 100%;
-  }
   
   /* モバイル時のログアウトボタン - アイコン表示 */
   .logout-container {
@@ -392,7 +220,6 @@
 
 /* フォント設定の強制適用 */
 .dashboard-header,
-.dashboard-header h1,
 .dashboard-header .user-info,
 .dashboard-header .header-right,
 .dashboard-header .header-right button,
