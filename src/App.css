@@ -808,9 +808,6 @@ body {
 
 /* レスポンシブデザイン */
 @media (max-width: 1024px) {
-  .dashboard-header h1 {
-    font-size: 1.6rem;
-  }
   
   .user-info {
     gap: 0.8rem;
@@ -835,12 +832,6 @@ body {
     margin: 0;
   }
 
-  .dashboard-header {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-    padding: 1.5rem 1rem;
-  }
   
   .user-info {
     flex-direction: column;
@@ -2346,16 +2337,6 @@ html, body, .app {
   font-family: var(--app-font-family, inherit) !important;
 }
 
-/* より強力なフォント適用 - 特定の要素を明示的に指定 */
-.dashboard-header,
-.dashboard-header h1,
-.dashboard-header .user-info,
-.dashboard-header .header-right,
-.dashboard-header .header-right button,
-.dashboard-header .header-right span,
-.dashboard-header .header-right div {
-  font-family: var(--app-font-family, inherit) !important;
-}
 
 /* セクションヘッダーの強制適用 */
 .time-tracking-section h2,
@@ -5207,24 +5188,6 @@ input:checked + .toggle-slider:before {
   box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
 }
 
-.feature-settings-button {
-  background: var(--accent-color, linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%));
-  color: white;
-  border: none;
-  border-radius: 25px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
-  margin-left: 0.5rem;
-}
-
-.feature-settings-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
-}
 
 /* モバイル用機能設定の改善 */
 @media (max-width: 768px) {

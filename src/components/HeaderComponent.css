@@ -955,6 +955,18 @@
     position: absolute;
     top: 1rem;
     right: 4rem;
+    overflow: hidden;
+  }
+
+  .feature-settings-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
   }
   
   .design-settings-button:hover {
@@ -987,6 +999,10 @@
     transform: translateY(-1px) scale(1.05);
     box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
     background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  }
+
+  .feature-settings-button:hover::before {
+    left: 100%;
   }
   
   /* モバイル時のログアウトボタン - アイコン表示 */
