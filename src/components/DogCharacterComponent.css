@@ -1,13 +1,14 @@
 /* DogCharacterComponent.css - 犬キャラクターコンポーネント専用のスタイル */
 
 /* 犬キャラクターのコンテナ */
-.dog-character-container {
+.dog-character-component {
   position: absolute;
-  bottom: 70px;
-  left: 20px;
+  bottom: 0;
+  right: 0;
   width: 70px;
   height: 70px;
-  z-index: 5;
+  z-index: 1;
+  opacity: 0.8;
   pointer-events: none;
 }
 
@@ -268,11 +269,9 @@
 
 /* レスポンシブデザイン */
 @media (max-width: 1024px) {
-  .dog-character-container {
+  .dog-character-component {
     width: 60px;
     height: 60px;
-    bottom: 60px;
-    left: 15px;
   }
   
   .dog-halo {
@@ -292,11 +291,9 @@
 }
 
 @media (max-width: 768px) {
-  .dog-character-container {
+  .dog-character-component {
     width: 50px;
     height: 50px;
-    bottom: 50px;
-    left: 10px;
   }
   
   .dog-halo {
@@ -320,11 +317,9 @@
 }
 
 @media (max-width: 480px) {
-  .dog-character-container {
+  .dog-character-component {
     width: 40px;
     height: 40px;
-    bottom: 40px;
-    left: 8px;
   }
   
   .dog-halo {

@@ -3,7 +3,7 @@ import "./DogCharacterComponent.css";
 
 const DogCharacterComponent: React.FC = () => {
   return (
-    <div className="dog-character-container">
+    <div className="dog-character-component">
       <div className="dog-character">
         {/* 犬の耳 */}
         <div className="dog-ear dog-ear-left"></div>
