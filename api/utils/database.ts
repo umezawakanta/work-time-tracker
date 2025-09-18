@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+const mongooseInstance = require('mongoose');
 const jsonwebtoken = require('jsonwebtoken');
 
 // Database connection utility
 const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
+  const isConnected = mongooseInstance.connection.readyState === 1;
   
   if (isConnected) {
     return;
@@ -22,7 +22,7 @@ const ensureDatabaseConnection = async () => {
       return;
     }
 
-    await mongoose.connect(MONGODB_URI, {
+    await mongooseInstance.connect(MONGODB_URI, {
       dbName: 'workTimeTracker',
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 15000,
@@ -72,9 +72,9 @@ const handleError = (res, error, message = 'Internal server error') => {
 };
 
 module.exports = {
-  ensureDatabaseConnection,
+  ensureDatabaseConnection: ensureDatabaseConnection,
   verifyJWT,
   handleError,
-  mongoose,
+  mongoose: mongooseInstance,
   jwt: jsonwebtoken
 };

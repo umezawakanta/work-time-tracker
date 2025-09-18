@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { serialize } = require('cookie');
-const { mongoose: mongooseInstance, jwt } = require('../utils/database');
-const dotenv = require('dotenv');
+const { mongoose, jwt, ensureDatabaseConnection } = require('../utils/database');
 const { 
   createValidationError, 
   createAuthError, 
@@ -10,60 +9,11 @@ const {
   sendErrorResponse 
 } = require('../utils/errorHandler');
 
-dotenv.config();
+require('dotenv').config();
 
-// Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongooseInstance.connection.readyState === 1;
-  
-  if (isConnected) {
-    return;
-  }
-
-  console.warn('[auth/login] Database not connected, attempting to connect...');
-  
-  try {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    if (!MONGODB_URI) {
-      throw new Error("MONGODB_URI environment variable is required but not set.");
-    }
-    
-    if (MONGODB_URI === "memory://") {
-      return;
-    }
-
-    // 接続オプションを追加してタイムアウトと再接続を最適化
-    await mongooseInstance.connect(MONGODB_URI, {
-      dbName: 'workTimeTracker',
-      maxPoolSize: 10, // 接続プールサイズ
-      serverSelectionTimeoutMS: 15000, // サーバー選択タイムアウト (15秒)
-      socketTimeoutMS: 45000, // ソケットタイムアウト
-      bufferCommands: false, // コマンドバッファリング無効化
-      connectTimeoutMS: 10000, // 接続タイムアウト
-      maxIdleTimeMS: 30000, // 最大アイドル時間
-    });
-
-
-    // 接続状態の監視
-    mongooseInstance.connection.on("error", (error) => {
-      console.error("❌ MongoDB connection error:", error);
-    });
-
-    mongooseInstance.connection.on("disconnected", () => {
-      console.warn("⚠️ MongoDB disconnected");
-    });
-
-    mongooseInstance.connection.on("reconnected", () => {
-      console.log("🔄 MongoDB reconnected");
-    });
-  } catch (error) {
-    console.error('[auth/login] Failed to connect to database:', error);
-    throw new Error('Database connection failed: ' + (error && error.message ? error.message : String(error)));
-  }
-};
 
 // User schema
-const UserSchema = new mongooseInstance.Schema(
+const UserSchema = new mongoose.Schema(
   {
     email: { type: String, required: true, unique: true, index: true },
     displayName: { type: String, required: true },
@@ -73,7 +23,7 @@ const UserSchema = new mongooseInstance.Schema(
     isAdmin: { type: Boolean, default: false },
     roles: [{ type: String }],
     avatar: { type: String },
-    preferences: { type: mongooseInstance.Schema.Types.Mixed, default: {} },
+    preferences: { type: mongoose.Schema.Types.Mixed, default: {} },
     status: {
       type: String,
       enum: ["active", "inactive", "suspended"],
@@ -99,7 +49,7 @@ UserSchema.set("toJSON", {
   },
 });
 
-const User = mongooseInstance.models.User || mongooseInstance.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 // Robust JSON reader for Vercel Node (handles object, string, or raw stream)
 async function readJson(req) {
@@ -116,7 +66,7 @@ async function readJson(req) {
       req.on('end', () => resolve(data));
       req.on('error', reject);
     });
-    return raw ? JSON.parse(raw) : {};
+    return raw ? JSON.parse(raw) : null;
   } catch {
     throw Object.assign(new Error('Invalid JSON'), { statusCode: 400 });
   }
@@ -124,7 +74,7 @@ async function readJson(req) {
 
 async function handler(req, res) {
   // CORS設定
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
   const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
   

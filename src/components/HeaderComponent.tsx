@@ -1,7 +1,7 @@
-import React from 'react';
-import './HeaderComponent.css';
-import VersionInfoComponent from './VersionInfo';
-import type { User, Character } from '../types';
+import React from "react";
+import "./HeaderComponent.css";
+import VersionInfoComponent from "./VersionInfo";
+import type { User, Character } from "../types";
 
 interface HeaderComponentProps {
   user: User | null;
@@ -70,7 +70,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
         <div className="user-greeting">
           <div className="header-character">
             {currentCharacter ? (
-              <div 
+              <div
                 className="current-character-svg"
                 dangerouslySetInnerHTML={{ __html: currentCharacter.svg }}
               />
@@ -78,65 +78,89 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
               <div className="default-character">👋</div>
             )}
           </div>
-          <span>こんにちは、{user?.displayName || user?.email || 'User'}さん！</span>
+          <span>
+            こんにちは、{user?.displayName || user?.email || "User"}さん！
+          </span>
         </div>
         <VersionInfoComponent />
         <div className="header-buttons">
-          <button 
+          <button
             onClick={handleCharacterHomeToggle}
             className="character-home-button"
             title="キャラクター達のお家"
           >
             🏠
           </button>
-          <button 
+          <button
             onClick={() => {
               if (!showThemeSettings) {
-                closeOtherFeatures('theme-settings');
+                closeOtherFeatures("theme-settings");
               }
               setShowThemeSettings(!showThemeSettings);
-            }} 
+            }}
             className="design-settings-button"
             title="テーマ設定"
           >
             🎨
           </button>
-          <button 
+          <button
             onClick={() => {
               if (!showFontSettings) {
-                closeOtherFeatures('font-settings');
+                closeOtherFeatures("font-settings");
               }
               setShowFontSettings(!showFontSettings);
-            }} 
+            }}
             className="font-settings-button"
             title="フォント設定"
           >
             🔤
           </button>
+          <button
+            onClick={() => {
+              closeOtherFeatures("feature-settings");
+              setShowFeatureSettings(true);
+              loadUserSettings();
+            }}
+            className="feature-settings-button"
+            title="機能設定"
+          >
+            ⚙️
+          </button>
         </div>
-        <button 
-          onClick={() => {
-            closeOtherFeatures('feature-settings');
-            setShowFeatureSettings(true);
-            loadUserSettings();
-          }} 
-          className="feature-settings-button"
-          title="機能設定"
-        >
-          ⚙️
-        </button>
       </div>
-      
+
       {/* 右上のログアウトボタン */}
       <div className="logout-container">
-        <button onClick={handleLogout} className="logout-button" title="ログアウト">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 12H15M15 12L11 8M15 12L11 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <button
+          onClick={handleLogout}
+          className="logout-button"
+          title="ログアウト"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3 12H15M15 12L11 8M15 12L11 16"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </button>
       </div>
-      
+
       {/* 右下のヘタウマキャラクター */}
       <div className="bottom-right-character">
         <div className="hetama-character">
