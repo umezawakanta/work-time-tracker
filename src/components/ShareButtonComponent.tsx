@@ -44,9 +44,6 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   };
 
   const handleShare = async (platform: string) => {
-    // シェア時に新しいランダム要素を生成
-    setRandomElements(generateRandomElements());
-    
     const encodedUrl = encodeURIComponent(siteUrl);
     const encodedTitle = encodeURIComponent(siteTitle);
     const encodedDescription = encodeURIComponent(siteDescription);
@@ -70,6 +67,8 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
         try {
           await navigator.clipboard.writeText(siteUrl);
           alert('URLをコピーしました！');
+          // コピー成功後に新しいランダム要素を生成
+          setRandomElements(generateRandomElements());
           return;
         } catch (err) {
           console.error('コピーに失敗しました:', err);
@@ -79,6 +78,8 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
         try {
           if (navigator.share) {
             await navigator.share(shareData);
+            // ネイティブシェア成功後に新しいランダム要素を生成
+            setRandomElements(generateRandomElements());
             return;
           }
         } catch (err) {
@@ -90,6 +91,9 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     if (shareUrl) {
       window.open(shareUrl, '_blank', 'width=600,height=400');
     }
+    
+    // シェア処理完了後に新しいランダム要素を生成
+    setRandomElements(generateRandomElements());
   };
 
   return (
@@ -165,7 +169,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
                 <span>URLコピー</span>
               </button>
 
-              {navigator.share && (
+              {typeof navigator.share === 'function' && (
                 <button
                   className="share-option native"
                   onClick={() => handleShare('native')}
