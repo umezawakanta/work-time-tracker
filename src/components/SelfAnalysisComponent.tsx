@@ -1,6 +1,6 @@
 import React from 'react';
 import './SelfAnalysisComponent.css';
-import type { Habit, Goal, LearningRecord } from '../types';
+import type { Habit, Goal, LearningRecord, MoodLog } from '../types';
 
 interface PersonalProfile {
   values: string[];
@@ -12,14 +12,6 @@ interface PersonalProfile {
   personality: string;
 }
 
-interface MoodLog {
-  id: string;
-  date: string;
-  mood: number;
-  note: string;
-  factors: string[];
-}
-
 interface SelfAnalysisComponentProps {
   showSelfAnalysis: boolean;
   setShowSelfAnalysis: (show: boolean) => void;
@@ -28,7 +20,7 @@ interface SelfAnalysisComponentProps {
   personalProfile: PersonalProfile;
   habits: Habit[];
   habitHistory: { [habitId: string]: string[] };
-  moodLogs: MoodLog[];
+  moodLogs: any[];
   goals: Goal[];
   learningRecords: LearningRecord[];
   editingProfile: boolean;
