@@ -1,5 +1,5 @@
 const { NextApiRequest, NextApiResponse } = require('next');
-const { ensureDatabaseConnection, mongoose } = require('./utils/database');
+const { ensureDatabaseConnection, mongoose } = require('../utils/database');
 
 // TimeEntry スキーマを定義
 const TimeEntrySchema = new mongoose.Schema({
