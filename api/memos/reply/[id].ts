@@ -1,49 +1,17 @@
-const { mongoose: mongooseInstance } = require('../../utils/database');
+const { mongoose: mongooseLib, ensureDatabaseConnection: connectDB } = require('../../utils/database');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-// Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongooseInstance.connection.readyState === 1;
-  if (isConnected) {
-    return;
-  }
-  console.warn('[memos/reply/[id]] Database not connected, attempting to connect...');
-  try {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    if (!MONGODB_URI) {
-      throw new Error("MONGODB_URI environment variable is required but not set.");
-    }
-    
-    if (MONGODB_URI === "memory://") {
-      return;
-    }
-
-    await mongooseInstance.connect(MONGODB_URI, {
-      dbName: 'workTimeTracker',
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 15000,
-      socketTimeoutMS: 45000,
-      bufferCommands: false,
-      connectTimeoutMS: 10000,
-      maxIdleTimeMS: 30000,
-    });
-
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error('[memos/reply/[id]] Failed to connect to database:', message);
-    throw new Error(`Database connection failed: ${message}`);
-  }
-};
+// Database connection utility is now imported from database.ts
 
 // Reply schema (独立したコレクション)
-const ReplySchema = new mongooseInstance.Schema(
+const ReplySchema = new mongooseLib.Schema(
   {
     content: { type: String, required: true },
     authorName: { type: String, required: true },
     authorEmail: { type: String, required: true },
-    memoId: { type: mongooseInstance.Schema.Types.ObjectId, ref: 'Memo', required: true },
+    memoId: { type: mongooseLib.Schema.Types.ObjectId, ref: 'Memo', required: true },
     userId: { type: String, required: false } // 既存データとの互換性のためオプショナルに変更
   },
   {
@@ -52,7 +20,7 @@ const ReplySchema = new mongooseInstance.Schema(
   },
 );
 
-const Reply = mongooseInstance.models.Reply || mongooseInstance.model("Reply", ReplySchema);
+const Reply = mongooseLib.models.Reply || mongooseLib.model("Reply", ReplySchema);
 
 /**
  * Update reply request interface
@@ -104,7 +72,7 @@ module.exports = async function handler(req, res) {
 
   try {
     // Ensure database connection is established
-    await ensureDatabaseConnection();
+    await connectDB();
     
     const { id: replyId } = req.query;
     

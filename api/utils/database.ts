@@ -1,6 +1,45 @@
 const mongooseInstance = require('mongoose');
 const jsonwebtoken = require('jsonwebtoken');
 
+// User schema
+const UserSchema = new mongooseInstance.Schema(
+  {
+    email: { type: String, required: true, unique: true, index: true },
+    displayName: { type: String, required: true },
+    password: { type: String, required: true },
+    role: { type: String, default: "user" },
+    isVerified: { type: Boolean, default: false },
+    isAdmin: { type: Boolean, default: false },
+    roles: [{ type: String }],
+    avatar: { type: String },
+    preferences: { type: mongooseInstance.Schema.Types.Mixed, default: {} },
+    status: {
+      type: String,
+      enum: ["active", "inactive", "suspended"],
+      default: "active",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// Virtual for user ID
+UserSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+// Ensure virtual fields are serialized
+UserSchema.set("toJSON", {
+  virtuals: true,
+  transform: function (doc, ret) {
+    const { _id, __v, password, ...cleanRet } = ret;
+    return cleanRet;
+  },
+});
+
+const User = mongooseInstance.models.User || mongooseInstance.model("User", UserSchema);
+
 // Database connection utility
 const ensureDatabaseConnection = async () => {
   const isConnected = mongooseInstance.connection.readyState === 1;
@@ -76,5 +115,6 @@ module.exports = {
   verifyJWT,
   handleError,
   mongoose: mongooseInstance,
-  jwt: jsonwebtoken
+  jwt: jsonwebtoken,
+  User
 };

@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { serialize } = require('cookie');
-const { mongoose, jwt, ensureDatabaseConnection } = require('../utils/database');
+const { mongoose, jwt, ensureDatabaseConnection: connectDB, User } = require('../utils/database');
 const { 
   createValidationError, 
   createAuthError, 
@@ -12,44 +12,6 @@ const {
 require('dotenv').config();
 
 
-// User schema
-const UserSchema = new mongoose.Schema(
-  {
-    email: { type: String, required: true, unique: true, index: true },
-    displayName: { type: String, required: true },
-    password: { type: String, required: true },
-    role: { type: String, default: "user" },
-    isVerified: { type: Boolean, default: false },
-    isAdmin: { type: Boolean, default: false },
-    roles: [{ type: String }],
-    avatar: { type: String },
-    preferences: { type: mongoose.Schema.Types.Mixed, default: {} },
-    status: {
-      type: String,
-      enum: ["active", "inactive", "suspended"],
-      default: "active",
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
-
-// Virtual for user ID
-UserSchema.virtual("id").get(function () {
-  return this._id.toHexString();
-});
-
-// Ensure virtual fields are serialized
-UserSchema.set("toJSON", {
-  virtuals: true,
-  transform: function (doc, ret) {
-    const { _id, __v, password, ...cleanRet } = ret;
-    return cleanRet;
-  },
-});
-
-const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 // Robust JSON reader for Vercel Node (handles object, string, or raw stream)
 async function readJson(req) {
@@ -115,7 +77,7 @@ async function handler(req, res) {
   try {
 
     // Ensure database connection is established
-    await ensureDatabaseConnection();
+    await connectDB();
 
     // Read JSON body safely across environments
     const body = await readJson(req);

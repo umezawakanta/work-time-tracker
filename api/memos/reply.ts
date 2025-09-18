@@ -1,12 +1,12 @@
-const { ensureDatabaseConnection: ensureDBConnection, mongoose: mongooseInstance } = require('../utils/database');
+const { ensureDatabaseConnection: ensureDBConnection, mongoose: mongooseDB } = require('../utils/database');
 
 // Reply schema (独立したコレクション)
-const ReplySchema = new mongooseInstance.Schema(
+const ReplySchemaDef = new mongooseDB.Schema(
   {
     content: { type: String, required: true },
     authorName: { type: String, required: true },
     authorEmail: { type: String, required: true },
-    memoId: { type: mongooseInstance.Schema.Types.ObjectId, ref: 'Memo', required: true },
+    memoId: { type: mongooseDB.Schema.Types.ObjectId, ref: 'Memo', required: true },
     userId: { type: String, required: false } // 既存データとの互換性のためオプショナルに変更
   },
   {
@@ -15,11 +15,11 @@ const ReplySchema = new mongooseInstance.Schema(
   },
 );
 
-const Reply = mongooseInstance.models.Reply || mongooseInstance.model("Reply", ReplySchema);
+const ReplyModel = mongooseDB.models.Reply || mongooseDB.model("Reply", ReplySchemaDef);
 
 module.exports = async function handler(req, res) {
   // CORS設定
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
 
   const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
@@ -121,7 +121,7 @@ async function handleReplyRequest(req, res) {
         });
       }
 
-      const replies = await Reply.find({ memoId }).sort({ createdAt: 1 });
+      const replies = await ReplyModel.find({ memoId }).sort({ createdAt: 1 });
 
       res.status(200).json({
         success: true,
@@ -146,11 +146,11 @@ async function handleReplyRequest(req, res) {
         });
       }
 
-      const newReply = new Reply({
+      const newReply = new ReplyModel({
         content: content.trim(),
         authorName: authorName.trim(),
         authorEmail: authorEmail.trim(),
-        memoId: new mongooseInstance.Types.ObjectId(memoId), // ObjectIdに変換
+        memoId: new mongooseDB.Types.ObjectId(memoId), // ObjectIdに変換
         userId: userId || null // userIdが提供されない場合はnullを設定
       });
 
