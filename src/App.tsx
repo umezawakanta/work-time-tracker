@@ -69,6 +69,7 @@ function App() {
   const [isTracking, setIsTracking] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [description, setDescription] = useState("");
+  const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
 
   // ゆでたまごタイマーの状態
   const [eggTimerActive, setEggTimerActive] = useState(false);
@@ -1531,6 +1532,62 @@ function App() {
     }
   };
 
+  // 時間記録の履歴を取得
+  const loadTimeEntries = async () => {
+    try {
+      const response = await fetch("/api/time/entries", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        setTimeEntries(data.entries);
+      }
+    } catch (error) {
+      console.error("時間記録の読み込みに失敗しました:", error);
+    }
+  };
+
+  // 時間記録データからカテゴリ別の時間を計算
+  const calculateTimeBreakdown = () => {
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    // 今日の時間記録をフィルタリング
+    const todayEntries = timeEntries.filter(entry => {
+      const entryDate = new Date(entry.startTime);
+      return entryDate >= startOfDay && entry.endTime;
+    });
+
+    // カテゴリ別に時間を集計
+    const categories: { [key: string]: number } = {
+      '仕事': 0,
+      '学習': 0,
+      '休憩': 0,
+      'その他': 0
+    };
+
+    todayEntries.forEach(entry => {
+      const duration = entry.duration || 0; // 秒単位
+      const hours = duration / 3600; // 時間単位に変換
+      
+      // 説明文からカテゴリを推定（簡単なキーワードマッチング）
+      const description = entry.description.toLowerCase();
+      if (description.includes('仕事') || description.includes('work') || description.includes('作業')) {
+        categories['仕事'] += hours;
+      } else if (description.includes('学習') || description.includes('study') || description.includes('勉強') || description.includes('読書')) {
+        categories['学習'] += hours;
+      } else if (description.includes('休憩') || description.includes('break') || description.includes('休み')) {
+        categories['休憩'] += hours;
+      } else {
+        categories['その他'] += hours;
+      }
+    });
+
+    return categories;
+  };
+
   const handleCreateSalaryRecord = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user?.id) return;
@@ -2689,6 +2746,7 @@ function App() {
       loadSalaryRecords();
       loadWorkDiaries();
       loadUserSettings();
+      loadTimeEntries();
     }
   }, [isLoggedIn, user?.id]);
 
@@ -8162,6 +8220,9 @@ function App() {
                     moodLogs={moodLogs}
                     goals={goals}
                     learningRecords={learningRecords}
+                    timeEntries={timeEntries}
+                    calculateTimeBreakdown={calculateTimeBreakdown}
+                    loadTimeEntries={loadTimeEntries}
                     editingProfile={editingProfile}
                     setEditingProfile={setEditingProfile}
                     newValue={newValue}

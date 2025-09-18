@@ -24,6 +24,9 @@ interface SelfAnalysisComponentProps {
   moodLogs: any[];
   goals: Goal[];
   learningRecords: LearningRecord[];
+  timeEntries: any[];
+  calculateTimeBreakdown: () => { [key: string]: number };
+  loadTimeEntries: () => void;
   editingProfile: boolean;
   setEditingProfile: (editing: boolean) => void;
   newValue: string;
@@ -65,6 +68,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   moodLogs,
   goals,
   learningRecords,
+  timeEntries,
+  calculateTimeBreakdown,
+  loadTimeEntries,
   editingProfile,
   setEditingProfile,
   newValue,
@@ -134,6 +140,8 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
           <div className="self-analysis-header">
             <button 
               onClick={() => {
+                // 時間記録データを更新
+                loadTimeEntries();
                 // じぶん図鑑のデータは主にローカルストレージに保存されているため、
                 // ページをリロードしてデータを再読み込み
                 window.location.reload();
@@ -190,27 +198,35 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                   <h3>📊 時間の使い方分析</h3>
                   <div className="analysis-content">
                     <div className="time-breakdown">
-                      <div className="time-category">
-                        <span className="category-label">仕事</span>
-                        <div className="progress-bar">
-                          <div className="progress-fill" style={{width: '60%'}}></div>
-                        </div>
-                        <span className="time-value">6.0h</span>
-                      </div>
-                      <div className="time-category">
-                        <span className="category-label">学習</span>
-                        <div className="progress-bar">
-                          <div className="progress-fill" style={{width: '20%'}}></div>
-                        </div>
-                        <span className="time-value">2.0h</span>
-                      </div>
-                      <div className="time-category">
-                        <span className="category-label">休憩</span>
-                        <div className="progress-bar">
-                          <div className="progress-fill" style={{width: '20%'}}></div>
-                        </div>
-                        <span className="time-value">2.0h</span>
-                      </div>
+                      {(() => {
+                        const timeBreakdown = calculateTimeBreakdown();
+                        const totalHours = Object.values(timeBreakdown).reduce((sum, hours) => sum + hours, 0);
+                        
+                        if (totalHours === 0) {
+                          return (
+                            <div className="no-data-message">
+                              <p>📝 今日の時間記録がありません</p>
+                              <p>時間記録機能を使って作業時間を記録してみましょう！</p>
+                            </div>
+                          );
+                        }
+                        
+                        return Object.entries(timeBreakdown).map(([category, hours]) => {
+                          const percentage = totalHours > 0 ? (hours / totalHours) * 100 : 0;
+                          return (
+                            <div key={category} className="time-category">
+                              <span className="category-label">{category}</span>
+                              <div className="progress-bar">
+                                <div 
+                                  className="progress-fill" 
+                                  style={{width: `${percentage}%`}}
+                                ></div>
+                              </div>
+                              <span className="time-value">{hours.toFixed(1)}h</span>
+                            </div>
+                          );
+                        });
+                      })()}
                     </div>
                   </div>
                 </div>
