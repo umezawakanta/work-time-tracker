@@ -7,6 +7,7 @@ interface DiaryReminderIntegrationProps {
   setShowDiaryReminderSettings: (show: boolean) => void;
   diaryReminderSnoozeUntil: number | null;
   setDiaryReminderSnoozeUntil: (time: number | null) => void;
+  onOpenDiaryForm: () => void;
 }
 
 const DiaryReminderIntegration: React.FC<DiaryReminderIntegrationProps> = ({
@@ -14,10 +15,11 @@ const DiaryReminderIntegration: React.FC<DiaryReminderIntegrationProps> = ({
   setShowDiaryReminderSettings,
   diaryReminderSnoozeUntil,
   setDiaryReminderSnoozeUntil,
+  onOpenDiaryForm,
 }) => {
   const handleReminderDismiss = () => {
-    // 日記ページに移動する処理
-    console.log('日記を書く');
+    // 日記フォームを開く
+    onOpenDiaryForm();
   };
 
   const handleReminderSnooze = (minutes: number) => {

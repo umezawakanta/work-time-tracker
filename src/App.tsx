@@ -2521,6 +2521,30 @@ function App() {
     setEditingMonthlyMemo(false);
   };
 
+  // 日記フォームを開く関数
+  const openDiaryForm = () => {
+    setShowSalaryForm(false);
+    setShowDiaryForm(true);
+    setShowCalendar(false);
+    setShowWorkRecords(true);
+    // 今日の日付を設定
+    const today = new Date();
+    setDiaryDate(today.toISOString().split('T')[0]);
+    // フォームをリセット
+    setDiaryTitle("");
+    setDiaryContent("");
+    setDiaryMood("");
+    setDiaryWeather("");
+    setDiaryActivities([]);
+    setDiaryNotes("");
+    setDiaryGoals("");
+    setDiaryChallenges("");
+    setDiaryAchievements([]);
+    setDiaryGratitude("");
+    setDiaryReflection("");
+    setEditingDiary(null);
+  };
+
   // 利用可能なジャンル一覧を取得（デフォルト + カスタム）
   const getAllGenres = () => {
     const defaultGenres = [
@@ -8680,6 +8704,7 @@ function App() {
           setShowDiaryReminderSettings={setShowDiaryReminderSettings}
           diaryReminderSnoozeUntil={diaryReminderSnoozeUntil}
           setDiaryReminderSnoozeUntil={setDiaryReminderSnoozeUntil}
+          onOpenDiaryForm={openDiaryForm}
         />
       </div>
     );
