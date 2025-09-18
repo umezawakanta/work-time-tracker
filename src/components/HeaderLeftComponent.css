@@ -20,7 +20,9 @@
   .header-left {
     gap: 1.5rem;
     padding-left: 1rem;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 250px;
   }
 }
 
@@ -29,7 +31,9 @@
   .header-left {
     gap: 1.2rem;
     padding-left: 0.75rem;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 220px;
   }
 }
 
@@ -37,7 +41,9 @@
 @media (max-width: 1199px) and (min-width: 1024px) {
   .header-left {
     gap: 1rem;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 180px;
   }
 }
 

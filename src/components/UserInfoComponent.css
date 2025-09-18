@@ -34,7 +34,8 @@
     gap: 1rem;
     align-items: flex-end;
     flex-direction: column;
-    min-width: 200px;
+    min-width: 250px;
+    justify-content: flex-end;
   }
   
   .user-info span {
@@ -50,7 +51,8 @@
     gap: 0.75rem;
     align-items: flex-end;
     flex-direction: column;
-    min-width: 180px;
+    min-width: 220px;
+    justify-content: flex-end;
   }
   
   .user-info span {
@@ -66,7 +68,8 @@
     gap: 0.5rem;
     align-items: flex-end;
     flex-direction: column;
-    min-width: 160px;
+    min-width: 180px;
+    justify-content: flex-end;
   }
   
   .user-info span {
