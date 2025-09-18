@@ -33,7 +33,7 @@ interface SelfAnalysisComponentProps {
   habitHistory: { [habitId: string]: string[] };
   setHabitHistory: (history: { [habitId: string]: string[] }) => void;
   habitStreak: { [habitId: string]: number };
-  setHabitStreak: (streak: { [habitId: string]: number }) => void;
+  setHabitStreak: React.Dispatch<React.SetStateAction<{ [habitId: string]: number }>>;
   moodLogs: any[];
   setMoodLogs: (logs: any[]) => void;
   goals: Goal[];
