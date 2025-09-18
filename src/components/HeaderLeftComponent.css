@@ -1,18 +1,24 @@
 /* HeaderLeftComponent.css - 究極シンプル左側デザイン */
 
 .header-left {
-  display: flex;
+  flex: 0 0 auto;
+  z-index: 2;
+  display: flex !important;
   align-items: center;
   gap: 1rem;
   padding-left: 0.5rem;
   width: 100%;
   box-sizing: border-box;
   flex-shrink: 0;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* レスポンシブ */
 @media (max-width: 1024px) {
   .header-left {
+    order: 1;
+    width: 100%;
     gap: 0.8rem;
     padding-left: 0.4rem;
     justify-content: center;
