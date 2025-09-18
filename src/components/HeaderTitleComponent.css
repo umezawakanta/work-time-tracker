@@ -30,7 +30,16 @@
 }
 
 /* レスポンシブデザイン */
-@media (min-width: 1200px) {
+
+/* 大画面 (1400px以上) */
+@media (min-width: 1400px) {
+  .header-title {
+    font-size: 3rem;
+  }
+}
+
+/* 大画面 (1200px - 1399px) */
+@media (max-width: 1399px) and (min-width: 1200px) {
   .header-title {
     font-size: 2.5rem;
   }

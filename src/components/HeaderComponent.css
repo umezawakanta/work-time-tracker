@@ -17,6 +17,8 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  flex-wrap: nowrap;
+  gap: 1rem;
 }
 
 .dashboard-header::before {
@@ -37,6 +39,38 @@
   z-index: 1;
 }
 
+/* PCサイズでのヘッダーレイアウト最適化 */
+@media (min-width: 1024px) {
+  .dashboard-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas: "left center right";
+    align-items: center;
+    gap: 2rem;
+  }
+  
+  .dashboard-header .header-left {
+    grid-area: left;
+    justify-content: flex-start;
+  }
+  
+  .dashboard-header .header-title {
+    grid-area: center;
+    text-align: center;
+  }
+  
+  .dashboard-header .user-info {
+    grid-area: right;
+    justify-content: flex-end;
+  }
+  
+  .dashboard-header .logout-container {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+}
+
 
 
 
@@ -46,11 +80,21 @@
 
 /* レスポンシブデザイン */
 
-/* 大画面 (1200px以上) */
-@media (min-width: 1200px) {
+/* 大画面 (1400px以上) */
+@media (min-width: 1400px) {
+  .dashboard-header {
+    padding: 3.5rem 4rem;
+    min-height: 160px;
+    gap: 2rem;
+  }
+}
+
+/* 大画面 (1200px - 1399px) */
+@media (max-width: 1399px) and (min-width: 1200px) {
   .dashboard-header {
     padding: 3rem 3rem;
     min-height: 140px;
+    gap: 1.5rem;
   }
 }
 
@@ -59,6 +103,7 @@
   .dashboard-header {
     padding: 2.5rem 2rem;
     min-height: 130px;
+    gap: 1.25rem;
   }
 }
 

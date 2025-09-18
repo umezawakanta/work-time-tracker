@@ -27,7 +27,21 @@
 }
 
 /* レスポンシブデザイン */
-@media (min-width: 1200px) {
+
+/* 大画面 (1400px以上) */
+@media (min-width: 1400px) {
+  .user-info {
+    gap: 1.5rem;
+  }
+  
+  .user-info span {
+    padding: 0.7rem 1.4rem;
+    font-size: 1.1rem;
+  }
+}
+
+/* 大画面 (1200px - 1399px) */
+@media (max-width: 1399px) and (min-width: 1200px) {
   .user-info {
     gap: 1.2rem;
   }

@@ -65,7 +65,28 @@
 }
 
 /* レスポンシブデザイン */
-@media (min-width: 1200px) {
+
+/* 大画面 (1400px以上) */
+@media (min-width: 1400px) {
+  .logout-container {
+    top: 1.5rem;
+    right: 1.5rem;
+  }
+  
+  .logout-button {
+    width: 52px;
+    height: 52px;
+    font-size: 1.4rem;
+  }
+  
+  .logout-button svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* 大画面 (1200px - 1399px) */
+@media (max-width: 1399px) and (min-width: 1200px) {
   .logout-container {
     top: 1.25rem;
     right: 1.25rem;
