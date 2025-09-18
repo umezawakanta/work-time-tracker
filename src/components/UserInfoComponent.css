@@ -34,7 +34,8 @@
     gap: 1rem;
     align-items: flex-end;
     flex-direction: column;
-    min-width: 250px;
+    width: 100%;
+    max-width: 350px;
     justify-content: flex-end;
   }
   
@@ -51,7 +52,8 @@
     gap: 0.75rem;
     align-items: flex-end;
     flex-direction: column;
-    min-width: 220px;
+    width: 100%;
+    max-width: 320px;
     justify-content: flex-end;
   }
   
@@ -68,7 +70,8 @@
     gap: 0.5rem;
     align-items: flex-end;
     flex-direction: column;
-    min-width: 180px;
+    width: 100%;
+    max-width: 280px;
     justify-content: flex-end;
   }
   

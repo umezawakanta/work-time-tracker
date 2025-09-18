@@ -22,7 +22,8 @@
     padding-left: 1rem;
     align-items: center;
     justify-content: flex-start;
-    min-width: 250px;
+    width: 100%;
+    max-width: 350px;
   }
 }
 
@@ -33,7 +34,8 @@
     padding-left: 0.75rem;
     align-items: center;
     justify-content: flex-start;
-    min-width: 220px;
+    width: 100%;
+    max-width: 320px;
   }
 }
 
@@ -43,7 +45,8 @@
     gap: 1rem;
     align-items: center;
     justify-content: flex-start;
-    min-width: 180px;
+    width: 100%;
+    max-width: 280px;
   }
 }
 
