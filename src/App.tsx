@@ -1567,9 +1567,15 @@ function App() {
 
   // 時間記録の履歴を取得
   const loadTimeEntries = async () => {
+    if (!user?.id) {
+      console.warn("ユーザーIDがありません。時間記録を取得できません。");
+      setTimeEntries([]);
+      return;
+    }
+
     setTimeEntriesLoading(true);
     try {
-      const response = await fetch("/api/time/entries", {
+      const response = await fetch(`/api/time/entries?userId=${user.id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
