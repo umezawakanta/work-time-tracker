@@ -21,9 +21,15 @@ import AdminPanelComponent from "./components/AdminPanelComponent";
 import LoginComponent from "./components/LoginComponent";
 import TimeTrackingComponent from "./components/TimeTrackingComponent";
 import TimersComponent from "./components/TimersComponent";
+import PublicMemosComponent from "./components/PublicMemosComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
-import { availableFonts, FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
+import {
+  availableFonts,
+  FontSettings,
+  DEFAULT_FONT_SETTINGS,
+  generateFontCSS,
+} from "./constants/fonts";
 import LanguageFontSettings from "./components/LanguageFontSettings";
 import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
 
@@ -163,20 +169,22 @@ function App() {
   const [soundLoopInterval, setSoundLoopInterval] =
     useState<NodeJS.Timeout | null>(null);
   const [isSoundPlaying, setIsSoundPlaying] = useState(false);
-  
+
   // バックグラウンドタイマー関連の状態
   const [backgroundTimerActive, setBackgroundTimerActive] = useState(false);
-  const [serviceWorker, setServiceWorker] = useState<ServiceWorker | null>(null);
+  const [serviceWorker, setServiceWorker] = useState<ServiceWorker | null>(
+    null
+  );
   const [isMannerMode, setIsMannerMode] = useState(false);
-  
+
   // 時間記録の進行状態
   const [isTimeTrackingActive, setIsTimeTrackingActive] = useState(false);
-  
+
   // ジャンル管理の状態
   const [showGenreManagement, setShowGenreManagement] = useState(false);
   const [editingGenre, setEditingGenre] = useState<string | null>(null);
   const [editingGenreName, setEditingGenreName] = useState("");
-  
+
   // 月収支メモの状態
   const [monthlyMemo, setMonthlyMemo] = useState("");
   const [editingMonthlyMemo, setEditingMonthlyMemo] = useState(false);
@@ -267,9 +275,12 @@ function App() {
 
   // フォント設定関連の状態
   const [selectedFont, setSelectedFont] = useState("system");
-  const [fontSettings, setFontSettings] = useState<FontSettings>(DEFAULT_FONT_SETTINGS);
+  const [fontSettings, setFontSettings] = useState<FontSettings>(
+    DEFAULT_FONT_SETTINGS
+  );
   const [showFontSettings, setShowFontSettings] = useState(false);
-  const [showLanguageFontSettings, setShowLanguageFontSettings] = useState(false);
+  const [showLanguageFontSettings, setShowLanguageFontSettings] =
+    useState(false);
 
   // テーマ設定関連の状態
   const [selectedTheme, setSelectedTheme] = useState("default");
@@ -313,7 +324,7 @@ function App() {
   const [diaryActivities, setDiaryActivities] = useState<string[]>([]);
   const [diaryTags, setDiaryTags] = useState("");
   const [diaryIsPrivate, setDiaryIsPrivate] = useState(true);
-  
+
   // 新しい日記項目の状態
   const [diaryWorkSummary, setDiaryWorkSummary] = useState("");
   const [diaryAchievements, setDiaryAchievements] = useState<string[]>([]);
@@ -326,7 +337,7 @@ function App() {
   const [diaryBreakTime, setDiaryBreakTime] = useState(0);
   const [diaryProductivity, setDiaryProductivity] = useState(5);
   const [diaryNotes, setDiaryNotes] = useState("");
-  
+
   // 配列項目の一時入力状態
   const [newAchievement, setNewAchievement] = useState("");
   const [newChallenge, setNewChallenge] = useState("");
@@ -337,8 +348,11 @@ function App() {
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [showFeatureSettings, setShowFeatureSettings] = useState(false);
   const [draggedFeature, setDraggedFeature] = useState<string | null>(null);
-  const [showDiaryReminderSettings, setShowDiaryReminderSettings] = useState(false);
-  const [diaryReminderSnoozeUntil, setDiaryReminderSnoozeUntil] = useState<number | null>(null);
+  const [showDiaryReminderSettings, setShowDiaryReminderSettings] =
+    useState(false);
+  const [diaryReminderSnoozeUntil, setDiaryReminderSnoozeUntil] = useState<
+    number | null
+  >(null);
 
   // カレンダーの状態
   const [showCalendar, setShowCalendar] = useState(false);
@@ -1071,7 +1085,7 @@ function App() {
   useEffect(() => {
     const savedFont = localStorage.getItem("selectedFont");
     const savedFontSettings = localStorage.getItem("fontSettings");
-    
+
     if (savedFontSettings) {
       try {
         const settings = JSON.parse(savedFontSettings);
@@ -1175,36 +1189,38 @@ function App() {
   const applyLanguageFonts = (settings: FontSettings) => {
     const root = document.documentElement;
     const css = generateFontCSS(settings);
-    
+
     // 既存のフォントCSSを削除
-    const existingStyle = document.getElementById('language-font-styles');
+    const existingStyle = document.getElementById("language-font-styles");
     if (existingStyle) {
       existingStyle.remove();
     }
-    
+
     // 新しいフォントCSSを追加
-    const style = document.createElement('style');
-    style.id = 'language-font-styles';
+    const style = document.createElement("style");
+    style.id = "language-font-styles";
     style.textContent = css;
     document.head.appendChild(style);
-    
+
     // 日本語テキストに日本語フォントを適用
-    const japaneseFont = settings.japanese === 'system' 
-      ? 'var(--japanese-font)'
-      : settings.japanese;
-    
+    const japaneseFont =
+      settings.japanese === "system"
+        ? "var(--japanese-font)"
+        : settings.japanese;
+
     // 英語テキストに英語フォントを適用
-    const englishFont = settings.english === 'system'
-      ? 'var(--english-font)'
-      : settings.english;
-    
+    const englishFont =
+      settings.english === "system" ? "var(--english-font)" : settings.english;
+
     // 全要素に言語別フォントを適用
-    const allElements = document.querySelectorAll('*');
-    allElements.forEach(element => {
-      const text = element.textContent || '';
-      const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
+    const allElements = document.querySelectorAll("*");
+    allElements.forEach((element) => {
+      const text = element.textContent || "";
+      const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(
+        text
+      );
       const hasEnglish = /[a-zA-Z]/.test(text);
-      
+
       if (hasJapanese && hasEnglish) {
         // 日本語と英語が混在する場合は日本語フォントを優先
         (element as HTMLElement).style.fontFamily = japaneseFont;
@@ -1575,23 +1591,28 @@ function App() {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       });
-      
+
       if (!response.ok) {
         console.warn("時間記録APIが利用できません。モックデータを使用します。");
         // モックデータを使用
         setTimeEntries([]);
         return;
       }
-      
+
       const data = await response.json();
       if (data.success) {
         setTimeEntries(data.entries);
       } else {
-        console.warn("時間記録の取得に失敗しました。モックデータを使用します。");
+        console.warn(
+          "時間記録の取得に失敗しました。モックデータを使用します。"
+        );
         setTimeEntries([]);
       }
     } catch (error) {
-      console.warn("時間記録の読み込みに失敗しました。モックデータを使用します。", error);
+      console.warn(
+        "時間記録の読み込みに失敗しました。モックデータを使用します。",
+        error
+      );
       setTimeEntries([]);
     } finally {
       setTimeEntriesLoading(false);
@@ -1601,36 +1622,53 @@ function App() {
   // 時間記録データからカテゴリ別の時間を計算
   const calculateTimeBreakdown = () => {
     const today = new Date();
-    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    
+    const startOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+
     // 今日の時間記録をフィルタリング
-    const todayEntries = timeEntries.filter(entry => {
+    const todayEntries = timeEntries.filter((entry) => {
       const entryDate = new Date(entry.startTime);
       return entryDate >= startOfDay && entry.endTime;
     });
 
     // カテゴリ別に時間を集計
     const categories: { [key: string]: number } = {
-      '仕事': 0,
-      '学習': 0,
-      '休憩': 0,
-      'その他': 0
+      仕事: 0,
+      学習: 0,
+      休憩: 0,
+      その他: 0,
     };
 
-    todayEntries.forEach(entry => {
+    todayEntries.forEach((entry) => {
       const duration = entry.duration || 0; // 秒単位
       const hours = duration / 3600; // 時間単位に変換
-      
+
       // 説明文からカテゴリを推定（簡単なキーワードマッチング）
       const description = entry.description.toLowerCase();
-      if (description.includes('仕事') || description.includes('work') || description.includes('作業')) {
-        categories['仕事'] += hours;
-      } else if (description.includes('学習') || description.includes('study') || description.includes('勉強') || description.includes('読書')) {
-        categories['学習'] += hours;
-      } else if (description.includes('休憩') || description.includes('break') || description.includes('休み')) {
-        categories['休憩'] += hours;
+      if (
+        description.includes("仕事") ||
+        description.includes("work") ||
+        description.includes("作業")
+      ) {
+        categories["仕事"] += hours;
+      } else if (
+        description.includes("学習") ||
+        description.includes("study") ||
+        description.includes("勉強") ||
+        description.includes("読書")
+      ) {
+        categories["学習"] += hours;
+      } else if (
+        description.includes("休憩") ||
+        description.includes("break") ||
+        description.includes("休み")
+      ) {
+        categories["休憩"] += hours;
       } else {
-        categories['その他'] += hours;
+        categories["その他"] += hours;
       }
     });
 
@@ -1642,63 +1680,74 @@ function App() {
     const today = new Date();
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(today.getDate() - 6); // 7日間（今日含む）
-    
+
     const productivityData = [];
-    
+
     for (let i = 0; i < 7; i++) {
       const date = new Date(sevenDaysAgo);
       date.setDate(sevenDaysAgo.getDate() + i);
-      
-      const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+      const startOfDay = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+      );
       const endOfDay = new Date(startOfDay);
       endOfDay.setDate(startOfDay.getDate() + 1);
-      
+
       // その日の時間記録をフィルタリング
-      const dayEntries = timeEntries.filter(entry => {
+      const dayEntries = timeEntries.filter((entry) => {
         const entryDate = new Date(entry.startTime);
         return entryDate >= startOfDay && entryDate < endOfDay && entry.endTime;
       });
-      
+
       // その日の総作業時間を計算（仕事と学習の時間）
       const totalWorkHours = dayEntries.reduce((total, entry) => {
         const duration = entry.duration || 0;
         const hours = duration / 3600;
         const description = entry.description.toLowerCase();
-        
+
         // 仕事と学習の時間のみをカウント
-        if (description.includes('仕事') || description.includes('work') || description.includes('作業') ||
-            description.includes('学習') || description.includes('study') || description.includes('勉強') || description.includes('読書')) {
+        if (
+          description.includes("仕事") ||
+          description.includes("work") ||
+          description.includes("作業") ||
+          description.includes("学習") ||
+          description.includes("study") ||
+          description.includes("勉強") ||
+          description.includes("読書")
+        ) {
           return total + hours;
         }
         return total;
       }, 0);
-      
+
       productivityData.push({
-        date: date.toISOString().split('T')[0],
+        date: date.toISOString().split("T")[0],
         workHours: totalWorkHours,
-        dayOfWeek: ['日', '月', '火', '水', '木', '金', '土'][date.getDay()]
+        dayOfWeek: ["日", "月", "火", "水", "木", "金", "土"][date.getDay()],
       });
     }
-    
+
     return productivityData;
   };
 
   // 生産性統計を計算
   const calculateProductivityStats = () => {
     const productivityData = calculateProductivityTrend();
-    const workHours = productivityData.map(day => day.workHours);
-    
+    const workHours = productivityData.map((day) => day.workHours);
+
     const totalHours = workHours.reduce((sum, hours) => sum + hours, 0);
     const averageHours = totalHours / workHours.length;
     const maxHours = Math.max(...workHours);
-    const productiveDays = workHours.filter(hours => hours > 0).length;
-    
+    const productiveDays = workHours.filter((hours) => hours > 0).length;
+
     return {
       averageHours: averageHours,
       maxHours: maxHours,
       totalHours: totalHours,
       productiveDays: productiveDays,
-      productivityRate: (productiveDays / workHours.length) * 100
+      productivityRate: (productiveDays / workHours.length) * 100,
     };
   };
 
@@ -1987,15 +2036,22 @@ function App() {
   };
 
   // 配列項目を管理する関数
-  const addArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string, setValue: React.Dispatch<React.SetStateAction<string>>) => {
+  const addArrayItem = (
+    setter: React.Dispatch<React.SetStateAction<string[]>>,
+    value: string,
+    setValue: React.Dispatch<React.SetStateAction<string>>
+  ) => {
     if (value.trim()) {
-      setter(prev => [...prev, value.trim()]);
+      setter((prev) => [...prev, value.trim()]);
       setValue("");
     }
   };
 
-  const removeArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, index: number) => {
-    setter(prev => prev.filter((_, i) => i !== index));
+  const removeArrayItem = (
+    setter: React.Dispatch<React.SetStateAction<string[]>>,
+    index: number
+  ) => {
+    setter((prev) => prev.filter((_, i) => i !== index));
   };
 
   // 機能設定の関数
@@ -2569,7 +2625,7 @@ function App() {
 
   const handleSaveGenreEdit = () => {
     if (editingGenreName.trim() && editingGenreName.trim() !== editingGenre) {
-      const updatedGenres = customGenres.map(genre => 
+      const updatedGenres = customGenres.map((genre) =>
         genre === editingGenre ? editingGenreName.trim() : genre
       );
       setCustomGenres(updatedGenres);
@@ -2586,7 +2642,11 @@ function App() {
   };
 
   const handleDeleteGenreFromManagement = (genreToDelete: string) => {
-    if (window.confirm(`「${genreToDelete}」ジャンルを削除しますか？\nこのジャンルを使用しているメモも影響を受けます。`)) {
+    if (
+      window.confirm(
+        `「${genreToDelete}」ジャンルを削除しますか？\nこのジャンルを使用しているメモも影響を受けます。`
+      )
+    ) {
       const updatedGenres = customGenres.filter(
         (genre) => genre !== genreToDelete
       );
@@ -2598,13 +2658,17 @@ function App() {
 
   // 月収支メモの管理
   const loadMonthlyMemo = () => {
-    const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+    const currentMonth = `${currentDate.getFullYear()}-${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, "0")}`;
     const savedMemo = localStorage.getItem(`monthlyMemo_${currentMonth}`);
     setMonthlyMemo(savedMemo || "");
   };
 
   const saveMonthlyMemo = () => {
-    const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+    const currentMonth = `${currentDate.getFullYear()}-${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, "0")}`;
     localStorage.setItem(`monthlyMemo_${currentMonth}`, monthlyMemo);
     setEditingMonthlyMemo(false);
     setMessage("月収支メモを保存しました");
@@ -2627,7 +2691,7 @@ function App() {
     setShowWorkRecords(true);
     // 今日の日付を設定
     const today = new Date();
-    setDiaryDate(today.toISOString().split('T')[0]);
+    setDiaryDate(today.toISOString().split("T")[0]);
     // フォームをリセット
     setDiaryTitle("");
     setDiaryContent("");
@@ -3538,7 +3602,6 @@ function App() {
     }
   };
 
-
   // 公開メモ用のカレンダー関数
   const getPublicMemosForDate = (date: Date) => {
     const dateString = date.toDateString();
@@ -3663,7 +3726,6 @@ function App() {
     setSelectedMemoCategory(category);
     loadMemos();
   };
-
 
   // 公開メモ関連の関数
   const loadPublicMemos = async () => {
@@ -3850,24 +3912,30 @@ function App() {
     if (serviceWorker && backgroundTimerActive) {
       const totalTime = getTotalCookingTime(selectedRecipe, selectedEggType);
       const recipeName = cookingRecipes[selectedRecipe].name;
-      
+
       startBackgroundTimer(
-        'egg-timer',
+        "egg-timer",
         totalTime,
-        'egg',
+        "egg",
         eggTimerSound,
         recipeName
       );
-      
+
       setEggTimerActive(true);
       setEggTimerPaused(false);
       setEggTimerTime(totalTime);
       setEggTimerOriginalTime(totalTime);
-      setEggTimerPhase('heating');
-      setEggTimerPhaseTime(getRecipePhases(selectedRecipe, selectedEggType)[0].duration);
-      setEggTimerPhaseName(getRecipePhases(selectedRecipe, selectedEggType)[0].name);
-      
-      setMessage(`🍳 ${recipeName}タイマーを開始しました（バックグラウンド動作）`);
+      setEggTimerPhase("heating");
+      setEggTimerPhaseTime(
+        getRecipePhases(selectedRecipe, selectedEggType)[0].duration
+      );
+      setEggTimerPhaseName(
+        getRecipePhases(selectedRecipe, selectedEggType)[0].name
+      );
+
+      setMessage(
+        `🍳 ${recipeName}タイマーを開始しました（バックグラウンド動作）`
+      );
       return;
     }
 
@@ -3912,7 +3980,7 @@ function App() {
   const pauseEggTimer = () => {
     // バックグラウンドタイマーの場合
     if (serviceWorker && backgroundTimerActive) {
-      pauseBackgroundTimer('egg-timer');
+      pauseBackgroundTimer("egg-timer");
       setEggTimerPaused(true);
       return;
     }
@@ -3928,7 +3996,7 @@ function App() {
   const stopEggTimer = () => {
     // バックグラウンドタイマーの場合
     if (serviceWorker && backgroundTimerActive) {
-      stopBackgroundTimer('egg-timer');
+      stopBackgroundTimer("egg-timer");
       setEggTimerActive(false);
       setEggTimerPaused(false);
       setEggTimerTime(0);
@@ -4458,77 +4526,86 @@ function App() {
 
   // Service Workerとの通信機能
   const initializeServiceWorker = async () => {
-    if ('serviceWorker' in navigator) {
+    if ("serviceWorker" in navigator) {
       try {
-        const registration = await navigator.serviceWorker.register('/sw.js');
-        const sw = registration.installing || registration.waiting || registration.active;
+        const registration = await navigator.serviceWorker.register("/sw.js");
+        const sw =
+          registration.installing ||
+          registration.waiting ||
+          registration.active;
         if (sw) {
           setServiceWorker(sw);
-          
+
           // Service Workerからのメッセージをリッスン
-          navigator.serviceWorker.addEventListener('message', (event) => {
+          navigator.serviceWorker.addEventListener("message", (event) => {
             const { type, data } = event.data;
-            
+
             switch (type) {
-              case 'TIMER_UPDATE':
+              case "TIMER_UPDATE":
                 // バックグラウンドタイマーの更新
-                if (data.timerId === 'egg-timer') {
+                if (data.timerId === "egg-timer") {
                   setEggTimerTime(data.remainingTime);
-                } else if (data.timerId === 'custom-timer') {
+                } else if (data.timerId === "custom-timer") {
                   setCustomTimerTime(data.remainingTime);
                 }
                 break;
-              case 'TIMER_COMPLETED':
+              case "TIMER_COMPLETED":
                 // タイマー完了
-                if (data.timerId === 'egg-timer') {
+                if (data.timerId === "egg-timer") {
                   setEggTimerActive(false);
                   setEggTimerPaused(false);
                   setEggTimerTime(0);
-                  setMessage(`🍳 ${data.recipeName}タイマー終了！できあがりです！`);
-                  
+                  setMessage(
+                    `🍳 ${data.recipeName}タイマー終了！できあがりです！`
+                  );
+
                   // マナーモードでない場合のみ音を再生
                   if (!isMannerMode) {
-                    startSoundLoop(data.soundType as 'bell' | 'chime' | 'beep' | 'alarm');
+                    startSoundLoop(
+                      data.soundType as "bell" | "chime" | "beep" | "alarm"
+                    );
                   }
-                  
+
                   // 履歴に追加
-                  addToTimerHistory(data.recipeName, data.duration, 'egg');
-                } else if (data.timerId === 'custom-timer') {
+                  addToTimerHistory(data.recipeName, data.duration, "egg");
+                } else if (data.timerId === "custom-timer") {
                   setCustomTimerActive(false);
                   setCustomTimerPaused(false);
                   setCustomTimerTime(0);
                   setMessage(`⏰ ${data.timerName}タイマー終了！`);
-                  
+
                   // マナーモードでない場合のみ音を再生
                   if (!isMannerMode) {
-                    startSoundLoop(data.soundType as 'bell' | 'chime' | 'beep' | 'alarm');
+                    startSoundLoop(
+                      data.soundType as "bell" | "chime" | "beep" | "alarm"
+                    );
                   }
-                  
+
                   // 履歴に追加
-                  addToTimerHistory(data.timerName, data.duration, 'custom');
+                  addToTimerHistory(data.timerName, data.duration, "custom");
                 }
                 break;
-              case 'TIMER_PAUSED':
+              case "TIMER_PAUSED":
                 // タイマー一時停止
-                if (data.timerId === 'egg-timer') {
+                if (data.timerId === "egg-timer") {
                   setEggTimerPaused(true);
-                } else if (data.timerId === 'custom-timer') {
+                } else if (data.timerId === "custom-timer") {
                   setCustomTimerPaused(true);
                 }
                 break;
-              case 'TIMER_STOPPED':
+              case "TIMER_STOPPED":
                 // タイマー停止
-                if (data.timerId === 'egg-timer') {
+                if (data.timerId === "egg-timer") {
                   setEggTimerActive(false);
                   setEggTimerPaused(false);
                   setEggTimerTime(0);
-                } else if (data.timerId === 'custom-timer') {
+                } else if (data.timerId === "custom-timer") {
                   setCustomTimerActive(false);
                   setCustomTimerPaused(false);
                   setCustomTimerTime(0);
                 }
                 break;
-              case 'STOP_SOUND':
+              case "STOP_SOUND":
                 // 音を停止
                 stopSoundLoop();
                 break;
@@ -4536,23 +4613,29 @@ function App() {
           });
         }
       } catch (error) {
-        console.error('Service Worker registration failed:', error);
+        console.error("Service Worker registration failed:", error);
       }
     }
   };
 
   // バックグラウンドタイマーを開始
-  const startBackgroundTimer = (timerId: string, duration: number, type: string, soundType: string, recipeName: string) => {
+  const startBackgroundTimer = (
+    timerId: string,
+    duration: number,
+    type: string,
+    soundType: string,
+    recipeName: string
+  ) => {
     if (serviceWorker) {
       serviceWorker.postMessage({
-        type: 'START_TIMER',
+        type: "START_TIMER",
         data: {
           timerId,
           duration,
           type,
           soundType,
-          recipeName
-        }
+          recipeName,
+        },
       });
       setBackgroundTimerActive(true);
     }
@@ -4562,8 +4645,8 @@ function App() {
   const pauseBackgroundTimer = (timerId: string) => {
     if (serviceWorker) {
       serviceWorker.postMessage({
-        type: 'PAUSE_TIMER',
-        data: { timerId }
+        type: "PAUSE_TIMER",
+        data: { timerId },
       });
     }
   };
@@ -4572,8 +4655,8 @@ function App() {
   const resumeBackgroundTimer = (timerId: string) => {
     if (serviceWorker) {
       serviceWorker.postMessage({
-        type: 'RESUME_TIMER',
-        data: { timerId }
+        type: "RESUME_TIMER",
+        data: { timerId },
       });
     }
   };
@@ -4582,8 +4665,8 @@ function App() {
   const stopBackgroundTimer = (timerId: string) => {
     if (serviceWorker) {
       serviceWorker.postMessage({
-        type: 'STOP_TIMER',
-        data: { timerId }
+        type: "STOP_TIMER",
+        data: { timerId },
       });
       setBackgroundTimerActive(false);
     }
@@ -4593,12 +4676,12 @@ function App() {
   const playMannerModeSound = async () => {
     if (isMannerMode) {
       // マナーモードの場合は振動のみ
-      if ('vibrate' in navigator) {
+      if ("vibrate" in navigator) {
         navigator.vibrate([200, 100, 200, 100, 200]);
       }
       return;
     }
-    
+
     // 通常の音声再生
     await playEggTimerSound();
   };
@@ -4608,10 +4691,10 @@ function App() {
     setIsMannerMode(!isMannerMode);
     if (isMannerMode) {
       // マナーモードを無効にする
-      setMessage('🔊 音声モードに切り替えました');
+      setMessage("🔊 音声モードに切り替えました");
     } else {
       // マナーモードを有効にする
-      setMessage('🔇 マナーモードに切り替えました（振動のみ）');
+      setMessage("🔇 マナーモードに切り替えました（振動のみ）");
       // 現在再生中の音を停止
       stopSoundLoop();
     }
@@ -5296,7 +5379,9 @@ function App() {
                     handleEditGenre={handleEditGenre}
                     handleSaveGenreEdit={handleSaveGenreEdit}
                     handleCancelGenreEdit={handleCancelGenreEdit}
-                    handleDeleteGenreFromManagement={handleDeleteGenreFromManagement}
+                    handleDeleteGenreFromManagement={
+                      handleDeleteGenreFromManagement
+                    }
                     loadMemos={loadMemos}
                     closeOtherFeatures={closeOtherFeatures}
                   />
@@ -5345,7 +5430,9 @@ function App() {
                         {/* ジャンル管理ボタン */}
                         <div className="memos-controls">
                           <button
-                            onClick={() => setShowGenreManagement(!showGenreManagement)}
+                            onClick={() =>
+                              setShowGenreManagement(!showGenreManagement)
+                            }
                             className="genre-management-button"
                           >
                             🏷️ ジャンル管理
@@ -5364,14 +5451,19 @@ function App() {
                                       <input
                                         type="text"
                                         value={editingGenreName}
-                                        onChange={(e) => setEditingGenreName(e.target.value)}
+                                        onChange={(e) =>
+                                          setEditingGenreName(e.target.value)
+                                        }
                                         className="genre-edit-input"
                                         placeholder="ジャンル名を入力"
                                       />
                                       <button
                                         onClick={handleSaveGenreEdit}
                                         className="save-genre-button"
-                                        disabled={!editingGenreName.trim() || editingGenreName.trim() === genre}
+                                        disabled={
+                                          !editingGenreName.trim() ||
+                                          editingGenreName.trim() === genre
+                                        }
                                       >
                                         保存
                                       </button>
@@ -5384,7 +5476,9 @@ function App() {
                                     </div>
                                   ) : (
                                     <div className="genre-display">
-                                      <span className="genre-name">{genre}</span>
+                                      <span className="genre-name">
+                                        {genre}
+                                      </span>
                                       <div className="genre-actions">
                                         <button
                                           onClick={() => handleEditGenre(genre)}
@@ -5394,7 +5488,11 @@ function App() {
                                           ✏️
                                         </button>
                                         <button
-                                          onClick={() => handleDeleteGenreFromManagement(genre)}
+                                          onClick={() =>
+                                            handleDeleteGenreFromManagement(
+                                              genre
+                                            )
+                                          }
                                           className="delete-genre-button"
                                           title="削除"
                                         >
@@ -5406,7 +5504,9 @@ function App() {
                                 </div>
                               ))}
                               {customGenres.length === 0 && (
-                                <p className="no-genres">カスタムジャンルがありません</p>
+                                <p className="no-genres">
+                                  カスタムジャンルがありません
+                                </p>
                               )}
                             </div>
                           </div>
@@ -5964,11 +6064,53 @@ function App() {
                 );
               } else if (feature.id === "public-memos") {
                 return (
+                  <PublicMemosComponent
+                    key={feature.id}
+                    publicMemos={publicMemos}
+                    publicMemosLoading={publicMemosLoading}
+                    showPublicMemos={showPublicMemos}
+                    setShowPublicMemos={setShowPublicMemos}
+                    publicMemoSelectedDate={publicMemoSelectedDate}
+                    setPublicMemoSelectedDate={setPublicMemoSelectedDate}
+                    publicMemoCurrentMonth={publicMemoCurrentMonth}
+                    setPublicMemoCurrentMonth={setPublicMemoCurrentMonth}
+                    selectedPublicMemoCategory={selectedPublicMemoCategory}
+                    setSelectedPublicMemoCategory={setSelectedPublicMemoCategory}
+                    publicMemoSearchTerm={publicMemoSearchTerm}
+                    setPublicMemoSearchTerm={setPublicMemoSearchTerm}
+                    replyingToMemo={replyingToMemo}
+                    setReplyingToMemo={setReplyingToMemo}
+                    replyContent={replyContent}
+                    setReplyContent={setReplyContent}
+                    editingReply={editingReply}
+                    setEditingReply={setEditingReply}
+                    editingReplyContent={editingReplyContent}
+                    setEditingReplyContent={setEditingReplyContent}
+                    user={user}
+                    loadPublicMemos={loadPublicMemos}
+                    handlePublicMemoSearch={handlePublicMemoSearch}
+                    handlePublicMemoCategoryChange={handlePublicMemoCategoryChange}
+                    navigatePublicMemoMonth={navigatePublicMemoMonth}
+                    handlePublicMemoDateClick={handlePublicMemoDateClick}
+                    handleReplySubmit={handleReplySubmit}
+                    handleEditReply={handleEditReply}
+                    handleCancelEditReply={handleCancelEditReply}
+                    handleSaveEditReply={handleSaveEditReply}
+                    handleDeleteReply={handleDeleteReply}
+                    handleReplyCancel={handleReplyCancel}
+                    closeOtherFeatures={closeOtherFeatures}
+                  />
+                );
+              } else if (feature.id === "public-memos-old") {
+                return (
                   <div key={feature.id} className="public-memos-section">
                     <div className="section-header">
                       <h2>
                         <span className="section-icon">
-                          <HetamaIconComponent featureId="public-memos" size="large" />
+                          <HetamaIconComponent
+                            featureId="public-memos"
+                            size="large"
+                          />
                         </span>
                         公開メモ
                       </h2>
@@ -6006,7 +6148,9 @@ function App() {
                         {/* ジャンル管理ボタン */}
                         <div className="memos-controls">
                           <button
-                            onClick={() => setShowGenreManagement(!showGenreManagement)}
+                            onClick={() =>
+                              setShowGenreManagement(!showGenreManagement)
+                            }
                             className="genre-management-button"
                           >
                             🏷️ ジャンル管理
@@ -6025,14 +6169,19 @@ function App() {
                                       <input
                                         type="text"
                                         value={editingGenreName}
-                                        onChange={(e) => setEditingGenreName(e.target.value)}
+                                        onChange={(e) =>
+                                          setEditingGenreName(e.target.value)
+                                        }
                                         className="genre-edit-input"
                                         placeholder="ジャンル名を入力"
                                       />
                                       <button
                                         onClick={handleSaveGenreEdit}
                                         className="save-genre-button"
-                                        disabled={!editingGenreName.trim() || editingGenreName.trim() === genre}
+                                        disabled={
+                                          !editingGenreName.trim() ||
+                                          editingGenreName.trim() === genre
+                                        }
                                       >
                                         保存
                                       </button>
@@ -6045,7 +6194,9 @@ function App() {
                                     </div>
                                   ) : (
                                     <div className="genre-display">
-                                      <span className="genre-name">{genre}</span>
+                                      <span className="genre-name">
+                                        {genre}
+                                      </span>
                                       <div className="genre-actions">
                                         <button
                                           onClick={() => handleEditGenre(genre)}
@@ -6055,7 +6206,11 @@ function App() {
                                           ✏️
                                         </button>
                                         <button
-                                          onClick={() => handleDeleteGenreFromManagement(genre)}
+                                          onClick={() =>
+                                            handleDeleteGenreFromManagement(
+                                              genre
+                                            )
+                                          }
                                           className="delete-genre-button"
                                           title="削除"
                                         >
@@ -6067,7 +6222,9 @@ function App() {
                                 </div>
                               ))}
                               {customGenres.length === 0 && (
-                                <p className="no-genres">カスタムジャンルがありません</p>
+                                <p className="no-genres">
+                                  カスタムジャンルがありません
+                                </p>
                               )}
                             </div>
                           </div>
@@ -6742,7 +6899,9 @@ function App() {
                                 type="number"
                                 id="miscellaneous"
                                 value={miscellaneous}
-                                onChange={(e) => setMiscellaneous(e.target.value)}
+                                onChange={(e) =>
+                                  setMiscellaneous(e.target.value)
+                                }
                                 placeholder="例: 5000"
                               />
                             </div>
@@ -6867,14 +7026,18 @@ function App() {
                             {/* 新しい詳細項目 */}
                             <div className="diary-details-section">
                               <h4>📊 詳細記録</h4>
-                              
+
                               {/* 仕事の要約 */}
                               <div className="form-group">
-                                <label htmlFor="diaryWorkSummary">仕事の要約</label>
+                                <label htmlFor="diaryWorkSummary">
+                                  仕事の要約
+                                </label>
                                 <textarea
                                   id="diaryWorkSummary"
                                   value={diaryWorkSummary}
-                                  onChange={(e) => setDiaryWorkSummary(e.target.value)}
+                                  onChange={(e) =>
+                                    setDiaryWorkSummary(e.target.value)
+                                  }
                                   placeholder="今日の仕事を簡潔にまとめてください"
                                   rows={3}
                                 />
@@ -6883,24 +7046,32 @@ function App() {
                               {/* 数値項目 */}
                               <div className="form-row">
                                 <div className="form-group">
-                                  <label htmlFor="diaryWorkHours">作業時間 (時間)</label>
+                                  <label htmlFor="diaryWorkHours">
+                                    作業時間 (時間)
+                                  </label>
                                   <input
                                     type="number"
                                     id="diaryWorkHours"
                                     value={diaryWorkHours}
-                                    onChange={(e) => setDiaryWorkHours(Number(e.target.value))}
+                                    onChange={(e) =>
+                                      setDiaryWorkHours(Number(e.target.value))
+                                    }
                                     min="0"
                                     max="24"
                                     step="0.5"
                                   />
                                 </div>
                                 <div className="form-group">
-                                  <label htmlFor="diaryBreakTime">休憩時間 (分)</label>
+                                  <label htmlFor="diaryBreakTime">
+                                    休憩時間 (分)
+                                  </label>
                                   <input
                                     type="number"
                                     id="diaryBreakTime"
                                     value={diaryBreakTime}
-                                    onChange={(e) => setDiaryBreakTime(Number(e.target.value))}
+                                    onChange={(e) =>
+                                      setDiaryBreakTime(Number(e.target.value))
+                                    }
                                     min="0"
                                     max="480"
                                   />
@@ -6909,42 +7080,64 @@ function App() {
 
                               <div className="form-row">
                                 <div className="form-group">
-                                  <label htmlFor="diaryEnergyLevel">エネルギーレベル (1-10)</label>
+                                  <label htmlFor="diaryEnergyLevel">
+                                    エネルギーレベル (1-10)
+                                  </label>
                                   <input
                                     type="range"
                                     id="diaryEnergyLevel"
                                     value={diaryEnergyLevel}
-                                    onChange={(e) => setDiaryEnergyLevel(Number(e.target.value))}
+                                    onChange={(e) =>
+                                      setDiaryEnergyLevel(
+                                        Number(e.target.value)
+                                      )
+                                    }
                                     min="1"
                                     max="10"
                                   />
-                                  <span className="range-value">{diaryEnergyLevel}</span>
+                                  <span className="range-value">
+                                    {diaryEnergyLevel}
+                                  </span>
                                 </div>
                                 <div className="form-group">
-                                  <label htmlFor="diaryStressLevel">ストレスレベル (1-10)</label>
+                                  <label htmlFor="diaryStressLevel">
+                                    ストレスレベル (1-10)
+                                  </label>
                                   <input
                                     type="range"
                                     id="diaryStressLevel"
                                     value={diaryStressLevel}
-                                    onChange={(e) => setDiaryStressLevel(Number(e.target.value))}
+                                    onChange={(e) =>
+                                      setDiaryStressLevel(
+                                        Number(e.target.value)
+                                      )
+                                    }
                                     min="1"
                                     max="10"
                                   />
-                                  <span className="range-value">{diaryStressLevel}</span>
+                                  <span className="range-value">
+                                    {diaryStressLevel}
+                                  </span>
                                 </div>
                               </div>
 
                               <div className="form-group">
-                                <label htmlFor="diaryProductivity">生産性 (1-10)</label>
+                                <label htmlFor="diaryProductivity">
+                                  生産性 (1-10)
+                                </label>
                                 <input
                                   type="range"
                                   id="diaryProductivity"
                                   value={diaryProductivity}
-                                  onChange={(e) => setDiaryProductivity(Number(e.target.value))}
+                                  onChange={(e) =>
+                                    setDiaryProductivity(Number(e.target.value))
+                                  }
                                   min="1"
                                   max="10"
                                 />
-                                <span className="range-value">{diaryProductivity}</span>
+                                <span className="range-value">
+                                  {diaryProductivity}
+                                </span>
                               </div>
 
                               {/* 配列項目 */}
@@ -6954,18 +7147,30 @@ function App() {
                                   <input
                                     type="text"
                                     value={newAchievement}
-                                    onChange={(e) => setNewAchievement(e.target.value)}
+                                    onChange={(e) =>
+                                      setNewAchievement(e.target.value)
+                                    }
                                     placeholder="成果を入力してEnterキーで追加"
                                     onKeyPress={(e) => {
-                                      if (e.key === 'Enter') {
+                                      if (e.key === "Enter") {
                                         e.preventDefault();
-                                        addArrayItem(setDiaryAchievements, newAchievement, setNewAchievement);
+                                        addArrayItem(
+                                          setDiaryAchievements,
+                                          newAchievement,
+                                          setNewAchievement
+                                        );
                                       }
                                     }}
                                   />
                                   <button
                                     type="button"
-                                    onClick={() => addArrayItem(setDiaryAchievements, newAchievement, setNewAchievement)}
+                                    onClick={() =>
+                                      addArrayItem(
+                                        setDiaryAchievements,
+                                        newAchievement,
+                                        setNewAchievement
+                                      )
+                                    }
                                     className="add-item-button"
                                   >
                                     +
@@ -6977,7 +7182,12 @@ function App() {
                                       <span>✅ {item}</span>
                                       <button
                                         type="button"
-                                        onClick={() => removeArrayItem(setDiaryAchievements, index)}
+                                        onClick={() =>
+                                          removeArrayItem(
+                                            setDiaryAchievements,
+                                            index
+                                          )
+                                        }
                                         className="remove-item-button"
                                       >
                                         ✕
@@ -6993,18 +7203,30 @@ function App() {
                                   <input
                                     type="text"
                                     value={newChallenge}
-                                    onChange={(e) => setNewChallenge(e.target.value)}
+                                    onChange={(e) =>
+                                      setNewChallenge(e.target.value)
+                                    }
                                     placeholder="課題を入力してEnterキーで追加"
                                     onKeyPress={(e) => {
-                                      if (e.key === 'Enter') {
+                                      if (e.key === "Enter") {
                                         e.preventDefault();
-                                        addArrayItem(setDiaryChallenges, newChallenge, setNewChallenge);
+                                        addArrayItem(
+                                          setDiaryChallenges,
+                                          newChallenge,
+                                          setNewChallenge
+                                        );
                                       }
                                     }}
                                   />
                                   <button
                                     type="button"
-                                    onClick={() => addArrayItem(setDiaryChallenges, newChallenge, setNewChallenge)}
+                                    onClick={() =>
+                                      addArrayItem(
+                                        setDiaryChallenges,
+                                        newChallenge,
+                                        setNewChallenge
+                                      )
+                                    }
                                     className="add-item-button"
                                   >
                                     +
@@ -7016,7 +7238,12 @@ function App() {
                                       <span>⚠️ {item}</span>
                                       <button
                                         type="button"
-                                        onClick={() => removeArrayItem(setDiaryChallenges, index)}
+                                        onClick={() =>
+                                          removeArrayItem(
+                                            setDiaryChallenges,
+                                            index
+                                          )
+                                        }
                                         className="remove-item-button"
                                       >
                                         ✕
@@ -7032,18 +7259,30 @@ function App() {
                                   <input
                                     type="text"
                                     value={newLearning}
-                                    onChange={(e) => setNewLearning(e.target.value)}
+                                    onChange={(e) =>
+                                      setNewLearning(e.target.value)
+                                    }
                                     placeholder="学んだことを入力してEnterキーで追加"
                                     onKeyPress={(e) => {
-                                      if (e.key === 'Enter') {
+                                      if (e.key === "Enter") {
                                         e.preventDefault();
-                                        addArrayItem(setDiaryLearnings, newLearning, setNewLearning);
+                                        addArrayItem(
+                                          setDiaryLearnings,
+                                          newLearning,
+                                          setNewLearning
+                                        );
                                       }
                                     }}
                                   />
                                   <button
                                     type="button"
-                                    onClick={() => addArrayItem(setDiaryLearnings, newLearning, setNewLearning)}
+                                    onClick={() =>
+                                      addArrayItem(
+                                        setDiaryLearnings,
+                                        newLearning,
+                                        setNewLearning
+                                      )
+                                    }
                                     className="add-item-button"
                                   >
                                     +
@@ -7055,7 +7294,12 @@ function App() {
                                       <span>📚 {item}</span>
                                       <button
                                         type="button"
-                                        onClick={() => removeArrayItem(setDiaryLearnings, index)}
+                                        onClick={() =>
+                                          removeArrayItem(
+                                            setDiaryLearnings,
+                                            index
+                                          )
+                                        }
                                         className="remove-item-button"
                                       >
                                         ✕
@@ -7071,18 +7315,30 @@ function App() {
                                   <input
                                     type="text"
                                     value={newNextGoal}
-                                    onChange={(e) => setNewNextGoal(e.target.value)}
+                                    onChange={(e) =>
+                                      setNewNextGoal(e.target.value)
+                                    }
                                     placeholder="明日の目標を入力してEnterキーで追加"
                                     onKeyPress={(e) => {
-                                      if (e.key === 'Enter') {
+                                      if (e.key === "Enter") {
                                         e.preventDefault();
-                                        addArrayItem(setDiaryNextGoals, newNextGoal, setNewNextGoal);
+                                        addArrayItem(
+                                          setDiaryNextGoals,
+                                          newNextGoal,
+                                          setNewNextGoal
+                                        );
                                       }
                                     }}
                                   />
                                   <button
                                     type="button"
-                                    onClick={() => addArrayItem(setDiaryNextGoals, newNextGoal, setNewNextGoal)}
+                                    onClick={() =>
+                                      addArrayItem(
+                                        setDiaryNextGoals,
+                                        newNextGoal,
+                                        setNewNextGoal
+                                      )
+                                    }
                                     className="add-item-button"
                                   >
                                     +
@@ -7094,7 +7350,12 @@ function App() {
                                       <span>🎯 {item}</span>
                                       <button
                                         type="button"
-                                        onClick={() => removeArrayItem(setDiaryNextGoals, index)}
+                                        onClick={() =>
+                                          removeArrayItem(
+                                            setDiaryNextGoals,
+                                            index
+                                          )
+                                        }
                                         className="remove-item-button"
                                       >
                                         ✕
@@ -7109,7 +7370,9 @@ function App() {
                                 <textarea
                                   id="diaryNotes"
                                   value={diaryNotes}
-                                  onChange={(e) => setDiaryNotes(e.target.value)}
+                                  onChange={(e) =>
+                                    setDiaryNotes(e.target.value)
+                                  }
                                   placeholder="その他、気になることや記録したいことを自由に書いてください"
                                   rows={3}
                                 />
@@ -7175,11 +7438,13 @@ function App() {
                                   )}
                                 </div>
                               </div>
-                              
+
                               {editingMonthlyMemo ? (
                                 <textarea
                                   value={monthlyMemo}
-                                  onChange={(e) => setMonthlyMemo(e.target.value)}
+                                  onChange={(e) =>
+                                    setMonthlyMemo(e.target.value)
+                                  }
                                   placeholder="今月の収支についてメモを書いてください..."
                                   className="monthly-memo-textarea"
                                   rows={4}
@@ -7189,7 +7454,9 @@ function App() {
                                   {monthlyMemo ? (
                                     <p>{monthlyMemo}</p>
                                   ) : (
-                                    <p className="no-memo">メモがありません。編集ボタンから追加してください。</p>
+                                    <p className="no-memo">
+                                      メモがありません。編集ボタンから追加してください。
+                                    </p>
                                   )}
                                 </div>
                               )}
@@ -7701,7 +7968,7 @@ function App() {
                                         </div>
                                         <div className="diary-content">
                                           <p>{diary.content}</p>
-                                          
+
                                           {/* 新しい詳細項目の表示 */}
                                           {diary.workSummary && (
                                             <div className="diary-detail-section">
@@ -7709,71 +7976,105 @@ function App() {
                                               <p>{diary.workSummary}</p>
                                             </div>
                                           )}
-                                          
-                                          {diary.achievements && diary.achievements.length > 0 && (
-                                            <div className="diary-detail-section">
-                                              <h5>✅ 今日の成果</h5>
-                                              <ul>
-                                                {diary.achievements.map((achievement, index) => (
-                                                  <li key={index}>{achievement}</li>
-                                                ))}
-                                              </ul>
-                                            </div>
-                                          )}
-                                          
-                                          {diary.challenges && diary.challenges.length > 0 && (
-                                            <div className="diary-detail-section">
-                                              <h5>⚠️ 課題・困難</h5>
-                                              <ul>
-                                                {diary.challenges.map((challenge, index) => (
-                                                  <li key={index}>{challenge}</li>
-                                                ))}
-                                              </ul>
-                                            </div>
-                                          )}
-                                          
-                                          {diary.learnings && diary.learnings.length > 0 && (
-                                            <div className="diary-detail-section">
-                                              <h5>📚 学んだこと</h5>
-                                              <ul>
-                                                {diary.learnings.map((learning, index) => (
-                                                  <li key={index}>{learning}</li>
-                                                ))}
-                                              </ul>
-                                            </div>
-                                          )}
-                                          
-                                          {diary.nextGoals && diary.nextGoals.length > 0 && (
-                                            <div className="diary-detail-section">
-                                              <h5>🎯 明日の目標</h5>
-                                              <ul>
-                                                {diary.nextGoals.map((goal, index) => (
-                                                  <li key={index}>{goal}</li>
-                                                ))}
-                                              </ul>
-                                            </div>
-                                          )}
-                                          
+
+                                          {diary.achievements &&
+                                            diary.achievements.length > 0 && (
+                                              <div className="diary-detail-section">
+                                                <h5>✅ 今日の成果</h5>
+                                                <ul>
+                                                  {diary.achievements.map(
+                                                    (achievement, index) => (
+                                                      <li key={index}>
+                                                        {achievement}
+                                                      </li>
+                                                    )
+                                                  )}
+                                                </ul>
+                                              </div>
+                                            )}
+
+                                          {diary.challenges &&
+                                            diary.challenges.length > 0 && (
+                                              <div className="diary-detail-section">
+                                                <h5>⚠️ 課題・困難</h5>
+                                                <ul>
+                                                  {diary.challenges.map(
+                                                    (challenge, index) => (
+                                                      <li key={index}>
+                                                        {challenge}
+                                                      </li>
+                                                    )
+                                                  )}
+                                                </ul>
+                                              </div>
+                                            )}
+
+                                          {diary.learnings &&
+                                            diary.learnings.length > 0 && (
+                                              <div className="diary-detail-section">
+                                                <h5>📚 学んだこと</h5>
+                                                <ul>
+                                                  {diary.learnings.map(
+                                                    (learning, index) => (
+                                                      <li key={index}>
+                                                        {learning}
+                                                      </li>
+                                                    )
+                                                  )}
+                                                </ul>
+                                              </div>
+                                            )}
+
+                                          {diary.nextGoals &&
+                                            diary.nextGoals.length > 0 && (
+                                              <div className="diary-detail-section">
+                                                <h5>🎯 明日の目標</h5>
+                                                <ul>
+                                                  {diary.nextGoals.map(
+                                                    (goal, index) => (
+                                                      <li key={index}>
+                                                        {goal}
+                                                      </li>
+                                                    )
+                                                  )}
+                                                </ul>
+                                              </div>
+                                            )}
+
                                           {/* 数値項目の表示 */}
                                           <div className="diary-metrics">
                                             {diary.workHours > 0 && (
-                                              <span className="metric">⏰ 作業時間: {diary.workHours}時間</span>
+                                              <span className="metric">
+                                                ⏰ 作業時間: {diary.workHours}
+                                                時間
+                                              </span>
                                             )}
                                             {diary.breakTime > 0 && (
-                                              <span className="metric">☕ 休憩時間: {diary.breakTime}分</span>
+                                              <span className="metric">
+                                                ☕ 休憩時間: {diary.breakTime}分
+                                              </span>
                                             )}
-                                            <span className="metric">⚡ エネルギー: {diary.energyLevel || 5}/10</span>
-                                            <span className="metric">😰 ストレス: {diary.stressLevel || 5}/10</span>
-                                            <span className="metric">📈 生産性: {diary.productivity || 5}/10</span>
+                                            <span className="metric">
+                                              ⚡ エネルギー:{" "}
+                                              {diary.energyLevel || 5}/10
+                                            </span>
+                                            <span className="metric">
+                                              😰 ストレス:{" "}
+                                              {diary.stressLevel || 5}/10
+                                            </span>
+                                            <span className="metric">
+                                              📈 生産性:{" "}
+                                              {diary.productivity || 5}/10
+                                            </span>
                                           </div>
-                                          
+
                                           {diary.notes && (
                                             <div className="diary-detail-section">
                                               <h5>📝 その他のメモ</h5>
                                               <p>{diary.notes}</p>
                                             </div>
                                           )}
-                                          
+
                                           {diary.tags &&
                                             diary.tags.length > 0 && (
                                               <div className="diary-tags">
@@ -8030,52 +8331,52 @@ function App() {
                 );
               } else if (feature.id === "self-analysis") {
                 return (
-        <SelfAnalysisComponent
-          key={feature.id}
-          showSelfAnalysis={showSelfAnalysis}
-          setShowSelfAnalysis={setShowSelfAnalysis}
-          selfAnalysisTab={selfAnalysisTab}
-          setSelfAnalysisTab={setSelfAnalysisTab}
-          personalProfile={personalProfile}
-          habits={habits}
-          habitHistory={habitHistory}
-          moodLogs={moodLogs}
-          goals={goals}
-          learningRecords={learningRecords}
-          timeEntries={timeEntries}
-          calculateTimeBreakdown={calculateTimeBreakdown}
-          calculateProductivityTrend={calculateProductivityTrend}
-          calculateProductivityStats={calculateProductivityStats}
-          loadTimeEntries={loadTimeEntries}
-          editingProfile={editingProfile}
-          setEditingProfile={setEditingProfile}
-          newValue={newValue}
-          setNewValue={setNewValue}
-          newGoal={newGoal}
-          setNewGoal={setNewGoal}
-          newSkill={newSkill}
-          setNewSkill={setNewSkill}
-          newInterest={newInterest}
-          setNewInterest={setNewInterest}
-          newStrength={newStrength}
-          setNewStrength={setNewStrength}
-          newWeakness={newWeakness}
-          setNewWeakness={setNewWeakness}
-          newPersonality={newPersonality}
-          setNewPersonality={setNewPersonality}
-          addToProfile={addToProfile}
-          removeFromProfile={removeFromProfile}
-          addHabit={addHabit}
-          toggleHabitCompletion={toggleHabitCompletion}
-          deleteHabit={deleteHabit}
-          addGoal={addGoal}
-          updateGoal={updateGoal}
-          deleteGoal={deleteGoal}
-          addLearningRecord={addLearningRecord}
-          updateLearningRecord={updateLearningRecord}
-          deleteLearningRecord={deleteLearningRecord}
-          closeOtherFeatures={closeOtherFeatures}
-        />
+                  <SelfAnalysisComponent
+                    key={feature.id}
+                    showSelfAnalysis={showSelfAnalysis}
+                    setShowSelfAnalysis={setShowSelfAnalysis}
+                    selfAnalysisTab={selfAnalysisTab}
+                    setSelfAnalysisTab={setSelfAnalysisTab}
+                    personalProfile={personalProfile}
+                    habits={habits}
+                    habitHistory={habitHistory}
+                    moodLogs={moodLogs}
+                    goals={goals}
+                    learningRecords={learningRecords}
+                    timeEntries={timeEntries}
+                    calculateTimeBreakdown={calculateTimeBreakdown}
+                    calculateProductivityTrend={calculateProductivityTrend}
+                    calculateProductivityStats={calculateProductivityStats}
+                    loadTimeEntries={loadTimeEntries}
+                    editingProfile={editingProfile}
+                    setEditingProfile={setEditingProfile}
+                    newValue={newValue}
+                    setNewValue={setNewValue}
+                    newGoal={newGoal}
+                    setNewGoal={setNewGoal}
+                    newSkill={newSkill}
+                    setNewSkill={setNewSkill}
+                    newInterest={newInterest}
+                    setNewInterest={setNewInterest}
+                    newStrength={newStrength}
+                    setNewStrength={setNewStrength}
+                    newWeakness={newWeakness}
+                    setNewWeakness={setNewWeakness}
+                    newPersonality={newPersonality}
+                    setNewPersonality={setNewPersonality}
+                    addToProfile={addToProfile}
+                    removeFromProfile={removeFromProfile}
+                    addHabit={addHabit}
+                    toggleHabitCompletion={toggleHabitCompletion}
+                    deleteHabit={deleteHabit}
+                    addGoal={addGoal}
+                    updateGoal={updateGoal}
+                    deleteGoal={deleteGoal}
+                    addLearningRecord={addLearningRecord}
+                    updateLearningRecord={updateLearningRecord}
+                    deleteLearningRecord={deleteLearningRecord}
+                    closeOtherFeatures={closeOtherFeatures}
+                  />
                 );
               } else {
                 console.log("Unknown feature:", feature.name, feature.id);
@@ -8291,7 +8592,7 @@ function App() {
                     📝 リマインダー設定を開く
                   </button>
                 </div>
-                
+
                 <div className="feature-settings-section">
                   <h4>📋 機能の並び順</h4>
                   <p>
@@ -8324,9 +8625,9 @@ function App() {
                           <div className="feature-drag-handle">⋮⋮</div>
                           <div className="feature-item-content">
                             <div className="feature-icon">
-                              <HetamaIconComponent 
-                                featureId={feature.id} 
-                                size="medium" 
+                              <HetamaIconComponent
+                                featureId={feature.id}
+                                size="medium"
                               />
                             </div>
                             <div className="feature-info">
@@ -8398,7 +8699,7 @@ function App() {
             </div>
           </div>
         )}
-        
+
         {/* 日記リマインダー機能 */}
         <DiaryReminderIntegration
           showDiaryReminderSettings={showDiaryReminderSettings}
