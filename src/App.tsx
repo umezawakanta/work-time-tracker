@@ -5079,6 +5079,9 @@ function App() {
                     learningRecords={learningRecords}
                     setLearningRecords={setLearningRecords}
                     timeEntries={timeEntries}
+                    calculateTimeBreakdown={calculateTimeBreakdown}
+                    calculateProductivityTrend={calculateProductivityTrend}
+                    calculateProductivityStats={calculateProductivityStats}
                     loadTimeEntries={loadTimeEntries}
                     closeOtherFeatures={closeOtherFeatures}
                   />
