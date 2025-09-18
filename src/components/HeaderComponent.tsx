@@ -1,6 +1,7 @@
 import React from "react";
 import "./HeaderComponent.css";
 import VersionInfoComponent from "./VersionInfo";
+import CharacterComponent from "./CharacterComponent";
 import type { User, Character } from "../types";
 
 interface HeaderComponentProps {
@@ -35,35 +36,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   return (
     <header className="dashboard-header">
       <div className="header-left">
-        <div className="character-container">
-          <div className="character">
-            <div className="character-halo"></div>
-            <div className="character-wings">
-              <div className="wing left-wing"></div>
-              <div className="wing right-wing"></div>
-            </div>
-            <div className="character-face">
-              <div className="character-eyes">
-                <div className="eye left-eye"></div>
-                <div className="eye right-eye"></div>
-              </div>
-              <div className="character-mouth"></div>
-            </div>
-            <div className="character-body"></div>
-            <div className="character-arms">
-              <div className="arm left-arm"></div>
-              <div className="arm right-arm"></div>
-            </div>
-            <div className="sparkles">
-              <div className="sparkle sparkle-1"></div>
-              <div className="sparkle sparkle-2"></div>
-              <div className="sparkle sparkle-3"></div>
-              <div className="sparkle sparkle-4"></div>
-              <div className="sparkle sparkle-5"></div>
-              <div className="sparkle sparkle-6"></div>
-            </div>
-          </div>
-        </div>
+        <CharacterComponent />
       </div>
       <h1>⏰ Work Time Tracker 📚</h1>
       <div className="user-info">
