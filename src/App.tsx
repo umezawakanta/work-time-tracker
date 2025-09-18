@@ -273,6 +273,9 @@ function App() {
   );
   const [publicMemoSelectedDate, setPublicMemoSelectedDate] =
     useState<Date | null>(null);
+  const [publicMemoCurrentMonth, setPublicMemoCurrentMonth] = useState(
+    new Date()
+  );
 
   // フォント設定関連の状態
   const [selectedFont, setSelectedFont] = useState("system");
