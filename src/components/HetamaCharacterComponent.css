@@ -3,14 +3,13 @@
 /* 右下のヘタウマキャラクター */
 .bottom-right-character {
   position: absolute;
-  bottom: 70px;
-  right: 20px;
+  bottom: 0px;
+  right: 75px;
   width: 80px;
   height: 80px;
   z-index: 5;
   pointer-events: none;
 }
-
 .hetama-character {
   position: relative;
   width: 100%;
@@ -315,7 +314,7 @@
   .bottom-right-character {
     width: 60px;
     height: 60px;
-    bottom: 50px;
+    bottom: 80px;
     right: 15px;
   }
   
