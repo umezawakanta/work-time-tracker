@@ -29,6 +29,8 @@ interface MemosComponentProps {
   handleSaveEditReply: (replyId: string) => void;
   handleCancelEditReply: () => void;
   handleDeleteReply: (replyId: string) => void;
+  replyContent: string;
+  setReplyContent: (content: string) => void;
 }
 
 const MemosComponent: React.FC<MemosComponentProps> = ({
@@ -58,6 +60,8 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   handleSaveEditReply,
   handleCancelEditReply,
   handleDeleteReply,
+  replyContent,
+  setReplyContent,
 }) => {
   // 内部状態
   const [showMemoForm, setShowMemoForm] = useState(false);
@@ -67,7 +71,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   const [editingGenreName, setEditingGenreName] = useState("");
   // 返信関連の状態
   const [replyingToMemo, setReplyingToMemo] = useState<string | null>(null);
-  const [replyContent, setReplyContent] = useState("");
   const [editingReply, setEditingReply] = useState<string | null>(null);
   const [editingReplyContent, setEditingReplyContent] = useState("");
   // ページネーションの状態
