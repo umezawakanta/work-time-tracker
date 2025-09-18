@@ -69,8 +69,27 @@
 /* 大画面 (1400px以上) */
 @media (min-width: 1400px) {
   .logout-container {
-    top: 1.5rem;
-    right: 1.5rem;
+    top: 2rem;
+    right: 2rem;
+  }
+  
+  .logout-button {
+    width: 56px;
+    height: 56px;
+    font-size: 1.5rem;
+  }
+  
+  .logout-button svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+/* 大画面 (1200px - 1399px) */
+@media (max-width: 1399px) and (min-width: 1200px) {
+  .logout-container {
+    top: 1.75rem;
+    right: 1.75rem;
   }
   
   .logout-button {
@@ -85,11 +104,10 @@
   }
 }
 
-/* 大画面 (1200px - 1399px) */
-@media (max-width: 1399px) and (min-width: 1200px) {
+@media (max-width: 1199px) and (min-width: 1024px) {
   .logout-container {
-    top: 1.25rem;
-    right: 1.25rem;
+    top: 1.5rem;
+    right: 1.5rem;
   }
   
   .logout-button {
@@ -101,13 +119,6 @@
   .logout-button svg {
     width: 22px;
     height: 22px;
-  }
-}
-
-@media (max-width: 1199px) and (min-width: 1024px) {
-  .logout-container {
-    top: 1rem;
-    right: 1rem;
   }
 }
 

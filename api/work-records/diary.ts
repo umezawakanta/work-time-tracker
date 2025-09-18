@@ -131,11 +131,21 @@ export default async function handler(req, res) {
         const utcDate = new Date(jstDate.getTime() - (9 * 60 * 60 * 1000));
         updateData.date = utcDate;
       }
-      if (title) updateData.title = title;
-      if (content) updateData.content = content;
-      if (mood) updateData.mood = mood;
-      if (tags) updateData.tags = tags;
-      if (isPrivate !== undefined) updateData.isPrivate = isPrivate;
+      if (title) {
+        updateData.title = title;
+      }
+      if (content) {
+        updateData.content = content;
+      }
+      if (mood) {
+        updateData.mood = mood;
+      }
+      if (tags) {
+        updateData.tags = tags;
+      }
+      if (isPrivate !== undefined) {
+        updateData.isPrivate = isPrivate;
+      }
 
       const diary = await WorkDiary.findByIdAndUpdate(
         id,

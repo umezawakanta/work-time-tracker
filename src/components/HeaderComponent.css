@@ -19,6 +19,8 @@
   box-sizing: border-box;
   flex-wrap: nowrap;
   gap: 1rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .dashboard-header::before {
@@ -28,9 +30,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.05) 100%);
   pointer-events: none;
   z-index: 0;
+  border-radius: inherit;
 }
 
 /* ヘッダー内のすべての要素をz-indexで前面に */
@@ -39,35 +42,91 @@
   z-index: 1;
 }
 
+/* クロスブラウザ対応 */
+.dashboard-header {
+  /* Safari対応 */
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  
+  /* Firefox対応 */
+  -moz-box-shadow: 0 8px 25px rgba(255, 154, 158, 0.4);
+  
+  /* IE対応 */
+  -ms-flex-direction: row;
+  -ms-align-items: center;
+  -ms-justify-content: space-between;
+}
+
+/* アクセシビリティ向上 */
+.dashboard-header:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* 高コントラストモード対応 */
+@media (prefers-contrast: high) {
+  .dashboard-header {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 3px solid #000000;
+  }
+}
+
+/* モーション軽減設定 */
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-header {
+    transition: none;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .dashboard-header {
+    background: var(--primary-color, linear-gradient(145deg, #1a1a2e 0%, #16213e 100%)) !important;
+    color: var(--text-color, #ffffff) !important;
+  }
+}
+
 /* PCサイズでのヘッダーレイアウト最適化 */
 @media (min-width: 1024px) {
   .dashboard-header {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    grid-template-areas: "left center right";
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 2rem;
+    padding: 2.5rem 3rem;
+    position: relative;
   }
   
   .dashboard-header .header-left {
-    grid-area: left;
-    justify-content: flex-start;
+    flex: 0 0 auto;
+    order: 1;
   }
   
   .dashboard-header .header-title {
-    grid-area: center;
+    flex: 1;
     text-align: center;
+    order: 2;
+    margin: 0 2rem;
   }
   
   .dashboard-header .user-info {
-    grid-area: right;
+    flex: 0 0 auto;
+    order: 3;
     justify-content: flex-end;
   }
   
   .dashboard-header .logout-container {
     position: absolute;
-    top: 1rem;
+    top: 1.5rem;
+    right: 1.5rem;
+    order: 4;
+  }
+  
+  .dashboard-header .hetama-character {
+    position: absolute;
+    bottom: 1rem;
     right: 1rem;
+    order: 5;
   }
 }
 
@@ -85,7 +144,20 @@
   .dashboard-header {
     padding: 3.5rem 4rem;
     min-height: 160px;
-    gap: 2rem;
+  }
+  
+  .dashboard-header .header-title {
+    margin: 0 3rem;
+  }
+  
+  .dashboard-header .logout-container {
+    top: 2rem;
+    right: 2rem;
+  }
+  
+  .dashboard-header .hetama-character {
+    bottom: 1.5rem;
+    right: 1.5rem;
   }
 }
 
@@ -94,7 +166,20 @@
   .dashboard-header {
     padding: 3rem 3rem;
     min-height: 140px;
-    gap: 1.5rem;
+  }
+  
+  .dashboard-header .header-title {
+    margin: 0 2.5rem;
+  }
+  
+  .dashboard-header .logout-container {
+    top: 1.75rem;
+    right: 1.75rem;
+  }
+  
+  .dashboard-header .hetama-character {
+    bottom: 1.25rem;
+    right: 1.25rem;
   }
 }
 
@@ -103,7 +188,20 @@
   .dashboard-header {
     padding: 2.5rem 2rem;
     min-height: 130px;
-    gap: 1.25rem;
+  }
+  
+  .dashboard-header .header-title {
+    margin: 0 2rem;
+  }
+  
+  .dashboard-header .logout-container {
+    top: 1.5rem;
+    right: 1.5rem;
+  }
+  
+  .dashboard-header .hetama-character {
+    bottom: 1rem;
+    right: 1rem;
   }
 }
 
