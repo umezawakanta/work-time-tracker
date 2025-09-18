@@ -388,6 +388,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                                       onChange={(e) => setEditingReplyContent(e.target.value)}
                                       className="reply-edit-textarea"
                                       rows={3}
+                                      aria-label="返信を編集"
                                     />
                                     <div className="reply-edit-actions">
                                       <button

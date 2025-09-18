@@ -401,7 +401,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
         title: goalForm.title,
         description: goalForm.description,
         category: goalForm.category,
-        priority: goalForm.priority,
+        priority: goalForm.priority as "high" | "medium" | "low",
         status: goalForm.status,
         milestones: goalForm.milestones,
       });
