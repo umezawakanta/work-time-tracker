@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './MemosComponent.css';
-import type { Memo } from '../types';
+import type { Memo, Reply } from '../types';
 
 interface MemosComponentProps {
   memos: Memo[];
@@ -46,6 +46,11 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   const [showGenreManagement, setShowGenreManagement] = useState(false);
   const [editingGenre, setEditingGenre] = useState<string | null>(null);
   const [editingGenreName, setEditingGenreName] = useState("");
+  // 返信関連の状態
+  const [replyingToMemo, setReplyingToMemo] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState("");
+  const [editingReply, setEditingReply] = useState<string | null>(null);
+  const [editingReplyContent, setEditingReplyContent] = useState("");
   // ページネーションの状態
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -374,6 +379,116 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                     <div className="memo-content">
                       <p>{memo.content}</p>
                     </div>
+
+                    {/* 返信セクション */}
+                    <div className="replies-section">
+                      <h4>返信 ({memo.replies?.length || 0})</h4>
+                      
+                      {memo.replies && memo.replies.length > 0 && (
+                        <div className="replies-list">
+                          {memo.replies.map((reply: Reply) => (
+                            <div key={reply.id} className="reply-item">
+                              <div className="reply-content">
+                                {editingReply === reply.id ? (
+                                  <div className="reply-edit-form">
+                                    <textarea
+                                      value={editingReplyContent}
+                                      onChange={(e) => setEditingReplyContent(e.target.value)}
+                                      className="reply-edit-textarea"
+                                      rows={3}
+                                      aria-label="返信を編集"
+                                    />
+                                    <div className="reply-edit-actions">
+                                      <button
+                                        onClick={() => handleSaveEditReply(reply.id)}
+                                        className="save-reply-button"
+                                      >
+                                        保存
+                                      </button>
+                                      <button
+                                        onClick={handleCancelEditReply}
+                                        className="cancel-reply-button"
+                                      >
+                                        キャンセル
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <p>{reply.content}</p>
+                                )}
+                              </div>
+                              <div className="reply-meta">
+                                <span className="reply-date">
+                                  {formatDateTime(reply.createdAt)}
+                                </span>
+                                <div className="reply-actions">
+                                  <button
+                                    onClick={() => {
+                                      setEditingReply(reply.id);
+                                      setEditingReplyContent(reply.content);
+                                    }}
+                                    className="edit-reply-button"
+                                    title="編集"
+                                  >
+                                    ✏️
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteReply(reply.id)}
+                                    className="delete-reply-button"
+                                    title="削除"
+                                  >
+                                    🗑️
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* 返信フォーム */}
+                      {replyingToMemo === memo.id ? (
+                        <div className="reply-form">
+                          <textarea
+                            value={replyContent}
+                            onChange={(e) => setReplyContent(e.target.value)}
+                            className="reply-textarea"
+                            rows={3}
+                            placeholder="返信を入力..."
+                            aria-label="返信を入力"
+                          />
+                          <div className="reply-form-actions">
+                            <button
+                              onClick={() => handleReplySubmit(memo.id)}
+                              className="submit-reply-button"
+                              disabled={!replyContent.trim()}
+                            >
+                              返信
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleReplyCancel();
+                                setReplyContent("");
+                              }}
+                              className="cancel-reply-button"
+                            >
+                              キャンセル
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setReplyingToMemo(memo.id);
+                            setReplyContent("");
+                          }}
+                          className="reply-button"
+                        >
+                          💬 返信
+                        </button>
+                      )}
+                    </div>
+
                     <div className="memo-actions">
                       <button
                         onClick={() => {

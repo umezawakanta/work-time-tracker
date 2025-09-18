@@ -469,6 +469,230 @@
   white-space: pre-wrap;
 }
 
+/* 返信セクション */
+.replies-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.replies-section h4 {
+  margin: 0 0 1rem 0;
+  color: #495057;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.replies-list {
+  margin-bottom: 1rem;
+}
+
+.reply-item {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #e9ecef;
+}
+
+.reply-content {
+  margin-bottom: 0.75rem;
+}
+
+.reply-content p {
+  margin: 0;
+  color: #495057;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.reply-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.reply-date {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.reply-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-reply-button,
+.delete-reply-button {
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+}
+
+.edit-reply-button {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.edit-reply-button:hover {
+  background: #bbdefb;
+  transform: scale(1.1);
+}
+
+.delete-reply-button {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.delete-reply-button:hover {
+  background: #ffcdd2;
+  transform: scale(1.1);
+}
+
+.reply-edit-form {
+  background: white;
+  border-radius: 6px;
+  padding: 1rem;
+  border: 1px solid #ced4da;
+}
+
+.reply-edit-textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 80px;
+  box-sizing: border-box;
+}
+
+.reply-edit-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.reply-edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  justify-content: flex-end;
+}
+
+.save-reply-button,
+.cancel-reply-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-reply-button {
+  background: #28a745;
+  color: white;
+}
+
+.save-reply-button:hover {
+  background: #218838;
+}
+
+.cancel-reply-button {
+  background: #6c757d;
+  color: white;
+}
+
+.cancel-reply-button:hover {
+  background: #545b62;
+}
+
+.reply-form {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e9ecef;
+}
+
+.reply-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 80px;
+  box-sizing: border-box;
+  margin-bottom: 0.75rem;
+}
+
+.reply-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.reply-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.submit-reply-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.submit-reply-button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.submit-reply-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.reply-button {
+  background: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #bbdefb;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reply-button:hover {
+  background: #bbdefb;
+  border-color: #90caf9;
+  transform: translateY(-1px);
+}
+
 .memo-actions {
   display: flex;
   gap: 0.5rem;
