@@ -1,4 +1,4 @@
-/* UserInfoComponent.css - 究極シンプルユーザー情報デザイン */
+/* UserInfoComponent.css - ユーザー情報コンポーネント専用のスタイル */
 
 .user-info {
   display: flex;
@@ -30,7 +30,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* レスポンシブ */
+/* レスポンシブデザイン */
 @media (max-width: 1024px) {
   .user-info {
     gap: 0.8rem;

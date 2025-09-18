@@ -1,4 +1,4 @@
-/* HeaderTitleComponent.css - 究極シンプルタイトルデザイン */
+/* HeaderTitleComponent.css - ヘッダータイトルコンポーネント専用のスタイル */
 
 .header-title {
   font-size: 2rem;
@@ -35,7 +35,7 @@
   text-shadow: none;
 }
 
-/* レスポンシブ */
+/* レスポンシブデザイン */
 @media (max-width: 1024px) {
   .header-title { font-size: 1.8rem; }
   [data-theme="simple"] .header-title { font-size: 2rem; }

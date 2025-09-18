@@ -1,60 +1,39 @@
-/* UserGreetingComponent.css - 究極シンプル挨拶デザイン */
+/* UserGreetingComponent.css - ユーザーグリーティングコンポーネント専用のスタイル */
 
 .user-greeting {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
 }
 
 .header-character {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 2px solid #3b82f6;
-  overflow: hidden;
+  font-size: 1.2rem;
 }
 
 .current-character-svg {
-  width: 100%;
-  height: 100%;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.current-character-svg svg {
-  width: 32px;
-  height: 32px;
+.default-character {
+  font-size: 1.2rem;
 }
 
-.greeting-text {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #333;
-}
-
-/* レスポンシブ */
-@media (max-width: 1024px) {
-  .user-greeting { gap: 0.6rem; }
-  .header-character { width: 36px; height: 36px; }
-  .current-character-svg svg { width: 28px; height: 28px; }
-  .greeting-text { font-size: 0.9rem; }
-}
-
+/* レスポンシブデザイン */
 @media (max-width: 768px) {
-  .user-greeting { gap: 0.5rem; }
-  .header-character { width: 32px; height: 32px; }
-  .current-character-svg svg { width: 24px; height: 24px; }
-  .greeting-text { font-size: 0.8rem; }
+  .user-greeting {
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width: 480px) {
-  .user-greeting { gap: 0.4rem; }
-  .header-character { width: 28px; height: 28px; }
-  .current-character-svg svg { width: 20px; height: 20px; }
-  .greeting-text { font-size: 0.7rem; }
+  .user-greeting {
+    font-size: 0.8rem;
+  }
 }
