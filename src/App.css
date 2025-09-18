@@ -9196,3 +9196,27 @@ input:checked + .toggle-slider:before {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* 日記リマインダー設定ボタン */
+.reminder-settings-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  font-size: 1rem;
+}
+
+.reminder-settings-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.reminder-settings-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}

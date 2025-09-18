@@ -13,6 +13,7 @@ import TimerHistoryComponent from "./components/TimerHistoryComponent";
 import SelfAnalysisComponent from "./components/SelfAnalysisComponent";
 import BookshelfComponent from "./components/BookshelfComponent";
 import HeaderComponent from "./components/HeaderComponent";
+import DiaryReminderIntegration from "./components/DiaryReminderIntegration";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts, FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
@@ -286,6 +287,8 @@ function App() {
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [showFeatureSettings, setShowFeatureSettings] = useState(false);
   const [draggedFeature, setDraggedFeature] = useState<string | null>(null);
+  const [showDiaryReminderSettings, setShowDiaryReminderSettings] = useState(false);
+  const [diaryReminderSnoozeUntil, setDiaryReminderSnoozeUntil] = useState<number | null>(null);
 
   // カレンダーの状態
   const [showCalendar, setShowCalendar] = useState(false);
@@ -7604,6 +7607,16 @@ function App() {
               </div>
               <div className="feature-settings-body">
                 <div className="feature-settings-section">
+                  <h4>📝 日記リマインダー設定</h4>
+                  <button
+                    onClick={() => setShowDiaryReminderSettings(true)}
+                    className="reminder-settings-btn"
+                  >
+                    📝 リマインダー設定を開く
+                  </button>
+                </div>
+                
+                <div className="feature-settings-section">
                   <h4>📋 機能の並び順</h4>
                   <p>
                     ドラッグ&ドロップまたは↑↓ボタンで機能の順序を変更できます
@@ -7704,6 +7717,14 @@ function App() {
             </div>
           </div>
         )}
+        
+        {/* 日記リマインダー機能 */}
+        <DiaryReminderIntegration
+          showDiaryReminderSettings={showDiaryReminderSettings}
+          setShowDiaryReminderSettings={setShowDiaryReminderSettings}
+          diaryReminderSnoozeUntil={diaryReminderSnoozeUntil}
+          setDiaryReminderSnoozeUntil={setDiaryReminderSnoozeUntil}
+        />
       </div>
     );
   }
