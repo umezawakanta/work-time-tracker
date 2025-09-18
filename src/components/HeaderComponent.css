@@ -7,7 +7,7 @@
   padding: 1rem 2rem;
   display: flex !important;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   min-height: 80px;
   width: 100%;
   box-sizing: border-box;
@@ -15,6 +15,7 @@
   border-bottom: 2px solid #e0ddd6;
   visibility: visible !important;
   opacity: 1 !important;
+  gap: 1rem; /* 要素間の間隔を確保 */
 }
 
 /* 左側：キャラクター（絶対保持） */
@@ -27,7 +28,7 @@
   justify-content: center;
   padding: 0 1rem;
   min-width: 0; /* フレックスアイテムの縮小を許可 */
-  max-width: calc(100% - 200px); /* 左右の要素の幅を考慮 */
+  max-width: calc(100% - 300px); /* 左右の要素の幅を考慮（余裕を持たせる） */
   visibility: visible !important;
   opacity: 1 !important;
 }
@@ -35,12 +36,12 @@
 /* 右側：ナビゲーション */
 .header-right {
   flex: 0 0 auto;
-  margin-left: auto;
   display: flex !important;
   align-items: center;
   gap: 0.75rem;
   visibility: visible !important;
   opacity: 1 !important;
+  min-width: 0; /* フレックスアイテムの縮小を許可 */
 }
 
 .header-navigation {
@@ -83,9 +84,20 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  z-index: 1;
+  z-index: 10; /* z-indexを上げて表示を確保 */
   opacity: 0.8;
   pointer-events: none;
+}
+
+/* PC表示での追加調整 */
+@media (min-width: 1025px) {
+  .header-center {
+    max-width: calc(100% - 400px); /* PC表示ではより多くのスペースを確保 */
+  }
+  
+  .header-right {
+    flex-shrink: 0; /* 右側の要素が縮小されないように */
+  }
 }
 
 /* タブレット以下 */
@@ -102,6 +114,7 @@
     order: 2;
     width: 100%;
     padding: 0;
+    max-width: 100%; /* タブレット以下では制限を解除 */
   }
   
   
