@@ -361,6 +361,7 @@ function App() {
   // カレンダーの状態
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showRecordDetail, setShowRecordDetail] = useState(false);
 
