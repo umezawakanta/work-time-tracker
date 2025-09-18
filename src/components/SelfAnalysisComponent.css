@@ -231,6 +231,251 @@
   width: 100%;
 }
 
+/* 感情ログ機能 */
+.mood-content {
+  padding: 1.5rem;
+}
+
+.mood-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.mood-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text-color, #374151);
+}
+
+.add-mood-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.add-mood-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.mood-stats {
+  margin-bottom: 2rem;
+}
+
+.mood-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: var(--card-background, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color, #3b82f6);
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--text-color-light, #6b7280);
+  font-weight: 500;
+}
+
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.mood-card {
+  background: var(--card-background, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.mood-card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.mood-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.mood-date {
+  font-size: 0.875rem;
+  color: var(--text-color-light, #6b7280);
+  font-weight: 500;
+}
+
+.delete-mood-button {
+  background: none;
+  border: none;
+  color: var(--text-color-light, #6b7280);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.delete-mood-button:hover {
+  background: var(--error-color, #ef4444);
+  color: white;
+}
+
+.mood-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 8px;
+}
+
+.mood-emoji {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.mood-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-color, #374151);
+}
+
+.mood-details {
+  margin-bottom: 1rem;
+}
+
+.mood-factor {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.factor-label {
+  font-size: 0.875rem;
+  color: var(--text-color-light, #6b7280);
+  min-width: 80px;
+}
+
+.factor-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--border-color, #e5e7eb);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.factor-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.factor-fill.stress {
+  background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+}
+
+.factor-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-color, #374151);
+  min-width: 40px;
+  text-align: right;
+}
+
+.mood-activities {
+  margin-bottom: 1rem;
+}
+
+.mood-activities h5 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--text-color-light, #6b7280);
+  font-weight: 600;
+}
+
+.activities-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.activity-tag {
+  background: var(--primary-color-light, #dbeafe);
+  color: var(--primary-color, #3b82f6);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.mood-notes {
+  margin-bottom: 1rem;
+}
+
+.mood-notes h5 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--text-color-light, #6b7280);
+  font-weight: 600;
+}
+
+.mood-notes p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-color, #374151);
+  line-height: 1.5;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-color-light, #6b7280);
+}
+
+.empty-state p {
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-state p:last-child {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
 /* 時間分析 */
 .time-breakdown {
   display: flex;

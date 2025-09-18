@@ -789,8 +789,141 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
 
           {selfAnalysisTab === 'mood' && (
             <div className="mood-content">
-              <h3>😊 感情ログ</h3>
-              <p>感情ログ機能は準備中です...</p>
+              <div className="mood-header">
+                <h3>😊 感情ログ</h3>
+                <button 
+                  className="add-mood-button"
+                  onClick={() => {
+                    const newMoodLog = {
+                      date: new Date().toISOString().split('T')[0],
+                      mood: 3,
+                      energy: 3,
+                      stress: 3,
+                      activities: [],
+                      notes: '',
+                      weather: 'sunny',
+                      sleep: 8
+                    };
+                    addMoodLog(newMoodLog);
+                  }}
+                >
+                  + 今日の気分を記録
+                </button>
+              </div>
+
+              <div className="mood-stats">
+                <div className="mood-summary">
+                  <div className="stat-card">
+                    <div className="stat-value">
+                      {moodLogs.length > 0 ? getAverageMood().toFixed(1) : '0.0'}
+                    </div>
+                    <div className="stat-label">平均気分</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-value">
+                      {moodLogs.length}
+                    </div>
+                    <div className="stat-label">記録日数</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-value">
+                      {moodLogs.length > 0 ? moodLogs[moodLogs.length - 1].mood : 0}
+                    </div>
+                    <div className="stat-label">最新の気分</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mood-list">
+                {moodLogs.length === 0 ? (
+                  <div className="empty-state">
+                    <p>まだ感情ログがありません</p>
+                    <p>「+ 今日の気分を記録」ボタンから気分を記録してください</p>
+                  </div>
+                ) : (
+                  <div className="mood-grid">
+                    {moodLogs.map(log => (
+                      <div key={log.id} className="mood-card">
+                        <div className="mood-card-header">
+                          <div className="mood-date">{log.date}</div>
+                          <button 
+                            className="delete-mood-button"
+                            onClick={() => deleteMoodLog(log.id)}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        
+                        <div className="mood-display">
+                          <div className="mood-emoji">{getMoodEmoji(log.mood)}</div>
+                          <div className="mood-text">
+                            {log.mood === 5 ? '最高！' :
+                             log.mood === 4 ? '良い' :
+                             log.mood === 3 ? '普通' :
+                             log.mood === 2 ? '少し低い' : '低い'}
+                          </div>
+                        </div>
+
+                        <div className="mood-details">
+                          <div className="mood-factor">
+                            <span className="factor-label">エネルギー:</span>
+                            <div className="factor-bar">
+                              <div 
+                                className="factor-fill" 
+                                style={{width: `${(log.energy / 5) * 100}%`}}
+                              ></div>
+                            </div>
+                            <span className="factor-value">{log.energy}/5</span>
+                          </div>
+                          <div className="mood-factor">
+                            <span className="factor-label">ストレス:</span>
+                            <div className="factor-bar">
+                              <div 
+                                className="factor-fill stress" 
+                                style={{width: `${(log.stress / 5) * 100}%`}}
+                              ></div>
+                            </div>
+                            <span className="factor-value">{log.stress}/5</span>
+                          </div>
+                          <div className="mood-factor">
+                            <span className="factor-label">睡眠:</span>
+                            <span className="factor-value">{log.sleep}時間</span>
+                          </div>
+                          <div className="mood-factor">
+                            <span className="factor-label">天気:</span>
+                            <span className="factor-value">
+                              {log.weather === 'sunny' && '☀️ 晴れ'}
+                              {log.weather === 'cloudy' && '☁️ 曇り'}
+                              {log.weather === 'rainy' && '🌧️ 雨'}
+                              {log.weather === 'snowy' && '❄️ 雪'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {log.activities.length > 0 && (
+                          <div className="mood-activities">
+                            <h5>活動:</h5>
+                            <div className="activities-tags">
+                              {log.activities.map((activity, index) => (
+                                <span key={index} className="activity-tag">
+                                  {activity}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {log.notes && (
+                          <div className="mood-notes">
+                            <h5>メモ:</h5>
+                            <p>{log.notes}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
