@@ -402,7 +402,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
         description: goalForm.description,
         category: goalForm.category,
         priority: goalForm.priority as "high" | "medium" | "low",
-        status: goalForm.status,
+        status: goalForm.status as "not-started" | "in-progress" | "completed" | "paused",
         milestones: goalForm.milestones,
       });
     } else {
