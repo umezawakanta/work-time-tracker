@@ -1,10 +1,14 @@
 import React from 'react';
 import './CharacterComponent.css';
 
-const CharacterComponent: React.FC = () => {
+interface CharacterComponentProps {
+  isTimeTrackingActive: boolean;
+}
+
+const CharacterComponent: React.FC<CharacterComponentProps> = ({ isTimeTrackingActive }) => {
   return (
     <div className="character-container">
-      <div className="character">
+      <div className={`character ${isTimeTrackingActive ? 'running' : ''}`}>
         <div className="character-halo"></div>
         <div className="character-wings">
           <div className="wing left-wing"></div>
@@ -30,6 +34,16 @@ const CharacterComponent: React.FC = () => {
           <div className="sparkle sparkle-5"></div>
           <div className="sparkle sparkle-6"></div>
         </div>
+        {/* 走っている時のエフェクト */}
+        {isTimeTrackingActive && (
+          <div className="running-effects">
+            <div className="running-dust dust-1"></div>
+            <div className="running-dust dust-2"></div>
+            <div className="running-dust dust-3"></div>
+            <div className="running-dust dust-4"></div>
+            <div className="running-dust dust-5"></div>
+          </div>
+        )}
       </div>
     </div>
   );

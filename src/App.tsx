@@ -158,6 +158,14 @@ function App() {
   const [backgroundTimerActive, setBackgroundTimerActive] = useState(false);
   const [serviceWorker, setServiceWorker] = useState<ServiceWorker | null>(null);
   const [isMannerMode, setIsMannerMode] = useState(false);
+  
+  // 時間記録の進行状態
+  const [isTimeTrackingActive, setIsTimeTrackingActive] = useState(false);
+  
+  // ジャンル管理の状態
+  const [showGenreManagement, setShowGenreManagement] = useState(false);
+  const [editingGenre, setEditingGenre] = useState<string | null>(null);
+  const [editingGenreName, setEditingGenreName] = useState("");
 
   // プロジェクト関連の状態
   const [projects, setProjects] = useState<Project[]>([]);
@@ -2382,6 +2390,41 @@ function App() {
     localStorage.setItem("customGenres", JSON.stringify(updatedGenres));
   };
 
+  // ジャンル管理の追加関数
+  const handleEditGenre = (genre: string) => {
+    setEditingGenre(genre);
+    setEditingGenreName(genre);
+  };
+
+  const handleSaveGenreEdit = () => {
+    if (editingGenreName.trim() && editingGenreName.trim() !== editingGenre) {
+      const updatedGenres = customGenres.map(genre => 
+        genre === editingGenre ? editingGenreName.trim() : genre
+      );
+      setCustomGenres(updatedGenres);
+      localStorage.setItem("customGenres", JSON.stringify(updatedGenres));
+      setMessage("ジャンルを更新しました");
+    }
+    setEditingGenre(null);
+    setEditingGenreName("");
+  };
+
+  const handleCancelGenreEdit = () => {
+    setEditingGenre(null);
+    setEditingGenreName("");
+  };
+
+  const handleDeleteGenreFromManagement = (genreToDelete: string) => {
+    if (window.confirm(`「${genreToDelete}」ジャンルを削除しますか？\nこのジャンルを使用しているメモも影響を受けます。`)) {
+      const updatedGenres = customGenres.filter(
+        (genre) => genre !== genreToDelete
+      );
+      setCustomGenres(updatedGenres);
+      localStorage.setItem("customGenres", JSON.stringify(updatedGenres));
+      setMessage("ジャンルを削除しました");
+    }
+  };
+
   // 利用可能なジャンル一覧を取得（デフォルト + カスタム）
   const getAllGenres = () => {
     const defaultGenres = [
@@ -3499,6 +3542,7 @@ function App() {
         };
         setCurrentTimeEntry(newEntry);
         setIsTracking(true);
+        setIsTimeTrackingActive(true);
         setElapsedTime(0);
         setMessage("時間記録を開始しました");
       } else {
@@ -3533,6 +3577,7 @@ function App() {
       if (data.success) {
         setCurrentTimeEntry(null);
         setIsTracking(false);
+        setIsTimeTrackingActive(false);
         setElapsedTime(0);
         setDescription("");
         setMessage(
@@ -3554,6 +3599,7 @@ function App() {
     console.log("🔄 時間記録を強制リセットします");
     setCurrentTimeEntry(null);
     setIsTracking(false);
+    setIsTimeTrackingActive(false);
     setElapsedTime(0);
     setDescription("");
     setMessage("時間記録をリセットしました");
@@ -4613,6 +4659,7 @@ function App() {
             setShowFontSettings={setShowFontSettings}
             setShowFeatureSettings={setShowFeatureSettings}
             loadUserSettings={loadUserSettings}
+            isTimeTrackingActive={isTimeTrackingActive}
           />
 
           <main className="dashboard-main">
@@ -5192,6 +5239,76 @@ function App() {
 
                     {showMemos && (
                       <div className="memos-content">
+                        {/* ジャンル管理ボタン */}
+                        <div className="memos-controls">
+                          <button
+                            onClick={() => setShowGenreManagement(!showGenreManagement)}
+                            className="genre-management-button"
+                          >
+                            🏷️ ジャンル管理
+                          </button>
+                        </div>
+
+                        {/* ジャンル管理セクション */}
+                        {showGenreManagement && (
+                          <div className="genre-management-section">
+                            <h3>🏷️ ジャンル管理</h3>
+                            <div className="genre-list">
+                              {customGenres.map((genre, index) => (
+                                <div key={index} className="genre-item">
+                                  {editingGenre === genre ? (
+                                    <div className="genre-edit-form">
+                                      <input
+                                        type="text"
+                                        value={editingGenreName}
+                                        onChange={(e) => setEditingGenreName(e.target.value)}
+                                        className="genre-edit-input"
+                                        placeholder="ジャンル名を入力"
+                                      />
+                                      <button
+                                        onClick={handleSaveGenreEdit}
+                                        className="save-genre-button"
+                                        disabled={!editingGenreName.trim() || editingGenreName.trim() === genre}
+                                      >
+                                        保存
+                                      </button>
+                                      <button
+                                        onClick={handleCancelGenreEdit}
+                                        className="cancel-genre-button"
+                                      >
+                                        キャンセル
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <div className="genre-display">
+                                      <span className="genre-name">{genre}</span>
+                                      <div className="genre-actions">
+                                        <button
+                                          onClick={() => handleEditGenre(genre)}
+                                          className="edit-genre-button"
+                                          title="編集"
+                                        >
+                                          ✏️
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteGenreFromManagement(genre)}
+                                          className="delete-genre-button"
+                                          title="削除"
+                                        >
+                                          🗑️
+                                        </button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                              {customGenres.length === 0 && (
+                                <p className="no-genres">カスタムジャンルがありません</p>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
                         <div className="memos-stats">
                           <div className="stat-card">
                             <h3>総メモ数</h3>
@@ -5783,6 +5900,76 @@ function App() {
 
                     {showPublicMemos && (
                       <div className="public-memos-content">
+                        {/* ジャンル管理ボタン */}
+                        <div className="memos-controls">
+                          <button
+                            onClick={() => setShowGenreManagement(!showGenreManagement)}
+                            className="genre-management-button"
+                          >
+                            🏷️ ジャンル管理
+                          </button>
+                        </div>
+
+                        {/* ジャンル管理セクション */}
+                        {showGenreManagement && (
+                          <div className="genre-management-section">
+                            <h3>🏷️ ジャンル管理</h3>
+                            <div className="genre-list">
+                              {customGenres.map((genre, index) => (
+                                <div key={index} className="genre-item">
+                                  {editingGenre === genre ? (
+                                    <div className="genre-edit-form">
+                                      <input
+                                        type="text"
+                                        value={editingGenreName}
+                                        onChange={(e) => setEditingGenreName(e.target.value)}
+                                        className="genre-edit-input"
+                                        placeholder="ジャンル名を入力"
+                                      />
+                                      <button
+                                        onClick={handleSaveGenreEdit}
+                                        className="save-genre-button"
+                                        disabled={!editingGenreName.trim() || editingGenreName.trim() === genre}
+                                      >
+                                        保存
+                                      </button>
+                                      <button
+                                        onClick={handleCancelGenreEdit}
+                                        className="cancel-genre-button"
+                                      >
+                                        キャンセル
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <div className="genre-display">
+                                      <span className="genre-name">{genre}</span>
+                                      <div className="genre-actions">
+                                        <button
+                                          onClick={() => handleEditGenre(genre)}
+                                          className="edit-genre-button"
+                                          title="編集"
+                                        >
+                                          ✏️
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteGenreFromManagement(genre)}
+                                          className="delete-genre-button"
+                                          title="削除"
+                                        >
+                                          🗑️
+                                        </button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                              {customGenres.length === 0 && (
+                                <p className="no-genres">カスタムジャンルがありません</p>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
                         <div className="public-memos-stats">
                           <div className="stat-card">
                             <h3>公開メモ数</h3>

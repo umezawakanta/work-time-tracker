@@ -23,6 +23,7 @@ interface HeaderComponentProps {
   setShowFontSettings: (show: boolean) => void;
   setShowFeatureSettings: (show: boolean) => void;
   loadUserSettings: () => void;
+  isTimeTrackingActive: boolean;
 }
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
@@ -38,12 +39,13 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   setShowFontSettings,
   setShowFeatureSettings,
   loadUserSettings,
+  isTimeTrackingActive,
 }) => {
   return (
     <header className="dashboard-header">
       {/* 左側：キャラクター（絶対保持） */}
       <div className="header-left">
-        <HeaderLeftComponent />
+        <HeaderLeftComponent isTimeTrackingActive={isTimeTrackingActive} />
       </div>
       
       {/* 中央：タイトルとグリーティング */}
