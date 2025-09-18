@@ -215,6 +215,15 @@
   padding: 0.1rem 0.3rem;
   border-radius: 3px;
   background: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.salary-indicator:hover,
+.diary-indicator:hover {
+  background: rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
 }
 
 .calendar-day.selected .salary-indicator,

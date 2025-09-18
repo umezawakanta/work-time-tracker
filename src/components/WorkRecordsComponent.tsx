@@ -215,7 +215,12 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     const records = getRecordsForDate(date);
     if (records.salaryRecord || records.diaryRecord) {
       setSelectedRecord(records);
-      setSelectedRecordType(records.salaryRecord ? "salary" : "diary");
+      // 両方の記録がある場合は、日記を優先表示（または最後にクリックされた方を優先）
+      if (records.salaryRecord && records.diaryRecord) {
+        setSelectedRecordType("diary"); // 日記を優先表示
+      } else {
+        setSelectedRecordType(records.salaryRecord ? "salary" : "diary");
+      }
     } else {
       setSelectedRecord(null);
       setSelectedRecordType(null);
@@ -366,10 +371,28 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                       <span className="day-number">{date.getDate()}</span>
                       <div className="day-indicators">
                         {records.salaryRecord && (
-                          <span className="salary-indicator" title="給与記録">💰</span>
+                          <span 
+                            className="salary-indicator" 
+                            title="給与記録"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRecordClick("salary", date);
+                            }}
+                          >
+                            💰
+                          </span>
                         )}
                         {records.diaryRecord && (
-                          <span className="diary-indicator" title="日記">📝</span>
+                          <span 
+                            className="diary-indicator" 
+                            title="日記"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRecordClick("diary", date);
+                            }}
+                          >
+                            📝
+                          </span>
                         )}
                       </div>
                     </div>
@@ -380,10 +403,12 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           </div>
 
           {/* 選択された記録の詳細 */}
-          {selectedRecord && selectedRecordType && (
+          {selectedRecord && (
             <div className="record-details">
               <h3>選択された記録</h3>
-              {selectedRecordType === "salary" && selectedRecord.salaryRecord && (
+              
+              {/* 給与記録の表示 */}
+              {selectedRecord.salaryRecord && (
                 <div className="salary-record-detail">
                   <h4>💰 給与記録</h4>
                   <p><strong>金額:</strong> ¥{(selectedRecord.salaryRecord.amount || 0).toLocaleString()}</p>
@@ -408,7 +433,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 </div>
               )}
               
-              {selectedRecordType === "diary" && selectedRecord.diaryRecord && (
+              {/* 日記の表示 */}
+              {selectedRecord.diaryRecord && (
                 <div className="diary-record-detail">
                   <h4>📝 日記</h4>
                   <p><strong>タイトル:</strong> {selectedRecord.diaryRecord.title}</p>
