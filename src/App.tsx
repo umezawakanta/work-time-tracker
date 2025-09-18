@@ -19,6 +19,7 @@ import MemosComponent from "./components/MemosComponent";
 import ReportsComponent from "./components/ReportsComponent";
 import AdminPanelComponent from "./components/AdminPanelComponent";
 import LoginComponent from "./components/LoginComponent";
+import TimeTrackingComponent from "./components/TimeTrackingComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts, FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
@@ -4783,20 +4784,27 @@ function App() {
             {getVisibleFeatures().map((feature) => {
               if (feature.id === "time-tracking") {
                 return (
-                  <TimeTrackingSection
+                  <TimeTrackingComponent
                     key={feature.id}
                     showTimeTracking={showTimeTracking}
                     setShowTimeTracking={setShowTimeTracking}
-                    closeOtherFeatures={closeOtherFeatures}
-                    isTracking={isTracking}
+                    projects={projects}
+                    projectsLoading={projectsLoading}
+                    timeEntries={timeEntries}
+                    timeEntriesLoading={timeEntriesLoading}
+                    currentProject={currentProject}
+                    setCurrentProject={setCurrentProject}
                     description={description}
                     setDescription={setDescription}
-                    currentTimeEntry={currentTimeEntry}
+                    isTracking={isTracking}
+                    startTime={startTime}
                     elapsedTime={elapsedTime}
+                    loadProjects={loadProjects}
+                    loadTimeEntries={loadTimeEntries}
                     handleStartTracking={handleStartTracking}
                     handleStopTracking={handleStopTracking}
                     handleResetTracking={handleResetTracking}
-                    formatTime={formatTime}
+                    closeOtherFeatures={closeOtherFeatures}
                   />
                 );
               } else if (feature.id === "cooking-timer") {
