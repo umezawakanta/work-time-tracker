@@ -42,6 +42,42 @@
   gap: 0.5rem;
 }
 
+/* ヘッダータイトル */
+.header-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease-in-out infinite;
+  line-height: 1.2;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* シンプルテーマ用タイトル */
+[data-theme="simple"] .header-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+  animation: none;
+  text-shadow: none;
+}
+
 /* ヘッダー右側 */
 .header-right {
   display: flex;
@@ -57,6 +93,37 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+/* ユーザー情報 */
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.user-info span {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-info span:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* ログアウトボタン */
@@ -88,12 +155,30 @@
     padding: 0;
   }
   
+  .header-title {
+    font-size: 1.8rem;
+  }
+  
+  [data-theme="simple"] .header-title {
+    font-size: 2rem;
+  }
+  
   .header-right {
     order: 3;
     width: 100%;
     align-items: center;
     flex-direction: row;
     justify-content: center;
+  }
+  
+  .user-info {
+    gap: 0.8rem;
+    justify-content: center;
+  }
+  
+  .user-info span {
+    max-width: 150px;
+    padding: 0.4rem 0.8rem;
   }
   
   .dashboard-header .logout-container {
@@ -113,8 +198,26 @@
     gap: 0.4rem;
   }
   
+  .header-title {
+    font-size: 1.6rem;
+  }
+  
+  [data-theme="simple"] .header-title {
+    font-size: 1.8rem;
+  }
+  
   .header-navigation {
     gap: 0.8rem;
+  }
+  
+  .user-info {
+    gap: 0.6rem;
+  }
+  
+  .user-info span {
+    max-width: 120px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -129,7 +232,25 @@
     gap: 0.3rem;
   }
   
+  .header-title {
+    font-size: 1.4rem;
+  }
+  
+  [data-theme="simple"] .header-title {
+    font-size: 1.6rem;
+  }
+  
   .header-navigation {
     gap: 0.6rem;
+  }
+  
+  .user-info {
+    gap: 0.4rem;
+  }
+  
+  .user-info span {
+    max-width: 100px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
   }
 }
