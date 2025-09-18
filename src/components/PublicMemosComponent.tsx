@@ -49,11 +49,11 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   const getPaginatedMemos = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return publicMemos.slice(startIndex, endIndex);
+    return (publicMemos || []).slice(startIndex, endIndex);
   };
 
   const getTotalPages = () => {
-    return Math.ceil(publicMemos.length / itemsPerPage);
+    return Math.ceil((publicMemos || []).length / itemsPerPage);
   };
 
   const handlePageChange = (page: number) => {
@@ -97,7 +97,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // 公開メモカテゴリを取得する関数
   const getPublicMemoCategories = () => {
-    const memoCategories = new Set(publicMemos.map((memo) => memo.category));
+    const memoCategories = new Set((publicMemos || []).map((memo) => memo.category));
     const allCategories = [...memoCategories, ...getAllGenres()];
     return Array.from(new Set(allCategories)).sort();
   };
@@ -105,7 +105,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   // 選択された日付の公開メモを取得
   const getPublicMemosForDate = (date: Date) => {
     const dateString = date.toDateString();
-    return publicMemos.filter(memo => {
+    return (publicMemos || []).filter(memo => {
       const memoDate = new Date(memo.createdAt).toDateString();
       return memoDate === dateString;
     });

@@ -1621,7 +1621,7 @@ function App() {
     );
 
     // 今日の時間記録をフィルタリング
-    const todayEntries = timeEntries.filter((entry) => {
+    const todayEntries = (timeEntries || []).filter((entry) => {
       const entryDate = new Date(entry.startTime);
       return entryDate >= startOfDay && entry.endTime;
     });
@@ -1688,7 +1688,7 @@ function App() {
       endOfDay.setDate(startOfDay.getDate() + 1);
 
       // その日の時間記録をフィルタリング
-      const dayEntries = timeEntries.filter((entry) => {
+      const dayEntries = (timeEntries || []).filter((entry) => {
         const entryDate = new Date(entry.startTime);
         return entryDate >= startOfDay && entryDate < endOfDay && entry.endTime;
       });
@@ -1732,7 +1732,7 @@ function App() {
     const totalHours = workHours.length > 0 ? workHours.reduce((sum, hours) => sum + hours, 0) : 0;
     const averageHours = totalHours / workHours.length;
     const maxHours = workHours.length > 0 ? Math.max(...workHours) : 0;
-    const productiveDays = workHours.filter((hours) => hours > 0).length;
+    const productiveDays = (workHours || []).filter((hours) => hours > 0).length;
 
     return {
       averageHours: averageHours,
@@ -2417,7 +2417,7 @@ function App() {
       totalIncome,
       totalExpense,
       netIncome,
-      recordCount: salaryRecords.filter((record) => {
+      recordCount: (salaryRecords || []).filter((record) => {
         const recordDate = new Date(record.date);
         return recordDate >= startDate && recordDate <= endDate;
       }).length,
@@ -2440,7 +2440,7 @@ function App() {
       .toISOString()
       .split("T")[0];
 
-    const filteredSalaryRecords = salaryRecords.filter((record) => {
+    const filteredSalaryRecords = (salaryRecords || []).filter((record) => {
       // データベースの日付を日本時間に変換して比較
       const recordDate = new Date(record.date);
       const recordJstDateStr = new Date(
@@ -2451,7 +2451,7 @@ function App() {
       return recordJstDateStr === jstDateStr;
     });
 
-    const filteredDiaries = workDiaries.filter((diary) => {
+    const filteredDiaries = (workDiaries || []).filter((diary) => {
       // データベースの日付を日本時間に変換して比較
       const diaryDate = new Date(diary.date);
       const diaryJstDateStr = new Date(diaryDate.getTime() + 9 * 60 * 60 * 1000)
@@ -3249,7 +3249,7 @@ function App() {
     // 楽観的更新：即座にUIから削除
     const originalUsers = [...adminUsers];
     setAdminUsers((prevUsers) =>
-      prevUsers.filter((user) => user.id !== userId)
+      (prevUsers || []).filter((user) => user.id !== userId)
     );
     setMessage("ユーザーを削除中...");
 
@@ -3587,7 +3587,7 @@ function App() {
   // 公開メモ用のカレンダー関数
   const getPublicMemosForDate = (date: Date) => {
     const dateString = date.toDateString();
-    return publicMemos.filter((memo) => {
+    return (publicMemos || []).filter((memo) => {
       const memoDate = new Date(memo.createdAt).toDateString();
       return memoDate === dateString;
     });

@@ -173,10 +173,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 指定された日付の記録を取得
   const getRecordsForDate = (date: Date) => {
     const dateString = date.toISOString().split('T')[0];
-    const salaryRecord = salaryRecords.find(record => 
+    const salaryRecord = (salaryRecords || []).find(record => 
       new Date(record.date).toISOString().split('T')[0] === dateString
     );
-    const diaryRecord = workDiaries.find(diary => 
+    const diaryRecord = (workDiaries || []).find(diary => 
       new Date(diary.date).toISOString().split('T')[0] === dateString
     );
     
@@ -186,12 +186,12 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 月の統計を計算
   const getMonthlySummary = (year: number, month: number) => {
     if (!currentMonth) return { totalSalary: 0, averageMood: 0, salaryRecordsCount: 0, diariesCount: 0 };
-    const monthlySalaryRecords = salaryRecords.filter(record => {
+    const monthlySalaryRecords = (salaryRecords || []).filter(record => {
       const recordDate = new Date(record.date);
       return recordDate.getFullYear() === year && recordDate.getMonth() === month;
     });
     
-    const monthlyDiaries = workDiaries.filter(diary => {
+    const monthlyDiaries = (workDiaries || []).filter(diary => {
       const diaryDate = new Date(diary.date);
       return diaryDate.getFullYear() === year && diaryDate.getMonth() === month;
     });
