@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './TimersComponent.css';
+import { cookingRecipes, getRecipePhases } from '../constants/cookingRecipes';
 import type { TimerPreset } from '../types';
 
 interface TimersComponentProps {
@@ -31,28 +32,49 @@ interface TimersComponentProps {
 const TimersComponent: React.FC<TimersComponentProps> = ({
   showTimers,
   setShowTimers,
-  customTimerTime,
-  setCustomTimerTime,
-  customTimerActive,
-  setCustomTimerActive,
-  customTimerPaused,
-  setCustomTimerPaused,
-  customTimerTimeLeft,
-  setCustomTimerTimeLeft,
-  customTimerInterval,
-  setCustomTimerInterval,
-  customTimerSound,
-  setCustomTimerSound,
-  timerHistory,
-  timerSettings,
-  startCustomTimer,
-  pauseCustomTimer,
-  stopCustomTimer,
-  resetCustomTimer,
-  playCustomTimerSound,
-  addToTimerHistory,
   closeOtherFeatures,
 }) => {
+  // 内部状態
+  const [customTimerTime, setCustomTimerTime] = useState(0);
+  const [customTimerTimeLeft, setCustomTimerTimeLeft] = useState(0);
+  const [customTimerActive, setCustomTimerActive] = useState(false);
+  const [customTimerPaused, setCustomTimerPaused] = useState(false);
+  const [customTimerInterval, setCustomTimerInterval] = useState<NodeJS.Timeout | null>(null);
+  const [customTimerSound, setCustomTimerSound] = useState<"bell" | "chime" | "beep" | "alarm">("bell");
+  const [timerHistory, setTimerHistory] = useState<any[]>([]);
+  const [timerSettings, setTimerSettings] = useState({
+    enableSounds: true,
+    enableNotifications: true,
+    enableVibration: true,
+    soundVolume: 0.5,
+    notificationDuration: 5000,
+  });
+  const [customTimerMinutes, setCustomTimerMinutes] = useState(5);
+  const [customTimerSeconds, setCustomTimerSeconds] = useState(0);
+  const [customTimerName, setCustomTimerName] = useState("");
+  const [isSoundPlaying, setIsSoundPlaying] = useState(false);
+  const [soundLoopInterval, setSoundLoopInterval] = useState<NodeJS.Timeout | null>(null);
+  const [serviceWorker, setServiceWorker] = useState<ServiceWorker | null>(null);
+  const [backgroundTimerActive, setBackgroundTimerActive] = useState(false);
+
+  // ゆでたまごタイマーの状態
+  const [eggTimerActive, setEggTimerActive] = useState(false);
+  const [eggTimerPaused, setEggTimerPaused] = useState(false);
+  const [eggTimerTime, setEggTimerTime] = useState(0);
+  const [eggTimerType, setEggTimerType] = useState<"soft" | "medium" | "hard">("medium");
+  const [eggTimerSound, setEggTimerSound] = useState<"bell" | "chime" | "beep" | "alarm">("bell");
+  const [selectedRecipe, setSelectedRecipe] = useState("boiled-egg");
+  const [selectedEggType, setSelectedEggType] = useState<"soft" | "medium" | "hard">("medium");
+  const [eggTimerPhaseName, setEggTimerPhaseName] = useState("");
+
+  // プリセットタイマー
+  const timerPresets = [
+    { name: "ポモドーロ", minutes: 25 },
+    { name: "短休憩", minutes: 5 },
+    { name: "長休憩", minutes: 15 },
+    { name: "集中時間", minutes: 45 },
+    { name: "作業時間", minutes: 60 },
+  ];
   const [selectedPreset, setSelectedPreset] = useState<string>('');
   const [showHistory, setShowHistory] = useState(false);
   const [showSettings, setShowSettings] = useState(false);

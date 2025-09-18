@@ -7,36 +7,8 @@ interface MemosComponentProps {
   memosLoading: boolean;
   showMemos: boolean;
   setShowMemos: (show: boolean) => void;
-  showMemoForm: boolean;
-  editingMemo: Memo | null;
-  memoTitle: string;
-  setMemoTitle: (title: string) => void;
-  memoContent: string;
-  setMemoContent: (content: string) => void;
-  memoCategory: string;
-  setMemoCategory: (category: string) => void;
-  memoIsPublic: boolean;
-  setMemoIsPublic: (isPublic: boolean) => void;
-  selectedMemoCategory: string;
-  setSelectedMemoCategory: (category: string) => void;
   customGenres: string[];
-  showGenreManagement: boolean;
-  setShowGenreManagement: (show: boolean) => void;
-  editingGenre: string | null;
-  setEditingGenre: (genre: string | null) => void;
-  editingGenreName: string;
-  setEditingGenreName: (name: string) => void;
-  setShowMemoForm: (show: boolean) => void;
-  setEditingMemo: (memo: Memo | null) => void;
-  handleCreateMemo: (e: React.FormEvent) => void;
-  handleUpdateMemo: (e: React.FormEvent) => void;
-  handleEditMemo: (memo: Memo) => void;
-  handleDeleteMemo: (memoId: string, memoTitle: string) => void;
-  handleMemoCategoryChange: (category: string) => void;
-  handleEditGenre: (genre: string) => void;
-  handleSaveGenreEdit: () => void;
-  handleCancelGenreEdit: () => void;
-  handleDeleteGenreFromManagement: (genre: string) => void;
+  setCustomGenres: (genres: string[]) => void;
   loadMemos: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
 }
@@ -46,39 +18,22 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   memosLoading,
   showMemos,
   setShowMemos,
-  showMemoForm,
-  editingMemo,
-  memoTitle,
-  setMemoTitle,
-  memoContent,
-  setMemoContent,
-  memoCategory,
-  setMemoCategory,
-  memoIsPublic,
-  setMemoIsPublic,
-  selectedMemoCategory,
-  setSelectedMemoCategory,
   customGenres,
-  showGenreManagement,
-  setShowGenreManagement,
-  editingGenre,
-  setEditingGenre,
-  editingGenreName,
-  setEditingGenreName,
-  setShowMemoForm,
-  setEditingMemo,
-  handleCreateMemo,
-  handleUpdateMemo,
-  handleEditMemo,
-  handleDeleteMemo,
-  handleMemoCategoryChange,
-  handleEditGenre,
-  handleSaveGenreEdit,
-  handleCancelGenreEdit,
-  handleDeleteGenreFromManagement,
+  setCustomGenres,
   loadMemos,
   closeOtherFeatures,
 }) => {
+  // 内部状態
+  const [showMemoForm, setShowMemoForm] = useState(false);
+  const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
+  const [memoTitle, setMemoTitle] = useState("");
+  const [memoContent, setMemoContent] = useState("");
+  const [memoCategory, setMemoCategory] = useState("");
+  const [memoIsPublic, setMemoIsPublic] = useState(false);
+  const [selectedMemoCategory, setSelectedMemoCategory] = useState("all");
+  const [showGenreManagement, setShowGenreManagement] = useState(false);
+  const [editingGenre, setEditingGenre] = useState<string | null>(null);
+  const [editingGenreName, setEditingGenreName] = useState("");
   // ページネーションの状態
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;

@@ -49,6 +49,89 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
 
+  // 時間計算関数
+  const calculateTimeBreakdown = () => {
+    const today = new Date();
+    const startOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setDate(endOfDay.getDate() + 1);
+
+    const todayEntries = timeEntries.filter((entry) => {
+      const entryDate = new Date(entry.startTime);
+      return entryDate >= startOfDay && entryDate < endOfDay;
+    });
+
+    const breakdown: { [key: string]: number } = {};
+    todayEntries.forEach((entry) => {
+      const duration = entry.duration || 0;
+      const projectName = entry.projectName || "未分類";
+      breakdown[projectName] = (breakdown[projectName] || 0) + duration;
+    });
+
+    return breakdown;
+  };
+
+  const calculateProductivityTrend = () => {
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6); // 7日間（今日含む）
+
+    const productivityData = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(sevenDaysAgo);
+      date.setDate(sevenDaysAgo.getDate() + i);
+
+      const startOfDay = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+      );
+      const endOfDay = new Date(startOfDay);
+      endOfDay.setDate(endOfDay.getDate() + 1);
+
+      const dayEntries = timeEntries.filter((entry) => {
+        const entryDate = new Date(entry.startTime);
+        return entryDate >= startOfDay && entryDate < endOfDay;
+      });
+
+      const workHours = dayEntries.reduce(
+        (total, entry) => total + (entry.duration || 0),
+        0
+      ) / 3600; // 秒を時間に変換
+
+      productivityData.push({
+        date: date.toISOString().split("T")[0],
+        workHours: Math.round(workHours * 100) / 100,
+        dayOfWeek: date.toLocaleDateString("ja-JP", { weekday: "short" }),
+      });
+    }
+
+    return productivityData;
+  };
+
+  const calculateProductivityStats = () => {
+    const productivityData = calculateProductivityTrend();
+    const workHours = productivityData.map((day) => day.workHours);
+
+    const totalHours = workHours.reduce((sum, hours) => sum + hours, 0);
+    const averageHours = totalHours / workHours.length;
+    const maxHours = Math.max(...workHours);
+    const productiveDays = workHours.filter((hours) => hours > 0).length;
+    const productivityRate = (productiveDays / workHours.length) * 100;
+
+    return {
+      averageHours: Math.round(averageHours * 100) / 100,
+      maxHours: Math.round(maxHours * 100) / 100,
+      totalHours: Math.round(totalHours * 100) / 100,
+      productiveDays,
+      productivityRate: Math.round(productivityRate * 100) / 100,
+    };
+  };
+
   // 時間フォーマット関数
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);

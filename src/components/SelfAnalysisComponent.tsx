@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './SelfAnalysisComponent.css';
 import type { Habit, Goal, LearningRecord, MoodLog } from '../types';
 import HetamaIconComponent from './HetamaIconComponent';
@@ -19,43 +19,24 @@ interface SelfAnalysisComponentProps {
   selfAnalysisTab: string;
   setSelfAnalysisTab: (tab: string) => void;
   personalProfile: PersonalProfile;
+  setPersonalProfile: (profile: PersonalProfile) => void;
   habits: Habit[];
+  setHabits: (habits: Habit[]) => void;
   habitHistory: { [habitId: string]: string[] };
+  setHabitHistory: (history: { [habitId: string]: string[] }) => void;
+  habitStreak: { [habitId: string]: number };
+  setHabitStreak: (streak: { [habitId: string]: number }) => void;
   moodLogs: any[];
+  setMoodLogs: (logs: any[]) => void;
   goals: Goal[];
+  setGoals: (goals: Goal[]) => void;
   learningRecords: LearningRecord[];
+  setLearningRecords: (records: LearningRecord[]) => void;
   timeEntries: any[];
   calculateTimeBreakdown: () => { [key: string]: number };
   calculateProductivityTrend: () => Array<{date: string, workHours: number, dayOfWeek: string}>;
   calculateProductivityStats: () => {averageHours: number, maxHours: number, totalHours: number, productiveDays: number, productivityRate: number};
   loadTimeEntries: () => void;
-  editingProfile: boolean;
-  setEditingProfile: (editing: boolean) => void;
-  newValue: string;
-  setNewValue: (value: string) => void;
-  newGoal: string;
-  setNewGoal: (value: string) => void;
-  newSkill: string;
-  setNewSkill: (value: string) => void;
-  newInterest: string;
-  setNewInterest: (value: string) => void;
-  newStrength: string;
-  setNewStrength: (value: string) => void;
-  newWeakness: string;
-  setNewWeakness: (value: string) => void;
-  newPersonality: string;
-  setNewPersonality: (value: string) => void;
-  addToProfile: (section: keyof PersonalProfile, value: string) => void;
-  removeFromProfile: (section: keyof PersonalProfile, index: number) => void;
-  addHabit: (habit: Omit<Habit, 'id'>) => void;
-  toggleHabitCompletion: (habitId: string, date: string) => void;
-  deleteHabit: (habitId: string) => void;
-  addGoal: (goal: Omit<Goal, 'id'>) => void;
-  updateGoal: (goalId: string, updates: Partial<Goal>) => void;
-  deleteGoal: (goalId: string) => void;
-  addLearningRecord: (record: Omit<LearningRecord, 'id'>) => void;
-  updateLearningRecord: (recordId: string, updates: Partial<LearningRecord>) => void;
-  deleteLearningRecord: (recordId: string) => void;
   closeOtherFeatures: (activeFeature: string) => void;
 }
 
@@ -65,45 +46,407 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   selfAnalysisTab,
   setSelfAnalysisTab,
   personalProfile,
+  setPersonalProfile,
   habits,
+  setHabits,
   habitHistory,
+  setHabitHistory,
+  habitStreak,
+  setHabitStreak,
   moodLogs,
+  setMoodLogs,
   goals,
+  setGoals,
   learningRecords,
+  setLearningRecords,
   timeEntries,
   calculateTimeBreakdown,
   calculateProductivityTrend,
   calculateProductivityStats,
   loadTimeEntries,
-  editingProfile,
-  setEditingProfile,
-  newValue,
-  setNewValue,
-  newGoal,
-  setNewGoal,
-  newSkill,
-  setNewSkill,
-  newInterest,
-  setNewInterest,
-  newStrength,
-  setNewStrength,
-  newWeakness,
-  setNewWeakness,
-  newPersonality,
-  setNewPersonality,
-  addToProfile,
-  removeFromProfile,
-  addHabit,
-  toggleHabitCompletion,
-  deleteHabit,
-  addGoal,
-  updateGoal,
-  deleteGoal,
-  addLearningRecord,
-  updateLearningRecord,
-  deleteLearningRecord,
   closeOtherFeatures,
 }) => {
+  // 内部状態
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [newValue, setNewValue] = useState("");
+  const [newGoal, setNewGoal] = useState("");
+  const [newSkill, setNewSkill] = useState("");
+  const [newInterest, setNewInterest] = useState("");
+  const [newStrength, setNewStrength] = useState("");
+  const [newWeakness, setNewWeakness] = useState("");
+  const [newPersonality, setNewPersonality] = useState("");
+  const [newHabit, setNewHabit] = useState("");
+  const [moodForm, setMoodForm] = useState({
+    date: new Date().toISOString().split("T")[0],
+    mood: 5,
+    energy: 5,
+    stress: 5,
+    activities: [] as string[],
+    notes: "",
+  });
+  const [newActivity, setNewActivity] = useState("");
+  const [editingMoodLog, setEditingMoodLog] = useState<MoodLog | null>(null);
+  const [goalForm, setGoalForm] = useState({
+    title: "",
+    description: "",
+    category: "personal",
+    priority: "medium",
+    status: "not-started",
+    milestones: [] as Array<{ id: string; text: string; completed: boolean }>,
+  });
+  const [newMilestone, setNewMilestone] = useState("");
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+
+  // プロフィール管理関数
+  const addToProfile = (field: keyof PersonalProfile, value: string) => {
+    if (!value.trim()) return;
+    setPersonalProfile((prev) => ({
+      ...prev,
+      [field]: [...(prev[field] as string[]), value.trim()],
+    }));
+  };
+
+  const removeFromProfile = (field: keyof PersonalProfile, index: number) => {
+    setPersonalProfile((prev) => ({
+      ...prev,
+      [field]: (prev[field] as string[]).filter((_, i) => i !== index),
+    }));
+  };
+
+  // 習慣管理関数
+  const addHabit = () => {
+    if (!newHabit.trim()) return;
+    const habitId = Date.now().toString();
+    const newHabitObj: Habit = {
+      id: habitId,
+      name: newHabit.trim(),
+      description: "",
+      category: "personal",
+      frequency: "daily",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setHabits((prev) => [...prev, newHabitObj]);
+    setNewHabit("");
+  };
+
+  const updateHabit = (habitId: string, updates: Partial<Habit>) => {
+    setHabits((prev) =>
+      prev.map((habit) =>
+        habit.id === habitId
+          ? { ...habit, ...updates, updatedAt: new Date().toISOString() }
+          : habit
+      )
+    );
+  };
+
+  const deleteHabit = (habitId: string) => {
+    setHabits((prev) => prev.filter((habit) => habit.id !== habitId));
+    setHabitStreak((prev) => {
+      const newStreak = { ...prev };
+      delete newStreak[habitId];
+      return newStreak;
+    });
+  };
+
+  const toggleHabitCompletion = (habitId: string, date: string) => {
+    const history = habitHistory[habitId] || [];
+    const isCompleted = history.includes(date);
+
+    if (isCompleted) {
+      setHabitHistory((prev) => ({
+        ...prev,
+        [habitId]: history.filter((d) => d !== date),
+      }));
+    } else {
+      setHabitHistory((prev) => ({
+        ...prev,
+        [habitId]: [...history, date],
+      }));
+    }
+  };
+
+  const getHabitCompletionRate = (habitId: string) => {
+    const habit = habits.find((h) => h.id === habitId);
+    if (!habit) return 0;
+
+    const history = habitHistory[habitId] || [];
+    const daysSinceStart = Math.ceil(
+      (Date.now() - new Date(habit.createdAt).getTime()) / (1000 * 60 * 60 * 24)
+    );
+    return daysSinceStart > 0 ? (history.length / daysSinceStart) * 100 : 0;
+  };
+
+  // 気分ログ管理関数
+  const addMoodLog = () => {
+    if (!moodForm.date) return;
+    const moodLogId = Date.now().toString();
+    const newMoodLog: MoodLog = {
+      id: moodLogId,
+      date: moodForm.date,
+      mood: moodForm.mood,
+      energy: moodForm.energy,
+      stress: moodForm.stress,
+      activities: moodForm.activities,
+      notes: moodForm.notes,
+      createdAt: new Date().toISOString(),
+    };
+    setMoodLogs((prev) => [...prev, newMoodLog]);
+    resetMoodForm();
+  };
+
+  const updateMoodLog = (moodLogId: string, updates: Partial<MoodLog>) => {
+    setMoodLogs((prev) =>
+      prev.map((log) => (log.id === moodLogId ? { ...log, ...updates } : log))
+    );
+  };
+
+  const deleteMoodLog = (moodLogId: string) => {
+    setMoodLogs((prev) => prev.filter((log) => log.id !== moodLogId));
+  };
+
+  const resetMoodForm = () => {
+    setMoodForm({
+      date: new Date().toISOString().split("T")[0],
+      mood: 5,
+      energy: 5,
+      stress: 5,
+      activities: [],
+      notes: "",
+    });
+    setEditingMoodLog(null);
+  };
+
+  const addActivity = () => {
+    if (!newActivity.trim()) return;
+    setMoodForm((prev) => ({
+      ...prev,
+      activities: [...prev.activities, newActivity.trim()],
+    }));
+    setNewActivity("");
+  };
+
+  const removeActivity = (index: number) => {
+    setMoodForm((prev) => ({
+      ...prev,
+      activities: prev.activities.filter((_, i) => i !== index),
+    }));
+  };
+
+  const editMoodLog = (log: MoodLog) => {
+    setMoodForm({
+      date: log.date,
+      mood: log.mood,
+      energy: log.energy,
+      stress: log.stress,
+      activities: log.activities,
+      notes: log.notes,
+    });
+    setEditingMoodLog(log);
+  };
+
+  const saveMoodLog = () => {
+    if (editingMoodLog) {
+      updateMoodLog(editingMoodLog.id, {
+        date: moodForm.date,
+        mood: moodForm.mood,
+        energy: moodForm.energy,
+        stress: moodForm.stress,
+        activities: moodForm.activities,
+        notes: moodForm.notes,
+      });
+    } else {
+      addMoodLog();
+    }
+  };
+
+  const getMoodEmoji = (mood: number) => {
+    if (mood <= 2) return "😢";
+    if (mood <= 4) return "😔";
+    if (mood <= 6) return "😐";
+    if (mood <= 8) return "😊";
+    return "😄";
+  };
+
+  const getAverageMood = () => {
+    if (moodLogs.length === 0) return 0;
+    return moodLogs.reduce((sum, log) => sum + log.mood, 0) / moodLogs.length;
+  };
+
+  // 目標管理関数
+  const addGoal = () => {
+    if (!goalForm.title.trim()) return;
+    const goalId = Date.now().toString();
+    const newGoal: Goal = {
+      id: goalId,
+      title: goalForm.title.trim(),
+      description: goalForm.description.trim(),
+      category: goalForm.category,
+      priority: goalForm.priority,
+      status: goalForm.status,
+      milestones: goalForm.milestones,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setGoals((prev) => [...prev, newGoal]);
+    resetGoalForm();
+  };
+
+  const updateGoal = (goalId: string, updates: Partial<Goal>) => {
+    setGoals((prev) =>
+      prev.map((goal) =>
+        goal.id === goalId
+          ? { ...goal, ...updates, updatedAt: new Date().toISOString() }
+          : goal
+      )
+    );
+  };
+
+  const deleteGoal = (goalId: string) => {
+    setGoals((prev) => prev.filter((goal) => goal.id !== goalId));
+  };
+
+  const addLearningRecord = (record: Omit<LearningRecord, "id">) => {
+    const newRecord = {
+      ...record,
+      id: Date.now().toString(),
+    };
+    setLearningRecords((prev) => [...prev, newRecord]);
+  };
+
+  const updateLearningRecord = (recordId: string, updates: Partial<LearningRecord>) => {
+    setLearningRecords((prev) =>
+      prev.map((r) => (r.id === recordId ? { ...r, ...updates } : r))
+    );
+  };
+
+  const deleteLearningRecord = (recordId: string) => {
+    setLearningRecords((prev) => prev.filter((r) => r.id !== recordId));
+  };
+
+  const resetGoalForm = () => {
+    setGoalForm({
+      title: "",
+      description: "",
+      category: "personal",
+      priority: "medium",
+      status: "not-started",
+      milestones: [],
+    });
+    setEditingGoal(null);
+  };
+
+  const addMilestone = () => {
+    if (!newMilestone.trim()) return;
+    const milestoneId = Date.now().toString();
+    setGoalForm((prev) => ({
+      ...prev,
+      milestones: [
+        ...prev.milestones,
+        { id: milestoneId, text: newMilestone.trim(), completed: false },
+      ],
+    }));
+    setNewMilestone("");
+  };
+
+  const removeMilestone = (milestoneId: string) => {
+    setGoalForm((prev) => ({
+      ...prev,
+      milestones: prev.milestones.filter((m) => m.id !== milestoneId),
+    }));
+  };
+
+  const toggleMilestone = (milestoneId: string) => {
+    setGoalForm((prev) => ({
+      ...prev,
+      milestones: prev.milestones.map((m) =>
+        m.id === milestoneId ? { ...m, completed: !m.completed } : m
+      ),
+    }));
+  };
+
+  const editGoal = (goal: Goal) => {
+    setGoalForm({
+      title: goal.title,
+      description: goal.description,
+      category: goal.category,
+      priority: goal.priority,
+      status: goal.status,
+      milestones: goal.milestones,
+    });
+    setEditingGoal(goal);
+  };
+
+  const saveGoal = () => {
+    if (editingGoal) {
+      updateGoal(editingGoal.id, {
+        title: goalForm.title,
+        description: goalForm.description,
+        category: goalForm.category,
+        priority: goalForm.priority,
+        status: goalForm.status,
+        milestones: goalForm.milestones,
+      });
+    } else {
+      addGoal();
+    }
+  };
+
+  const getGoalStatusColor = (status: string) => {
+    switch (status) {
+      case "not-started":
+        return "#666";
+      case "in-progress":
+        return "#ff9800";
+      case "completed":
+        return "#4caf50";
+      case "cancelled":
+        return "#f44336";
+      default:
+        return "#666";
+    }
+  };
+
+  const getGoalStatusText = (status: string) => {
+    switch (status) {
+      case "not-started":
+        return "未開始";
+      case "in-progress":
+        return "進行中";
+      case "completed":
+        return "完了";
+      case "cancelled":
+        return "キャンセル";
+      default:
+        return "不明";
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "low":
+        return "#4caf50";
+      case "medium":
+        return "#ff9800";
+      case "high":
+        return "#f44336";
+      default:
+        return "#666";
+    }
+  };
+
+  const getPriorityText = (priority: string) => {
+    switch (priority) {
+      case "low":
+        return "低";
+      case "medium":
+        return "中";
+      case "high":
+        return "高";
+      default:
+        return "不明";
+    }
+  };
   const today = new Date().toISOString().split('T')[0];
   
   return (
