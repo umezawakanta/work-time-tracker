@@ -341,8 +341,8 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                     <input
                       type="text"
                       id="userName"
-                      value={editingUserData.name || ''}
-                      onChange={(e) => setEditingUserData(prev => ({ ...prev, name: e.target.value }))}
+                      value={editingUserData.email || ''}
+                      onChange={(e) => setEditingUserData(prev => ({ ...prev, email: e.target.value }))}
                       required
                       className="form-input"
                     />

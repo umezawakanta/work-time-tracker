@@ -352,7 +352,14 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                     </div>
                     <div className="memo-actions">
                       <button
-                        onClick={() => handleEditMemo(memo)}
+                        onClick={() => {
+                          setEditingMemo(memo);
+                          setMemoTitle(memo.title || '');
+                          setMemoContent(memo.content || '');
+                          setMemoCategory(memo.category || '');
+                          setMemoIsPublic(memo.isPublic || false);
+                          setShowMemoForm(true);
+                        }}
                         className="edit-button"
                         title="編集"
                       >

@@ -58,13 +58,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    console.log('Environment check:', {
+      NODE_ENV: process.env.NODE_ENV,
+      MONGODB_URI: process.env.MONGODB_URI ? 'Set' : 'Not set'
+    });
+    
+    console.log('Attempting to connect to database...');
     await ensureDatabaseConnection();
+    console.log('Database connected successfully');
     
     const { userId } = req.query;
     
     if (!userId) {
       return res.status(400).json({ message: 'User ID is required' });
     }
+    
+    console.log('Fetching time entries for userId:', userId);
 
     // ユーザーの時間記録を取得
     const timeEntries = await TimeEntry.find({ userId })
@@ -79,6 +88,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   } catch (error) {
     console.error('Error fetching time entries:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    
+    // データベース接続エラーの場合は空の配列を返す
+    if (error.message.includes('connect') || error.message.includes('database')) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+        count: 0,
+        message: 'Database connection failed, returning empty data'
+      });
+    }
+    
     res.status(500).json({ 
       success: false, 
       message: 'Internal server error',

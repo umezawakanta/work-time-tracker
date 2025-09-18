@@ -320,7 +320,8 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   };
 
   const deleteGoal = (goalId: string) => {
-    setGoals((prev) => prev.filter((goal) => goal.id !== goalId));
+    const updatedGoals = goals.filter((goal) => goal.id !== goalId);
+    setGoals(updatedGoals);
   };
 
   const addLearningRecord = (record: Omit<LearningRecord, "id">) => {

@@ -353,7 +353,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                           {formatDateTime(memo.createdAt)}
                         </span>
                         <span className="author-info">
-                          by {memo.authorName || '匿名'}
+                          by {memo.author || '匿名'}
                         </span>
                       </div>
                     </div>

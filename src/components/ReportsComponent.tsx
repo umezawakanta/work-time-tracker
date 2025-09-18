@@ -300,10 +300,10 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
                   {salaryRecords
                     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                     .slice(0, 5)
-                    .map((record) => (
-                      <div key={record.id} className="recent-item">
+                    .map((record, index) => (
+                      <div key={record._id || index} className="recent-item">
                         <div className="recent-date">{formatDateTime(record.date)}</div>
-                        <div className="recent-amount">{formatCurrency(record.amount || 0)}</div>
+                        <div className="recent-amount">{formatCurrency(record.salary || 0)}</div>
                         <div className="recent-type">給与記録</div>
                       </div>
                     ))}
