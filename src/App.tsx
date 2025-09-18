@@ -314,6 +314,7 @@ function App() {
   // 給料記録フォームの状態
   const [salaryDate, setSalaryDate] = useState("");
   const [salary, setSalary] = useState("");
+  const [salaryAmount, setSalaryAmount] = useState("");
   const [transportation, setTransportation] = useState("");
   const [miscellaneous, setMiscellaneous] = useState("");
   const [other, setOther] = useState("");
