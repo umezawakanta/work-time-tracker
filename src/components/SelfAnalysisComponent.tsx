@@ -278,7 +278,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
 
   const getAverageMood = () => {
     if (moodLogs.length === 0) return 0;
-    return moodLogs.reduce((sum, log) => sum + log.mood, 0) / moodLogs.length;
+    return moodLogs.reduce((sum, log) => sum + (log.mood || 0), 0) / moodLogs.length;
   };
 
   // 目標管理関数
@@ -1491,7 +1491,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                   <div className="stat-card">
                     <div className="stat-value">
                       {learningRecords.length > 0 
-                        ? Math.round(learningRecords.reduce((sum, r) => sum + r.rating, 0) / learningRecords.length * 10) / 10
+                        ? Math.round(learningRecords.reduce((sum, r) => sum + (r.rating || 0), 0) / learningRecords.length * 10) / 10
                         : 0
                       }
                     </div>

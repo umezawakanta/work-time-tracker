@@ -247,6 +247,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
                 className="sort-select"
+                aria-label="並び替え項目を選択"
               >
                 <option value="createdAt">登録日時</option>
                 <option value="name">ユーザー名</option>
