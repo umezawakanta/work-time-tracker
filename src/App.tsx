@@ -2655,8 +2655,8 @@ function App() {
     setDiaryMood("");
     setDiaryActivities([]);
     setDiaryNotes("");
-    setDiaryNextGoals("");
-    setDiaryChallenges("");
+    setDiaryNextGoals([]);
+    setDiaryChallenges([]);
     setDiaryAchievements([]);
     setDiaryGratitude("");
     setDiaryReflection("");
