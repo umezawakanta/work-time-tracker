@@ -5532,6 +5532,8 @@ function App() {
                               <label className="toggle-switch">
                                 <input
                                   type="checkbox"
+                                  id="manner-mode-toggle"
+                                  aria-label="マナーモード切り替え"
                                   checked={
                                     !userSettings?.hiddenFeatures.includes(
                                       feature.id
