@@ -29,7 +29,7 @@ interface SelfAnalysisComponentProps {
   personalProfile: PersonalProfile;
   setPersonalProfile: React.Dispatch<React.SetStateAction<PersonalProfile>>;
   habits: Habit[];
-  setHabits: (habits: Habit[]) => void;
+  setHabits: React.Dispatch<React.SetStateAction<Habit[]>>;
   habitHistory: { [habitId: string]: string[] };
   setHabitHistory: (history: { [habitId: string]: string[] }) => void;
   habitStreak: { [habitId: string]: number };
