@@ -15,7 +15,7 @@
   border-bottom: 2px solid var(--header-border, #e0ddd6);
   visibility: visible !important;
   opacity: 1 !important;
-  gap: 1rem; /* 要素間の間隔を確保 */
+  gap: 1.5rem; /* 要素間の間隔を確保 */
 }
 
 /* 左側：キャラクター（絶対保持） */
@@ -31,6 +31,8 @@
   max-width: calc(100% - 300px); /* 左右の要素の幅を考慮（余裕を持たせる） */
   visibility: visible !important;
   opacity: 1 !important;
+  position: relative;
+  z-index: 1;
 }
 
 /* 右側：ナビゲーション */
@@ -42,6 +44,8 @@
   visibility: visible !important;
   opacity: 1 !important;
   min-width: 0; /* フレックスアイテムの縮小を許可 */
+  position: relative;
+  z-index: 1;
 }
 
 .header-navigation {
@@ -79,18 +83,21 @@
 }
 
 /* 背景キャラクター（絶対保持） */
-.hetama-character-component,
-.dog-character-component {
+.hetama-character-component {
   position: absolute;
   bottom: 0;
   right: 0;
-  z-index: 10; /* z-indexを上げて表示を確保 */
+  z-index: 15; /* z-indexを上げて表示を確保 */
   opacity: 0.8;
   pointer-events: none;
 }
 
 /* PC表示での追加調整 */
 @media (min-width: 1025px) {
+  .dashboard-header {
+    gap: 2rem; /* PC表示ではより大きな間隔 */
+  }
+  
   .header-center {
     max-width: calc(100% - 400px); /* PC表示ではより多くのスペースを確保 */
   }

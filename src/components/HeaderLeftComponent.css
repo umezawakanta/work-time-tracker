@@ -2,7 +2,7 @@
 
 .header-left {
   flex: 0 0 auto;
-  z-index: 2;
+  z-index: 1;
   display: flex !important;
   align-items: center;
   gap: 1rem;
