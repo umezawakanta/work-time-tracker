@@ -1267,6 +1267,16 @@ function App() {
         "--card-bg",
         "linear-gradient(145deg, #d1fae5 0%, #a7f3d0 100%)"
       );
+    } else if (themeValue === "simple") {
+      root.style.setProperty("--primary-color", "#f8f6f0");
+      root.style.setProperty("--secondary-color", "#e0ddd6");
+      root.style.setProperty("--accent-color", "#6b7280");
+      root.style.setProperty("--text-color", "#333");
+      root.style.setProperty("--bg-color", "#ffffff");
+      root.style.setProperty("--card-bg", "#ffffff");
+      root.style.setProperty("--header-title-gradient", "#333");
+      root.style.setProperty("--header-bg", "#f8f6f0");
+      root.style.setProperty("--header-border", "#e0ddd6");
     } else {
       // デフォルトテーマ（ピンク）
       root.style.setProperty(

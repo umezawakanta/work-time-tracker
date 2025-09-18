@@ -9,6 +9,7 @@ export interface ThemeOption {
 // 利用可能なテーマ一覧
 export const availableThemes: ThemeOption[] = [
   { value: "default", label: "🌟 デフォルト (ピンク)", preview: "💕" },
+  { value: "simple", label: "📄 シンプル", preview: "📝" },
   { value: "dark", label: "🌙 ダークテーマ", preview: "🌚" },
   { value: "ocean", label: "🌊 オーシャン", preview: "🐠" },
   { value: "forest", label: "🌲 フォレスト", preview: "🦋" },

@@ -1,15 +1,21 @@
 /* HeaderTitleComponent.css - ヘッダータイトルコンポーネント専用のスタイル */
 
 .header-title {
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
   margin: 0;
-  color: #333;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
   position: relative;
   z-index: 1;
+  background: var(--header-title-gradient, linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease-in-out infinite;
   font-family: var(--app-font-family, inherit) !important;
   line-height: 1.2;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   word-break: break-word;
   hyphens: auto;
   text-align: center;
@@ -18,15 +24,37 @@
   box-sizing: border-box;
 }
 
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* シンプルテーマ用の特別なスタイル */
+[data-theme="simple"] .header-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--header-title-gradient, #333);
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+  animation: none;
+  text-shadow: none;
+}
 
 /* レスポンシブデザイン */
 
 /* 大画面 (1400px以上) */
 @media (min-width: 1400px) {
   .header-title {
-    font-size: 3.5rem;
-    letter-spacing: -0.02em;
+    font-size: 4.5rem;
+    letter-spacing: -0.03em;
     line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-width: 800px;
     margin: 0;
     width: 100%;
@@ -38,9 +66,10 @@
 /* 大画面 (1200px - 1399px) */
 @media (max-width: 1399px) and (min-width: 1200px) {
   .header-title {
-    font-size: 3rem;
-    letter-spacing: -0.02em;
+    font-size: 4rem;
+    letter-spacing: -0.025em;
     line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-width: 700px;
     margin: 0;
     width: 100%;
@@ -52,9 +81,10 @@
 /* デスクトップ (1024px - 1199px) */
 @media (max-width: 1199px) and (min-width: 1024px) {
   .header-title {
-    font-size: 2.8rem;
-    letter-spacing: -0.015em;
+    font-size: 3.5rem;
+    letter-spacing: -0.02em;
     line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-width: 600px;
     margin: 0;
     width: 100%;
@@ -113,13 +143,28 @@
 /* 高コントラストモード対応 */
 @media (prefers-contrast: high) {
   .header-title {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+    background-clip: unset !important;
     color: #000000 !important;
+    text-shadow: none;
+  }
+}
+
+/* モーション軽減設定 */
+@media (prefers-reduced-motion: reduce) {
+  .header-title {
+    animation: none;
   }
 }
 
 /* ダークモード対応 */
 @media (prefers-color-scheme: dark) {
   .header-title {
-    color: #ffffff !important;
+    background: var(--header-title-gradient, linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }

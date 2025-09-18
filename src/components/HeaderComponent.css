@@ -2,24 +2,26 @@
 
 /* ダッシュボードヘッダー */
 .dashboard-header {
-  background: #f8f6f0 !important;
-  color: #333 !important;
+  background: var(--primary-color, linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fad0c4 100%)) !important;
+  color: var(--text-color, #333) !important;
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 25px 25px 0 0;
+  box-shadow: 0 8px 25px rgba(255, 154, 158, 0.4);
   position: relative;
-  overflow: visible;
-  min-height: 80px;
+  overflow: hidden;
+  min-height: 100px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   flex-wrap: nowrap;
-  gap: 2rem;
-  border-bottom: 1px solid #e0ddd6;
+  gap: 1rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   
   /* パフォーマンス最適化 */
   will-change: transform, box-shadow;
@@ -479,6 +481,24 @@
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* シンプルテーマ用の特別なスタイル */
+[data-theme="simple"] .dashboard-header {
+  background: var(--header-bg, #f8f6f0) !important;
+  color: var(--text-color, #333) !important;
+  border-radius: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--header-border, #e0ddd6);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  min-height: 80px;
+  gap: 2rem;
+}
+
+[data-theme="simple"] .dashboard-header::before {
+  display: none;
 }
 
 /* ダークモード対応 */

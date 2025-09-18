@@ -3400,6 +3400,18 @@ figure, figcaption, details, summary, mark, small, sub, sup,
 }
 
 /* テーマ別のスタイル */
+[data-theme="simple"] {
+  --primary-color: #f8f6f0;
+  --secondary-color: #e0ddd6;
+  --accent-color: #6b7280;
+  --text-color: #333;
+  --bg-color: #ffffff;
+  --card-bg: #ffffff;
+  --header-title-gradient: #333;
+  --header-bg: #f8f6f0;
+  --header-border: #e0ddd6;
+}
+
 [data-theme="dark"] {
   --primary-color: linear-gradient(135deg, #2d3748 0%, #4a5568 50%, #68d391 100%);
   --secondary-color: linear-gradient(145deg, #4a5568 0%, #68d391 100%);
