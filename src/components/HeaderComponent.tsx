@@ -9,6 +9,7 @@ import UserInfoComponent from "./UserInfoComponent";
 import UserGreetingComponent from "./UserGreetingComponent";
 import ShareButtonComponent from "./ShareButtonComponent";
 import type { User, Character } from "../types";
+import VersionInfoComponent from "./VersionInfo";
 
 interface HeaderComponentProps {
   user: User | null;
@@ -53,6 +54,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
           user={user}
           currentCharacter={currentCharacter}
         />
+        <VersionInfoComponent />
       </div>
       
       {/* 右側：ナビゲーション要素 */}

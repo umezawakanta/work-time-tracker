@@ -7,7 +7,6 @@ import CookingTimerSection from "./components/CookingTimerSection";
 import TimeTrackingSection from "./components/TimeTrackingSection";
 import LoginForm from "./components/LoginForm";
 import PresetTimersSection from "./components/PresetTimersSection";
-import VersionInfoComponent from "./components/VersionInfo";
 import TimerStatsSection from "./components/TimerStatsSection";
 import TimerHistoryComponent from "./components/TimerHistoryComponent";
 import SelfAnalysisComponent from "./components/SelfAnalysisComponent";
