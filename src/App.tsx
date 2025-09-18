@@ -9,6 +9,7 @@ import LoginForm from "./components/LoginForm";
 import PresetTimersSection from "./components/PresetTimersSection";
 import VersionInfoComponent from "./components/VersionInfo";
 import TimerStatsSection from "./components/TimerStatsSection";
+import TimerHistoryComponent from "./components/TimerHistoryComponent";
 import HeaderComponent from "./components/HeaderComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
@@ -6443,60 +6444,16 @@ function App() {
                    />
 
                    {/* タイマー履歴 */}
-                   <div className="timer-history-section">
-                     <div className="subsection-header">
-                       <h3>📊 タイマー履歴</h3>
-                       <div className="subsection-controls">
-                         {showTimerHistory ? (
-                           <button 
-                             onClick={() => setShowTimerHistory(false)}
-                             className="close-section-button"
-                             title="セクションを閉じる"
-                           >
-                             ✕
-                           </button>
-                         ) : (
-                           <button 
-                             onClick={() => {
-                               closeOtherFeatures('timer-history');
-                               setShowTimerHistory(true);
-                             }}
-                             className="show-section-button"
-                             title="セクションを表示"
-                           >
-                             ▶️
-                           </button>
-                         )}
-                       </div>
-                     </div>
-                     
-                     {showTimerHistory && (
-                       <div className="subsection-content">
-                     {timerHistory.length > 0 ? (
-                       <div className="history-list">
-                         {timerHistory.slice(0, 10).map((entry) => (
-                           <div key={entry.id} className="history-item">
-                             <div className="history-info">
-                               <span className="history-name">{entry.name}</span>
-                               <span className="history-duration">{formatTime(entry.duration)}</span>
-                             </div>
-                             <div className="history-meta">
-                               <span className="history-type">
-                                 {entry.type === 'custom' ? '🎯' : entry.type === 'preset' ? '⚡' : '🥚'}
-                               </span>
-                               <span className="history-date">
-                                 {new Date(entry.completedAt).toLocaleDateString('ja-JP')}
-                               </span>
-                             </div>
-                           </div>
-                         ))}
-                       </div>
-                     ) : (
-                       <p className="no-history">まだタイマーの履歴がありません</p>
-                     )}
-                       </div>
-                     )}
-                   </div>
+                   <TimerHistoryComponent
+                     timerHistory={timerHistory}
+                     showTimerHistory={showTimerHistory}
+                     onToggle={() => {
+                       closeOtherFeatures('timer-history');
+                       setShowTimerHistory(true);
+                     }}
+                     onClose={() => setShowTimerHistory(false)}
+                     formatTime={formatTime}
+                   />
                 </div>
               </div>
                 )}
