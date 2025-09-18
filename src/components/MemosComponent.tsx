@@ -1,0 +1,408 @@
+import React, { useState } from 'react';
+import './MemosComponent.css';
+import type { Memo } from '../types';
+
+interface MemosComponentProps {
+  memos: Memo[];
+  memosLoading: boolean;
+  showMemos: boolean;
+  setShowMemos: (show: boolean) => void;
+  showMemoForm: boolean;
+  editingMemo: Memo | null;
+  memoTitle: string;
+  setMemoTitle: (title: string) => void;
+  memoContent: string;
+  setMemoContent: (content: string) => void;
+  memoCategory: string;
+  setMemoCategory: (category: string) => void;
+  memoIsPrivate: boolean;
+  setMemoIsPrivate: (isPrivate: boolean) => void;
+  selectedMemoCategory: string;
+  setSelectedMemoCategory: (category: string) => void;
+  customGenres: string[];
+  showGenreManagement: boolean;
+  setShowGenreManagement: (show: boolean) => void;
+  editingGenre: string | null;
+  setEditingGenre: (genre: string | null) => void;
+  editingGenreName: string;
+  setEditingGenreName: (name: string) => void;
+  setShowMemoForm: (show: boolean) => void;
+  setEditingMemo: (memo: Memo | null) => void;
+  handleCreateMemo: (e: React.FormEvent) => void;
+  handleUpdateMemo: (e: React.FormEvent) => void;
+  handleEditMemo: (memo: Memo) => void;
+  handleDeleteMemo: (memoId: string, memoTitle: string) => void;
+  handleMemoCategoryChange: (category: string) => void;
+  handleEditGenre: (genre: string) => void;
+  handleSaveGenreEdit: () => void;
+  handleCancelGenreEdit: () => void;
+  handleDeleteGenreFromManagement: (genre: string) => void;
+  getMemoCategories: () => string[];
+  getMemoTitle: (memo: Memo) => string;
+  formatDateTime: (dateString: string) => string;
+  loadMemos: () => void;
+  closeOtherFeatures: (activeFeature: string) => void;
+}
+
+const MemosComponent: React.FC<MemosComponentProps> = ({
+  memos,
+  memosLoading,
+  showMemos,
+  setShowMemos,
+  showMemoForm,
+  editingMemo,
+  memoTitle,
+  setMemoTitle,
+  memoContent,
+  setMemoContent,
+  memoCategory,
+  setMemoCategory,
+  memoIsPrivate,
+  setMemoIsPrivate,
+  selectedMemoCategory,
+  setSelectedMemoCategory,
+  customGenres,
+  showGenreManagement,
+  setShowGenreManagement,
+  editingGenre,
+  setEditingGenre,
+  editingGenreName,
+  setEditingGenreName,
+  setShowMemoForm,
+  setEditingMemo,
+  handleCreateMemo,
+  handleUpdateMemo,
+  handleEditMemo,
+  handleDeleteMemo,
+  handleMemoCategoryChange,
+  handleEditGenre,
+  handleSaveGenreEdit,
+  handleCancelGenreEdit,
+  handleDeleteGenreFromManagement,
+  getMemoCategories,
+  getMemoTitle,
+  formatDateTime,
+  loadMemos,
+  closeOtherFeatures,
+}) => {
+  // ページネーションの状態
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // ページネーション用の関数
+  const getPaginatedMemos = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return memos.slice(startIndex, endIndex);
+  };
+
+  const getTotalPages = () => {
+    return Math.ceil(memos.length / itemsPerPage);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const resetForm = () => {
+    setMemoTitle("");
+    setMemoContent("");
+    setMemoCategory("");
+    setMemoIsPrivate(true);
+    setEditingMemo(null);
+    setShowMemoForm(false);
+  };
+
+  return (
+    <div className="memos-section">
+      <div className="section-header">
+        <h2>
+          <span className="section-icon">📝</span>
+          メモ
+        </h2>
+        <div className="section-controls">
+          <button
+            onClick={() => {
+              closeOtherFeatures("memos");
+              setShowMemos(true);
+            }}
+            className="show-section-button"
+            title="セクションを表示"
+          >
+            ▶️
+          </button>
+        </div>
+      </div>
+
+      {showMemos && (
+        <div className="memos-content">
+          <div className="memos-header">
+            <button
+              onClick={() => {
+                loadMemos();
+              }}
+              className="refresh-button"
+              title="メモを更新"
+            >
+              🔄
+            </button>
+          </div>
+
+          {/* ジャンル管理ボタン */}
+          <div className="memos-controls">
+            <button
+              onClick={() => setShowGenreManagement(!showGenreManagement)}
+              className="genre-management-button"
+            >
+              🏷️ ジャンル管理
+            </button>
+          </div>
+
+          {/* ジャンル管理セクション */}
+          {showGenreManagement && (
+            <div className="genre-management-section">
+              <h3>🏷️ ジャンル管理</h3>
+              <div className="genre-list">
+                {customGenres.map((genre, index) => (
+                  <div key={index} className="genre-item">
+                    {editingGenre === genre ? (
+                      <div className="genre-edit-form">
+                        <input
+                          type="text"
+                          value={editingGenreName}
+                          onChange={(e) => setEditingGenreName(e.target.value)}
+                          className="genre-edit-input"
+                          placeholder="ジャンル名を入力"
+                        />
+                        <button
+                          onClick={handleSaveGenreEdit}
+                          className="save-genre-button"
+                          disabled={!editingGenreName.trim() || editingGenreName.trim() === genre}
+                        >
+                          保存
+                        </button>
+                        <button
+                          onClick={handleCancelGenreEdit}
+                          className="cancel-genre-button"
+                        >
+                          キャンセル
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="genre-display">
+                        <span className="genre-name">{genre}</span>
+                        <div className="genre-actions">
+                          <button
+                            onClick={() => handleEditGenre(genre)}
+                            className="edit-genre-button"
+                            title="編集"
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            onClick={() => handleDeleteGenreFromManagement(genre)}
+                            className="delete-genre-button"
+                            title="削除"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {customGenres.length === 0 && (
+                  <p className="no-genres">カスタムジャンルがありません</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* メモフォーム */}
+          {showMemoForm && (
+            <form
+              onSubmit={editingMemo ? handleUpdateMemo : handleCreateMemo}
+              className="memo-form"
+            >
+              <div className="form-group">
+                <label htmlFor="memoTitle">タイトル</label>
+                <input
+                  type="text"
+                  id="memoTitle"
+                  value={memoTitle}
+                  onChange={(e) => setMemoTitle(e.target.value)}
+                  placeholder="メモのタイトルを入力"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="memoContent">内容</label>
+                <textarea
+                  id="memoContent"
+                  value={memoContent}
+                  onChange={(e) => setMemoContent(e.target.value)}
+                  placeholder="メモの内容を入力"
+                  rows={6}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="memoCategory">カテゴリ</label>
+                <select
+                  id="memoCategory"
+                  value={memoCategory}
+                  onChange={(e) => setMemoCategory(e.target.value)}
+                  required
+                >
+                  <option value="">カテゴリを選択</option>
+                  {getMemoCategories().map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={memoIsPrivate}
+                    onChange={(e) => setMemoIsPrivate(e.target.checked)}
+                  />
+                  プライベートメモ（非公開）
+                </label>
+              </div>
+
+              <div className="form-actions">
+                <button type="submit" className="submit-button">
+                  {editingMemo ? "更新" : "作成"}
+                </button>
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="cancel-button"
+                >
+                  キャンセル
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* メモ一覧 */}
+          <div className="memos-list">
+            <div className="memos-filters">
+              <select
+                value={selectedMemoCategory}
+                onChange={(e) => handleMemoCategoryChange(e.target.value)}
+                className="category-filter"
+              >
+                <option value="all">すべてのカテゴリ</option>
+                {getMemoCategories().map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {memosLoading ? (
+              <div className="data-loading">
+                <div className="spinner"></div>
+                <p>メモを読み込み中...</p>
+              </div>
+            ) : memos.length === 0 ? (
+              <p className="no-memos">メモが登録されていません</p>
+            ) : (
+              <>
+                {getPaginatedMemos().map((memo) => (
+                  <div key={memo.id} className="memo-item">
+                    <div className="memo-header">
+                      <h3>{getMemoTitle(memo)}</h3>
+                      <div className="memo-meta">
+                        <span className="memo-category">{memo.category}</span>
+                        <span className="memo-date">
+                          {formatDateTime(memo.updatedAt)}
+                        </span>
+                        {memo.isPrivate && (
+                          <span className="private-badge">🔒 プライベート</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="memo-content">
+                      <p>{memo.content}</p>
+                    </div>
+                    <div className="memo-actions">
+                      <button
+                        onClick={() => handleEditMemo(memo)}
+                        className="edit-button"
+                        title="編集"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => handleDeleteMemo(memo.id, getMemoTitle(memo))}
+                        className="delete-button"
+                        title="削除"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {/* ページネーション */}
+                {getTotalPages() > 1 && (
+                  <div className="pagination">
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="pagination-button prev"
+                    >
+                      ← 前へ
+                    </button>
+                    
+                    <div className="pagination-numbers">
+                      {Array.from({ length: getTotalPages() }, (_, i) => i + 1).map((page) => (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page)}
+                          className={`pagination-button number ${
+                            currentPage === page ? 'active' : ''
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === getTotalPages()}
+                      className="pagination-button next"
+                    >
+                      次へ →
+                    </button>
+                  </div>
+                )}
+
+                {/* ページ情報 */}
+                <div className="pagination-info">
+                  {memos.length > 0 && (
+                    <p>
+                      {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, memos.length)} / {memos.length} 件
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MemosComponent;

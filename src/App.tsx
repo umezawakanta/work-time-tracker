@@ -15,6 +15,7 @@ import BookshelfComponent from "./components/BookshelfComponent";
 import HeaderComponent from "./components/HeaderComponent";
 import DiaryReminderIntegration from "./components/DiaryReminderIntegration";
 import HetamaIconComponent from "./components/HetamaIconComponent";
+import MemosComponent from "./components/MemosComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts, FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
@@ -5392,7 +5393,52 @@ function App() {
                 );
               } else if (feature.id === "memos") {
                 return (
-                  <div key={feature.id} className="memos-section">
+                  <MemosComponent
+                    key={feature.id}
+                    memos={memos}
+                    memosLoading={memosLoading}
+                    showMemos={showMemos}
+                    setShowMemos={setShowMemos}
+                    showMemoForm={showMemoForm}
+                    editingMemo={editingMemo}
+                    memoTitle={memoTitle}
+                    setMemoTitle={setMemoTitle}
+                    memoContent={memoContent}
+                    setMemoContent={setMemoContent}
+                    memoCategory={memoCategory}
+                    setMemoCategory={setMemoCategory}
+                    memoIsPrivate={memoIsPrivate}
+                    setMemoIsPrivate={setMemoIsPrivate}
+                    selectedMemoCategory={selectedMemoCategory}
+                    setSelectedMemoCategory={setSelectedMemoCategory}
+                    customGenres={customGenres}
+                    showGenreManagement={showGenreManagement}
+                    setShowGenreManagement={setShowGenreManagement}
+                    editingGenre={editingGenre}
+                    setEditingGenre={setEditingGenre}
+                    editingGenreName={editingGenreName}
+                    setEditingGenreName={setEditingGenreName}
+                    setShowMemoForm={setShowMemoForm}
+                    setEditingMemo={setEditingMemo}
+                    handleCreateMemo={handleCreateMemo}
+                    handleUpdateMemo={handleUpdateMemo}
+                    handleEditMemo={handleEditMemo}
+                    handleDeleteMemo={handleDeleteMemo}
+                    handleMemoCategoryChange={handleMemoCategoryChange}
+                    handleEditGenre={handleEditGenre}
+                    handleSaveGenreEdit={handleSaveGenreEdit}
+                    handleCancelGenreEdit={handleCancelGenreEdit}
+                    handleDeleteGenreFromManagement={handleDeleteGenreFromManagement}
+                    getMemoCategories={getMemoCategories}
+                    getMemoTitle={getMemoTitle}
+                    formatDateTime={formatDateTime}
+                    loadMemos={loadMemos}
+                    closeOtherFeatures={closeOtherFeatures}
+                  />
+                );
+              } else if (feature.id === "public-memos") {
+                return (
+                  <div key={feature.id} className="public-memos-section">
                     <div className="section-header">
                       <h2>
                         <span className="section-icon">
