@@ -2929,6 +2929,7 @@ function App() {
       loadWorkDiaries();
       loadUserSettings();
       loadTimeEntries();
+      loadMemos();
     }
   }, [isLoggedIn, user?.id]);
 
