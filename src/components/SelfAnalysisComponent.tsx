@@ -35,7 +35,7 @@ interface SelfAnalysisComponentProps {
   habitStreak: { [habitId: string]: number };
   setHabitStreak: React.Dispatch<React.SetStateAction<{ [habitId: string]: number }>>;
   moodLogs: any[];
-  setMoodLogs: (logs: any[]) => void;
+  setMoodLogs: React.Dispatch<React.SetStateAction<any[]>>;
   goals: Goal[];
   setGoals: (goals: Goal[]) => void;
   learningRecords: LearningRecord[];
