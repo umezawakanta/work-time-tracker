@@ -33,17 +33,7 @@
   align-items: center;
   justify-content: center;
   padding: 0 1rem;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-.header-title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin: 0;
-  text-align: center;
-  color: #333 !important;
-  display: block !important;
+  min-width: 0; /* フレックスアイテムの縮小を許可 */
   visibility: visible !important;
   opacity: 1 !important;
 }
@@ -124,9 +114,6 @@
     padding: 0;
   }
   
-  .header-title {
-    font-size: 1.6rem;
-  }
   
   .header-right {
     order: 3;
@@ -148,9 +135,6 @@
     gap: 0.8rem;
   }
   
-  .header-title {
-    font-size: 1.4rem;
-  }
   
   .header-navigation {
     gap: 0.5rem;
@@ -170,9 +154,6 @@
     gap: 0.6rem;
   }
   
-  .header-title {
-    font-size: 1.2rem;
-  }
   
   .user-info span {
     max-width: 80px;
