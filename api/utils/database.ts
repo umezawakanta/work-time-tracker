@@ -111,7 +111,7 @@ const handleError = (res, error, message = 'Internal server error') => {
 };
 
 module.exports = {
-  ensureDatabaseConnection: ensureDatabaseConnection,
+  ensureDatabaseConnection,
   verifyJWT,
   handleError,
   mongoose: mongooseInstance,

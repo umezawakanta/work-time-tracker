@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { ensureDatabaseConnection, mongoose } from '../utils/database';
+const { NextApiRequest, NextApiResponse } = require('next');
+const { ensureDatabaseConnection, mongoose } = require('../utils/database');
 
 // TimeEntry スキーマを定義
 const TimeEntrySchema = new mongoose.Schema({
@@ -52,7 +52,7 @@ const TimeEntrySchema = new mongoose.Schema({
 
 const TimeEntry = mongoose.models.TimeEntry || mongoose.model('TimeEntry', TimeEntrySchema);
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
@@ -95,7 +95,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     
     // データベース接続エラーの場合は空の配列を返す
-    if (error.message.includes('connect') || error.message.includes('database')) {
+    if (error.message && (error.message.includes('connect') || error.message.includes('database'))) {
       return res.status(200).json({
         success: true,
         data: [],
