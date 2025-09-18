@@ -16,7 +16,7 @@ interface TimersComponentProps {
   customTimerInterval: NodeJS.Timeout | null;
   setCustomTimerInterval: (interval: NodeJS.Timeout | null) => void;
   customTimerSound: string;
-  setCustomTimerSound: (sound: string) => void;
+  setCustomTimerSound: (sound: "bell" | "chime" | "beep" | "alarm") => void;
   timerHistory: any[];
   timerSettings: any;
   startCustomTimer: () => void;
@@ -24,7 +24,7 @@ interface TimersComponentProps {
   stopCustomTimer: () => void;
   resetCustomTimer: () => void;
   playCustomTimerSound: () => void;
-  addToTimerHistory: (name: string, duration: number, type: string) => void;
+  addToTimerHistory: (name: string, duration: number, type: "custom" | "egg" | "preset") => void;
   closeOtherFeatures: (activeFeature: string) => void;
 }
 

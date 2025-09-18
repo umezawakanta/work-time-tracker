@@ -110,6 +110,7 @@ function App() {
   const [customTimerActive, setCustomTimerActive] = useState(false);
   const [customTimerPaused, setCustomTimerPaused] = useState(false);
   const [customTimerTime, setCustomTimerTime] = useState(0); // 残り時間（秒）
+  const [customTimerTimeLeft, setCustomTimerTimeLeft] = useState(0);
   const [customTimerInterval, setCustomTimerInterval] =
     useState<NodeJS.Timeout | null>(null);
   const [customTimerMinutes, setCustomTimerMinutes] = useState(5);
@@ -979,7 +980,6 @@ function App() {
   };
 
   // 表示する機能を取得
-
 
   // PWA Badge機能
   const updateAppBadge = (count: number) => {
@@ -2014,7 +2014,6 @@ function App() {
     }
   };
 
-
   // 機能設定の関数
   const loadUserSettings = async () => {
     if (!user?.id) {
@@ -2374,7 +2373,6 @@ function App() {
 
     return days;
   };
-
 
   // 月間収支を計算する関数
   const getMonthlySummary = (year: number, month: number) => {
@@ -5062,7 +5060,9 @@ function App() {
                     publicMemoCurrentMonth={publicMemoCurrentMonth}
                     setPublicMemoCurrentMonth={setPublicMemoCurrentMonth}
                     selectedPublicMemoCategory={selectedPublicMemoCategory}
-                    setSelectedPublicMemoCategory={setSelectedPublicMemoCategory}
+                    setSelectedPublicMemoCategory={
+                      setSelectedPublicMemoCategory
+                    }
                     publicMemoSearchTerm={publicMemoSearchTerm}
                     setPublicMemoSearchTerm={setPublicMemoSearchTerm}
                     replyingToMemo={replyingToMemo}
@@ -5076,7 +5076,9 @@ function App() {
                     user={user}
                     loadPublicMemos={loadPublicMemos}
                     handlePublicMemoSearch={handlePublicMemoSearch}
-                    handlePublicMemoCategoryChange={handlePublicMemoCategoryChange}
+                    handlePublicMemoCategoryChange={
+                      handlePublicMemoCategoryChange
+                    }
                     navigatePublicMemoMonth={navigatePublicMemoMonth}
                     handlePublicMemoDateClick={handlePublicMemoDateClick}
                     handleReplySubmit={handleReplySubmit}
@@ -5169,12 +5171,12 @@ function App() {
                     setShowTimers={setShowTimers}
                     customTimerTime={customTimerTime}
                     setCustomTimerTime={setCustomTimerTime}
-                            customTimerActive={customTimerActive}
+                    customTimerTimeLeft={customTimerTimeLeft}
+                    setCustomTimerTimeLeft={setCustomTimerTimeLeft}
+                    customTimerActive={customTimerActive}
                     setCustomTimerActive={setCustomTimerActive}
                     customTimerPaused={customTimerPaused}
                     setCustomTimerPaused={setCustomTimerPaused}
-                    customTimerTimeLeft={customTimerTimeLeft}
-                    setCustomTimerTimeLeft={setCustomTimerTimeLeft}
                     customTimerInterval={customTimerInterval}
                     setCustomTimerInterval={setCustomTimerInterval}
                     customTimerSound={customTimerSound}
@@ -5187,7 +5189,7 @@ function App() {
                     resetCustomTimer={resetCustomTimer}
                     playCustomTimerSound={playCustomTimerSound}
                     addToTimerHistory={addToTimerHistory}
-                            closeOtherFeatures={closeOtherFeatures}
+                    closeOtherFeatures={closeOtherFeatures}
                   />
                 );
               } else if (feature.id === "self-analysis") {
@@ -5337,12 +5339,12 @@ function App() {
                   >
                     🌐 言語別設定
                   </button>
-                <button
-                  onClick={() => setShowFontSettings(false)}
-                  className="close-button"
-                >
-                  ×
-                </button>
+                  <button
+                    onClick={() => setShowFontSettings(false)}
+                    className="close-button"
+                  >
+                    ×
+                  </button>
                 </div>
               </div>
               <div className="font-settings-body">
