@@ -38,39 +38,46 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
 }) => {
   return (
     <header className="dashboard-header">
-      <HeaderLeftComponent />
-      <HeaderTitleComponent />
-      <UserInfoComponent
-        user={user}
-        currentCharacter={currentCharacter}
-        onCharacterHomeToggle={handleCharacterHomeToggle}
-        showThemeSettings={showThemeSettings}
-        onThemeSettingsToggle={() => {
-          if (!showThemeSettings) {
-            closeOtherFeatures("theme-settings");
-          }
-          setShowThemeSettings(!showThemeSettings);
-        }}
-        showFontSettings={showFontSettings}
-        onFontSettingsToggle={() => {
-          if (!showFontSettings) {
-            closeOtherFeatures("font-settings");
-          }
-          setShowFontSettings(!showFontSettings);
-        }}
-        onFeatureSettingsToggle={() => {
-          closeOtherFeatures("feature-settings");
-          setShowFeatureSettings(true);
-          loadUserSettings();
-        }}
-        closeOtherFeatures={closeOtherFeatures}
-        setShowThemeSettings={setShowThemeSettings}
-        setShowFontSettings={setShowFontSettings}
-        setShowFeatureSettings={setShowFeatureSettings}
-        loadUserSettings={loadUserSettings}
-      />
-
-      <LogoutButtonComponent onLogout={handleLogout} />
+      <div className="header-left">
+        <HeaderLeftComponent />
+      </div>
+      
+      <div className="header-center">
+        <HeaderTitleComponent />
+      </div>
+      
+      <div className="header-right">
+        <UserInfoComponent
+          user={user}
+          currentCharacter={currentCharacter}
+          onCharacterHomeToggle={handleCharacterHomeToggle}
+          showThemeSettings={showThemeSettings}
+          onThemeSettingsToggle={() => {
+            if (!showThemeSettings) {
+              closeOtherFeatures("theme-settings");
+            }
+            setShowThemeSettings(!showThemeSettings);
+          }}
+          showFontSettings={showFontSettings}
+          onFontSettingsToggle={() => {
+            if (!showFontSettings) {
+              closeOtherFeatures("font-settings");
+            }
+            setShowFontSettings(!showFontSettings);
+          }}
+          onFeatureSettingsToggle={() => {
+            closeOtherFeatures("feature-settings");
+            setShowFeatureSettings(true);
+            loadUserSettings();
+          }}
+          closeOtherFeatures={closeOtherFeatures}
+          setShowThemeSettings={setShowThemeSettings}
+          setShowFontSettings={setShowFontSettings}
+          setShowFeatureSettings={setShowFeatureSettings}
+          loadUserSettings={loadUserSettings}
+        />
+        <LogoutButtonComponent onLogout={handleLogout} />
+      </div>
 
       <HetamaCharacterComponent />
     </header>

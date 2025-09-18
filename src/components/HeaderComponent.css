@@ -4,7 +4,7 @@
 .dashboard-header {
   background: var(--primary-color, linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fad0c4 100%)) !important;
   color: var(--text-color, #333) !important;
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -12,7 +12,7 @@
   box-shadow: 0 8px 25px rgba(255, 154, 158, 0.4);
   position: relative;
   overflow: hidden;
-  min-height: 120px;
+  min-height: 100px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
   max-width: 100%;
@@ -31,20 +31,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
-  /* レイアウト最適化 */
-  align-items: center;
-  
-  /* PCサイズでの基本設定 */
-  @media (min-width: 1024px) {
-    display: grid;
-    grid-template-columns: 200px 1fr 200px;
-    grid-template-rows: 1fr;
-    grid-template-areas: "left title right";
-    align-items: center;
-    justify-items: center;
-    gap: 3rem;
-  }
 }
 
 .dashboard-header::before {
@@ -69,6 +55,38 @@
 .dashboard-header > * {
   position: relative;
   z-index: 1;
+}
+
+/* ヘッダー左側エリア */
+.header-left {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 0 auto;
+  min-width: 0;
+  z-index: 2;
+}
+
+/* ヘッダー中央エリア */
+.header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  z-index: 2;
+  padding: 0 1rem;
+}
+
+/* ヘッダー右側エリア */
+.header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  min-width: 0;
+  gap: 1rem;
+  z-index: 2;
 }
 
 /* クロスブラウザ対応 */
@@ -119,192 +137,101 @@
 /* PCサイズでのヘッダーレイアウト最適化 */
 @media (min-width: 1024px) {
   .dashboard-header {
-    display: grid;
-    grid-template-columns: 200px 1fr 200px;
-    grid-template-rows: 1fr;
-    grid-template-areas: "left title right";
-    align-items: center;
-    justify-items: center;
-    padding: 2.5rem 3rem;
-    position: relative;
-    min-height: 160px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    gap: 3rem;
+    padding: 2rem 3rem;
+    min-height: 120px;
+    gap: 2rem;
   }
   
-  /* 左側エリア */
-  .dashboard-header .header-left {
-    grid-area: left;
-    justify-self: start;
-    align-self: center;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
+  .header-left {
+    flex: 0 0 200px;
     max-width: 200px;
   }
   
-  /* 中央エリア（タイトル） */
-  .dashboard-header .header-title {
-    grid-area: title;
-    justify-self: center;
-    align-self: center;
-    text-align: center;
-    position: relative;
-    z-index: 2;
+  .header-center {
+    flex: 1 1 auto;
     max-width: 600px;
-    width: 100%;
-    margin: 0;
+    padding: 0 2rem;
   }
   
-  /* 右側エリア */
-  .dashboard-header .user-info {
-    grid-area: right;
-    justify-self: end;
-    align-self: center;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.5rem;
-    z-index: 2;
-    width: 100%;
-    max-width: 200px;
-  }
-  
-  /* ログアウトボタン */
-  .dashboard-header .logout-container {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 10;
-  }
-  
-  /* ヘタマキャラクター */
-  .dashboard-header .hetama-character {
-    position: absolute;
-    bottom: 0.5rem;
-    right: 0.5rem;
-    z-index: 10;
+  .header-right {
+    flex: 0 0 300px;
+    max-width: 300px;
+    gap: 1.5rem;
   }
 }
-
-
-
-
-
-
-
-
-/* レスポンシブデザイン */
 
 /* 大画面 (1400px以上) */
 @media (min-width: 1400px) {
   .dashboard-header {
-    padding: 3.5rem 4rem;
-    min-height: 180px;
-    gap: 4rem;
-    grid-template-columns: 250px 1fr 250px;
+    padding: 2.5rem 4rem;
+    min-height: 140px;
+    gap: 3rem;
   }
   
-  .dashboard-header .header-left {
+  .header-left {
+    flex: 0 0 250px;
     max-width: 250px;
   }
   
-  .dashboard-header .header-title {
+  .header-center {
     max-width: 800px;
-    font-size: 4.5rem;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
+    padding: 0 3rem;
   }
   
-  .dashboard-header .user-info {
-    gap: 0.75rem;
-    max-width: 250px;
-  }
-  
-  .dashboard-header .logout-container {
-    top: 1.5rem;
-    right: 1.5rem;
-  }
-  
-  .dashboard-header .hetama-character {
-    bottom: 1rem;
-    right: 1rem;
+  .header-right {
+    flex: 0 0 350px;
+    max-width: 350px;
+    gap: 2rem;
   }
 }
 
 /* 大画面 (1200px - 1399px) */
 @media (max-width: 1399px) and (min-width: 1200px) {
   .dashboard-header {
-    padding: 3rem 3rem;
-    min-height: 160px;
-    gap: 3.5rem;
-    grid-template-columns: 220px 1fr 220px;
+    padding: 2rem 3rem;
+    min-height: 130px;
+    gap: 2.5rem;
   }
   
-  .dashboard-header .header-left {
+  .header-left {
+    flex: 0 0 220px;
     max-width: 220px;
   }
   
-  .dashboard-header .header-title {
+  .header-center {
     max-width: 700px;
-    font-size: 4rem;
-    letter-spacing: -0.025em;
-    line-height: 1.1;
+    padding: 0 2.5rem;
   }
   
-  .dashboard-header .user-info {
-    gap: 0.5rem;
-    max-width: 220px;
-  }
-  
-  .dashboard-header .logout-container {
-    top: 1.25rem;
-    right: 1.25rem;
-  }
-  
-  .dashboard-header .hetama-character {
-    bottom: 0.75rem;
-    right: 0.75rem;
+  .header-right {
+    flex: 0 0 320px;
+    max-width: 320px;
+    gap: 1.8rem;
   }
 }
 
 /* デスクトップ (1024px - 1199px) */
 @media (max-width: 1199px) and (min-width: 1024px) {
   .dashboard-header {
-    padding: 2.5rem 2rem;
-    min-height: 150px;
-    gap: 3rem;
-    grid-template-columns: 200px 1fr 200px;
+    padding: 1.8rem 2.5rem;
+    min-height: 120px;
+    gap: 2rem;
   }
   
-  .dashboard-header .header-left {
+  .header-left {
+    flex: 0 0 200px;
     max-width: 200px;
   }
   
-  .dashboard-header .header-title {
+  .header-center {
     max-width: 600px;
-    font-size: 3.5rem;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    padding: 0 2rem;
   }
   
-  .dashboard-header .user-info {
-    gap: 0.5rem;
-    max-width: 200px;
-  }
-  
-  .dashboard-header .logout-container {
-    top: 1rem;
-    right: 1rem;
-  }
-  
-  .dashboard-header .hetama-character {
-    bottom: 0.5rem;
-    right: 0.5rem;
+  .header-right {
+    flex: 0 0 280px;
+    max-width: 280px;
+    gap: 1.5rem;
   }
 }
 
@@ -323,46 +250,35 @@
     box-sizing: border-box;
   }
   
-  .dashboard-header .header-left {
+  .header-left {
     order: 1;
     align-self: flex-start;
     width: 100%;
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    flex: none;
+    max-width: none;
   }
   
-  .dashboard-header .header-title {
+  .header-center {
     order: 2;
     text-align: center;
     width: 100%;
     max-width: 500px;
-    font-size: 3rem;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
+    padding: 0;
+    flex: none;
   }
   
-  .dashboard-header .user-info {
+  .header-right {
     order: 3;
     align-self: flex-end;
     width: 100%;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-  }
-  
-  .dashboard-header .logout-container {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 10;
-  }
-  
-  .dashboard-header .hetama-character {
-    position: absolute;
-    bottom: 0.5rem;
-    right: 0.5rem;
-    z-index: 10;
+    flex: none;
+    max-width: none;
   }
 }
 
@@ -382,62 +298,35 @@
     box-sizing: border-box;
   }
   
-  .dashboard-header .header-left {
+  .header-left {
     order: 1;
     align-self: flex-start;
     width: 100%;
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    flex: none;
+    max-width: none;
   }
   
-  .dashboard-header .header-title {
+  .header-center {
     order: 2;
     text-align: center;
     width: 100%;
     max-width: 400px;
-    font-size: 2.5rem;
-    letter-spacing: -0.005em;
-    line-height: 1.3;
+    padding: 0;
+    flex: none;
   }
   
-  .dashboard-header .user-info {
+  .header-right {
     order: 3;
     align-self: flex-end;
     width: 100%;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-  }
-  
-  .dashboard-header .logout-container {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    z-index: 10;
-  }
-  
-  .dashboard-header .hetama-character {
-    position: absolute;
-    bottom: 0.25rem;
-    right: 0.25rem;
-    z-index: 10;
-  }
-  
-  .version-info {
-    margin: 0;
-  }
-  
-  .version-display {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(15px);
-    color: #4b5563;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    flex: none;
+    max-width: none;
   }
 }
 
@@ -458,62 +347,35 @@
     box-sizing: border-box;
   }
   
-  .dashboard-header .header-left {
+  .header-left {
     order: 1;
     align-self: flex-start;
     width: 100%;
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    flex: none;
+    max-width: none;
   }
   
-  .dashboard-header .header-title {
+  .header-center {
     order: 2;
     text-align: center;
     width: 100%;
     max-width: 350px;
-    font-size: 2rem;
-    letter-spacing: 0;
-    line-height: 1.4;
+    padding: 0;
+    flex: none;
   }
   
-  .dashboard-header .user-info {
+  .header-right {
     order: 3;
     align-self: flex-end;
     width: 100%;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-  }
-  
-  .dashboard-header .logout-container {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    z-index: 10;
-  }
-  
-  .dashboard-header .hetama-character {
-    position: absolute;
-    bottom: 0.25rem;
-    right: 0.25rem;
-    z-index: 10;
-  }
-  
-  .version-info {
-    margin: 0;
-  }
-  
-  .version-display {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 0.3rem 0.6rem;
-    border-radius: 15px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(15px);
-    color: #4b5563;
-    font-size: 11px;
-    font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    flex: none;
+    max-width: none;
   }
 }
 
@@ -525,60 +387,9 @@
     border-radius: 15px 15px 0 0;
   }
   
-  .dashboard-header .header-title {
+  .header-center {
     max-width: 300px;
   }
-}
-
-/* クロスブラウザ対応 */
-.dashboard-header {
-  /* Safari対応 */
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  
-  /* Firefox対応 */
-  -moz-box-shadow: 0 8px 25px rgba(255, 154, 158, 0.4);
-  -moz-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* IE対応 */
-  -ms-flex-direction: row;
-  -ms-align-items: flex-start;
-  -ms-justify-content: space-between;
-  
-  /* Edge対応 */
-  -ms-flex-direction: row;
-  -ms-align-items: flex-start;
-  -ms-justify-content: space-between;
-  
-  /* フォールバック */
-  background-color: #ff9a9e;
-  
-  /* パフォーマンス最適化 */
-  will-change: transform, box-shadow;
-  contain: layout style paint;
-}
-
-/* PCサイズでのクロスブラウザ対応 */
-@media (min-width: 1024px) {
-  .dashboard-header {
-    /* Safari PC対応 */
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    
-    /* Firefox PC対応 */
-    -moz-backdrop-filter: blur(10px);
-    
-    /* Edge PC対応 */
-    -ms-backdrop-filter: blur(10px);
-    
-    /* Chrome PC対応 */
-    backdrop-filter: blur(10px);
-  }
-}
-  
-  /* レイアウト安定化 */
-  min-height: 120px;
-  position: relative;
 }
 
 /* フォント設定の強制適用 */
@@ -614,18 +425,6 @@
   .dashboard-header::before {
     display: none;
   }
-  
-  .dashboard-header .logout-container button {
-    background: #000000 !important;
-    color: #ffffff !important;
-    border: 2px solid #000000 !important;
-  }
-  
-  .dashboard-header .version-display {
-    background: #000000 !important;
-    color: #ffffff !important;
-    border: 2px solid #000000 !important;
-  }
 }
 
 /* モーション軽減設定 */
@@ -651,12 +450,6 @@
     color: var(--text-color, #ffffff) !important;
     box-shadow: 0 8px 25px rgba(26, 26, 46, 0.4);
   }
-  
-  .dashboard-header .version-display {
-    background: rgba(255, 255, 255, 0.1) !important;
-    color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  }
 }
 
 /* 印刷対応 */
@@ -666,11 +459,6 @@
     color: #000000 !important;
     box-shadow: none !important;
     border: 1px solid #000000 !important;
-  }
-  
-  .dashboard-header .logout-container,
-  .dashboard-header .hetama-character {
-    display: none !important;
   }
 }
 

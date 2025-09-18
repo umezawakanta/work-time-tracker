@@ -185,6 +185,7 @@
   }
 }
 
+/* デスクトップ (1024px - 1199px) */
 @media (max-width: 1199px) and (min-width: 1024px) {
   .header-buttons {
     gap: 0.8rem;
@@ -205,18 +206,28 @@
   }
 }
 
+/* タブレット (768px - 1023px) */
 @media (max-width: 1023px) and (min-width: 768px) {
   .header-buttons {
     gap: 0.5rem;
   }
   
+  .character-home-button,
   .design-settings-button,
+  .feature-settings-button {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+  
   .font-settings-button {
-    font-size: 12px;
-    padding: 9px 14px;
+    padding: 10px 16px;
+    font-size: 13px;
+    border-radius: 22px;
   }
 }
 
+/* モバイル (480px - 767px) */
 @media (max-width: 767px) and (min-width: 480px) {
   .header-buttons {
     gap: 0.4rem;
@@ -233,9 +244,11 @@
   .font-settings-button {
     padding: 8px 12px;
     font-size: 12px;
+    border-radius: 20px;
   }
 }
 
+/* 小画面モバイル (320px - 479px) */
 @media (max-width: 479px) {
   .header-buttons {
     gap: 0.3rem;
@@ -252,9 +265,11 @@
   .font-settings-button {
     padding: 6px 10px;
     font-size: 11px;
+    border-radius: 18px;
   }
 }
 
+/* 超小画面 (320px未満) */
 @media (max-width: 319px) {
   .header-buttons {
     gap: 0.25rem;
@@ -271,6 +286,7 @@
   .font-settings-button {
     padding: 4px 8px;
     font-size: 10px;
+    border-radius: 16px;
   }
 }
 
