@@ -1,56 +1,7 @@
-const { mongoose } = require('../utils/database');
+const { mongoose, ensureDatabaseConnection } = require('../utils/database');
 const dotenv = require('dotenv');
 
 dotenv.config();
-
-// Reply schema (独立したコレクション)
-const ReplySchema = new mongoose.Schema(
-  {
-    content: { type: String, required: true },
-    authorName: { type: String, required: true },
-    authorEmail: { type: String, required: true },
-    memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
-    userId: { type: String, required: false }
-  },
-  {
-    timestamps: true,
-    versionKey: false,
-  },
-);
-
-const Reply = mongoose.models.Reply || mongoose.model("Reply", ReplySchema);
-
-// Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
-  
-  if (isConnected) {
-    return;
-  }
-
-  console.warn('[memos/public] Database not connected, attempting to connect...');
-  
-  try {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    
-    if (!MONGODB_URI) {
-      throw new Error('MONGODB_URI environment variable is not set');
-    }
-
-    if (MONGODB_URI === "memory://") {
-      return;
-    }
-
-    await mongoose.connect(MONGODB_URI, {
-      dbName: 'workTimeTracker',
-    });
-
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error('[memos/public] Failed to connect to database:', message);
-    throw new Error(`Database connection failed: ${message}`);
-  }
-};
 
 // Memo Schema
 const MemoSchema = new mongoose.Schema({
@@ -72,6 +23,8 @@ MemoSchema.pre('save', function(next) {
   next();
 });
 
+const Memo = mongoose.model('Memo', MemoSchema);
+
 // Reply Schema (独立したコレクション)
 const ReplySchema = new mongoose.Schema({
   content: { type: String, required: true },
@@ -83,8 +36,7 @@ const ReplySchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-const Memo = mongoose.model('Memo', MemoSchema);
-const Reply = mongoose.model('Reply', ReplySchema);
+const Reply = mongoose.models.Reply || mongoose.model('Reply', ReplySchema);
 
 // CORS設定
 const setCorsHeaders = (res, origin) => {
@@ -97,6 +49,7 @@ const setCorsHeaders = (res, origin) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
 };
 
 module.exports = async (req, res) => {
@@ -109,14 +62,22 @@ module.exports = async (req, res) => {
   }
 
   try {
-    
     // Ensure database connection
-    await ensureDatabaseConnection();
+    try {
+      await ensureDatabaseConnection();
+    } catch (dbError) {
+      console.error('❌ Database connection failed:', dbError);
+      return res.status(500).json({
+        success: false,
+        message: 'データベース接続に失敗しました',
+        error: 'Database connection failed',
+      });
+    }
 
     if (req.method === 'GET') {
       // 公開メモの一覧を取得（認証不要）
       const { category, search } = req.query;
-      let query = { isPublic: true };
+      let query: any = { isPublic: true };
       
       if (category && category !== 'all') {
         query.category = category;
@@ -191,10 +152,25 @@ module.exports = async (req, res) => {
     }
   } catch (error) {
     console.error('❌ Public memos API error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'サーバーエラーが発生しました',
-      error: 'Internal server error',
-    });
+    
+    // レスポンスが既に送信されているかチェック
+    if (res.headersSent) {
+      console.error('Response already sent, cannot send error response');
+      return;
+    }
+    
+    try {
+      res.status(500).json({
+        success: false,
+        message: 'サーバーエラーが発生しました',
+        error: error instanceof Error ? error.message : 'Internal server error',
+      });
+    } catch (jsonError) {
+      console.error('Failed to send JSON error response:', jsonError);
+      // 最後の手段としてプレーンテキストでエラーを送信
+      if (!res.headersSent) {
+        res.status(500).end('Internal Server Error');
+      }
+    }
   }
 };
