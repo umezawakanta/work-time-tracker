@@ -593,8 +593,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 <div className="form-group">
                   <label>次回の目標</label>
                   <textarea
-                    value={diaryNextGoals}
-                    onChange={(e) => setDiaryNextGoals(e.target.value)}
+                    value={Array.isArray(diaryNextGoals) ? diaryNextGoals.join('\n') : diaryNextGoals}
+                    onChange={(e) => setDiaryNextGoals(e.target.value.split('\n').filter(goal => goal.trim()))}
                     placeholder="次回の目標を書いてください"
                     rows={2}
                   />

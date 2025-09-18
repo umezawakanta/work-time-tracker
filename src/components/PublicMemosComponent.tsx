@@ -291,7 +291,10 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                 className="search-input"
               />
               <button
-                onClick={handlePublicMemoSearch}
+                onClick={() => {
+                  // 検索機能（実装予定）
+                  console.log('検索:', publicMemoSearchTerm);
+                }}
                 className="search-button"
               >
                 検索

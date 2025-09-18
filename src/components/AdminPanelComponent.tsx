@@ -280,7 +280,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                   <div key={user.id} className="user-item">
                     <div className="user-info">
                       <div className="user-avatar">
-                        {user.name?.charAt(0).toUpperCase() || '?'}
+                        {user.email?.charAt(0).toUpperCase() || '?'}
                       </div>
                       <div className="user-details">
                         <h3 className="user-name">{user.name || '名前なし'}</h3>

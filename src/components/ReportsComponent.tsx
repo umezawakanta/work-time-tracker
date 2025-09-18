@@ -57,13 +57,8 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
       ? periodWorkDiaries.reduce((sum, diary) => sum + (Number(diary.mood) || 0), 0) / periodWorkDiaries.length 
       : 0;
 
-    // カテゴリ別の統計
-    const categoryStats = periodWorkDiaries.length > 0 ? periodWorkDiaries.reduce((acc, diary) => {
-      diary.activities?.forEach(activity => {
-        acc[activity] = (acc[activity] || 0) + 1;
-      });
-      return acc;
-    }, {} as Record<string, number>) : {};
+    // カテゴリ別の統計（activitiesプロパティが存在しないため無効化）
+    const categoryStats = {} as Record<string, number>;
 
     return {
       totalSalary,

@@ -207,7 +207,10 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                             ✏️
                           </button>
                           <button
-                            onClick={() => handleDeleteGenreFromManagement(genre)}
+                            onClick={() => {
+                              const updatedGenres = customGenres.filter(g => g !== genre);
+                              setCustomGenres(updatedGenres);
+                            }}
                             className="delete-genre-button"
                             title="削除"
                           >
