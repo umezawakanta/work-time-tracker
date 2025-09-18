@@ -7,6 +7,7 @@ import HeaderTitleComponent from "./HeaderTitleComponent";
 import LogoutButtonComponent from "./LogoutButtonComponent";
 import UserInfoComponent from "./UserInfoComponent";
 import UserGreetingComponent from "./UserGreetingComponent";
+import ShareButtonComponent from "./ShareButtonComponent";
 import type { User, Character } from "../types";
 
 interface HeaderComponentProps {
@@ -86,6 +87,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             setShowFeatureSettings={setShowFeatureSettings}
             loadUserSettings={loadUserSettings}
           />
+          <ShareButtonComponent />
           <LogoutButtonComponent onLogout={handleLogout} />
         </div>
       </div>

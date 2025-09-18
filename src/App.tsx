@@ -23,7 +23,6 @@ import TimeTrackingComponent from "./components/TimeTrackingComponent";
 import TimersComponent from "./components/TimersComponent";
 import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
-import ShareButtonComponent from "./components/ShareButtonComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import {
@@ -4872,10 +4871,6 @@ function App() {
             isTimeTrackingActive={isTimeTrackingActive}
           />
 
-          {/* シェアボタン */}
-          <div className="share-button-wrapper">
-            <ShareButtonComponent />
-          </div>
 
           <main className="dashboard-main">
             {getVisibleFeatures().map((feature) => {
