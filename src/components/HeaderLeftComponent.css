@@ -7,4 +7,56 @@
   position: relative;
   z-index: 1;
   padding-left: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* レスポンシブデザイン */
+@media (min-width: 1200px) {
+  .header-left {
+    gap: 1.2rem;
+    padding-left: 0.75rem;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 1024px) {
+  .header-left {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+  .header-left {
+    gap: 0.8rem;
+    padding-left: 0.4rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .header-left {
+    gap: 0.75rem;
+    padding-left: 0;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 479px) {
+  .header-left {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 319px) {
+  .header-left {
+    gap: 0.4rem;
+  }
+}
+
+/* アクセシビリティ向上 */
+.header-left:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 8px;
 }

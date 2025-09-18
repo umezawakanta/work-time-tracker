@@ -8,6 +8,9 @@
   position: relative;
   z-index: 1;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .user-info span {
@@ -18,16 +21,40 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   font-family: var(--app-font-family, inherit) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  word-break: break-word;
+  hyphens: auto;
 }
 
 /* レスポンシブデザイン */
-@media (max-width: 1024px) {
+@media (min-width: 1200px) {
   .user-info {
-    gap: 0.8rem;
+    gap: 1.2rem;
+  }
+  
+  .user-info span {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1199px) and (min-width: 1024px) {
+  .user-info {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+  .user-info {
+    gap: 0.8rem;
+  }
+  
+  .user-info span {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 767px) and (min-width: 480px) {
   .user-info {
     flex-direction: row;
     gap: 1rem;
@@ -45,5 +72,60 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+}
+
+@media (max-width: 479px) {
+  .user-info {
+    gap: 0.75rem;
+  }
+  
+  .user-info span {
+    font-size: 13px;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (max-width: 319px) {
+  .user-info {
+    gap: 0.5rem;
+  }
+  
+  .user-info span {
+    font-size: 12px;
+    padding: 0.3rem 0.6rem;
+  }
+}
+
+/* アクセシビリティ向上 */
+.user-info:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* 高コントラストモード対応 */
+@media (prefers-contrast: high) {
+  .user-info span {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 2px solid #000000;
+    box-shadow: none;
+  }
+}
+
+/* モーション軽減設定 */
+@media (prefers-reduced-motion: reduce) {
+  .user-info span {
+    transition: none;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .user-info span {
+    background: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 }

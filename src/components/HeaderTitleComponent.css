@@ -14,6 +14,10 @@
   background-clip: text;
   animation: gradientShift 3s ease-in-out infinite;
   font-family: var(--app-font-family, inherit) !important;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 @keyframes gradientShift {
@@ -26,9 +30,78 @@
 }
 
 /* レスポンシブデザイン */
-@media (max-width: 1024px) {
+@media (min-width: 1200px) {
+  .header-title {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 1024px) {
+  .header-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+  .header-title {
+    font-size: 1.8rem;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 767px) and (min-width: 480px) {
   .header-title {
     font-size: 1.6rem;
     white-space: nowrap;
+  }
+}
+
+@media (max-width: 479px) {
+  .header-title {
+    font-size: 1.4rem;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 319px) {
+  .header-title {
+    font-size: 1.2rem;
+    white-space: nowrap;
+  }
+}
+
+/* アクセシビリティ向上 */
+.header-title:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* 高コントラストモード対応 */
+@media (prefers-contrast: high) {
+  .header-title {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+    background-clip: unset !important;
+    color: #000000 !important;
+    text-shadow: none;
+  }
+}
+
+/* モーション軽減設定 */
+@media (prefers-reduced-motion: reduce) {
+  .header-title {
+    animation: none;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .header-title {
+    background: var(--header-title-gradient, linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
