@@ -1304,7 +1304,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                           <div className="mood-activities">
                             <h5>活動:</h5>
                             <div className="activities-tags">
-                              {log.activities.map((activity, index) => (
+                              {log.activities.map((activity: string, index: number) => (
                                 <span key={index} className="activity-tag">
                                   {activity}
                                 </span>
@@ -1334,16 +1334,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                 <button 
                   className="add-goal-button"
                   onClick={() => {
-                    const newGoal = {
-                      title: '新しい目標',
-                      description: '',
-                      category: 'その他',
-                      priority: 'medium' as const,
-                      status: 'not-started' as const,
-                      createdAt: new Date(),
-                      milestones: []
-                    };
-                    addGoal(newGoal);
+                    addGoal();
                   }}
                 >
                   + 新しい目標
@@ -1443,7 +1434,11 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                       status: 'not-started' as const,
                       rating: 3,
                       startDate: new Date().toISOString().split('T')[0],
-                      skills: []
+                      skills: [],
+                      notes: '',
+                      resources: [],
+                      createdAt: new Date().toISOString(),
+                      updatedAt: new Date().toISOString()
                     };
                     addLearningRecord(newRecord);
                   }}
