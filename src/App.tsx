@@ -401,19 +401,20 @@ function App() {
   };
 
   const toggleHabitCompletion = (habitId: string, date: string) => {
-    const updatedHabits = habits.map(h => {
-      if (h.id === habitId) {
-        const isCompleted = h.completionDates.includes(date);
-        return {
-          ...h,
-          completionDates: isCompleted 
-            ? h.completionDates.filter(d => d !== date)
-            : [...h.completionDates, date]
-        };
-      }
-      return h;
-    });
-    setHabits(updatedHabits);
+    const history = habitHistory[habitId] || [];
+    const isCompleted = history.includes(date);
+
+    if (isCompleted) {
+      setHabitHistory(prev => ({
+        ...prev,
+        [habitId]: history.filter(d => d !== date)
+      }));
+    } else {
+      setHabitHistory(prev => ({
+        ...prev,
+        [habitId]: [...history, date]
+      }));
+    }
   };
 
   const getHabitCompletionRate = (habitId: string) => {
