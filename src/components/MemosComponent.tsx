@@ -197,7 +197,10 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                         <span className="genre-name">{genre}</span>
                         <div className="genre-actions">
                           <button
-                            onClick={() => handleEditGenre(genre)}
+                            onClick={() => {
+                              setEditingGenre(genre);
+                              setEditingGenreName(genre);
+                            }}
                             className="edit-genre-button"
                             title="編集"
                           >

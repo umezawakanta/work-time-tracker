@@ -54,7 +54,7 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
     // 日記の統計
     const totalDiaries = periodWorkDiaries.length;
     const averageMood = periodWorkDiaries.length > 0 
-      ? periodWorkDiaries.reduce((sum, diary) => sum + (diary.mood || 0), 0) / periodWorkDiaries.length 
+      ? periodWorkDiaries.reduce((sum, diary) => sum + (Number(diary.mood) || 0), 0) / periodWorkDiaries.length 
       : 0;
 
     // カテゴリ別の統計

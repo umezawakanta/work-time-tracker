@@ -520,6 +520,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                   <select
                     value={diaryMood}
                     onChange={(e) => setDiaryMood(e.target.value)}
+                    aria-label="気分を選択"
                   >
                     <option value="">選択してください</option>
                     <option value="1">😢 1 (とても悪い)</option>

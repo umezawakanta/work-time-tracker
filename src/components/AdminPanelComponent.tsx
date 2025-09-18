@@ -69,7 +69,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   // フォーム送信処理
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingUser && editingUserData.name && editingUserData.email) {
+    if (editingUser && editingUserData.email) {
       handleUpdateUser({
         ...editingUser,
         ...editingUserData,

@@ -265,7 +265,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                     <div
                       key={index}
                       className={`calendar-day ${isCurrentMonth ? 'current-month' : 'other-month'} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${memosForDate.length > 0 ? 'has-memos' : ''}`}
-                      onClick={() => handlePublicMemoDateClick(date)}
+                      onClick={() => setPublicMemoSelectedDate(date)}
                     >
                       <span className="day-number">{date.getDate()}</span>
                       {memosForDate.length > 0 && (

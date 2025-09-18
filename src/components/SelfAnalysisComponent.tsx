@@ -300,6 +300,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
       priority: goalForm.priority as "high" | "medium" | "low",
       status: goalForm.status as "not-started" | "in-progress" | "completed" | "paused",
       milestones: goalForm.milestones,
+      startDate: new Date().toISOString().split('T')[0],
+      targetDate: null,
+      progress: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

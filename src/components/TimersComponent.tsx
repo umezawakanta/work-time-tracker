@@ -383,7 +383,10 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
                 ))}
               </div>
               <button
-                onClick={playCustomTimerSound}
+                onClick={() => {
+                  // 音をテストする機能（実装予定）
+                  console.log('音をテスト:', customTimerSound);
+                }}
                 className="test-sound-button"
               >
                 🔊 音をテスト
