@@ -169,7 +169,14 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                           placeholder="ジャンル名を入力"
                         />
                         <button
-                          onClick={handleSaveGenreEdit}
+                          onClick={() => {
+                            if (editingGenreName.trim() && editingGenreName.trim() !== genre) {
+                              const updatedGenres = customGenres.map(g => g === genre ? editingGenreName.trim() : g);
+                              setCustomGenres(updatedGenres);
+                              setEditingGenre(null);
+                              setEditingGenreName("");
+                            }
+                          }}
                           className="save-genre-button"
                           disabled={!editingGenreName.trim() || editingGenreName.trim() === genre}
                         >

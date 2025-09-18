@@ -147,7 +147,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
         )
       : ['', 0];
     
-    return mostActiveDay ? parseInt(mostActiveDay[0]) : null;
+    return mostActiveDay ? parseInt(String(mostActiveDay[0])) : null;
   };
 
   const monthlyStats = getMonthlyStats();

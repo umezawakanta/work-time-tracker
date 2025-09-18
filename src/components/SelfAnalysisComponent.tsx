@@ -298,7 +298,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
       description: goalForm.description.trim(),
       category: goalForm.category,
       priority: goalForm.priority as "high" | "medium" | "low",
-      status: goalForm.status,
+      status: goalForm.status as "not-started" | "in-progress" | "completed" | "paused",
       milestones: goalForm.milestones,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

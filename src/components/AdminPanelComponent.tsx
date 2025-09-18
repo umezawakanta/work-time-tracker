@@ -52,7 +52,6 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   // 検索・ソート機能
   const filteredUsers = adminUsers
     .filter(user => 
-      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.role?.toLowerCase().includes(searchTerm.toLowerCase())
     )

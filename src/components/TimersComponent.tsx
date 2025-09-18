@@ -264,18 +264,28 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
                       ⏸️ 一時停止
                     </button>
                   ) : (
-                    <button onClick={startCustomTimer} className="resume-button">
+                    <button onClick={() => setCustomTimerPaused(false)} className="resume-button">
                       ▶️ 再開
                     </button>
                   )}
-                  <button onClick={stopCustomTimer} className="stop-button">
+                  <button onClick={() => {
+                    setCustomTimerActive(false);
+                    setCustomTimerPaused(false);
+                    if (customTimerInterval) {
+                      clearInterval(customTimerInterval);
+                      setCustomTimerInterval(null);
+                    }
+                  }} className="stop-button">
                     ⏹️ 停止
                   </button>
                 </div>
               )}
               
               <button
-                onClick={resetCustomTimer}
+                onClick={() => {
+                  setCustomTimerTime(0);
+                  setCustomTimerTimeLeft(0);
+                }}
                 className="reset-button"
                 disabled={customTimerActive}
               >
@@ -317,6 +327,7 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
                   onChange={(e) => handleTimeChange('hours', parseInt(e.target.value) || 0)}
                   disabled={customTimerActive}
                   className="time-input"
+                  aria-label="時間"
                 />
               </div>
               <div className="time-input-group">
@@ -329,6 +340,7 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
                   onChange={(e) => handleTimeChange('minutes', parseInt(e.target.value) || 0)}
                   disabled={customTimerActive}
                   className="time-input"
+                  aria-label="分"
                 />
               </div>
               <div className="time-input-group">
@@ -341,6 +353,7 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
                   onChange={(e) => handleTimeChange('seconds', parseInt(e.target.value) || 0)}
                   disabled={customTimerActive}
                   className="time-input"
+                  aria-label="秒"
                 />
               </div>
             </div>

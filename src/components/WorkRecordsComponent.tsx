@@ -46,10 +46,10 @@ interface WorkRecordsComponentProps {
   setDiaryActivities: React.Dispatch<React.SetStateAction<string[]>>;
   diaryNotes: string;
   setDiaryNotes: (notes: string) => void;
-  diaryNextGoals: string;
-  setDiaryNextGoals: (goals: string) => void;
-  diaryChallenges: string;
-  setDiaryChallenges: (challenges: string) => void;
+  diaryNextGoals: string[];
+  setDiaryNextGoals: React.Dispatch<React.SetStateAction<string[]>>;
+  diaryChallenges: string[];
+  setDiaryChallenges: React.Dispatch<React.SetStateAction<string[]>>;
   diaryAchievements: string[];
   setDiaryAchievements: React.Dispatch<React.SetStateAction<string[]>>;
   diaryGratitude: string;
@@ -456,6 +456,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     value={salaryDate}
                     onChange={(e) => setSalaryDate(e.target.value)}
                     required
+                    aria-label="給与記録の日付"
                   />
                 </div>
                 <div className="form-group">
