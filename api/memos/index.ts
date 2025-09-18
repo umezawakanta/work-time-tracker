@@ -1,56 +1,11 @@
-const { mongoose, jwt } = require('../utils/database');
+const { mongoose, jwt, ensureDatabaseConnection, verifyJWT } = require('../utils/database');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-// Reply schema (独立したコレクション)
-const ReplySchema = new mongoose.Schema(
-  {
-    content: { type: String, required: true },
-    authorName: { type: String, required: true },
-    authorEmail: { type: String, required: true },
-    memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
-    userId: { type: String, required: false }
-  },
-  {
-    timestamps: true,
-    versionKey: false,
-  },
-);
+// Reply schema (独立したコレクション) - 重複を削除
 
-const Reply = mongoose.models.Reply || mongoose.model("Reply", ReplySchema);
-
-// Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
-  
-  if (isConnected) {
-    return;
-  }
-
-  console.warn('[memos] Database not connected, attempting to connect...');
-  
-  try {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    
-    if (!MONGODB_URI) {
-      throw new Error('MONGODB_URI environment variable is not set');
-    }
-
-    if (MONGODB_URI === "memory://") {
-      return;
-    }
-
-    await mongoose.connect(MONGODB_URI, {
-      dbName: 'workTimeTracker',
-    });
-
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error('[memos] Failed to connect to database:', message);
-    throw new Error(`Database connection failed: ${message}`);
-  }
-};
+// Database connection utility - 共通のdatabase.tsから使用
 
 // Memo Schema
 const MemoSchema = new mongoose.Schema({
@@ -85,30 +40,9 @@ const ReplySchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-const Reply = mongoose.model('Reply', ReplySchema);
+const Reply = mongoose.models.Reply || mongoose.model('Reply', ReplySchema);
 
-// JWT verification utility
-const verifyJWT = async (req) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-
-  try {
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      console.error('[memos] JWT_SECRET not configured');
-      return null;
-    }
-
-    const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, jwtSecret);
-    return decoded;
-  } catch (error) {
-    console.error('[memos] JWT verification failed:', error);
-    return null;
-  }
-};
+// JWT verification utility - 共通のdatabase.tsから使用
 
 // CORS設定
 const setCorsHeaders = (res, origin) => {
@@ -121,6 +55,7 @@ const setCorsHeaders = (res, origin) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
 };
 
 module.exports = async (req, res) => {
@@ -146,20 +81,24 @@ module.exports = async (req, res) => {
           await handleRequest(req, res);
         } catch (parseError) {
           console.error('❌ JSON parse error:', parseError);
-          res.status(400).json({
-            success: false,
-            message: 'リクエストデータの解析に失敗しました',
-            error: 'Invalid JSON'
-          });
+          if (!res.headersSent) {
+            res.status(400).json({
+              success: false,
+              message: 'リクエストデータの解析に失敗しました',
+              error: 'Invalid JSON'
+            });
+          }
         }
       });
     } catch (error) {
       console.error('❌ Request body parsing error:', error);
-      res.status(400).json({
-        success: false,
-        message: 'リクエストの処理に失敗しました',
-        error: 'Request parsing failed'
-      });
+      if (!res.headersSent) {
+        res.status(400).json({
+          success: false,
+          message: 'リクエストの処理に失敗しました',
+          error: 'Request parsing failed'
+        });
+      }
     }
   } else {
     await handleRequest(req, res);
@@ -169,7 +108,16 @@ module.exports = async (req, res) => {
 async function handleRequest(req, res) {
   try {
     // Ensure database connection
-    await ensureDatabaseConnection();
+    try {
+      await ensureDatabaseConnection();
+    } catch (dbError) {
+      console.error('❌ Database connection failed:', dbError);
+      return res.status(500).json({
+        success: false,
+        message: 'データベース接続に失敗しました',
+        error: 'Database connection failed',
+      });
+    }
 
     // Verify JWT token
     const userInfo = await verifyJWT(req);
@@ -184,7 +132,7 @@ async function handleRequest(req, res) {
     if (req.method === 'GET') {
       // メモの一覧を取得
       const { category, search } = req.query;
-      let query = { userId: userInfo.userId };
+      let query: any = { userId: userInfo.userId };
       
       if (category && category !== 'all') {
         query.category = category;
@@ -344,10 +292,24 @@ async function handleRequest(req, res) {
       console.error('Error stack:', error.stack);
     }
     
-    res.status(500).json({
-      success: false,
-      message: 'サーバーエラーが発生しました',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    // レスポンスが既に送信されているかチェック
+    if (res.headersSent) {
+      console.error('Response already sent, cannot send error response');
+      return;
+    }
+    
+    try {
+      res.status(500).json({
+        success: false,
+        message: 'サーバーエラーが発生しました',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    } catch (jsonError) {
+      console.error('Failed to send JSON error response:', jsonError);
+      // 最後の手段としてプレーンテキストでエラーを送信
+      if (!res.headersSent) {
+        res.status(500).end('Internal Server Error');
+      }
+    }
   }
 }

@@ -3496,6 +3496,14 @@ function App() {
         },
       });
 
+      // レスポンスのContent-Typeをチェック
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await response.text();
+        console.error("Non-JSON response:", text);
+        throw new Error(`サーバーエラー: ${response.status} - ${text.substring(0, 100)}`);
+      }
+
       const data = await response.json();
 
       if (data.success) {
@@ -3505,9 +3513,13 @@ function App() {
       }
     } catch (error) {
       console.error("Failed to load memos:", error);
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
+      if (error instanceof SyntaxError && error.message.includes("JSON")) {
+        setMessage("サーバーからの応答が無効です。しばらく待ってから再試行してください。");
+      } else {
+        setMessage(
+          `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
+        );
+      }
     } finally {
       setMemosLoading(false);
     }
