@@ -38,6 +38,7 @@
     letter-spacing: -0.03em;
     line-height: 1.1;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
   }
 }
 
@@ -48,43 +49,54 @@
     letter-spacing: -0.025em;
     line-height: 1.1;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 650px;
   }
 }
 
+/* デスクトップ (1024px - 1199px) */
 @media (max-width: 1199px) and (min-width: 1024px) {
   .header-title {
     font-size: 3.5rem;
     letter-spacing: -0.02em;
     line-height: 1.1;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
   }
 }
 
+/* タブレット (768px - 1023px) */
 @media (max-width: 1023px) and (min-width: 768px) {
+  .header-title {
+    font-size: 2.2rem;
+    white-space: nowrap;
+    max-width: 500px;
+  }
+}
+
+/* モバイル (480px - 767px) */
+@media (max-width: 767px) and (min-width: 480px) {
   .header-title {
     font-size: 1.8rem;
     white-space: nowrap;
+    max-width: 400px;
   }
 }
 
-@media (max-width: 767px) and (min-width: 480px) {
-  .header-title {
-    font-size: 1.6rem;
-    white-space: nowrap;
-  }
-}
-
+/* 小画面モバイル (320px - 479px) */
 @media (max-width: 479px) {
   .header-title {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     white-space: nowrap;
+    max-width: 350px;
   }
 }
 
+/* 超小画面 (320px未満) */
 @media (max-width: 319px) {
   .header-title {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     white-space: nowrap;
+    max-width: 300px;
   }
 }
 

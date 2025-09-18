@@ -20,6 +20,7 @@
   .header-left {
     gap: 1.5rem;
     padding-left: 1rem;
+    align-items: flex-start;
   }
 }
 
@@ -28,39 +29,52 @@
   .header-left {
     gap: 1.2rem;
     padding-left: 0.75rem;
+    align-items: flex-start;
   }
 }
 
+/* デスクトップ (1024px - 1199px) */
 @media (max-width: 1199px) and (min-width: 1024px) {
   .header-left {
     gap: 1rem;
+    align-items: flex-start;
   }
 }
 
+/* タブレット (768px - 1023px) */
 @media (max-width: 1023px) and (min-width: 768px) {
   .header-left {
     gap: 0.8rem;
     padding-left: 0.4rem;
+    align-items: flex-start;
   }
 }
 
-@media (max-width: 767px) {
+/* モバイル (480px - 767px) */
+@media (max-width: 767px) and (min-width: 480px) {
   .header-left {
     gap: 0.75rem;
     padding-left: 0;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: center;
   }
 }
 
+/* 小画面モバイル (320px - 479px) */
 @media (max-width: 479px) {
   .header-left {
     gap: 0.5rem;
+    justify-content: flex-start;
+    align-items: center;
   }
 }
 
+/* 超小画面 (320px未満) */
 @media (max-width: 319px) {
   .header-left {
     gap: 0.4rem;
+    justify-content: flex-start;
+    align-items: center;
   }
 }
 

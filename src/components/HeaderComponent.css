@@ -22,6 +22,15 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  /* パフォーマンス最適化 */
+  will-change: transform, box-shadow;
+  contain: layout style paint;
+  
+  /* テキストレンダリング最適化 */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .dashboard-header::before {
@@ -96,41 +105,50 @@
 /* PCサイズでのヘッダーレイアウト最適化 */
 @media (min-width: 1024px) {
   .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    grid-template-areas: 
+      "left title right"
+      "left title right";
+    align-items: center;
+    justify-items: center;
     padding: 2.5rem 3rem;
     position: relative;
     min-height: 140px;
+    gap: 1rem;
   }
   
   /* 左側エリア */
   .dashboard-header .header-left {
-    flex: 0 0 auto;
-    order: 1;
-    align-self: flex-start;
+    grid-area: left;
+    justify-self: start;
+    align-self: start;
+    z-index: 2;
   }
   
   /* 中央エリア */
   .dashboard-header .header-title {
-    flex: 1;
-    order: 2;
-    text-align: center;
+    grid-area: title;
+    justify-self: center;
     align-self: center;
-    margin: 0 2rem;
+    text-align: center;
     position: relative;
     z-index: 2;
+    width: 100%;
+    max-width: 600px;
   }
   
   /* 右側エリア */
   .dashboard-header .user-info {
-    flex: 0 0 auto;
-    order: 3;
-    align-self: flex-start;
+    grid-area: right;
+    justify-self: end;
+    align-self: start;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 0.5rem;
+    z-index: 2;
   }
   
   /* ログアウトボタン */
@@ -164,10 +182,11 @@
   .dashboard-header {
     padding: 3.5rem 4rem;
     min-height: 160px;
+    gap: 1.5rem;
   }
   
   .dashboard-header .header-title {
-    margin: 0 3rem;
+    max-width: 700px;
   }
   
   .dashboard-header .user-info {
@@ -190,10 +209,11 @@
   .dashboard-header {
     padding: 3rem 3rem;
     min-height: 140px;
+    gap: 1.25rem;
   }
   
   .dashboard-header .header-title {
-    margin: 0 2.5rem;
+    max-width: 650px;
   }
   
   .dashboard-header .user-info {
@@ -216,10 +236,11 @@
   .dashboard-header {
     padding: 2.5rem 2rem;
     min-height: 130px;
+    gap: 1rem;
   }
   
   .dashboard-header .header-title {
-    margin: 0 2rem;
+    max-width: 600px;
   }
   
   .dashboard-header .user-info {
@@ -245,32 +266,39 @@
     align-items: center;
     padding: 2rem 1.5rem;
     min-height: 120px;
-    gap: 1rem;
+    gap: 1.25rem;
+    position: relative;
   }
   
   .dashboard-header .header-left {
     order: 1;
+    align-self: flex-start;
   }
   
   .dashboard-header .header-title {
     order: 2;
     text-align: center;
+    width: 100%;
+    max-width: 500px;
   }
   
   .dashboard-header .user-info {
     order: 3;
+    align-self: flex-end;
   }
   
   .dashboard-header .logout-container {
     position: absolute;
     top: 1rem;
     right: 1rem;
+    z-index: 10;
   }
   
   .dashboard-header .hetama-character {
     position: absolute;
     bottom: 0.5rem;
     right: 0.5rem;
+    z-index: 10;
   }
 }
 
@@ -289,27 +317,33 @@
   
   .dashboard-header .header-left {
     order: 1;
+    align-self: flex-start;
   }
   
   .dashboard-header .header-title {
     order: 2;
     text-align: center;
+    width: 100%;
+    max-width: 400px;
   }
   
   .dashboard-header .user-info {
     order: 3;
+    align-self: flex-end;
   }
   
   .dashboard-header .logout-container {
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;
+    z-index: 10;
   }
   
   .dashboard-header .hetama-character {
     position: absolute;
     bottom: 0.25rem;
     right: 0.25rem;
+    z-index: 10;
   }
   
   .version-info {
@@ -345,27 +379,33 @@
   
   .dashboard-header .header-left {
     order: 1;
+    align-self: flex-start;
   }
   
   .dashboard-header .header-title {
     order: 2;
     text-align: center;
+    width: 100%;
+    max-width: 350px;
   }
   
   .dashboard-header .user-info {
     order: 3;
+    align-self: flex-end;
   }
   
   .dashboard-header .logout-container {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
+    z-index: 10;
   }
   
   .dashboard-header .hetama-character {
     position: absolute;
     bottom: 0.25rem;
     right: 0.25rem;
+    z-index: 10;
   }
   
   .version-info {
@@ -392,6 +432,10 @@
     gap: 0.75rem;
     border-radius: 15px 15px 0 0;
   }
+  
+  .dashboard-header .header-title {
+    max-width: 300px;
+  }
 }
 
 /* クロスブラウザ対応 */
@@ -402,14 +446,25 @@
   
   /* Firefox対応 */
   -moz-box-shadow: 0 8px 25px rgba(255, 154, 158, 0.4);
+  -moz-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   
   /* IE対応 */
   -ms-flex-direction: row;
   -ms-align-items: center;
   -ms-justify-content: space-between;
+  -ms-grid-template-columns: auto 1fr auto;
+  -ms-grid-template-rows: auto auto;
+  
+  /* Edge対応 */
+  -ms-grid-columns: auto 1fr auto;
+  -ms-grid-rows: auto auto;
   
   /* フォールバック */
   background-color: #ff9a9e;
+  
+  /* パフォーマンス最適化 */
+  will-change: transform, box-shadow;
+  contain: layout style paint;
 }
 
 /* フォント設定の強制適用 */
@@ -427,16 +482,35 @@
   outline-offset: 2px;
 }
 
+/* キーボードナビゲーション対応 */
+.dashboard-header *:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
+}
+
 /* 高コントラストモード対応 */
 @media (prefers-contrast: high) {
   .dashboard-header {
     background: #ffffff !important;
     color: #000000 !important;
-    border: 2px solid #000000;
+    border: 3px solid #000000;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
   }
   
   .dashboard-header::before {
     display: none;
+  }
+  
+  .dashboard-header .logout-container button {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #000000 !important;
+  }
+  
+  .dashboard-header .version-display {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #000000 !important;
   }
 }
 
@@ -449,6 +523,11 @@
   .dashboard-header::before {
     animation: none;
   }
+  
+  .dashboard-header * {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 /* ダークモード対応 */
@@ -456,5 +535,64 @@
   .dashboard-header {
     background: var(--primary-color, linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)) !important;
     color: var(--text-color, #ffffff) !important;
+    box-shadow: 0 8px 25px rgba(26, 26, 46, 0.4);
+  }
+  
+  .dashboard-header .version-display {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  }
+}
+
+/* 印刷対応 */
+@media print {
+  .dashboard-header {
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: 1px solid #000000 !important;
+  }
+  
+  .dashboard-header .logout-container,
+  .dashboard-header .hetama-character {
+    display: none !important;
+  }
+}
+
+/* OS別最適化 */
+
+/* Windows */
+@media screen and (-ms-high-contrast: active) {
+  .dashboard-header {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+  }
+}
+
+/* macOS */
+@media screen and (-webkit-min-device-pixel-ratio: 2) {
+  .dashboard-header {
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+  }
+}
+
+/* iOS Safari */
+@supports (-webkit-touch-callout: none) {
+  .dashboard-header {
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}
+
+/* Android Chrome */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+  .dashboard-header {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
   }
 }

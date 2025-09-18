@@ -33,6 +33,7 @@
   .user-info {
     gap: 1.5rem;
     align-items: flex-end;
+    flex-direction: column;
   }
   
   .user-info span {
@@ -47,6 +48,7 @@
   .user-info {
     gap: 1.2rem;
     align-items: flex-end;
+    flex-direction: column;
   }
   
   .user-info span {
@@ -56,10 +58,12 @@
   }
 }
 
+/* デスクトップ (1024px - 1199px) */
 @media (max-width: 1199px) and (min-width: 1024px) {
   .user-info {
     gap: 1rem;
     align-items: flex-end;
+    flex-direction: column;
   }
   
   .user-info span {
@@ -69,9 +73,13 @@
   }
 }
 
+/* タブレット (768px - 1023px) */
 @media (max-width: 1023px) and (min-width: 768px) {
   .user-info {
     gap: 0.8rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
   }
   
   .user-info span {
@@ -79,6 +87,7 @@
   }
 }
 
+/* モバイル (480px - 767px) */
 @media (max-width: 767px) and (min-width: 480px) {
   .user-info {
     flex-direction: row;
@@ -100,9 +109,14 @@
   }
 }
 
+/* 小画面モバイル (320px - 479px) */
 @media (max-width: 479px) {
   .user-info {
     gap: 0.75rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
   }
   
   .user-info span {
@@ -111,9 +125,14 @@
   }
 }
 
+/* 超小画面 (320px未満) */
 @media (max-width: 319px) {
   .user-info {
     gap: 0.5rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
   }
   
   .user-info span {
