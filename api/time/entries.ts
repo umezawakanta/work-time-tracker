@@ -1,8 +1,8 @@
 const { NextApiRequest, NextApiResponse } = require('next');
-const { ensureDatabaseConnection, mongoose } = require('../utils/database');
+const { ensureDatabaseConnection: initDB, mongoose: mongooseDB } = require('../utils/database');
 
 // TimeEntry スキーマを定義
-const TimeEntrySchema = new mongoose.Schema({
+const TimeEntrySchema = new mongooseDB.Schema({
   userId: {
     type: String,
     required: true,
@@ -50,7 +50,7 @@ const TimeEntrySchema = new mongoose.Schema({
   timestamps: true
 });
 
-const TimeEntry = mongoose.models.TimeEntry || mongoose.model('TimeEntry', TimeEntrySchema);
+const TimeEntry = mongooseDB.models.TimeEntry || mongooseDB.model('TimeEntry', TimeEntrySchema);
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -64,7 +64,7 @@ module.exports = async function handler(req, res) {
     });
     
     console.log('Attempting to connect to database...');
-    await ensureDatabaseConnection();
+    await initDB();
     console.log('Database connected successfully');
     
     const { userId } = req.query;

@@ -2,7 +2,7 @@ const mongooseInstance = require('mongoose');
 const jsonwebtoken = require('jsonwebtoken');
 
 // User schema
-const UserSchema = new mongooseInstance.Schema(
+const UserSchemaDef = new mongooseInstance.Schema(
   {
     email: { type: String, required: true, unique: true, index: true },
     displayName: { type: String, required: true },
@@ -25,12 +25,12 @@ const UserSchema = new mongooseInstance.Schema(
 );
 
 // Virtual for user ID
-UserSchema.virtual("id").get(function () {
+UserSchemaDef.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
 // Ensure virtual fields are serialized
-UserSchema.set("toJSON", {
+UserSchemaDef.set("toJSON", {
   virtuals: true,
   transform: function (doc, ret) {
     const { _id, __v, password, ...cleanRet } = ret;
@@ -38,10 +38,10 @@ UserSchema.set("toJSON", {
   },
 });
 
-const User = mongooseInstance.models.User || mongooseInstance.model("User", UserSchema);
+const UserModel = mongooseInstance.models.User || mongooseInstance.model("User", UserSchemaDef);
 
 // Database connection utility
-const ensureDatabaseConnection = async () => {
+const initDatabaseConnection = async () => {
   const isConnected = mongooseInstance.connection.readyState === 1;
   
   if (isConnected) {
@@ -51,7 +51,7 @@ const ensureDatabaseConnection = async () => {
   console.warn('[database] Database not connected, attempting to connect...');
   
   try {
-    const MONGODB_URI = process.env.MONGODB_URI;
+    const { MONGODB_URI } = process.env;
     
     if (!MONGODB_URI) {
       throw new Error('MONGODB_URI environment variable is not set');
@@ -79,7 +79,7 @@ const ensureDatabaseConnection = async () => {
 };
 
 // JWT verification utility
-const verifyJWT = async (req) => {
+const verifyJWTToken = async (req) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return null;
@@ -89,8 +89,7 @@ const verifyJWT = async (req) => {
   
   try {
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
-    const decoded = jsonwebtoken.verify(token, jwtSecret);
-    return decoded;
+    return jsonwebtoken.verify(token, jwtSecret);
   } catch (error) {
     console.error('JWT verification failed:', error);
     return null;
@@ -111,10 +110,10 @@ const handleError = (res, error, message = 'Internal server error') => {
 };
 
 module.exports = {
-  ensureDatabaseConnection,
-  verifyJWT,
+  ensureDatabaseConnection: initDatabaseConnection,
+  verifyJWT: verifyJWTToken,
   handleError,
   mongoose: mongooseInstance,
   jwt: jsonwebtoken,
-  User
+  User: UserModel
 };
