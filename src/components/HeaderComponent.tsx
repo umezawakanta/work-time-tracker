@@ -6,6 +6,7 @@ import DogCharacterComponent from "./DogCharacterComponent";
 import HeaderTitleComponent from "./HeaderTitleComponent";
 import LogoutButtonComponent from "./LogoutButtonComponent";
 import UserInfoComponent from "./UserInfoComponent";
+import UserGreetingComponent from "./UserGreetingComponent";
 import type { User, Character } from "../types";
 
 interface HeaderComponentProps {
@@ -52,6 +53,10 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       {/* 右側：最小限の要素のみ */}
       <div className="header-right">
         <div className="header-navigation">
+          <UserGreetingComponent
+            user={user}
+            currentCharacter={currentCharacter}
+          />
           <UserInfoComponent
             user={user}
             currentCharacter={currentCharacter}
