@@ -243,3 +243,47 @@ export interface CookingRecipe {
 export interface CookingRecipes {
   [key: string]: CookingRecipe;
 }
+
+// じぶん図鑑関連の型定義
+export interface EncyclopediaEntry {
+  id: string;
+  title: string;
+  category: EncyclopediaCategory;
+  description: string;
+  content: string;
+  tags: string[];
+  images?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  isPublic: boolean;
+  userId: string;
+  views: number;
+  likes: number;
+}
+
+export interface EncyclopediaCategory {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  order: number;
+}
+
+export interface EncyclopediaSection {
+  id: string;
+  title: string;
+  content: string;
+  order: number;
+  entryId: string;
+}
+
+export interface EncyclopediaComment {
+  id: string;
+  content: string;
+  author: string;
+  authorId: string;
+  entryId: string;
+  createdAt: Date;
+  isApproved: boolean;
+}
