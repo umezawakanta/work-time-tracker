@@ -1204,17 +1204,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                 <button 
                   className="add-mood-button"
                   onClick={() => {
-                    const newMoodLog = {
-                      date: new Date().toISOString().split('T')[0],
-                      mood: 3,
-                      energy: 3,
-                      stress: 3,
-                      activities: [],
-                      notes: '',
-                      weather: 'sunny',
-                      sleep: 8
-                    };
-                    addMoodLog(newMoodLog);
+                    addMoodLog();
                   }}
                 >
                   + 今日の気分を記録
