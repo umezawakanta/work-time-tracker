@@ -12,7 +12,7 @@ const ensureDatabaseConnection = async () => {
   }
   console.warn('[admin/user-delete] Database not connected, attempting to connect...');
   try {
-    const MONGODB_URI = process.env.MONGODB_URI;
+    const { MONGODB_URI } = process.env;
     if (!MONGODB_URI) {
       throw new Error("MONGODB_URI environment variable is required but not set.");
     }
@@ -91,7 +91,7 @@ const verifyJWT = (token) => {
 
 module.exports = async function handler(req, res) {
   // CORS設定
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
   const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
   const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
