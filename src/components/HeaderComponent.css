@@ -90,43 +90,50 @@
 /* PCサイズでのヘッダーレイアウト最適化 */
 @media (min-width: 1024px) {
   .dashboard-header {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas: 
+      "left title right"
+      "left title right";
     align-items: center;
+    justify-items: center;
     padding: 2.5rem 3rem;
     position: relative;
+    gap: 1rem;
   }
   
   .dashboard-header .header-left {
-    flex: 0 0 auto;
-    order: 1;
+    grid-area: left;
+    justify-self: start;
+    align-self: start;
   }
   
   .dashboard-header .header-title {
-    flex: 1;
+    grid-area: title;
+    justify-self: center;
+    align-self: center;
     text-align: center;
-    order: 2;
-    margin: 0 2rem;
   }
   
   .dashboard-header .user-info {
-    flex: 0 0 auto;
-    order: 3;
-    justify-content: flex-end;
+    grid-area: right;
+    justify-self: end;
+    align-self: start;
   }
   
   .dashboard-header .logout-container {
     position: absolute;
     top: 1.5rem;
     right: 1.5rem;
-    order: 4;
+    z-index: 10;
   }
   
   .dashboard-header .hetama-character {
     position: absolute;
     bottom: 1rem;
     right: 1rem;
-    order: 5;
+    z-index: 10;
   }
 }
 
@@ -144,10 +151,8 @@
   .dashboard-header {
     padding: 3.5rem 4rem;
     min-height: 160px;
-  }
-  
-  .dashboard-header .header-title {
-    margin: 0 3rem;
+    grid-template-columns: 1fr 3fr 1fr;
+    gap: 2rem;
   }
   
   .dashboard-header .logout-container {
@@ -166,10 +171,8 @@
   .dashboard-header {
     padding: 3rem 3rem;
     min-height: 140px;
-  }
-  
-  .dashboard-header .header-title {
-    margin: 0 2.5rem;
+    grid-template-columns: 1fr 2.5fr 1fr;
+    gap: 1.5rem;
   }
   
   .dashboard-header .logout-container {
@@ -188,10 +191,8 @@
   .dashboard-header {
     padding: 2.5rem 2rem;
     min-height: 130px;
-  }
-  
-  .dashboard-header .header-title {
-    margin: 0 2rem;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 1rem;
   }
   
   .dashboard-header .logout-container {
@@ -208,26 +209,76 @@
 /* タブレット (768px - 1023px) */
 @media (max-width: 1023px) and (min-width: 768px) {
   .dashboard-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 2rem 1.5rem;
     min-height: 120px;
-    flex-wrap: wrap;
     gap: 1rem;
   }
   
-  .dashboard-header > * {
-    flex-shrink: 0;
+  .dashboard-header .header-left {
+    order: 1;
+  }
+  
+  .dashboard-header .header-title {
+    order: 2;
+    text-align: center;
+  }
+  
+  .dashboard-header .user-info {
+    order: 3;
+  }
+  
+  .dashboard-header .logout-container {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+  
+  .dashboard-header .hetama-character {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
   }
 }
 
 /* モバイル (480px - 767px) */
 @media (max-width: 767px) and (min-width: 480px) {
   .dashboard-header {
+    display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1.5rem;
     text-align: center;
     padding: 2rem 1rem;
     min-height: auto;
     position: relative;
+  }
+  
+  .dashboard-header .header-left {
+    order: 1;
+  }
+  
+  .dashboard-header .header-title {
+    order: 2;
+    text-align: center;
+  }
+  
+  .dashboard-header .user-info {
+    order: 3;
+  }
+  
+  .dashboard-header .logout-container {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+  
+  .dashboard-header .hetama-character {
+    position: absolute;
+    bottom: 0.25rem;
+    right: 0.25rem;
   }
   
   .version-info {
@@ -250,13 +301,40 @@
 /* 小画面モバイル (320px - 479px) */
 @media (max-width: 479px) {
   .dashboard-header {
+    display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1rem;
     text-align: center;
     padding: 1.5rem 0.75rem;
     min-height: auto;
     position: relative;
     border-radius: 20px 20px 0 0;
+  }
+  
+  .dashboard-header .header-left {
+    order: 1;
+  }
+  
+  .dashboard-header .header-title {
+    order: 2;
+    text-align: center;
+  }
+  
+  .dashboard-header .user-info {
+    order: 3;
+  }
+  
+  .dashboard-header .logout-container {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  .dashboard-header .hetama-character {
+    position: absolute;
+    bottom: 0.25rem;
+    right: 0.25rem;
   }
   
   .version-info {
