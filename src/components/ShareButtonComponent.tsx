@@ -2,66 +2,71 @@ import React, { useState } from 'react';
 import './ShareButtonComponent.css';
 
 interface ShareButtonComponentProps {
-  url?: string;
-  title?: string;
-  description?: string;
+  className?: string;
 }
 
-const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({
-  url = window.location.href,
-  title = 'Work Time Tracker - 作業時間管理アプリ',
-  description = '可愛いキャラクターと一緒に作業時間を管理できるアプリです。タイマー機能、記録管理、メモ機能などが充実！'
-}) => {
+const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const siteUrl = window.location.origin;
+  const siteTitle = 'Work Time Tracker - 可愛いキャラクターと一緒に作業時間を管理';
+  const siteDescription = '可愛いキャラクターと一緒に作業時間を管理できるWebアプリです。タイマー機能、メモ機能、作業記録など、効率的な作業管理をサポートします。';
+
   const shareData = {
-    title,
-    text: description,
-    url
+    title: siteTitle,
+    text: siteDescription,
+    url: siteUrl,
   };
 
-  const handleNativeShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (error) {
-        console.log('シェアがキャンセルされました');
-      }
-    } else {
-      // フォールバック: URLをクリップボードにコピー
-      navigator.clipboard.writeText(url);
-      alert('URLをクリップボードにコピーしました！');
+  const handleShare = async (platform: string) => {
+    const encodedUrl = encodeURIComponent(siteUrl);
+    const encodedTitle = encodeURIComponent(siteTitle);
+    const encodedDescription = encodeURIComponent(siteDescription);
+
+    let shareUrl = '';
+
+    switch (platform) {
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+        break;
+      case 'line':
+        shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodedUrl}`;
+        break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+        break;
+      case 'copy':
+        try {
+          await navigator.clipboard.writeText(siteUrl);
+          alert('URLをコピーしました！');
+          return;
+        } catch (err) {
+          console.error('コピーに失敗しました:', err);
+          return;
+        }
+      case 'native':
+        try {
+          if (navigator.share) {
+            await navigator.share(shareData);
+            return;
+          }
+        } catch (err) {
+          console.error('ネイティブシェアに失敗しました:', err);
+        }
+        break;
+    }
+
+    if (shareUrl) {
+      window.open(shareUrl, '_blank', 'width=600,height=400');
     }
   };
 
-  const shareToTwitter = () => {
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
-    window.open(twitterUrl, '_blank', 'width=600,height=400');
-  };
-
-  const shareToFacebook = () => {
-    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-    window.open(facebookUrl, '_blank', 'width=600,height=400');
-  };
-
-  const shareToLine = () => {
-    const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`;
-    window.open(lineUrl, '_blank', 'width=600,height=400');
-  };
-
-  const shareToLinkedIn = () => {
-    const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-    window.open(linkedinUrl, '_blank', 'width=600,height=400');
-  };
-
-  const copyUrl = () => {
-    navigator.clipboard.writeText(url);
-    alert('URLをクリップボードにコピーしました！');
-  };
-
   return (
-    <div className="share-container">
-      <button 
+    <div className={`share-button-container ${className}`}>
+      <button
         className="share-button"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="シェア"
@@ -72,76 +77,72 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({
 
       {isOpen && (
         <div className="share-dropdown">
-          <div className="share-header">
-            <h3>シェア</h3>
-            <button 
-              className="close-button"
-              onClick={() => setIsOpen(false)}
-              aria-label="閉じる"
-            >
-              ×
-            </button>
-          </div>
-          
-          <div className="share-content">
-            <p className="share-description">
-              {description}
-            </p>
-            
-            <div className="share-buttons">
-              <button 
-                className="share-option twitter"
-                onClick={shareToTwitter}
-                title="Twitterでシェア"
+          <div className="share-dropdown-content">
+            <div className="share-header">
+              <h3>シェア</h3>
+              <button
+                className="close-button"
+                onClick={() => setIsOpen(false)}
+                aria-label="閉じる"
               >
-                <span className="social-icon">🐦</span>
+                ×
+              </button>
+            </div>
+            
+            <div className="share-description">
+              <p>{siteDescription}</p>
+            </div>
+
+            <div className="share-buttons">
+              <button
+                className="share-option twitter"
+                onClick={() => handleShare('twitter')}
+              >
+                <span className="share-option-icon">🐦</span>
                 <span>Twitter</span>
               </button>
-              
-              <button 
+
+              <button
                 className="share-option facebook"
-                onClick={shareToFacebook}
-                title="Facebookでシェア"
+                onClick={() => handleShare('facebook')}
               >
-                <span className="social-icon">📘</span>
+                <span className="share-option-icon">📘</span>
                 <span>Facebook</span>
               </button>
-              
-              <button 
+
+              <button
                 className="share-option line"
-                onClick={shareToLine}
-                title="LINEでシェア"
+                onClick={() => handleShare('line')}
               >
-                <span className="social-icon">💬</span>
+                <span className="share-option-icon">💬</span>
                 <span>LINE</span>
               </button>
-              
-              <button 
+
+              <button
                 className="share-option linkedin"
-                onClick={shareToLinkedIn}
-                title="LinkedInでシェア"
+                onClick={() => handleShare('linkedin')}
               >
-                <span className="social-icon">💼</span>
+                <span className="share-option-icon">💼</span>
                 <span>LinkedIn</span>
               </button>
-              
-              <button 
-                className="share-option native"
-                onClick={handleNativeShare}
-                title="ネイティブシェア"
-              >
-                <span className="social-icon">📱</span>
-                <span>シェア</span>
-              </button>
-              
-              <button 
+
+              <button
                 className="share-option copy"
-                onClick={copyUrl}
-                title="URLをコピー"
+                onClick={() => handleShare('copy')}
               >
-                <span className="social-icon">📋</span>
+                <span className="share-option-icon">📋</span>
                 <span>URLコピー</span>
               </button>
+
+              {navigator.share && (
+                <button
+                  className="share-option native"
+                  onClick={() => handleShare('native')}
+                >
+                  <span className="share-option-icon">📱</span>
+                  <span>その他</span>
+                </button>
+              )}
             </div>
           </div>
         </div>

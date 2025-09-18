@@ -1,22 +1,22 @@
 /* ShareButtonComponent.css - シェアボタンデザイン */
 
-.share-container {
+.share-button-container {
   position: relative;
   display: inline-block;
 }
 
 .share-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 25px;
-  padding: 0.5rem 1rem;
+  cursor: pointer;
   font-size: 0.9rem;
   font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
@@ -38,48 +38,42 @@
   position: absolute;
   top: 100%;
   right: 0;
+  margin-top: 0.5rem;
+  z-index: 1000;
+  min-width: 300px;
+}
+
+.share-dropdown-content {
   background: white;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  min-width: 300px;
-  margin-top: 0.5rem;
   overflow: hidden;
-  animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  border: 1px solid #e0e0e0;
 }
 
 .share-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .share-header h3 {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 700;
+  color: #333;
+  font-family: var(--app-font-family, inherit);
 }
 
 .close-button {
   background: none;
   border: none;
-  color: white;
   font-size: 1.5rem;
   cursor: pointer;
+  color: #666;
   padding: 0;
   width: 30px;
   height: 30px;
@@ -87,86 +81,88 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .close-button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.share-content {
-  padding: 1rem;
+  background: #f0f0f0;
+  color: #333;
 }
 
 .share-description {
-  margin: 0 0 1rem 0;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.share-description p {
+  margin: 0;
   font-size: 0.9rem;
-  color: #666;
   line-height: 1.5;
-  background: #f8f9fa;
-  padding: 0.8rem;
-  border-radius: 8px;
-  border-left: 4px solid #667eea;
+  color: #666;
+  font-family: var(--app-font-family, inherit);
 }
 
 .share-buttons {
+  padding: 1rem 1.5rem;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
+  gap: 0.8rem;
 }
 
 .share-option {
-  background: white;
-  border: 2px solid #e9ecef;
-  border-radius: 10px;
-  padding: 0.8rem;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  font-weight: 600;
+  gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
   transition: all 0.3s ease;
-  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  font-family: var(--app-font-family, inherit);
 }
 
 .share-option:hover {
-  transform: translateY(-2px);
+  background: #e9ecef;
+  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+.share-option-icon {
+  font-size: 1.2rem;
+}
+
 .share-option.twitter:hover {
-  border-color: #1da1f2;
-  background: #f8fcff;
+  background: #e3f2fd;
+  border-color: #2196f3;
 }
 
 .share-option.facebook:hover {
+  background: #e8f4fd;
   border-color: #1877f2;
-  background: #f8faff;
 }
 
 .share-option.line:hover {
+  background: #e8f5e8;
   border-color: #00c300;
-  background: #f8fff8;
 }
 
 .share-option.linkedin:hover {
+  background: #e3f2fd;
   border-color: #0077b5;
-  background: #f8fcff;
-}
-
-.share-option.native:hover {
-  border-color: #667eea;
-  background: #f8f9ff;
 }
 
 .share-option.copy:hover {
-  border-color: #6c757d;
-  background: #f8f9fa;
+  background: #fff3e0;
+  border-color: #ff9800;
 }
 
-.social-icon {
-  font-size: 1.2rem;
+.share-option.native:hover {
+  background: #f3e5f5;
+  border-color: #9c27b0;
 }
 
 /* レスポンシブデザイン */
@@ -178,11 +174,16 @@
   
   .share-buttons {
     grid-template-columns: 1fr;
+    gap: 0.6rem;
   }
   
   .share-option {
-    padding: 0.6rem;
+    padding: 0.6rem 0.8rem;
     font-size: 0.8rem;
+  }
+  
+  .share-option-icon {
+    font-size: 1rem;
   }
 }
 
@@ -192,12 +193,15 @@
     right: -80px;
   }
   
-  .share-button {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
+  .share-header {
+    padding: 0.8rem 1rem;
   }
   
-  .share-text {
-    display: none;
+  .share-description {
+    padding: 0.8rem 1rem;
+  }
+  
+  .share-buttons {
+    padding: 0.8rem 1rem;
   }
 }
