@@ -17,6 +17,7 @@
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   white-space: nowrap;
   max-width: 200px;
