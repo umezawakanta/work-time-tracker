@@ -7,10 +7,35 @@ interface ShareButtonComponentProps {
 
 const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [randomElements, setRandomElements] = useState(() => generateRandomElements());
 
   const siteUrl = window.location.origin;
-  const siteTitle = 'Work Time Tracker - 可愛いキャラクターと一緒に作業時間を管理';
-  const siteDescription = '可愛いキャラクターと一緒に作業時間を管理できるWebアプリです。タイマー機能、メモ機能、作業記録など、効率的な作業管理をサポートします。';
+  
+  // ランダムな要素を生成する関数
+  function generateRandomElements() {
+    const adjectives = ['可愛い', '素敵な', '楽しい', '便利な', '効率的な', '魅力的な', '実用的な', '革新的な', '優しい', '親しみやすい', '頼もしい', '面白い', '素晴らしい', '驚きの', '特別な', 'ユニークな'];
+    const characters = ['キャラクター', '仲間', 'パートナー', 'お友達', 'アシスタント', 'サポーター', '相棒', 'チームメイト', 'ガイド', 'コーチ', 'メンター', 'バディ'];
+    const activities = ['作業時間管理', '時間トラッキング', 'プロジェクト管理', 'タスク管理', '時間記録', '作業効率化', '生産性向上', '時間活用', 'スケジュール管理', '進捗管理', '目標達成', '成果向上'];
+    const features = ['タイマー機能', 'メモ機能', '作業記録', '分析機能', 'レポート機能', 'カレンダー機能', '統計機能', '目標設定', '通知機能', 'データ可視化', 'エクスポート機能', 'カスタマイズ機能', '同期機能', 'バックアップ機能'];
+    const benefits = ['効率的な作業管理', '時間の有効活用', '生産性の向上', '目標達成のサポート', '進捗の可視化', '習慣の定着', 'モチベーション維持', '成果の分析'];
+    
+    const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const randomCharacter = characters[Math.floor(Math.random() * characters.length)];
+    const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+    const randomFeatures = features.sort(() => 0.5 - Math.random()).slice(0, 3);
+    const randomBenefit = benefits[Math.floor(Math.random() * benefits.length)];
+    
+    return {
+      adjective: randomAdjective,
+      character: randomCharacter,
+      activity: randomActivity,
+      features: randomFeatures,
+      benefit: randomBenefit
+    };
+  }
+
+  const siteTitle = `Work Time Tracker - ${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}`;
+  const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！`;
 
   const shareData = {
     title: siteTitle,
@@ -19,6 +44,9 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   };
 
   const handleShare = async (platform: string) => {
+    // シェア時に新しいランダム要素を生成
+    setRandomElements(generateRandomElements());
+    
     const encodedUrl = encodeURIComponent(siteUrl);
     const encodedTitle = encodeURIComponent(siteTitle);
     const encodedDescription = encodeURIComponent(siteDescription);
@@ -68,7 +96,10 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     <div className={`share-button-container ${className}`}>
       <button
         className="share-button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setRandomElements(generateRandomElements());
+          setIsOpen(!isOpen);
+        }}
         aria-label="シェア"
       >
         <span className="share-icon">📤</span>
