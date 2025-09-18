@@ -481,7 +481,9 @@ function App() {
 
   // 習慣トラッカー管理関数
   const addHabit = () => {
-    if (!newHabit.trim()) return;
+    if (!newHabit.trim()) {
+      return;
+    }
 
     const habitId = Date.now().toString();
     const newHabitObj: Habit = {
