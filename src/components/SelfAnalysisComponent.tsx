@@ -1090,23 +1090,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                 <button 
                   className="add-habit-button"
                   onClick={() => {
-                    const newHabit = {
-                      name: '新しい習慣',
-                      description: '',
-                      frequency: 'daily' as const,
-                      target: 1,
-                      unit: '回',
-                      color: '#3b82f6',
-                      isActive: true,
-                      createdAt: new Date(),
-                      completionDates: [],
-                      category: 'その他',
-                      targetDays: 30,
-                      completedDays: 0,
-                      streak: 0,
-                      lastCompleted: null
-                    };
-                    addHabit(newHabit);
+                    addHabit();
                   }}
                 >
                   + 新しい習慣
