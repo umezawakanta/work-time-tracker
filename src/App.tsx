@@ -4763,6 +4763,7 @@ function App() {
                                       role: e.target.value,
                                     })
                                   }
+                                  aria-label="ユーザーの役割を選択"
                                 >
                                   <option value="user">ユーザー</option>
                                   <option value="admin">管理者</option>
@@ -4778,6 +4779,7 @@ function App() {
                                       status: e.target.value,
                                     })
                                   }
+                                  aria-label="ユーザーの状態を選択"
                                 >
                                   <option value="active">アクティブ</option>
                                   <option value="inactive">非アクティブ</option>
