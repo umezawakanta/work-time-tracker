@@ -5659,6 +5659,8 @@ function App() {
                                                     e.target.value
                                                   )
                                                 }
+                                                placeholder="返信を編集..."
+                                                aria-label="返信を編集"
                                                 className="reply-edit-textarea"
                                                 rows={3}
                                               />
