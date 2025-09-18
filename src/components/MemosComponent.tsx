@@ -15,8 +15,8 @@ interface MemosComponentProps {
   setMemoContent: (content: string) => void;
   memoCategory: string;
   setMemoCategory: (category: string) => void;
-  memoIsPrivate: boolean;
-  setMemoIsPrivate: (isPrivate: boolean) => void;
+  memoIsPublic: boolean;
+  setMemoIsPublic: (isPublic: boolean) => void;
   selectedMemoCategory: string;
   setSelectedMemoCategory: (category: string) => void;
   customGenres: string[];
@@ -54,8 +54,8 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   setMemoContent,
   memoCategory,
   setMemoCategory,
-  memoIsPrivate,
-  setMemoIsPrivate,
+  memoIsPublic,
+  setMemoIsPublic,
   selectedMemoCategory,
   setSelectedMemoCategory,
   customGenres,
@@ -102,7 +102,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     setMemoTitle("");
     setMemoContent("");
     setMemoCategory("");
-    setMemoIsPrivate(true);
+    setMemoIsPublic(false);
     setEditingMemo(null);
     setShowMemoForm(false);
   };
@@ -292,10 +292,10 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                 <label>
                   <input
                     type="checkbox"
-                    checked={memoIsPrivate}
-                    onChange={(e) => setMemoIsPrivate(e.target.checked)}
+                    checked={memoIsPublic}
+                    onChange={(e) => setMemoIsPublic(e.target.checked)}
                   />
-                  プライベートメモ（非公開）
+                  公開メモ
                 </label>
               </div>
 
@@ -349,7 +349,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                         <span className="memo-date">
                           {formatDateTime(memo.updatedAt)}
                         </span>
-                        {memo.isPrivate && (
+                        {!memo.isPublic && (
                           <span className="private-badge">🔒 プライベート</span>
                         )}
                       </div>

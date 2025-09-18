@@ -5334,8 +5334,8 @@ function App() {
                     setMemoContent={setMemoContent}
                     memoCategory={memoCategory}
                     setMemoCategory={setMemoCategory}
-                    memoIsPrivate={memoIsPrivate}
-                    setMemoIsPrivate={setMemoIsPrivate}
+                    memoIsPublic={memoIsPublic}
+                    setMemoIsPublic={setMemoIsPublic}
                     selectedMemoCategory={selectedMemoCategory}
                     setSelectedMemoCategory={setSelectedMemoCategory}
                     customGenres={customGenres}
