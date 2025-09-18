@@ -5103,6 +5103,7 @@ function App() {
                                 handleMemoCategoryChange(e.target.value)
                               }
                               className="category-select"
+                              aria-label="メモカテゴリを選択"
                             >
                               <option value="all">すべてのカテゴリ</option>
                               {getMemoCategories().map((category) => (
