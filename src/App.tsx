@@ -5053,6 +5053,7 @@ function App() {
                     setCustomGenres={setCustomGenres}
                     loadMemos={loadMemos}
                     closeOtherFeatures={closeOtherFeatures}
+                    handleDeleteMemo={handleDeleteMemo}
                     handleReplySubmit={handleReplySubmit}
                     handleReplyCancel={handleReplyCancel}
                     handleEditReply={handleEditReply}

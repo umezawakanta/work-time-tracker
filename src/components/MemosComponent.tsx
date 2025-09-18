@@ -11,6 +11,7 @@ interface MemosComponentProps {
   setCustomGenres: (genres: string[]) => void;
   loadMemos: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
+  handleDeleteMemo: (memoId: string, memoTitle: string) => void;
   handleReplySubmit: (memoId: string) => void;
   handleReplyCancel: () => void;
   handleEditReply: (replyId: string, content: string) => void;
@@ -28,6 +29,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   setCustomGenres,
   loadMemos,
   closeOtherFeatures,
+  handleDeleteMemo,
   handleReplySubmit,
   handleReplyCancel,
   handleEditReply,
@@ -506,8 +508,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                       </button>
                       <button
                         onClick={() => {
-                          // メモ削除機能（実装予定）
-                          console.log('メモ削除:', memo.id, getMemoTitle(memo));
+                          handleDeleteMemo(memo.id, getMemoTitle(memo));
                         }}
                         className="delete-button"
                         title="削除"
