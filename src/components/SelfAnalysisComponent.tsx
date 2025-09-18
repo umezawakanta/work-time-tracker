@@ -673,7 +673,12 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                       color: '#3b82f6',
                       isActive: true,
                       createdAt: new Date(),
-                      completionDates: []
+                      completionDates: [],
+                      category: 'その他',
+                      targetDays: 30,
+                      completedDays: 0,
+                      streak: 0,
+                      lastCompleted: null
                     };
                     addHabit(newHabit);
                   }}
