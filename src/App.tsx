@@ -86,7 +86,7 @@ function App() {
   const [customTimerOriginalTime, setCustomTimerOriginalTime] = useState(0); // 元の時間を保存
   
   // タイマーセクションの表示状態
-  const [showTimers, setShowTimers] = useState(true);
+  const [showTimers, setShowTimers] = useState(false);
   
   // タイマープリセットの状態
   const [timerPresets, setTimerPresets] = useState([
@@ -177,12 +177,12 @@ function App() {
   const [showCharacterHome, setShowCharacterHome] = useState(false);
 
   // セクション表示状態（既存の状態変数を使用）
-  const [showTimeTracking, setShowTimeTracking] = useState(true);
-  const [showProjects, setShowProjects] = useState(true);
-  const [showCustomTimer, setShowCustomTimer] = useState(true);
-  const [showCookingTimer, setShowCookingTimer] = useState(true);
-  const [showPresetTimers, setShowPresetTimers] = useState(true);
-  const [showTimerStats, setShowTimerStats] = useState(true);
+  const [showTimeTracking, setShowTimeTracking] = useState(false);
+  const [showProjects, setShowProjects] = useState(false);
+  const [showCustomTimer, setShowCustomTimer] = useState(false);
+  const [showCookingTimer, setShowCookingTimer] = useState(false);
+  const [showPresetTimers, setShowPresetTimers] = useState(false);
+  const [showTimerStats, setShowTimerStats] = useState(false);
   const [showTimerHistory, setShowTimerHistory] = useState(false);
   const [memoContent, setMemoContent] = useState("");
   const [memoCategory, setMemoCategory] = useState("");
