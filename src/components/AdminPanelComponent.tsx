@@ -283,7 +283,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                         {user.email?.charAt(0).toUpperCase() || '?'}
                       </div>
                       <div className="user-details">
-                        <h3 className="user-name">{user.name || '名前なし'}</h3>
+                        <h3 className="user-name">{user.email || 'メールなし'}</h3>
                         <p className="user-email">{user.email}</p>
                         <p className="user-created">
                           登録日: {formatDateTime(user.createdAt)}

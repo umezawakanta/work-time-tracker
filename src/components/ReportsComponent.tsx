@@ -180,6 +180,7 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
                 className="year-select"
+                aria-label="年を選択"
               >
                 {years.map(year => (
                   <option key={year} value={year}>{year}年</option>

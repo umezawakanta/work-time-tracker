@@ -306,7 +306,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    setGoals((prev) => [...prev, newGoal]);
+    setGoals([...goals, newGoal]);
     resetGoalForm();
   };
 

@@ -602,8 +602,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 <div className="form-group">
                   <label>課題</label>
                   <textarea
-                    value={diaryChallenges}
-                    onChange={(e) => setDiaryChallenges(e.target.value)}
+                    value={Array.isArray(diaryChallenges) ? diaryChallenges.join('\n') : diaryChallenges}
+                    onChange={(e) => setDiaryChallenges(e.target.value.split('\n').filter(challenge => challenge.trim()))}
                     placeholder="現在の課題を書いてください"
                     rows={2}
                   />

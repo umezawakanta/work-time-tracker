@@ -231,7 +231,12 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
           {/* メモフォーム */}
           {showMemoForm && (
             <form
-              onSubmit={editingMemo ? handleUpdateMemo : handleCreateMemo}
+              onSubmit={(e) => {
+                e.preventDefault();
+                // メモの作成・更新機能（実装予定）
+                console.log('メモ送信:', editingMemo ? '更新' : '作成');
+                resetForm();
+              }}
               className="memo-form"
             >
               <div className="form-group">

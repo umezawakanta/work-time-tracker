@@ -306,6 +306,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                 value={selectedPublicMemoCategory}
                 onChange={(e) => handlePublicMemoCategoryChange(e.target.value)}
                 className="category-select"
+                aria-label="カテゴリでフィルター"
               >
                 <option value="all">すべてのカテゴリ</option>
                 {getPublicMemoCategories().map((category) => (
