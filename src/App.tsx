@@ -153,6 +153,11 @@ function App() {
   const [soundLoopInterval, setSoundLoopInterval] =
     useState<NodeJS.Timeout | null>(null);
   const [isSoundPlaying, setIsSoundPlaying] = useState(false);
+  
+  // バックグラウンドタイマー関連の状態
+  const [backgroundTimerActive, setBackgroundTimerActive] = useState(false);
+  const [serviceWorker, setServiceWorker] = useState<ServiceWorker | null>(null);
+  const [isMannerMode, setIsMannerMode] = useState(false);
 
   // プロジェクト関連の状態
   const [projects, setProjects] = useState<Project[]>([]);
@@ -3578,6 +3583,32 @@ function App() {
   };
 
   const handleStartCookingTimer = () => {
+    // バックグラウンドタイマーを使用する場合
+    if (serviceWorker && backgroundTimerActive) {
+      const totalTime = getTotalCookingTime(selectedRecipe, selectedEggType);
+      const recipeName = cookingRecipes[selectedRecipe].name;
+      
+      startBackgroundTimer(
+        'egg-timer',
+        totalTime,
+        'egg',
+        eggTimerSound,
+        recipeName
+      );
+      
+      setEggTimerActive(true);
+      setEggTimerPaused(false);
+      setEggTimerTime(totalTime);
+      setEggTimerOriginalTime(totalTime);
+      setEggTimerPhase('heating');
+      setEggTimerPhaseTime(getRecipePhases(selectedRecipe, selectedEggType)[0].duration);
+      setEggTimerPhaseName(getRecipePhases(selectedRecipe, selectedEggType)[0].name);
+      
+      setMessage(`🍳 ${recipeName}タイマーを開始しました（バックグラウンド動作）`);
+      return;
+    }
+
+    // 従来のフロントエンドタイマー
     const state = {
       eggTimerActive,
       eggTimerPaused,
@@ -3616,6 +3647,14 @@ function App() {
   };
 
   const pauseEggTimer = () => {
+    // バックグラウンドタイマーの場合
+    if (serviceWorker && backgroundTimerActive) {
+      pauseBackgroundTimer('egg-timer');
+      setEggTimerPaused(true);
+      return;
+    }
+
+    // 従来のフロントエンドタイマー
     if (eggTimerInterval) {
       clearInterval(eggTimerInterval);
       setEggTimerInterval(null);
@@ -3624,6 +3663,20 @@ function App() {
   };
 
   const stopEggTimer = () => {
+    // バックグラウンドタイマーの場合
+    if (serviceWorker && backgroundTimerActive) {
+      stopBackgroundTimer('egg-timer');
+      setEggTimerActive(false);
+      setEggTimerPaused(false);
+      setEggTimerTime(0);
+      setEggTimerPhase("heating");
+      setEggTimerPhaseTime(0);
+      setEggTimerPhaseName("");
+      stopSoundLoop();
+      return;
+    }
+
+    // 従来のフロントエンドタイマー
     if (eggTimerInterval) {
       clearInterval(eggTimerInterval);
       setEggTimerInterval(null);
@@ -4140,6 +4193,167 @@ function App() {
     setIsSoundPlaying(false);
   };
 
+  // Service Workerとの通信機能
+  const initializeServiceWorker = async () => {
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        const sw = registration.installing || registration.waiting || registration.active;
+        if (sw) {
+          setServiceWorker(sw);
+          
+          // Service Workerからのメッセージをリッスン
+          navigator.serviceWorker.addEventListener('message', (event) => {
+            const { type, data } = event.data;
+            
+            switch (type) {
+              case 'TIMER_UPDATE':
+                // バックグラウンドタイマーの更新
+                if (data.timerId === 'egg-timer') {
+                  setEggTimerTime(data.remainingTime);
+                } else if (data.timerId === 'custom-timer') {
+                  setCustomTimerTime(data.remainingTime);
+                }
+                break;
+              case 'TIMER_COMPLETED':
+                // タイマー完了
+                if (data.timerId === 'egg-timer') {
+                  setEggTimerActive(false);
+                  setEggTimerPaused(false);
+                  setEggTimerTime(0);
+                  setMessage(`🍳 ${data.recipeName}タイマー終了！できあがりです！`);
+                  
+                  // マナーモードでない場合のみ音を再生
+                  if (!isMannerMode) {
+                    startSoundLoop(data.soundType as 'bell' | 'chime' | 'beep' | 'alarm');
+                  }
+                  
+                  // 履歴に追加
+                  addToTimerHistory(data.recipeName, data.duration, 'egg');
+                } else if (data.timerId === 'custom-timer') {
+                  setCustomTimerActive(false);
+                  setCustomTimerPaused(false);
+                  setCustomTimerTime(0);
+                  setMessage(`⏰ ${data.timerName}タイマー終了！`);
+                  
+                  // マナーモードでない場合のみ音を再生
+                  if (!isMannerMode) {
+                    startSoundLoop(data.soundType as 'bell' | 'chime' | 'beep' | 'alarm');
+                  }
+                  
+                  // 履歴に追加
+                  addToTimerHistory(data.timerName, data.duration, 'custom');
+                }
+                break;
+              case 'TIMER_PAUSED':
+                // タイマー一時停止
+                if (data.timerId === 'egg-timer') {
+                  setEggTimerPaused(true);
+                } else if (data.timerId === 'custom-timer') {
+                  setCustomTimerPaused(true);
+                }
+                break;
+              case 'TIMER_STOPPED':
+                // タイマー停止
+                if (data.timerId === 'egg-timer') {
+                  setEggTimerActive(false);
+                  setEggTimerPaused(false);
+                  setEggTimerTime(0);
+                } else if (data.timerId === 'custom-timer') {
+                  setCustomTimerActive(false);
+                  setCustomTimerPaused(false);
+                  setCustomTimerTime(0);
+                }
+                break;
+              case 'STOP_SOUND':
+                // 音を停止
+                stopSoundLoop();
+                break;
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Service Worker registration failed:', error);
+      }
+    }
+  };
+
+  // バックグラウンドタイマーを開始
+  const startBackgroundTimer = (timerId: string, duration: number, type: string, soundType: string, recipeName: string) => {
+    if (serviceWorker) {
+      serviceWorker.postMessage({
+        type: 'START_TIMER',
+        data: {
+          timerId,
+          duration,
+          type,
+          soundType,
+          recipeName
+        }
+      });
+      setBackgroundTimerActive(true);
+    }
+  };
+
+  // バックグラウンドタイマーを一時停止
+  const pauseBackgroundTimer = (timerId: string) => {
+    if (serviceWorker) {
+      serviceWorker.postMessage({
+        type: 'PAUSE_TIMER',
+        data: { timerId }
+      });
+    }
+  };
+
+  // バックグラウンドタイマーを再開
+  const resumeBackgroundTimer = (timerId: string) => {
+    if (serviceWorker) {
+      serviceWorker.postMessage({
+        type: 'RESUME_TIMER',
+        data: { timerId }
+      });
+    }
+  };
+
+  // バックグラウンドタイマーを停止
+  const stopBackgroundTimer = (timerId: string) => {
+    if (serviceWorker) {
+      serviceWorker.postMessage({
+        type: 'STOP_TIMER',
+        data: { timerId }
+      });
+      setBackgroundTimerActive(false);
+    }
+  };
+
+  // マナーモード対応の音声再生
+  const playMannerModeSound = async () => {
+    if (isMannerMode) {
+      // マナーモードの場合は振動のみ
+      if ('vibrate' in navigator) {
+        navigator.vibrate([200, 100, 200, 100, 200]);
+      }
+      return;
+    }
+    
+    // 通常の音声再生
+    await playEggTimerSound();
+  };
+
+  // マナーモードの切り替え
+  const toggleMannerMode = () => {
+    setIsMannerMode(!isMannerMode);
+    if (isMannerMode) {
+      // マナーモードを無効にする
+      setMessage('🔊 音声モードに切り替えました');
+    } else {
+      // マナーモードを有効にする
+      setMessage('🔇 マナーモードに切り替えました（振動のみ）');
+      // 現在再生中の音を停止
+      stopSoundLoop();
+    }
+  };
+
   // タイマー設定の保存
   const saveTimerSettings = (newSettings: typeof timerSettings) => {
     setTimerSettings(newSettings);
@@ -4246,6 +4460,7 @@ function App() {
     loadTimerSettings();
     loadTimerHistory();
     loadCharacters();
+    initializeServiceWorker();
 
     // 現在のキャラクターを読み込み
     const savedCharacter = localStorage.getItem("currentCharacter");
@@ -7477,6 +7692,38 @@ function App() {
                     {showTimers && (
                       <div className="section-content">
                         <div className="timers-content">
+                          {/* タイマー設定コントロール */}
+                          <div className="timer-controls">
+                            <div className="timer-control-group">
+                              <button
+                                onClick={toggleMannerMode}
+                                className={`manner-mode-button ${isMannerMode ? 'active' : ''}`}
+                                title={isMannerMode ? 'マナーモード（振動のみ）' : '音声モード'}
+                              >
+                                {isMannerMode ? '🔇 マナーモード' : '🔊 音声モード'}
+                              </button>
+                              <button
+                                onClick={() => setBackgroundTimerActive(!backgroundTimerActive)}
+                                className={`background-timer-button ${backgroundTimerActive ? 'active' : ''}`}
+                                title={backgroundTimerActive ? 'バックグラウンドタイマー有効' : 'フロントエンドタイマー'}
+                              >
+                                {backgroundTimerActive ? '🌐 バックグラウンド' : '🖥️ フロントエンド'}
+                              </button>
+                            </div>
+                            <div className="timer-status">
+                              {backgroundTimerActive && (
+                                <span className="status-indicator">
+                                  🌐 バックグラウンドタイマーが有効です（ページを閉じても動作します）
+                                </span>
+                              )}
+                              {isMannerMode && (
+                                <span className="status-indicator">
+                                  🔇 マナーモード：音の代わりに振動で通知します
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
                           {/* 音声停止ボタン */}
                           {isSoundPlaying && (
                             <div className="sound-stop-section">
