@@ -3,7 +3,7 @@
 /* 右下のヘタウマキャラクター */
 .bottom-right-character {
   position: absolute;
-  bottom: 20px;
+  bottom: 70px;
   right: 20px;
   width: 80px;
   height: 80px;
@@ -311,106 +311,17 @@
 }
 
 /* レスポンシブデザイン */
-
-/* PCサイズ (1024px以上) */
-@media (min-width: 1024px) {
+@media (max-width: 768px) {
   .bottom-right-character {
-    width: 100px;
-    height: 100px;
-    bottom: 30px;
-    right: 30px;
+    width: 60px;
+    height: 60px;
+    bottom: 50px;
+    right: 15px;
   }
   
   .hetama-character {
     width: 100%;
     height: 100%;
-  }
-  
-  .hetama-face {
-    width: 60px;
-    height: 48px;
-  }
-  
-  .hetama-body {
-    width: 42px;
-    height: 30px;
-  }
-  
-  .hetama-wing {
-    width: 36px;
-    height: 30px;
-  }
-  
-  .hetama-sparkle {
-    font-size: 14px;
-  }
-}
-
-/* 大画面 (1400px以上) */
-@media (min-width: 1400px) {
-  .bottom-right-character {
-    width: 120px;
-    height: 120px;
-    bottom: 40px;
-    right: 40px;
-  }
-  
-  .hetama-face {
-    width: 70px;
-    height: 56px;
-  }
-  
-  .hetama-body {
-    width: 50px;
-    height: 36px;
-  }
-  
-  .hetama-wing {
-    width: 42px;
-    height: 36px;
-  }
-  
-  .hetama-sparkle {
-    font-size: 16px;
-  }
-}
-
-/* タブレット (768px - 1023px) */
-@media (max-width: 1023px) and (min-width: 768px) {
-  .bottom-right-character {
-    width: 70px;
-    height: 70px;
-    bottom: 25px;
-    right: 25px;
-  }
-  
-  .hetama-face {
-    width: 45px;
-    height: 36px;
-  }
-  
-  .hetama-body {
-    width: 32px;
-    height: 24px;
-  }
-  
-  .hetama-wing {
-    width: 28px;
-    height: 24px;
-  }
-  
-  .hetama-sparkle {
-    font-size: 11px;
-  }
-}
-
-/* モバイル (480px - 767px) */
-@media (max-width: 767px) and (min-width: 480px) {
-  .bottom-right-character {
-    width: 60px;
-    height: 60px;
-    bottom: 20px;
-    right: 20px;
   }
   
   .hetama-face {
@@ -430,135 +341,5 @@
   
   .hetama-sparkle {
     font-size: 10px;
-  }
-}
-
-/* 小画面モバイル (320px - 479px) */
-@media (max-width: 479px) {
-  .bottom-right-character {
-    width: 50px;
-    height: 50px;
-    bottom: 15px;
-    right: 15px;
-  }
-  
-  .hetama-face {
-    width: 35px;
-    height: 28px;
-  }
-  
-  .hetama-body {
-    width: 25px;
-    height: 18px;
-  }
-  
-  .hetama-wing {
-    width: 20px;
-    height: 16px;
-  }
-  
-  .hetama-sparkle {
-    font-size: 9px;
-  }
-}
-
-/* 超小画面 (320px未満) */
-@media (max-width: 319px) {
-  .bottom-right-character {
-    width: 45px;
-    height: 45px;
-    bottom: 10px;
-    right: 10px;
-  }
-  
-  .hetama-face {
-    width: 30px;
-    height: 24px;
-  }
-  
-  .hetama-body {
-    width: 22px;
-    height: 16px;
-  }
-  
-  .hetama-wing {
-    width: 18px;
-    height: 14px;
-  }
-  
-  .hetama-sparkle {
-    font-size: 8px;
-  }
-}
-
-/* モーション軽減設定 */
-@media (prefers-reduced-motion: reduce) {
-  .hetama-character,
-  .hetama-halo,
-  .hetama-wing,
-  .hetama-eye,
-  .hetama-mouth,
-  .hetama-arm,
-  .hetama-leg,
-  .hetama-sparkle {
-    animation: none !important;
-  }
-}
-
-/* 高コントラストモード対応 */
-@media (prefers-contrast: high) {
-  .hetama-face {
-    background: #ffffff !important;
-    border: 3px solid #000000 !important;
-  }
-  
-  .hetama-body {
-    background: #ffffff !important;
-    border: 3px solid #000000 !important;
-  }
-  
-  .hetama-wing {
-    background: #ffffff !important;
-  }
-  
-  .hetama-arm,
-  .hetama-leg {
-    background: #ffffff !important;
-    border: 2px solid #000000 !important;
-  }
-  
-  .hetama-eye {
-    background: #000000 !important;
-  }
-  
-  .hetama-mouth {
-    background: #000000 !important;
-  }
-  
-  .hetama-halo {
-    background: #FFD700 !important;
-  }
-}
-
-/* ダークモード対応 */
-@media (prefers-color-scheme: dark) {
-  .hetama-face {
-    background: linear-gradient(135deg, #2a2a2a, #3a3a3a, #2a2a2a);
-    border-color: #4a4a4a;
-  }
-  
-  .hetama-body {
-    background: linear-gradient(135deg, #2a2a2a, #3a3a3a, #2a2a2a);
-    border-color: #4a4a4a;
-  }
-  
-  .hetama-wing {
-    background: linear-gradient(135deg, #3a3a3a, #4a4a4a, #3a3a3a);
-  }
-  
-  .hetama-arm,
-  .hetama-leg {
-    background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
-    border-color: #4a4a4a;
   }
 }
