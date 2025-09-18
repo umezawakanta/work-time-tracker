@@ -22,6 +22,7 @@ import LoginComponent from "./components/LoginComponent";
 import TimeTrackingComponent from "./components/TimeTrackingComponent";
 import TimersComponent from "./components/TimersComponent";
 import PublicMemosComponent from "./components/PublicMemosComponent";
+import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import {
@@ -6410,6 +6411,83 @@ function App() {
                   </div>
                 );
               } else if (feature.id === "work-records") {
+                return (
+                  <WorkRecordsComponent
+                    key={feature.id}
+                    showWorkRecords={showWorkRecords}
+                    setShowWorkRecords={setShowWorkRecords}
+                    showSalaryForm={showSalaryForm}
+                    setShowSalaryForm={setShowSalaryForm}
+                    showDiaryForm={showDiaryForm}
+                    setShowDiaryForm={setShowDiaryForm}
+                    showCalendar={showCalendar}
+                    setShowCalendar={setShowCalendar}
+                    salaryRecords={salaryRecords}
+                    workDiaries={workDiaries}
+                    salaryLoading={salaryLoading}
+                    diaryLoading={diaryLoading}
+                    workRecordsLoading={workRecordsLoading}
+                    currentMonth={currentMonth}
+                    setCurrentMonth={setCurrentMonth}
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                    selectedRecord={selectedRecord}
+                    setSelectedRecord={setSelectedRecord}
+                    selectedRecordType={selectedRecordType}
+                    setSelectedRecordType={setSelectedRecordType}
+                    editingSalaryRecord={editingSalaryRecord}
+                    setEditingSalaryRecord={setEditingSalaryRecord}
+                    editingDiary={editingDiary}
+                    setEditingDiary={setEditingDiary}
+                    salaryAmount={salaryAmount}
+                    setSalaryAmount={setSalaryAmount}
+                    salaryDate={salaryDate}
+                    setSalaryDate={setSalaryDate}
+                    salaryNotes={salaryNotes}
+                    setSalaryNotes={setSalaryNotes}
+                    diaryDate={diaryDate}
+                    setDiaryDate={setDiaryDate}
+                    diaryTitle={diaryTitle}
+                    setDiaryTitle={setDiaryTitle}
+                    diaryContent={diaryContent}
+                    setDiaryContent={setDiaryContent}
+                    diaryMood={diaryMood}
+                    setDiaryMood={setDiaryMood}
+                    diaryActivities={diaryActivities}
+                    setDiaryActivities={setDiaryActivities}
+                    diaryNotes={diaryNotes}
+                    setDiaryNotes={setDiaryNotes}
+                    diaryNextGoals={diaryNextGoals}
+                    setDiaryNextGoals={setDiaryNextGoals}
+                    diaryChallenges={diaryChallenges}
+                    setDiaryChallenges={setDiaryChallenges}
+                    diaryAchievements={diaryAchievements}
+                    setDiaryAchievements={setDiaryAchievements}
+                    diaryGratitude={diaryGratitude}
+                    setDiaryGratitude={setDiaryGratitude}
+                    diaryReflection={diaryReflection}
+                    setDiaryReflection={setDiaryReflection}
+                    monthlyMemo={monthlyMemo}
+                    setMonthlyMemo={setMonthlyMemo}
+                    editingMonthlyMemo={editingMonthlyMemo}
+                    setEditingMonthlyMemo={setEditingMonthlyMemo}
+                    loadSalaryRecords={loadSalaryRecords}
+                    loadWorkDiaries={loadWorkDiaries}
+                    handleCreateSalaryRecord={handleCreateSalaryRecord}
+                    handleUpdateSalaryRecord={handleUpdateSalaryRecord}
+                    handleCreateDiary={handleCreateDiary}
+                    handleUpdateDiary={handleUpdateDiary}
+                    handleDeleteSalaryRecord={handleDeleteSalaryRecord}
+                    handleDeleteDiary={handleDeleteDiary}
+                    openDiaryForm={openDiaryForm}
+                    loadMonthlyMemo={loadMonthlyMemo}
+                    saveMonthlyMemo={saveMonthlyMemo}
+                    startEditingMonthlyMemo={startEditingMonthlyMemo}
+                    cancelEditingMonthlyMemo={cancelEditingMonthlyMemo}
+                    closeOtherFeatures={closeOtherFeatures}
+                  />
+                );
+              } else if (feature.id === "work-records-old") {
                 return (
                   <div key={feature.id} className="work-records-section">
                     <div className="section-header">
