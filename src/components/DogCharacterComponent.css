@@ -1,0 +1,377 @@
+/* DogCharacterComponent.css - 犬キャラクターコンポーネント専用のスタイル */
+
+/* 犬キャラクターのコンテナ */
+.dog-character-container {
+  position: absolute;
+  bottom: 70px;
+  left: 20px;
+  width: 70px;
+  height: 70px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.dog-character {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: dogWiggle 2.5s ease-in-out infinite;
+}
+
+/* 犬の天使の輪っか */
+.dog-halo {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 6px;
+  background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+  animation: dogHaloGlow 2s ease-in-out infinite alternate;
+}
+
+/* 犬の耳 */
+.dog-ear {
+  position: absolute;
+  top: 5px;
+  width: 12px;
+  height: 15px;
+  background: #8B4513;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  animation: dogEarWiggle 1.5s ease-in-out infinite;
+}
+
+.dog-ear-left {
+  left: 8px;
+  transform: rotate(-15deg);
+}
+
+.dog-ear-right {
+  right: 8px;
+  transform: rotate(15deg);
+}
+
+/* 犬の顔 */
+.dog-face {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 45px;
+  height: 40px;
+  background: #DEB887;
+  border-radius: 50%;
+  border: 2px solid #8B4513;
+}
+
+/* 犬の目 */
+.dog-eye {
+  position: absolute;
+  top: 8px;
+  width: 6px;
+  height: 8px;
+  background: #000;
+  border-radius: 50%;
+  animation: dogBlink 3s ease-in-out infinite;
+}
+
+.dog-eye-left {
+  left: 10px;
+}
+
+.dog-eye-right {
+  right: 10px;
+}
+
+/* 犬の鼻 */
+.dog-nose {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 3px;
+  background: #000;
+  border-radius: 50%;
+}
+
+/* 犬の口 */
+.dog-mouth {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 4px;
+  border: 1px solid #8B4513;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
+/* 犬の舌 */
+.dog-tongue {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 8px;
+  background: #FF69B4;
+  border-radius: 0 0 3px 3px;
+  animation: dogTongueWag 1s ease-in-out infinite;
+}
+
+/* 犬の体 */
+.dog-body {
+  position: absolute;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 35px;
+  height: 25px;
+  background: #8B4513;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+/* 犬の前足 */
+.dog-paw {
+  position: absolute;
+  top: 20px;
+  width: 6px;
+  height: 8px;
+  background: #8B4513;
+  border-radius: 50%;
+}
+
+.dog-paw-left {
+  left: 5px;
+}
+
+.dog-paw-right {
+  right: 5px;
+}
+
+/* 犬のしっぽ */
+.dog-tail {
+  position: absolute;
+  top: 10px;
+  right: -8px;
+  width: 4px;
+  height: 15px;
+  background: #8B4513;
+  border-radius: 2px;
+  animation: dogTailWag 0.8s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+/* 犬のハートエフェクト */
+.dog-heart {
+  position: absolute;
+  font-size: 12px;
+  animation: dogHeartFloat 2s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+.dog-heart-1 {
+  top: -15px;
+  left: 10px;
+  animation-delay: 0s;
+}
+
+.dog-heart-2 {
+  top: -20px;
+  right: 15px;
+  animation-delay: 0.7s;
+}
+
+.dog-heart-3 {
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 1.4s;
+}
+
+/* アニメーション */
+@keyframes dogWiggle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-2px) rotate(1deg);
+  }
+  75% {
+    transform: translateY(2px) rotate(-1deg);
+  }
+}
+
+@keyframes dogHaloGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+  }
+}
+
+@keyframes dogEarWiggle {
+  0%, 100% {
+    transform: rotate(-15deg);
+  }
+  50% {
+    transform: rotate(-10deg);
+  }
+}
+
+@keyframes dogBlink {
+  0%, 90%, 100% {
+    height: 8px;
+  }
+  95% {
+    height: 2px;
+  }
+}
+
+@keyframes dogTongueWag {
+  0%, 100% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  50% {
+    transform: translateX(-50%) rotate(5deg);
+  }
+}
+
+@keyframes dogTailWag {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(30deg);
+  }
+}
+
+@keyframes dogHeartFloat {
+  0% {
+    transform: translateY(0px) scale(0.8);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-10px) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20px) scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 1024px) {
+  .dog-character-container {
+    width: 60px;
+    height: 60px;
+    bottom: 60px;
+    left: 15px;
+  }
+  
+  .dog-halo {
+    width: 40px;
+    height: 5px;
+  }
+  
+  .dog-face {
+    width: 35px;
+    height: 30px;
+  }
+  
+  .dog-body {
+    width: 28px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dog-character-container {
+    width: 50px;
+    height: 50px;
+    bottom: 50px;
+    left: 10px;
+  }
+  
+  .dog-halo {
+    width: 35px;
+    height: 4px;
+  }
+  
+  .dog-face {
+    width: 30px;
+    height: 25px;
+  }
+  
+  .dog-body {
+    width: 22px;
+    height: 16px;
+  }
+  
+  .dog-heart {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dog-character-container {
+    width: 40px;
+    height: 40px;
+    bottom: 40px;
+    left: 8px;
+  }
+  
+  .dog-halo {
+    width: 30px;
+    height: 3px;
+  }
+  
+  .dog-face {
+    width: 25px;
+    height: 20px;
+  }
+  
+  .dog-body {
+    width: 18px;
+    height: 12px;
+  }
+  
+  .dog-heart {
+    font-size: 8px;
+  }
+}
+
+/* アクセシビリティ向上 */
+@media (prefers-reduced-motion: reduce) {
+  .dog-character,
+  .dog-halo,
+  .dog-ear,
+  .dog-eye,
+  .dog-tongue,
+  .dog-tail,
+  .dog-heart {
+    animation: none;
+  }
+}
+
+/* 高コントラストモード対応 */
+@media (prefers-contrast: high) {
+  .dog-face {
+    border: 3px solid #000;
+  }
+  
+  .dog-eye {
+    background: #000;
+    border: 1px solid #fff;
+  }
+  
+  .dog-nose {
+    background: #000;
+  }
+}

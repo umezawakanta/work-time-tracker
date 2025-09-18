@@ -2,6 +2,7 @@ import React from "react";
 import "./HeaderComponent.css";
 import HeaderLeftComponent from "./HeaderLeftComponent";
 import HetamaCharacterComponent from "./HetamaCharacterComponent";
+import DogCharacterComponent from "./DogCharacterComponent";
 import HeaderTitleComponent from "./HeaderTitleComponent";
 import LogoutButtonComponent from "./LogoutButtonComponent";
 import UserInfoComponent from "./UserInfoComponent";
@@ -86,6 +87,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       </div>
 
       <HetamaCharacterComponent />
+      <DogCharacterComponent />
     </header>
   );
 };
