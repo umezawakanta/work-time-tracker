@@ -1,0 +1,105 @@
+/* LogoutButtonComponent.css - ログアウトボタンコンポーネント専用のスタイル */
+
+.logout-container {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+}
+
+.logout-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.logout-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* 右上配置時のログアウトボタン */
+.logout-container .logout-button {
+  background: rgba(255, 255, 255, 0.9);
+  color: #dc2626;
+  border: 2px solid #dc2626;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.logout-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.logout-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6);
+}
+
+.logout-button:hover::before {
+  left: 100%;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 1024px) {
+  .logout-button {
+    font-size: 12px;
+    padding: 9px 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* モバイル時のログアウトボタン - アイコン表示 */
+  .logout-container {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+  
+  .logout-container .logout-button {
+    background: rgba(255, 255, 255, 0.9);
+    color: #dc2626;
+    border: 2px solid #dc2626;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+  
+  .logout-container .logout-button svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .logout-container .logout-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  }
+}
