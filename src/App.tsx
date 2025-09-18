@@ -17,6 +17,7 @@ import DiaryReminderIntegration from "./components/DiaryReminderIntegration";
 import HetamaIconComponent from "./components/HetamaIconComponent";
 import MemosComponent from "./components/MemosComponent";
 import ReportsComponent from "./components/ReportsComponent";
+import AdminPanelComponent from "./components/AdminPanelComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts, FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
@@ -4967,7 +4968,24 @@ function App() {
                 user?.role === "admin"
               ) {
                 return (
-                  <div key={feature.id} className="admin-section">
+                  <AdminPanelComponent
+                    key={feature.id}
+                    showAdminPanel={showAdminPanel}
+                    setShowAdminPanel={setShowAdminPanel}
+                    adminUsers={adminUsers}
+                    adminUsersLoading={adminUsersLoading}
+                    editingUser={editingUser}
+                    setEditingUser={setEditingUser}
+                    loadAdminUsers={loadAdminUsers}
+                    handleEditUser={handleEditUser}
+                    handleUpdateUser={handleUpdateUser}
+                    handleDeleteUser={handleDeleteUser}
+                    closeOtherFeatures={closeOtherFeatures}
+                  />
+                );
+              } else if (feature.id === "timers") {
+                return (
+                  <div key={feature.id} className="timers-section">
                     <div className="section-header">
                       <h2>
                         <span className="section-icon">
