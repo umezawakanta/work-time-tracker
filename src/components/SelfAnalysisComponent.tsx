@@ -202,6 +202,8 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
       stress: moodForm.stress,
       activities: moodForm.activities,
       notes: moodForm.notes,
+      weather: '',
+      sleep: 0,
       createdAt: new Date().toISOString(),
     };
     setMoodLogs((prev) => [...prev, newMoodLog]);
