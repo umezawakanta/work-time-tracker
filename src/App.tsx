@@ -4668,6 +4668,7 @@ function App() {
                                 <input
                                   type="email"
                                   value={editingUser.email}
+                                  placeholder="メールアドレスを入力してください"
                                   onChange={(e) =>
                                     setEditingUser({
                                       ...editingUser,
