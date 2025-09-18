@@ -1,6 +1,5 @@
 import React from 'react';
 import './UserInfoComponent.css';
-import UserGreetingComponent from './UserGreetingComponent';
 import VersionInfoComponent from './VersionInfo';
 import HeaderButtonsComponent from './HeaderButtonsComponent';
 import type { User, Character } from '../types';
@@ -38,10 +37,6 @@ const UserInfoComponent: React.FC<UserInfoComponentProps> = ({
 }) => {
   return (
     <div className="user-info">
-      <UserGreetingComponent 
-        user={user}
-        currentCharacter={currentCharacter}
-      />
       <VersionInfoComponent />
       <HeaderButtonsComponent
         onCharacterHomeToggle={onCharacterHomeToggle}

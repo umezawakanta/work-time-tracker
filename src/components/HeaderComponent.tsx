@@ -6,6 +6,7 @@ import HeaderTitleComponent from "./HeaderTitleComponent";
 import LogoutButtonComponent from "./LogoutButtonComponent";
 import UserInfoComponent from "./UserInfoComponent";
 import type { User, Character } from "../types";
+import UserGreetingComponent from "./UserGreetingComponent";
 
 interface HeaderComponentProps {
   user: User | null;
@@ -41,11 +42,15 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       <div className="header-left">
         <HeaderLeftComponent />
       </div>
-      
+
       <div className="header-center">
         <HeaderTitleComponent />
+        <UserGreetingComponent
+          user={user}
+          currentCharacter={currentCharacter}
+        />
       </div>
-      
+
       <div className="header-right">
         <div className="header-navigation">
           <UserInfoComponent
