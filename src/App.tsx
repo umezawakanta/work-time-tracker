@@ -6475,6 +6475,7 @@ function App() {
                   setSelfAnalysisTab={setSelfAnalysisTab}
                   personalProfile={personalProfile}
                   habits={habits}
+                  habitHistory={habitHistory}
                   moodLogs={moodLogs}
                   goals={goals}
                   learningRecords={learningRecords}

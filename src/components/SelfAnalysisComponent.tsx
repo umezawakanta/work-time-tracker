@@ -1,5 +1,6 @@
 import React from 'react';
 import './SelfAnalysisComponent.css';
+import type { Habit, Goal, LearningRecord } from '../types';
 
 interface PersonalProfile {
   values: string[];
@@ -11,55 +12,12 @@ interface PersonalProfile {
   personality: string;
 }
 
-interface Habit {
-  id: string;
-  name: string;
-  description: string;
-  frequency: 'daily' | 'weekly' | 'monthly';
-  target: number;
-  unit: string;
-  color: string;
-  isActive: boolean;
-  createdAt: Date;
-  completionDates: string[];
-}
-
 interface MoodLog {
   id: string;
   date: string;
   mood: number;
   note: string;
   factors: string[];
-}
-
-interface Goal {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  priority: 'low' | 'medium' | 'high';
-  status: 'not-started' | 'in-progress' | 'completed' | 'paused';
-  targetDate?: string;
-  createdAt: Date;
-  milestones: Array<{
-    id: string;
-    title: string;
-    completed: boolean;
-    completedAt?: Date;
-  }>;
-}
-
-interface LearningRecord {
-  id: string;
-  title: string;
-  description: string;
-  type: 'book' | 'course' | 'video' | 'article' | 'practice' | 'other';
-  category: string;
-  status: 'not-started' | 'in-progress' | 'completed' | 'paused';
-  rating: number;
-  startDate: string;
-  completedDate?: string;
-  skills: string[];
 }
 
 interface SelfAnalysisComponentProps {
@@ -69,6 +27,7 @@ interface SelfAnalysisComponentProps {
   setSelfAnalysisTab: (tab: string) => void;
   personalProfile: PersonalProfile;
   habits: Habit[];
+  habitHistory: { [habitId: string]: string[] };
   moodLogs: MoodLog[];
   goals: Goal[];
   learningRecords: LearningRecord[];
@@ -109,6 +68,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   setSelfAnalysisTab,
   personalProfile,
   habits,
+  habitHistory,
   moodLogs,
   goals,
   learningRecords,
@@ -769,15 +729,15 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                             <span className="today-date">{today}</span>
                           </div>
                           <div className="today-progress">
-                            <button 
-                              className={`completion-button ${habit.completionDates.includes(today) ? 'completed' : ''}`}
-                              onClick={() => toggleHabitCompletion(habit.id, today)}
-                            >
-                              {habit.completionDates.includes(today) ? '✅' : '⭕'}
-                            </button>
-                            <span className="today-status">
-                              {habit.completionDates.includes(today) ? '完了' : '未完了'}
-                            </span>
+                                      <button 
+                                        className={`completion-button ${habitHistory[habit.id]?.includes(today) ? 'completed' : ''}`}
+                                        onClick={() => toggleHabitCompletion(habit.id, today)}
+                                      >
+                                        {habitHistory[habit.id]?.includes(today) ? '✅' : '⭕'}
+                                      </button>
+                                      <span className="today-status">
+                                        {habitHistory[habit.id]?.includes(today) ? '完了' : '未完了'}
+                                      </span>
                           </div>
                         </div>
 
@@ -785,32 +745,37 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                           <div className="stat-item">
                             <span className="stat-label">連続日数</span>
                             <span className="stat-value">
-                              {(() => {
-                                let streak = 0;
-                                const today = new Date();
-                                for (let i = 0; i < 365; i++) {
-                                  const checkDate = new Date(today);
-                                  checkDate.setDate(checkDate.getDate() - i);
-                                  const dateStr = checkDate.toISOString().split('T')[0];
-                                  if (habit.completionDates.includes(dateStr)) {
-                                    streak++;
-                                  } else {
-                                    break;
-                                  }
+                            {(() => {
+                              let streak = 0;
+                              const today = new Date();
+                              const history = habitHistory[habit.id] || [];
+                              for (let i = 0; i < 365; i++) {
+                                const checkDate = new Date(today);
+                                checkDate.setDate(checkDate.getDate() - i);
+                                const dateStr = checkDate.toISOString().split('T')[0];
+                                if (history.includes(dateStr)) {
+                                  streak++;
+                                } else {
+                                  break;
                                 }
-                                return streak;
-                              })()}日
+                              }
+                              return streak;
+                            })()}日
                             </span>
                           </div>
                           <div className="stat-item">
                             <span className="stat-label">完了率</span>
                             <span className="stat-value">
-                              {habit.frequency === 'daily' 
-                                ? `${Math.round((habit.completionDates.length / 30) * 100)}%`
-                                : habit.frequency === 'weekly'
-                                ? `${Math.round((habit.completionDates.length / 4) * 100)}%`
-                                : `${Math.round((habit.completionDates.length / 1) * 100)}%`
+                            {(() => {
+                              const history = habitHistory[habit.id] || [];
+                              if (habit.frequency === 'daily') {
+                                return `${Math.round((history.length / 30) * 100)}%`;
+                              } else if (habit.frequency === 'weekly') {
+                                return `${Math.round((history.length / 4) * 100)}%`;
+                              } else {
+                                return `${Math.round((history.length / 1) * 100)}%`;
                               }
+                            })()}
                             </span>
                           </div>
                         </div>
