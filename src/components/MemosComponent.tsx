@@ -129,16 +129,26 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
           メモ
         </h2>
         <div className="section-controls">
-          <button
-            onClick={() => {
-              closeOtherFeatures("memos");
-              setShowMemos(true);
-            }}
-            className="show-section-button"
-            title="セクションを表示"
-          >
-            ▶️
-          </button>
+          {showMemos ? (
+            <button
+              onClick={() => setShowMemos(false)}
+              className="close-section-button"
+              title="セクションを閉じる"
+            >
+              ✕
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                closeOtherFeatures("memos");
+                setShowMemos(true);
+              }}
+              className="show-section-button"
+              title="セクションを表示"
+            >
+              ▶️
+            </button>
+          )}
         </div>
       </div>
 

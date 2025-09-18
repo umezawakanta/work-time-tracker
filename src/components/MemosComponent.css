@@ -45,6 +45,21 @@
   background: #0056b3;
 }
 
+.close-section-button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.close-section-button:hover {
+  background: #c82333;
+}
+
 .memos-content {
   background: white;
   border-radius: 12px;
