@@ -292,6 +292,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                 value={selectedMemoCategory}
                 onChange={(e) => handleMemoCategoryChange(e.target.value)}
                 className="category-filter"
+                aria-label="カテゴリでフィルター"
               >
                 <option value="all">すべてのカテゴリ</option>
                 {getMemoCategories().map((category) => (

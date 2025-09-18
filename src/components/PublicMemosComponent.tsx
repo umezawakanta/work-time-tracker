@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './PublicMemosComponent.css';
-import type { Memo, Reply } from '../types';
+import type { Memo, Reply, User } from '../types';
 
 interface PublicMemosComponentProps {
   publicMemos: Memo[];

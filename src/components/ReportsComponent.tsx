@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ReportsComponent.css';
-import type { WorkRecord, SalaryRecord, WorkDiary } from '../types';
+import type { SalaryRecord, WorkDiary } from '../types';
 
 interface ReportsComponentProps {
   showReports: boolean;

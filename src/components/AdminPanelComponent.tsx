@@ -39,7 +39,6 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   useEffect(() => {
     if (editingUser) {
       setEditingUserData({
-        name: editingUser.name || '',
         email: editingUser.email || '',
         role: editingUser.role || 'user',
       });

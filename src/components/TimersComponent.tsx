@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './TimersComponent.css';
 import { cookingRecipes, getRecipePhases } from '../constants/cookingRecipes';
-import type { TimerPreset } from '../types';
+// TimerPreset型を定義
+interface TimerPreset {
+  id: string;
+  name: string;
+  duration: number;
+  color: string;
+}
 
 interface TimersComponentProps {
   showTimers: boolean;
