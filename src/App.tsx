@@ -20,6 +20,7 @@ import ReportsComponent from "./components/ReportsComponent";
 import AdminPanelComponent from "./components/AdminPanelComponent";
 import LoginComponent from "./components/LoginComponent";
 import TimeTrackingComponent from "./components/TimeTrackingComponent";
+import TimersComponent from "./components/TimersComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts, FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
@@ -7986,308 +7987,32 @@ function App() {
                 );
               } else if (feature.id === "timers") {
                 return (
-                  <div key={feature.id} className="timers-section">
-                    <div className="section-header">
-                      <h2>
-                        <span className="section-icon">
-                          <HetamaIconComponent featureId="timers" size="large" />
-                        </span>
-                        タイマー
-                      </h2>
-                      <div className="section-controls">
-                        {showTimers ? (
-                          <button
-                            onClick={() => setShowTimers(false)}
-                            className="close-section-button"
-                            title="セクションを閉じる"
-                          >
-                            ✕
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => setShowTimers(true)}
-                            className="show-section-button"
-                            title="セクションを表示"
-                          >
-                            ▶️
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {showTimers && (
-                      <div className="section-content">
-                        <div className="timers-content">
-                          {/* タイマー設定コントロール */}
-                          <div className="timer-controls">
-                            <div className="timer-control-group">
-                              <button
-                                onClick={toggleMannerMode}
-                                className={`manner-mode-button ${isMannerMode ? 'active' : ''}`}
-                                title={isMannerMode ? 'マナーモード（振動のみ）' : '音声モード'}
-                              >
-                                {isMannerMode ? '🔇 マナーモード' : '🔊 音声モード'}
-                              </button>
-                              <button
-                                onClick={() => setBackgroundTimerActive(!backgroundTimerActive)}
-                                className={`background-timer-button ${backgroundTimerActive ? 'active' : ''}`}
-                                title={backgroundTimerActive ? 'バックグラウンドタイマー有効' : 'フロントエンドタイマー'}
-                              >
-                                {backgroundTimerActive ? '🌐 バックグラウンド' : '🖥️ フロントエンド'}
-                              </button>
-                            </div>
-                            <div className="timer-status">
-                              {backgroundTimerActive && (
-                                <span className="status-indicator">
-                                  🌐 バックグラウンドタイマーが有効です（ページを閉じても動作します）
-                                </span>
-                              )}
-                              {isMannerMode && (
-                                <span className="status-indicator">
-                                  🔇 マナーモード：音の代わりに振動で通知します
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* 音声停止ボタン */}
-                          {isSoundPlaying && (
-                            <div className="sound-stop-section">
-                              <div className="sound-stop-alert">
-                                <h3>🔊 通知音が再生中です</h3>
-                                <p>
-                                  タイマーが終了しました。音を停止するには下のボタンを押してください。
-                                </p>
-                                <button
-                                  onClick={stopSoundLoop}
-                                  className="sound-stop-btn"
-                                >
-                                  🔇 音を停止
-                                </button>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* タイマー設定 */}
-                          <div className="timer-settings-section">
-                            <h3>⚙️ タイマー設定</h3>
-                            <div className="settings-grid">
-                              <div className="setting-group">
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    checked={timerSettings.enableSounds}
-                                    onChange={(e) =>
-                                      saveTimerSettings({
-                                        ...timerSettings,
-                                        enableSounds: e.target.checked,
-                                      })
-                                    }
-                                  />
-                                  🔊 音声を有効にする
-                                </label>
-                              </div>
-                              <div className="setting-group">
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    checked={timerSettings.enableNotifications}
-                                    onChange={(e) =>
-                                      saveTimerSettings({
-                                        ...timerSettings,
-                                        enableNotifications: e.target.checked,
-                                      })
-                                    }
-                                  />
-                                  🔔 ブラウザ通知を有効にする
-                                </label>
-                              </div>
-                              <div className="setting-group">
-                                <label>デフォルトのカスタムタイマー時間</label>
-                                <div className="time-inputs">
-                                  <input
-                                    type="number"
-                                    value={timerSettings.defaultCustomMinutes}
-                                    aria-label="デフォルトカスタムタイマー時間（分）"
-                                    onChange={(e) =>
-                                      saveTimerSettings({
-                                        ...timerSettings,
-                                        defaultCustomMinutes: Math.max(
-                                          0,
-                                          parseInt(e.target.value) || 0
-                                        ),
-                                      })
-                                    }
-                                    min="0"
-                                    max="999"
-                                  />
-                                  <span>分</span>
-                                  <input
-                                    type="number"
-                                    value={timerSettings.defaultCustomSeconds}
-                                    onChange={(e) =>
-                                      saveTimerSettings({
-                                        ...timerSettings,
-                                        defaultCustomSeconds: Math.max(
-                                          0,
-                                          Math.min(
-                                            59,
-                                            parseInt(e.target.value) || 0
-                                          )
-                                        ),
-                                      })
-                                    }
-                                    min="0"
-                                    max="59"
-                                  />
-                                  <span>秒</span>
-                                </div>
-                              </div>
-                              <div className="setting-group">
-                                <label>タイマーテーマ</label>
-                                <select
-                                  value={timerSettings.theme}
-                                  aria-label="タイマーテーマ選択"
-                                  onChange={(e) => {
-                                    const newSettings = {
-                                      ...timerSettings,
-                                      theme: e.target.value as
-                                        | "default"
-                                        | "dark"
-                                        | "colorful"
-                                        | "minimal",
-                                    };
-                                    saveTimerSettings(newSettings);
-                                    applyTimerTheme(
-                                      e.target.value,
-                                      timerSettings.customColors
-                                    );
-                                  }}
-                                  className="theme-selector"
-                                >
-                                  <option value="default">🎨 デフォルト</option>
-                                  <option value="dark">🌙 ダーク</option>
-                                  <option value="colorful">🌈 カラフル</option>
-                                  <option value="minimal">⚪ ミニマル</option>
-                                </select>
-                              </div>
-                              <div className="setting-group">
-                                <label>カスタムカラー</label>
-                                <div className="color-inputs">
-                                  <div className="color-input">
-                                    <label>プライマリ</label>
-                                    <input
-                                      type="color"
-                                      value={timerSettings.customColors.primary}
-                                      onChange={(e) => {
-                                        const newSettings = {
-                                          ...timerSettings,
-                                          customColors: {
-                                            ...timerSettings.customColors,
-                                            primary: e.target.value,
-                                          },
-                                        };
-                                        saveTimerSettings(newSettings);
-                                        applyTimerTheme(
-                                          "default",
-                                          newSettings.customColors
-                                        );
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="color-input">
-                                    <label>セカンダリ</label>
-                                    <input
-                                      type="color"
-                                      value={
-                                        timerSettings.customColors.secondary
-                                      }
-                                      onChange={(e) => {
-                                        const newSettings = {
-                                          ...timerSettings,
-                                          customColors: {
-                                            ...timerSettings.customColors,
-                                            secondary: e.target.value,
-                                          },
-                                        };
-                                        saveTimerSettings(newSettings);
-                                        applyTimerTheme(
-                                          "default",
-                                          newSettings.customColors
-                                        );
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="color-input">
-                                    <label>アクセント</label>
-                                    <input
-                                      type="color"
-                                      value={timerSettings.customColors.accent}
-                                      onChange={(e) => {
-                                        const newSettings = {
-                                          ...timerSettings,
-                                          customColors: {
-                                            ...timerSettings.customColors,
-                                            accent: e.target.value,
-                                          },
-                                        };
-                                        saveTimerSettings(newSettings);
-                                        applyTimerTheme(
-                                          "default",
-                                          newSettings.customColors
-                                        );
-                                      }}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* カスタムタイマー */}
-                          <CustomTimer
-                            showCustomTimer={showCustomTimer}
-                            setShowCustomTimer={setShowCustomTimer}
-                            closeOtherFeatures={closeOtherFeatures}
-                            setMessage={setMessage}
-                          />
-
-                          {/* プリセットタイマー */}
-                          <PresetTimersSection
-                            showPresetTimers={showPresetTimers}
-                            setShowPresetTimers={setShowPresetTimers}
-                            closeOtherFeatures={closeOtherFeatures}
-                            timerPresets={timerPresets}
-                            customTimerActive={customTimerActive}
-                            startPresetTimer={startPresetTimer}
-                          />
-
-                          <TimerStatsSection
-                            showTimerStats={showTimerStats}
-                            setShowTimerStats={setShowTimerStats}
-                            closeOtherFeatures={closeOtherFeatures}
-                            timerHistory={timerHistory.map((item) => ({
-                              ...item,
-                              completedAt: item.completedAt.toISOString(),
-                            }))}
-                            formatTime={formatTime}
-                          />
-
-                          {/* タイマー履歴 */}
-                          <TimerHistoryComponent
-                            timerHistory={timerHistory}
-                            showTimerHistory={showTimerHistory}
-                            onToggle={() => {
-                              closeOtherFeatures("timer-history");
-                              setShowTimerHistory(true);
-                            }}
-                            onClose={() => setShowTimerHistory(false)}
-                            formatTime={formatTime}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <TimersComponent
+                    key={feature.id}
+                    showTimers={showTimers}
+                    setShowTimers={setShowTimers}
+                    customTimerTime={customTimerTime}
+                    setCustomTimerTime={setCustomTimerTime}
+                    customTimerActive={customTimerActive}
+                    setCustomTimerActive={setCustomTimerActive}
+                    customTimerPaused={customTimerPaused}
+                    setCustomTimerPaused={setCustomTimerPaused}
+                    customTimerTimeLeft={customTimerTimeLeft}
+                    setCustomTimerTimeLeft={setCustomTimerTimeLeft}
+                    customTimerInterval={customTimerInterval}
+                    setCustomTimerInterval={setCustomTimerInterval}
+                    customTimerSound={customTimerSound}
+                    setCustomTimerSound={setCustomTimerSound}
+                    timerHistory={timerHistory}
+                    timerSettings={timerSettings}
+                    startCustomTimer={startCustomTimer}
+                    pauseCustomTimer={pauseCustomTimer}
+                    stopCustomTimer={stopCustomTimer}
+                    resetCustomTimer={resetCustomTimer}
+                    playCustomTimerSound={playCustomTimerSound}
+                    addToTimerHistory={addToTimerHistory}
+                    closeOtherFeatures={closeOtherFeatures}
+                  />
                 );
               } else if (feature.id === "self-analysis") {
                 return (
