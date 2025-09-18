@@ -27,7 +27,7 @@ interface SelfAnalysisComponentProps {
   selfAnalysisTab: string;
   setSelfAnalysisTab: (tab: string) => void;
   personalProfile: PersonalProfile;
-  setPersonalProfile: (profile: PersonalProfile) => void;
+  setPersonalProfile: React.Dispatch<React.SetStateAction<PersonalProfile>>;
   habits: Habit[];
   setHabits: (habits: Habit[]) => void;
   habitHistory: { [habitId: string]: string[] };
@@ -131,6 +131,11 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
       description: "",
       category: "personal",
       frequency: "daily",
+      targetDays: 7,
+      completedDays: 0,
+      streak: 0,
+      bestStreak: 0,
+      isActive: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
