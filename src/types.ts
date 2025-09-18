@@ -132,6 +132,18 @@ export interface WorkDiary {
   mood: string;
   tags: string[];
   isPrivate: boolean;
+  // 新しい項目
+  workSummary: string; // 仕事の要約
+  achievements: string[]; // 今日の成果
+  challenges: string[]; // 課題・困難
+  learnings: string[]; // 学んだこと
+  nextGoals: string[]; // 明日の目標
+  energyLevel: number; // エネルギーレベル (1-10)
+  stressLevel: number; // ストレスレベル (1-10)
+  workHours: number; // 作業時間
+  breakTime: number; // 休憩時間
+  productivity: number; // 生産性 (1-10)
+  notes: string; // その他のメモ
   createdAt: string;
   updatedAt: string;
 }

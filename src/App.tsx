@@ -283,6 +283,25 @@ function App() {
   const [diaryMood, setDiaryMood] = useState("😊");
   const [diaryTags, setDiaryTags] = useState("");
   const [diaryIsPrivate, setDiaryIsPrivate] = useState(true);
+  
+  // 新しい日記項目の状態
+  const [diaryWorkSummary, setDiaryWorkSummary] = useState("");
+  const [diaryAchievements, setDiaryAchievements] = useState<string[]>([]);
+  const [diaryChallenges, setDiaryChallenges] = useState<string[]>([]);
+  const [diaryLearnings, setDiaryLearnings] = useState<string[]>([]);
+  const [diaryNextGoals, setDiaryNextGoals] = useState<string[]>([]);
+  const [diaryEnergyLevel, setDiaryEnergyLevel] = useState(5);
+  const [diaryStressLevel, setDiaryStressLevel] = useState(5);
+  const [diaryWorkHours, setDiaryWorkHours] = useState(0);
+  const [diaryBreakTime, setDiaryBreakTime] = useState(0);
+  const [diaryProductivity, setDiaryProductivity] = useState(5);
+  const [diaryNotes, setDiaryNotes] = useState("");
+  
+  // 配列項目の一時入力状態
+  const [newAchievement, setNewAchievement] = useState("");
+  const [newChallenge, setNewChallenge] = useState("");
+  const [newLearning, setNewLearning] = useState("");
+  const [newNextGoal, setNewNextGoal] = useState("");
 
   // 機能設定の状態
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
@@ -325,8 +344,6 @@ function App() {
   const [newStrength, setNewStrength] = useState("");
   const [newWeakness, setNewWeakness] = useState("");
   const [newPersonality, setNewPersonality] = useState("");
-  const [newChallenge, setNewChallenge] = useState("");
-  const [newAchievement, setNewAchievement] = useState("");
 
   // 習慣トラッカー関連の状態
   const [newHabit, setNewHabit] = useState("");
@@ -1618,6 +1635,18 @@ function App() {
             .map((tag) => tag.trim())
             .filter((tag) => tag),
           isPrivate: diaryIsPrivate,
+          // 新しい項目
+          workSummary: diaryWorkSummary,
+          achievements: diaryAchievements,
+          challenges: diaryChallenges,
+          learnings: diaryLearnings,
+          nextGoals: diaryNextGoals,
+          energyLevel: diaryEnergyLevel,
+          stressLevel: diaryStressLevel,
+          workHours: diaryWorkHours,
+          breakTime: diaryBreakTime,
+          productivity: diaryProductivity,
+          notes: diaryNotes,
         }),
       });
 
@@ -1630,6 +1659,22 @@ function App() {
         setDiaryMood("😊");
         setDiaryTags("");
         setDiaryIsPrivate(true);
+        // 新しい項目もリセット
+        setDiaryWorkSummary("");
+        setDiaryAchievements([]);
+        setDiaryChallenges([]);
+        setDiaryLearnings([]);
+        setDiaryNextGoals([]);
+        setDiaryEnergyLevel(5);
+        setDiaryStressLevel(5);
+        setDiaryWorkHours(0);
+        setDiaryBreakTime(0);
+        setDiaryProductivity(5);
+        setDiaryNotes("");
+        setNewAchievement("");
+        setNewChallenge("");
+        setNewLearning("");
+        setNewNextGoal("");
         setShowDiaryForm(false);
         loadWorkDiaries();
       } else {
@@ -1663,6 +1708,18 @@ function App() {
               .map((tag) => tag.trim())
               .filter((tag) => tag),
             isPrivate: diaryIsPrivate,
+            // 新しい項目
+            workSummary: diaryWorkSummary,
+            achievements: diaryAchievements,
+            challenges: diaryChallenges,
+            learnings: diaryLearnings,
+            nextGoals: diaryNextGoals,
+            energyLevel: diaryEnergyLevel,
+            stressLevel: diaryStressLevel,
+            workHours: diaryWorkHours,
+            breakTime: diaryBreakTime,
+            productivity: diaryProductivity,
+            notes: diaryNotes,
           }),
         }
       );
@@ -1676,6 +1733,22 @@ function App() {
         setDiaryMood("😊");
         setDiaryTags("");
         setDiaryIsPrivate(true);
+        // 新しい項目もリセット
+        setDiaryWorkSummary("");
+        setDiaryAchievements([]);
+        setDiaryChallenges([]);
+        setDiaryLearnings([]);
+        setDiaryNextGoals([]);
+        setDiaryEnergyLevel(5);
+        setDiaryStressLevel(5);
+        setDiaryWorkHours(0);
+        setDiaryBreakTime(0);
+        setDiaryProductivity(5);
+        setDiaryNotes("");
+        setNewAchievement("");
+        setNewChallenge("");
+        setNewLearning("");
+        setNewNextGoal("");
         setEditingDiary(null);
         setShowDiaryForm(false);
         loadWorkDiaries();
@@ -1727,6 +1800,18 @@ function App() {
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
     }
+  };
+
+  // 配列項目を管理する関数
+  const addArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string, setValue: React.Dispatch<React.SetStateAction<string>>) => {
+    if (value.trim()) {
+      setter(prev => [...prev, value.trim()]);
+      setValue("");
+    }
+  };
+
+  const removeArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, index: number) => {
+    setter(prev => prev.filter((_, i) => i !== index));
   };
 
   // 機能設定の関数
@@ -2242,6 +2327,22 @@ function App() {
     setDiaryMood(diary.mood);
     setDiaryTags(diary.tags ? diary.tags.join(", ") : "");
     setDiaryIsPrivate(diary.isPrivate);
+    // 新しい項目の初期値設定
+    setDiaryWorkSummary(diary.workSummary || "");
+    setDiaryAchievements(diary.achievements || []);
+    setDiaryChallenges(diary.challenges || []);
+    setDiaryLearnings(diary.learnings || []);
+    setDiaryNextGoals(diary.nextGoals || []);
+    setDiaryEnergyLevel(diary.energyLevel || 5);
+    setDiaryStressLevel(diary.stressLevel || 5);
+    setDiaryWorkHours(diary.workHours || 0);
+    setDiaryBreakTime(diary.breakTime || 0);
+    setDiaryProductivity(diary.productivity || 5);
+    setDiaryNotes(diary.notes || "");
+    setNewAchievement("");
+    setNewChallenge("");
+    setNewLearning("");
+    setNewNextGoal("");
     setEditingDiary(diary);
     setShowDiaryForm(true);
     setShowSalaryForm(false);
@@ -6257,6 +6358,259 @@ function App() {
                                 プライベートにする
                               </label>
                             </div>
+
+                            {/* 新しい詳細項目 */}
+                            <div className="diary-details-section">
+                              <h4>📊 詳細記録</h4>
+                              
+                              {/* 仕事の要約 */}
+                              <div className="form-group">
+                                <label htmlFor="diaryWorkSummary">仕事の要約</label>
+                                <textarea
+                                  id="diaryWorkSummary"
+                                  value={diaryWorkSummary}
+                                  onChange={(e) => setDiaryWorkSummary(e.target.value)}
+                                  placeholder="今日の仕事を簡潔にまとめてください"
+                                  rows={3}
+                                />
+                              </div>
+
+                              {/* 数値項目 */}
+                              <div className="form-row">
+                                <div className="form-group">
+                                  <label htmlFor="diaryWorkHours">作業時間 (時間)</label>
+                                  <input
+                                    type="number"
+                                    id="diaryWorkHours"
+                                    value={diaryWorkHours}
+                                    onChange={(e) => setDiaryWorkHours(Number(e.target.value))}
+                                    min="0"
+                                    max="24"
+                                    step="0.5"
+                                  />
+                                </div>
+                                <div className="form-group">
+                                  <label htmlFor="diaryBreakTime">休憩時間 (分)</label>
+                                  <input
+                                    type="number"
+                                    id="diaryBreakTime"
+                                    value={diaryBreakTime}
+                                    onChange={(e) => setDiaryBreakTime(Number(e.target.value))}
+                                    min="0"
+                                    max="480"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="form-row">
+                                <div className="form-group">
+                                  <label htmlFor="diaryEnergyLevel">エネルギーレベル (1-10)</label>
+                                  <input
+                                    type="range"
+                                    id="diaryEnergyLevel"
+                                    value={diaryEnergyLevel}
+                                    onChange={(e) => setDiaryEnergyLevel(Number(e.target.value))}
+                                    min="1"
+                                    max="10"
+                                  />
+                                  <span className="range-value">{diaryEnergyLevel}</span>
+                                </div>
+                                <div className="form-group">
+                                  <label htmlFor="diaryStressLevel">ストレスレベル (1-10)</label>
+                                  <input
+                                    type="range"
+                                    id="diaryStressLevel"
+                                    value={diaryStressLevel}
+                                    onChange={(e) => setDiaryStressLevel(Number(e.target.value))}
+                                    min="1"
+                                    max="10"
+                                  />
+                                  <span className="range-value">{diaryStressLevel}</span>
+                                </div>
+                              </div>
+
+                              <div className="form-group">
+                                <label htmlFor="diaryProductivity">生産性 (1-10)</label>
+                                <input
+                                  type="range"
+                                  id="diaryProductivity"
+                                  value={diaryProductivity}
+                                  onChange={(e) => setDiaryProductivity(Number(e.target.value))}
+                                  min="1"
+                                  max="10"
+                                />
+                                <span className="range-value">{diaryProductivity}</span>
+                              </div>
+
+                              {/* 配列項目 */}
+                              <div className="form-group">
+                                <label>今日の成果</label>
+                                <div className="array-input">
+                                  <input
+                                    type="text"
+                                    value={newAchievement}
+                                    onChange={(e) => setNewAchievement(e.target.value)}
+                                    placeholder="成果を入力してEnterキーで追加"
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        addArrayItem(setDiaryAchievements, newAchievement, setNewAchievement);
+                                      }
+                                    }}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => addArrayItem(setDiaryAchievements, newAchievement, setNewAchievement)}
+                                    className="add-item-button"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                                <div className="array-items">
+                                  {diaryAchievements.map((item, index) => (
+                                    <div key={index} className="array-item">
+                                      <span>✅ {item}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => removeArrayItem(setDiaryAchievements, index)}
+                                        className="remove-item-button"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="form-group">
+                                <label>課題・困難</label>
+                                <div className="array-input">
+                                  <input
+                                    type="text"
+                                    value={newChallenge}
+                                    onChange={(e) => setNewChallenge(e.target.value)}
+                                    placeholder="課題を入力してEnterキーで追加"
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        addArrayItem(setDiaryChallenges, newChallenge, setNewChallenge);
+                                      }
+                                    }}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => addArrayItem(setDiaryChallenges, newChallenge, setNewChallenge)}
+                                    className="add-item-button"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                                <div className="array-items">
+                                  {diaryChallenges.map((item, index) => (
+                                    <div key={index} className="array-item">
+                                      <span>⚠️ {item}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => removeArrayItem(setDiaryChallenges, index)}
+                                        className="remove-item-button"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="form-group">
+                                <label>学んだこと</label>
+                                <div className="array-input">
+                                  <input
+                                    type="text"
+                                    value={newLearning}
+                                    onChange={(e) => setNewLearning(e.target.value)}
+                                    placeholder="学んだことを入力してEnterキーで追加"
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        addArrayItem(setDiaryLearnings, newLearning, setNewLearning);
+                                      }
+                                    }}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => addArrayItem(setDiaryLearnings, newLearning, setNewLearning)}
+                                    className="add-item-button"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                                <div className="array-items">
+                                  {diaryLearnings.map((item, index) => (
+                                    <div key={index} className="array-item">
+                                      <span>📚 {item}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => removeArrayItem(setDiaryLearnings, index)}
+                                        className="remove-item-button"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="form-group">
+                                <label>明日の目標</label>
+                                <div className="array-input">
+                                  <input
+                                    type="text"
+                                    value={newNextGoal}
+                                    onChange={(e) => setNewNextGoal(e.target.value)}
+                                    placeholder="明日の目標を入力してEnterキーで追加"
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        addArrayItem(setDiaryNextGoals, newNextGoal, setNewNextGoal);
+                                      }
+                                    }}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => addArrayItem(setDiaryNextGoals, newNextGoal, setNewNextGoal)}
+                                    className="add-item-button"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                                <div className="array-items">
+                                  {diaryNextGoals.map((item, index) => (
+                                    <div key={index} className="array-item">
+                                      <span>🎯 {item}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => removeArrayItem(setDiaryNextGoals, index)}
+                                        className="remove-item-button"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="form-group">
+                                <label htmlFor="diaryNotes">その他のメモ</label>
+                                <textarea
+                                  id="diaryNotes"
+                                  value={diaryNotes}
+                                  onChange={(e) => setDiaryNotes(e.target.value)}
+                                  placeholder="その他、気になることや記録したいことを自由に書いてください"
+                                  rows={3}
+                                />
+                              </div>
+                            </div>
+
                             <button type="submit" className="submit-button">
                               📝 {editingDiary ? "日記を更新" : "日記を保存"}
                             </button>
@@ -6791,6 +7145,79 @@ function App() {
                                         </div>
                                         <div className="diary-content">
                                           <p>{diary.content}</p>
+                                          
+                                          {/* 新しい詳細項目の表示 */}
+                                          {diary.workSummary && (
+                                            <div className="diary-detail-section">
+                                              <h5>📋 仕事の要約</h5>
+                                              <p>{diary.workSummary}</p>
+                                            </div>
+                                          )}
+                                          
+                                          {diary.achievements && diary.achievements.length > 0 && (
+                                            <div className="diary-detail-section">
+                                              <h5>✅ 今日の成果</h5>
+                                              <ul>
+                                                {diary.achievements.map((achievement, index) => (
+                                                  <li key={index}>{achievement}</li>
+                                                ))}
+                                              </ul>
+                                            </div>
+                                          )}
+                                          
+                                          {diary.challenges && diary.challenges.length > 0 && (
+                                            <div className="diary-detail-section">
+                                              <h5>⚠️ 課題・困難</h5>
+                                              <ul>
+                                                {diary.challenges.map((challenge, index) => (
+                                                  <li key={index}>{challenge}</li>
+                                                ))}
+                                              </ul>
+                                            </div>
+                                          )}
+                                          
+                                          {diary.learnings && diary.learnings.length > 0 && (
+                                            <div className="diary-detail-section">
+                                              <h5>📚 学んだこと</h5>
+                                              <ul>
+                                                {diary.learnings.map((learning, index) => (
+                                                  <li key={index}>{learning}</li>
+                                                ))}
+                                              </ul>
+                                            </div>
+                                          )}
+                                          
+                                          {diary.nextGoals && diary.nextGoals.length > 0 && (
+                                            <div className="diary-detail-section">
+                                              <h5>🎯 明日の目標</h5>
+                                              <ul>
+                                                {diary.nextGoals.map((goal, index) => (
+                                                  <li key={index}>{goal}</li>
+                                                ))}
+                                              </ul>
+                                            </div>
+                                          )}
+                                          
+                                          {/* 数値項目の表示 */}
+                                          <div className="diary-metrics">
+                                            {diary.workHours > 0 && (
+                                              <span className="metric">⏰ 作業時間: {diary.workHours}時間</span>
+                                            )}
+                                            {diary.breakTime > 0 && (
+                                              <span className="metric">☕ 休憩時間: {diary.breakTime}分</span>
+                                            )}
+                                            <span className="metric">⚡ エネルギー: {diary.energyLevel || 5}/10</span>
+                                            <span className="metric">😰 ストレス: {diary.stressLevel || 5}/10</span>
+                                            <span className="metric">📈 生産性: {diary.productivity || 5}/10</span>
+                                          </div>
+                                          
+                                          {diary.notes && (
+                                            <div className="diary-detail-section">
+                                              <h5>📝 その他のメモ</h5>
+                                              <p>{diary.notes}</p>
+                                            </div>
+                                          )}
+                                          
                                           {diary.tags &&
                                             diary.tags.length > 0 && (
                                               <div className="diary-tags">
