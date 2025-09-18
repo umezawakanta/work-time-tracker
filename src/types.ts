@@ -81,6 +81,7 @@ export interface Memo {
   isPublic: boolean;
   isFamilyOnly?: boolean;
   isAdminOnly?: boolean;
+  author?: string;
   createdAt: string;
   updatedAt: string;
   replies?: Reply[];

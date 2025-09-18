@@ -366,7 +366,10 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                         ✏️
                       </button>
                       <button
-                        onClick={() => handleDeleteMemo(memo.id, getMemoTitle(memo))}
+                        onClick={() => {
+                          // メモ削除機能（実装予定）
+                          console.log('メモ削除:', memo.id, getMemoTitle(memo));
+                        }}
                         className="delete-button"
                         title="削除"
                       >

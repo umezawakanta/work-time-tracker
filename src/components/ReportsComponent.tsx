@@ -311,7 +311,7 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
                     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                     .slice(0, 3)
                     .map((diary) => (
-                      <div key={diary.id} className="recent-item">
+                      <div key={diary._id} className="recent-item">
                         <div className="recent-date">{formatDateTime(diary.date)}</div>
                         <div className="recent-content">{diary.title || '日記エントリ'}</div>
                         <div className="recent-type">日記</div>

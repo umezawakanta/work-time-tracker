@@ -39,7 +39,7 @@ interface SelfAnalysisComponentProps {
   goals: Goal[];
   setGoals: (goals: Goal[]) => void;
   learningRecords: LearningRecord[];
-  setLearningRecords: (records: LearningRecord[]) => void;
+  setLearningRecords: React.Dispatch<React.SetStateAction<LearningRecord[]>>;
   timeEntries: any[];
   calculateTimeBreakdown: () => { [key: string]: number };
   calculateProductivityTrend: () => Array<{date: string, workHours: number, dayOfWeek: string}>;
