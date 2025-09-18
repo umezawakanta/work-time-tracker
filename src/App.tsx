@@ -977,34 +977,6 @@ function App() {
 
   // 表示する機能を取得
 
-  // 日時フォーマット関数（他のセクション用）
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("ja-JP", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  // メモのタイトルを取得するヘルパー関数（他のセクション用）
-  const getMemoTitle = (memo: Memo): string => {
-    if (memo.title && memo.title.trim()) {
-      return memo.title;
-    }
-    // タイトルが空の場合は内容の一行目を返す
-    const firstLine = memo.content.split("\n")[0].trim();
-    return firstLine || "無題";
-  };
-
-  // メモカテゴリを取得する関数（他のセクション用）
-  const getMemoCategories = () => {
-    const memoCategories = new Set(memos.map((memo) => memo.category));
-    const allCategories = [...memoCategories, ...getAllGenres()];
-    return Array.from(new Set(allCategories)).sort();
-  };
 
   // PWA Badge機能
   const updateAppBadge = (count: number) => {
@@ -2039,24 +2011,6 @@ function App() {
     }
   };
 
-  // 配列項目を管理する関数
-  const addArrayItem = (
-    setter: React.Dispatch<React.SetStateAction<string[]>>,
-    value: string,
-    setValue: React.Dispatch<React.SetStateAction<string>>
-  ) => {
-    if (value.trim()) {
-      setter((prev) => [...prev, value.trim()]);
-      setValue("");
-    }
-  };
-
-  const removeArrayItem = (
-    setter: React.Dispatch<React.SetStateAction<string[]>>,
-    index: number
-  ) => {
-    setter((prev) => prev.filter((_, i) => i !== index));
-  };
 
   // 機能設定の関数
   const loadUserSettings = async () => {
@@ -2418,36 +2372,6 @@ function App() {
     return days;
   };
 
-  const getRecordsForDate = (date: Date) => {
-    // 日本時間での日付文字列を取得
-    const jstDateStr = new Date(date.getTime() + 9 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0];
-
-    const filteredSalaryRecords = salaryRecords.filter((record) => {
-      // データベースの日付を日本時間に変換して比較
-      const recordDate = new Date(record.date);
-      const recordJstDateStr = new Date(
-        recordDate.getTime() + 9 * 60 * 60 * 1000
-      )
-        .toISOString()
-        .split("T")[0];
-
-      return recordJstDateStr === jstDateStr;
-    });
-
-    const filteredDiaries = workDiaries.filter((diary) => {
-      // データベースの日付を日本時間に変換して比較
-      const diaryDate = new Date(diary.date);
-      const diaryJstDateStr = new Date(diaryDate.getTime() + 9 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0];
-
-      return diaryJstDateStr === jstDateStr;
-    });
-
-    return { salaryRecords: filteredSalaryRecords, diaries: filteredDiaries };
-  };
 
   // 月間収支を計算する関数
   const getMonthlySummary = (year: number, month: number) => {

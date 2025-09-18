@@ -243,7 +243,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     setCurrentMonth(newMonth);
   };
 
-  // 配列アイテムの追加・削除ヘルパー
+  // 配列項目を管理する関数
   const addArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string, setValue: React.Dispatch<React.SetStateAction<string>>) => {
     if (value.trim()) {
       setter(prev => [...prev, value.trim()]);

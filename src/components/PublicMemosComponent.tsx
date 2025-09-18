@@ -131,9 +131,9 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // 選択された日付の公開メモを取得
   const getPublicMemosForDate = (date: Date) => {
-    const dateString = date.toISOString().split('T')[0];
+    const dateString = date.toDateString();
     return publicMemos.filter(memo => {
-      const memoDate = new Date(memo.createdAt).toISOString().split('T')[0];
+      const memoDate = new Date(memo.createdAt).toDateString();
       return memoDate === dateString;
     });
   };
