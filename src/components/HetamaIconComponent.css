@@ -1,0 +1,182 @@
+/* HetamaIconComponent.css - ヘタウマ風アイコンコンポーネント */
+
+.hetama-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fad0c4 100%);
+  box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.hetama-icon:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 154, 158, 0.4);
+}
+
+.hetama-icon-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.hetama-icon-emoji {
+  font-size: inherit;
+  line-height: 1;
+  animation: bounce 2s infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.hetama-icon-aura {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1, #f093fb);
+  background-size: 400% 400%;
+  border-radius: 50%;
+  animation: auraRotate 3s ease-in-out infinite;
+  z-index: 1;
+}
+
+.hetama-icon-sparkles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 0.6em;
+  animation: sparkleFloat 2s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+.sparkle-1 {
+  top: 10%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.sparkle-2 {
+  top: 20%;
+  right: 15%;
+  animation-delay: 0.7s;
+}
+
+.sparkle-3 {
+  bottom: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 1.4s;
+}
+
+/* サイズバリエーション */
+.hetama-icon-small {
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+}
+
+.hetama-icon-medium {
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+}
+
+.hetama-icon-large {
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+}
+
+/* アニメーション */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes auraRotate {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes sparkleFloat {
+  0%, 100% {
+    opacity: 0.8;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.2);
+  }
+}
+
+/* ホバー効果の強化 */
+.hetama-icon:hover .hetama-icon-aura {
+  animation-duration: 1.5s;
+}
+
+.hetama-icon:hover .sparkle {
+  animation-duration: 1s;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 768px) {
+  .hetama-icon-small {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+  }
+  
+  .hetama-icon-medium {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+  
+  .hetama-icon-large {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .hetama-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+  
+  .hetama-icon:hover {
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+  
+  .hetama-icon-aura {
+    background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4ecdc4);
+  }
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import './SelfAnalysisComponent.css';
 import type { Habit, Goal, LearningRecord, MoodLog } from '../types';
+import HetamaIconComponent from './HetamaIconComponent';
 
 interface PersonalProfile {
   values: string[];
@@ -99,7 +100,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
     <div className="self-analysis-section">
       <div className="section-header">
         <h2>
-          <span className="section-icon">🔍</span>
+          <span className="section-icon">
+            <HetamaIconComponent featureId="self-analysis" size="large" />
+          </span>
           じぶん図鑑
         </h2>
         <div className="section-controls">

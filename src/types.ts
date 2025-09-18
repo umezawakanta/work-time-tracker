@@ -150,7 +150,6 @@ export interface UserSettings {
 export interface Feature {
   id: string;
   name: string;
-  icon: string;
   description: string;
   component: React.ReactNode;
 }

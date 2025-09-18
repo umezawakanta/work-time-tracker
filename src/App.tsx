@@ -14,6 +14,7 @@ import SelfAnalysisComponent from "./components/SelfAnalysisComponent";
 import BookshelfComponent from "./components/BookshelfComponent";
 import HeaderComponent from "./components/HeaderComponent";
 import DiaryReminderIntegration from "./components/DiaryReminderIntegration";
+import HetamaIconComponent from "./components/HetamaIconComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts, FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
@@ -824,77 +825,66 @@ function App() {
     {
       id: "time-tracking",
       name: "時間管理",
-      icon: "⏰",
       description: "作業時間の記録と管理",
       component: null, // 既存の時間管理セクション
     },
     {
       id: "cooking-timer",
       name: "料理タイマー",
-      icon: "🍳",
       description: "料理の調理時間管理",
       component: null, // 料理タイマーセクション
     },
     {
       id: "projects",
       name: "プロジェクト",
-      icon: "📁",
       description: "プロジェクトの管理",
       component: null, // 既存のプロジェクトセクション
     },
     {
       id: "reports",
       name: "レポート",
-      icon: "📊",
       description: "作業時間のレポート表示",
       component: null, // 既存のレポートセクション
     },
     {
       id: "admin-panel",
       name: "管理者パネル",
-      icon: "👑",
       description: "ユーザー管理とシステム設定",
       component: null, // 既存の管理者パネルセクション
     },
     {
       id: "bookshelf",
       name: "本棚",
-      icon: "📚",
       description: "本の管理と記録",
       component: null, // 既存の本棚セクション
     },
     {
       id: "memos",
       name: "メモ",
-      icon: "📝",
       description: "個人メモの管理",
       component: null, // 既存のメモセクション
     },
     {
       id: "public-memos",
       name: "公開メモ",
-      icon: "🌐",
       description: "公開メモの閲覧と投稿",
       component: null, // 既存の公開メモセクション
     },
     {
       id: "work-records",
       name: "お仕事記録",
-      icon: "💼",
       description: "給料記録と日記",
       component: null, // 既存のお仕事記録セクション
     },
     {
       id: "timers",
       name: "タイマー",
-      icon: "⏱️",
       description: "カスタムタイマーとプリセットタイマー",
       component: null, // タイマーセクション
     },
     {
       id: "self-analysis",
       name: "じぶん図鑑",
-      icon: "🔍",
       description: "自分自身を深く理解するための分析ツール",
       component: null, // 自己分析セクション
     },
@@ -4403,25 +4393,7 @@ function App() {
                     <div className="section-header">
                       <h2>
                         <span className="section-icon">
-                          <div className="mini-character">
-                            <div className="mini-character-halo"></div>
-                            <div className="mini-character-wings">
-                              <div className="mini-wing left-mini-wing"></div>
-                              <div className="mini-wing right-mini-wing"></div>
-                            </div>
-                            <div className="mini-character-face">
-                              <div className="mini-character-eyes">
-                                <div className="mini-eye left-mini-eye"></div>
-                                <div className="mini-eye right-mini-eye"></div>
-                              </div>
-                              <div className="mini-character-mouth"></div>
-                            </div>
-                            <div className="mini-character-body"></div>
-                            <div className="mini-sparkles">
-                              <div className="mini-sparkle mini-sparkle-1"></div>
-                              <div className="mini-sparkle mini-sparkle-2"></div>
-                            </div>
-                          </div>
+                          <HetamaIconComponent featureId="reports" size="large" />
                         </span>
                         レポート
                       </h2>
@@ -4869,25 +4841,7 @@ function App() {
                     <div className="section-header">
                       <h2>
                         <span className="section-icon">
-                          <div className="mini-character">
-                            <div className="mini-character-halo"></div>
-                            <div className="mini-character-wings">
-                              <div className="mini-wing left-mini-wing"></div>
-                              <div className="mini-wing right-mini-wing"></div>
-                            </div>
-                            <div className="mini-character-face">
-                              <div className="mini-character-eyes">
-                                <div className="mini-eye left-mini-eye"></div>
-                                <div className="mini-eye right-mini-eye"></div>
-                              </div>
-                              <div className="mini-character-mouth"></div>
-                            </div>
-                            <div className="mini-character-body"></div>
-                            <div className="mini-sparkles">
-                              <div className="mini-sparkle mini-sparkle-1"></div>
-                              <div className="mini-sparkle mini-sparkle-2"></div>
-                            </div>
-                          </div>
+                          <HetamaIconComponent featureId="memos" size="large" />
                         </span>
                         メモ
                       </h2>
@@ -5478,25 +5432,7 @@ function App() {
                     <div className="section-header">
                       <h2>
                         <span className="section-icon">
-                          <div className="mini-character">
-                            <div className="mini-character-halo"></div>
-                            <div className="mini-character-wings">
-                              <div className="mini-wing left-mini-wing"></div>
-                              <div className="mini-wing right-mini-wing"></div>
-                            </div>
-                            <div className="mini-character-face">
-                              <div className="mini-character-eyes">
-                                <div className="mini-eye left-mini-eye"></div>
-                                <div className="mini-eye right-mini-eye"></div>
-                              </div>
-                              <div className="mini-character-mouth"></div>
-                            </div>
-                            <div className="mini-character-body"></div>
-                            <div className="mini-sparkles">
-                              <div className="mini-sparkle mini-sparkle-1"></div>
-                              <div className="mini-sparkle mini-sparkle-2"></div>
-                            </div>
-                          </div>
+                          <HetamaIconComponent featureId="public-memos" size="large" />
                         </span>
                         公開メモ
                       </h2>
@@ -7084,18 +7020,9 @@ function App() {
                     <div className="section-header">
                       <h2>
                         <span className="section-icon">
-                          <div className="mini-character">
-                            <div className="mini-character-face">
-                              <div className="mini-character-eyes">
-                                <div className="mini-eye left-mini-eye"></div>
-                                <div className="mini-eye right-mini-eye"></div>
-                              </div>
-                              <div className="mini-character-mouth"></div>
-                            </div>
-                            <div className="mini-character-body"></div>
-                          </div>
+                          <HetamaIconComponent featureId="timers" size="large" />
                         </span>
-                        ⏱️ タイマー
+                        タイマー
                       </h2>
                       <div className="section-controls">
                         {showTimers ? (
@@ -7648,7 +7575,12 @@ function App() {
                         >
                           <div className="feature-drag-handle">⋮⋮</div>
                           <div className="feature-item-content">
-                            <div className="feature-icon">{feature.icon}</div>
+                            <div className="feature-icon">
+                              <HetamaIconComponent 
+                                featureId={feature.id} 
+                                size="medium" 
+                              />
+                            </div>
                             <div className="feature-info">
                               <div className="feature-name">{feature.name}</div>
                               <div className="feature-description">
