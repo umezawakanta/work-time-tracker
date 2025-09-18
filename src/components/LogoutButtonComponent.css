@@ -35,6 +35,11 @@
   height: 20px;
 }
 
+.logout-button i {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
 /* 右上配置時のログアウトボタン */
 .logout-container .logout-button {
   background: rgba(255, 255, 255, 0.9);
