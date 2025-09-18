@@ -46,18 +46,18 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       {/* 左側：キャラクター（絶対保持） */}
       <HeaderLeftComponent isTimeTrackingActive={isTimeTrackingActive} />
       
-      {/* 中央：タイトルのみ */}
+      {/* 中央：タイトルと挨拶 */}
       <div className="header-center">
         <HeaderTitleComponent />
+        <UserGreetingComponent
+          user={user}
+          currentCharacter={currentCharacter}
+        />
       </div>
       
-      {/* 右側：最小限の要素のみ */}
+      {/* 右側：ナビゲーション要素 */}
       <div className="header-right">
         <div className="header-navigation">
-          <UserGreetingComponent
-            user={user}
-            currentCharacter={currentCharacter}
-          />
           <UserInfoComponent
             user={user}
             currentCharacter={currentCharacter}
@@ -88,6 +88,9 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             loadUserSettings={loadUserSettings}
           />
           <ShareButtonComponent />
+        </div>
+        {/* ログアウトボタンを右上に配置 */}
+        <div className="header-logout">
           <LogoutButtonComponent onLogout={handleLogout} />
         </div>
       </div>
