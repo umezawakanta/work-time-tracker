@@ -37,9 +37,6 @@ interface MemosComponentProps {
   handleSaveGenreEdit: () => void;
   handleCancelGenreEdit: () => void;
   handleDeleteGenreFromManagement: (genre: string) => void;
-  getMemoCategories: () => string[];
-  getMemoTitle: (memo: Memo) => string;
-  formatDateTime: (dateString: string) => string;
   loadMemos: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
 }
@@ -79,9 +76,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   handleSaveGenreEdit,
   handleCancelGenreEdit,
   handleDeleteGenreFromManagement,
-  getMemoCategories,
-  getMemoTitle,
-  formatDateTime,
   loadMemos,
   closeOtherFeatures,
 }) => {
@@ -111,6 +105,35 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     setMemoIsPrivate(true);
     setEditingMemo(null);
     setShowMemoForm(false);
+  };
+
+  // 日時フォーマット関数
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("ja-JP", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  // メモのタイトルを取得するヘルパー関数
+  const getMemoTitle = (memo: Memo): string => {
+    if (memo.title && memo.title.trim()) {
+      return memo.title;
+    }
+    // タイトルが空の場合は内容の一行目を返す
+    const firstLine = memo.content.split("\n")[0].trim();
+    return firstLine || "無題のメモ";
+  };
+
+  // メモカテゴリを取得する関数
+  const getMemoCategories = () => {
+    const memoCategories = new Set(memos.map((memo) => memo.category));
+    const allCategories = [...memoCategories, ...customGenres];
+    return Array.from(new Set(allCategories)).sort();
   };
 
   return (

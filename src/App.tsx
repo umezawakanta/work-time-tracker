@@ -947,7 +947,8 @@ function App() {
   };
 
   // 表示する機能を取得
-  // ユーティリティ関数
+
+  // 日時フォーマット関数（他のセクション用）
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString("ja-JP", {
@@ -957,6 +958,23 @@ function App() {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  // メモのタイトルを取得するヘルパー関数（他のセクション用）
+  const getMemoTitle = (memo: Memo): string => {
+    if (memo.title && memo.title.trim()) {
+      return memo.title;
+    }
+    // タイトルが空の場合は内容の一行目を返す
+    const firstLine = memo.content.split("\n")[0].trim();
+    return firstLine || "無題";
+  };
+
+  // メモカテゴリを取得する関数（他のセクション用）
+  const getMemoCategories = () => {
+    const memoCategories = new Set(memos.map((memo) => memo.category));
+    const allCategories = [...memoCategories, ...getAllGenres()];
+    return Array.from(new Set(allCategories)).sort();
   };
 
   // PWA Badge機能
@@ -3500,15 +3518,6 @@ function App() {
     }
   };
 
-  // メモのタイトルを取得するヘルパー関数
-  const getMemoTitle = (memo: Memo): string => {
-    if (memo.title && memo.title.trim()) {
-      return memo.title;
-    }
-    // タイトルが空の場合は内容の一行目を返す
-    const firstLine = memo.content.split("\n")[0].trim();
-    return firstLine || "無題";
-  };
 
   // 公開メモ用のカレンダー関数
   const getPublicMemosForDate = (date: Date) => {
@@ -3635,11 +3644,6 @@ function App() {
     loadMemos();
   };
 
-  const getMemoCategories = () => {
-    const memoCategories = new Set(memos.map((memo) => memo.category));
-    const allCategories = [...memoCategories, ...getAllGenres()];
-    return Array.from(new Set(allCategories)).sort();
-  };
 
   // 公開メモ関連の関数
   const loadPublicMemos = async () => {
@@ -5429,9 +5433,6 @@ function App() {
                     handleSaveGenreEdit={handleSaveGenreEdit}
                     handleCancelGenreEdit={handleCancelGenreEdit}
                     handleDeleteGenreFromManagement={handleDeleteGenreFromManagement}
-                    getMemoCategories={getMemoCategories}
-                    getMemoTitle={getMemoTitle}
-                    formatDateTime={formatDateTime}
                     loadMemos={loadMemos}
                     closeOtherFeatures={closeOtherFeatures}
                   />
