@@ -1129,7 +1129,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                             {habit.frequency === 'monthly' && '毎月'}
                           </span>
                           <span className="frequency-target">
-                            {habit.target}{habit.unit}
+                            {habit.targetDays}日
                           </span>
                         </div>
 

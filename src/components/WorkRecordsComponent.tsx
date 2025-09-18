@@ -304,7 +304,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             <div className="summary-grid">
               <div className="summary-item">
                 <span className="summary-label">総給与</span>
-                <span className="summary-value">¥{monthlySummary.totalSalary.toLocaleString()}</span>
+                <span className="summary-value">¥{(monthlySummary.totalSalary || 0).toLocaleString()}</span>
               </div>
               <div className="summary-item">
                 <span className="summary-label">平均気分</span>
@@ -386,7 +386,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               {selectedRecordType === "salary" && selectedRecord.salaryRecord && (
                 <div className="salary-record-detail">
                   <h4>💰 給与記録</h4>
-                  <p><strong>金額:</strong> ¥{selectedRecord.salaryRecord.amount.toLocaleString()}</p>
+                  <p><strong>金額:</strong> ¥{(selectedRecord.salaryRecord.amount || 0).toLocaleString()}</p>
                   <p><strong>日付:</strong> {new Date(selectedRecord.salaryRecord.date).toLocaleDateString()}</p>
                   {selectedRecord.salaryRecord.notes && (
                     <p><strong>メモ:</strong> {selectedRecord.salaryRecord.notes}</p>

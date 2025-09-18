@@ -5018,6 +5018,12 @@ function App() {
                     setCustomGenres={setCustomGenres}
                     loadMemos={loadMemos}
                     closeOtherFeatures={closeOtherFeatures}
+                    handleReplySubmit={handleReplySubmit}
+                    handleReplyCancel={handleReplyCancel}
+                    handleEditReply={handleEditReply}
+                    handleSaveEditReply={handleSaveEditReply}
+                    handleCancelEditReply={handleCancelEditReply}
+                    handleDeleteReply={handleDeleteReply}
                   />
                 );
               } else if (feature.id === "public-memos") {
@@ -5031,6 +5037,12 @@ function App() {
                     user={user}
                     loadPublicMemos={loadPublicMemos}
                     closeOtherFeatures={closeOtherFeatures}
+                    handleReplySubmit={handleReplySubmit}
+                    handleReplyCancel={handleReplyCancel}
+                    handleEditReply={handleEditReply}
+                    handleSaveEditReply={handleSaveEditReply}
+                    handleCancelEditReply={handleCancelEditReply}
+                    handleDeleteReply={handleDeleteReply}
                   />
                 );
               } else if (feature.id === "work-records") {

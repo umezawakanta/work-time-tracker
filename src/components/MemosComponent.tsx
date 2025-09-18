@@ -11,6 +11,12 @@ interface MemosComponentProps {
   setCustomGenres: (genres: string[]) => void;
   loadMemos: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
+  handleReplySubmit: (memoId: string) => void;
+  handleReplyCancel: () => void;
+  handleEditReply: (replyId: string, content: string) => void;
+  handleSaveEditReply: (replyId: string) => void;
+  handleCancelEditReply: () => void;
+  handleDeleteReply: (replyId: string) => void;
 }
 
 const MemosComponent: React.FC<MemosComponentProps> = ({
@@ -22,6 +28,12 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   setCustomGenres,
   loadMemos,
   closeOtherFeatures,
+  handleReplySubmit,
+  handleReplyCancel,
+  handleEditReply,
+  handleSaveEditReply,
+  handleCancelEditReply,
+  handleDeleteReply,
 }) => {
   // 内部状態
   const [showMemoForm, setShowMemoForm] = useState(false);

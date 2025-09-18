@@ -10,6 +10,12 @@ interface PublicMemosComponentProps {
   user: User | null;
   loadPublicMemos: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
+  handleReplySubmit: (memoId: string) => void;
+  handleReplyCancel: () => void;
+  handleEditReply: (replyId: string, content: string) => void;
+  handleSaveEditReply: (replyId: string) => void;
+  handleCancelEditReply: () => void;
+  handleDeleteReply: (replyId: string) => void;
 }
 
 const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
@@ -20,6 +26,12 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   user,
   loadPublicMemos,
   closeOtherFeatures,
+  handleReplySubmit,
+  handleReplyCancel,
+  handleEditReply,
+  handleSaveEditReply,
+  handleCancelEditReply,
+  handleDeleteReply,
 }) => {
   // 内部状態
   const [publicMemoSelectedDate, setPublicMemoSelectedDate] = useState<Date | null>(null);
@@ -48,40 +60,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
     setCurrentPage(page);
   };
 
-  // 返信関連の関数
-  const handleEditReply = (replyId: string, content: string) => {
-    setEditingReply(replyId);
-    setEditingReplyContent(content);
-  };
-
-  const handleSaveEditReply = (replyId: string) => {
-    // TODO: API呼び出しで返信を更新
-    console.log('返信を更新:', replyId, editingReplyContent);
-    setEditingReply(null);
-    setEditingReplyContent("");
-  };
-
-  const handleCancelEditReply = () => {
-    setEditingReply(null);
-    setEditingReplyContent("");
-  };
-
-  const handleDeleteReply = (replyId: string) => {
-    // TODO: API呼び出しで返信を削除
-    console.log('返信を削除:', replyId);
-  };
-
-  const handleReplySubmit = (memoId: string) => {
-    // TODO: API呼び出しで返信を送信
-    console.log('返信を送信:', memoId, replyContent);
-    setReplyingToMemo(null);
-    setReplyContent("");
-  };
-
-  const handleReplyCancel = () => {
-    setReplyingToMemo(null);
-    setReplyContent("");
-  };
+  // 返信関連の関数はpropsから受け取る
 
   // 日時フォーマット関数
   const formatDateTime = (dateString: string) => {
