@@ -6,26 +6,6 @@ import type { TimerPreset } from '../types';
 interface TimersComponentProps {
   showTimers: boolean;
   setShowTimers: (show: boolean) => void;
-  customTimerTime: number;
-  setCustomTimerTime: (time: number) => void;
-  customTimerActive: boolean;
-  setCustomTimerActive: (active: boolean) => void;
-  customTimerPaused: boolean;
-  setCustomTimerPaused: (paused: boolean) => void;
-  customTimerTimeLeft: number;
-  setCustomTimerTimeLeft: (time: number) => void;
-  customTimerInterval: NodeJS.Timeout | null;
-  setCustomTimerInterval: (interval: NodeJS.Timeout | null) => void;
-  customTimerSound: string;
-  setCustomTimerSound: (sound: "bell" | "chime" | "beep" | "alarm") => void;
-  timerHistory: any[];
-  timerSettings: any;
-  startCustomTimer: () => void;
-  pauseCustomTimer: () => void;
-  stopCustomTimer: () => void;
-  resetCustomTimer: () => void;
-  playCustomTimerSound: () => void;
-  addToTimerHistory: (name: string, duration: number, type: "custom" | "egg" | "preset") => void;
   closeOtherFeatures: (activeFeature: string) => void;
 }
 
