@@ -134,7 +134,7 @@
   z-index: 10;
 }
 
-/* タブレット以下 */
+/* レスポンシブデザイン - タブレット */
 @media (max-width: 1024px) {
   .dashboard-header {
     flex-direction: column;
@@ -187,7 +187,7 @@
   }
 }
 
-/* モバイル */
+/* レスポンシブデザイン - モバイル */
 @media (max-width: 768px) {
   .dashboard-header {
     padding: 0.8rem;
@@ -221,7 +221,7 @@
   }
 }
 
-/* 小画面モバイル */
+/* レスポンシブデザイン - 小画面モバイル */
 @media (max-width: 480px) {
   .dashboard-header {
     padding: 0.6rem;
