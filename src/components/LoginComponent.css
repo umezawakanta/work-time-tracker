@@ -55,7 +55,8 @@
   animation: float 3s ease-in-out infinite;
 }
 
-.character-halo {
+/* ログイン画面専用のキャラクタースタイル - メインのキャラクターコンポーネントと競合しないようにスコープを限定 */
+.login-container .character-halo {
   position: absolute;
   top: -10px;
   left: 50%;
@@ -68,7 +69,7 @@
   animation: glow 2s ease-in-out infinite alternate;
 }
 
-.character-wings {
+.login-container .character-wings {
   position: absolute;
   top: 10px;
   left: 0;
@@ -76,7 +77,7 @@
   height: 30px;
 }
 
-.wing {
+.login-container .wing {
   position: absolute;
   width: 25px;
   height: 30px;
@@ -85,18 +86,18 @@
   animation: wingFlap 1.5s ease-in-out infinite;
 }
 
-.left-wing {
+.login-container .left-wing {
   left: 5px;
   transform-origin: right center;
 }
 
-.right-wing {
+.login-container .right-wing {
   right: 5px;
   transform-origin: left center;
   animation-delay: 0.75s;
 }
 
-.character-face {
+.login-container .character-face {
   position: absolute;
   top: 20px;
   left: 50%;
@@ -108,7 +109,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.character-eyes {
+.login-container .character-eyes {
   position: absolute;
   top: 12px;
   left: 50%;
@@ -117,7 +118,7 @@
   gap: 8px;
 }
 
-.eye {
+.login-container .eye {
   width: 6px;
   height: 6px;
   background: #333;
@@ -125,7 +126,7 @@
   animation: blink 3s ease-in-out infinite;
 }
 
-.character-mouth {
+.login-container .character-mouth {
   position: absolute;
   bottom: 8px;
   left: 50%;
@@ -137,7 +138,7 @@
   border-radius: 0 0 12px 12px;
 }
 
-.character-body {
+.login-container .character-body {
   position: absolute;
   top: 50px;
   left: 50%;
@@ -149,7 +150,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.sparkles {
+.login-container .sparkles {
   position: absolute;
   top: 0;
   left: 0;
@@ -158,7 +159,7 @@
   pointer-events: none;
 }
 
-.sparkle {
+.login-container .sparkle {
   position: absolute;
   width: 4px;
   height: 4px;
@@ -167,12 +168,12 @@
   animation: sparkle 2s ease-in-out infinite;
 }
 
-.sparkle-1 { top: 10px; left: 20px; animation-delay: 0s; }
-.sparkle-2 { top: 15px; right: 15px; animation-delay: 0.5s; }
-.sparkle-3 { bottom: 20px; left: 15px; animation-delay: 1s; }
-.sparkle-4 { bottom: 15px; right: 20px; animation-delay: 1.5s; }
-.sparkle-5 { top: 30px; left: 10px; animation-delay: 0.3s; }
-.sparkle-6 { top: 25px; right: 10px; animation-delay: 0.8s; }
+.login-container .sparkle-1 { top: 10px; left: 20px; animation-delay: 0s; }
+.login-container .sparkle-2 { top: 15px; right: 15px; animation-delay: 0.5s; }
+.login-container .sparkle-3 { bottom: 20px; left: 15px; animation-delay: 1s; }
+.login-container .sparkle-4 { bottom: 15px; right: 20px; animation-delay: 1.5s; }
+.login-container .sparkle-5 { top: 30px; left: 10px; animation-delay: 0.3s; }
+.login-container .sparkle-6 { top: 25px; right: 10px; animation-delay: 0.8s; }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
@@ -438,17 +439,17 @@
     height: 60px;
   }
   
-  .character-halo {
+  .login-container .character-halo {
     width: 80px;
     height: 16px;
   }
   
-  .character-face {
+  .login-container .character-face {
     width: 30px;
     height: 30px;
   }
   
-  .character-body {
+  .login-container .character-body {
     width: 24px;
     height: 20px;
   }
