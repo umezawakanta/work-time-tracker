@@ -5745,8 +5745,8 @@ function App() {
                     setReplyContent={setReplyContent}
                     editingReply={editingReply}
                     setEditingReply={setEditingReply}
-                    editingReplyContent={editingReplyContent}
-                    setEditingReplyContent={setEditingReplyContent}
+                    editingReplyContent={editReplyContent}
+                    setEditingReplyContent={setEditReplyContent}
                     user={user}
                     loadPublicMemos={loadPublicMemos}
                     handlePublicMemoSearch={handlePublicMemoSearch}
