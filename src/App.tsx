@@ -5056,6 +5056,7 @@ function App() {
                     handleDeleteMemo={handleDeleteMemo}
                     handleUpdateMemo={handleUpdateMemo}
                     editingMemo={editingMemo}
+                    setEditingMemo={setEditingMemo}
                     memoTitle={memoTitle}
                     setMemoTitle={setMemoTitle}
                     memoContent={memoContent}

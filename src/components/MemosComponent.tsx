@@ -14,6 +14,7 @@ interface MemosComponentProps {
   handleDeleteMemo: (memoId: string, memoTitle: string) => void;
   handleUpdateMemo: (e: React.FormEvent) => void;
   editingMemo: Memo | null;
+  setEditingMemo: (memo: Memo | null) => void;
   memoTitle: string;
   setMemoTitle: (title: string) => void;
   memoContent: string;
@@ -42,6 +43,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   handleDeleteMemo,
   handleUpdateMemo,
   editingMemo,
+  setEditingMemo,
   memoTitle,
   setMemoTitle,
   memoContent,
