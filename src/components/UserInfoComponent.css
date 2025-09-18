@@ -1,12 +1,10 @@
-/* UserInfoComponent.css - シンプルなユーザー情報デザイン */
+/* UserInfoComponent.css - 超シンプルユーザー情報デザイン */
 
 .user-info {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 1rem;
-  position: relative;
-  z-index: 1;
   flex-wrap: wrap;
   width: 100%;
   box-sizing: border-box;
@@ -32,13 +30,12 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* レスポンシブデザイン */
+/* レスポンシブ */
 @media (max-width: 1024px) {
   .user-info {
     gap: 0.8rem;
     justify-content: center;
   }
-  
   .user-info span {
     max-width: 150px;
     padding: 0.4rem 0.8rem;
@@ -49,7 +46,6 @@
   .user-info {
     gap: 0.6rem;
   }
-  
   .user-info span {
     max-width: 120px;
     padding: 0.3rem 0.6rem;
@@ -61,7 +57,6 @@
   .user-info {
     gap: 0.4rem;
   }
-  
   .user-info span {
     max-width: 100px;
     padding: 0.2rem 0.5rem;

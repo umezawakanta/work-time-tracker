@@ -1,12 +1,10 @@
-/* HeaderTitleComponent.css - シンプルなヘッダータイトルデザイン */
+/* HeaderTitleComponent.css - 超シンプルタイトルデザイン */
 
 .header-title {
   font-size: 2rem;
   font-weight: 800;
   margin: 0;
   text-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-  position: relative;
-  z-index: 1;
   background: var(--header-title-gradient, linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1));
   background-size: 200% 200%;
   -webkit-background-clip: text;
@@ -21,15 +19,11 @@
 }
 
 @keyframes gradientShift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
-/* シンプルテーマ用のタイトル */
+/* シンプルテーマ用 */
 [data-theme="simple"] .header-title {
   font-size: 2.5rem;
   font-weight: 700;
@@ -42,33 +36,18 @@
   text-shadow: none;
 }
 
-/* レスポンシブデザイン */
+/* レスポンシブ */
 @media (max-width: 1024px) {
-  .header-title {
-    font-size: 1.8rem;
-  }
-  
-  [data-theme="simple"] .header-title {
-    font-size: 2rem;
-  }
+  .header-title { font-size: 1.8rem; }
+  [data-theme="simple"] .header-title { font-size: 2rem; }
 }
 
 @media (max-width: 768px) {
-  .header-title {
-    font-size: 1.6rem;
-  }
-  
-  [data-theme="simple"] .header-title {
-    font-size: 1.8rem;
-  }
+  .header-title { font-size: 1.6rem; }
+  [data-theme="simple"] .header-title { font-size: 1.8rem; }
 }
 
 @media (max-width: 480px) {
-  .header-title {
-    font-size: 1.4rem;
-  }
-  
-  [data-theme="simple"] .header-title {
-    font-size: 1.6rem;
-  }
+  .header-title { font-size: 1.4rem; }
+  [data-theme="simple"] .header-title { font-size: 1.6rem; }
 }

@@ -1,4 +1,4 @@
-/* HeaderButtonsComponent.css - シンプルなヘッダーボタンデザイン */
+/* HeaderButtonsComponent.css - 超シンプルボタンデザイン */
 
 .header-buttons {
   display: flex;
@@ -10,13 +10,10 @@
   box-sizing: border-box;
 }
 
-/* 共通ボタンスタイル */
 .header-buttons button {
   position: relative;
-  overflow: hidden;
   min-width: 44px;
   min-height: 44px;
-  touch-action: manipulation;
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
@@ -24,56 +21,34 @@
   align-items: center;
   justify-content: center;
   font-family: var(--app-font-family, inherit);
+  border-radius: 50%;
+  color: white;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* テーマボタン */
+.header-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
 .theme-button {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.theme-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-}
-
-/* フォントボタン */
 .font-button {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
-  border-radius: 50%;
-  font-size: 1.1rem;
-  box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
 }
 
-.font-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(240, 147, 251, 0.6);
-}
-
-/* 機能ボタン */
 .feature-button {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: white;
-  border-radius: 50%;
-  font-size: 1.1rem;
-  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
 }
 
-.feature-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
-}
-
-/* レスポンシブデザイン */
+/* レスポンシブ */
 @media (max-width: 1024px) {
   .header-buttons {
     gap: 0.4rem;
   }
-  
   .header-buttons button {
     min-width: 40px;
     min-height: 40px;
@@ -85,7 +60,6 @@
   .header-buttons {
     gap: 0.3rem;
   }
-  
   .header-buttons button {
     min-width: 36px;
     min-height: 36px;
@@ -97,7 +71,6 @@
   .header-buttons {
     gap: 0.2rem;
   }
-  
   .header-buttons button {
     min-width: 32px;
     min-height: 32px;
