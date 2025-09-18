@@ -167,6 +167,10 @@ function App() {
   const [showGenreManagement, setShowGenreManagement] = useState(false);
   const [editingGenre, setEditingGenre] = useState<string | null>(null);
   const [editingGenreName, setEditingGenreName] = useState("");
+  
+  // 月収支メモの状態
+  const [monthlyMemo, setMonthlyMemo] = useState("");
+  const [editingMonthlyMemo, setEditingMonthlyMemo] = useState(false);
 
   // プロジェクト関連の状態
   const [projects, setProjects] = useState<Project[]>([]);
@@ -2494,6 +2498,29 @@ function App() {
     }
   };
 
+  // 月収支メモの管理
+  const loadMonthlyMemo = () => {
+    const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+    const savedMemo = localStorage.getItem(`monthlyMemo_${currentMonth}`);
+    setMonthlyMemo(savedMemo || "");
+  };
+
+  const saveMonthlyMemo = () => {
+    const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+    localStorage.setItem(`monthlyMemo_${currentMonth}`, monthlyMemo);
+    setEditingMonthlyMemo(false);
+    setMessage("月収支メモを保存しました");
+  };
+
+  const startEditingMonthlyMemo = () => {
+    setEditingMonthlyMemo(true);
+  };
+
+  const cancelEditingMonthlyMemo = () => {
+    loadMonthlyMemo();
+    setEditingMonthlyMemo(false);
+  };
+
   // 利用可能なジャンル一覧を取得（デフォルト + カスタム）
   const getAllGenres = () => {
     const defaultGenres = [
@@ -2761,6 +2788,13 @@ function App() {
       loadTimeEntries();
     }
   }, [isLoggedIn, user?.id]);
+
+  // 月が変更された時に月収支メモを読み込み
+  useEffect(() => {
+    if (showCalendar) {
+      loadMonthlyMemo();
+    }
+  }, [currentDate, showCalendar]);
 
   const verifyToken = async (token: string) => {
     try {
@@ -7109,6 +7143,57 @@ function App() {
                               >
                                 →
                               </button>
+                            </div>
+
+                            {/* 月収支メモセクション */}
+                            <div className="monthly-memo-section">
+                              <div className="monthly-memo-header">
+                                <h4>📝 月収支メモ</h4>
+                                <div className="monthly-memo-actions">
+                                  {editingMonthlyMemo ? (
+                                    <>
+                                      <button
+                                        onClick={saveMonthlyMemo}
+                                        className="save-memo-button"
+                                        disabled={!monthlyMemo.trim()}
+                                      >
+                                        保存
+                                      </button>
+                                      <button
+                                        onClick={cancelEditingMonthlyMemo}
+                                        className="cancel-memo-button"
+                                      >
+                                        キャンセル
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <button
+                                      onClick={startEditingMonthlyMemo}
+                                      className="edit-memo-button"
+                                    >
+                                      編集
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {editingMonthlyMemo ? (
+                                <textarea
+                                  value={monthlyMemo}
+                                  onChange={(e) => setMonthlyMemo(e.target.value)}
+                                  placeholder="今月の収支についてメモを書いてください..."
+                                  className="monthly-memo-textarea"
+                                  rows={4}
+                                />
+                              ) : (
+                                <div className="monthly-memo-display">
+                                  {monthlyMemo ? (
+                                    <p>{monthlyMemo}</p>
+                                  ) : (
+                                    <p className="no-memo">メモがありません。編集ボタンから追加してください。</p>
+                                  )}
+                                </div>
+                              )}
                             </div>
 
                             <div className="calendar-weekdays">

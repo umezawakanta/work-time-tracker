@@ -9703,3 +9703,139 @@ input:checked + .toggle-slider:before {
     justify-content: center;
   }
 }
+
+/* 月収支メモセクション */
+.monthly-memo-section {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e9ecef;
+}
+
+.monthly-memo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.monthly-memo-header h4 {
+  margin: 0;
+  color: #495057;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.monthly-memo-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-memo-button,
+.save-memo-button,
+.cancel-memo-button {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-memo-button {
+  background: #007bff;
+  color: white;
+}
+
+.edit-memo-button:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.save-memo-button {
+  background: #28a745;
+  color: white;
+}
+
+.save-memo-button:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.save-memo-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.cancel-memo-button {
+  background: #6c757d;
+  color: white;
+}
+
+.cancel-memo-button:hover {
+  background: #545b62;
+  transform: translateY(-1px);
+}
+
+.monthly-memo-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  box-sizing: border-box;
+}
+
+.monthly-memo-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.monthly-memo-display {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 0.75rem;
+  min-height: 80px;
+}
+
+.monthly-memo-display p {
+  margin: 0;
+  color: #495057;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.no-memo {
+  color: #6c757d;
+  font-style: italic;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+/* 月収支メモのレスポンシブ対応 */
+@media (max-width: 768px) {
+  .monthly-memo-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .monthly-memo-actions {
+    justify-content: center;
+  }
+  
+  .edit-memo-button,
+  .save-memo-button,
+  .cancel-memo-button {
+    flex: 1;
+    padding: 0.5rem;
+  }
+}
