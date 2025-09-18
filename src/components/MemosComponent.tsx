@@ -107,6 +107,18 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     setShowMemoForm(false);
   };
 
+
+
+  // 利用可能なジャンル一覧を取得（デフォルト + カスタム）
+  const getAllGenres = () => {
+    const defaultGenres = [
+      "仕事", "学習", "趣味", "健康", "家族", "旅行", "読書", "映画", "音楽",
+      "スポーツ", "料理", "要望、リクエスト", "その他",
+    ];
+    return [...defaultGenres, ...customGenres];
+  };
+
+
   // 日時フォーマット関数
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -132,9 +144,13 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   // メモカテゴリを取得する関数
   const getMemoCategories = () => {
     const memoCategories = new Set(memos.map((memo) => memo.category));
-    const allCategories = [...memoCategories, ...customGenres];
+    const allCategories = [...memoCategories, ...getAllGenres()];
     return Array.from(new Set(allCategories)).sort();
   };
+
+
+
+
 
   return (
     <div className="memos-section">
