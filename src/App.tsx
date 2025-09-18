@@ -449,7 +449,9 @@ function App() {
 
   // プロフィール管理関数
   const addToProfile = (field: keyof typeof personalProfile, value: string) => {
-    if (!value.trim()) return;
+    if (!value.trim()) {
+      return;
+    }
 
     setPersonalProfile((prev) => ({
       ...prev,
