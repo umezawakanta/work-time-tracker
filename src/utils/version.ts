@@ -41,15 +41,12 @@ export const storeVersionInfo = (versionInfo: VersionInfo): void => {
 // バージョン情報を初期化
 export const initializeVersionInfo = (): VersionInfo => {
   const stored = getStoredVersionInfo();
-  if (stored) {
-    return stored;
-  }
-  
   const newVersionInfo = {
     ...generateBuildInfo(),
     lastChecked: new Date().toISOString()
   };
   
+  // 常に新しいバージョン情報を生成して保存
   storeVersionInfo(newVersionInfo);
   return newVersionInfo;
 };
@@ -97,6 +94,17 @@ export const compareVersions = (version1: string, version2: string): number => {
   }
   
   return 0;
+};
+
+// バージョン情報を強制更新
+export const forceUpdateVersionInfo = (): VersionInfo => {
+  const newVersionInfo = {
+    ...generateBuildInfo(),
+    lastChecked: new Date().toISOString()
+  };
+  
+  storeVersionInfo(newVersionInfo);
+  return newVersionInfo;
 };
 
 // 更新が必要かどうかをチェック

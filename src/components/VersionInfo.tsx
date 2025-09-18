@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { VersionInfo, initializeVersionInfo, updateVersionInfo, shouldCheckForUpdates, checkForUpdates } from '../utils/version';
+import { VersionInfo, initializeVersionInfo, updateVersionInfo, shouldCheckForUpdates, checkForUpdates, forceUpdateVersionInfo } from '../utils/version';
 
 interface VersionInfoProps {
   className?: string;
@@ -13,8 +13,8 @@ const VersionInfoComponent: React.FC<VersionInfoProps> = ({ className = '' }) =>
   const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
-    // バージョン情報を初期化
-    const initVersionInfo = initializeVersionInfo();
+    // バージョン情報を強制更新
+    const initVersionInfo = forceUpdateVersionInfo();
     setVersionInfo(initVersionInfo);
 
     // 更新チェックが必要かどうかを確認
@@ -48,6 +48,11 @@ const VersionInfoComponent: React.FC<VersionInfoProps> = ({ className = '' }) =>
     if (typeof window !== 'undefined') {
       window.location.reload();
     }
+  };
+
+  const handleForceUpdate = () => {
+    const newVersionInfo = forceUpdateVersionInfo();
+    setVersionInfo(newVersionInfo);
   };
 
   const formatBuildDate = (dateString: string) => {
@@ -112,6 +117,12 @@ const VersionInfoComponent: React.FC<VersionInfoProps> = ({ className = '' }) =>
                 className="check-update-button"
               >
                 {isChecking ? 'チェック中...' : '更新確認'}
+              </button>
+              <button
+                onClick={handleForceUpdate}
+                className="force-update-button"
+              >
+                バージョン更新
               </button>
               {hasUpdate && (
                 <button
