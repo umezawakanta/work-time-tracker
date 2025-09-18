@@ -1,38 +1,17 @@
-/* HeaderTitleComponent.css - ヘッダータイトルコンポーネント専用のスタイル */
+/* HeaderTitleComponent.css - シンプルで確実な表示 */
 
 .header-title {
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: 1.8rem;
+  font-weight: 600;
   margin: 0;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-  background: linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradientShift 3s ease-in-out infinite;
+  color: #333;
   line-height: 1.2;
   text-align: center;
   width: 100%;
   box-sizing: border-box;
-}
-
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-/* シンプルテーマ用 */
-[data-theme="simple"] .header-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #333;
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
-  background-clip: unset;
-  animation: none;
-  text-shadow: none;
+  display: block;
+  visibility: visible;
+  opacity: 1;
 }
 
 /* レスポンシブデザイン */
