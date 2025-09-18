@@ -58,7 +58,7 @@ const TimerStatsSection: React.FC<TimerStatsSectionProps> = ({
             </div>
             <div className="stat-card">
               <div className="stat-value">
-                {formatTime(timerHistory.reduce((total, entry) => total + entry.duration, 0))}
+                {formatTime(timerHistory.length > 0 ? timerHistory.reduce((total, entry) => total + entry.duration, 0) : 0)}
               </div>
               <div className="stat-label">総実行時間</div>
             </div>

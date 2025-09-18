@@ -45,11 +45,11 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
     });
 
     // 基本統計を計算
-    const totalSalary = periodSalaryRecords.reduce((sum, record) => sum + (record.amount || 0), 0);
-    const totalOvertime = periodSalaryRecords.reduce((sum, record) => sum + (record.overtime || 0), 0);
-    const totalBonus = periodSalaryRecords.reduce((sum, record) => sum + (record.bonus || 0), 0);
-    const totalMiscellaneous = periodSalaryRecords.reduce((sum, record) => sum + (record.miscellaneous || 0), 0);
-    const totalOther = periodSalaryRecords.reduce((sum, record) => sum + (record.other || 0), 0);
+    const totalSalary = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.amount || 0), 0) : 0;
+    const totalOvertime = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.overtime || 0), 0) : 0;
+    const totalBonus = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.bonus || 0), 0) : 0;
+    const totalMiscellaneous = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.miscellaneous || 0), 0) : 0;
+    const totalOther = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.other || 0), 0) : 0;
 
     // 日記の統計
     const totalDiaries = periodWorkDiaries.length;
@@ -58,12 +58,12 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
       : 0;
 
     // カテゴリ別の統計
-    const categoryStats = periodWorkDiaries.reduce((acc, diary) => {
+    const categoryStats = periodWorkDiaries.length > 0 ? periodWorkDiaries.reduce((acc, diary) => {
       diary.activities?.forEach(activity => {
         acc[activity] = (acc[activity] || 0) + 1;
       });
       return acc;
-    }, {} as Record<string, number>);
+    }, {} as Record<string, number>) : {};
 
     return {
       totalSalary,

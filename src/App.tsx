@@ -1716,9 +1716,9 @@ function App() {
     const productivityData = calculateProductivityTrend();
     const workHours = productivityData.map((day) => day.workHours);
 
-    const totalHours = workHours.reduce((sum, hours) => sum + hours, 0);
+    const totalHours = workHours.length > 0 ? workHours.reduce((sum, hours) => sum + hours, 0) : 0;
     const averageHours = totalHours / workHours.length;
-    const maxHours = Math.max(...workHours);
+    const maxHours = workHours.length > 0 ? Math.max(...workHours) : 0;
     const productiveDays = workHours.filter((hours) => hours > 0).length;
 
     return {

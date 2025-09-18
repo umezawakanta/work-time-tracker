@@ -547,7 +547,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                     <div className="time-breakdown">
                       {(() => {
                         const timeBreakdown = calculateTimeBreakdown();
-                        const totalHours = Object.values(timeBreakdown).reduce((sum, hours) => sum + hours, 0);
+                        const totalHours = Object.values(timeBreakdown).length > 0 
+                          ? Object.values(timeBreakdown).reduce((sum, hours) => sum + hours, 0)
+                          : 0;
                         
                         if (totalHours === 0) {
                           return (

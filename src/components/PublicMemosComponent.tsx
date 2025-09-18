@@ -184,9 +184,11 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       dayCounts[day] = (dayCounts[day] || 0) + 1;
     });
     
-    const mostActiveDay = Object.entries(dayCounts).reduce((a, b) => 
-      dayCounts[a[0]] > dayCounts[b[0]] ? a : b
-    );
+    const mostActiveDay = Object.entries(dayCounts).length > 0 
+      ? Object.entries(dayCounts).reduce((a, b) => 
+          dayCounts[a[0]] > dayCounts[b[0]] ? a : b
+        )
+      : ['', 0];
     
     return mostActiveDay ? parseInt(mostActiveDay[0]) : null;
   };
