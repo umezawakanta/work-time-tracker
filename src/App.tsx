@@ -5606,6 +5606,7 @@ function App() {
                                 handlePublicMemoCategoryChange(e.target.value)
                               }
                               className="category-select"
+                              aria-label="公開メモカテゴリを選択"
                             >
                               <option value="all">すべてのカテゴリ</option>
                               {getPublicMemoCategories().map((category) => (
