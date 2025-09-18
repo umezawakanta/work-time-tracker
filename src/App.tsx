@@ -5153,13 +5153,13 @@ function App() {
                                 <label>役割</label>
                                 <select
                                   value={editingUser.role}
+                                  aria-label="ユーザー役割"
                                   onChange={(e) =>
                                     setEditingUser({
                                       ...editingUser,
                                       role: e.target.value,
                                     })
                                   }
-                                  aria-label="ユーザーの役割を選択"
                                 >
                                   <option value="user">ユーザー</option>
                                   <option value="admin">管理者</option>
@@ -5169,13 +5169,13 @@ function App() {
                                 <label>状態</label>
                                 <select
                                   value={editingUser.status}
+                                  aria-label="ユーザー状態"
                                   onChange={(e) =>
                                     setEditingUser({
                                       ...editingUser,
                                       status: e.target.value,
                                     })
                                   }
-                                  aria-label="ユーザーの状態を選択"
                                 >
                                   <option value="active">アクティブ</option>
                                   <option value="inactive">非アクティブ</option>
@@ -5547,11 +5547,11 @@ function App() {
                           <div className="category-controls">
                             <select
                               value={selectedMemoCategory}
+                              aria-label="メモカテゴリ選択"
                               onChange={(e) =>
                                 handleMemoCategoryChange(e.target.value)
                               }
                               className="category-select"
-                              aria-label="メモカテゴリを選択"
                             >
                               <option value="all">すべてのカテゴリ</option>
                               {getMemoCategories().map((category) => (
@@ -6099,11 +6099,11 @@ function App() {
                           <div className="category-controls">
                             <select
                               value={selectedPublicMemoCategory}
+                              aria-label="公開メモカテゴリ選択"
                               onChange={(e) =>
                                 handlePublicMemoCategoryChange(e.target.value)
                               }
                               className="category-select"
-                              aria-label="公開メモカテゴリを選択"
                             >
                               <option value="all">すべてのカテゴリ</option>
                               {getPublicMemoCategories().map((category) => (
@@ -8027,6 +8027,7 @@ function App() {
                                   <input
                                     type="number"
                                     value={timerSettings.defaultCustomMinutes}
+                                    aria-label="デフォルトカスタムタイマー時間（分）"
                                     onChange={(e) =>
                                       saveTimerSettings({
                                         ...timerSettings,
@@ -8065,6 +8066,7 @@ function App() {
                                 <label>タイマーテーマ</label>
                                 <select
                                   value={timerSettings.theme}
+                                  aria-label="タイマーテーマ選択"
                                   onChange={(e) => {
                                     const newSettings = {
                                       ...timerSettings,
