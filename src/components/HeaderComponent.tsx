@@ -87,12 +87,13 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             setShowFeatureSettings={setShowFeatureSettings}
             loadUserSettings={loadUserSettings}
           />
-          <ShareButtonComponent />
         </div>
-        {/* ログアウトボタンを右上に配置 */}
-        <div className="header-logout">
-          <LogoutButtonComponent onLogout={handleLogout} />
-        </div>
+      </div>
+
+      {/* 右上固定：シェアボタンとログアウトボタン */}
+      <div className="header-top-right">
+        <ShareButtonComponent />
+        <LogoutButtonComponent onLogout={handleLogout} />
       </div>
 
       {/* 背景キャラクター（絶対保持） */}
