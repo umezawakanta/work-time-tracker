@@ -2659,7 +2659,6 @@ function App() {
     setDiaryNextGoals([]);
     setDiaryChallenges([]);
     setDiaryAchievements([]);
-    setDiaryReflection("");
     setEditingDiary(null);
   };
 
