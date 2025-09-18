@@ -327,7 +327,7 @@ function App() {
   const [diaryDate, setDiaryDate] = useState("");
   const [diaryTitle, setDiaryTitle] = useState("");
   const [diaryContent, setDiaryContent] = useState("");
-  const [diaryMood, setDiaryMood] = useState("😊");
+  const [diaryMood, setDiaryMood] = useState("4");
   const [diaryActivities, setDiaryActivities] = useState<string[]>([]);
   const [diaryTags, setDiaryTags] = useState("");
   const [diaryIsPrivate, setDiaryIsPrivate] = useState(true);
@@ -656,11 +656,11 @@ function App() {
   };
 
   const getMoodEmoji = (mood: number) => {
-    if (mood <= 2) return "😢";
-    if (mood <= 4) return "😔";
-    if (mood <= 6) return "😐";
-    if (mood <= 8) return "😊";
-    return "😄";
+    if (mood <= 2) return "bi-emoji-frown";
+    if (mood <= 4) return "bi-emoji-expressionless";
+    if (mood <= 6) return "bi-emoji-neutral";
+    if (mood <= 8) return "bi-emoji-smile";
+    return "bi-emoji-laughing";
   };
 
   const getAverageMood = () => {
@@ -1880,7 +1880,7 @@ function App() {
         setDiaryDate("");
         setDiaryTitle("");
         setDiaryContent("");
-        setDiaryMood("😊");
+        setDiaryMood("4");
         setDiaryTags("");
         setDiaryIsPrivate(true);
         // 新しい項目もリセット
@@ -1954,7 +1954,7 @@ function App() {
         setDiaryDate("");
         setDiaryTitle("");
         setDiaryContent("");
-        setDiaryMood("😊");
+        setDiaryMood("4");
         setDiaryTags("");
         setDiaryIsPrivate(true);
         // 新しい項目もリセット
@@ -3868,7 +3868,7 @@ function App() {
 
   // 時間記録を強制的にリセットする関数
   const handleResetTracking = () => {
-    console.log("🔄 時間記録を強制リセットします");
+    console.log("時間記録を強制リセットします");
     setCurrentTimeEntry(null);
     setIsTracking(false);
     setIsTimeTrackingActive(false);
@@ -4018,7 +4018,7 @@ function App() {
   const playEggTimerSound = async () => {
     if (!timerSettings.enableSounds) return;
 
-    console.log("🔊 ゆでたまごタイマー音声再生開始:", eggTimerSound);
+    console.log("ゆでたまごタイマー音声再生開始:", eggTimerSound);
     try {
       // まずAudioContextを再開する（必要に応じて）
       const audioContext = new (window.AudioContext ||
@@ -4228,12 +4228,12 @@ function App() {
             // タイマー終了時の通知
             const timerName = customTimerName || "カスタムタイマー";
             setMessage(
-              `⏰ ${timerName}終了！音を停止するには「音を停止」ボタンを押してください。`
+              `${timerName}終了！音を停止するには「音を停止」ボタンを押してください。`
             );
 
             // ブラウザ通知を送信
             sendNotification(
-              "⏰ タイマー終了！",
+              "タイマー終了！",
               `${timerName}が終了しました！音を停止するには「音を停止」ボタンを押してください。`,
               "⏰"
             );
@@ -4272,12 +4272,12 @@ function App() {
             // タイマー終了時の通知
             const timerName = customTimerName || "カスタムタイマー";
             setMessage(
-              `⏰ ${timerName}終了！音を停止するには「音を停止」ボタンを押してください。`
+              `${timerName}終了！音を停止するには「音を停止」ボタンを押してください。`
             );
 
             // ブラウザ通知を送信
             sendNotification(
-              "⏰ タイマー終了！",
+              "タイマー終了！",
               `${timerName}が終了しました！音を停止するには「音を停止」ボタンを押してください。`,
               "⏰"
             );
@@ -4382,7 +4382,7 @@ function App() {
 
           // ブラウザ通知を送信
           sendNotification(
-            "⏰ プリセットタイマー終了！",
+            "プリセットタイマー終了！",
             `${preset.name}が終了しました！音を停止するには「音を停止」ボタンを押してください。`,
             "⏰"
           );
@@ -4565,7 +4565,7 @@ function App() {
                   setCustomTimerActive(false);
                   setCustomTimerPaused(false);
                   setCustomTimerTime(0);
-                  setMessage(`⏰ ${data.timerName}タイマー終了！`);
+                  setMessage(`${data.timerName}タイマー終了！`);
 
                   // マナーモードでない場合のみ音を再生
                   if (!isMannerMode) {
@@ -4684,10 +4684,10 @@ function App() {
     setIsMannerMode(!isMannerMode);
     if (isMannerMode) {
       // マナーモードを無効にする
-      setMessage("🔊 音声モードに切り替えました");
+      setMessage("音声モードに切り替えました");
     } else {
       // マナーモードを有効にする
-      setMessage("🔇 マナーモードに切り替えました（振動のみ）");
+      setMessage("マナーモードに切り替えました（振動のみ）");
       // 現在再生中の音を停止
       stopSoundLoop();
     }
@@ -5214,7 +5214,7 @@ function App() {
             ></div>
             <div className="character-home-modal-content">
               <div className="character-home-modal-header">
-                <h2>🏠 キャラクター達のお家</h2>
+                <h2><i className="bi bi-house"></i> キャラクター達のお家</h2>
                 <button
                   onClick={handleCharacterHomeToggle}
                   className="close-button"
@@ -5235,7 +5235,7 @@ function App() {
           <div className="theme-settings-modal">
             <div className="theme-settings-content">
               <div className="theme-settings-header">
-                <h3>🎨 テーマ設定</h3>
+                <h3><i className="bi bi-palette"></i> テーマ設定</h3>
                 <button
                   onClick={() => setShowThemeSettings(false)}
                   className="close-button"
@@ -5317,7 +5317,7 @@ function App() {
                       fontFamily: selectedFont === "system" ? "" : selectedFont,
                     }}
                   >
-                    ⏰ Work Time Tracker 📚
+                    <i className="bi bi-clock"></i> Work Time Tracker <i className="bi bi-book"></i>
                   </p>
                   <p
                     style={{
@@ -5331,7 +5331,7 @@ function App() {
                       fontFamily: selectedFont === "system" ? "" : selectedFont,
                     }}
                   >
-                    🎨 テーマ 🔤 フォント ⚙️ 機能設定 🚪 ログアウト
+                    <i className="bi bi-palette"></i> テーマ <i className="bi bi-fonts"></i> フォント <i className="bi bi-gear"></i> 機能設定 <i className="bi bi-box-arrow-right"></i> ログアウト
                   </p>
                   <p
                     style={{
@@ -5352,7 +5352,7 @@ function App() {
                       fontFamily: selectedFont === "system" ? "" : selectedFont,
                     }}
                   >
-                    作業内容を入力してください | ▶️ 記録開始
+                    作業内容を入力してください | <i className="bi bi-play-fill"></i> 記録開始
                   </p>
                 </div>
                 <div className="font-options">
@@ -5393,7 +5393,7 @@ function App() {
           <div className="feature-settings-modal">
             <div className="feature-settings-content">
               <div className="feature-settings-header">
-                <h3>⚙️ 機能設定</h3>
+                <h3><i className="bi bi-gear"></i> 機能設定</h3>
                 <button
                   onClick={() => setShowFeatureSettings(false)}
                   className="close-button"
@@ -5403,17 +5403,17 @@ function App() {
               </div>
               <div className="feature-settings-body">
                 <div className="feature-settings-section">
-                  <h4>📝 日記リマインダー設定</h4>
+                  <h4><i className="bi bi-journal-text"></i> 日記リマインダー設定</h4>
                   <button
                     onClick={() => setShowDiaryReminderSettings(true)}
                     className="reminder-settings-btn"
                   >
-                    📝 リマインダー設定を開く
+                    <i className="bi bi-journal-text"></i> リマインダー設定を開く
                   </button>
                 </div>
 
                 <div className="feature-settings-section">
-                  <h4>📋 機能の並び順</h4>
+                  <h4><i className="bi bi-list-ul"></i> 機能の並び順</h4>
                   <p>
                     ドラッグ&ドロップまたは↑↓ボタンで機能の順序を変更できます
                   </p>

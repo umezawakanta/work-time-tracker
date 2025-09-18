@@ -102,7 +102,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
         }}
         aria-label="シェア"
       >
-        <span className="share-icon">📤</span>
+        <i className="bi bi-share share-icon"></i>
         <span className="share-text">シェア</span>
       </button>
 
@@ -137,7 +137,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
                 className="share-option facebook"
                 onClick={() => handleShare('facebook')}
               >
-                <span className="share-option-icon">📘</span>
+                <i className="bi bi-facebook share-option-icon"></i>
                 <span>Facebook</span>
               </button>
 
@@ -161,7 +161,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
                 className="share-option copy"
                 onClick={() => handleShare('copy')}
               >
-                <span className="share-option-icon">📋</span>
+                <i className="bi bi-clipboard share-option-icon"></i>
                 <span>URLコピー</span>
               </button>
 
@@ -170,7 +170,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
                   className="share-option native"
                   onClick={() => handleShare('native')}
                 >
-                  <span className="share-option-icon">📱</span>
+                  <i className="bi bi-phone share-option-icon"></i>
                   <span>その他</span>
                 </button>
               )}

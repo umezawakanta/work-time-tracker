@@ -130,7 +130,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     <div className="memos-section">
       <div className="section-header">
         <h2>
-          <span className="section-icon">📝</span>
+          <i className="bi bi-journal-text section-icon"></i>
           メモ
         </h2>
         <div className="section-controls">
@@ -151,7 +151,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
               className="show-section-button"
               title="セクションを表示"
             >
-              ▶️
+              <i className="bi bi-play-fill"></i>
             </button>
           )}
         </div>
@@ -167,7 +167,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
               className="refresh-button"
               title="メモを更新"
             >
-              🔄
+              <i className="bi bi-arrow-clockwise"></i>
             </button>
           </div>
 
@@ -177,14 +177,14 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
               onClick={() => setShowGenreManagement(!showGenreManagement)}
               className="genre-management-button"
             >
-              🏷️ ジャンル管理
+              <i className="bi bi-tags"></i> ジャンル管理
             </button>
           </div>
 
           {/* ジャンル管理セクション */}
           {showGenreManagement && (
             <div className="genre-management-section">
-              <h3>🏷️ ジャンル管理</h3>
+              <h3><i className="bi bi-tags"></i> ジャンル管理</h3>
               <div className="genre-list">
                 {customGenres.map((genre, index) => (
                   <div key={index} className="genre-item">
@@ -233,7 +233,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                             className="edit-genre-button"
                             title="編集"
                           >
-                            ✏️
+                            <i className="bi bi-pencil"></i>
                           </button>
                           <button
                             onClick={() => {
@@ -243,7 +243,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                             className="delete-genre-button"
                             title="削除"
                           >
-                            🗑️
+                            <i className="bi bi-trash"></i>
                           </button>
                         </div>
                       </div>
@@ -372,7 +372,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                           {formatDateTime(memo.updatedAt)}
                         </span>
                         {!memo.isPublic && (
-                          <span className="private-badge">🔒 プライベート</span>
+                          <span className="private-badge"><i className="bi bi-lock"></i> プライベート</span>
                         )}
                       </div>
                     </div>
@@ -430,14 +430,14 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                                     className="edit-reply-button"
                                     title="編集"
                                   >
-                                    ✏️
+                                    <i className="bi bi-pencil"></i>
                                   </button>
                                   <button
                                     onClick={() => handleDeleteReply(reply.id)}
                                     className="delete-reply-button"
                                     title="削除"
                                   >
-                                    🗑️
+                                    <i className="bi bi-trash"></i>
                                   </button>
                                 </div>
                               </div>
@@ -502,7 +502,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                         className="edit-button"
                         title="編集"
                       >
-                        ✏️
+                        <i className="bi bi-pencil"></i>
                       </button>
                       <button
                         onClick={() => {
@@ -512,7 +512,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                         className="delete-button"
                         title="削除"
                       >
-                        🗑️
+                        <i className="bi bi-trash"></i>
                       </button>
                     </div>
                   </div>

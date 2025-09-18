@@ -295,7 +295,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               className="show-section-button"
               title="セクションを表示"
             >
-              ▶️
+              <i className="bi bi-play-fill"></i>
             </button>
           )}
         </div>
@@ -305,7 +305,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         <div className="work-records-content">
           {/* 月別統計 */}
           <div className="monthly-summary">
-            <h3>📊 {currentMonth.getFullYear()}年{currentMonth.getMonth() + 1}月の統計</h3>
+            <h3><i className="bi bi-graph-up"></i> {currentMonth.getFullYear()}年{currentMonth.getMonth() + 1}月の統計</h3>
             <div className="summary-grid">
               <div className="summary-item">
                 <span className="summary-label">総給与</span>
@@ -314,7 +314,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               <div className="summary-item">
                 <span className="summary-label">平均気分</span>
                 <span className="summary-value">
-                  {monthlySummary.averageMood > 0 ? `😊 ${monthlySummary.averageMood.toFixed(1)}` : 'なし'}
+                  {monthlySummary.averageMood > 0 ? `<i className="bi bi-emoji-smile"></i> ${monthlySummary.averageMood.toFixed(1)}` : 'なし'}
                 </span>
               </div>
               <div className="summary-item">
@@ -391,7 +391,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                               handleRecordClick("diary", date);
                             }}
                           >
-                            📝
+                            <i className="bi bi-journal-text"></i>
                           </span>
                         )}
                       </div>
@@ -436,7 +436,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               {/* 日記の表示 */}
               {selectedRecord.diaryRecord && (
                 <div className="diary-record-detail">
-                  <h4>📝 日記</h4>
+                  <h4><i className="bi bi-journal-text"></i> 日記</h4>
                   <p><strong>タイトル:</strong> {selectedRecord.diaryRecord.title}</p>
                   <p><strong>日付:</strong> {new Date(selectedRecord.diaryRecord.date).toLocaleDateString()}</p>
                   <p><strong>気分:</strong> {selectedRecord.diaryRecord.mood || '未設定'}</p>
@@ -549,11 +549,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     aria-label="気分を選択"
                   >
                     <option value="">選択してください</option>
-                    <option value="1">😢 1 (とても悪い)</option>
-                    <option value="2">😔 2 (悪い)</option>
-                    <option value="3">😐 3 (普通)</option>
-                    <option value="4">😊 4 (良い)</option>
-                    <option value="5">😄 5 (とても良い)</option>
+                    <option value="1"><i className="bi bi-emoji-frown"></i> 1 (とても悪い)</option>
+                    <option value="2"><i className="bi bi-emoji-expressionless"></i> 2 (悪い)</option>
+                    <option value="3"><i className="bi bi-emoji-neutral"></i> 3 (普通)</option>
+                    <option value="4"><i className="bi bi-emoji-smile"></i> 4 (良い)</option>
+                    <option value="5"><i className="bi bi-emoji-laughing"></i> 5 (とても良い)</option>
                   </select>
                 </div>
                 <div className="form-group">
@@ -725,7 +725,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
           {/* 月次メモ */}
           <div className="monthly-memo">
-            <h3>📝 月次メモ</h3>
+            <h3><i className="bi bi-journal-text"></i> 月次メモ</h3>
             {editingMonthlyMemo ? (
               <div className="memo-edit">
                 <textarea
@@ -772,7 +772,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               onClick={openDiaryForm}
               className="action-button diary-button"
             >
-              📝 日記を追加
+              <i className="bi bi-journal-plus"></i> 日記を追加
             </button>
             <button
               onClick={() => {
@@ -781,7 +781,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               }}
               className="action-button refresh-button"
             >
-              🔄 更新
+              <i className="bi bi-arrow-clockwise"></i> 更新
             </button>
           </div>
         </div>
