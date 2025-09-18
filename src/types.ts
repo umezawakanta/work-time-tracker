@@ -115,9 +115,9 @@ export interface SalaryRecord {
   date: string;
   salary: number;
   transportation: number;
-  overtime: number;
-  bonus: number;
-  notes: string;
+  miscellaneous: number; // 雑費
+  other: number; // その他
+  memo: string; // メモ
   createdAt: string;
   updatedAt: string;
 }

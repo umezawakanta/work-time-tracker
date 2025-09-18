@@ -270,9 +270,9 @@ function App() {
   const [salaryDate, setSalaryDate] = useState("");
   const [salary, setSalary] = useState("");
   const [transportation, setTransportation] = useState("");
-  const [overtime, setOvertime] = useState("");
-  const [bonus, setBonus] = useState("");
-  const [salaryNotes, setSalaryNotes] = useState("");
+  const [miscellaneous, setMiscellaneous] = useState("");
+  const [other, setOther] = useState("");
+  const [salaryMemo, setSalaryMemo] = useState("");
   const [recordType, setRecordType] = useState<"income" | "expense">("income");
 
   // 日記フォームの状態
@@ -1530,9 +1530,9 @@ function App() {
           date: salaryDate,
           salary: salaryAmount,
           transportation: Number(transportation) || 0,
-          overtime: Number(overtime) || 0,
-          bonus: Number(bonus) || 0,
-          notes: salaryNotes,
+          miscellaneous: Number(miscellaneous) || 0,
+          other: Number(other) || 0,
+          memo: salaryMemo,
         }),
       });
 
@@ -1542,9 +1542,9 @@ function App() {
         setSalaryDate("");
         setSalary("");
         setTransportation("");
-        setOvertime("");
-        setBonus("");
-        setSalaryNotes("");
+        setMiscellaneous("");
+        setOther("");
+        setSalaryMemo("");
         setRecordType("income");
         setShowSalaryForm(false);
         loadSalaryRecords();
@@ -1579,9 +1579,9 @@ function App() {
             date: salaryDate,
             salary: salaryAmount,
             transportation: Number(transportation) || 0,
-            overtime: Number(overtime) || 0,
-            bonus: Number(bonus) || 0,
-            notes: salaryNotes,
+            miscellaneous: Number(miscellaneous) || 0,
+            other: Number(other) || 0,
+            memo: salaryMemo,
           }),
         }
       );
@@ -1592,9 +1592,9 @@ function App() {
         setSalaryDate("");
         setSalary("");
         setTransportation("");
-        setOvertime("");
-        setBonus("");
-        setSalaryNotes("");
+        setMiscellaneous("");
+        setOther("");
+        setSalaryMemo("");
         setRecordType("income");
         setEditingSalaryRecord(null);
         setShowSalaryForm(false);
@@ -2147,10 +2147,10 @@ function App() {
           totalExpense += Math.abs(record.salary);
         }
 
-        // 交通費、残業代、ボーナスも収入として計算
+        // 交通費、雑費、その他も収入として計算
         if (record.transportation > 0) totalIncome += record.transportation;
-        if (record.overtime > 0) totalIncome += record.overtime;
-        if (record.bonus > 0) totalIncome += record.bonus;
+        if (record.miscellaneous > 0) totalIncome += record.miscellaneous;
+        if (record.other > 0) totalIncome += record.other;
       }
     });
 
@@ -2235,9 +2235,9 @@ function App() {
     setSalaryDate(record.date.split("T")[0]);
     setSalary(Math.abs(record.salary).toString()); // 絶対値で表示
     setTransportation(record.transportation.toString());
-    setOvertime(record.overtime.toString());
-    setBonus(record.bonus.toString());
-    setSalaryNotes(record.notes || "");
+    setMiscellaneous(record.miscellaneous.toString());
+    setOther(record.other.toString());
+    setSalaryMemo(record.memo || "");
     setRecordType(record.salary >= 0 ? "income" : "expense"); // 正負に基づいてタイプを設定
     setEditingSalaryRecord(record);
     setShowSalaryForm(true);
@@ -6193,31 +6193,31 @@ function App() {
                               />
                             </div>
                             <div className="form-group">
-                              <label htmlFor="overtime">残業代 (円)</label>
+                              <label htmlFor="miscellaneous">雑費 (円)</label>
                               <input
                                 type="number"
-                                id="overtime"
-                                value={overtime}
-                                onChange={(e) => setOvertime(e.target.value)}
-                                placeholder="例: 30000"
+                                id="miscellaneous"
+                                value={miscellaneous}
+                                onChange={(e) => setMiscellaneous(e.target.value)}
+                                placeholder="例: 5000"
                               />
                             </div>
                             <div className="form-group">
-                              <label htmlFor="bonus">ボーナス (円)</label>
+                              <label htmlFor="other">その他 (円)</label>
                               <input
                                 type="number"
-                                id="bonus"
-                                value={bonus}
-                                onChange={(e) => setBonus(e.target.value)}
-                                placeholder="例: 100000"
+                                id="other"
+                                value={other}
+                                onChange={(e) => setOther(e.target.value)}
+                                placeholder="例: 10000"
                               />
                             </div>
                             <div className="form-group">
-                              <label htmlFor="salaryNotes">メモ</label>
+                              <label htmlFor="salaryMemo">メモ</label>
                               <textarea
-                                id="salaryNotes"
-                                value={salaryNotes}
-                                onChange={(e) => setSalaryNotes(e.target.value)}
+                                id="salaryMemo"
+                                value={salaryMemo}
+                                onChange={(e) => setSalaryMemo(e.target.value)}
                                 placeholder="給料についてのメモ"
                                 rows={3}
                               />
@@ -6767,22 +6767,22 @@ function App() {
                                               {record.transportation.toLocaleString()}
                                             </p>
                                           )}
-                                          {record.overtime > 0 && (
+                                          {record.miscellaneous > 0 && (
                                             <p>
-                                              <strong>残業代:</strong> ¥
-                                              {record.overtime.toLocaleString()}
+                                              <strong>雑費:</strong> ¥
+                                              {record.miscellaneous.toLocaleString()}
                                             </p>
                                           )}
-                                          {record.bonus > 0 && (
+                                          {record.other > 0 && (
                                             <p>
-                                              <strong>ボーナス:</strong> ¥
-                                              {record.bonus.toLocaleString()}
+                                              <strong>その他:</strong> ¥
+                                              {record.other.toLocaleString()}
                                             </p>
                                           )}
-                                          {record.notes && (
+                                          {record.memo && (
                                             <p>
                                               <strong>メモ:</strong>{" "}
-                                              {record.notes}
+                                              {record.memo}
                                             </p>
                                           )}
                                         </div>
@@ -6941,29 +6941,29 @@ function App() {
                                     </div>
                                   )}
 
-                                  {selectedRecord.overtime > 0 && (
+                                  {selectedRecord.miscellaneous > 0 && (
                                     <div className="detail-section">
-                                      <h4>⏰ 残業代</h4>
+                                      <h4>💰 雑費</h4>
                                       <p className="amount">
                                         ¥
-                                        {selectedRecord.overtime.toLocaleString()}
+                                        {selectedRecord.miscellaneous.toLocaleString()}
                                       </p>
                                     </div>
                                   )}
 
-                                  {selectedRecord.bonus > 0 && (
+                                  {selectedRecord.other > 0 && (
                                     <div className="detail-section">
-                                      <h4>🎁 ボーナス</h4>
+                                      <h4>📋 その他</h4>
                                       <p className="amount">
-                                        ¥{selectedRecord.bonus.toLocaleString()}
+                                        ¥{selectedRecord.other.toLocaleString()}
                                       </p>
                                     </div>
                                   )}
 
-                                  {selectedRecord.notes && (
+                                  {selectedRecord.memo && (
                                     <div className="detail-section">
                                       <h4>📝 メモ</h4>
-                                      <p>{selectedRecord.notes}</p>
+                                      <p>{selectedRecord.memo}</p>
                                     </div>
                                   )}
 
