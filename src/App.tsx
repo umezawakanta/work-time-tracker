@@ -16,6 +16,7 @@ import HeaderComponent from "./components/HeaderComponent";
 import DiaryReminderIntegration from "./components/DiaryReminderIntegration";
 import HetamaIconComponent from "./components/HetamaIconComponent";
 import MemosComponent from "./components/MemosComponent";
+import ReportsComponent from "./components/ReportsComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import { availableFonts, FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
@@ -4949,113 +4950,17 @@ function App() {
                 );
               } else if (feature.id === "reports") {
                 return (
-                  <div key={feature.id} className="reports-section">
-                    <div className="section-header">
-                      <h2>
-                        <span className="section-icon">
-                          <HetamaIconComponent featureId="reports" size="large" />
-                        </span>
-                        レポート
-                      </h2>
-                      <div className="section-controls">
-                        {showReports ? (
-                          <button
-                            onClick={() => {
-                              setShowReports(false);
-                            }}
-                            className="close-section-button"
-                            title="セクションを閉じる"
-                          >
-                            ✕
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              closeOtherFeatures("reports");
-                              setShowReports(true);
-                              if (!reportSummary) {
-                                loadReportSummary();
-                              }
-                            }}
-                            className="show-section-button"
-                            title="セクションを表示"
-                          >
-                            ▶️
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {showReports && reportSummary && (
-                      <div className="report-content">
-                        <div className="report-stats">
-                          <div className="stat-card">
-                            <h3>総作業時間</h3>
-                            <p className="stat-value">
-                              {formatTime(reportSummary.totalTime)}
-                            </p>
-                          </div>
-                          <div className="stat-card">
-                            <h3>今日の作業時間</h3>
-                            <p className="stat-value">
-                              {formatTime(reportSummary.todayTime)}
-                            </p>
-                          </div>
-                          <div className="stat-card">
-                            <h3>今週の作業時間</h3>
-                            <p className="stat-value">
-                              {formatTime(reportSummary.thisWeekTime)}
-                            </p>
-                          </div>
-                          <div className="stat-card">
-                            <h3>今月の作業時間</h3>
-                            <p className="stat-value">
-                              {formatTime(reportSummary.thisMonthTime)}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="report-details">
-                          <div className="detail-section">
-                            <h3>セッション統計</h3>
-                            <p>
-                              総セッション数: {reportSummary.totalEntries}回
-                            </p>
-                            <p>
-                              平均セッション時間:{" "}
-                              {formatTime(reportSummary.averageSessionTime)}
-                            </p>
-                          </div>
-
-                          {reportSummary.projectBreakdown.length > 0 && (
-                            <div className="detail-section">
-                              <h3>プロジェクト別時間</h3>
-                              <div className="project-breakdown">
-                                {reportSummary.projectBreakdown.map(
-                                  (project) => (
-                                    <div
-                                      key={project.projectId}
-                                      className="breakdown-item"
-                                    >
-                                      <span className="project-name">
-                                        {project.projectName}
-                                      </span>
-                                      <span className="project-time">
-                                        {formatTime(project.totalTime)}
-                                      </span>
-                                      <span className="project-count">
-                                        ({project.entryCount}回)
-                                      </span>
-                                    </div>
-                                  )
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <ReportsComponent
+                    key={feature.id}
+                    showReports={showReports}
+                    setShowReports={setShowReports}
+                    salaryRecords={salaryRecords}
+                    workDiaries={workDiaries}
+                    reportsLoading={reportsLoading}
+                    reportSummary={reportSummary}
+                    loadReportSummary={loadReportSummary}
+                    closeOtherFeatures={closeOtherFeatures}
+                  />
                 );
               } else if (
                 feature.id === "admin-panel" &&
