@@ -1540,12 +1540,24 @@ function App() {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       });
+      
+      if (!response.ok) {
+        console.warn("時間記録APIが利用できません。モックデータを使用します。");
+        // モックデータを使用
+        setTimeEntries([]);
+        return;
+      }
+      
       const data = await response.json();
       if (data.success) {
         setTimeEntries(data.entries);
+      } else {
+        console.warn("時間記録の取得に失敗しました。モックデータを使用します。");
+        setTimeEntries([]);
       }
     } catch (error) {
-      console.error("時間記録の読み込みに失敗しました:", error);
+      console.warn("時間記録の読み込みに失敗しました。モックデータを使用します。", error);
+      setTimeEntries([]);
     }
   };
 

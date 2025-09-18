@@ -6,9 +6,7 @@ import DogCharacterComponent from "./DogCharacterComponent";
 import HeaderTitleComponent from "./HeaderTitleComponent";
 import LogoutButtonComponent from "./LogoutButtonComponent";
 import UserInfoComponent from "./UserInfoComponent";
-import ShareButtonComponent from "./ShareButtonComponent";
 import type { User, Character } from "../types";
-import UserGreetingComponent from "./UserGreetingComponent";
 
 interface HeaderComponentProps {
   user: User | null;
@@ -48,13 +46,12 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
         <HeaderLeftComponent isTimeTrackingActive={isTimeTrackingActive} />
       </div>
       
-      {/* 中央：タイトルとグリーティング */}
+      {/* 中央：タイトルのみ */}
       <div className="header-center">
         <HeaderTitleComponent />
-        <UserGreetingComponent user={user} currentCharacter={currentCharacter} />
       </div>
       
-      {/* 右側：アクションボタン */}
+      {/* 右側：最小限の要素のみ */}
       <div className="header-right">
         <div className="header-navigation">
           <UserInfoComponent
@@ -86,9 +83,8 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             setShowFeatureSettings={setShowFeatureSettings}
             loadUserSettings={loadUserSettings}
           />
-          <ShareButtonComponent />
+          <LogoutButtonComponent onLogout={handleLogout} />
         </div>
-        <LogoutButtonComponent onLogout={handleLogout} />
       </div>
 
       {/* 背景キャラクター（絶対保持） */}
