@@ -36,6 +36,16 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
 
   const siteTitle = `Work Time Tracker - ${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}`;
   const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！`;
+  
+  // Twitter用の短縮テキスト（280文字制限を考慮）
+  const twitterText = `${siteTitle}\n\n${siteDescription}\n\n${siteUrl}`;
+  const twitterTextLength = twitterText.length;
+  
+  // 文字数制限をチェックして必要に応じて短縮
+  const maxTwitterLength = 280;
+  const finalTwitterText = twitterTextLength > maxTwitterLength 
+    ? `${siteTitle}\n\n${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。\n\n${siteUrl}`
+    : twitterText;
 
   const shareData = {
     title: siteTitle,
@@ -47,26 +57,28 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     const encodedUrl = encodeURIComponent(siteUrl);
     const encodedTitle = encodeURIComponent(siteTitle);
     const encodedDescription = encodeURIComponent(siteDescription);
+    const encodedTwitterText = encodeURIComponent(finalTwitterText);
 
     let shareUrl = '';
 
     switch (platform) {
       case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodedTwitterText}`;
         break;
       case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedDescription}`;
         break;
       case 'line':
-        shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodedUrl}`;
+        shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodedUrl}&text=${encodedDescription}`;
         break;
       case 'linkedin':
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&title=${encodedTitle}&summary=${encodedDescription}`;
         break;
       case 'copy':
         try {
-          await navigator.clipboard.writeText(siteUrl);
-          alert('URLをコピーしました！');
+          const copyText = `${siteTitle}\n\n${siteDescription}\n\n${siteUrl}`;
+          await navigator.clipboard.writeText(copyText);
+          alert('テキストをコピーしました！');
           // コピー成功後に新しいランダム要素を生成
           setRandomElements(generateRandomElements());
           return;
