@@ -192,6 +192,7 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
                   className="month-select"
+                  aria-label="月を選択"
                 >
                   {months.map(month => (
                     <option key={month} value={month}>{month}月</option>

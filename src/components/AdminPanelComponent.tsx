@@ -307,7 +307,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                         ✏️
                       </button>
                       <button
-                        onClick={() => handleDeleteUser(user.id, user.name || 'ユーザー')}
+                        onClick={() => handleDeleteUser(user.id, user.email || 'ユーザー')}
                         className="delete-button"
                         title="削除"
                       >

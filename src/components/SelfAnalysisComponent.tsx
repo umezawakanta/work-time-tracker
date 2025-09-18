@@ -311,13 +311,12 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   };
 
   const updateGoal = (goalId: string, updates: Partial<Goal>) => {
-    setGoals((prev) =>
-      prev.map((goal) =>
-        goal.id === goalId
-          ? { ...goal, ...updates, updatedAt: new Date().toISOString() }
-          : goal
-      )
+    const updatedGoals = goals.map((goal) =>
+      goal.id === goalId
+        ? { ...goal, ...updates, updatedAt: new Date().toISOString() }
+        : goal
     );
+    setGoals(updatedGoals);
   };
 
   const deleteGoal = (goalId: string) => {

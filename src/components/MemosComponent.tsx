@@ -311,7 +311,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
             <div className="memos-filters">
               <select
                 value={selectedMemoCategory}
-                onChange={(e) => handleMemoCategoryChange(e.target.value)}
+                onChange={(e) => setSelectedMemoCategory(e.target.value)}
                 className="category-filter"
                 aria-label="カテゴリでフィルター"
               >
