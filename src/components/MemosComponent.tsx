@@ -12,6 +12,16 @@ interface MemosComponentProps {
   loadMemos: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
   handleDeleteMemo: (memoId: string, memoTitle: string) => void;
+  handleUpdateMemo: (e: React.FormEvent) => void;
+  editingMemo: Memo | null;
+  memoTitle: string;
+  setMemoTitle: (title: string) => void;
+  memoContent: string;
+  setMemoContent: (content: string) => void;
+  memoCategory: string;
+  setMemoCategory: (category: string) => void;
+  memoIsPublic: boolean;
+  setMemoIsPublic: (isPublic: boolean) => void;
   handleReplySubmit: (memoId: string) => void;
   handleReplyCancel: () => void;
   handleEditReply: (replyId: string, content: string) => void;
@@ -30,6 +40,16 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   loadMemos,
   closeOtherFeatures,
   handleDeleteMemo,
+  handleUpdateMemo,
+  editingMemo,
+  memoTitle,
+  setMemoTitle,
+  memoContent,
+  setMemoContent,
+  memoCategory,
+  setMemoCategory,
+  memoIsPublic,
+  setMemoIsPublic,
   handleReplySubmit,
   handleReplyCancel,
   handleEditReply,
@@ -39,11 +59,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
 }) => {
   // 内部状態
   const [showMemoForm, setShowMemoForm] = useState(false);
-  const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
-  const [memoTitle, setMemoTitle] = useState("");
-  const [memoContent, setMemoContent] = useState("");
-  const [memoCategory, setMemoCategory] = useState("");
-  const [memoIsPublic, setMemoIsPublic] = useState(false);
   const [selectedMemoCategory, setSelectedMemoCategory] = useState("all");
   const [showGenreManagement, setShowGenreManagement] = useState(false);
   const [editingGenre, setEditingGenre] = useState<string | null>(null);
@@ -262,12 +277,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
           {/* メモフォーム */}
           {showMemoForm && (
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                // メモの作成・更新機能（実装予定）
-                console.log('メモ送信:', editingMemo ? '更新' : '作成');
-                resetForm();
-              }}
+              onSubmit={handleUpdateMemo}
               className="memo-form"
             >
               <div className="form-group">
@@ -494,7 +504,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                     <div className="memo-actions">
                       <button
                         onClick={() => {
-                          setEditingMemo(memo);
                           setMemoTitle(memo.title || '');
                           setMemoContent(memo.content || '');
                           setMemoCategory(memo.category || '');

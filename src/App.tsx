@@ -5054,6 +5054,16 @@ function App() {
                     loadMemos={loadMemos}
                     closeOtherFeatures={closeOtherFeatures}
                     handleDeleteMemo={handleDeleteMemo}
+                    handleUpdateMemo={handleUpdateMemo}
+                    editingMemo={editingMemo}
+                    memoTitle={memoTitle}
+                    setMemoTitle={setMemoTitle}
+                    memoContent={memoContent}
+                    setMemoContent={setMemoContent}
+                    memoCategory={memoCategory}
+                    setMemoCategory={setMemoCategory}
+                    memoIsPublic={memoIsPublic}
+                    setMemoIsPublic={setMemoIsPublic}
                     handleReplySubmit={handleReplySubmit}
                     handleReplyCancel={handleReplyCancel}
                     handleEditReply={handleEditReply}
