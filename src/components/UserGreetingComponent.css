@@ -1,4 +1,4 @@
-/* UserGreetingComponent.css - ユーザー挨拶コンポーネント専用のスタイル */
+/* UserGreetingComponent.css - シンプルなユーザー挨拶デザイン */
 
 .user-greeting {
   display: flex;
@@ -29,11 +29,72 @@
 .current-character-svg svg {
   width: 32px;
   height: 32px;
-  max-width: 32px;
-  max-height: 32px;
 }
 
-.default-character {
-  font-size: 1.5rem;
-  color: #3b82f6;
+.greeting-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color, #333);
+  font-family: var(--app-font-family, inherit) !important;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 1024px) {
+  .user-greeting {
+    gap: 0.6rem;
+  }
+  
+  .header-character {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .current-character-svg svg {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .greeting-text {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .user-greeting {
+    gap: 0.5rem;
+  }
+  
+  .header-character {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .current-character-svg svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .greeting-text {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-greeting {
+    gap: 0.4rem;
+  }
+  
+  .header-character {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .current-character-svg svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .greeting-text {
+    font-size: 0.7rem;
+  }
 }

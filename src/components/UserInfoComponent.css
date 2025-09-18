@@ -1,4 +1,4 @@
-/* UserInfoComponent.css - ユーザー情報コンポーネント専用のスタイル */
+/* UserInfoComponent.css - シンプルなユーザー情報デザイン */
 
 .user-info {
   display: flex;
@@ -9,7 +9,6 @@
   z-index: 1;
   flex-wrap: wrap;
   width: 100%;
-  max-width: 100%;
   box-sizing: border-box;
 }
 
@@ -21,180 +20,51 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   font-family: var(--app-font-family, inherit) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  word-break: break-word;
-  hyphens: auto;
+  transition: all 0.3s ease;
   white-space: nowrap;
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.user-info span:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 /* レスポンシブデザイン */
-
-/* 大画面 (1400px以上) */
-@media (min-width: 1400px) {
-  .user-info {
-    gap: 1.5rem;
-    align-items: center;
-    justify-content: flex-end;
-    width: 100%;
-    max-width: 350px;
-  }
-  
-  .user-info span {
-    padding: 0.8rem 1.6rem;
-    font-size: 1.2rem;
-    border-radius: 25px;
-    max-width: 250px;
-  }
-}
-
-/* 大画面 (1200px - 1399px) */
-@media (max-width: 1399px) and (min-width: 1200px) {
-  .user-info {
-    gap: 1.2rem;
-    align-items: center;
-    justify-content: flex-end;
-    width: 100%;
-    max-width: 320px;
-  }
-  
-  .user-info span {
-    padding: 0.7rem 1.4rem;
-    font-size: 1.1rem;
-    border-radius: 22px;
-    max-width: 220px;
-  }
-}
-
-/* デスクトップ (1024px - 1199px) */
-@media (max-width: 1199px) and (min-width: 1024px) {
-  .user-info {
-    gap: 1rem;
-    align-items: center;
-    justify-content: flex-end;
-    width: 100%;
-    max-width: 280px;
-  }
-  
-  .user-info span {
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    border-radius: 20px;
-    max-width: 200px;
-  }
-}
-
-/* タブレット (768px - 1023px) */
-@media (max-width: 1023px) and (min-width: 768px) {
+@media (max-width: 1024px) {
   .user-info {
     gap: 0.8rem;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    width: 100%;
-    max-width: none;
-  }
-  
-  .user-info span {
-    font-size: 0.9rem;
-    max-width: 180px;
-  }
-}
-
-/* モバイル (480px - 767px) */
-@media (max-width: 767px) and (min-width: 480px) {
-  .user-info {
-    flex-direction: row;
-    gap: 1rem;
-    align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
-    max-width: none;
   }
   
   .user-info span {
-    font-size: 14px;
-    padding: 0.5rem 1rem;
-    margin: 0;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 25px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    max-width: 160px;
-  }
-}
-
-/* 小画面モバイル (320px - 479px) */
-@media (max-width: 479px) {
-  .user-info {
-    gap: 0.75rem;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
-    max-width: none;
-  }
-  
-  .user-info span {
-    font-size: 13px;
+    max-width: 150px;
     padding: 0.4rem 0.8rem;
-    max-width: 140px;
   }
 }
 
-/* 超小画面 (320px未満) */
-@media (max-width: 319px) {
+@media (max-width: 768px) {
   .user-info {
-    gap: 0.5rem;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
-    max-width: none;
+    gap: 0.6rem;
   }
   
   .user-info span {
-    font-size: 12px;
-    padding: 0.3rem 0.6rem;
     max-width: 120px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.9rem;
   }
 }
 
-/* アクセシビリティ向上 */
-.user-info:focus-within {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-  border-radius: 8px;
-}
-
-/* 高コントラストモード対応 */
-@media (prefers-contrast: high) {
-  .user-info span {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: 2px solid #000000;
-    box-shadow: none;
+@media (max-width: 480px) {
+  .user-info {
+    gap: 0.4rem;
   }
-}
-
-/* モーション軽減設定 */
-@media (prefers-reduced-motion: reduce) {
+  
   .user-info span {
-    transition: none;
-  }
-}
-
-/* ダークモード対応 */
-@media (prefers-color-scheme: dark) {
-  .user-info span {
-    background: rgba(0, 0, 0, 0.7);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    max-width: 100px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
   }
 }
