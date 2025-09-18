@@ -108,45 +108,58 @@
 /* PCサイズでのヘッダーレイアウト最適化 */
 @media (min-width: 1024px) {
   .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    grid-template-areas: 
+      "left title right"
+      "left title right";
+    align-items: center;
+    justify-items: center;
     padding: 2.5rem 3rem;
     position: relative;
-    min-height: 140px;
+    min-height: 160px;
     gap: 2rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   /* 左側エリア */
   .dashboard-header .header-left {
-    flex: 0 0 auto;
-    order: 1;
-    align-self: flex-start;
+    grid-area: left;
+    justify-self: start;
+    align-self: start;
     z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
   }
   
-  /* 中央エリア */
+  /* 中央エリア（タイトル） */
   .dashboard-header .header-title {
-    flex: 1;
-    order: 2;
-    text-align: center;
+    grid-area: title;
+    justify-self: center;
     align-self: center;
+    text-align: center;
     position: relative;
     z-index: 2;
     max-width: 600px;
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
   }
   
   /* 右側エリア */
   .dashboard-header .user-info {
-    flex: 0 0 auto;
-    order: 3;
-    align-self: flex-start;
+    grid-area: right;
+    justify-self: end;
+    align-self: start;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 0.5rem;
     z-index: 2;
+    min-width: 200px;
   }
   
   /* ログアウトボタン */
@@ -179,17 +192,21 @@
 @media (min-width: 1400px) {
   .dashboard-header {
     padding: 3.5rem 4rem;
-    min-height: 160px;
-    gap: 2.5rem;
+    min-height: 180px;
+    gap: 3rem;
+    grid-template-columns: 200px 1fr 200px;
   }
   
   .dashboard-header .header-title {
     max-width: 800px;
     font-size: 4.5rem;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
   }
   
   .dashboard-header .user-info {
     gap: 1rem;
+    min-width: 200px;
   }
   
   .dashboard-header .logout-container {
@@ -207,17 +224,21 @@
 @media (max-width: 1399px) and (min-width: 1200px) {
   .dashboard-header {
     padding: 3rem 3rem;
-    min-height: 140px;
-    gap: 2rem;
+    min-height: 160px;
+    gap: 2.5rem;
+    grid-template-columns: 180px 1fr 180px;
   }
   
   .dashboard-header .header-title {
     max-width: 700px;
     font-size: 4rem;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
   }
   
   .dashboard-header .user-info {
     gap: 0.75rem;
+    min-width: 180px;
   }
   
   .dashboard-header .logout-container {
@@ -235,17 +256,21 @@
 @media (max-width: 1199px) and (min-width: 1024px) {
   .dashboard-header {
     padding: 2.5rem 2rem;
-    min-height: 130px;
-    gap: 1.5rem;
+    min-height: 150px;
+    gap: 2rem;
+    grid-template-columns: 160px 1fr 160px;
   }
   
   .dashboard-header .header-title {
     max-width: 600px;
     font-size: 3.5rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
   }
   
   .dashboard-header .user-info {
     gap: 0.5rem;
+    min-width: 160px;
   }
   
   .dashboard-header .logout-container {
@@ -266,14 +291,21 @@
     flex-direction: column;
     align-items: center;
     padding: 2rem 1.5rem;
-    min-height: 120px;
-    gap: 1.25rem;
+    min-height: 140px;
+    gap: 1.5rem;
     position: relative;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   .dashboard-header .header-left {
     order: 1;
     align-self: flex-start;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
   }
   
   .dashboard-header .header-title {
@@ -281,11 +313,18 @@
     text-align: center;
     width: 100%;
     max-width: 500px;
+    font-size: 3rem;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
   }
   
   .dashboard-header .user-info {
     order: 3;
     align-self: flex-end;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
   }
   
   .dashboard-header .logout-container {
@@ -312,13 +351,20 @@
     gap: 1.5rem;
     text-align: center;
     padding: 2rem 1rem;
-    min-height: auto;
+    min-height: 120px;
     position: relative;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   .dashboard-header .header-left {
     order: 1;
     align-self: flex-start;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
   }
   
   .dashboard-header .header-title {
@@ -326,11 +372,18 @@
     text-align: center;
     width: 100%;
     max-width: 400px;
+    font-size: 2.5rem;
+    letter-spacing: -0.005em;
+    line-height: 1.3;
   }
   
   .dashboard-header .user-info {
     order: 3;
     align-self: flex-end;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
   }
   
   .dashboard-header .logout-container {
@@ -373,14 +426,21 @@
     gap: 1rem;
     text-align: center;
     padding: 1.5rem 0.75rem;
-    min-height: auto;
+    min-height: 100px;
     position: relative;
     border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   .dashboard-header .header-left {
     order: 1;
     align-self: flex-start;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
   }
   
   .dashboard-header .header-title {
@@ -388,11 +448,18 @@
     text-align: center;
     width: 100%;
     max-width: 350px;
+    font-size: 2rem;
+    letter-spacing: 0;
+    line-height: 1.4;
   }
   
   .dashboard-header .user-info {
     order: 3;
     align-self: flex-end;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
   }
   
   .dashboard-header .logout-container {
@@ -575,6 +642,15 @@
   }
 }
 
+/* Windows 11 */
+@media screen and (min-width: 1024px) and (-ms-high-contrast: none) {
+  .dashboard-header {
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+}
+
 /* macOS */
 @media screen and (-webkit-min-device-pixel-ratio: 2) {
   .dashboard-header {
@@ -590,6 +666,15 @@
     backdrop-filter: blur(15px);
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* iOS Safari PCサイズ対応 */
+  @media (min-width: 1024px) {
+    .dashboard-header {
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+    }
   }
 }
 
@@ -598,5 +683,29 @@
   .dashboard-header {
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+  }
+}
+
+/* Android Chrome PCサイズ対応 */
+@media screen and (min-width: 1024px) and (-webkit-min-device-pixel-ratio: 1) {
+  .dashboard-header {
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+  }
+}
+
+/* Firefox */
+@-moz-document url-prefix() {
+  .dashboard-header {
+    -moz-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+  }
+}
+
+/* Edge */
+@supports (-ms-ime-align: auto) {
+  .dashboard-header {
+    -ms-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
   }
 }
