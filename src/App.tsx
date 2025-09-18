@@ -10,6 +10,7 @@ import PresetTimersSection from "./components/PresetTimersSection";
 import VersionInfoComponent from "./components/VersionInfo";
 import TimerStatsSection from "./components/TimerStatsSection";
 import TimerHistoryComponent from "./components/TimerHistoryComponent";
+import SelfAnalysisComponent from "./components/SelfAnalysisComponent";
 import HeaderComponent from "./components/HeaderComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
@@ -286,6 +287,7 @@ function App() {
   const [newInterest, setNewInterest] = useState('');
   const [newStrength, setNewStrength] = useState('');
   const [newWeakness, setNewWeakness] = useState('');
+  const [newPersonality, setNewPersonality] = useState('');
   const [newChallenge, setNewChallenge] = useState('');
   const [newAchievement, setNewAchievement] = useState('');
 
@@ -398,35 +400,20 @@ function App() {
     });
   };
 
-  const toggleHabitToday = (habitId: string) => {
-    const today = new Date().toISOString().split('T')[0];
-    const habit = habits.find(h => h.id === habitId);
-    if (!habit) return;
-
-    const history = habitHistory[habitId] || [];
-    const isCompletedToday = history.includes(today);
-
-    if (isCompletedToday) {
-      // 今日の記録を削除
-      setHabitHistory(prev => ({
-        ...prev,
-        [habitId]: history.filter(date => date !== today)
-      }));
-      setHabitStreak(prev => ({
-        ...prev,
-        [habitId]: Math.max(0, (prev[habitId] || 0) - 1)
-      }));
-    } else {
-      // 今日の記録を追加
-      setHabitHistory(prev => ({
-        ...prev,
-        [habitId]: [...history, today]
-      }));
-      setHabitStreak(prev => ({
-        ...prev,
-        [habitId]: (prev[habitId] || 0) + 1
-      }));
-    }
+  const toggleHabitCompletion = (habitId: string, date: string) => {
+    const updatedHabits = habits.map(h => {
+      if (h.id === habitId) {
+        const isCompleted = h.completionDates.includes(date);
+        return {
+          ...h,
+          completionDates: isCompleted 
+            ? h.completionDates.filter(d => d !== date)
+            : [...h.completionDates, date]
+        };
+      }
+      return h;
+    });
+    setHabits(updatedHabits);
   };
 
   const getHabitCompletionRate = (habitId: string) => {
@@ -589,6 +576,24 @@ function App() {
 
   const deleteGoal = (goalId: string) => {
     setGoals(prev => prev.filter(goal => goal.id !== goalId));
+  };
+
+  const addLearningRecord = (record: Omit<LearningRecord, 'id'>) => {
+    const newRecord = {
+      ...record,
+      id: Date.now().toString()
+    };
+    setLearningRecords([...learningRecords, newRecord]);
+  };
+
+  const updateLearningRecord = (recordId: string, updates: Partial<LearningRecord>) => {
+    setLearningRecords(learningRecords.map(r => 
+      r.id === recordId ? { ...r, ...updates } : r
+    ));
+  };
+
+  const deleteLearningRecord = (recordId: string) => {
+    setLearningRecords(learningRecords.filter(r => r.id !== recordId));
   };
 
   const resetGoalForm = () => {
@@ -6460,7 +6465,49 @@ function App() {
             </div>
               );
             } else if (feature.id === 'self-analysis') {
-              console.log('Rendering self-analysis feature');
+              return (
+                <SelfAnalysisComponent
+                  key={feature.id}
+                  showSelfAnalysis={showSelfAnalysis}
+                  setShowSelfAnalysis={setShowSelfAnalysis}
+                  selfAnalysisTab={selfAnalysisTab}
+                  setSelfAnalysisTab={setSelfAnalysisTab}
+                  personalProfile={personalProfile}
+                  habits={habits}
+                  moodLogs={moodLogs}
+                  goals={goals}
+                  learningRecords={learningRecords}
+                  editingProfile={editingProfile}
+                  setEditingProfile={setEditingProfile}
+                  newValue={newValue}
+                  setNewValue={setNewValue}
+                  newGoal={newGoal}
+                  setNewGoal={setNewGoal}
+                  newSkill={newSkill}
+                  setNewSkill={setNewSkill}
+                  newInterest={newInterest}
+                  setNewInterest={setNewInterest}
+                  newStrength={newStrength}
+                  setNewStrength={setNewStrength}
+                  newWeakness={newWeakness}
+                  setNewWeakness={setNewWeakness}
+                  newPersonality={newPersonality}
+                  setNewPersonality={setNewPersonality}
+                  addToProfile={addToProfile}
+                  removeFromProfile={removeFromProfile}
+                  addHabit={addHabit}
+                  toggleHabitCompletion={toggleHabitCompletion}
+                  deleteHabit={deleteHabit}
+                  addGoal={addGoal}
+                  updateGoal={updateGoal}
+                  deleteGoal={deleteGoal}
+                  addLearningRecord={addLearningRecord}
+                  updateLearningRecord={updateLearningRecord}
+                  deleteLearningRecord={deleteLearningRecord}
+                  closeOtherFeatures={closeOtherFeatures}
+                />
+              );
+            } else if (false && feature.id === 'self-analysis-old') {
               return (
                 <div key={feature.id} className="self-analysis-section">
                   <div className="section-header">
@@ -7599,11 +7646,6 @@ function App() {
                           )}
                         </div>
                       </div>
-                    )}
-                    </div>
-                  )}
-                </div>
-              );
             } else {
               console.log('Unknown feature:', feature.name, feature.id);
               return null;
