@@ -319,6 +319,7 @@ function App() {
   const [miscellaneous, setMiscellaneous] = useState("");
   const [other, setOther] = useState("");
   const [salaryMemo, setSalaryMemo] = useState("");
+  const [salaryNotes, setSalaryNotes] = useState("");
   const [recordType, setRecordType] = useState<"income" | "expense">("income");
 
   // 日記フォームの状態
@@ -5140,10 +5141,6 @@ function App() {
                     setDiaryChallenges={setDiaryChallenges}
                     diaryAchievements={diaryAchievements}
                     setDiaryAchievements={setDiaryAchievements}
-                    diaryGratitude={diaryGratitude}
-                    setDiaryGratitude={setDiaryGratitude}
-                    diaryReflection={diaryReflection}
-                    setDiaryReflection={setDiaryReflection}
                     monthlyMemo={monthlyMemo}
                     setMonthlyMemo={setMonthlyMemo}
                     editingMonthlyMemo={editingMonthlyMemo}
