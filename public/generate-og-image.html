@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Time Tracker - OGP画像生成</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background: #f0f0f0;
+        }
+        
+        .og-image {
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fad0c4 100%);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            margin: 0 auto;
+        }
+        
+        .og-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            z-index: 2;
+        }
+        
+        .og-title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 0 0 1rem 0;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .og-icon {
+            font-size: 4.5rem;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .og-subtitle {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0 0 2rem 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            opacity: 0.9;
+        }
+        
+        .og-description {
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            opacity: 0.8;
+            max-width: 800px;
+            line-height: 1.4;
+        }
+        
+        .og-character-left {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 3rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .og-character-right {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 3rem;
+            animation: float 3s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .og-features {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .og-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .download-section {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="og-image" id="ogImage">
+        <div class="og-character-left">🎯</div>
+        <div class="og-character-right">📊</div>
+        
+        <div class="og-content">
+            <h1 class="og-title">
+                <span class="og-icon">⏰</span>
+                Work Time Tracker
+            </h1>
+            <p class="og-subtitle">可愛いキャラクターと一緒に作業時間を管理しよう！</p>
+            <p class="og-description">
+                タイマー機能・記録管理・メモ機能が充実した<br>
+                革新的な時間管理アプリケーション
+            </p>
+        </div>
+        
+        <div class="og-features">
+            <div class="og-feature">
+                <span>⏱️</span>
+                <span>タイマー</span>
+            </div>
+            <div class="og-feature">
+                <span>📈</span>
+                <span>分析</span>
+            </div>
+            <div class="og-feature">
+                <span>📝</span>
+                <span>メモ</span>
+            </div>
+            <div class="og-feature">
+                <span>🎨</span>
+                <span>カスタマイズ</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="download-section">
+        <button class="download-btn" onclick="downloadOGImage()">
+            OGP画像をダウンロード
+        </button>
+    </div>
+    
+    <script>
+        function downloadOGImage() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const ogImage = document.getElementById('ogImage');
+            
+            canvas.width = 1200;
+            canvas.height = 630;
+            
+            // HTML2Canvasライブラリが必要ですが、ここでは簡易版
+            // 実際の実装ではhtml2canvasライブラリを使用することを推奨
+            alert('OGP画像の生成にはhtml2canvasライブラリが必要です。\n実際の画像はデザインツールで作成することをお勧めします。');
+        }
+    </script>
+</body>
+</html>
