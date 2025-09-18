@@ -5044,6 +5044,7 @@ function App() {
                     loadSalaryRecords={loadSalaryRecords}
                     loadWorkDiaries={loadWorkDiaries}
                     closeOtherFeatures={closeOtherFeatures}
+                    user={user}
                   />
                 );
               } else if (feature.id === "timers") {
