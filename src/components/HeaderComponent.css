@@ -1,15 +1,13 @@
-/* HeaderComponent.css - 究極シンプルヘッダーデザイン */
+/* HeaderComponent.css - 超シンプルヘッダーデザイン */
 
-/* メインヘッダー */
+/* メインヘッダー - 3列レイアウト */
 .dashboard-header {
   background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fad0c4 100%);
   color: #333;
   padding: 1rem 2rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border-radius: 25px 25px 0 0;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
   min-height: 80px;
   width: 100%;
   box-sizing: border-box;
@@ -18,167 +16,135 @@
 
 /* シンプルテーマ用 */
 [data-theme="simple"] .dashboard-header {
-  background: #f8f6f0 !important;
-  color: #333 !important;
-  border-radius: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #f8f6f0;
+  color: #333;
   border-bottom: 1px solid #e0ddd6;
 }
 
-/* ヘッダー左側 */
+/* 左側：キャラクター（絶対保持） */
 .header-left {
-  display: flex;
-  align-items: center;
   flex: 0 0 auto;
+  z-index: 2;
 }
 
-/* ヘッダー中央 */
+/* 中央：タイトルとグリーティング */
 .header-center {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1 1 auto;
-  padding: 0 2rem;
-  gap: 0.5rem;
+  gap: 0.25rem;
+  padding: 0 1rem;
 }
 
-/* ヘッダータイトル */
 .header-title {
-  font-size: 2rem;
-  font-weight: 800;
-  margin: 0;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-  background: linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradientShift 3s ease-in-out infinite;
-  line-height: 1.2;
-  text-align: center;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-/* シンプルテーマ用タイトル */
-[data-theme="simple"] .header-title {
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  color: #333;
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
-  background-clip: unset;
-  animation: none;
-  text-shadow: none;
+  margin: 0;
+  text-align: center;
+  line-height: 1.2;
 }
 
-/* ヘッダー右側 */
+.user-greeting {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* 右側：アクションボタン */
 .header-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
   flex: 0 0 auto;
-  gap: 1rem;
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 2;
 }
 
 /* ナビゲーション */
 .header-navigation {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 /* ユーザー情報 */
 .user-info {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 1rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .user-info span {
   background: rgba(255, 255, 255, 0.9);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+  padding: 0.4rem 0.8rem;
+  border-radius: 15px;
   font-weight: 600;
+  font-size: 0.85rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   white-space: nowrap;
-  max-width: 200px;
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .user-info span:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* ログアウトボタン */
 .dashboard-header .logout-container {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0.5rem;
+  right: 0.5rem;
   z-index: 10;
 }
 
-/* レスポンシブデザイン - タブレット */
-@media (max-width: 1024px) {
+/* レスポンシブ対応 - シンプル化 */
+@media (max-width: 768px) {
   .dashboard-header {
     flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
+    gap: 0.5rem;
+    padding: 0.8rem;
     min-height: auto;
   }
   
   .header-left {
     order: 1;
-    width: 100%;
-    justify-content: center;
   }
   
   .header-center {
     order: 2;
-    width: 100%;
     padding: 0;
   }
   
   .header-title {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
   
-  [data-theme="simple"] .header-title {
-    font-size: 2rem;
+  .user-greeting {
+    font-size: 0.8rem;
+    max-width: 150px;
   }
   
   .header-right {
     order: 3;
     width: 100%;
-    align-items: center;
-    flex-direction: row;
-    justify-content: center;
-  }
-  
-  .user-info {
-    gap: 0.8rem;
     justify-content: center;
   }
   
   .user-info span {
-    max-width: 150px;
-    padding: 0.4rem 0.8rem;
+    max-width: 100px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
   }
   
   .dashboard-header .logout-container {
@@ -187,70 +153,23 @@
   }
 }
 
-/* レスポンシブデザイン - モバイル */
-@media (max-width: 768px) {
-  .dashboard-header {
-    padding: 0.8rem;
-    gap: 0.8rem;
-  }
-  
-  .header-center {
-    gap: 0.4rem;
-  }
-  
-  .header-title {
-    font-size: 1.6rem;
-  }
-  
-  [data-theme="simple"] .header-title {
-    font-size: 1.8rem;
-  }
-  
-  .header-navigation {
-    gap: 0.8rem;
-  }
-  
-  .user-info {
-    gap: 0.6rem;
-  }
-  
-  .user-info span {
-    max-width: 120px;
-    padding: 0.3rem 0.6rem;
-    font-size: 0.9rem;
-  }
-}
-
-/* レスポンシブデザイン - 小画面モバイル */
 @media (max-width: 480px) {
   .dashboard-header {
     padding: 0.6rem;
-    gap: 0.6rem;
-  }
-  
-  .header-center {
-    gap: 0.3rem;
   }
   
   .header-title {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
   
-  [data-theme="simple"] .header-title {
-    font-size: 1.6rem;
-  }
-  
-  .header-navigation {
-    gap: 0.6rem;
-  }
-  
-  .user-info {
-    gap: 0.4rem;
+  .user-greeting {
+    font-size: 0.75rem;
+    max-width: 120px;
   }
   
   .user-info span {
-    max-width: 100px;
-    padding: 0.2rem 0.5rem;
-    font-size: 0.8rem;
+    max-width: 80px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
   }
 }

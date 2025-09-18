@@ -41,15 +41,18 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
 }) => {
   return (
     <header className="dashboard-header">
+      {/* 左側：キャラクター（絶対保持） */}
       <div className="header-left">
         <HeaderLeftComponent />
       </div>
       
+      {/* 中央：タイトルとグリーティング */}
       <div className="header-center">
         <HeaderTitleComponent />
         <UserGreetingComponent user={user} currentCharacter={currentCharacter} />
       </div>
       
+      {/* 右側：アクションボタン */}
       <div className="header-right">
         <div className="header-navigation">
           <UserInfoComponent
@@ -86,6 +89,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
         <LogoutButtonComponent onLogout={handleLogout} />
       </div>
 
+      {/* 背景キャラクター（絶対保持） */}
       <HetamaCharacterComponent />
       <DogCharacterComponent />
     </header>
