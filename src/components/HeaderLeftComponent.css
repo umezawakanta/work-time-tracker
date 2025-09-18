@@ -24,6 +24,7 @@
     justify-content: flex-start;
     width: 100%;
     max-width: 350px;
+    min-width: 350px;
   }
 }
 
@@ -36,6 +37,7 @@
     justify-content: flex-start;
     width: 100%;
     max-width: 320px;
+    min-width: 320px;
   }
 }
 
@@ -47,6 +49,7 @@
     justify-content: flex-start;
     width: 100%;
     max-width: 280px;
+    min-width: 280px;
   }
 }
 
