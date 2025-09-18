@@ -16,6 +16,8 @@ interface PublicMemosComponentProps {
   handleSaveEditReply: (replyId: string) => void;
   handleCancelEditReply: () => void;
   handleDeleteReply: (replyId: string) => void;
+  replyContent: string;
+  setReplyContent: (content: string) => void;
 }
 
 const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
@@ -32,6 +34,8 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   handleSaveEditReply,
   handleCancelEditReply,
   handleDeleteReply,
+  replyContent,
+  setReplyContent,
 }) => {
   // 内部状態
   const [publicMemoSelectedDate, setPublicMemoSelectedDate] = useState<Date | null>(null);
@@ -39,7 +43,6 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   const [selectedPublicMemoCategory, setSelectedPublicMemoCategory] = useState("all");
   const [publicMemoSearchTerm, setPublicMemoSearchTerm] = useState("");
   const [replyingToMemo, setReplyingToMemo] = useState<string | null>(null);
-  const [replyContent, setReplyContent] = useState("");
   const [editingReply, setEditingReply] = useState<string | null>(null);
   const [editingReplyContent, setEditingReplyContent] = useState("");
   const [currentPage, setCurrentPage] = useState(1);

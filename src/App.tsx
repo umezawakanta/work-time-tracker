@@ -5092,6 +5092,8 @@ function App() {
                     handleSaveEditReply={handleSaveEditReply}
                     handleCancelEditReply={handleCancelEditReply}
                     handleDeleteReply={handleDeleteReply}
+                    replyContent={replyContent}
+                    setReplyContent={setReplyContent}
                   />
                 );
               } else if (feature.id === "work-records") {
