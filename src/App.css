@@ -3445,6 +3445,8 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   --bg-color: #1a202c;
   --card-bg: linear-gradient(145deg, #2d3748 0%, #4a5568 100%);
   --header-title-gradient: linear-gradient(45deg, #68d391, #4ade80, #22c55e);
+  --header-bg: linear-gradient(135deg, #2d3748 0%, #4a5568 50%, #68d391 100%);
+  --header-border: #68d391;
 }
 
 [data-theme="ocean"] {
@@ -3455,6 +3457,8 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   --bg-color: #f0f9ff;
   --card-bg: linear-gradient(145deg, #e0f2fe 0%, #bae6fd 100%);
   --header-title-gradient: linear-gradient(45deg, #0ea5e9, #06b6d4, #0891b2);
+  --header-bg: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #06b6d4 100%);
+  --header-border: #06b6d4;
 }
 
 [data-theme="forest"] {
@@ -3465,6 +3469,8 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   --bg-color: #f0fdf4;
   --card-bg: linear-gradient(145deg, #dcfce7 0%, #bbf7d0 100%);
   --header-title-gradient: linear-gradient(45deg, #16a34a, #22c55e, #4ade80);
+  --header-bg: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #22c55e 100%);
+  --header-border: #22c55e;
 }
 
 [data-theme="sunset"] {
@@ -3475,6 +3481,8 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   --bg-color: #fff7ed;
   --card-bg: linear-gradient(145deg, #fed7aa 0%, #fdba74 100%);
   --header-title-gradient: linear-gradient(45deg, #f97316, #fb923c, #fbbf24);
+  --header-bg: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #fb923c 100%);
+  --header-border: #fb923c;
 }
 
 [data-theme="rainbow"] {
@@ -3485,6 +3493,8 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   --bg-color: #faf5ff;
   --card-bg: linear-gradient(145deg, #e9d5ff 0%, #ddd6fe 100%);
   --header-title-gradient: linear-gradient(45deg, #8b5cf6, #a78bfa, #c084fc);
+  --header-bg: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #a78bfa 100%);
+  --header-border: #a78bfa;
 }
 
 [data-theme="space"] {
@@ -3495,6 +3505,8 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   --bg-color: #0f172a;
   --card-bg: linear-gradient(145deg, #1e293b 0%, #334155 100%);
   --header-title-gradient: linear-gradient(45deg, #6366f1, #8b5cf6, #a78bfa);
+  --header-bg: linear-gradient(135deg, #1e293b 0%, #334155 50%, #6366f1 100%);
+  --header-border: #6366f1;
 }
 
 [data-theme="candy"] {
@@ -3505,6 +3517,8 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   --bg-color: #fdf2f8;
   --card-bg: linear-gradient(145deg, #fce7f3 0%, #fbcfe8 100%);
   --header-title-gradient: linear-gradient(45deg, #ec4899, #f472b6, #f9a8d4);
+  --header-bg: linear-gradient(135deg, #ec4899 0%, #db2777 50%, #f472b6 100%);
+  --header-border: #f472b6;
 }
 
 [data-theme="pastel"] {
@@ -3515,6 +3529,8 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   --bg-color: #faf5ff;
   --card-bg: linear-gradient(145deg, #f3e8ff 0%, #ede9fe 100%);
   --header-title-gradient: linear-gradient(45deg, #a78bfa, #c4b5fd, #ddd6fe);
+  --header-bg: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #c4b5fd 100%);
+  --header-border: #c4b5fd;
 }
 
 [data-theme="neon"] {
@@ -3525,6 +3541,8 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   --bg-color: #ecfdf5;
   --card-bg: linear-gradient(145deg, #d1fae5 0%, #a7f3d0 100%);
   --header-title-gradient: linear-gradient(45deg, #10b981, #34d399, #6ee7b7);
+  --header-bg: linear-gradient(135deg, #10b981 0%, #059669 50%, #34d399 100%);
+  --header-border: #34d399;
 }
 
 /* デフォルトテーマ */

@@ -2,8 +2,8 @@
 
 /* メインヘッダー - 3列レイアウト */
 .dashboard-header {
-  background: #f8f6f0 !important;
-  color: #333 !important;
+  background: var(--header-bg, #f8f6f0);
+  color: var(--text-color, #333);
   padding: 1rem 2rem;
   display: flex !important;
   align-items: center;
@@ -12,7 +12,7 @@
   width: 100%;
   box-sizing: border-box;
   position: relative;
-  border-bottom: 2px solid #e0ddd6;
+  border-bottom: 2px solid var(--header-border, #e0ddd6);
   visibility: visible !important;
   opacity: 1 !important;
   gap: 1rem; /* 要素間の間隔を確保 */
