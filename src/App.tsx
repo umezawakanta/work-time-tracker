@@ -1893,41 +1893,38 @@ function App() {
     };
   };
 
-  const handleCreateSalaryRecord = async (e: React.FormEvent) => {
+  const handleCreateIncomeExpenseRecord = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user?.id) return;
 
     try {
       // 記録タイプに基づいて金額を正負に変換
-      const salaryAmount =
-        recordType === "expense"
-          ? -Math.abs(Number(salary))
-          : Math.abs(Number(salary));
+      const amount =
+        incomeExpenseType === "expense"
+          ? -Math.abs(Number(incomeExpenseAmount))
+          : Math.abs(Number(incomeExpenseAmount));
 
       const response = await fetch("/api/work-records/salary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user.id,
-          date: salaryDate,
-          salary: salaryAmount,
-          transportation: Number(transportation) || 0,
-          miscellaneous: Number(miscellaneous) || 0,
-          other: Number(other) || 0,
-          memo: salaryMemo,
+          date: incomeExpenseDate,
+          salary: amount,
+          transportation: 0,
+          miscellaneous: 0,
+          other: 0,
+          memo: incomeExpenseNotes,
         }),
       });
 
       const data = await response.json();
       if (data.success) {
         setMessage("収入・支出記録が作成されました！");
-        setSalaryDate("");
-        setSalary("");
-        setTransportation("");
-        setMiscellaneous("");
-        setOther("");
-        setSalaryMemo("");
-        setRecordType("income");
+        setIncomeExpenseDate("");
+        setIncomeExpenseAmount("");
+        setIncomeExpenseType("income");
+        setIncomeExpenseNotes("");
         setShowIncomeExpenseForm(false);
         loadIncomeExpenseRecords();
       } else {
@@ -1940,30 +1937,30 @@ function App() {
     }
   };
 
-  const handleUpdateSalaryRecord = async (e: React.FormEvent) => {
+  const handleUpdateIncomeExpenseRecord = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id || !editingSalaryRecord) return;
+    if (!user?.id || !editingIncomeExpenseRecord) return;
 
     try {
       // 記録タイプに基づいて金額を正負に変換
-      const salaryAmount =
-        recordType === "expense"
-          ? -Math.abs(Number(salary))
-          : Math.abs(Number(salary));
+      const amount =
+        incomeExpenseType === "expense"
+          ? -Math.abs(Number(incomeExpenseAmount))
+          : Math.abs(Number(incomeExpenseAmount));
 
       const response = await fetch(
-        `/api/work-records/salary/${editingSalaryRecord._id}`,
+        `/api/work-records/salary/${editingIncomeExpenseRecord._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             userId: user.id,
-            date: salaryDate,
-            salary: salaryAmount,
-            transportation: Number(transportation) || 0,
-            miscellaneous: Number(miscellaneous) || 0,
-            other: Number(other) || 0,
-            memo: salaryMemo,
+            date: incomeExpenseDate,
+            salary: amount,
+            transportation: 0,
+            miscellaneous: 0,
+            other: 0,
+            memo: incomeExpenseNotes,
           }),
         }
       );
@@ -1971,14 +1968,11 @@ function App() {
       const data = await response.json();
       if (data.success) {
         setMessage("収入・支出記録を更新しました！");
-        setSalaryDate("");
-        setSalary("");
-        setTransportation("");
-        setMiscellaneous("");
-        setOther("");
-        setSalaryMemo("");
-        setRecordType("income");
-        setEditingSalaryRecord(null);
+        setIncomeExpenseDate("");
+        setIncomeExpenseAmount("");
+        setIncomeExpenseType("income");
+        setIncomeExpenseNotes("");
+        setEditingIncomeExpenseRecord(null);
         setShowIncomeExpenseForm(false);
         loadIncomeExpenseRecords();
       } else {
@@ -2137,7 +2131,7 @@ function App() {
     }
   };
 
-  const handleDeleteSalaryRecord = async (id: string) => {
+  const handleDeleteIncomeExpenseRecord = async (id: string) => {
     try {
       const response = await fetch(`/api/work-records/salary?id=${id}`, {
         method: "DELETE",
@@ -2651,9 +2645,9 @@ function App() {
     setShowCalendar(false);
   };
 
-  const viewSalaryRecord = (record: any) => {
+  const viewIncomeExpenseRecord = (record: any) => {
     setSelectedRecord(record);
-    setSelectedRecordType("salary");
+    setSelectedRecordType("income");
     setShowRecordDetail(true);
     setShowIncomeExpenseForm(false);
     setShowDiaryForm(false);
@@ -2669,15 +2663,12 @@ function App() {
     setShowCalendar(false);
   };
 
-  const editSalaryRecord = (record: any) => {
-    setSalaryDate(record.date.split("T")[0]);
-    setSalary(Math.abs(record.salary).toString()); // 絶対値で表示
-    setTransportation(record.transportation.toString());
-    setMiscellaneous(record.miscellaneous.toString());
-    setOther(record.other.toString());
-    setSalaryMemo(record.memo || "");
-    setRecordType(record.salary >= 0 ? "income" : "expense"); // 正負に基づいてタイプを設定
-    setEditingSalaryRecord(record);
+  const editIncomeExpenseRecord = (record: any) => {
+    setIncomeExpenseDate(record.date.split("T")[0]);
+    setIncomeExpenseAmount(Math.abs(record.salary).toString()); // 絶対値で表示
+    setIncomeExpenseType(record.salary >= 0 ? "income" : "expense"); // 正負に基づいてタイプを設定
+    setIncomeExpenseNotes(record.memo || "");
+    setEditingIncomeExpenseRecord(record);
     setShowIncomeExpenseForm(true);
     setShowDiaryForm(false);
     setShowCalendar(false);
@@ -5436,6 +5427,8 @@ function App() {
                     handleUpdateDiary={handleUpdateDiary}
                     handleDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
                     handleDeleteDiary={handleDeleteDiary}
+                    editIncomeExpenseRecord={editIncomeExpenseRecord}
+                    viewIncomeExpenseRecord={viewIncomeExpenseRecord}
                     openDiaryForm={openDiaryForm}
                     loadMonthlyMemo={loadMonthlyMemo}
                     saveMonthlyMemo={saveMonthlyMemo}
