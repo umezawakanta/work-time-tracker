@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-// Memo Schema
+// Memo Schema (既存のメモAPIと同じスキーマを使用)
 const MemoSchema = new mongoose.Schema({
   title: { type: String, required: false },
   content: { type: String, required: true },
@@ -19,7 +19,31 @@ const MemoSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-const Memo = mongoose.models.Memo || mongoose.model('Memo', MemoSchema);
+// 更新時にupdatedAtを自動更新
+MemoSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+const Memo = mongoose.model('Memo', MemoSchema);
+
+// Reply Schema (既存のメモAPIと同じスキーマを使用)
+const ReplySchema = new mongoose.Schema({
+  content: { type: String, required: true },
+  authorName: { type: String, required: true },
+  authorEmail: { type: String, required: true },
+  memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+// 更新時にupdatedAtを自動更新
+ReplySchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+const Reply = mongoose.model('Reply', ReplySchema);
 
 // CORS設定
 const setCorsHeaders = (res) => {
@@ -33,6 +57,8 @@ const handleRequest = async (req, res) => {
   try {
     // データベース接続を確実にする
     await ensureDatabaseConnection();
+    
+    console.log('Database connected successfully for error-reports API');
 
     // 認証チェック
     const authHeader = req.headers.authorization;
@@ -52,24 +78,17 @@ const handleRequest = async (req, res) => {
 
     if (req.method === 'GET') {
       // 不具合報告メモを取得
+      console.log('Fetching error reports...');
       const errorReports = await Memo.find({
         category: 'エラー報告',
         isPublic: true
       })
       .sort({ createdAt: -1 }) // 新しい順
       .limit(100); // 最大100件
+      
+      console.log(`Found ${errorReports.length} error reports`);
 
-      // 返信も取得
-      const ReplySchema = new mongoose.Schema({
-        memoId: { type: String, required: true },
-        content: { type: String, required: true },
-        authorName: { type: String, required: false },
-        authorEmail: { type: String, required: false },
-        createdAt: { type: Date, default: Date.now },
-        updatedAt: { type: Date, default: Date.now },
-      });
-
-      const Reply = mongoose.models.Reply || mongoose.model('Reply', ReplySchema);
+      // 返信も取得（既存のReplyモデルを使用）
 
       const memosWithReplies = await Promise.all(
         errorReports.map(async (memo) => {
@@ -113,6 +132,12 @@ const handleRequest = async (req, res) => {
 
   } catch (error) {
     console.error('Error in error-reports API:', error);
+    
+    // レスポンスが既に送信されている場合は何もしない
+    if (res.headersSent) {
+      return;
+    }
+    
     return res.status(500).json({ 
       success: false, 
       message: 'サーバーエラーが発生しました',
@@ -122,11 +147,26 @@ const handleRequest = async (req, res) => {
 };
 
 module.exports = async (req, res) => {
-  setCorsHeaders(res);
+  try {
+    setCorsHeaders(res);
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+
+    await handleRequest(req, res);
+  } catch (error) {
+    console.error('Error in error-reports module:', error);
+    
+    // レスポンスが既に送信されている場合は何もしない
+    if (res.headersSent) {
+      return;
+    }
+    
+    return res.status(500).json({ 
+      success: false, 
+      message: 'サーバーエラーが発生しました',
+      error: error.message 
+    });
   }
-
-  await handleRequest(req, res);
 };
