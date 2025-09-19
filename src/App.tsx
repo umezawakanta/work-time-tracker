@@ -1139,7 +1139,11 @@ function App() {
           errorMessage.includes('incomeExpenseAmount') ||
           errorMessage.includes('incomeExpenseDate') ||
           errorMessage.includes('incomeExpenseNotes') ||
-          errorMessage.includes('incomeExpenseType')) {
+          errorMessage.includes('incomeExpenseType') ||
+          errorMessage.includes('404') ||
+          errorMessage.includes('Not Found') ||
+          errorMessage.includes('api.github.com') ||
+          errorMessage.includes('SourceCodeViewer')) {
         
         const errorInfo = {
           message: errorMessage,
@@ -1212,7 +1216,11 @@ function App() {
                              errorMessage.includes('incomeExpenseAmount') ||
                              errorMessage.includes('incomeExpenseDate') ||
                              errorMessage.includes('incomeExpenseNotes') ||
-                             errorMessage.includes('incomeExpenseType');
+                             errorMessage.includes('incomeExpenseType') ||
+                             errorMessage.includes('404') ||
+                             errorMessage.includes('Not Found') ||
+                             errorMessage.includes('api.github.com') ||
+                             errorMessage.includes('SourceCodeViewer');
       
       if (shouldShowModal) {
         const errorInfo = {
@@ -3848,7 +3856,11 @@ function App() {
                            errorMessage.includes('incomeExpenseAmount') ||
                            errorMessage.includes('incomeExpenseDate') ||
                            errorMessage.includes('incomeExpenseNotes') ||
-                           errorMessage.includes('incomeExpenseType');
+                           errorMessage.includes('incomeExpenseType') ||
+                           errorMessage.includes('404') ||
+                           errorMessage.includes('Not Found') ||
+                           errorMessage.includes('api.github.com') ||
+                           errorMessage.includes('SourceCodeViewer');
     
     if (shouldShowModal) {
       const enhancedErrorInfo = {
