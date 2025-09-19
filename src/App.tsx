@@ -732,7 +732,7 @@ function App() {
   };
 
   const deleteLearningRecord = (recordId: string) => {
-    setLearningRecords(learningRecords.filter((r) => r.id !== recordId));
+    setLearningRecords((learningRecords || []).filter((r) => r.id !== recordId));
   };
 
   const resetGoalForm = () => {
@@ -982,7 +982,7 @@ function App() {
     });
 
     // 存在しない機能を除外
-    order = order.filter((id) => features.some((f) => f.id === id));
+    order = (order || []).filter((id) => features.some((f) => f.id === id));
 
     return order;
   };
@@ -1019,7 +1019,7 @@ function App() {
           const today = new Date();
           today.setHours(0, 0, 0, 0);
 
-          const todayReplies = memo.replies.filter((reply) => {
+          const todayReplies = (memo.replies || []).filter((reply) => {
             const replyDate = new Date(reply.createdAt);
             replyDate.setHours(0, 0, 0, 0);
             return replyDate.getTime() === today.getTime();
@@ -1037,7 +1037,7 @@ function App() {
           const today = new Date();
           today.setHours(0, 0, 0, 0);
 
-          const todayReplies = memo.replies.filter((reply) => {
+          const todayReplies = (memo.replies || []).filter((reply) => {
             const replyDate = new Date(reply.createdAt);
             replyDate.setHours(0, 0, 0, 0);
             return replyDate.getTime() === today.getTime();
@@ -1056,12 +1056,12 @@ function App() {
     let hiddenFeatures = userSettings?.hiddenFeatures || [];
 
     // 「じぶん図鑑」が隠されている場合は表示に戻す
-    if (hiddenFeatures.includes("self-analysis")) {
-      hiddenFeatures = hiddenFeatures.filter((id) => id !== "self-analysis");
+    if ((hiddenFeatures || []).includes("self-analysis")) {
+      hiddenFeatures = (hiddenFeatures || []).filter((id) => id !== "self-analysis");
     }
 
-    const visibleFeatures = order
-      .filter((id) => !hiddenFeatures.includes(id))
+    const visibleFeatures = (order || [])
+      .filter((id) => !(hiddenFeatures || []).includes(id))
       .map((id) => features.find((f) => f.id === id))
       .filter(Boolean) as Feature[];
 
@@ -2229,7 +2229,7 @@ function App() {
         const existingHidden = settings.hiddenFeatures || [];
 
         // 存在しない機能を除外し、新しい機能を追加
-        const updatedOrder = existingOrder.filter((id: string) =>
+        const updatedOrder = (existingOrder || []).filter((id: string) =>
           currentFeatureIds.includes(id)
         );
         currentFeatureIds.forEach((featureId) => {
@@ -2238,7 +2238,7 @@ function App() {
           }
         });
 
-        const updatedHidden = existingHidden.filter((id: string) =>
+        const updatedHidden = (existingHidden || []).filter((id: string) =>
           currentFeatureIds.includes(id)
         );
 
@@ -2348,10 +2348,10 @@ function App() {
   const handleFeatureToggle = (featureId: string) => {
     const currentSettings = userSettings || getDefaultUserSettings();
 
-    const isHidden = currentSettings.hiddenFeatures.includes(featureId);
+    const isHidden = (currentSettings.hiddenFeatures || []).includes(featureId);
     const newHiddenFeatures = isHidden
-      ? currentSettings.hiddenFeatures.filter((id) => id !== featureId)
-      : [...currentSettings.hiddenFeatures, featureId];
+      ? (currentSettings.hiddenFeatures || []).filter((id) => id !== featureId)
+      : [...(currentSettings.hiddenFeatures || []), featureId];
 
     updateUserSettings({ hiddenFeatures: newHiddenFeatures });
   };
