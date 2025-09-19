@@ -1075,8 +1075,11 @@ function App() {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       
-      // ページをリロードしてログイン画面に遷移
-      window.location.reload();
+      // 少し遅延してからページをリロードしてログイン画面に遷移
+      // これにより障害報告画面が表示される時間を確保
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000); // 2秒後にリロード
     }
   };
 
@@ -1186,6 +1189,8 @@ function App() {
           errorMessage.includes('incomeExpenseDate') ||
           errorMessage.includes('incomeExpenseNotes') ||
           errorMessage.includes('incomeExpenseType') ||
+          errorMessage.includes('401') ||
+          errorMessage.includes('Unauthorized') ||
           errorMessage.includes('404') ||
           errorMessage.includes('Not Found') ||
           errorMessage.includes('api.github.com') ||
@@ -1295,6 +1300,8 @@ function App() {
                              errorMessage.includes('incomeExpenseDate') ||
                              errorMessage.includes('incomeExpenseNotes') ||
                              errorMessage.includes('incomeExpenseType') ||
+                             errorMessage.includes('401') ||
+                             errorMessage.includes('Unauthorized') ||
                              errorMessage.includes('404') ||
                              errorMessage.includes('Not Found') ||
                              errorMessage.includes('api.github.com') ||
@@ -3983,6 +3990,8 @@ function App() {
                            errorMessage.includes('incomeExpenseDate') ||
                            errorMessage.includes('incomeExpenseNotes') ||
                            errorMessage.includes('incomeExpenseType') ||
+                           errorMessage.includes('401') ||
+                           errorMessage.includes('Unauthorized') ||
                            errorMessage.includes('404') ||
                            errorMessage.includes('Not Found') ||
                            errorMessage.includes('api.github.com') ||

@@ -24,21 +24,24 @@ export const apiFetch = async (
       const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
       const apiError = createApiError(error, response, { url, method: options.method || 'GET' });
       
-      // 401 Unauthorizedの場合は特別な処理
+      // エラー報告コールバックが設定されている場合は呼び出し
+      if (globalErrorReportCallback) {
+        globalErrorReportCallback(apiError);
+      }
+      
+      // 401 Unauthorizedの場合は特別な処理（エラー報告後に実行）
       if (response.status === 401) {
         // 認証トークンをクリア
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         
-        // ページをリロードしてログイン画面に遷移
+        // 少し遅延してからページをリロードしてログイン画面に遷移
+        // これにより障害報告画面が表示される時間を確保
         if (typeof window !== 'undefined') {
-          window.location.reload();
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000); // 2秒後にリロード
         }
-      }
-      
-      // エラー報告コールバックが設定されている場合は呼び出し
-      if (globalErrorReportCallback) {
-        globalErrorReportCallback(apiError);
       }
       
       throw apiError;
