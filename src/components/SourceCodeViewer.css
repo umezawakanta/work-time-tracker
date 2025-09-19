@@ -107,6 +107,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  justify-content: space-between;
   padding: 6px 16px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -145,6 +146,15 @@
   text-overflow: ellipsis;
 }
 
+.file-stats {
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
 .file-content-panel {
   flex: 1;
   display: flex;
@@ -159,9 +169,35 @@
 }
 
 .file-content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 16px 24px;
   border-bottom: 1px solid #e5e7eb;
   background: #f9fafb;
+}
+
+.file-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.file-stats-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 .file-content-header h3 {

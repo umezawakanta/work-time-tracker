@@ -21,6 +21,14 @@ const SourceCodeViewer: React.FC<SourceCodeViewerProps> = ({ isOpen, onClose }) 
   const [loading, setLoading] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState('');
+  const [fileStats, setFileStats] = useState<{[key: string]: {lines: number, characters: number}}>({});
+
+  // ファイルの統計情報を計算する関数
+  const calculateFileStats = (content: string) => {
+    const lines = content.split('\n').length;
+    const characters = content.length;
+    return { lines, characters };
+  };
 
   // ファイルツリーの構造を定義
   const projectStructure: FileNode[] = [
@@ -195,25 +203,40 @@ const SourceCodeViewer: React.FC<SourceCodeViewerProps> = ({ isOpen, onClose }) 
             if (response.ok) {
               const content = await response.text();
               setFileContent(content);
+              // 統計情報を計算して保存
+              const stats = calculateFileStats(content);
+              setFileStats(prev => ({ ...prev, [file.path]: stats }));
             } else {
               throw new Error('Local file not found');
             }
           } catch (localError) {
             // ローカルファイルが見つからない場合はサンプルコンテンツを表示
-            setFileContent(generateSampleContent(file));
+            const sampleContent = generateSampleContent(file);
+            setFileContent(sampleContent);
+            // 統計情報を計算して保存
+            const stats = calculateFileStats(sampleContent);
+            setFileStats(prev => ({ ...prev, [file.path]: stats }));
           }
         } else {
           // 本番環境ではサンプルコンテンツを表示
-          setFileContent(generateSampleContent(file));
+          const sampleContent = generateSampleContent(file);
+          setFileContent(sampleContent);
+          // 統計情報を計算して保存
+          const stats = calculateFileStats(sampleContent);
+          setFileStats(prev => ({ ...prev, [file.path]: stats }));
         }
       } catch (error) {
         console.error('ファイルの取得に失敗しました:', error);
-        setFileContent(`// エラー: ファイルの取得に失敗しました
+        const errorContent = `// エラー: ファイルの取得に失敗しました
 // ファイル: ${file.path}
 // エラー: ${error instanceof Error ? error.message : String(error)}
 // 時間: ${new Date().toISOString()}
 
-${generateSampleContent(file)}`);
+${generateSampleContent(file)}`;
+        setFileContent(errorContent);
+        // 統計情報を計算して保存
+        const stats = calculateFileStats(errorContent);
+        setFileStats(prev => ({ ...prev, [file.path]: stats }));
       } finally {
         setLoading(false);
       }
@@ -325,6 +348,11 @@ export default ${file.name.replace('.tsx', '').replace('.ts', '')};`;
           >
             <i className={`bi ${getFileIcon(node)}`}></i>
             <span className="file-name">{node.name}</span>
+            {node.type === 'file' && fileStats[node.path] && (
+              <span className="file-stats">
+                {fileStats[node.path].lines}行
+              </span>
+            )}
           </div>
           {node.type === 'directory' && 
            expandedFolders.has(node.path) && 
@@ -391,11 +419,25 @@ export default ${file.name.replace('.tsx', '').replace('.ts', '')};`;
             {selectedFile ? (
               <div className="file-content">
                 <div className="file-content-header">
-                  <h3>
-                    <i className={`bi ${getFileIcon(selectedFile)}`}></i>
-                    {selectedFile.name}
-                  </h3>
-                  <span className="file-path">{selectedFile.path}</span>
+                  <div className="file-header-info">
+                    <h3>
+                      <i className={`bi ${getFileIcon(selectedFile)}`}></i>
+                      {selectedFile.name}
+                    </h3>
+                    <span className="file-path">{selectedFile.path}</span>
+                  </div>
+                  {fileStats[selectedFile.path] && (
+                    <div className="file-stats-info">
+                      <span className="stat-item">
+                        <i className="bi bi-list-ol"></i>
+                        {fileStats[selectedFile.path].lines}行
+                      </span>
+                      <span className="stat-item">
+                        <i className="bi bi-type"></i>
+                        {fileStats[selectedFile.path].characters.toLocaleString()}文字
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="file-content-body">
                   {loading ? (
