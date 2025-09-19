@@ -53,19 +53,6 @@ const handleRequest = async (req, res) => {
     
     console.log('Database connected successfully for error-reports API');
 
-    // 認証チェック（オプション - エラーレポートは公開可能）
-    let userInfo = null;
-    if (req.headers && req.headers.authorization) {
-      const authHeader = req.headers.authorization;
-      if (authHeader.startsWith('Bearer ')) {
-        try {
-          userInfo = await verifyJWT(req);
-        } catch (authError) {
-          console.log('Authentication failed, proceeding without auth:', authError.message);
-        }
-      }
-    }
-
     if (req.method === 'GET') {
       // 不具合報告メモを取得
       console.log('Fetching error reports...');

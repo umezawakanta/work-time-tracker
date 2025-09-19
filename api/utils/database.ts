@@ -80,6 +80,12 @@ const initDatabaseConnection = async () => {
 
 // JWT verification utility
 const verifyJWTToken = async (req) => {
+  // リクエストオブジェクトとヘッダーの存在チェック
+  if (!req || !req.headers) {
+    console.log('Request or headers object is undefined');
+    return null;
+  }
+
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return null;
