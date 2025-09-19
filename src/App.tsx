@@ -2737,22 +2737,22 @@ function App() {
     // その日の記録を取得
     const dayRecords = getRecordsForDate(date);
 
-    if (type === "income" && dayRecords.incomeExpenseRecords.filter(r => r.type === 'income').length > 0) {
-      setSelectedRecord(dayRecords.incomeExpenseRecords.filter(r => r.type === 'income')[0]);
+    if (type === "income" && (dayRecords.incomeExpenseRecords || []).filter(r => r.type === 'income').length > 0) {
+      setSelectedRecord((dayRecords.incomeExpenseRecords || []).filter(r => r.type === 'income')[0]);
       setSelectedRecordType("income");
       setShowRecordDetail(true);
       setShowIncomeExpenseForm(false);
       setShowDiaryForm(false);
       setShowCalendar(false);
-    } else if (type === "expense" && dayRecords.incomeExpenseRecords.filter(r => r.type === 'expense').length > 0) {
-      setSelectedRecord(dayRecords.incomeExpenseRecords.filter(r => r.type === 'expense')[0]);
+    } else if (type === "expense" && (dayRecords.incomeExpenseRecords || []).filter(r => r.type === 'expense').length > 0) {
+      setSelectedRecord((dayRecords.incomeExpenseRecords || []).filter(r => r.type === 'expense')[0]);
       setSelectedRecordType("expense");
       setShowRecordDetail(true);
       setShowIncomeExpenseForm(false);
       setShowDiaryForm(false);
       setShowCalendar(false);
-    } else if (type === "diary" && dayRecords.diaries.length > 0) {
-      setSelectedRecord(dayRecords.diaries[0]);
+    } else if (type === "diary" && (dayRecords.diaries || []).length > 0) {
+      setSelectedRecord((dayRecords.diaries || [])[0]);
       setSelectedRecordType("diary");
       setShowRecordDetail(true);
       setShowIncomeExpenseForm(false);

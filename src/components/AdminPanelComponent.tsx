@@ -491,10 +491,10 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                       <div className="error-report-content">
                         <p>{report.content}</p>
                       </div>
-                      {report.replies && report.replies.length > 0 && (
+                      {(report.replies || []).length > 0 && (
                         <div className="error-report-replies">
-                          <h5>返信 ({report.replies.length}件)</h5>
-                          {report.replies.map((reply: any) => (
+                          <h5>返信 ({(report.replies || []).length}件)</h5>
+                          {(report.replies || []).map((reply: any) => (
                             <div key={reply.id} className="error-report-reply">
                               <div className="reply-header">
                                 <span className="reply-author">{reply.author}</span>

@@ -651,9 +651,9 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                     <div className="replies-section">
                       <h4>返信 ({memo.replies?.length || 0})</h4>
                       
-                      {memo.replies && memo.replies.length > 0 && (
+                      {(memo.replies || []).length > 0 && (
                         <div className="replies-list">
-                          {memo.replies.map((reply: Reply) => (
+                          {(memo.replies || []).map((reply: Reply) => (
                             <div key={reply.id} className="reply-item">
                               <div className="reply-content">
                                 {editingReply === reply.id ? (
