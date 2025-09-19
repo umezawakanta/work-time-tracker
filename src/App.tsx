@@ -2878,11 +2878,11 @@ function App() {
 
   const handleSaveGenreEdit = () => {
     if (editingGenreName.trim() && editingGenreName.trim() !== editingGenre) {
-      const updatedGenres = customGenres.map((genre) =>
-        genre === editingGenre ? editingGenreName.trim() : genre
+      const updatedCategories = customCategories.map((category) =>
+        category === editingGenre ? editingGenreName.trim() : category
       );
-      setCustomGenres(updatedGenres);
-      localStorage.setItem("customGenres", JSON.stringify(updatedGenres));
+      setCustomCategories(updatedCategories);
+      localStorage.setItem("customCategories", JSON.stringify(updatedCategories));
       setMessage("ジャンルを更新しました");
     }
     setEditingGenre(null);
@@ -2900,11 +2900,11 @@ function App() {
         `「${genreToDelete}」ジャンルを削除しますか？\nこのジャンルを使用しているメモも影響を受けます。`
       )
     ) {
-      const updatedGenres = customGenres.filter(
-        (genre) => genre !== genreToDelete
+      const updatedCategories = customCategories.filter(
+        (category) => category !== genreToDelete
       );
-      setCustomGenres(updatedGenres);
-      localStorage.setItem("customGenres", JSON.stringify(updatedGenres));
+      setCustomCategories(updatedCategories);
+      localStorage.setItem("customCategories", JSON.stringify(updatedCategories));
       setMessage("ジャンルを削除しました");
     }
   };
@@ -2974,7 +2974,7 @@ function App() {
       "要望、リクエスト",
       "その他",
     ];
-    return [...defaultGenres, ...customGenres];
+    return [...defaultGenres, ...customCategories];
   };
 
   // 返信機能の関数
@@ -5566,8 +5566,8 @@ function App() {
                     memosLoading={memosLoading}
                     showMemos={showMemos}
                     setShowMemos={setShowMemos}
-                    customGenres={customGenres}
-                    setCustomGenres={setCustomGenres}
+                    customCategories={customCategories}
+                    setCustomCategories={setCustomCategories}
                     loadMemos={loadMemos}
                     closeOtherFeatures={closeOtherFeatures}
                     handleDeleteMemo={handleDeleteMemo}
