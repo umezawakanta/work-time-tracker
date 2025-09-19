@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './MemosComponent.css';
 import type { Memo, Reply } from '../types';
+import QuickReportModal from './QuickReportModal';
 
 interface MemosComponentProps {
   memos: Memo[];
@@ -92,6 +93,39 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     const saved = localStorage.getItem("deletedDefaultCategories");
     return saved ? JSON.parse(saved) : [];
   });
+
+  // 簡易報告機能の状態
+  const [showQuickReport, setShowQuickReport] = useState(false);
+
+  // 簡易報告のハンドラー
+  const handleQuickReport = async (report: { title: string; content: string; type: 'bug' | 'feature' }) => {
+    try {
+      const response = await fetch('/api/memos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          title: report.title,
+          content: report.content,
+          category: report.type === 'bug' ? '不具合報告' : '機能要望',
+          isPublic: true,
+          postType: 'update-request'
+        })
+      });
+
+      if (response.ok) {
+        alert('報告を投稿しました！');
+        loadMemos();
+      } else {
+        alert('報告の投稿に失敗しました。');
+      }
+    } catch (error) {
+      console.error('報告の投稿エラー:', error);
+      alert('報告の投稿に失敗しました。');
+    }
+  };
 
   // ページネーション用の関数
   const getPaginatedMemos = () => {
@@ -185,6 +219,16 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
           メモ
         </h2>
         <div className="section-controls">
+          {showMemos && (
+            <button
+              onClick={() => setShowQuickReport(true)}
+              className="quick-report-button"
+              title="不具合報告・機能要望を投稿"
+            >
+              <i className="bi bi-bug"></i>
+              報告
+            </button>
+          )}
           {showMemos ? (
             <button
               onClick={() => setShowMemos(false)}
@@ -737,6 +781,13 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
           </div>
         </div>
       )}
+
+      {/* 簡易報告モーダル */}
+      <QuickReportModal
+        isOpen={showQuickReport}
+        onClose={() => setShowQuickReport(false)}
+        onSubmit={handleQuickReport}
+      />
     </div>
   );
 };

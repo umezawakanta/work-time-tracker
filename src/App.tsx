@@ -32,7 +32,7 @@ import {
 } from "./constants/fonts";
 import LanguageFontSettings from "./components/LanguageFontSettings";
 import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
-import ErrorReportingModal from "./components/ErrorReportingModal";
+import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
 
 import type {
   User,
@@ -5907,7 +5907,7 @@ function App() {
         />
 
         {/* エラー報告モーダル */}
-        <ErrorReportingModal
+        <SimpleErrorReportingModal
           isOpen={showErrorModal}
           onClose={() => setShowErrorModal(false)}
           error={currentError}
@@ -5933,12 +5933,12 @@ function App() {
         handleLogin={handleLogin}
         handleRegister={handleRegister}
       />
-      <ErrorReportingModal
-        isOpen={showErrorModal}
-        onClose={() => setShowErrorModal(false)}
-        error={currentError}
-        onSubmit={handleErrorReport}
-      />
+        <SimpleErrorReportingModal
+          isOpen={showErrorModal}
+          onClose={() => setShowErrorModal(false)}
+          error={currentError}
+          onSubmit={handleErrorReport}
+        />
     </>
   );
 }
