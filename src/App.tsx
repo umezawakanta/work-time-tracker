@@ -1128,6 +1128,38 @@ function App() {
           errorMessage.includes('SyntaxError') ||
           errorMessage.includes('is not defined') ||
           errorMessage.includes('Cannot read properties') ||
+          errorMessage.includes('Cannot read property') ||
+          errorMessage.includes('reading') ||
+          errorMessage.includes('filter') ||
+          errorMessage.includes('map') ||
+          errorMessage.includes('forEach') ||
+          errorMessage.includes('reduce') ||
+          errorMessage.includes('find') ||
+          errorMessage.includes('some') ||
+          errorMessage.includes('every') ||
+          errorMessage.includes('includes') ||
+          errorMessage.includes('indexOf') ||
+          errorMessage.includes('push') ||
+          errorMessage.includes('pop') ||
+          errorMessage.includes('shift') ||
+          errorMessage.includes('unshift') ||
+          errorMessage.includes('slice') ||
+          errorMessage.includes('splice') ||
+          errorMessage.includes('sort') ||
+          errorMessage.includes('reverse') ||
+          errorMessage.includes('join') ||
+          errorMessage.includes('split') ||
+          errorMessage.includes('replace') ||
+          errorMessage.includes('match') ||
+          errorMessage.includes('search') ||
+          errorMessage.includes('test') ||
+          errorMessage.includes('exec') ||
+          errorMessage.includes('toString') ||
+          errorMessage.includes('valueOf') ||
+          errorMessage.includes('hasOwnProperty') ||
+          errorMessage.includes('propertyIsEnumerable') ||
+          errorMessage.includes('toLocaleString') ||
+          errorMessage.includes('toJSON') ||
           errorMessage.includes('loadIncomeExpenseRecords') ||
           errorMessage.includes('loadSalaryRecords') ||
           errorMessage.includes('salaryRecords') ||
@@ -1209,6 +1241,38 @@ function App() {
                              errorMessage.includes('SyntaxError') ||
                              errorMessage.includes('is not defined') ||
                              errorMessage.includes('Cannot read properties') ||
+                             errorMessage.includes('Cannot read property') ||
+                             errorMessage.includes('reading') ||
+                             errorMessage.includes('filter') ||
+                             errorMessage.includes('map') ||
+                             errorMessage.includes('forEach') ||
+                             errorMessage.includes('reduce') ||
+                             errorMessage.includes('find') ||
+                             errorMessage.includes('some') ||
+                             errorMessage.includes('every') ||
+                             errorMessage.includes('includes') ||
+                             errorMessage.includes('indexOf') ||
+                             errorMessage.includes('push') ||
+                             errorMessage.includes('pop') ||
+                             errorMessage.includes('shift') ||
+                             errorMessage.includes('unshift') ||
+                             errorMessage.includes('slice') ||
+                             errorMessage.includes('splice') ||
+                             errorMessage.includes('sort') ||
+                             errorMessage.includes('reverse') ||
+                             errorMessage.includes('join') ||
+                             errorMessage.includes('split') ||
+                             errorMessage.includes('replace') ||
+                             errorMessage.includes('match') ||
+                             errorMessage.includes('search') ||
+                             errorMessage.includes('test') ||
+                             errorMessage.includes('exec') ||
+                             errorMessage.includes('toString') ||
+                             errorMessage.includes('valueOf') ||
+                             errorMessage.includes('hasOwnProperty') ||
+                             errorMessage.includes('propertyIsEnumerable') ||
+                             errorMessage.includes('toLocaleString') ||
+                             errorMessage.includes('toJSON') ||
                              errorMessage.includes('handleCreateIncomeExpenseRecord') ||
                              errorMessage.includes('handleUpdateIncomeExpenseRecord') ||
                              errorMessage.includes('handleDeleteIncomeExpenseRecord') ||
@@ -3859,6 +3923,38 @@ function App() {
                            errorMessage.includes('SyntaxError') ||
                            errorMessage.includes('is not defined') ||
                            errorMessage.includes('Cannot read properties') ||
+                           errorMessage.includes('Cannot read property') ||
+                           errorMessage.includes('reading') ||
+                           errorMessage.includes('filter') ||
+                           errorMessage.includes('map') ||
+                           errorMessage.includes('forEach') ||
+                           errorMessage.includes('reduce') ||
+                           errorMessage.includes('find') ||
+                           errorMessage.includes('some') ||
+                           errorMessage.includes('every') ||
+                           errorMessage.includes('includes') ||
+                           errorMessage.includes('indexOf') ||
+                           errorMessage.includes('push') ||
+                           errorMessage.includes('pop') ||
+                           errorMessage.includes('shift') ||
+                           errorMessage.includes('unshift') ||
+                           errorMessage.includes('slice') ||
+                           errorMessage.includes('splice') ||
+                           errorMessage.includes('sort') ||
+                           errorMessage.includes('reverse') ||
+                           errorMessage.includes('join') ||
+                           errorMessage.includes('split') ||
+                           errorMessage.includes('replace') ||
+                           errorMessage.includes('match') ||
+                           errorMessage.includes('search') ||
+                           errorMessage.includes('test') ||
+                           errorMessage.includes('exec') ||
+                           errorMessage.includes('toString') ||
+                           errorMessage.includes('valueOf') ||
+                           errorMessage.includes('hasOwnProperty') ||
+                           errorMessage.includes('propertyIsEnumerable') ||
+                           errorMessage.includes('toLocaleString') ||
+                           errorMessage.includes('toJSON') ||
                            errorMessage.includes('handleCreateIncomeExpenseRecord') ||
                            errorMessage.includes('handleUpdateIncomeExpenseRecord') ||
                            errorMessage.includes('handleDeleteIncomeExpenseRecord') ||
