@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ShareButtonComponent.css';
 
 interface ShareButtonComponentProps {
@@ -8,8 +8,71 @@ interface ShareButtonComponentProps {
 const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [randomElements, setRandomElements] = useState(() => generateRandomElements());
+  const [stats, setStats] = useState({
+    userCount: 0,
+    errorCount: 0,
+    updateRequestCount: 0,
+    loading: true
+  });
 
   const siteUrl = window.location.origin;
+  
+  // 統計データを取得する関数
+  const loadStats = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      // 並列で複数のAPIを呼び出し
+      const [adminUsersResponse, errorReportsResponse, publicMemosResponse] = await Promise.all([
+        fetch('/api/admin/users', { headers }),
+        fetch('/api/admin/error-reports', { headers }),
+        fetch('/api/memos/public', { headers })
+      ]);
+
+      let userCount = 0;
+      let errorCount = 0;
+      let updateRequestCount = 0;
+
+      // ユーザー数を取得
+      if (adminUsersResponse.ok) {
+        const adminData = await adminUsersResponse.json();
+        userCount = adminData.users?.length || 0;
+      }
+
+      // エラー報告数を取得
+      if (errorReportsResponse.ok) {
+        const errorData = await errorReportsResponse.json();
+        errorCount = errorData.errorReports?.length || 0;
+      }
+
+      // 更新要望数を取得
+      if (publicMemosResponse.ok) {
+        const memosData = await publicMemosResponse.json();
+        updateRequestCount = (memosData.memos || []).filter((memo: any) => 
+          memo.postType === 'update_request'
+        ).length;
+      }
+
+      setStats({
+        userCount,
+        errorCount,
+        updateRequestCount,
+        loading: false
+      });
+    } catch (error) {
+      console.error('統計データの取得に失敗しました:', error);
+      setStats(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  // コンポーネントマウント時に統計データを取得
+  useEffect(() => {
+    loadStats();
+  }, []);
   
   // ランダムな要素を生成する関数
   function generateRandomElements() {
@@ -35,7 +98,26 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   }
 
   const siteTitle = `Work Time Tracker - ${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}`;
-  const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！`;
+  
+  // 統計データを含む説明文を生成
+  const getStatsText = () => {
+    if (stats.loading) {
+      return '統計データを読み込み中...';
+    }
+    const statsParts = [];
+    if (stats.userCount > 0) {
+      statsParts.push(`👥 ${stats.userCount}名のユーザー`);
+    }
+    if (stats.errorCount > 0) {
+      statsParts.push(`🐛 ${stats.errorCount}件の不具合報告`);
+    }
+    if (stats.updateRequestCount > 0) {
+      statsParts.push(`💡 ${stats.updateRequestCount}件の更新要望`);
+    }
+    return statsParts.length > 0 ? `\n\n📊 現在の状況: ${statsParts.join('、')}` : '';
+  };
+  
+  const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！${getStatsText()}`;
   
   // Twitter用の短縮テキスト（280文字制限を考慮）
   const twitterText = `${siteTitle}\n\n${siteDescription}\n\n${siteUrl}`;
@@ -44,7 +126,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   // 文字数制限をチェックして必要に応じて短縮
   const maxTwitterLength = 280;
   const finalTwitterText = twitterTextLength > maxTwitterLength 
-    ? `${siteTitle}\n\n${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。\n\n${siteUrl}`
+    ? `${siteTitle}\n\n${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${getStatsText()}\n\n${siteUrl}`
     : twitterText;
 
   const shareData = {
@@ -138,6 +220,43 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
             
             <div className="share-description">
               <p>{siteDescription}</p>
+              
+              {/* 統計データの表示 */}
+              {!stats.loading && (stats.userCount > 0 || stats.errorCount > 0 || stats.updateRequestCount > 0) && (
+                <div className="stats-display">
+                  <h4>📊 現在の状況</h4>
+                  <div className="stats-grid">
+                    {stats.userCount > 0 && (
+                      <div className="stat-item">
+                        <span className="stat-icon">👥</span>
+                        <span className="stat-label">ユーザー</span>
+                        <span className="stat-value">{stats.userCount}名</span>
+                      </div>
+                    )}
+                    {stats.errorCount > 0 && (
+                      <div className="stat-item">
+                        <span className="stat-icon">🐛</span>
+                        <span className="stat-label">不具合報告</span>
+                        <span className="stat-value">{stats.errorCount}件</span>
+                      </div>
+                    )}
+                    {stats.updateRequestCount > 0 && (
+                      <div className="stat-item">
+                        <span className="stat-icon">💡</span>
+                        <span className="stat-label">更新要望</span>
+                        <span className="stat-value">{stats.updateRequestCount}件</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {stats.loading && (
+                <div className="stats-loading">
+                  <i className="bi bi-hourglass-split"></i>
+                  統計データを読み込み中...
+                </div>
+              )}
             </div>
 
             <div className="share-buttons">
