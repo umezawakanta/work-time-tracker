@@ -17,6 +17,8 @@ const MemoSchema = new mongoose.Schema({
   isFamilyOnly: { type: Boolean, default: false },
   isAdminOnly: { type: Boolean, default: false },
   userId: { type: String, required: true },
+  authorName: { type: String, required: false }, // 作成者名を追加
+  authorEmail: { type: String, required: false }, // 作成者メールを追加
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
@@ -185,12 +187,14 @@ async function handleRequest(req, res) {
             isPublic: memo.isPublic,
             isFamilyOnly: memo.isFamilyOnly || false,
             isAdminOnly: memo.isAdminOnly || false,
+            author: memo.authorName || '匿名', // メモの作成者名を追加
+            authorEmail: memo.authorEmail, // メモの作成者メールを追加
             createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
             updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
             replies: replies.map(reply => ({
               id: reply._id.toString(),
               content: reply.content,
-              authorName: reply.authorName,
+              author: reply.authorName || '匿名', // 返信の作成者名を統一
               authorEmail: reply.authorEmail,
               createdAt: reply.createdAt ? reply.createdAt.toISOString() : new Date().toISOString()
             }))
@@ -208,6 +212,8 @@ async function handleRequest(req, res) {
           isPublic: memo.isPublic,
           isFamilyOnly: memo.isFamilyOnly || false,
           isAdminOnly: memo.isAdminOnly || false,
+          author: memo.authorName || '匿名', // メモの作成者名を追加
+          authorEmail: memo.authorEmail, // メモの作成者メールを追加
           createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
           updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
           replies: []
@@ -242,6 +248,8 @@ async function handleRequest(req, res) {
           isFamilyOnly: Boolean(isFamilyOnly),
           isAdminOnly: Boolean(isAdminOnly),
           userId: userInfo.userId,
+          authorName: userInfo.displayName || userInfo.email || '匿名', // 作成者名を保存
+          authorEmail: userInfo.email, // 作成者メールを保存
         });
 
         const savedMemo = await newMemo.save();
