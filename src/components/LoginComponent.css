@@ -415,7 +415,153 @@
   text-decoration: underline;
 }
 
+/* リンクボタン */
+.link-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  margin: 0 0.25rem;
+}
+
+.link-button:hover {
+  color: #0056b3;
+  text-decoration: none;
+}
+
+/* モーダル */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.modal-body {
+  overflow-y: auto;
+  padding: 0;
+  max-height: calc(90vh - 80px);
+}
+
 /* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+  
+  .modal-content {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+  
+  .modal-header {
+    padding: 1rem 1.5rem;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* レスポンシブ対応 */
+@media (min-width: 1025px) {
+  .login-container {
+    padding: 2rem;
+  }
+  
+  .login-card {
+    max-width: 500px;
+    padding: 3rem;
+  }
+  
+  .login-header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .login-header p {
+    font-size: 1.1rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-input {
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+  }
+  
+  .form-button {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .form-links {
+    gap: 1.5rem;
+  }
+  
+  .form-links a {
+    font-size: 1rem;
+  }
+}
+
 @media (max-width: 768px) {
   .login-container {
     padding: 0.5rem;

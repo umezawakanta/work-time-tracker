@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './LoginComponent.css';
+import PrivacyPolicyComponent from './PrivacyPolicyComponent';
+import TermsOfServiceComponent from './TermsOfServiceComponent';
 
 interface LoginComponentProps {
   onLogin: (e: React.FormEvent) => void;
@@ -35,6 +37,8 @@ const LoginComponent: React.FC<LoginComponentProps> = ({
   message,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+  const [showTermsOfService, setShowTermsOfService] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -207,17 +211,65 @@ const LoginComponent: React.FC<LoginComponentProps> = ({
         <div className="login-footer">
           <p className="privacy-note">
             アカウントを作成することで、
-            <a href="/privacy" target="_blank" rel="noopener noreferrer">
+            <button 
+              type="button"
+              className="link-button"
+              onClick={() => setShowPrivacyPolicy(true)}
+            >
               プライバシーポリシー
-            </a>
+            </button>
             および
-            <a href="/terms" target="_blank" rel="noopener noreferrer">
+            <button 
+              type="button"
+              className="link-button"
+              onClick={() => setShowTermsOfService(true)}
+            >
               利用規約
-            </a>
+            </button>
             に同意したものとみなされます。
           </p>
         </div>
       </div>
+      
+      {/* プライバシーポリシー */}
+      {showPrivacyPolicy && (
+        <div className="modal-overlay" onClick={() => setShowPrivacyPolicy(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>プライバシーポリシー</h2>
+              <button 
+                className="modal-close" 
+                onClick={() => setShowPrivacyPolicy(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <PrivacyPolicyComponent />
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* 利用規約 */}
+      {showTermsOfService && (
+        <div className="modal-overlay" onClick={() => setShowTermsOfService(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>利用規約</h2>
+              <button 
+                className="modal-close" 
+                onClick={() => setShowTermsOfService(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <TermsOfServiceComponent />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
