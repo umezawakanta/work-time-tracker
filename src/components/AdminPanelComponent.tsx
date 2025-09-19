@@ -39,6 +39,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [showErrorReports, setShowErrorReports] = useState(false);
   const [errorReports, setErrorReports] = useState<any[]>([]);
   const [errorReportsLoading, setErrorReportsLoading] = useState(false);
+  const [errorReportsError, setErrorReportsError] = useState<string | null>(null);
 
   // ユーザー編集フォームの初期化
   useEffect(() => {
@@ -74,6 +75,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   // 不具合報告メモを取得
   const loadErrorReports = async () => {
     setErrorReportsLoading(true);
+    setErrorReportsError(null);
     try {
       const token = localStorage.getItem('access_token');
       const response = await fetch('/api/admin/error-reports', {
@@ -84,12 +86,24 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
 
       if (response.ok) {
         const data = await response.json();
-        setErrorReports(data.errorReports || []);
+        if (data.success) {
+          setErrorReports(data.errorReports || []);
+        } else {
+          console.error('API returned error:', data.message);
+          setErrorReportsError(data.message || 'エラーレポートの取得に失敗しました');
+          setErrorReports([]);
+        }
       } else {
-        console.error('Failed to load error reports');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.message || `サーバーエラー (${response.status})`;
+        console.error('Failed to load error reports:', response.status, errorMessage);
+        setErrorReportsError(errorMessage);
+        setErrorReports([]);
       }
     } catch (error) {
       console.error('Error loading error reports:', error);
+      setErrorReportsError('ネットワークエラーが発生しました');
+      setErrorReports([]);
     } finally {
       setErrorReportsLoading(false);
     }
@@ -463,6 +477,19 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                 <div className="loading-message">
                   <i className="bi bi-hourglass-split"></i>
                   不具合報告を読み込み中...
+                </div>
+              ) : errorReportsError ? (
+                <div className="error-message">
+                  <i className="bi bi-exclamation-triangle"></i>
+                  {errorReportsError}
+                  <button
+                    onClick={loadErrorReports}
+                    className="retry-button"
+                    title="再試行"
+                  >
+                    <i className="bi bi-arrow-clockwise"></i>
+                    再試行
+                  </button>
                 </div>
               ) : errorReports.length === 0 ? (
                 <div className="no-data-message">

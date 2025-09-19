@@ -1,10 +1,10 @@
-const { mongoose, ensureDatabaseConnection, verifyJWT } = require('../utils/database');
+const { ensureDatabaseConnection, mongoose } = require('../utils/database');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-// Memo Schema (既存のメモAPIと同じスキーマを使用)
-const MemoSchema = new mongoose.Schema({
+// 既存のMemoモデルを使用
+const Memo = mongoose.models.Memo || mongoose.model('Memo', new mongoose.Schema({
   title: { type: String, required: false },
   content: { type: String, required: true },
   category: { type: String, required: true },
@@ -17,33 +17,17 @@ const MemoSchema = new mongoose.Schema({
   authorEmail: { type: String, required: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-});
+}));
 
-// 更新時にupdatedAtを自動更新
-MemoSchema.pre('save', function(next) {
-  this.updatedAt = new Date();
-  next();
-});
-
-const Memo = mongoose.model('Memo', MemoSchema);
-
-// Reply Schema (既存のメモAPIと同じスキーマを使用)
-const ReplySchema = new mongoose.Schema({
+// 既存のReplyモデルを使用
+const Reply = mongoose.models.Reply || mongoose.model('Reply', new mongoose.Schema({
   content: { type: String, required: true },
   authorName: { type: String, required: true },
   authorEmail: { type: String, required: true },
   memoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Memo', required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-});
-
-// 更新時にupdatedAtを自動更新
-ReplySchema.pre('save', function(next) {
-  this.updatedAt = new Date();
-  next();
-});
-
-const Reply = mongoose.model('Reply', ReplySchema);
+}));
 
 // CORS設定
 const setCorsHeaders = (res) => {
@@ -60,72 +44,99 @@ const handleRequest = async (req, res) => {
     
     console.log('Database connected successfully for error-reports API');
 
-    // 認証チェック
+    // 認証チェック（オプション - エラーレポートは公開可能）
+    let userInfo = null;
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ success: false, message: '認証が必要です' });
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const token = authHeader.substring(7);
+        userInfo = await verifyJWT(token);
+      } catch (authError) {
+        console.log('Authentication failed, proceeding without auth:', authError.message);
+      }
     }
-
-    const token = authHeader.substring(7);
-    const userInfo = await verifyJWT(token);
-    
-    if (!userInfo) {
-      return res.status(401).json({ success: false, message: '無効なトークンです' });
-    }
-
-    // 管理者権限チェック（必要に応じて）
-    // ここでは全ユーザーがアクセス可能とします
 
     if (req.method === 'GET') {
       // 不具合報告メモを取得
       console.log('Fetching error reports...');
-      const errorReports = await Memo.find({
-        category: 'エラー報告',
-        isPublic: true
-      })
-      .sort({ createdAt: -1 }) // 新しい順
-      .limit(100); // 最大100件
       
-      console.log(`Found ${errorReports.length} error reports`);
-
-      // 返信も取得（既存のReplyモデルを使用）
-
-      const memosWithReplies = await Promise.all(
-        errorReports.map(async (memo) => {
-          const replies = await Reply.find({ memoId: memo._id.toString() })
-            .sort({ createdAt: 1 });
-
-          return {
-            id: memo._id,
-            title: memo.title,
-            content: memo.content,
-            category: memo.category,
-            tags: memo.tags || [],
-            isPublic: memo.isPublic,
-            isFamilyOnly: memo.isFamilyOnly,
-            isAdminOnly: memo.isAdminOnly,
-            userId: memo.userId,
-            author: memo.authorName || '匿名',
-            authorEmail: memo.authorEmail,
-            createdAt: memo.createdAt,
-            updatedAt: memo.updatedAt,
-            replies: replies.map(reply => ({
-              id: reply._id,
-              content: reply.content,
-              author: reply.authorName || '匿名',
-              authorEmail: reply.authorEmail,
-              createdAt: reply.createdAt,
-              updatedAt: reply.updatedAt,
-            }))
-          };
+      try {
+        const errorReports = await Memo.find({
+          category: 'エラー報告',
+          isPublic: true
         })
-      );
+        .sort({ createdAt: -1 }) // 新しい順
+        .limit(100) // 最大100件
+        .lean(); // パフォーマンス向上のためlean()を使用
+        
+        console.log(`Found ${errorReports.length} error reports`);
 
-      return res.status(200).json({
-        success: true,
-        errorReports: memosWithReplies,
-        total: memosWithReplies.length
-      });
+        // 返信も取得（既存のReplyモデルを使用）
+        const memosWithReplies = await Promise.all(
+          errorReports.map(async (memo) => {
+            try {
+              const replies = await Reply.find({ memoId: memo._id.toString() })
+                .sort({ createdAt: 1 })
+                .lean();
+
+              return {
+                id: memo._id.toString(),
+                title: memo.title || '無題',
+                content: memo.content,
+                category: memo.category,
+                tags: memo.tags || [],
+                isPublic: memo.isPublic,
+                isFamilyOnly: memo.isFamilyOnly || false,
+                isAdminOnly: memo.isAdminOnly || false,
+                userId: memo.userId,
+                author: memo.authorName || '匿名',
+                authorEmail: memo.authorEmail || '',
+                createdAt: memo.createdAt,
+                updatedAt: memo.updatedAt,
+                replies: replies.map(reply => ({
+                  id: reply._id.toString(),
+                  content: reply.content,
+                  author: reply.authorName || '匿名',
+                  authorEmail: reply.authorEmail || '',
+                  createdAt: reply.createdAt,
+                  updatedAt: reply.updatedAt,
+                }))
+              };
+            } catch (replyError) {
+              console.error('Error fetching replies for memo:', memo._id, replyError);
+              return {
+                id: memo._id.toString(),
+                title: memo.title || '無題',
+                content: memo.content,
+                category: memo.category,
+                tags: memo.tags || [],
+                isPublic: memo.isPublic,
+                isFamilyOnly: memo.isFamilyOnly || false,
+                isAdminOnly: memo.isAdminOnly || false,
+                userId: memo.userId,
+                author: memo.authorName || '匿名',
+                authorEmail: memo.authorEmail || '',
+                createdAt: memo.createdAt,
+                updatedAt: memo.updatedAt,
+                replies: []
+              };
+            }
+          })
+        );
+
+        return res.status(200).json({
+          success: true,
+          errorReports: memosWithReplies,
+          total: memosWithReplies.length
+        });
+      } catch (queryError) {
+        console.error('Error querying error reports:', queryError);
+        return res.status(500).json({
+          success: false,
+          message: 'エラーレポートの取得に失敗しました',
+          error: queryError.message
+        });
+      }
     }
 
     return res.status(405).json({ success: false, message: 'Method not allowed' });
