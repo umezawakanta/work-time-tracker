@@ -22,6 +22,7 @@ const SourceCodeViewer: React.FC<SourceCodeViewerProps> = ({ isOpen, onClose }) 
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState('');
   const [fileStats, setFileStats] = useState<{[key: string]: {lines: number, characters: number}}>({});
+  const [fileError, setFileError] = useState<string | null>(null);
 
   // ファイルの統計情報を計算する関数
   const calculateFileStats = (content: string) => {
@@ -194,48 +195,36 @@ const SourceCodeViewer: React.FC<SourceCodeViewerProps> = ({ isOpen, onClose }) 
     if (file.type === 'file') {
       setSelectedFile(file);
       setLoading(true);
+      setFileError(null);
       
       try {
-        // ローカルファイルの内容を取得（開発環境の場合）
-        if (process.env.NODE_ENV === 'development') {
-          try {
-            const response = await fetch(`/${file.path}`);
-            if (response.ok) {
-              const content = await response.text();
-              setFileContent(content);
-              // 統計情報を計算して保存
-              const stats = calculateFileStats(content);
-              setFileStats(prev => ({ ...prev, [file.path]: stats }));
-            } else {
-              throw new Error('Local file not found');
-            }
-          } catch (localError) {
-            // ローカルファイルが見つからない場合はサンプルコンテンツを表示
-            const sampleContent = generateSampleContent(file);
-            setFileContent(sampleContent);
+        // ソースコードAPIから実際のファイル内容を取得
+        const response = await fetch(`/api/source-code/${encodeURIComponent(file.path)}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setFileContent(data.content);
             // 統計情報を計算して保存
-            const stats = calculateFileStats(sampleContent);
+            const stats = calculateFileStats(data.content);
             setFileStats(prev => ({ ...prev, [file.path]: stats }));
+          } else {
+            throw new Error(data.error || 'Failed to load file');
           }
         } else {
-          // 本番環境ではサンプルコンテンツを表示
-          const sampleContent = generateSampleContent(file);
-          setFileContent(sampleContent);
-          // 統計情報を計算して保存
-          const stats = calculateFileStats(sampleContent);
-          setFileStats(prev => ({ ...prev, [file.path]: stats }));
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
         }
       } catch (error) {
         console.error('ファイルの取得に失敗しました:', error);
-        const errorContent = `// エラー: ファイルの取得に失敗しました
-// ファイル: ${file.path}
-// エラー: ${error instanceof Error ? error.message : String(error)}
-// 時間: ${new Date().toISOString()}
-
-${generateSampleContent(file)}`;
-        setFileContent(errorContent);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        setFileError(errorMessage);
+        
+        // エラー時はサンプルコンテンツを表示
+        const sampleContent = generateSampleContent(file);
+        setFileContent(sampleContent);
         // 統計情報を計算して保存
-        const stats = calculateFileStats(errorContent);
+        const stats = calculateFileStats(sampleContent);
         setFileStats(prev => ({ ...prev, [file.path]: stats }));
       } finally {
         setLoading(false);
@@ -444,6 +433,35 @@ export default ${file.name.replace('.tsx', '').replace('.ts', '')};`;
                     <div className="loading">
                       <i className="bi bi-hourglass-split"></i>
                       読み込み中...
+                    </div>
+                  ) : fileError ? (
+                    <div className="file-error">
+                      <div className="error-header">
+                        <i className="bi bi-exclamation-triangle"></i>
+                        <h4>ファイルの読み込みに失敗しました</h4>
+                      </div>
+                      <div className="error-message">
+                        <p><strong>エラー:</strong> {fileError}</p>
+                        <p><strong>ファイル:</strong> {selectedFile.path}</p>
+                        <p><strong>時間:</strong> {new Date().toLocaleString('ja-JP')}</p>
+                      </div>
+                      <div className="error-actions">
+                        <button 
+                          className="retry-button"
+                          onClick={() => handleFileSelect(selectedFile)}
+                        >
+                          <i className="bi bi-arrow-clockwise"></i>
+                          再試行
+                        </button>
+                      </div>
+                      <div className="sample-content-notice">
+                        <p><i className="bi bi-info-circle"></i> 以下はサンプルコンテンツです</p>
+                      </div>
+                      <pre className="code-content">
+                        <code className={`language-${getLanguageFromExtension(selectedFile.name)}`}>
+                          {fileContent}
+                        </code>
+                      </pre>
                     </div>
                   ) : (
                     <pre className="code-content">
