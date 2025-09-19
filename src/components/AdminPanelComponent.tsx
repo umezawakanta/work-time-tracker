@@ -35,7 +35,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'email' | 'role' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors'>('users');
   const [errorReports, setErrorReports] = useState<any[]>([]);
   const [errorReportsLoading, setErrorReportsLoading] = useState(false);
   const [errorReportsError, setErrorReportsError] = useState<string | null>(null);
@@ -46,6 +46,9 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [adminResponse, setAdminResponse] = useState('');
   const [memoStatus, setMemoStatus] = useState<'pending' | 'in_progress' | 'resolved' | 'closed'>('pending');
   const [sendingResponse, setSendingResponse] = useState(false);
+  const [linterErrors, setLinterErrors] = useState<any[]>([]);
+  const [linterErrorsLoading, setLinterErrorsLoading] = useState(false);
+  const [linterErrorsError, setLinterErrorsError] = useState<string | null>(null);
 
   // ユーザー編集フォームの初期化
   useEffect(() => {
@@ -153,6 +156,32 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
       setUpdateRequests([]);
     } finally {
       setUpdateRequestsLoading(false);
+    }
+  };
+
+  // リンターエラーを取得する関数
+  const loadLinterErrors = async () => {
+    setLinterErrorsLoading(true);
+    setLinterErrorsError(null);
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('/api/admin/linter-errors', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('リンターエラーの取得に失敗しました');
+      }
+
+      const data = await response.json();
+      setLinterErrors(data.errors || []);
+    } catch (error) {
+      console.error('リンターエラー取得エラー:', error);
+      setLinterErrorsError(error instanceof Error ? error.message : 'リンターエラーの取得に失敗しました');
+    } finally {
+      setLinterErrorsLoading(false);
     }
   };
 
@@ -367,6 +396,18 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             >
               <i className="bi bi-lightbulb"></i>
               更新要望
+            </button>
+            <button
+              className={`admin-tab ${activeTab === 'lintererrors' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('lintererrors');
+                if (linterErrors.length === 0) {
+                  loadLinterErrors();
+                }
+              }}
+            >
+              <i className="bi bi-exclamation-triangle"></i>
+              リンターエラー
             </button>
           </div>
 
@@ -829,6 +870,93 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                               </span>
                             )}
                           </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* リンターエラータブ */}
+            {activeTab === 'lintererrors' && (
+              <div className="tab-pane">
+                <div className="tab-header">
+                  <h3>リンターエラー一覧</h3>
+                  <div className="tab-actions">
+                    <button
+                      onClick={loadLinterErrors}
+                      className="refresh-button"
+                      title="リンターエラーを更新"
+                    >
+                      <i className="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('users')}
+                      className="back-button"
+                      title="ユーザー管理に戻る"
+                    >
+                      <i className="bi bi-arrow-left"></i>
+                    </button>
+                  </div>
+                </div>
+                <div className="linter-errors-content">
+                  {linterErrorsLoading ? (
+                    <div className="loading-message">
+                      <i className="bi bi-hourglass-split"></i>
+                      リンターエラーを読み込み中...
+                    </div>
+                  ) : linterErrorsError ? (
+                    <div className="error-message">
+                      <i className="bi bi-exclamation-triangle"></i>
+                      {linterErrorsError}
+                      <button
+                        onClick={loadLinterErrors}
+                        className="retry-button"
+                        title="再試行"
+                      >
+                        <i className="bi bi-arrow-clockwise"></i>
+                        再試行
+                      </button>
+                    </div>
+                  ) : linterErrors.length === 0 ? (
+                    <div className="no-data-message">
+                      <i className="bi bi-check-circle"></i>
+                      リンターエラーはありません
+                    </div>
+                  ) : (
+                    <div className="linter-errors-list">
+                      {linterErrors.map((error, index) => (
+                        <div key={index} className="linter-error-item">
+                          <div className="linter-error-header">
+                            <div className="linter-error-info">
+                              <h4 className="linter-error-file">
+                                <i className="bi bi-file-code"></i>
+                                {error.file || 'Unknown file'}
+                              </h4>
+                              <span className="linter-error-line">
+                                行 {error.line || 'N/A'}, 列 {error.column || 'N/A'}
+                              </span>
+                            </div>
+                            <span className={`linter-error-severity severity-${error.severity || 'error'}`}>
+                              {error.severity === 'warning' ? '警告' : 'エラー'}
+                            </span>
+                          </div>
+                          <div className="linter-error-content">
+                            <p className="linter-error-message">
+                              {error.message || 'No message available'}
+                            </p>
+                            {error.rule && (
+                              <span className="linter-error-rule">
+                                ルール: {error.rule}
+                              </span>
+                            )}
+                          </div>
+                          {error.source && (
+                            <div className="linter-error-source">
+                              <pre>{error.source}</pre>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
