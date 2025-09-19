@@ -1675,13 +1675,10 @@ function App() {
       if (!user?.id) {
         return;
       }
-      const response = await fetch(
+      const { apiFetch } = await import("./utils/apiClient");
+      const response = await apiFetch(
         `/api/work-records/salary?userId=${user.id}`
       );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       const data = await response.json();
       if (data.success) {
@@ -3680,7 +3677,8 @@ function App() {
         params.append("search", memoSearchTerm);
       }
 
-      const response = await fetch(`/api/memos?${params.toString()}`, {
+      const { apiFetch } = await import("./utils/apiClient");
+      const response = await apiFetch(`/api/memos?${params.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
