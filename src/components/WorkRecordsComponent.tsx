@@ -406,6 +406,38 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                       onClick={() => handleDateClick(date)}
                     >
                       <span className="day-number">{date.getDate()}</span>
+                      
+                      {/* 収入・支出の金額表示 */}
+                      <div className="day-amounts">
+                        {records.incomeRecords.length > 0 && (
+                          <div className="income-amount">
+                            <span className="amount-label">+</span>
+                            <span className="amount-value">
+                              ¥{records.incomeRecords.reduce((sum, record) => sum + (record.amount || 0), 0).toLocaleString()}
+                            </span>
+                          </div>
+                        )}
+                        {records.expenseRecords.length > 0 && (
+                          <div className="expense-amount">
+                            <span className="amount-label">-</span>
+                            <span className="amount-value">
+                              ¥{records.expenseRecords.reduce((sum, record) => sum + (record.amount || 0), 0).toLocaleString()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 日記のタイトル表示 */}
+                      {records.diaryRecord && (
+                        <div className="diary-title">
+                          <span className="diary-title-text" title={records.diaryRecord.title}>
+                            {records.diaryRecord.title.length > 8 
+                              ? records.diaryRecord.title.substring(0, 8) + '...' 
+                              : records.diaryRecord.title}
+                          </span>
+                        </div>
+                      )}
+
                       <div className="day-indicators">
                         {records.incomeRecords.length > 0 && (
                           <span 
@@ -454,31 +486,51 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           {/* 選択された記録の詳細 */}
           {selectedRecord && (
             <div className="record-details">
-              <h3>選択された記録</h3>
+              <h3>
+                <i className="bi bi-calendar-check"></i>
+                {selectedDate ? selectedDate.toLocaleDateString('ja-JP', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                }) : '選択された日付'}の記録
+              </h3>
               
               {/* 収入記録の表示 */}
               {selectedRecord.incomeRecords && selectedRecord.incomeRecords.length > 0 && (
                 <div className="income-records-detail">
-                  <h4>💰 収入記録</h4>
+                  <h4>
+                    <i className="bi bi-arrow-up-circle-fill"></i>
+                    収入記録 ({selectedRecord.incomeRecords.length}件)
+                    <span className="total-amount">
+                      合計: ¥{selectedRecord.incomeRecords.reduce((sum, record) => sum + (record.amount || 0), 0).toLocaleString()}
+                    </span>
+                  </h4>
                   {selectedRecord.incomeRecords.map((record, index) => (
                     <div key={index} className="record-item">
-                      <p><strong>金額:</strong> ¥{(record.amount || 0).toLocaleString()}</p>
-                      <p><strong>日付:</strong> {new Date(record.date).toLocaleDateString()}</p>
+                      <div className="record-header">
+                        <span className="record-amount income">¥{(record.amount || 0).toLocaleString()}</span>
+                        <span className="record-time">
+                          {new Date(record.date).toLocaleTimeString('ja-JP', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          })}
+                        </span>
+                      </div>
                       {record.notes && (
-                        <p><strong>メモ:</strong> {record.notes}</p>
+                        <p className="record-notes">{record.notes}</p>
                       )}
                       <div className="record-actions">
                         <button
                           onClick={() => setEditingIncomeExpenseRecord(record)}
                           className="edit-button"
                         >
-                          編集
+                          <i className="bi bi-pencil"></i> 編集
                         </button>
                         <button
                           onClick={() => handleDeleteIncomeExpenseRecord(record.id)}
                           className="delete-button"
                         >
-                          削除
+                          <i className="bi bi-trash"></i> 削除
                         </button>
                       </div>
                     </div>
@@ -489,26 +541,39 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               {/* 支出記録の表示 */}
               {selectedRecord.expenseRecords && selectedRecord.expenseRecords.length > 0 && (
                 <div className="expense-records-detail">
-                  <h4>💸 支出記録</h4>
+                  <h4>
+                    <i className="bi bi-arrow-down-circle-fill"></i>
+                    支出記録 ({selectedRecord.expenseRecords.length}件)
+                    <span className="total-amount">
+                      合計: ¥{selectedRecord.expenseRecords.reduce((sum, record) => sum + (record.amount || 0), 0).toLocaleString()}
+                    </span>
+                  </h4>
                   {selectedRecord.expenseRecords.map((record, index) => (
                     <div key={index} className="record-item">
-                      <p><strong>金額:</strong> ¥{(record.amount || 0).toLocaleString()}</p>
-                      <p><strong>日付:</strong> {new Date(record.date).toLocaleDateString()}</p>
+                      <div className="record-header">
+                        <span className="record-amount expense">¥{(record.amount || 0).toLocaleString()}</span>
+                        <span className="record-time">
+                          {new Date(record.date).toLocaleTimeString('ja-JP', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          })}
+                        </span>
+                      </div>
                       {record.notes && (
-                        <p><strong>メモ:</strong> {record.notes}</p>
+                        <p className="record-notes">{record.notes}</p>
                       )}
                       <div className="record-actions">
                         <button
                           onClick={() => setEditingIncomeExpenseRecord(record)}
                           className="edit-button"
                         >
-                          編集
+                          <i className="bi bi-pencil"></i> 編集
                         </button>
                         <button
                           onClick={() => handleDeleteIncomeExpenseRecord(record.id)}
                           className="delete-button"
                         >
-                          削除
+                          <i className="bi bi-trash"></i> 削除
                         </button>
                       </div>
                     </div>
@@ -519,7 +584,18 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               {/* 日記の表示 */}
               {selectedRecord.diaryRecord && (
                 <div className="diary-record-detail">
-                  <h4><i className="bi bi-journal-text"></i> 日記</h4>
+                  <h4>
+                    <i className="bi bi-journal-text"></i>
+                    日記: {selectedRecord.diaryRecord.title}
+                    <span className="diary-mood">
+                      {selectedRecord.diaryRecord.mood && (
+                        <i className={`bi bi-emoji-${selectedRecord.diaryRecord.mood === '1' ? 'frown' : 
+                          selectedRecord.diaryRecord.mood === '2' ? 'meh' : 
+                          selectedRecord.diaryRecord.mood === '3' ? 'neutral' : 
+                          selectedRecord.diaryRecord.mood === '4' ? 'smile' : 'laughing'}`}></i>
+                      )}
+                    </span>
+                  </h4>
                   <p><strong>タイトル:</strong> {selectedRecord.diaryRecord.title}</p>
                   <p><strong>日付:</strong> {new Date(selectedRecord.diaryRecord.date).toLocaleDateString()}</p>
                   <p><strong>気分:</strong> {selectedRecord.diaryRecord.mood || '未設定'}</p>

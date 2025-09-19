@@ -125,6 +125,59 @@
   border: 1px solid #e9ecef;
 }
 
+/* カレンダーの日付セル内の金額表示 */
+.day-amounts {
+  margin: 0.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.income-amount,
+.expense-amount {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.income-amount .amount-label {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.expense-amount .amount-label {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.income-amount .amount-value {
+  color: #28a745;
+}
+
+.expense-amount .amount-value {
+  color: #dc3545;
+}
+
+/* カレンダーの日付セル内の日記タイトル表示 */
+.diary-title {
+  margin: 0.25rem 0;
+  font-size: 0.7rem;
+}
+
+.diary-title-text {
+  background: rgba(0, 123, 255, 0.1);
+  color: #007bff;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-weight: 500;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .calendar-header {
   display: flex;
   justify-content: space-between;
@@ -319,6 +372,76 @@
   margin: 0.5rem 0;
   color: #555;
   line-height: 1.5;
+}
+
+/* 詳細表示の改善 */
+.record-details h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.income-records-detail h4,
+.expense-records-detail h4 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.total-amount {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #666;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.record-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.record-amount.income {
+  color: #28a745;
+}
+
+.record-amount.expense {
+  color: #dc3545;
+}
+
+.record-time {
+  font-size: 0.8rem;
+  color: #666;
+  background: #f8f9fa;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+}
+
+.record-notes {
+  background: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  font-style: italic;
+  color: #555;
+}
+
+.diary-mood {
+  margin-left: 0.5rem;
+  font-size: 1.2rem;
 }
 
 .record-actions {
@@ -637,9 +760,24 @@
     gap: 0.1rem;
   }
   
-  .salary-indicator,
+  .income-indicator,
+  .expense-indicator,
   .diary-indicator {
     font-size: 0.7rem;
+    padding: 0.05rem 0.2rem;
+  }
+  
+  .day-amounts {
+    gap: 0.05rem;
+  }
+  
+  .income-amount,
+  .expense-amount {
+    font-size: 0.6rem;
+  }
+  
+  .diary-title-text {
+    font-size: 0.6rem;
     padding: 0.05rem 0.2rem;
   }
   
