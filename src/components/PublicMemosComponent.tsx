@@ -56,10 +56,17 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
     
     // 日付でフィルタリング
     if (filterByDate) {
-      const filterDateString = filterByDate.toDateString();
+      const filterYear = filterByDate.getFullYear();
+      const filterMonth = filterByDate.getMonth();
+      const filterDay = filterByDate.getDate();
+      
       filteredMemos = filteredMemos.filter(memo => {
-        const memoDate = new Date(memo.createdAt).toDateString();
-        return memoDate === filterDateString;
+        const memoDate = new Date(memo.createdAt);
+        const memoYear = memoDate.getFullYear();
+        const memoMonth = memoDate.getMonth();
+        const memoDay = memoDate.getDate();
+        
+        return memoYear === filterYear && memoMonth === filterMonth && memoDay === filterDay;
       });
     }
     
@@ -88,10 +95,17 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
     
     // 日付でフィルタリング
     if (filterByDate) {
-      const filterDateString = filterByDate.toDateString();
+      const filterYear = filterByDate.getFullYear();
+      const filterMonth = filterByDate.getMonth();
+      const filterDay = filterByDate.getDate();
+      
       filteredMemos = filteredMemos.filter(memo => {
-        const memoDate = new Date(memo.createdAt).toDateString();
-        return memoDate === filterDateString;
+        const memoDate = new Date(memo.createdAt);
+        const memoYear = memoDate.getFullYear();
+        const memoMonth = memoDate.getMonth();
+        const memoDay = memoDate.getDate();
+        
+        return memoYear === filterYear && memoMonth === filterMonth && memoDay === filterDay;
       });
     }
     
@@ -161,10 +175,17 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // 選択された日付の公開メモを取得
   const getPublicMemosForDate = (date: Date) => {
-    const dateString = date.toDateString();
+    const filterYear = date.getFullYear();
+    const filterMonth = date.getMonth();
+    const filterDay = date.getDate();
+    
     return (publicMemos || []).filter(memo => {
-      const memoDate = new Date(memo.createdAt).toDateString();
-      return memoDate === dateString;
+      const memoDate = new Date(memo.createdAt);
+      const memoYear = memoDate.getFullYear();
+      const memoMonth = memoDate.getMonth();
+      const memoDay = memoDate.getDate();
+      
+      return memoYear === filterYear && memoMonth === filterMonth && memoDay === filterDay;
     });
   };
 
