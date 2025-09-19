@@ -24,6 +24,18 @@ export const apiFetch = async (
       const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
       const apiError = createApiError(error, response, { url, method: options.method || 'GET' });
       
+      // 401 Unauthorizedの場合は特別な処理
+      if (response.status === 401) {
+        // 認証トークンをクリア
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        
+        // ページをリロードしてログイン画面に遷移
+        if (typeof window !== 'undefined') {
+          window.location.reload();
+        }
+      }
+      
       // エラー報告コールバックが設定されている場合は呼び出し
       if (globalErrorReportCallback) {
         globalErrorReportCallback(apiError);

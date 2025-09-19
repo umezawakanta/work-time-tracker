@@ -1068,6 +1068,18 @@ function App() {
     return visibleFeatures;
   };
 
+  // 401エラーハンドリング用のヘルパー関数
+  const handle401Error = (response: Response) => {
+    if (response.status === 401) {
+      // 認証トークンをクリア
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      
+      // ページをリロードしてログイン画面に遷移
+      window.location.reload();
+    }
+  };
+
   // グローバルエラーハンドリング
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
@@ -3813,6 +3825,9 @@ function App() {
         }),
       });
 
+      // 401エラーのチェック
+      handle401Error(response);
+
       const data = await response.json();
 
       if (data.success) {
@@ -3870,6 +3885,9 @@ function App() {
           postType: "update_request"
         }),
       });
+
+      // 401エラーのチェック
+      handle401Error(response);
 
       const data = await response.json();
 
@@ -4111,6 +4129,9 @@ function App() {
         }),
       });
 
+      // 401エラーのチェック
+      handle401Error(response);
+
       const data = await response.json();
 
       if (data.success) {
@@ -4141,6 +4162,9 @@ function App() {
           Authorization: `Bearer ${token}`,
         },
       });
+
+      // 401エラーのチェック
+      handle401Error(response);
 
       const data = await response.json();
 
