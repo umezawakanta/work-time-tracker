@@ -35,10 +35,13 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'email' | 'role' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests'>('users');
   const [errorReports, setErrorReports] = useState<any[]>([]);
   const [errorReportsLoading, setErrorReportsLoading] = useState(false);
   const [errorReportsError, setErrorReportsError] = useState<string | null>(null);
+  const [updateRequests, setUpdateRequests] = useState<any[]>([]);
+  const [updateRequestsLoading, setUpdateRequestsLoading] = useState(false);
+  const [updateRequestsError, setUpdateRequestsError] = useState<string | null>(null);
 
   // ユーザー編集フォームの初期化
   useEffect(() => {
@@ -105,6 +108,47 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
       setErrorReports([]);
     } finally {
       setErrorReportsLoading(false);
+    }
+  };
+
+  // 更新要望メモを取得
+  const loadUpdateRequests = async () => {
+    setUpdateRequestsLoading(true);
+    setUpdateRequestsError(null);
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('/api/memos/public', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          // postTypeがupdate_requestのメモのみをフィルタリング
+          const updateRequestsData = (data.memos || []).filter((memo: any) => 
+            memo.postType === 'update_request'
+          );
+          setUpdateRequests(updateRequestsData);
+        } else {
+          console.error('API returned error:', data.message);
+          setUpdateRequestsError(data.message || '更新要望の取得に失敗しました');
+          setUpdateRequests([]);
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.message || `サーバーエラー (${response.status})`;
+        console.error('Failed to load update requests:', response.status, errorMessage);
+        setUpdateRequestsError(errorMessage);
+        setUpdateRequests([]);
+      }
+    } catch (error) {
+      console.error('Error loading update requests:', error);
+      setUpdateRequestsError('ネットワークエラーが発生しました');
+      setUpdateRequests([]);
+    } finally {
+      setUpdateRequestsLoading(false);
     }
   };
 
@@ -252,6 +296,18 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             >
               <i className="bi bi-bug"></i>
               不具合報告
+            </button>
+            <button
+              className={`admin-tab ${activeTab === 'updaterequests' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('updaterequests');
+                if (updateRequests.length === 0) {
+                  loadUpdateRequests();
+                }
+              }}
+            >
+              <i className="bi bi-lightbulb"></i>
+              更新要望
             </button>
           </div>
 
@@ -581,6 +637,107 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                   ))}
                 </div>
               )}
+                </div>
+              </div>
+            )}
+
+            {/* 更新要望タブ */}
+            {activeTab === 'updaterequests' && (
+              <div className="tab-pane">
+                <div className="tab-header">
+                  <h3>更新要望一覧</h3>
+                  <div className="tab-actions">
+                    <button
+                      onClick={loadUpdateRequests}
+                      className="refresh-button"
+                      title="更新要望を更新"
+                    >
+                      <i className="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('users')}
+                      className="back-button"
+                      title="ユーザー管理に戻る"
+                    >
+                      <i className="bi bi-arrow-left"></i>
+                    </button>
+                  </div>
+                </div>
+                <div className="update-requests-content">
+                  {updateRequestsLoading ? (
+                    <div className="loading-message">
+                      <i className="bi bi-hourglass-split"></i>
+                      更新要望を読み込み中...
+                    </div>
+                  ) : updateRequestsError ? (
+                    <div className="error-message">
+                      <i className="bi bi-exclamation-triangle"></i>
+                      {updateRequestsError}
+                      <button
+                        onClick={loadUpdateRequests}
+                        className="retry-button"
+                        title="再試行"
+                      >
+                        <i className="bi bi-arrow-clockwise"></i>
+                        再試行
+                      </button>
+                    </div>
+                  ) : updateRequests.length === 0 ? (
+                    <div className="no-data-message">
+                      <i className="bi bi-info-circle"></i>
+                      更新要望はありません
+                    </div>
+                  ) : (
+                    <div className="update-requests-list">
+                      {updateRequests.map((request) => (
+                        <div key={request.id} className="update-request-item">
+                          <div className="update-request-header">
+                            <h4 className="update-request-title">
+                              {request.title || '無題'}
+                            </h4>
+                            <div className="update-request-meta">
+                              <span className="update-request-author">
+                                by {request.author || '匿名'}
+                              </span>
+                              <span className="update-request-date">
+                                {new Date(request.createdAt).toLocaleString('ja-JP')}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="update-request-content">
+                            <p>{request.content}</p>
+                          </div>
+                          <div className="update-request-tags">
+                            <span className="update-request-badge">
+                              <i className="bi bi-lightbulb"></i>
+                              更新要望
+                            </span>
+                            {request.category && (
+                              <span className="category-badge">
+                                {request.category}
+                              </span>
+                            )}
+                          </div>
+                          {request.replies && request.replies.length > 0 && (
+                            <div className="update-request-replies">
+                              <h5>返信 ({request.replies.length})</h5>
+                              {request.replies.map((reply: any) => (
+                                <div key={reply.id} className="reply-item">
+                                  <div className="reply-header">
+                                    <span className="reply-author">{reply.author}</span>
+                                    <span className="reply-date">
+                                      {new Date(reply.createdAt).toLocaleString('ja-JP')}
+                                    </span>
+                                  </div>
+                                  <p className="reply-content">{reply.content}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
