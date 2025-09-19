@@ -19,11 +19,11 @@ const connectDB = async () => {
   }
 };
 
-// 給料記録のスキーマ
-const SalaryRecordSchema = new mongoose.Schema({
+// 収支記録のスキーマ
+const IncomeExpenseRecordSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   date: { type: Date, required: true },
-  salary: { type: Number, required: true },
+  salary: { type: Number, required: true }, // 正の値は収入、負の値は支出
   transportation: { type: Number, default: 0 },
   overtime: { type: Number, default: 0 },
   bonus: { type: Number, default: 0 },
@@ -32,7 +32,7 @@ const SalaryRecordSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-const SalaryRecord = mongoose.models.SalaryRecord || mongoose.model('SalaryRecord', SalaryRecordSchema);
+const IncomeExpenseRecord = mongoose.models.SalaryRecord || mongoose.model('SalaryRecord', IncomeExpenseRecordSchema);
 
 export default async function handler(req, res) {
   // CORS設定
@@ -63,14 +63,20 @@ export default async function handler(req, res) {
         });
       }
 
-      const records = await SalaryRecord.find({ userId })
+      const records = await IncomeExpenseRecord.find({ userId })
         .sort({ date: -1 })
         .limit(50);
 
 
+      // レスポンスにtypeフィールドを追加
+      const recordsWithType = records.map(record => ({
+        ...record.toObject(),
+        type: record.salary >= 0 ? 'income' : 'expense'
+      }));
+
       res.status(200).json({
         success: true,
-        records
+        records: recordsWithType
       });
 
     } else if (req.method === 'POST') {
@@ -88,7 +94,7 @@ export default async function handler(req, res) {
       const jstDate = new Date(date);
       const utcDate = new Date(jstDate.getTime() - (9 * 60 * 60 * 1000));
       
-      const record = new SalaryRecord({
+      const record = new IncomeExpenseRecord({
         userId,
         date: utcDate,
         salary: Number(salary),
@@ -102,8 +108,11 @@ export default async function handler(req, res) {
 
       res.status(201).json({
         success: true,
-        message: '給料記録が作成されました',
-        record
+        message: '収支記録が作成されました',
+        record: {
+          ...record.toObject(),
+          type: record.salary >= 0 ? 'income' : 'expense'
+        }
       });
 
     } else if (req.method === 'PUT') {
@@ -132,7 +141,7 @@ export default async function handler(req, res) {
       if (bonus !== undefined) updateData.bonus = Number(bonus);
       if (notes !== undefined) updateData.notes = notes;
 
-      const record = await SalaryRecord.findByIdAndUpdate(
+      const record = await IncomeExpenseRecord.findByIdAndUpdate(
         id,
         updateData,
         { new: true }
@@ -147,8 +156,11 @@ export default async function handler(req, res) {
 
       res.status(200).json({
         success: true,
-        message: '給料記録が更新されました',
-        record
+        message: '収支記録が更新されました',
+        record: {
+          ...record.toObject(),
+          type: record.salary >= 0 ? 'income' : 'expense'
+        }
       });
 
     } else if (req.method === 'DELETE') {
@@ -162,7 +174,7 @@ export default async function handler(req, res) {
         });
       }
 
-      const record = await SalaryRecord.findByIdAndDelete(id);
+      const record = await IncomeExpenseRecord.findByIdAndDelete(id);
 
       if (!record) {
         return res.status(404).json({
@@ -173,7 +185,7 @@ export default async function handler(req, res) {
 
       res.status(200).json({
         success: true,
-        message: '給料記録が削除されました'
+        message: '収支記録が削除されました'
       });
 
     } else {
