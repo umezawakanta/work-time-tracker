@@ -1,5 +1,267 @@
 /* MemosComponent.css - メモコンポーネント専用のスタイル */
 
+/* メモヘッダーのスタイル */
+.memos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.memos-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.memos-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.instructions-button {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+}
+
+.instructions-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+}
+
+/* 説明セクションのスタイル */
+.instructions-section {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.instructions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid #dee2e6;
+}
+
+.instructions-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.close-instructions-button {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-instructions-button:hover {
+  background: #f8f9fa;
+  color: #333;
+}
+
+.instructions-content {
+  padding: 1.5rem;
+}
+
+.instruction-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e9ecef;
+}
+
+.instruction-card:last-of-type {
+  margin-bottom: 0;
+}
+
+.instruction-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.instruction-icon {
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: white;
+}
+
+.bug-icon {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.idea-icon {
+  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+}
+
+.instruction-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.instruction-steps {
+  margin-bottom: 1rem;
+}
+
+.instruction-steps ol {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.instruction-steps li {
+  margin-bottom: 0.5rem;
+}
+
+.instruction-steps ul {
+  margin: 0.5rem 0 0 1rem;
+  padding-left: 1rem;
+}
+
+.instruction-steps ul li {
+  margin-bottom: 0.25rem;
+  color: #666;
+}
+
+.instruction-example {
+  background: white;
+  border-radius: 6px;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+}
+
+.instruction-example h5 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.example-content {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #555;
+}
+
+.example-content strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.instruction-tips {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #90caf9;
+  margin-top: 1.5rem;
+}
+
+.instruction-tips h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1565c0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.instruction-tips ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #1565c0;
+  line-height: 1.6;
+}
+
+.instruction-tips li {
+  margin-bottom: 0.5rem;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .memos-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .memos-header-left,
+  .memos-header-right {
+    justify-content: center;
+  }
+  
+  .instructions-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+  
+  .instructions-content {
+    padding: 1rem;
+  }
+  
+  .instruction-card {
+    padding: 1rem;
+  }
+  
+  .instruction-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  
+  .instruction-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+  }
+}
+
 .memos-section {
   margin-bottom: 2rem;
 }

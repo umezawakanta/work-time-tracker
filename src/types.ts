@@ -82,6 +82,10 @@ export interface Memo {
   isFamilyOnly?: boolean;
   isAdminOnly?: boolean;
   author?: string;
+  postType?: 'update_request' | 'error_report' | 'general';
+  status?: 'pending' | 'in_progress' | 'resolved' | 'closed';
+  adminResponse?: string;
+  adminResponseDate?: string;
   createdAt: string;
   updatedAt: string;
   replies?: Reply[];
@@ -93,6 +97,7 @@ export interface Reply {
   content: string;
   authorName: string;
   authorEmail: string;
+  author?: string;
   createdAt: string;
 }
 

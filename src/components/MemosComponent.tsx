@@ -82,6 +82,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   const [showGenreManagement, setShowGenreManagement] = useState(false);
   const [editingGenre, setEditingGenre] = useState<string | null>(null);
   const [editingGenreName, setEditingGenreName] = useState("");
+  const [showInstructions, setShowInstructions] = useState(false);
   // 返信関連の状態
   const [editingReply, setEditingReply] = useState<string | null>(null);
   const [editingReplyContent, setEditingReplyContent] = useState("");
@@ -263,16 +264,120 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
       {showMemos && (
         <div className="memos-content">
           <div className="memos-header">
-            <button
-              onClick={() => {
-                loadMemos();
-              }}
-              className="refresh-button"
-              title="メモを更新"
-            >
-              <i className="bi bi-arrow-clockwise"></i>
-            </button>
+            <div className="memos-header-left">
+              <button
+                onClick={() => setShowInstructions(!showInstructions)}
+                className="instructions-button"
+                title="不具合報告・更新要望の出し方"
+              >
+                <i className="bi bi-question-circle"></i>
+                不具合報告・更新要望の出し方
+              </button>
+            </div>
+            <div className="memos-header-right">
+              <button
+                onClick={() => {
+                  loadMemos();
+                }}
+                className="refresh-button"
+                title="メモを更新"
+              >
+                <i className="bi bi-arrow-clockwise"></i>
+              </button>
+            </div>
           </div>
+
+          {/* 不具合報告・更新要望の説明セクション */}
+          {showInstructions && (
+            <div className="instructions-section">
+              <div className="instructions-header">
+                <h3><i className="bi bi-info-circle"></i> 不具合報告・更新要望の出し方</h3>
+                <button
+                  className="close-instructions-button"
+                  onClick={() => setShowInstructions(false)}
+                  title="閉じる"
+                >
+                  <i className="bi bi-x"></i>
+                </button>
+              </div>
+              
+              <div className="instructions-content">
+                <div className="instruction-card">
+                  <div className="instruction-header">
+                    <i className="bi bi-bug instruction-icon bug-icon"></i>
+                    <h4>不具合報告の出し方</h4>
+                  </div>
+                  <div className="instruction-steps">
+                    <ol>
+                      <li>メモの「投稿タイプ」で「不具合報告」を選択</li>
+                      <li>タイトルに不具合の概要を記入（例：「ログインできない」）</li>
+                      <li>内容に以下の情報を含めて記入：
+                        <ul>
+                          <li>発生した不具合の詳細</li>
+                          <li>再現手順（どの操作で発生するか）</li>
+                          <li>使用環境（ブラウザ、OS等）</li>
+                          <li>エラーメッセージがあれば記載</li>
+                        </ul>
+                      </li>
+                      <li>「公開」にチェックを入れる</li>
+                      <li>「保存」ボタンを押して投稿</li>
+                    </ol>
+                  </div>
+                  <div className="instruction-example">
+                    <h5>例：</h5>
+                    <div className="example-content">
+                      <strong>タイトル：</strong> ログイン時にエラーが発生する<br/>
+                      <strong>内容：</strong> ログインボタンを押すと「Internal Server Error」が表示されます。<br/>
+                      再現手順：1. ログインページにアクセス 2. メールアドレスとパスワードを入力 3. ログインボタンをクリック<br/>
+                      環境：Chrome 120.0.0.0、Windows 11
+                    </div>
+                  </div>
+                </div>
+
+                <div className="instruction-card">
+                  <div className="instruction-header">
+                    <i className="bi bi-lightbulb instruction-icon idea-icon"></i>
+                    <h4>更新要望の出し方</h4>
+                  </div>
+                  <div className="instruction-steps">
+                    <ol>
+                      <li>メモの「投稿タイプ」で「更新要望」を選択</li>
+                      <li>タイトルに要望の概要を記入（例：「ダークモードの追加」）</li>
+                      <li>内容に以下の情報を含めて記入：
+                        <ul>
+                          <li>実装してほしい機能の詳細</li>
+                          <li>なぜその機能が必要か（使用場面、メリット等）</li>
+                          <li>具体的な仕様やデザイン案があれば記載</li>
+                        </ul>
+                      </li>
+                      <li>「公開」にチェックを入れる</li>
+                      <li>「保存」ボタンを押して投稿</li>
+                    </ol>
+                  </div>
+                  <div className="instruction-example">
+                    <h5>例：</h5>
+                    <div className="example-content">
+                      <strong>タイトル：</strong> ダークモードの追加<br/>
+                      <strong>内容：</strong> 夜間の使用時に目が疲れるので、ダークモードを追加してほしいです。<br/>
+                      背景色を黒系、文字色を白系にして、既存の機能はそのまま維持していただければと思います。<br/>
+                      設定画面で切り替えできるようにしていただけると助かります。
+                    </div>
+                  </div>
+                </div>
+
+                <div className="instruction-tips">
+                  <h4><i className="bi bi-lightbulb"></i> 投稿のコツ</h4>
+                  <ul>
+                    <li>具体的で分かりやすいタイトルをつける</li>
+                    <li>不具合報告では再現手順を詳しく書く</li>
+                    <li>更新要望では実装理由を明確にする</li>
+                    <li>他のユーザーも参考になるように投稿する</li>
+                    <li>管理者からの返信を待つ（通知でお知らせします）</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* カテゴリ管理ボタン */}
           <div className="memos-controls">
