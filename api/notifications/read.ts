@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 
 // データベース接続
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/work-time-tracker';
@@ -69,7 +70,6 @@ const verifyJWTToken = async (req: NextApiRequest) => {
   
   try {
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
-    const jwt = require('jsonwebtoken');
     return jwt.verify(token, jwtSecret);
   } catch (error) {
     console.error('JWT verification failed:', error);
