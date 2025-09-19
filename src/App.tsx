@@ -1070,15 +1070,79 @@ function App() {
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
       console.error('グローバルエラーが発生しました:', event.error);
-      setCurrentError(event.error);
+      
+      // エラーの詳細情報を収集
+      const errorInfo = {
+        message: event.error?.message || event.message || 'Unknown error',
+        stack: event.error?.stack || event.error?.stackTrace || 'No stack trace available',
+        filename: event.filename || 'Unknown file',
+        lineno: event.lineno || 0,
+        colno: event.colno || 0,
+        type: event.error?.constructor?.name || 'Error',
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      
+      // エラーオブジェクトに詳細情報を追加
+      const enhancedError = new Error(errorInfo.message);
+      enhancedError.stack = errorInfo.stack;
+      (enhancedError as any).errorInfo = errorInfo;
+      
+      setCurrentError(enhancedError);
       setShowErrorModal(true);
     };
 
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
       console.error('未処理のPromise拒否が発生しました:', event.reason);
+      
+      // Promise拒否の詳細情報を収集
+      const errorInfo = {
+        message: event.reason?.message || String(event.reason) || 'Promise rejection',
+        stack: event.reason?.stack || 'No stack trace available',
+        type: event.reason?.constructor?.name || 'PromiseRejection',
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      
       const error = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
+      error.stack = errorInfo.stack;
+      (error as any).errorInfo = errorInfo;
+      
       setCurrentError(error);
       setShowErrorModal(true);
+    };
+
+    // コンソールエラーもキャッチ
+    const originalConsoleError = console.error;
+    console.error = (...args) => {
+      originalConsoleError.apply(console, args);
+      
+      // エラーメッセージに特定のキーワードが含まれている場合
+      const errorMessage = args.join(' ');
+      if (errorMessage.includes('ReferenceError') || 
+          errorMessage.includes('TypeError') || 
+          errorMessage.includes('SyntaxError') ||
+          errorMessage.includes('is not defined') ||
+          errorMessage.includes('Cannot read properties')) {
+        
+        const errorInfo = {
+          message: errorMessage,
+          stack: new Error().stack || 'No stack trace available',
+          type: 'ConsoleError',
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          url: window.location.href
+        };
+        
+        const error = new Error(errorMessage);
+        error.stack = errorInfo.stack;
+        (error as any).errorInfo = errorInfo;
+        
+        setCurrentError(error);
+        setShowErrorModal(true);
+      }
     };
 
     window.addEventListener('error', handleError);
@@ -1087,6 +1151,7 @@ function App() {
     return () => {
       window.removeEventListener('error', handleError);
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      console.error = originalConsoleError;
     };
   }, []);
 
@@ -3651,6 +3716,32 @@ function App() {
     } catch (error) {
       console.error("エラー報告の送信に失敗しました:", error);
       setMessage("エラー報告の送信に失敗しました。もう一度お試しください。");
+    }
+  };
+
+  // エラーハンドリング用のヘルパー関数
+  const safeExecute = (fn: () => void, errorContext: string) => {
+    try {
+      fn();
+    } catch (error) {
+      console.error(`${errorContext}でエラーが発生しました:`, error);
+      
+      const errorInfo = {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        type: error instanceof Error ? error.constructor.name : 'UnknownError',
+        context: errorContext,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      
+      const enhancedError = new Error(errorInfo.message);
+      enhancedError.stack = errorInfo.stack;
+      (enhancedError as any).errorInfo = errorInfo;
+      
+      setCurrentError(enhancedError);
+      setShowErrorModal(true);
     }
   };
 

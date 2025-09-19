@@ -31,10 +31,31 @@ const ErrorReportingModal: React.FC<ErrorReportingModalProps> = ({
     setIsSubmitting(true);
     
     try {
+      // エラーの詳細情報を構築
+      let errorDetails = '';
+      if (error) {
+        errorDetails = `${error.name}: ${error.message}\n`;
+        if (error.stack) {
+          errorDetails += `Stack Trace:\n${error.stack}\n`;
+        }
+        
+        // 追加のエラー情報がある場合
+        if ((error as any).errorInfo) {
+          const errorInfo = (error as any).errorInfo;
+          errorDetails += `\n詳細情報:\n`;
+          errorDetails += `タイプ: ${errorInfo.type}\n`;
+          errorDetails += `ファイル: ${errorInfo.filename}\n`;
+          errorDetails += `行: ${errorInfo.lineno}\n`;
+          errorDetails += `列: ${errorInfo.colno}\n`;
+          errorDetails += `URL: ${errorInfo.url}\n`;
+          errorDetails += `タイムスタンプ: ${errorInfo.timestamp}\n`;
+        }
+      }
+
       const errorReport = {
         title: title.trim(),
         content: content.trim(),
-        errorDetails: error ? `${error.name}: ${error.message}\n${error.stack || ''}` : '',
+        errorDetails: errorDetails,
         userAgent: navigator.userAgent,
         timestamp: new Date().toISOString()
       };
@@ -84,6 +105,20 @@ const ErrorReportingModal: React.FC<ErrorReportingModalProps> = ({
             <div className="error-details">
               <p><strong>エラー名:</strong> {error?.name || '不明'}</p>
               <p><strong>エラーメッセージ:</strong> {error?.message || '不明'}</p>
+              
+              {/* 追加のエラー情報を表示 */}
+              {(error as any)?.errorInfo && (
+                <div className="error-additional-info">
+                  <h4>詳細情報</h4>
+                  <p><strong>タイプ:</strong> {(error as any).errorInfo.type}</p>
+                  <p><strong>ファイル:</strong> {(error as any).errorInfo.filename}</p>
+                  <p><strong>行:</strong> {(error as any).errorInfo.lineno}</p>
+                  <p><strong>列:</strong> {(error as any).errorInfo.colno}</p>
+                  <p><strong>URL:</strong> {(error as any).errorInfo.url}</p>
+                  <p><strong>発生時刻:</strong> {(error as any).errorInfo.timestamp}</p>
+                </div>
+              )}
+              
               {error?.stack && (
                 <details>
                   <summary>スタックトレース</summary>

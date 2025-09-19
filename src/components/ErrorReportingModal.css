@@ -112,6 +112,26 @@
   margin-top: 0.5rem;
 }
 
+.error-additional-info {
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.error-additional-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #1976d2;
+  font-size: 1rem;
+}
+
+.error-additional-info p {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
 .error-report-form {
   display: flex;
   flex-direction: column;
