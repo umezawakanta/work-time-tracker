@@ -381,14 +381,13 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
               className="memo-form"
             >
               <div className="form-group">
-                <label htmlFor="memoTitle">タイトル</label>
+                <label htmlFor="memoTitle">タイトル（任意）</label>
                 <input
                   type="text"
                   id="memoTitle"
                   value={memoTitle}
                   onChange={(e) => setMemoTitle(e.target.value)}
-                  placeholder="メモのタイトルを入力"
-                  required
+                  placeholder="空欄の場合は本文の一行目がタイトルになります"
                 />
               </div>
 

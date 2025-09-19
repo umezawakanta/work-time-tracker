@@ -9,7 +9,7 @@ dotenv.config();
 
 // Memo Schema
 const MemoSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+  title: { type: String, required: false }, // タイトルを必須でなくする
   content: { type: String, required: true },
   category: { type: String, required: true },
   tags: [{ type: String }],
@@ -231,16 +231,21 @@ async function handleRequest(req, res) {
         const { title, content, category, tags, isPublic, isFamilyOnly, isAdminOnly } = req.body;
 
         // 必須フィールドの検証
-        if (!title || !content || !category) {
+        if (!content || !category) {
           return res.status(400).json({
             success: false,
-            message: 'タイトル、内容、カテゴリは必須です',
+            message: '内容、カテゴリは必須です',
             error: 'Missing required fields',
           });
         }
 
+        // タイトルがない場合は内容の一行目をタイトルとして使用
+        const finalTitle = title && title.trim() 
+          ? title.trim() 
+          : content.split('\n')[0].trim() || '無題';
+
         const newMemo = new Memo({
-          title: title.trim(),
+          title: finalTitle,
           content: content.trim(),
           category: category.trim(),
           tags: Array.isArray(tags) ? tags : (tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : []),

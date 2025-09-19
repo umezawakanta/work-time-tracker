@@ -38,7 +38,7 @@ const ensureDatabaseConnection = async () => {
 
 // Memo Schema
 const MemoSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+  title: { type: String, required: false }, // タイトルを必須でなくする
   content: { type: String, required: true },
   category: { type: String, required: true },
   tags: [{ type: String }],
@@ -158,6 +158,13 @@ module.exports = async (req, res) => {
     } else if (req.method === 'PUT') {
       // メモを更新
       const updateData = req.body || {};
+      
+      // タイトルがない場合は内容の一行目をタイトルとして使用
+      if (updateData.title !== undefined && (!updateData.title || !updateData.title.trim())) {
+        if (updateData.content) {
+          updateData.title = updateData.content.split('\n')[0].trim() || '無題';
+        }
+      }
       
       const memo = await Memo.findOneAndUpdate(
         { _id: id, userId: userInfo.userId },

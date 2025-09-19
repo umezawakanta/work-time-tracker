@@ -5,7 +5,7 @@ dotenv.config();
 
 // Memo Schema
 const MemoSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+  title: { type: String, required: false }, // タイトルを必須でなくする
   content: { type: String, required: true },
   category: { type: String, required: true },
   tags: [{ type: String }],
