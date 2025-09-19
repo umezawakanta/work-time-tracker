@@ -647,12 +647,45 @@
 }
 
 /* ページネーション */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+
+.pagination-top {
+  margin: 0.5rem 0 1rem 0;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
 .pagination-controls {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
   margin-top: 1.5rem;
+}
+
+.pagination-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #dee2e6;
+  background: white;
+  color: #495057;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pagination-controls button {
@@ -663,6 +696,30 @@
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.pagination-button:disabled {
+  background: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.pagination-button.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.pagination-numbers {
+  display: flex;
+  gap: 0.25rem;
 }
 
 .pagination-controls button:hover:not(:disabled) {
@@ -679,6 +736,24 @@
 .pagination-controls button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.pagination-info {
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+.pagination-info-top {
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.85rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
 }
 
 .page-info {

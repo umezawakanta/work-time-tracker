@@ -392,6 +392,50 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
             )}
           </div>
 
+          {/* ページネーション（上部） */}
+          {getTotalPages() > 1 && (
+            <div className="pagination pagination-top">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="pagination-button prev"
+              >
+                ← 前へ
+              </button>
+              
+              <div className="pagination-numbers">
+                {Array.from({ length: getTotalPages() }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`pagination-button number ${
+                      currentPage === page ? 'active' : ''
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+              
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === getTotalPages()}
+                className="pagination-button next"
+              >
+                次へ →
+              </button>
+            </div>
+          )}
+
+          {/* ページ情報（上部） */}
+          <div className="pagination-info pagination-info-top">
+            {publicMemos.length > 0 && (
+              <p>
+                {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, publicMemos.length)} / {publicMemos.length} 件
+              </p>
+            )}
+          </div>
+
           {/* 公開メモ一覧 */}
           <div className="public-memos-list">
             {publicMemosLoading ? (
@@ -560,35 +604,6 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                   </div>
                 ))}
                 
-                {/* ページネーション */}
-                <div className="pagination-controls">
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    前へ
-                  </button>
-                  {Array.from({ length: getTotalPages() }, (_, i) => i + 1).map(
-                    (page) => (
-                      <button
-                        key={page}
-                        onClick={() => handlePageChange(page)}
-                        className={currentPage === page ? "active" : ""}
-                      >
-                        {page}
-                      </button>
-                    )
-                  )}
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === getTotalPages()}
-                  >
-                    次へ
-                  </button>
-                  <span className="page-info">
-                    ページ {currentPage} / {getTotalPages()}
-                  </span>
-                </div>
               </>
             )}
           </div>
