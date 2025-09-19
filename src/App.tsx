@@ -254,6 +254,7 @@ function App() {
   const [memoCategory, setMemoCategory] = useState("");
   const [memoTags, setMemoTags] = useState("");
   const [memoIsPublic, setMemoIsPublic] = useState(false);
+  const [memoPostType, setMemoPostType] = useState("normal"); // normal, update_request, admin_only, family_only
   const [memoIsFamilyOnly, setMemoIsFamilyOnly] = useState(false);
   const [memoIsAdminOnly, setMemoIsAdminOnly] = useState(false);
   const [memoSearchTerm, setMemoSearchTerm] = useState("");
@@ -5065,6 +5066,8 @@ function App() {
                     setMemoCategory={setMemoCategory}
                     memoIsPublic={memoIsPublic}
                     setMemoIsPublic={setMemoIsPublic}
+                    memoPostType={memoPostType}
+                    setMemoPostType={setMemoPostType}
                     handleReplySubmit={handleReplySubmit}
                     handleReplyCancel={handleReplyCancel}
                     handleEditReply={handleEditReply}

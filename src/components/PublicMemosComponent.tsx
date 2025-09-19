@@ -424,6 +424,15 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                         <span className="author-info">
                           by {memo.author || '匿名'}
                         </span>
+                        {memo.postType === 'update_request' && (
+                          <span className="update-request-badge"><i className="bi bi-lightbulb"></i> 更新要望</span>
+                        )}
+                        {memo.postType === 'admin_only' && (
+                          <span className="admin-only-badge"><i className="bi bi-shield-lock"></i> 管理者限定</span>
+                        )}
+                        {memo.postType === 'family_only' && (
+                          <span className="family-only-badge"><i className="bi bi-people"></i> 家族限定</span>
+                        )}
                       </div>
                     </div>
                     

@@ -24,6 +24,8 @@ interface MemosComponentProps {
   setMemoCategory: (category: string) => void;
   memoIsPublic: boolean;
   setMemoIsPublic: (isPublic: boolean) => void;
+  memoPostType: string;
+  setMemoPostType: (postType: string) => void;
   handleReplySubmit: (memoId: string) => void;
   handleReplyCancel: () => void;
   handleEditReply: (replyId: string, content: string) => void;
@@ -58,6 +60,8 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   setMemoCategory,
   memoIsPublic,
   setMemoIsPublic,
+  memoPostType,
+  setMemoPostType,
   handleReplySubmit,
   handleReplyCancel,
   handleEditReply,
@@ -343,6 +347,21 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
               </div>
 
               <div className="form-group">
+                <label htmlFor="memoPostType">投稿タイプ</label>
+                <select
+                  id="memoPostType"
+                  value={memoPostType}
+                  onChange={(e) => setMemoPostType(e.target.value)}
+                  required
+                >
+                  <option value="normal">通常のメモ</option>
+                  <option value="update_request">更新要望</option>
+                  <option value="admin_only">管理者限定</option>
+                  <option value="family_only">家族限定</option>
+                </select>
+              </div>
+
+              <div className="form-group">
                 <label>
                   <input
                     type="checkbox"
@@ -377,6 +396,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                   setMemoContent("");
                   setMemoCategory("");
                   setMemoIsPublic(false);
+                  setMemoPostType("normal");
                   setShowMemoForm(true);
                 }}
                 className="create-memo-button"
@@ -433,6 +453,15 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                         </span>
                         {!memo.isPublic && (
                           <span className="private-badge"><i className="bi bi-lock"></i> プライベート</span>
+                        )}
+                        {memo.postType === 'update_request' && (
+                          <span className="update-request-badge"><i className="bi bi-lightbulb"></i> 更新要望</span>
+                        )}
+                        {memo.postType === 'admin_only' && (
+                          <span className="admin-only-badge"><i className="bi bi-shield-lock"></i> 管理者限定</span>
+                        )}
+                        {memo.postType === 'family_only' && (
+                          <span className="family-only-badge"><i className="bi bi-people"></i> 家族限定</span>
                         )}
                       </div>
                     </div>
@@ -553,6 +582,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                           setMemoContent(memo.content || '');
                           setMemoCategory(memo.category || '');
                           setMemoIsPublic(memo.isPublic || false);
+                          setMemoPostType(memo.postType || 'normal');
                           setShowMemoForm(true);
                         }}
                         className="edit-button"
