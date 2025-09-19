@@ -1125,7 +1125,11 @@ function App() {
           errorMessage.includes('TypeError') || 
           errorMessage.includes('SyntaxError') ||
           errorMessage.includes('is not defined') ||
-          errorMessage.includes('Cannot read properties')) {
+          errorMessage.includes('Cannot read properties') ||
+          errorMessage.includes('loadIncomeExpenseRecords') ||
+          errorMessage.includes('loadSalaryRecords') ||
+          errorMessage.includes('salaryRecords') ||
+          errorMessage.includes('incomeExpenseRecords')) {
         
         const errorInfo = {
           message: errorMessage,
@@ -1145,13 +1149,71 @@ function App() {
       }
     };
 
+    // コンソール警告もキャッチ
+    const originalConsoleWarn = console.warn;
+    console.warn = (...args) => {
+      originalConsoleWarn.apply(console, args);
+      
+      // 警告メッセージに特定のキーワードが含まれている場合
+      const warningMessage = args.join(' ');
+      if (warningMessage.includes('ReferenceError') || 
+          warningMessage.includes('TypeError') || 
+          warningMessage.includes('is not defined') ||
+          warningMessage.includes('Cannot read properties')) {
+        
+        const errorInfo = {
+          message: `Warning: ${warningMessage}`,
+          stack: new Error().stack || 'No stack trace available',
+          type: 'ConsoleWarning',
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          url: window.location.href
+        };
+        
+        const error = new Error(`Warning: ${warningMessage}`);
+        error.stack = errorInfo.stack;
+        (error as any).errorInfo = errorInfo;
+        
+        setCurrentError(error);
+        setShowErrorModal(true);
+      }
+    };
+
     window.addEventListener('error', handleError);
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    
+    // より包括的なエラーハンドリング
+    window.onerror = (message, source, lineno, colno, error) => {
+      console.error('window.onerror caught:', message, source, lineno, colno, error);
+      
+      const errorInfo = {
+        message: String(message),
+        stack: error?.stack || 'No stack trace available',
+        filename: source || 'Unknown file',
+        lineno: lineno || 0,
+        colno: colno || 0,
+        type: error?.constructor?.name || 'Error',
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      
+      const enhancedError = new Error(String(message));
+      enhancedError.stack = errorInfo.stack;
+      (enhancedError as any).errorInfo = errorInfo;
+      
+      setCurrentError(enhancedError);
+      setShowErrorModal(true);
+      
+      return false; // デフォルトのエラーハンドリングを防ぐ
+    };
 
     return () => {
       window.removeEventListener('error', handleError);
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
       console.error = originalConsoleError;
+      console.warn = originalConsoleWarn;
+      window.onerror = null;
     };
   }, []);
 
@@ -3742,6 +3804,45 @@ function App() {
       
       setCurrentError(enhancedError);
       setShowErrorModal(true);
+    }
+  };
+
+  // Reactエラーバウンダリー用のエラーハンドラー
+  const handleReactError = (error: Error, errorInfo: any) => {
+    console.error('React Error Boundary caught an error:', error, errorInfo);
+    
+    const enhancedErrorInfo = {
+      message: error.message,
+      stack: error.stack || 'No stack trace available',
+      type: 'ReactError',
+      componentStack: errorInfo.componentStack || 'No component stack available',
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      url: window.location.href
+    };
+    
+    const enhancedError = new Error(error.message);
+    enhancedError.stack = error.stack;
+    (enhancedError as any).errorInfo = enhancedErrorInfo;
+    
+    setCurrentError(enhancedError);
+    setShowErrorModal(true);
+  };
+
+  // エラーハンドリングのテスト用関数（開発時のみ）
+  const testErrorHandling = () => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('エラーハンドリングのテストを実行します...');
+      
+      // 意図的にエラーを発生させてテスト
+      setTimeout(() => {
+        try {
+          // 存在しない関数を呼び出してエラーを発生
+          (window as any).nonExistentFunction();
+        } catch (error) {
+          console.error('テストエラーが発生しました:', error);
+        }
+      }, 1000);
     }
   };
 
