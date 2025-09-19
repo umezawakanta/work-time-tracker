@@ -44,7 +44,7 @@ import type {
   Memo,
   Reply,
   Character,
-  SalaryRecord,
+  IncomeExpenseRecord,
   WorkDiary,
   UserSettings,
   Feature,
@@ -76,7 +76,7 @@ function App() {
   const [projectsLoading, setProjectsLoading] = useState(false);
   const [booksLoading, setBooksLoading] = useState(false);
   const [workRecordsLoading, setWorkRecordsLoading] = useState(false);
-  const [salaryLoading, setSalaryLoading] = useState(false);
+  const [incomeExpenseLoading, setIncomeExpenseLoading] = useState(false);
   const [diaryLoading, setDiaryLoading] = useState(false);
 
   // 時間記録関連の状態
@@ -309,24 +309,19 @@ function App() {
 
   // お仕事記録の状態
   const [showWorkRecords, setShowWorkRecords] = useState(false);
-  const [salaryRecords, setSalaryRecords] = useState<SalaryRecord[]>([]);
+  const [incomeExpenseRecords, setIncomeExpenseRecords] = useState<IncomeExpenseRecord[]>([]);
   const [workDiaries, setWorkDiaries] = useState<WorkDiary[]>([]);
-  const [showSalaryForm, setShowSalaryForm] = useState(false);
+  const [showIncomeExpenseForm, setShowIncomeExpenseForm] = useState(false);
   const [showDiaryForm, setShowDiaryForm] = useState(false);
-  const [editingSalaryRecord, setEditingSalaryRecord] =
-    useState<SalaryRecord | null>(null);
+  const [editingIncomeExpenseRecord, setEditingIncomeExpenseRecord] =
+    useState<IncomeExpenseRecord | null>(null);
   const [editingDiary, setEditingDiary] = useState<WorkDiary | null>(null);
 
-  // 給料記録フォームの状態
-  const [salaryDate, setSalaryDate] = useState("");
-  const [salary, setSalary] = useState("");
-  const [salaryAmount, setSalaryAmount] = useState("");
-  const [transportation, setTransportation] = useState("");
-  const [miscellaneous, setMiscellaneous] = useState("");
-  const [other, setOther] = useState("");
-  const [salaryMemo, setSalaryMemo] = useState("");
-  const [salaryNotes, setSalaryNotes] = useState("");
-  const [recordType, setRecordType] = useState<"income" | "expense">("income");
+  // 収入・支出記録フォームの状態
+  const [incomeExpenseDate, setIncomeExpenseDate] = useState("");
+  const [incomeExpenseAmount, setIncomeExpenseAmount] = useState("");
+  const [incomeExpenseType, setIncomeExpenseType] = useState<"income" | "expense">("income");
+  const [incomeExpenseNotes, setIncomeExpenseNotes] = useState("");
 
   // 日記フォームの状態
   const [diaryDate, setDiaryDate] = useState("");
@@ -5182,15 +5177,15 @@ function App() {
                     key={feature.id}
                     showWorkRecords={showWorkRecords}
                     setShowWorkRecords={setShowWorkRecords}
-                    showSalaryForm={showSalaryForm}
-                    setShowSalaryForm={setShowSalaryForm}
+                    showIncomeExpenseForm={showIncomeExpenseForm}
+                    setShowIncomeExpenseForm={setShowIncomeExpenseForm}
                     showDiaryForm={showDiaryForm}
                     setShowDiaryForm={setShowDiaryForm}
                     showCalendar={showCalendar}
                     setShowCalendar={setShowCalendar}
-                    salaryRecords={salaryRecords}
+                    incomeExpenseRecords={incomeExpenseRecords}
                     workDiaries={workDiaries}
-                    salaryLoading={salaryLoading}
+                    incomeExpenseLoading={incomeExpenseLoading}
                     diaryLoading={diaryLoading}
                     workRecordsLoading={workRecordsLoading}
                     currentMonth={currentMonth}
@@ -5201,16 +5196,18 @@ function App() {
                     setSelectedRecord={setSelectedRecord}
                     selectedRecordType={selectedRecordType}
                     setSelectedRecordType={setSelectedRecordType}
-                    editingSalaryRecord={editingSalaryRecord}
-                    setEditingSalaryRecord={setEditingSalaryRecord}
+                    editingIncomeExpenseRecord={editingIncomeExpenseRecord}
+                    setEditingIncomeExpenseRecord={setEditingIncomeExpenseRecord}
                     editingDiary={editingDiary}
                     setEditingDiary={setEditingDiary}
-                    salaryAmount={salaryAmount}
-                    setSalaryAmount={setSalaryAmount}
-                    salaryDate={salaryDate}
-                    setSalaryDate={setSalaryDate}
-                    salaryNotes={salaryNotes}
-                    setSalaryNotes={setSalaryNotes}
+                    incomeExpenseAmount={incomeExpenseAmount}
+                    setIncomeExpenseAmount={setIncomeExpenseAmount}
+                    incomeExpenseType={incomeExpenseType}
+                    setIncomeExpenseType={setIncomeExpenseType}
+                    incomeExpenseDate={incomeExpenseDate}
+                    setIncomeExpenseDate={setIncomeExpenseDate}
+                    incomeExpenseNotes={incomeExpenseNotes}
+                    setIncomeExpenseNotes={setIncomeExpenseNotes}
                     diaryDate={diaryDate}
                     setDiaryDate={setDiaryDate}
                     diaryTitle={diaryTitle}
@@ -5237,13 +5234,13 @@ function App() {
                     setMonthlyMemo={setMonthlyMemo}
                     editingMonthlyMemo={editingMonthlyMemo}
                     setEditingMonthlyMemo={setEditingMonthlyMemo}
-                    loadSalaryRecords={loadSalaryRecords}
+                    loadIncomeExpenseRecords={loadIncomeExpenseRecords}
                     loadWorkDiaries={loadWorkDiaries}
-                    handleCreateSalaryRecord={handleCreateSalaryRecord}
-                    handleUpdateSalaryRecord={handleUpdateSalaryRecord}
+                    handleCreateIncomeExpenseRecord={handleCreateIncomeExpenseRecord}
+                    handleUpdateIncomeExpenseRecord={handleUpdateIncomeExpenseRecord}
                     handleCreateDiary={handleCreateDiary}
                     handleUpdateDiary={handleUpdateDiary}
-                    handleDeleteSalaryRecord={handleDeleteSalaryRecord}
+                    handleDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
                     handleDeleteDiary={handleDeleteDiary}
                     openDiaryForm={openDiaryForm}
                     loadMonthlyMemo={loadMonthlyMemo}

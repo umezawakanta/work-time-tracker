@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import './WorkRecordsComponent.css';
-import type { SalaryRecord, WorkDiary, User } from '../types';
+import type { IncomeExpenseRecord, WorkDiary, User } from '../types';
 
 interface WorkRecordsComponentProps {
   showWorkRecords: boolean;
   setShowWorkRecords: (show: boolean) => void;
-  showSalaryForm: boolean;
-  setShowSalaryForm: (show: boolean) => void;
+  showIncomeExpenseForm: boolean;
+  setShowIncomeExpenseForm: (show: boolean) => void;
   showDiaryForm: boolean;
   setShowDiaryForm: (show: boolean) => void;
   showCalendar: boolean;
   setShowCalendar: (show: boolean) => void;
-  salaryRecords: SalaryRecord[];
+  incomeExpenseRecords: IncomeExpenseRecord[];
   workDiaries: WorkDiary[];
-  salaryLoading: boolean;
+  incomeExpenseLoading: boolean;
   diaryLoading: boolean;
   workRecordsLoading: boolean;
   currentMonth: Date;
@@ -22,18 +22,20 @@ interface WorkRecordsComponentProps {
   setSelectedDate: (date: Date | null) => void;
   selectedRecord: any;
   setSelectedRecord: (record: any) => void;
-  selectedRecordType: "salary" | "diary" | null;
-  setSelectedRecordType: React.Dispatch<React.SetStateAction<"salary" | "diary" | null>>;
-  editingSalaryRecord: any;
-  setEditingSalaryRecord: (record: any) => void;
+  selectedRecordType: "income" | "expense" | "diary" | null;
+  setSelectedRecordType: React.Dispatch<React.SetStateAction<"income" | "expense" | "diary" | null>>;
+  editingIncomeExpenseRecord: any;
+  setEditingIncomeExpenseRecord: (record: any) => void;
   editingDiary: any;
   setEditingDiary: (diary: any) => void;
-  salaryAmount: string;
-  setSalaryAmount: (amount: string) => void;
-  salaryDate: string;
-  setSalaryDate: (date: string) => void;
-  salaryNotes: string;
-  setSalaryNotes: (notes: string) => void;
+  incomeExpenseAmount: string;
+  setIncomeExpenseAmount: (amount: string) => void;
+  incomeExpenseType: "income" | "expense";
+  setIncomeExpenseType: (type: "income" | "expense") => void;
+  incomeExpenseDate: string;
+  setIncomeExpenseDate: (date: string) => void;
+  incomeExpenseNotes: string;
+  setIncomeExpenseNotes: (notes: string) => void;
   diaryDate: string;
   setDiaryDate: (date: string) => void;
   diaryTitle: string;
@@ -60,13 +62,13 @@ interface WorkRecordsComponentProps {
   setMonthlyMemo: (memo: string) => void;
   editingMonthlyMemo: boolean;
   setEditingMonthlyMemo: (editing: boolean) => void;
-  loadSalaryRecords: () => void;
+  loadIncomeExpenseRecords: () => void;
   loadWorkDiaries: () => void;
-  handleCreateSalaryRecord: (e: React.FormEvent) => void;
-  handleUpdateSalaryRecord: (e: React.FormEvent) => void;
+  handleCreateIncomeExpenseRecord: (e: React.FormEvent) => void;
+  handleUpdateIncomeExpenseRecord: (e: React.FormEvent) => void;
   handleCreateDiary: (e: React.FormEvent) => void;
   handleUpdateDiary: (e: React.FormEvent) => void;
-  handleDeleteSalaryRecord: (id: string) => void;
+  handleDeleteIncomeExpenseRecord: (id: string) => void;
   handleDeleteDiary: (id: string) => void;
   openDiaryForm: () => void;
   loadMonthlyMemo: () => void;
@@ -80,15 +82,15 @@ interface WorkRecordsComponentProps {
 const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   showWorkRecords,
   setShowWorkRecords,
-  showSalaryForm,
-  setShowSalaryForm,
+  showIncomeExpenseForm,
+  setShowIncomeExpenseForm,
   showDiaryForm,
   setShowDiaryForm,
   showCalendar,
   setShowCalendar,
-  salaryRecords,
+  incomeExpenseRecords,
   workDiaries,
-  salaryLoading,
+  incomeExpenseLoading,
   diaryLoading,
   workRecordsLoading,
   currentMonth,
@@ -99,16 +101,18 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   setSelectedRecord,
   selectedRecordType,
   setSelectedRecordType,
-  editingSalaryRecord,
-  setEditingSalaryRecord,
+  editingIncomeExpenseRecord,
+  setEditingIncomeExpenseRecord,
   editingDiary,
   setEditingDiary,
-  salaryAmount,
-  setSalaryAmount,
-  salaryDate,
-  setSalaryDate,
-  salaryNotes,
-  setSalaryNotes,
+  incomeExpenseAmount,
+  setIncomeExpenseAmount,
+  incomeExpenseType,
+  setIncomeExpenseType,
+  incomeExpenseDate,
+  setIncomeExpenseDate,
+  incomeExpenseNotes,
+  setIncomeExpenseNotes,
   diaryDate,
   setDiaryDate,
   diaryTitle,
@@ -135,13 +139,13 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   setMonthlyMemo,
   editingMonthlyMemo,
   setEditingMonthlyMemo,
-  loadSalaryRecords,
+  loadIncomeExpenseRecords,
   loadWorkDiaries,
-  handleCreateSalaryRecord,
-  handleUpdateSalaryRecord,
+  handleCreateIncomeExpenseRecord,
+  handleUpdateIncomeExpenseRecord,
   handleCreateDiary,
   handleUpdateDiary,
-  handleDeleteSalaryRecord,
+  handleDeleteIncomeExpenseRecord,
   handleDeleteDiary,
   openDiaryForm,
   loadMonthlyMemo,
@@ -173,22 +177,31 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 指定された日付の記録を取得
   const getRecordsForDate = (date: Date) => {
     const dateString = date.toISOString().split('T')[0];
-    const salaryRecord = (salaryRecords || []).find(record => 
-      new Date(record.date).toISOString().split('T')[0] === dateString
+    const incomeRecords = (incomeExpenseRecords || []).filter(record => 
+      new Date(record.date).toISOString().split('T')[0] === dateString && record.type === 'income'
+    );
+    const expenseRecords = (incomeExpenseRecords || []).filter(record => 
+      new Date(record.date).toISOString().split('T')[0] === dateString && record.type === 'expense'
     );
     const diaryRecord = (workDiaries || []).find(diary => 
       new Date(diary.date).toISOString().split('T')[0] === dateString
     );
     
-    return { salaryRecord, diaryRecord };
+    return { incomeRecords, expenseRecords, diaryRecord };
   };
 
   // 月の統計を計算
   const getMonthlySummary = (year: number, month: number) => {
-    if (!currentMonth) return { totalSalary: 0, averageMood: 0, salaryRecordsCount: 0, diariesCount: 0 };
-    const monthlySalaryRecords = (salaryRecords || []).filter(record => {
+    if (!currentMonth) return { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
+    
+    const monthlyIncomeRecords = (incomeExpenseRecords || []).filter(record => {
       const recordDate = new Date(record.date);
-      return recordDate.getFullYear() === year && recordDate.getMonth() === month;
+      return recordDate.getFullYear() === year && recordDate.getMonth() === month && record.type === 'income';
+    });
+    
+    const monthlyExpenseRecords = (incomeExpenseRecords || []).filter(record => {
+      const recordDate = new Date(record.date);
+      return recordDate.getFullYear() === year && recordDate.getMonth() === month && record.type === 'expense';
     });
     
     const monthlyDiaries = (workDiaries || []).filter(diary => {
@@ -196,15 +209,20 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       return diaryDate.getFullYear() === year && diaryDate.getMonth() === month;
     });
     
-    const totalSalary = monthlySalaryRecords.length > 0 ? monthlySalaryRecords.reduce((sum, record) => sum + (record.salary || 0), 0) : 0;
+    const totalIncome = monthlyIncomeRecords.length > 0 ? monthlyIncomeRecords.reduce((sum, record) => sum + (record.amount || 0), 0) : 0;
+    const totalExpense = monthlyExpenseRecords.length > 0 ? monthlyExpenseRecords.reduce((sum, record) => sum + (record.amount || 0), 0) : 0;
+    const netBalance = totalIncome - totalExpense;
     const averageMood = monthlyDiaries.length > 0 
       ? monthlyDiaries.reduce((sum, diary) => sum + (Number(diary.mood) || 0), 0) / monthlyDiaries.length 
       : 0;
     
     return {
-      totalSalary,
+      totalIncome,
+      totalExpense,
+      netBalance,
       averageMood,
-      salaryRecordsCount: monthlySalaryRecords.length,
+      incomeRecordsCount: monthlyIncomeRecords.length,
+      expenseRecordsCount: monthlyExpenseRecords.length,
       diariesCount: monthlyDiaries.length,
     };
   };
@@ -213,13 +231,15 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
     const records = getRecordsForDate(date);
-    if (records.salaryRecord || records.diaryRecord) {
+    if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.diaryRecord) {
       setSelectedRecord(records);
-      // 両方の記録がある場合は、日記を優先表示（または最後にクリックされた方を優先）
-      if (records.salaryRecord && records.diaryRecord) {
-        setSelectedRecordType("diary"); // 日記を優先表示
-      } else {
-        setSelectedRecordType(records.salaryRecord ? "salary" : "diary");
+      // 複数の記録がある場合は、日記を優先表示
+      if (records.diaryRecord) {
+        setSelectedRecordType("diary");
+      } else if (records.incomeRecords.length > 0) {
+        setSelectedRecordType("income");
+      } else if (records.expenseRecords.length > 0) {
+        setSelectedRecordType("expense");
       }
     } else {
       setSelectedRecord(null);
@@ -228,11 +248,14 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   };
 
   // 記録クリックハンドラー
-  const handleRecordClick = (type: "salary" | "diary", date: Date) => {
+  const handleRecordClick = (type: "income" | "expense" | "diary", date: Date) => {
     const records = getRecordsForDate(date);
-    if (type === "salary" && records.salaryRecord) {
+    if (type === "income" && records.incomeRecords.length > 0) {
       setSelectedRecord(records);
-      setSelectedRecordType("salary");
+      setSelectedRecordType("income");
+    } else if (type === "expense" && records.expenseRecords.length > 0) {
+      setSelectedRecord(records);
+      setSelectedRecordType("expense");
     } else if (type === "diary" && records.diaryRecord) {
       setSelectedRecord(records);
       setSelectedRecordType("diary");
@@ -262,7 +285,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     setter(prev => prev.filter((_, i) => i !== index));
   };
 
-  const monthlySummary = currentMonth ? getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth()) : { totalSalary: 0, averageMood: 0, salaryRecordsCount: 0, diariesCount: 0 };
+  const monthlySummary = currentMonth ? getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth()) : { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
 
   return (
     <div className="work-records-section">
@@ -308,8 +331,18 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             <h3><i className="bi bi-graph-up"></i> {currentMonth.getFullYear()}年{currentMonth.getMonth() + 1}月の統計</h3>
             <div className="summary-grid">
               <div className="summary-item">
-                <span className="summary-label">総給与</span>
-                <span className="summary-value">¥{(monthlySummary.totalSalary || 0).toLocaleString()}</span>
+                <span className="summary-label">総収入</span>
+                <span className="summary-value income">¥{(monthlySummary.totalIncome || 0).toLocaleString()}</span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">総支出</span>
+                <span className="summary-value expense">¥{(monthlySummary.totalExpense || 0).toLocaleString()}</span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">収支</span>
+                <span className={`summary-value ${monthlySummary.netBalance >= 0 ? 'positive' : 'negative'}`}>
+                  {monthlySummary.netBalance >= 0 ? '+' : ''}¥{(monthlySummary.netBalance || 0).toLocaleString()}
+                </span>
               </div>
               <div className="summary-item">
                 <span className="summary-label">平均気分</span>
@@ -318,8 +351,12 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 </span>
               </div>
               <div className="summary-item">
-                <span className="summary-label">給与記録</span>
-                <span className="summary-value">{monthlySummary.salaryRecordsCount}件</span>
+                <span className="summary-label">収入記録</span>
+                <span className="summary-value">{monthlySummary.incomeRecordsCount}件</span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">支出記録</span>
+                <span className="summary-value">{monthlySummary.expenseRecordsCount}件</span>
               </div>
               <div className="summary-item">
                 <span className="summary-label">日記</span>
@@ -370,16 +407,28 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     >
                       <span className="day-number">{date.getDate()}</span>
                       <div className="day-indicators">
-                        {records.salaryRecord && (
+                        {records.incomeRecords.length > 0 && (
                           <span 
-                            className="salary-indicator" 
-                            title="給与記録"
+                            className="income-indicator" 
+                            title="収入記録"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleRecordClick("salary", date);
+                              handleRecordClick("income", date);
                             }}
                           >
                             💰
+                          </span>
+                        )}
+                        {records.expenseRecords.length > 0 && (
+                          <span 
+                            className="expense-indicator" 
+                            title="支出記録"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRecordClick("expense", date);
+                            }}
+                          >
+                            💸
                           </span>
                         )}
                         {records.diaryRecord && (
@@ -407,29 +456,63 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             <div className="record-details">
               <h3>選択された記録</h3>
               
-              {/* 給与記録の表示 */}
-              {selectedRecord.salaryRecord && (
-                <div className="salary-record-detail">
-                  <h4>💰 給与記録</h4>
-                  <p><strong>金額:</strong> ¥{(selectedRecord.salaryRecord.amount || 0).toLocaleString()}</p>
-                  <p><strong>日付:</strong> {new Date(selectedRecord.salaryRecord.date).toLocaleDateString()}</p>
-                  {selectedRecord.salaryRecord.notes && (
-                    <p><strong>メモ:</strong> {selectedRecord.salaryRecord.notes}</p>
-                  )}
-                  <div className="record-actions">
-                    <button
-                      onClick={() => setEditingSalaryRecord(selectedRecord.salaryRecord)}
-                      className="edit-button"
-                    >
-                      編集
-                    </button>
-                    <button
-                      onClick={() => handleDeleteSalaryRecord(selectedRecord.salaryRecord.id)}
-                      className="delete-button"
-                    >
-                      削除
-                    </button>
-                  </div>
+              {/* 収入記録の表示 */}
+              {selectedRecord.incomeRecords && selectedRecord.incomeRecords.length > 0 && (
+                <div className="income-records-detail">
+                  <h4>💰 収入記録</h4>
+                  {selectedRecord.incomeRecords.map((record, index) => (
+                    <div key={index} className="record-item">
+                      <p><strong>金額:</strong> ¥{(record.amount || 0).toLocaleString()}</p>
+                      <p><strong>日付:</strong> {new Date(record.date).toLocaleDateString()}</p>
+                      {record.notes && (
+                        <p><strong>メモ:</strong> {record.notes}</p>
+                      )}
+                      <div className="record-actions">
+                        <button
+                          onClick={() => setEditingIncomeExpenseRecord(record)}
+                          className="edit-button"
+                        >
+                          編集
+                        </button>
+                        <button
+                          onClick={() => handleDeleteIncomeExpenseRecord(record.id)}
+                          className="delete-button"
+                        >
+                          削除
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* 支出記録の表示 */}
+              {selectedRecord.expenseRecords && selectedRecord.expenseRecords.length > 0 && (
+                <div className="expense-records-detail">
+                  <h4>💸 支出記録</h4>
+                  {selectedRecord.expenseRecords.map((record, index) => (
+                    <div key={index} className="record-item">
+                      <p><strong>金額:</strong> ¥{(record.amount || 0).toLocaleString()}</p>
+                      <p><strong>日付:</strong> {new Date(record.date).toLocaleDateString()}</p>
+                      {record.notes && (
+                        <p><strong>メモ:</strong> {record.notes}</p>
+                      )}
+                      <div className="record-actions">
+                        <button
+                          onClick={() => setEditingIncomeExpenseRecord(record)}
+                          className="edit-button"
+                        >
+                          編集
+                        </button>
+                        <button
+                          onClick={() => handleDeleteIncomeExpenseRecord(record.id)}
+                          className="delete-button"
+                        >
+                          削除
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
               
@@ -460,18 +543,29 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             </div>
           )}
 
-          {/* 給与記録フォーム */}
-          {showSalaryForm && (
-            <div className="salary-form">
-              <h3>{editingSalaryRecord ? '給与記録を編集' : '新しい給与記録'}</h3>
-              <form onSubmit={editingSalaryRecord ? handleUpdateSalaryRecord : handleCreateSalaryRecord}>
+          {/* 収入・支出記録フォーム */}
+          {showIncomeExpenseForm && (
+            <div className="income-expense-form">
+              <h3>{editingIncomeExpenseRecord ? '収入・支出記録を編集' : '新しい収入・支出記録'}</h3>
+              <form onSubmit={editingIncomeExpenseRecord ? handleUpdateIncomeExpenseRecord : handleCreateIncomeExpenseRecord}>
+                <div className="form-group">
+                  <label>タイプ</label>
+                  <select
+                    value={incomeExpenseType}
+                    onChange={(e) => setIncomeExpenseType(e.target.value as "income" | "expense")}
+                    required
+                  >
+                    <option value="income">収入</option>
+                    <option value="expense">支出</option>
+                  </select>
+                </div>
                 <div className="form-group">
                   <label>金額</label>
                   <input
                     type="number"
-                    value={salaryAmount}
-                    onChange={(e) => setSalaryAmount(e.target.value)}
-                    placeholder="給与金額を入力"
+                    value={incomeExpenseAmount}
+                    onChange={(e) => setIncomeExpenseAmount(e.target.value)}
+                    placeholder="金額を入力"
                     required
                   />
                 </div>
@@ -479,33 +573,34 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                   <label>日付</label>
                   <input
                     type="date"
-                    value={salaryDate}
-                    onChange={(e) => setSalaryDate(e.target.value)}
+                    value={incomeExpenseDate}
+                    onChange={(e) => setIncomeExpenseDate(e.target.value)}
                     required
-                    aria-label="給与記録の日付"
+                    aria-label="収入・支出記録の日付"
                   />
                 </div>
                 <div className="form-group">
                   <label>メモ</label>
                   <textarea
-                    value={salaryNotes}
-                    onChange={(e) => setSalaryNotes(e.target.value)}
+                    value={incomeExpenseNotes}
+                    onChange={(e) => setIncomeExpenseNotes(e.target.value)}
                     placeholder="メモを入力（任意）"
                     rows={3}
                   />
                 </div>
                 <div className="form-actions">
                   <button type="submit" className="save-button">
-                    {editingSalaryRecord ? '更新' : '保存'}
+                    {editingIncomeExpenseRecord ? '更新' : '保存'}
                   </button>
                   <button
                     type="button"
                     onClick={() => {
-                      setShowSalaryForm(false);
-                      setEditingSalaryRecord(null);
-                      setSalaryAmount('');
-                      setSalaryDate('');
-                      setSalaryNotes('');
+                      setShowIncomeExpenseForm(false);
+                      setEditingIncomeExpenseRecord(null);
+                      setIncomeExpenseAmount('');
+                      setIncomeExpenseType('income');
+                      setIncomeExpenseDate('');
+                      setIncomeExpenseNotes('');
                     }}
                     className="cancel-button"
                   >

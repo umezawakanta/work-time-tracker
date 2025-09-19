@@ -109,16 +109,14 @@ export interface Character {
   tags: string[];
 }
 
-// 給料記録の型定義
-export interface SalaryRecord {
+// 収入・支出記録の型定義
+export interface IncomeExpenseRecord {
   _id: string;
   userId: string;
   date: string;
-  salary: number;
-  transportation: number;
-  miscellaneous: number; // 雑費
-  other: number; // その他
-  memo: string; // メモ
+  type: "income" | "expense";
+  amount: number;
+  notes: string; // メモ
   createdAt: string;
   updatedAt: string;
 }
