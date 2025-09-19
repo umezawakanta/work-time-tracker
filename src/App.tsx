@@ -1567,8 +1567,8 @@ function App() {
   };
 
   // お仕事記録の関数
-  const loadSalaryRecords = async () => {
-    setSalaryLoading(true);
+  const loadIncomeExpenseRecords = async () => {
+    setIncomeExpenseLoading(true);
     try {
       if (!user?.id) {
         return;
@@ -1583,20 +1583,20 @@ function App() {
 
       const data = await response.json();
       if (data.success) {
-        setSalaryRecords(data.records);
+        setIncomeExpenseRecords(data.records);
       } else {
-        console.error("Failed to load salary records:", data.message);
-        setMessage(`給料記録の読み込みに失敗しました: ${data.message}`);
+        console.error("Failed to load income/expense records:", data.message);
+        setMessage(`収入・支出記録の読み込みに失敗しました: ${data.message}`);
       }
     } catch (error) {
-      console.error("Failed to load salary records:", error);
+      console.error("Failed to load income/expense records:", error);
       setMessage(
-        `給料記録の読み込みに失敗しました: ${
+        `収入・支出記録の読み込みに失敗しました: ${
           error instanceof Error ? error.message : "Unknown error"
         }`
       );
     } finally {
-      setSalaryLoading(false);
+      setIncomeExpenseLoading(false);
     }
   };
 
@@ -1632,15 +1632,15 @@ function App() {
   };
 
   // ユーザーIDを直接受け取る関数
-  const loadSalaryRecordsWithUserId = async (userId: string) => {
+  const loadIncomeExpenseRecordsWithUserId = async (userId: string) => {
     try {
       const response = await fetch(`/api/work-records/salary?userId=${userId}`);
       const data = await response.json();
       if (data.success) {
-        setSalaryRecords(data.records);
+        setIncomeExpenseRecords(data.records);
       }
     } catch (error) {
-      console.error("Failed to load salary records:", error);
+      console.error("Failed to load income/expense records:", error);
     }
   };
 
@@ -1867,7 +1867,7 @@ function App() {
         setSalaryMemo("");
         setRecordType("income");
         setShowIncomeExpenseForm(false);
-        loadSalaryRecords();
+        loadIncomeExpenseRecords();
       } else {
         setMessage(`エラー: ${data.message}`);
       }
@@ -1918,7 +1918,7 @@ function App() {
         setRecordType("income");
         setEditingSalaryRecord(null);
         setShowIncomeExpenseForm(false);
-        loadSalaryRecords();
+        loadIncomeExpenseRecords();
       } else {
         setMessage(`エラー: ${data.message}`);
       }
@@ -2083,8 +2083,8 @@ function App() {
 
       const data = await response.json();
       if (data.success) {
-        setMessage("給料記録が削除されました！");
-        loadSalaryRecords();
+        setMessage("収入・支出記録が削除されました！");
+        loadIncomeExpenseRecords();
       } else {
         setMessage(`エラー: ${data.message}`);
       }
@@ -3026,7 +3026,7 @@ function App() {
     if (isLoggedIn && user?.id) {
       loadProjects();
       loadReportSummary();
-      loadSalaryRecords();
+      loadIncomeExpenseRecords();
       loadWorkDiaries();
       loadUserSettings();
       loadTimeEntries();
@@ -3121,7 +3121,7 @@ function App() {
         const userId = data.user.id;
         loadProjects(); // プロジェクトを読み込み
         loadReportSummary(); // レポートを読み込み
-        loadSalaryRecordsWithUserId(userId); // 給料記録を読み込み
+        loadIncomeExpenseRecordsWithUserId(userId); // 収入・支出記録を読み込み
         loadWorkDiariesWithUserId(userId); // 日記を読み込み
         loadUserSettings(); // ユーザー設定を読み込み
       } else {
@@ -3940,7 +3940,7 @@ function App() {
     setProjects([]);
     setSelectedProject("");
     // その他の状態もリセット
-    setSalaryRecords([]);
+    setIncomeExpenseRecords([]);
     setWorkDiaries([]);
     setReportSummary(null);
     setUserSettings(null);
