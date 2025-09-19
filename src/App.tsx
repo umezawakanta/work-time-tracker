@@ -1140,23 +1140,23 @@ function App() {
       originalConsoleError.apply(console, args);
       
       // エラーメッセージに特定のキーワードが含まれている場合
-      const errorMessage = args.join(' ');
-      if (errorMessage.includes('ReferenceError') || 
-          errorMessage.includes('TypeError') || 
-          errorMessage.includes('SyntaxError') ||
+    const errorMessage = args.join(' ').toLowerCase();
+    if (errorMessage.includes('referenceerror') ||
+          errorMessage.includes('typeerror') || 
+          errorMessage.includes('syntaxerror') ||
           errorMessage.includes('is not defined') ||
-          errorMessage.includes('Cannot read properties') ||
-          errorMessage.includes('Cannot read property') ||
+          errorMessage.includes('cannot read properties') ||
+          errorMessage.includes('cannot read property') ||
           errorMessage.includes('reading') ||
           errorMessage.includes('filter') ||
           errorMessage.includes('map') ||
-          errorMessage.includes('forEach') ||
+          errorMessage.includes('foreach') ||
           errorMessage.includes('reduce') ||
           errorMessage.includes('find') ||
           errorMessage.includes('some') ||
           errorMessage.includes('every') ||
           errorMessage.includes('includes') ||
-          errorMessage.includes('indexOf') ||
+          errorMessage.includes('indexof') ||
           errorMessage.includes('push') ||
           errorMessage.includes('pop') ||
           errorMessage.includes('shift') ||
@@ -1172,12 +1172,19 @@ function App() {
           errorMessage.includes('search') ||
           errorMessage.includes('test') ||
           errorMessage.includes('exec') ||
-          errorMessage.includes('toString') ||
-          errorMessage.includes('valueOf') ||
-          errorMessage.includes('hasOwnProperty') ||
-          errorMessage.includes('propertyIsEnumerable') ||
-          errorMessage.includes('toLocaleString') ||
-          errorMessage.includes('toJSON') ||
+          errorMessage.includes('tostring') ||
+          errorMessage.includes('valueof') ||
+          errorMessage.includes('hasownproperty') ||
+          errorMessage.includes('propertyisenumerable') ||
+          errorMessage.includes('tolocalestring') ||
+          errorMessage.includes('tojson') ||
+          errorMessage.includes('undefined') ||
+          errorMessage.includes('null') ||
+          errorMessage.includes('is not a function') ||
+          errorMessage.includes('is not a constructor') ||
+          errorMessage.includes('cannot access') ||
+          errorMessage.includes('cannot set') ||
+          errorMessage.includes('cannot delete') ||
           errorMessage.includes('loadIncomeExpenseRecords') ||
           errorMessage.includes('loadSalaryRecords') ||
           errorMessage.includes('salaryRecords') ||
@@ -1293,6 +1300,13 @@ function App() {
                              errorMessage.includes('propertyIsEnumerable') ||
                              errorMessage.includes('toLocaleString') ||
                              errorMessage.includes('toJSON') ||
+                             errorMessage.includes('undefined') ||
+                             errorMessage.includes('null') ||
+                             errorMessage.includes('is not a function') ||
+                             errorMessage.includes('is not a constructor') ||
+                             errorMessage.includes('Cannot access') ||
+                             errorMessage.includes('Cannot set') ||
+                             errorMessage.includes('Cannot delete') ||
                              errorMessage.includes('handleCreateIncomeExpenseRecord') ||
                              errorMessage.includes('handleUpdateIncomeExpenseRecord') ||
                              errorMessage.includes('handleDeleteIncomeExpenseRecord') ||
@@ -3984,6 +3998,13 @@ function App() {
                            errorMessage.includes('propertyIsEnumerable') ||
                            errorMessage.includes('toLocaleString') ||
                            errorMessage.includes('toJSON') ||
+                           errorMessage.includes('undefined') ||
+                           errorMessage.includes('null') ||
+                           errorMessage.includes('is not a function') ||
+                           errorMessage.includes('is not a constructor') ||
+                           errorMessage.includes('Cannot access') ||
+                           errorMessage.includes('Cannot set') ||
+                           errorMessage.includes('Cannot delete') ||
                            errorMessage.includes('handleCreateIncomeExpenseRecord') ||
                            errorMessage.includes('handleUpdateIncomeExpenseRecord') ||
                            errorMessage.includes('handleDeleteIncomeExpenseRecord') ||
