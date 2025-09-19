@@ -36,6 +36,9 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [sortBy, setSortBy] = useState<'email' | 'role' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [showSourceCodeViewer, setShowSourceCodeViewer] = useState(false);
+  const [showErrorReports, setShowErrorReports] = useState(false);
+  const [errorReports, setErrorReports] = useState<any[]>([]);
+  const [errorReportsLoading, setErrorReportsLoading] = useState(false);
 
   // ユーザー編集フォームの初期化
   useEffect(() => {
@@ -67,6 +70,30 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
         return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
       }
     });
+
+  // 不具合報告メモを取得
+  const loadErrorReports = async () => {
+    setErrorReportsLoading(true);
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('/api/admin/error-reports', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setErrorReports(data.errorReports || []);
+      } else {
+        console.error('Failed to load error reports');
+      }
+    } catch (error) {
+      console.error('Error loading error reports:', error);
+    } finally {
+      setErrorReportsLoading(false);
+    }
+  };
 
   // フォーム送信処理
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -201,6 +228,19 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
               >
                 <i className="bi bi-code-slash"></i>
                 ソースコード
+              </button>
+              <button
+                onClick={() => {
+                  setShowErrorReports(!showErrorReports);
+                  if (!showErrorReports) {
+                    loadErrorReports();
+                  }
+                }}
+                className="error-reports-button"
+                title="不具合報告一覧を表示"
+              >
+                <i className="bi bi-bug"></i>
+                不具合報告
               </button>
             </div>
           </div>
@@ -399,6 +439,78 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                   </div>
                 </form>
               </div>
+            </div>
+          )}
+
+          {/* 不具合報告メモ一覧 */}
+          {showErrorReports && (
+            <div className="error-reports-section">
+              <div className="error-reports-header">
+                <h3>
+                  <i className="bi bi-bug"></i>
+                  不具合報告一覧
+                </h3>
+                <button
+                  onClick={loadErrorReports}
+                  className="refresh-button"
+                  title="不具合報告を更新"
+                >
+                  <i className="bi bi-arrow-clockwise"></i>
+                </button>
+              </div>
+
+              {errorReportsLoading ? (
+                <div className="loading-message">
+                  <i className="bi bi-hourglass-split"></i>
+                  不具合報告を読み込み中...
+                </div>
+              ) : errorReports.length === 0 ? (
+                <div className="no-data-message">
+                  <i className="bi bi-info-circle"></i>
+                  不具合報告はありません
+                </div>
+              ) : (
+                <div className="error-reports-list">
+                  {errorReports.map((report) => (
+                    <div key={report.id} className="error-report-item">
+                      <div className="error-report-header">
+                        <h4 className="error-report-title">
+                          {report.title}
+                        </h4>
+                        <div className="error-report-meta">
+                          <span className="error-report-author">
+                            <i className="bi bi-person"></i>
+                            {report.author}
+                          </span>
+                          <span className="error-report-date">
+                            <i className="bi bi-calendar"></i>
+                            {formatDateTime(report.createdAt)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="error-report-content">
+                        <p>{report.content}</p>
+                      </div>
+                      {report.replies && report.replies.length > 0 && (
+                        <div className="error-report-replies">
+                          <h5>返信 ({report.replies.length}件)</h5>
+                          {report.replies.map((reply: any) => (
+                            <div key={reply.id} className="error-report-reply">
+                              <div className="reply-header">
+                                <span className="reply-author">{reply.author}</span>
+                                <span className="reply-date">
+                                  {formatDateTime(reply.createdAt)}
+                                </span>
+                              </div>
+                              <p className="reply-content">{reply.content}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
