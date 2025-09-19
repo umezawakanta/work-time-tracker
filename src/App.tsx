@@ -5053,6 +5053,7 @@ function App() {
                     loadMemos={loadMemos}
                     closeOtherFeatures={closeOtherFeatures}
                     handleDeleteMemo={handleDeleteMemo}
+                    handleCreateMemo={handleCreateMemo}
                     handleUpdateMemo={handleUpdateMemo}
                     editingMemo={editingMemo}
                     setEditingMemo={setEditingMemo}

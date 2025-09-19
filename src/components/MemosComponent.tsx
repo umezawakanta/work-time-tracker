@@ -12,6 +12,7 @@ interface MemosComponentProps {
   loadMemos: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
   handleDeleteMemo: (memoId: string, memoTitle: string) => void;
+  handleCreateMemo: (e: React.FormEvent) => void;
   handleUpdateMemo: (e: React.FormEvent) => void;
   editingMemo: Memo | null;
   setEditingMemo: (memo: Memo | null) => void;
@@ -45,6 +46,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   loadMemos,
   closeOtherFeatures,
   handleDeleteMemo,
+  handleCreateMemo,
   handleUpdateMemo,
   editingMemo,
   setEditingMemo,
@@ -285,7 +287,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
           {/* メモフォーム */}
           {showMemoForm && (
             <form
-              onSubmit={handleUpdateMemo}
+              onSubmit={editingMemo ? handleUpdateMemo : handleCreateMemo}
               className="memo-form"
             >
               <div className="form-group">
@@ -357,6 +359,21 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
 
           {/* メモ一覧 */}
           <div className="memos-list">
+            <div className="memos-actions">
+              <button
+                onClick={() => {
+                  setMemoTitle("");
+                  setMemoContent("");
+                  setMemoCategory("");
+                  setMemoIsPublic(false);
+                  setShowMemoForm(true);
+                }}
+                className="create-memo-button"
+              >
+                <i className="bi bi-plus-circle"></i> 新しいメモを作成
+              </button>
+            </div>
+            
             <div className="memos-filters">
               <select
                 value={selectedMemoCategory}
