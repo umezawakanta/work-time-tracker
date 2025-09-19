@@ -527,7 +527,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                           <i className="bi bi-pencil"></i> 編集
                         </button>
                         <button
-                          onClick={() => handleDeleteIncomeExpenseRecord(record.id)}
+                          onClick={() => handleDeleteIncomeExpenseRecord(record._id)}
                           className="delete-button"
                         >
                           <i className="bi bi-trash"></i> 削除
@@ -570,7 +570,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                           <i className="bi bi-pencil"></i> 編集
                         </button>
                         <button
-                          onClick={() => handleDeleteIncomeExpenseRecord(record.id)}
+                          onClick={() => handleDeleteIncomeExpenseRecord(record._id)}
                           className="delete-button"
                         >
                           <i className="bi bi-trash"></i> 削除

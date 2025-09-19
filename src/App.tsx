@@ -33,6 +33,8 @@ import {
 import LanguageFontSettings from "./components/LanguageFontSettings";
 import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
 import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
+import { setErrorReportCallback, reportApiError } from "./utils/apiClient";
+import type { ApiErrorInfo } from "./utils/apiErrorHandler";
 
 import type {
   User,
@@ -2171,7 +2173,8 @@ function App() {
 
   const handleDeleteIncomeExpenseRecord = async (id: string) => {
     try {
-      const response = await fetch(`/api/work-records/salary?id=${id}`, {
+      const { apiFetch } = await import("./utils/apiClient");
+      const response = await apiFetch(`/api/work-records/salary?id=${id}`, {
         method: "DELETE",
       });
 
@@ -2183,6 +2186,7 @@ function App() {
         setMessage(`エラー: ${data.message}`);
       }
     } catch (error) {
+      // APIエラーの場合は自動的にエラー報告モーダルが表示される
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -3112,6 +3116,11 @@ function App() {
     }
   }, [memos, publicMemos, isLoggedIn]);
 
+  // APIエラー報告コールバックを設定
+  useEffect(() => {
+    setErrorReportCallback(handleApiErrorReport);
+  }, []);
+
   // ログイン状態が変更された時にデータを読み込み
   useEffect(() => {
     if (isLoggedIn && user?.id) {
@@ -3763,6 +3772,11 @@ function App() {
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
     }
+  };
+
+  // APIエラー報告のハンドラー
+  const handleApiErrorReport = (errorInfo: ApiErrorInfo) => {
+    reportApiError(errorInfo, handleErrorReport);
   };
 
   // エラー報告の送信処理
