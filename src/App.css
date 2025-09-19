@@ -8836,6 +8836,7 @@ input:checked + .toggle-slider:before {
   gap: 0.5rem;
   font-weight: 600;
   color: #2c3e50;
+  margin-right: 150px;
 }
 
 .version-display:hover {

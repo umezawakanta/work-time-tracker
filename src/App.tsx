@@ -5072,6 +5072,8 @@ function App() {
                     handleDeleteReply={handleDeleteReply}
                     replyContent={replyContent}
                     setReplyContent={setReplyContent}
+                    replyingToMemo={replyingToMemo}
+                    setReplyingToMemo={setReplyingToMemo}
                   />
                 );
               } else if (feature.id === "public-memos") {
