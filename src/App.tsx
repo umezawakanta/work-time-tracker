@@ -1952,7 +1952,7 @@ function App() {
           transportation: 0,
           miscellaneous: 0,
           other: 0,
-          memo: incomeExpenseNotes,
+          notes: incomeExpenseNotes,
         }),
       });
 
@@ -1998,7 +1998,7 @@ function App() {
             transportation: 0,
             miscellaneous: 0,
             other: 0,
-            memo: incomeExpenseNotes,
+            notes: incomeExpenseNotes,
           }),
         }
       );
@@ -2705,7 +2705,7 @@ function App() {
     setIncomeExpenseDate(record.date.split("T")[0]);
     setIncomeExpenseAmount(Math.abs(record.salary).toString()); // 絶対値で表示
     setIncomeExpenseType(record.salary >= 0 ? "income" : "expense"); // 正負に基づいてタイプを設定
-    setIncomeExpenseNotes(record.memo || "");
+    setIncomeExpenseNotes(record.notes || "");
     setEditingIncomeExpenseRecord(record);
     setShowIncomeExpenseForm(true);
     setShowDiaryForm(false);

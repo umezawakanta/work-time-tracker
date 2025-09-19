@@ -516,7 +516,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                           })}
                         </span>
                       </div>
-                      {record.notes && (
+                      {record.notes && record.notes.trim() && (
                         <p className="record-notes">{record.notes}</p>
                       )}
                       <div className="record-actions">
@@ -559,7 +559,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                           })}
                         </span>
                       </div>
-                      {record.notes && (
+                      {record.notes && record.notes.trim() && (
                         <p className="record-notes">{record.notes}</p>
                       )}
                       <div className="record-actions">
