@@ -50,8 +50,8 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
     });
 
     // 基本統計を計算
-    const totalIncome = periodIncomeRecords.length > 0 ? periodIncomeRecords.reduce((sum, record) => sum + (record.amount || 0), 0) : 0;
-    const totalExpense = periodExpenseRecords.length > 0 ? periodExpenseRecords.reduce((sum, record) => sum + (record.amount || 0), 0) : 0;
+    const totalIncome = periodIncomeRecords.length > 0 ? periodIncomeRecords.reduce((sum, record) => sum + (record.salary || 0), 0) : 0;
+    const totalExpense = periodExpenseRecords.length > 0 ? periodExpenseRecords.reduce((sum, record) => sum + (record.salary || 0), 0) : 0;
     const netIncome = totalIncome - totalExpense;
 
     // 日記の統計
@@ -308,7 +308,7 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
                       <div key={record._id || index} className="recent-item">
                         <div className="recent-date">{formatDateTime(record.date)}</div>
                         <div className={`recent-amount ${record.type === 'income' ? 'income' : 'expense'}`}>
-                          {record.type === 'income' ? '+' : '-'}{formatCurrency(record.amount || 0)}
+                          {record.type === 'income' ? '+' : '-'}{formatCurrency(record.salary || 0)}
                         </div>
                         <div className="recent-type">{record.type === 'income' ? '収入記録' : '支出記録'}</div>
                       </div>

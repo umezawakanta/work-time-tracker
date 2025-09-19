@@ -2581,9 +2581,9 @@ function App() {
       const recordDate = new Date(record.date);
       if (recordDate >= startDate && recordDate <= endDate) {
         if (record.type === 'income') {
-          totalIncome += record.amount;
+          totalIncome += record.salary;
         } else if (record.type === 'expense') {
-          totalExpense += record.amount;
+          totalExpense += record.salary;
         }
       }
     });

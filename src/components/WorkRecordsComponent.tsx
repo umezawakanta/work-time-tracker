@@ -209,8 +209,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       return diaryDate.getFullYear() === year && diaryDate.getMonth() === month;
     });
     
-    const totalIncome = monthlyIncomeRecords.length > 0 ? monthlyIncomeRecords.reduce((sum, record) => sum + (record.amount || 0), 0) : 0;
-    const totalExpense = monthlyExpenseRecords.length > 0 ? monthlyExpenseRecords.reduce((sum, record) => sum + (record.amount || 0), 0) : 0;
+    const totalIncome = monthlyIncomeRecords.length > 0 ? monthlyIncomeRecords.reduce((sum, record) => sum + (record.salary || 0), 0) : 0;
+    const totalExpense = monthlyExpenseRecords.length > 0 ? monthlyExpenseRecords.reduce((sum, record) => sum + (record.salary || 0), 0) : 0;
     const netBalance = totalIncome - totalExpense;
     const averageMood = monthlyDiaries.length > 0 
       ? monthlyDiaries.reduce((sum, diary) => sum + (Number(diary.mood) || 0), 0) / monthlyDiaries.length 
@@ -413,7 +413,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                           <div className="income-amount">
                             <span className="amount-label">+</span>
                             <span className="amount-value">
-                              ¥{records.incomeRecords.reduce((sum, record) => sum + (record.amount || 0), 0).toLocaleString()}
+                              ¥{records.incomeRecords.reduce((sum, record) => sum + (record.salary || 0), 0).toLocaleString()}
                             </span>
                           </div>
                         )}
@@ -421,7 +421,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                           <div className="expense-amount">
                             <span className="amount-label">-</span>
                             <span className="amount-value">
-                              ¥{records.expenseRecords.reduce((sum, record) => sum + (record.amount || 0), 0).toLocaleString()}
+                              ¥{records.expenseRecords.reduce((sum, record) => sum + (record.salary || 0), 0).toLocaleString()}
                             </span>
                           </div>
                         )}
@@ -508,7 +508,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                   {selectedRecord.incomeRecords.map((record, index) => (
                     <div key={index} className="record-item">
                       <div className="record-header">
-                        <span className="record-amount income">¥{(record.amount || 0).toLocaleString()}</span>
+                        <span className="record-amount income">¥{(record.salary || 0).toLocaleString()}</span>
                         <span className="record-time">
                           {new Date(record.date).toLocaleTimeString('ja-JP', { 
                             hour: '2-digit', 
@@ -551,7 +551,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                   {selectedRecord.expenseRecords.map((record, index) => (
                     <div key={index} className="record-item">
                       <div className="record-header">
-                        <span className="record-amount expense">¥{(record.amount || 0).toLocaleString()}</span>
+                        <span className="record-amount expense">¥{(record.salary || 0).toLocaleString()}</span>
                         <span className="record-time">
                           {new Date(record.date).toLocaleTimeString('ja-JP', { 
                             hour: '2-digit', 
