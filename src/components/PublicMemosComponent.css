@@ -801,3 +801,15 @@
   font-size: 0.8rem;
   font-weight: 500;
 }
+
+.memo-updated {
+  color: #28a745;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.reply-author {
+  color: #495057;
+  font-size: 0.75rem;
+  font-weight: 500;
+}

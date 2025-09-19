@@ -419,8 +419,13 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                           {memo.category}
                         </span>
                         <span className="memo-date">
-                          {formatDateTime(memo.createdAt)}
+                          作成: {formatDateTime(memo.createdAt)}
                         </span>
+                        {memo.updatedAt && memo.updatedAt !== memo.createdAt && (
+                          <span className="memo-updated">
+                            更新: {formatDateTime(memo.updatedAt)}
+                          </span>
+                        )}
                         <span className="author-info">
                           by {memo.author || '匿名'}
                         </span>
@@ -491,6 +496,9 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                               <div className="reply-meta">
                                 <span className="reply-date">
                                   {formatDateTime(reply.createdAt)}
+                                </span>
+                                <span className="reply-author">
+                                  by {reply.author || '匿名'}
                                 </span>
                                 {user && (user.email === reply.authorEmail || user.role === 'admin') && (
                                   <div className="reply-actions">

@@ -449,7 +449,15 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                           {memo.category}
                         </span>
                         <span className="memo-date">
-                          {formatDateTime(memo.updatedAt)}
+                          作成: {formatDateTime(memo.createdAt)}
+                        </span>
+                        {memo.updatedAt !== memo.createdAt && (
+                          <span className="memo-updated">
+                            更新: {formatDateTime(memo.updatedAt)}
+                          </span>
+                        )}
+                        <span className="memo-author">
+                          by {memo.author || 'あなた'}
                         </span>
                         {!memo.isPublic && (
                           <span className="private-badge"><i className="bi bi-lock"></i> プライベート</span>
@@ -509,6 +517,9 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                               <div className="reply-meta">
                                 <span className="reply-date">
                                   {formatDateTime(reply.createdAt)}
+                                </span>
+                                <span className="reply-author">
+                                  by {reply.author || 'あなた'}
                                 </span>
                                 <div className="reply-actions">
                                   <button
