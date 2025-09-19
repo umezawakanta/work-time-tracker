@@ -61,6 +61,12 @@
   margin-bottom: 1.5rem;
 }
 
+.admin-panel-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
 .refresh-button {
   background: #28a745;
   color: white;
@@ -70,10 +76,33 @@
   cursor: pointer;
   font-size: 0.9rem;
   transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .refresh-button:hover {
   background: #218838;
+}
+
+.source-code-button {
+  background: #6f42c1;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.source-code-button:hover {
+  background: #5a32a3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);
 }
 
 /* 統計カード */

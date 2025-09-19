@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './AdminPanelComponent.css';
 import type { AdminUser } from '../types';
+import SourceCodeViewer from './SourceCodeViewer';
 
 interface AdminPanelComponentProps {
   showAdminPanel: boolean;
@@ -34,6 +35,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'email' | 'role' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [showSourceCodeViewer, setShowSourceCodeViewer] = useState(false);
 
   // ユーザー編集フォームの初期化
   useEffect(() => {
@@ -184,13 +186,23 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
       {showAdminPanel && (
         <div className="admin-panel-content">
           <div className="admin-panel-header">
-            <button
-              onClick={loadAdminUsers}
-              className="refresh-button"
-              title="ユーザー一覧を更新"
-            >
-              🔄
-            </button>
+            <div className="admin-panel-actions">
+              <button
+                onClick={loadAdminUsers}
+                className="refresh-button"
+                title="ユーザー一覧を更新"
+              >
+                <i className="bi bi-arrow-clockwise"></i>
+              </button>
+              <button
+                onClick={() => setShowSourceCodeViewer(true)}
+                className="source-code-button"
+                title="ソースコード一覧を表示"
+              >
+                <i className="bi bi-code-slash"></i>
+                ソースコード
+              </button>
+            </div>
           </div>
 
           {/* 統計カード */}
@@ -391,6 +403,12 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
           )}
         </div>
       )}
+
+      {/* ソースコード閲覧モーダル */}
+      <SourceCodeViewer
+        isOpen={showSourceCodeViewer}
+        onClose={() => setShowSourceCodeViewer(false)}
+      />
     </div>
   );
 };
