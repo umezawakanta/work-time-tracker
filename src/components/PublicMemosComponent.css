@@ -762,6 +762,47 @@
   margin-left: 1rem;
 }
 
+/* フィルター情報表示 */
+.filter-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1976d2;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.clear-date-filter-button {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.clear-date-filter-button:hover {
+  background: #d32f2f;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
   .public-memos-content {

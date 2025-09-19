@@ -47,10 +47,21 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   const [editingReplyContent, setEditingReplyContent] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  // 日付フィルタリング用の状態
+  const [filterByDate, setFilterByDate] = useState<Date | null>(null);
 
   // ページネーション用の関数
   const getPaginatedMemos = () => {
     let filteredMemos = publicMemos || [];
+    
+    // 日付でフィルタリング
+    if (filterByDate) {
+      const filterDateString = filterByDate.toDateString();
+      filteredMemos = filteredMemos.filter(memo => {
+        const memoDate = new Date(memo.createdAt).toDateString();
+        return memoDate === filterDateString;
+      });
+    }
     
     // カテゴリでフィルタリング
     if (selectedPublicMemoCategory !== "all") {
@@ -74,6 +85,15 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   const getTotalPages = () => {
     let filteredMemos = publicMemos || [];
+    
+    // 日付でフィルタリング
+    if (filterByDate) {
+      const filterDateString = filterByDate.toDateString();
+      filteredMemos = filteredMemos.filter(memo => {
+        const memoDate = new Date(memo.createdAt).toDateString();
+        return memoDate === filterDateString;
+      });
+    }
     
     // カテゴリでフィルタリング
     if (selectedPublicMemoCategory !== "all") {
@@ -318,7 +338,11 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                     <div
                       key={index}
                       className={`calendar-day ${isCurrentMonth ? 'current-month' : 'other-month'} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${memosForDate.length > 0 ? 'has-memos' : ''}`}
-                      onClick={() => setPublicMemoSelectedDate(date)}
+                      onClick={() => {
+                        setPublicMemoSelectedDate(date);
+                        setFilterByDate(date);
+                        setCurrentPage(1); // ページを1にリセット
+                      }}
                     >
                       <span className="day-number">{date.getDate()}</span>
                       {memosForDate.length > 0 && (
@@ -376,11 +400,12 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
               </select>
             </div>
             
-            {(selectedPublicMemoCategory !== "all" || publicMemoSearchTerm) && (
+            {(selectedPublicMemoCategory !== "all" || publicMemoSearchTerm || filterByDate) && (
               <button
                 onClick={() => {
                   setSelectedPublicMemoCategory("all");
                   setPublicMemoSearchTerm("");
+                  setFilterByDate(null);
                   setCurrentPage(1);
                   loadPublicMemos();
                 }}
@@ -391,6 +416,30 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
               </button>
             )}
           </div>
+
+          {/* フィルター情報表示 */}
+          {filterByDate && (
+            <div className="filter-info">
+              <span className="filter-label">
+                <i className="bi bi-calendar"></i>
+                日付フィルター: {filterByDate.toLocaleDateString('ja-JP', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+              </span>
+              <button
+                onClick={() => {
+                  setFilterByDate(null);
+                  setCurrentPage(1);
+                }}
+                className="clear-date-filter-button"
+                title="日付フィルターをクリア"
+              >
+                <i className="bi bi-x"></i>
+              </button>
+            </div>
+          )}
 
           {/* ページネーション（上部） */}
           {getTotalPages() > 1 && (
