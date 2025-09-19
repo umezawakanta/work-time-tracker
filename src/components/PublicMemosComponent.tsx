@@ -471,7 +471,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                           </span>
                         )}
                         <span className="author-info">
-                          by {memo.author || user?.displayName || '匿名'}
+                          by {memo.author || '匿名'}
                         </span>
                         {memo.postType === 'update_request' && (
                           <span className="update-request-badge"><i className="bi bi-lightbulb"></i> 更新要望</span>
@@ -542,7 +542,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                                   {formatDateTime(reply.createdAt)}
                                 </span>
                                 <span className="reply-author">
-                                  by {reply.author || user?.displayName || '匿名'}
+                                  by {reply.author || '匿名'}
                                 </span>
                                 {user && (user.email === reply.authorEmail || user.role === 'admin') && (
                                   <div className="reply-actions">
