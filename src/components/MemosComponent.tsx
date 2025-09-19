@@ -12,6 +12,7 @@ interface MemosComponentProps {
   loadMemos: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
   handleDeleteMemo: (memoId: string, memoTitle: string) => void;
+  user: any;
   handleCreateMemo: (e: React.FormEvent) => void;
   handleUpdateMemo: (e: React.FormEvent) => void;
   editingMemo: Memo | null;
@@ -44,6 +45,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   showMemos,
   setShowMemos,
   customGenres,
+  user,
   setCustomGenres,
   loadMemos,
   closeOtherFeatures,
@@ -501,7 +503,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                           </span>
                         )}
                         <span className="memo-author">
-                          by {memo.author || 'あなた'}
+                          by {memo.author || user?.displayName || 'あなた'}
                         </span>
                         {!memo.isPublic && (
                           <span className="private-badge"><i className="bi bi-lock"></i> プライベート</span>
@@ -563,7 +565,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                                   {formatDateTime(reply.createdAt)}
                                 </span>
                                 <span className="reply-author">
-                                  by {reply.author || 'あなた'}
+                                  by {reply.author || user?.displayName || 'あなた'}
                                 </span>
                                 <div className="reply-actions">
                                   <button

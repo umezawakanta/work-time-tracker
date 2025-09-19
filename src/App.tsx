@@ -5128,6 +5128,7 @@ function App() {
                     loadMemos={loadMemos}
                     closeOtherFeatures={closeOtherFeatures}
                     handleDeleteMemo={handleDeleteMemo}
+                    user={user}
                     handleCreateMemo={handleCreateMemo}
                     handleUpdateMemo={handleUpdateMemo}
                     editingMemo={editingMemo}
