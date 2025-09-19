@@ -39,6 +39,15 @@ const setCorsHeaders = (res) => {
 
 const handleRequest = async (req, res) => {
   try {
+    // リクエストオブジェクトの存在チェック
+    if (!req) {
+      console.error('Request object is undefined');
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid request'
+      });
+    }
+
     // データベース接続を確実にする
     await ensureDatabaseConnection();
     
@@ -46,13 +55,14 @@ const handleRequest = async (req, res) => {
 
     // 認証チェック（オプション - エラーレポートは公開可能）
     let userInfo = null;
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      try {
-        const token = authHeader.substring(7);
-        userInfo = await verifyJWT(token);
-      } catch (authError) {
-        console.log('Authentication failed, proceeding without auth:', authError.message);
+    if (req.headers && req.headers.authorization) {
+      const authHeader = req.headers.authorization;
+      if (authHeader.startsWith('Bearer ')) {
+        try {
+          userInfo = await verifyJWT(req);
+        } catch (authError) {
+          console.log('Authentication failed, proceeding without auth:', authError.message);
+        }
       }
     }
 
@@ -159,6 +169,12 @@ const handleRequest = async (req, res) => {
 
 module.exports = async (req, res) => {
   try {
+    // リクエストとレスポンスオブジェクトの存在チェック
+    if (!req || !res) {
+      console.error('Request or response object is undefined');
+      return;
+    }
+
     setCorsHeaders(res);
 
     if (req.method === 'OPTIONS') {
@@ -170,14 +186,16 @@ module.exports = async (req, res) => {
     console.error('Error in error-reports module:', error);
     
     // レスポンスが既に送信されている場合は何もしない
-    if (res.headersSent) {
+    if (res && res.headersSent) {
       return;
     }
     
-    return res.status(500).json({ 
-      success: false, 
-      message: 'サーバーエラーが発生しました',
-      error: error.message 
-    });
+    if (res) {
+      return res.status(500).json({ 
+        success: false, 
+        message: 'サーバーエラーが発生しました',
+        error: error.message 
+      });
+    }
   }
 };
