@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './ReportsComponent.css';
-import type { SalaryRecord, WorkDiary } from '../types';
+import type { IncomeExpenseRecord, WorkDiary } from '../types';
 
 interface ReportsComponentProps {
   showReports: boolean;
   setShowReports: (show: boolean) => void;
-  salaryRecords: SalaryRecord[];
+  incomeExpenseRecords: IncomeExpenseRecord[];
   workDiaries: WorkDiary[];
   reportsLoading: boolean;
   reportSummary: any;
@@ -16,7 +16,7 @@ interface ReportsComponentProps {
 const ReportsComponent: React.FC<ReportsComponentProps> = ({
   showReports,
   setShowReports,
-  salaryRecords,
+  incomeExpenseRecords,
   workDiaries,
   reportsLoading,
   reportSummary,
@@ -34,9 +34,14 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
     const month = selectedMonth;
 
     // 選択された期間のデータをフィルタリング
-    const periodSalaryRecords = salaryRecords.filter(record => {
+    const periodIncomeRecords = incomeExpenseRecords.filter(record => {
       const recordDate = new Date(record.date);
-      return recordDate.getFullYear() === year && recordDate.getMonth() + 1 === month;
+      return recordDate.getFullYear() === year && recordDate.getMonth() + 1 === month && record.type === 'income';
+    });
+
+    const periodExpenseRecords = incomeExpenseRecords.filter(record => {
+      const recordDate = new Date(record.date);
+      return recordDate.getFullYear() === year && recordDate.getMonth() + 1 === month && record.type === 'expense';
     });
 
     const periodWorkDiaries = workDiaries.filter(diary => {
@@ -45,11 +50,9 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
     });
 
     // 基本統計を計算
-    const totalSalary = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.salary || 0), 0) : 0;
-    const totalOvertime = 0; // overtimeプロパティが存在しないため0に設定
-    const totalBonus = 0; // bonusプロパティが存在しないため0に設定
-    const totalMiscellaneous = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.miscellaneous || 0), 0) : 0;
-    const totalOther = periodSalaryRecords.length > 0 ? periodSalaryRecords.reduce((sum, record) => sum + (record.other || 0), 0) : 0;
+    const totalIncome = periodIncomeRecords.length > 0 ? periodIncomeRecords.reduce((sum, record) => sum + (record.amount || 0), 0) : 0;
+    const totalExpense = periodExpenseRecords.length > 0 ? periodExpenseRecords.reduce((sum, record) => sum + (record.amount || 0), 0) : 0;
+    const netIncome = totalIncome - totalExpense;
 
     // 日記の統計
     const totalDiaries = periodWorkDiaries.length;
@@ -61,15 +64,14 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
     const categoryStats = {} as Record<string, number>;
 
     return {
-      totalSalary,
-      totalOvertime,
-      totalBonus,
-      totalMiscellaneous,
-      totalOther,
+      totalIncome,
+      totalExpense,
+      netIncome,
       totalDiaries,
       averageMood,
       categoryStats,
-      recordCount: periodSalaryRecords.length,
+      incomeRecordCount: periodIncomeRecords.length,
+      expenseRecordCount: periodExpenseRecords.length,
       diaryCount: periodWorkDiaries.length
     };
   };
@@ -299,14 +301,16 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
               <div className="report-card recent-records">
                 <h3>🕒 最近の記録</h3>
                 <div className="recent-list">
-                  {salaryRecords
+                  {incomeExpenseRecords
                     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                     .slice(0, 5)
                     .map((record, index) => (
                       <div key={record._id || index} className="recent-item">
                         <div className="recent-date">{formatDateTime(record.date)}</div>
-                        <div className="recent-amount">{formatCurrency(record.salary || 0)}</div>
-                        <div className="recent-type">給与記録</div>
+                        <div className={`recent-amount ${record.type === 'income' ? 'income' : 'expense'}`}>
+                          {record.type === 'income' ? '+' : '-'}{formatCurrency(record.amount || 0)}
+                        </div>
+                        <div className="recent-type">{record.type === 'income' ? '収入記録' : '支出記録'}</div>
                       </div>
                     ))}
                   {workDiaries

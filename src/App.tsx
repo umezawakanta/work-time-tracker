@@ -1801,7 +1801,7 @@ function App() {
         setOther("");
         setSalaryMemo("");
         setRecordType("income");
-        setShowSalaryForm(false);
+        setShowIncomeExpenseForm(false);
         loadSalaryRecords();
       } else {
         setMessage(`エラー: ${data.message}`);
@@ -1852,7 +1852,7 @@ function App() {
         setSalaryMemo("");
         setRecordType("income");
         setEditingSalaryRecord(null);
-        setShowSalaryForm(false);
+        setShowIncomeExpenseForm(false);
         loadSalaryRecords();
       } else {
         setMessage(`エラー: ${data.message}`);
@@ -2418,19 +2418,14 @@ function App() {
     let totalIncome = 0;
     let totalExpense = 0;
 
-    salaryRecords.forEach((record) => {
+    incomeExpenseRecords.forEach((record) => {
       const recordDate = new Date(record.date);
       if (recordDate >= startDate && recordDate <= endDate) {
-        if (record.salary > 0) {
-          totalIncome += record.salary;
-        } else {
-          totalExpense += Math.abs(record.salary);
+        if (record.type === 'income') {
+          totalIncome += record.amount;
+        } else if (record.type === 'expense') {
+          totalExpense += record.amount;
         }
-
-        // 交通費、雑費、その他も収入として計算
-        if (record.transportation > 0) totalIncome += record.transportation;
-        if (record.miscellaneous > 0) totalIncome += record.miscellaneous;
-        if (record.other > 0) totalIncome += record.other;
       }
     });
 
@@ -2440,7 +2435,7 @@ function App() {
       totalIncome,
       totalExpense,
       netIncome,
-      recordCount: (salaryRecords || []).filter((record) => {
+      recordCount: (incomeExpenseRecords || []).filter((record) => {
         const recordDate = new Date(record.date);
         return recordDate >= startDate && recordDate <= endDate;
       }).length,
@@ -2463,7 +2458,7 @@ function App() {
       .toISOString()
       .split("T")[0];
 
-    const filteredSalaryRecords = (salaryRecords || []).filter((record) => {
+    const filteredIncomeExpenseRecords = (incomeExpenseRecords || []).filter((record) => {
       // データベースの日付を日本時間に変換して比較
       const recordDate = new Date(record.date);
       const recordJstDateStr = new Date(
@@ -2483,10 +2478,10 @@ function App() {
       return diaryJstDateStr === jstDateStr;
     });
 
-    return { salaryRecords: filteredSalaryRecords, diaries: filteredDiaries };
+    return { incomeExpenseRecords: filteredIncomeExpenseRecords, diaries: filteredDiaries };
   };
 
-  const handleRecordClick = (type: "salary" | "diary", date: Date) => {
+  const handleRecordClick = (type: "income" | "expense" | "diary", date: Date) => {
     // 日本時間での日付文字列を取得
     const jstDateStr = new Date(date.getTime() + 9 * 60 * 60 * 1000)
       .toISOString()
@@ -2496,28 +2491,35 @@ function App() {
     // その日の記録を取得
     const dayRecords = getRecordsForDate(date);
 
-    if (type === "salary" && dayRecords.salaryRecords.length > 0) {
-      setSelectedRecord(dayRecords.salaryRecords[0]);
-      setSelectedRecordType("salary");
+    if (type === "income" && dayRecords.incomeExpenseRecords.filter(r => r.type === 'income').length > 0) {
+      setSelectedRecord(dayRecords.incomeExpenseRecords.filter(r => r.type === 'income')[0]);
+      setSelectedRecordType("income");
       setShowRecordDetail(true);
-      setShowSalaryForm(false);
+      setShowIncomeExpenseForm(false);
+      setShowDiaryForm(false);
+      setShowCalendar(false);
+    } else if (type === "expense" && dayRecords.incomeExpenseRecords.filter(r => r.type === 'expense').length > 0) {
+      setSelectedRecord(dayRecords.incomeExpenseRecords.filter(r => r.type === 'expense')[0]);
+      setSelectedRecordType("expense");
+      setShowRecordDetail(true);
+      setShowIncomeExpenseForm(false);
       setShowDiaryForm(false);
       setShowCalendar(false);
     } else if (type === "diary" && dayRecords.diaries.length > 0) {
       setSelectedRecord(dayRecords.diaries[0]);
       setSelectedRecordType("diary");
       setShowRecordDetail(true);
-      setShowSalaryForm(false);
+      setShowIncomeExpenseForm(false);
       setShowDiaryForm(false);
       setShowCalendar(false);
     }
   };
 
-  const handleSpecificRecordClick = (record: any, type: "salary" | "diary") => {
+  const handleSpecificRecordClick = (record: any, type: "income" | "expense" | "diary") => {
     setSelectedRecord(record);
     setSelectedRecordType(type);
     setShowRecordDetail(true);
-    setShowSalaryForm(false);
+    setShowIncomeExpenseForm(false);
     setShowDiaryForm(false);
     setShowCalendar(false);
   };
@@ -2526,7 +2528,7 @@ function App() {
     setSelectedRecord(record);
     setSelectedRecordType("salary");
     setShowRecordDetail(true);
-    setShowSalaryForm(false);
+    setShowIncomeExpenseForm(false);
     setShowDiaryForm(false);
     setShowCalendar(false);
   };
@@ -2535,7 +2537,7 @@ function App() {
     setSelectedRecord(diary);
     setSelectedRecordType("diary");
     setShowRecordDetail(true);
-    setShowSalaryForm(false);
+    setShowIncomeExpenseForm(false);
     setShowDiaryForm(false);
     setShowCalendar(false);
   };
@@ -2549,7 +2551,7 @@ function App() {
     setSalaryMemo(record.memo || "");
     setRecordType(record.salary >= 0 ? "income" : "expense"); // 正負に基づいてタイプを設定
     setEditingSalaryRecord(record);
-    setShowSalaryForm(true);
+    setShowIncomeExpenseForm(true);
     setShowDiaryForm(false);
     setShowCalendar(false);
   };
@@ -2579,7 +2581,7 @@ function App() {
     setNewNextGoal("");
     setEditingDiary(diary);
     setShowDiaryForm(true);
-    setShowSalaryForm(false);
+    setShowIncomeExpenseForm(false);
     setShowCalendar(false);
   };
 
@@ -2679,7 +2681,7 @@ function App() {
 
   // 日記フォームを開く関数
   const openDiaryForm = () => {
-    setShowSalaryForm(false);
+    setShowIncomeExpenseForm(false);
     setShowDiaryForm(true);
     setShowCalendar(false);
     setShowWorkRecords(true);
@@ -5042,7 +5044,7 @@ function App() {
                     key={feature.id}
                     showReports={showReports}
                     setShowReports={setShowReports}
-                    salaryRecords={salaryRecords}
+                    incomeExpenseRecords={incomeExpenseRecords}
                     workDiaries={workDiaries}
                     reportsLoading={reportsLoading}
                     reportSummary={reportSummary}
