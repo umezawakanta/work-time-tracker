@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './WorkRecordsComponent.css';
 import type { IncomeExpenseRecord, WorkDiary, User } from '../types';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 interface WorkRecordsComponentProps {
   showWorkRecords: boolean;
@@ -154,6 +155,14 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   cancelEditingMonthlyMemo,
   closeOtherFeatures,
 }) => {
+  // 削除確認モーダルの状態
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    name: string;
+    type: string;
+  } | null>(null);
+
   // カレンダーの日付を生成
   const getCalendarDays = () => {
     const year = currentMonth.getFullYear();
@@ -283,6 +292,23 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   const removeArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, index: number) => {
     setter(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // 削除確認モーダルのハンドラー
+  const handleDeleteClick = (id: string, name: string, type: string) => {
+    setDeleteTarget({ id, name, type });
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deleteTarget) {
+      handleDeleteIncomeExpenseRecord(deleteTarget.id);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
   };
 
   const monthlySummary = currentMonth ? getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth()) : { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
@@ -527,7 +553,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                           <i className="bi bi-pencil"></i> 編集
                         </button>
                         <button
-                          onClick={() => handleDeleteIncomeExpenseRecord(record._id)}
+                          onClick={() => handleDeleteClick(record._id, `収入記録 (¥${(record.salary || 0).toLocaleString()})`, '収入記録')}
                           className="delete-button"
                         >
                           <i className="bi bi-trash"></i> 削除
@@ -570,7 +596,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                           <i className="bi bi-pencil"></i> 編集
                         </button>
                         <button
-                          onClick={() => handleDeleteIncomeExpenseRecord(record._id)}
+                          onClick={() => handleDeleteClick(record._id, `支出記録 (¥${(record.salary || 0).toLocaleString()})`, '支出記録')}
                           className="delete-button"
                         >
                           <i className="bi bi-trash"></i> 削除
@@ -957,6 +983,17 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           </div>
         </div>
       )}
+
+      {/* 削除確認モーダル */}
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="収支記録の削除"
+        message="この収支記録を削除してもよろしいですか？削除した記録は復元できません。"
+        itemName={deleteTarget?.name || ''}
+        itemType={deleteTarget?.type || ''}
+      />
     </div>
   );
 };
