@@ -32,6 +32,7 @@ import {
 } from "./constants/fonts";
 import LanguageFontSettings from "./components/LanguageFontSettings";
 import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
+import ErrorReportingModal from "./components/ErrorReportingModal";
 
 import type {
   User,
@@ -64,6 +65,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [isRegisterMode, setIsRegisterMode] = useState(false);
+
+  // エラー報告関連の状態
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [currentError, setCurrentError] = useState<Error | null>(null);
 
   // 各機能のローディング状態
   const [memosLoading, setMemosLoading] = useState(false);
@@ -1065,6 +1070,30 @@ function App() {
 
     return visibleFeatures;
   };
+
+  // グローバルエラーハンドリング
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      console.error('グローバルエラーが発生しました:', event.error);
+      setCurrentError(event.error);
+      setShowErrorModal(true);
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('未処理のPromise拒否が発生しました:', event.reason);
+      const error = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
+      setCurrentError(error);
+      setShowErrorModal(true);
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
 
   // フォント設定の読み込みと適用
   useEffect(() => {
@@ -3583,6 +3612,51 @@ function App() {
     }
   };
 
+  // エラー報告の送信処理
+  const handleErrorReport = async (errorReport: {
+    title: string;
+    content: string;
+    errorDetails: string;
+    userAgent: string;
+    timestamp: string;
+  }) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      
+      // エラー報告を公開メモとして投稿
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: `[エラー報告] ${errorReport.title}`,
+          content: `${errorReport.content}\n\n--- エラー詳細 ---\n${errorReport.errorDetails}\n\n--- システム情報 ---\nUser Agent: ${errorReport.userAgent}\n発生時刻: ${errorReport.timestamp}`,
+          category: "エラー報告",
+          tags: ["エラー", "バグ報告", "システム"],
+          isPublic: true,
+          isFamilyOnly: false,
+          isAdminOnly: false,
+          postType: "update_request"
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("エラー報告を送信しました。開発者が確認します。");
+        loadMemos(); // メモ一覧を更新
+        loadPublicMemos(); // 公開メモ一覧を更新
+      } else {
+        setMessage(`エラー報告の送信に失敗しました: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("エラー報告の送信に失敗しました:", error);
+      setMessage("エラー報告の送信に失敗しました。もう一度お試しください。");
+    }
+  };
+
   // 公開メモ用のカレンダー関数
   const getPublicMemosForDate = (date: Date) => {
     const dateString = date.toDateString();
@@ -5550,25 +5624,41 @@ function App() {
           setDiaryReminderSnoozeUntil={setDiaryReminderSnoozeUntil}
           onOpenDiaryForm={openDiaryForm}
         />
+
+        {/* エラー報告モーダル */}
+        <ErrorReportingModal
+          isOpen={showErrorModal}
+          onClose={() => setShowErrorModal(false)}
+          error={currentError}
+          onSubmit={handleErrorReport}
+        />
       </div>
     );
   }
 
   return (
-    <LoginForm
-      isRegisterMode={isRegisterMode}
-      setIsRegisterMode={setIsRegisterMode}
-      email={email}
-      setEmail={setEmail}
-      password={password}
-      setPassword={setPassword}
-      displayName={displayName}
-      setDisplayName={setDisplayName}
-      loading={loading}
-      message={message}
-      handleLogin={handleLogin}
-      handleRegister={handleRegister}
-    />
+    <>
+      <LoginForm
+        isRegisterMode={isRegisterMode}
+        setIsRegisterMode={setIsRegisterMode}
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        displayName={displayName}
+        setDisplayName={setDisplayName}
+        loading={loading}
+        message={message}
+        handleLogin={handleLogin}
+        handleRegister={handleRegister}
+      />
+      <ErrorReportingModal
+        isOpen={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        error={currentError}
+        onSubmit={handleErrorReport}
+      />
+    </>
   );
 }
 
