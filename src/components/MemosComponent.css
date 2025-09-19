@@ -136,6 +136,78 @@
   gap: 0.5rem;
 }
 
+.default-categories-section,
+.custom-categories-section {
+  margin-bottom: 1.5rem;
+}
+
+.default-categories-section h4,
+.custom-categories-section h4 {
+  margin: 0 0 0.75rem 0;
+  color: #495057;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.default-genre {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+}
+
+.genre-type {
+  background: #6c757d;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+.restore-genre-button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s ease;
+}
+
+.restore-genre-button:hover {
+  background: #218838;
+}
+
+.genre-management-actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.reset-all-genres-button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 auto;
+}
+
+.reset-all-genres-button:hover {
+  background: #c82333;
+}
+
 .genre-list {
   display: flex;
   flex-direction: column;

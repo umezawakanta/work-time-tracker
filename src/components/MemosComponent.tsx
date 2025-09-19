@@ -87,6 +87,11 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   // ページネーションの状態
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  // デフォルトカテゴリの削除状態管理
+  const [deletedDefaultCategories, setDeletedDefaultCategories] = useState<string[]>(() => {
+    const saved = localStorage.getItem("deletedDefaultCategories");
+    return saved ? JSON.parse(saved) : [];
+  });
 
   // ページネーション用の関数
   const getPaginatedMemos = () => {
@@ -131,7 +136,9 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
       "仕事", "学習", "趣味", "健康", "家族", "旅行", "読書", "映画", "音楽",
       "スポーツ", "料理", "要望、リクエスト", "その他",
     ];
-    return [...defaultGenres, ...customGenres];
+    // 削除されたデフォルトカテゴリを除外
+    const availableDefaultGenres = defaultGenres.filter(genre => !deletedDefaultCategories.includes(genre));
+    return [...availableDefaultGenres, ...customGenres];
   };
 
 
@@ -229,8 +236,57 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
           {showGenreManagement && (
             <div className="genre-management-section">
               <h3><i className="bi bi-tags"></i> ジャンル管理</h3>
-              <div className="genre-list">
-                {customGenres.map((genre, index) => (
+              
+              {/* デフォルトカテゴリセクション */}
+              <div className="default-categories-section">
+                <h4><i className="bi bi-star"></i> デフォルトカテゴリ</h4>
+                <div className="genre-list">
+                  {[
+                    "仕事", "学習", "趣味", "健康", "家族", "旅行", "読書", "映画", "音楽",
+                    "スポーツ", "料理", "要望、リクエスト", "その他",
+                  ].map((genre) => (
+                    <div key={`default-${genre}`} className="genre-item default-genre">
+                      <div className="genre-display">
+                        <span className="genre-name">{genre}</span>
+                        <span className="genre-type">デフォルト</span>
+                        <div className="genre-actions">
+                          {deletedDefaultCategories.includes(genre) ? (
+                            <button
+                              onClick={() => {
+                                const updated = deletedDefaultCategories.filter(cat => cat !== genre);
+                                setDeletedDefaultCategories(updated);
+                                localStorage.setItem("deletedDefaultCategories", JSON.stringify(updated));
+                              }}
+                              className="restore-genre-button"
+                              title="復元"
+                            >
+                              <i className="bi bi-arrow-clockwise"></i>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                const updated = [...deletedDefaultCategories, genre];
+                                setDeletedDefaultCategories(updated);
+                                localStorage.setItem("deletedDefaultCategories", JSON.stringify(updated));
+                              }}
+                              className="delete-genre-button"
+                              title="削除"
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* カスタムジャンルセクション */}
+              <div className="custom-categories-section">
+                <h4><i className="bi bi-plus-circle"></i> カスタムジャンル</h4>
+                <div className="genre-list">
+                  {customGenres.map((genre, index) => (
                   <div key={index} className="genre-item">
                     {editingGenre === genre ? (
                       <div className="genre-edit-form">
@@ -293,10 +349,27 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                       </div>
                     )}
                   </div>
-                ))}
-                {customGenres.length === 0 && (
-                  <p className="no-genres">カスタムジャンルがありません</p>
-                )}
+                  ))}
+                  {customGenres.length === 0 && (
+                    <p className="no-genres">カスタムジャンルがありません</p>
+                  )}
+                </div>
+              </div>
+
+              {/* リセットボタン */}
+              <div className="genre-management-actions">
+                <button
+                  onClick={() => {
+                    setDeletedDefaultCategories([]);
+                    setCustomGenres([]);
+                    localStorage.setItem("deletedDefaultCategories", JSON.stringify([]));
+                    localStorage.setItem("customGenres", JSON.stringify([]));
+                  }}
+                  className="reset-all-genres-button"
+                  title="すべてのカテゴリをリセット"
+                >
+                  <i className="bi bi-arrow-clockwise"></i> すべてリセット
+                </button>
               </div>
             </div>
           )}
