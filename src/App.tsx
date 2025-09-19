@@ -2683,9 +2683,9 @@ function App() {
       const recordDate = new Date(record.date);
       if (recordDate >= startDate && recordDate <= endDate) {
         if (record.type === 'income') {
-          totalIncome += record.salary;
+          totalIncome += record.amount;
         } else if (record.type === 'expense') {
-          totalExpense += record.salary;
+          totalExpense += record.amount;
         }
       }
     });
@@ -2805,8 +2805,8 @@ function App() {
 
   const editIncomeExpenseRecord = (record: any) => {
     setIncomeExpenseDate(record.date.split("T")[0]);
-    setIncomeExpenseAmount(Math.abs(record.salary).toString()); // 絶対値で表示
-    setIncomeExpenseType(record.salary >= 0 ? "income" : "expense"); // 正負に基づいてタイプを設定
+    setIncomeExpenseAmount(Math.abs(record.amount).toString()); // 絶対値で表示
+    setIncomeExpenseType(record.type === 'income' ? "income" : "expense"); // タイプに基づいて設定
     setIncomeExpenseNotes(record.notes || "");
     setEditingIncomeExpenseRecord(record);
     setShowIncomeExpenseForm(true);
