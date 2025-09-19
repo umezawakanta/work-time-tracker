@@ -299,8 +299,8 @@ function App() {
   const [selectedTheme, setSelectedTheme] = useState("default");
   const [showThemeSettings, setShowThemeSettings] = useState(false);
 
-  // カスタムジャンル管理の状態
-  const [customGenres, setCustomGenres] = useState<string[]>([]);
+  // カスタムカテゴリ管理の状態
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
   const [showGenreManager, setShowGenreManager] = useState(false);
   const [newGenreName, setNewGenreName] = useState("");
 
@@ -1379,14 +1379,14 @@ function App() {
     }
   }, []);
 
-  // カスタムジャンルの読み込み
+  // カスタムカテゴリの読み込み
   useEffect(() => {
-    const savedGenres = localStorage.getItem("customGenres");
-    if (savedGenres) {
+    const savedCategories = localStorage.getItem("customCategories");
+    if (savedCategories) {
       try {
-        setCustomGenres(JSON.parse(savedGenres));
+        setCustomCategories(JSON.parse(savedCategories));
       } catch (error) {
-        console.error("Failed to load custom genres:", error);
+        console.error("Failed to load custom categories:", error);
       }
     }
   }, []);
@@ -2852,22 +2852,22 @@ function App() {
     setCurrentDate(newDate);
   };
 
-  // カスタムジャンル管理関数
-  const handleAddGenre = () => {
-    if (newGenreName.trim() && !customGenres.includes(newGenreName.trim())) {
-      const updatedGenres = [...customGenres, newGenreName.trim()];
-      setCustomGenres(updatedGenres);
-      localStorage.setItem("customGenres", JSON.stringify(updatedGenres));
+  // カスタムカテゴリ管理関数
+  const handleAddCategory = () => {
+    if (newGenreName.trim() && !customCategories.includes(newGenreName.trim())) {
+      const updatedCategories = [...customCategories, newGenreName.trim()];
+      setCustomCategories(updatedCategories);
+      localStorage.setItem("customCategories", JSON.stringify(updatedCategories));
       setNewGenreName("");
     }
   };
 
-  const handleDeleteGenre = (genreToDelete: string) => {
-    const updatedGenres = customGenres.filter(
-      (genre) => genre !== genreToDelete
+  const handleDeleteCategory = (categoryToDelete: string) => {
+    const updatedCategories = customCategories.filter(
+      (category) => category !== categoryToDelete
     );
-    setCustomGenres(updatedGenres);
-    localStorage.setItem("customGenres", JSON.stringify(updatedGenres));
+    setCustomCategories(updatedCategories);
+    localStorage.setItem("customCategories", JSON.stringify(updatedCategories));
   };
 
   // ジャンル管理の追加関数
