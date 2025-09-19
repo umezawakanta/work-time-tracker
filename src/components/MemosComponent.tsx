@@ -84,13 +84,24 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
 
   // ページネーション用の関数
   const getPaginatedMemos = () => {
+    // カテゴリでフィルタリング
+    let filteredMemos = memos;
+    if (selectedMemoCategory !== "all") {
+      filteredMemos = memos.filter(memo => memo.category === selectedMemoCategory);
+    }
+    
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return memos.slice(startIndex, endIndex);
+    return filteredMemos.slice(startIndex, endIndex);
   };
 
   const getTotalPages = () => {
-    return Math.ceil(memos.length / itemsPerPage);
+    // カテゴリでフィルタリング
+    let filteredMemos = memos;
+    if (selectedMemoCategory !== "all") {
+      filteredMemos = memos.filter(memo => memo.category === selectedMemoCategory);
+    }
+    return Math.ceil(filteredMemos.length / itemsPerPage);
   };
 
   const handlePageChange = (page: number) => {
@@ -377,7 +388,10 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
             <div className="memos-filters">
               <select
                 value={selectedMemoCategory}
-                onChange={(e) => setSelectedMemoCategory(e.target.value)}
+                onChange={(e) => {
+                  setSelectedMemoCategory(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="category-filter"
                 aria-label="カテゴリでフィルター"
               >
@@ -404,7 +418,16 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                     <div className="memo-header">
                       <h3>{getMemoTitle(memo)}</h3>
                       <div className="memo-meta">
-                        <span className="memo-category">{memo.category}</span>
+                        <span 
+                          className="memo-category clickable-category"
+                          onClick={() => {
+                            setSelectedMemoCategory(memo.category);
+                            setCurrentPage(1);
+                          }}
+                          title={`${memo.category}でフィルター`}
+                        >
+                          {memo.category}
+                        </span>
                         <span className="memo-date">
                           {formatDateTime(memo.updatedAt)}
                         </span>

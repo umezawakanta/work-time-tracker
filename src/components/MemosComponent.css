@@ -444,6 +444,18 @@
   font-weight: 500;
 }
 
+.clickable-category {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.clickable-category:hover {
+  background: #bbdefb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+}
+
 .memo-date {
   color: #6c757d;
   font-size: 0.8rem;

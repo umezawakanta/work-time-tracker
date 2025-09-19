@@ -50,13 +50,47 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // ページネーション用の関数
   const getPaginatedMemos = () => {
+    let filteredMemos = publicMemos || [];
+    
+    // カテゴリでフィルタリング
+    if (selectedPublicMemoCategory !== "all") {
+      filteredMemos = filteredMemos.filter(memo => memo.category === selectedPublicMemoCategory);
+    }
+    
+    // 検索語でフィルタリング
+    if (publicMemoSearchTerm.trim()) {
+      const searchTerm = publicMemoSearchTerm.toLowerCase();
+      filteredMemos = filteredMemos.filter(memo => 
+        memo.title.toLowerCase().includes(searchTerm) ||
+        memo.content.toLowerCase().includes(searchTerm) ||
+        memo.category.toLowerCase().includes(searchTerm)
+      );
+    }
+    
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return (publicMemos || []).slice(startIndex, endIndex);
+    return filteredMemos.slice(startIndex, endIndex);
   };
 
   const getTotalPages = () => {
-    return Math.ceil((publicMemos || []).length / itemsPerPage);
+    let filteredMemos = publicMemos || [];
+    
+    // カテゴリでフィルタリング
+    if (selectedPublicMemoCategory !== "all") {
+      filteredMemos = filteredMemos.filter(memo => memo.category === selectedPublicMemoCategory);
+    }
+    
+    // 検索語でフィルタリング
+    if (publicMemoSearchTerm.trim()) {
+      const searchTerm = publicMemoSearchTerm.toLowerCase();
+      filteredMemos = filteredMemos.filter(memo => 
+        memo.title.toLowerCase().includes(searchTerm) ||
+        memo.content.toLowerCase().includes(searchTerm) ||
+        memo.category.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    return Math.ceil(filteredMemos.length / itemsPerPage);
   };
 
   const handlePageChange = (page: number) => {
@@ -306,7 +340,10 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                 type="text"
                 placeholder="公開メモを検索..."
                 value={publicMemoSearchTerm}
-                onChange={(e) => setPublicMemoSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setPublicMemoSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="search-input"
               />
               <button
@@ -323,7 +360,10 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
             <div className="category-controls">
               <select
                 value={selectedPublicMemoCategory}
-                onChange={(e) => setSelectedPublicMemoCategory(e.target.value)}
+                onChange={(e) => {
+                  setSelectedPublicMemoCategory(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="category-select"
                 aria-label="カテゴリでフィルター"
               >
@@ -341,6 +381,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                 onClick={() => {
                   setSelectedPublicMemoCategory("all");
                   setPublicMemoSearchTerm("");
+                  setCurrentPage(1);
                   loadPublicMemos();
                 }}
                 className="reset-button"
@@ -367,7 +408,16 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                     <div className="memo-header">
                       <h3>{getMemoTitle(memo)}</h3>
                       <div className="memo-meta">
-                        <span className="memo-category">{memo.category}</span>
+                        <span 
+                          className="memo-category clickable-category"
+                          onClick={() => {
+                            setSelectedPublicMemoCategory(memo.category);
+                            setCurrentPage(1);
+                          }}
+                          title={`${memo.category}でフィルター`}
+                        >
+                          {memo.category}
+                        </span>
                         <span className="memo-date">
                           {formatDateTime(memo.createdAt)}
                         </span>
