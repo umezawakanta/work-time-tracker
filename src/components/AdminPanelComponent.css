@@ -806,8 +806,151 @@
   background: #9c2626;
 }
 
+/* タブナビゲーションのスタイル */
+.admin-tabs {
+  display: flex;
+  border-bottom: 2px solid #e9ecef;
+  margin-bottom: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+  overflow-x: auto;
+}
+
+.admin-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.admin-tab:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.admin-tab.active {
+  background: white;
+  color: #007bff;
+  border-bottom-color: #007bff;
+  box-shadow: 0 -2px 4px rgba(0, 123, 255, 0.1);
+}
+
+.admin-tab i {
+  font-size: 1rem;
+}
+
+/* タブコンテンツのスタイル */
+.admin-tab-content {
+  min-height: 400px;
+}
+
+.tab-pane {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.tab-header h3 {
+  margin: 0;
+  color: #495057;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.tab-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.back-button:hover {
+  background: #5a6268;
+}
+
+.source-code-content {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  min-height: 500px;
+}
+
+.error-reports-content {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
+  .admin-tabs {
+    flex-direction: column;
+    border-radius: 0;
+  }
+  
+  .admin-tab {
+    border-bottom: 1px solid #e9ecef;
+    border-right: none;
+    justify-content: flex-start;
+  }
+  
+  .admin-tab.active {
+    border-bottom-color: #e9ecef;
+    border-left: 3px solid #007bff;
+  }
+  
+  .tab-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .tab-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
   .error-reports-section {
     padding: 1rem;
   }

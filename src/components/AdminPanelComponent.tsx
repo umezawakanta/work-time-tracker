@@ -35,8 +35,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'email' | 'role' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [showSourceCodeViewer, setShowSourceCodeViewer] = useState(false);
-  const [showErrorReports, setShowErrorReports] = useState(false);
+  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports'>('users');
   const [errorReports, setErrorReports] = useState<any[]>([]);
   const [errorReportsLoading, setErrorReportsLoading] = useState(false);
   const [errorReportsError, setErrorReportsError] = useState<string | null>(null);
@@ -226,41 +225,54 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
 
       {showAdminPanel && (
         <div className="admin-panel-content">
-          <div className="admin-panel-header">
-            <div className="admin-panel-actions">
-              <button
-                onClick={loadAdminUsers}
-                className="refresh-button"
-                title="ユーザー一覧を更新"
-              >
-                <i className="bi bi-arrow-clockwise"></i>
-              </button>
-              <button
-                onClick={() => setShowSourceCodeViewer(true)}
-                className="source-code-button"
-                title="ソースコード一覧を表示"
-              >
-                <i className="bi bi-code-slash"></i>
-                ソースコード
-              </button>
-              <button
-                onClick={() => {
-                  setShowErrorReports(!showErrorReports);
-                  if (!showErrorReports) {
-                    loadErrorReports();
-                  }
-                }}
-                className="error-reports-button"
-                title="不具合報告一覧を表示"
-              >
-                <i className="bi bi-bug"></i>
-                不具合報告
-              </button>
-            </div>
+          {/* タブナビゲーション */}
+          <div className="admin-tabs">
+            <button
+              className={`admin-tab ${activeTab === 'users' ? 'active' : ''}`}
+              onClick={() => setActiveTab('users')}
+            >
+              <i className="bi bi-people"></i>
+              ユーザー管理
+            </button>
+            <button
+              className={`admin-tab ${activeTab === 'sourcecode' ? 'active' : ''}`}
+              onClick={() => setActiveTab('sourcecode')}
+            >
+              <i className="bi bi-code-slash"></i>
+              ソースコード
+            </button>
+            <button
+              className={`admin-tab ${activeTab === 'errorreports' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('errorreports');
+                if (errorReports.length === 0) {
+                  loadErrorReports();
+                }
+              }}
+            >
+              <i className="bi bi-bug"></i>
+              不具合報告
+            </button>
           </div>
 
-          {/* 統計カード */}
-          <div className="admin-stats">
+          {/* タブコンテンツ */}
+          <div className="admin-tab-content">
+            {/* ユーザー管理タブ */}
+            {activeTab === 'users' && (
+              <div className="tab-pane">
+                <div className="tab-header">
+                  <h3>ユーザー管理</h3>
+                  <button
+                    onClick={loadAdminUsers}
+                    className="refresh-button"
+                    title="ユーザー一覧を更新"
+                  >
+                    <i className="bi bi-arrow-clockwise"></i>
+                  </button>
+                </div>
+
+                {/* 統計カード */}
+                <div className="admin-stats">
             <div className="stat-card">
               <div className="stat-icon">👥</div>
               <div className="stat-content">
@@ -455,23 +467,54 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
               </div>
             </div>
           )}
-
-          {/* 不具合報告メモ一覧 */}
-          {showErrorReports && (
-            <div className="error-reports-section">
-              <div className="error-reports-header">
-                <h3>
-                  <i className="bi bi-bug"></i>
-                  不具合報告一覧
-                </h3>
-                <button
-                  onClick={loadErrorReports}
-                  className="refresh-button"
-                  title="不具合報告を更新"
-                >
-                  <i className="bi bi-arrow-clockwise"></i>
-                </button>
               </div>
+            )}
+
+            {/* ソースコードタブ */}
+            {activeTab === 'sourcecode' && (
+              <div className="tab-pane">
+                <div className="tab-header">
+                  <h3>ソースコード一覧</h3>
+                  <button
+                    onClick={() => setActiveTab('users')}
+                    className="back-button"
+                    title="ユーザー管理に戻る"
+                  >
+                    <i className="bi bi-arrow-left"></i>
+                  </button>
+                </div>
+                <div className="source-code-content">
+                  <SourceCodeViewer
+                    isOpen={true}
+                    onClose={() => setActiveTab('users')}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* 不具合報告タブ */}
+            {activeTab === 'errorreports' && (
+              <div className="tab-pane">
+                <div className="tab-header">
+                  <h3>不具合報告一覧</h3>
+                  <div className="tab-actions">
+                    <button
+                      onClick={loadErrorReports}
+                      className="refresh-button"
+                      title="不具合報告を更新"
+                    >
+                      <i className="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('users')}
+                      className="back-button"
+                      title="ユーザー管理に戻る"
+                    >
+                      <i className="bi bi-arrow-left"></i>
+                    </button>
+                  </div>
+                </div>
+                <div className="error-reports-content">
 
               {errorReportsLoading ? (
                 <div className="loading-message">
@@ -538,16 +581,12 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                   ))}
                 </div>
               )}
-            </div>
-          )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
-
-      {/* ソースコード閲覧モーダル */}
-      <SourceCodeViewer
-        isOpen={showSourceCodeViewer}
-        onClose={() => setShowSourceCodeViewer(false)}
-      />
     </div>
   );
 };
