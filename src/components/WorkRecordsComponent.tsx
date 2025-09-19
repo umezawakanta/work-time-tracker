@@ -947,7 +947,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             </button>
             <button
               onClick={() => {
-                loadSalaryRecords();
+                loadIncomeExpenseRecords();
                 loadWorkDiaries();
               }}
               className="action-button refresh-button"
