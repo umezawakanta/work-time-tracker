@@ -862,6 +862,14 @@ body {
   border: 1px solid #ef4444;
 }
 
+/* 通知コンポーネントのスタイル */
+.notification-wrapper {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
 /* レスポンシブデザイン */
 @media (max-width: 1024px) {
   

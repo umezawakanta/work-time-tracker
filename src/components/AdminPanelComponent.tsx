@@ -42,6 +42,10 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [updateRequests, setUpdateRequests] = useState<any[]>([]);
   const [updateRequestsLoading, setUpdateRequestsLoading] = useState(false);
   const [updateRequestsError, setUpdateRequestsError] = useState<string | null>(null);
+  const [selectedMemo, setSelectedMemo] = useState<any>(null);
+  const [adminResponse, setAdminResponse] = useState('');
+  const [memoStatus, setMemoStatus] = useState<'pending' | 'in_progress' | 'resolved' | 'closed'>('pending');
+  const [sendingResponse, setSendingResponse] = useState(false);
 
   // ユーザー編集フォームの初期化
   useEffect(() => {
@@ -150,6 +154,61 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
     } finally {
       setUpdateRequestsLoading(false);
     }
+  };
+
+  // 通知送信機能
+  const handleSendResponse = async () => {
+    if (!selectedMemo || !adminResponse.trim()) {
+      alert('対応内容を入力してください');
+      return;
+    }
+
+    setSendingResponse(true);
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('/api/admin/notifications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          memoId: selectedMemo.id,
+          response: adminResponse,
+          status: memoStatus,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('通知の送信に失敗しました');
+      }
+
+      const result = await response.json();
+      alert('通知を送信しました');
+      
+      // フォームをリセット
+      setSelectedMemo(null);
+      setAdminResponse('');
+      setMemoStatus('pending');
+      
+      // データを再読み込み
+      if (activeTab === 'errorreports') {
+        loadErrorReports();
+      } else if (activeTab === 'updaterequests') {
+        loadUpdateRequests();
+      }
+    } catch (error) {
+      console.error('通知送信エラー:', error);
+      alert(error instanceof Error ? error.message : '通知の送信に失敗しました');
+    } finally {
+      setSendingResponse(false);
+    }
+  };
+
+  const handleSelectMemo = (memo: any) => {
+    setSelectedMemo(memo);
+    setAdminResponse(memo.adminResponse || '');
+    setMemoStatus(memo.status || 'pending');
   };
 
   // フォーム送信処理
@@ -633,6 +692,24 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                           ))}
                         </div>
                       )}
+                      <div className="error-report-actions">
+                        <button
+                          className="response-button"
+                          onClick={() => handleSelectMemo(report)}
+                          title="対応を送信"
+                        >
+                          <i className="bi bi-reply"></i>
+                          対応を送信
+                        </button>
+                        {report.status && (
+                          <span className={`status-badge status-${report.status}`}>
+                            {report.status === 'pending' && '未対応'}
+                            {report.status === 'in_progress' && '対応中'}
+                            {report.status === 'resolved' && '解決済み'}
+                            {report.status === 'closed' && 'クローズ'}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -734,6 +811,24 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                               ))}
                             </div>
                           )}
+                          <div className="update-request-actions">
+                            <button
+                              className="response-button"
+                              onClick={() => handleSelectMemo(request)}
+                              title="対応を送信"
+                            >
+                              <i className="bi bi-reply"></i>
+                              対応を送信
+                            </button>
+                            {request.status && (
+                              <span className={`status-badge status-${request.status}`}>
+                                {request.status === 'pending' && '未対応'}
+                                {request.status === 'in_progress' && '対応中'}
+                                {request.status === 'resolved' && '解決済み'}
+                                {request.status === 'closed' && 'クローズ'}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -741,6 +836,94 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* 通知送信モーダル */}
+      {selectedMemo && (
+        <div className="modal-overlay">
+          <div className="modal-content notification-modal">
+            <div className="modal-header">
+              <h3>
+                {selectedMemo.postType === 'error_report' ? '不具合報告への対応' : '更新要望への対応'}
+              </h3>
+              <button
+                className="close-button"
+                onClick={() => setSelectedMemo(null)}
+                aria-label="閉じる"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="memo-preview">
+                <h4>{selectedMemo.title || '無題'}</h4>
+                <p>{selectedMemo.content}</p>
+                <div className="memo-meta">
+                  <span>投稿者: {selectedMemo.author || '匿名'}</span>
+                  <span>投稿日: {new Date(selectedMemo.createdAt).toLocaleString('ja-JP')}</span>
+                </div>
+              </div>
+
+              <div className="response-form">
+                <div className="form-group">
+                  <label htmlFor="memoStatus">ステータス</label>
+                  <select
+                    id="memoStatus"
+                    value={memoStatus}
+                    onChange={(e) => setMemoStatus(e.target.value as any)}
+                    className="form-control"
+                  >
+                    <option value="pending">未対応</option>
+                    <option value="in_progress">対応中</option>
+                    <option value="resolved">解決済み</option>
+                    <option value="closed">クローズ</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="adminResponse">対応内容</label>
+                  <textarea
+                    id="adminResponse"
+                    value={adminResponse}
+                    onChange={(e) => setAdminResponse(e.target.value)}
+                    className="form-control"
+                    rows={6}
+                    placeholder="対応内容を入力してください..."
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setSelectedMemo(null)}
+                disabled={sendingResponse}
+              >
+                キャンセル
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleSendResponse}
+                disabled={sendingResponse || !adminResponse.trim()}
+              >
+                {sendingResponse ? (
+                  <>
+                    <i className="bi bi-hourglass-split"></i>
+                    送信中...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-send"></i>
+                    通知を送信
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

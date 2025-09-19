@@ -22,6 +22,7 @@ import TimeTrackingComponent from "./components/TimeTrackingComponent";
 import TimersComponent from "./components/TimersComponent";
 import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
+import NotificationComponent from "./components/NotificationComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import {
@@ -5388,6 +5389,10 @@ function App() {
             isTimeTrackingActive={isTimeTrackingActive}
           />
 
+          {/* 通知コンポーネント */}
+          <div className="notification-wrapper">
+            <NotificationComponent />
+          </div>
 
           <main className="dashboard-main">
             {getVisibleFeatures().map((feature) => {
