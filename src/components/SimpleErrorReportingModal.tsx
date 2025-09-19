@@ -12,35 +12,41 @@ interface SimpleErrorReportingModalProps {
     userAgent: string;
     timestamp: string;
   }) => void;
+  buttonPosition?: { x: number; y: number };
 }
 
 const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
   isOpen,
   onClose,
   error,
-  onSubmit
+  onSubmit,
+  buttonPosition
 }) => {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // モーダル表示時にスクロールを無効化
+  // モーダル表示時の処理
   useEffect(() => {
     if (isOpen) {
-      // 現在のスクロール位置を保存
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-      
-      return () => {
-        // モーダル閉じる時にスクロール位置を復元
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        window.scrollTo(0, scrollY);
-      };
+      // スクロール制御は行わず、モーダルを画面内に表示
+      // 必要に応じてスクロール位置を調整
+      if (buttonPosition) {
+        const modalHeight = 400; // モーダルの推定高さ
+        const viewportHeight = window.innerHeight;
+        const scrollY = window.scrollY;
+        const buttonY = buttonPosition.y + scrollY;
+        
+        // ボタンが画面下部にある場合は上にスクロール
+        if (buttonY + modalHeight > viewportHeight + scrollY) {
+          const targetScrollY = Math.max(0, buttonY - viewportHeight + modalHeight + 20);
+          window.scrollTo({
+            top: targetScrollY,
+            behavior: 'smooth'
+          });
+        }
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, buttonPosition]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,8 +93,55 @@ const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
 
   if (!isOpen) return null;
 
+  // ボタン位置に基づくモーダルの位置計算
+  const getModalStyle = () => {
+    if (!buttonPosition) {
+      return {}; // デフォルトの中央表示
+    }
+
+    const modalWidth = 500;
+    const modalHeight = 400;
+    const padding = 20;
+    
+    // ビューポート内に収まるように位置を調整
+    let left = buttonPosition.x - modalWidth / 2;
+    let top = buttonPosition.y - modalHeight / 2;
+    
+    // 左端からはみ出さないように調整
+    if (left < padding) {
+      left = padding;
+    }
+    
+    // 右端からはみ出さないように調整
+    if (left + modalWidth > window.innerWidth - padding) {
+      left = window.innerWidth - modalWidth - padding;
+    }
+    
+    // 上端からはみ出さないように調整
+    if (top < padding) {
+      top = padding;
+    }
+    
+    // 下端からはみ出さないように調整
+    if (top + modalHeight > window.innerHeight - padding) {
+      top = window.innerHeight - modalHeight - padding;
+    }
+    
+    return {
+      position: 'fixed' as const,
+      left: `${left}px`,
+      top: `${top}px`,
+      transform: 'none',
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start'
+    };
+  };
+
   return (
-    <div className="simple-error-modal-overlay">
+    <div 
+      className="simple-error-modal-overlay"
+      style={getModalStyle()}
+    >
       <div className="simple-error-modal-content">
         <div className="simple-error-modal-header">
           <h3>

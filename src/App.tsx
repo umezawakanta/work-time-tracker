@@ -71,6 +71,7 @@ function App() {
   // エラー報告関連の状態
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [currentError, setCurrentError] = useState<Error | null>(null);
+  const [errorModalButtonPosition, setErrorModalButtonPosition] = useState<{ x: number; y: number } | undefined>(undefined);
 
   // 各機能のローディング状態
   const [memosLoading, setMemosLoading] = useState(false);
@@ -1107,6 +1108,7 @@ function App() {
       (enhancedError as any).errorInfo = errorInfo;
       
       setCurrentError(enhancedError);
+      setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
     };
 
@@ -1128,6 +1130,7 @@ function App() {
       (error as any).errorInfo = errorInfo;
       
       setCurrentError(error);
+      setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
     };
 
@@ -3933,6 +3936,7 @@ function App() {
       (enhancedError as any).errorInfo = errorInfo;
       
       setCurrentError(enhancedError);
+      setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
     }
   };
@@ -4013,6 +4017,7 @@ function App() {
       (enhancedError as any).errorInfo = enhancedErrorInfo;
       
       setCurrentError(enhancedError);
+      setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
     }
   };
@@ -6053,6 +6058,7 @@ function App() {
           onClose={() => setShowErrorModal(false)}
           error={currentError}
           onSubmit={handleErrorReport}
+          buttonPosition={errorModalButtonPosition}
         />
       </div>
     );
@@ -6079,6 +6085,7 @@ function App() {
           onClose={() => setShowErrorModal(false)}
           error={currentError}
           onSubmit={handleErrorReport}
+          buttonPosition={errorModalButtonPosition}
         />
     </>
   );

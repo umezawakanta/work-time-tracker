@@ -96,6 +96,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
 
   // 簡易報告機能の状態
   const [showQuickReport, setShowQuickReport] = useState(false);
+  const [quickReportButtonPosition, setQuickReportButtonPosition] = useState<{ x: number; y: number } | undefined>(undefined);
 
   // 簡易報告のハンドラー
   const handleQuickReport = async (report: { title: string; content: string; type: 'bug' | 'feature' }) => {
@@ -221,7 +222,14 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
         <div className="section-controls">
           {showMemos && (
             <button
-              onClick={() => setShowQuickReport(true)}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                setQuickReportButtonPosition({
+                  x: rect.left + rect.width / 2,
+                  y: rect.top + rect.height / 2
+                });
+                setShowQuickReport(true);
+              }}
               className="quick-report-button"
               title="不具合報告・機能要望を投稿"
             >
@@ -787,6 +795,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
         isOpen={showQuickReport}
         onClose={() => setShowQuickReport(false)}
         onSubmit={handleQuickReport}
+        buttonPosition={quickReportButtonPosition}
       />
     </div>
   );
