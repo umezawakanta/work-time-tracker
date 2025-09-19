@@ -892,7 +892,7 @@ function App() {
   const [learningRecords, setLearningRecords] = useState<LearningRecord[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [selectedRecordType, setSelectedRecordType] = useState<
-    "salary" | "diary" | null
+    "income" | "expense" | "diary" | null
   >(null);
 
   // 機能定義

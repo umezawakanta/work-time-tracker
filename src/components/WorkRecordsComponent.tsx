@@ -308,8 +308,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               onClick={() => {
                 closeOtherFeatures("work-records");
                 setShowWorkRecords(true);
-                if (salaryRecords.length === 0) {
-                  loadSalaryRecords();
+                if (incomeExpenseRecords.length === 0) {
+                  loadIncomeExpenseRecords();
                 }
                 if (workDiaries.length === 0) {
                   loadWorkDiaries();
@@ -928,16 +928,16 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           <div className="action-buttons">
             <button
               onClick={() => {
-                setShowSalaryForm(true);
+                setShowIncomeExpenseForm(true);
                 setShowDiaryForm(false);
-                setEditingSalaryRecord(null);
-                setSalaryAmount('');
-                setSalaryDate('');
-                setSalaryNotes('');
+                setEditingIncomeExpenseRecord(null);
+                setIncomeExpenseAmount('');
+                setIncomeExpenseDate('');
+                setIncomeExpenseNotes('');
               }}
-              className="action-button salary-button"
+              className="action-button income-expense-button"
             >
-              💰 給与記録を追加
+              💰 収支記録を追加
             </button>
             <button
               onClick={openDiaryForm}
