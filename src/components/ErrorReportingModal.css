@@ -11,6 +11,9 @@
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
+  /* スクロール位置に関係なく画面中央に固定 */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .error-modal-content {

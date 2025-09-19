@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ErrorReportingModal.css';
 
 interface ErrorReportingModalProps {
@@ -23,6 +23,25 @@ const ErrorReportingModal: React.FC<ErrorReportingModalProps> = ({
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // モーダル表示時にスクロールを無効化
+  useEffect(() => {
+    if (isOpen) {
+      // 現在のスクロール位置を保存
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      
+      return () => {
+        // モーダル閉じる時にスクロール位置を復元
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
