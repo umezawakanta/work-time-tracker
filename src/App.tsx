@@ -1129,7 +1129,17 @@ function App() {
           errorMessage.includes('loadIncomeExpenseRecords') ||
           errorMessage.includes('loadSalaryRecords') ||
           errorMessage.includes('salaryRecords') ||
-          errorMessage.includes('incomeExpenseRecords')) {
+          errorMessage.includes('incomeExpenseRecords') ||
+          errorMessage.includes('handleCreateIncomeExpenseRecord') ||
+          errorMessage.includes('handleUpdateIncomeExpenseRecord') ||
+          errorMessage.includes('handleDeleteIncomeExpenseRecord') ||
+          errorMessage.includes('editIncomeExpenseRecord') ||
+          errorMessage.includes('viewIncomeExpenseRecord') ||
+          errorMessage.includes('editingIncomeExpenseRecord') ||
+          errorMessage.includes('incomeExpenseAmount') ||
+          errorMessage.includes('incomeExpenseDate') ||
+          errorMessage.includes('incomeExpenseNotes') ||
+          errorMessage.includes('incomeExpenseType')) {
         
         const errorInfo = {
           message: errorMessage,
@@ -1186,24 +1196,44 @@ function App() {
     window.onerror = (message, source, lineno, colno, error) => {
       console.error('window.onerror caught:', message, source, lineno, colno, error);
       
-      const errorInfo = {
-        message: String(message),
-        stack: error?.stack || 'No stack trace available',
-        filename: source || 'Unknown file',
-        lineno: lineno || 0,
-        colno: colno || 0,
-        type: error?.constructor?.name || 'Error',
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
-        url: window.location.href
-      };
+      // 特定のエラーパターンをチェック
+      const errorMessage = String(message);
+      const shouldShowModal = errorMessage.includes('ReferenceError') ||
+                             errorMessage.includes('TypeError') ||
+                             errorMessage.includes('SyntaxError') ||
+                             errorMessage.includes('is not defined') ||
+                             errorMessage.includes('Cannot read properties') ||
+                             errorMessage.includes('handleCreateIncomeExpenseRecord') ||
+                             errorMessage.includes('handleUpdateIncomeExpenseRecord') ||
+                             errorMessage.includes('handleDeleteIncomeExpenseRecord') ||
+                             errorMessage.includes('editIncomeExpenseRecord') ||
+                             errorMessage.includes('viewIncomeExpenseRecord') ||
+                             errorMessage.includes('editingIncomeExpenseRecord') ||
+                             errorMessage.includes('incomeExpenseAmount') ||
+                             errorMessage.includes('incomeExpenseDate') ||
+                             errorMessage.includes('incomeExpenseNotes') ||
+                             errorMessage.includes('incomeExpenseType');
       
-      const enhancedError = new Error(String(message));
-      enhancedError.stack = errorInfo.stack;
-      (enhancedError as any).errorInfo = errorInfo;
-      
-      setCurrentError(enhancedError);
-      setShowErrorModal(true);
+      if (shouldShowModal) {
+        const errorInfo = {
+          message: errorMessage,
+          stack: error?.stack || 'No stack trace available',
+          filename: source || 'Unknown file',
+          lineno: lineno || 0,
+          colno: colno || 0,
+          type: error?.constructor?.name || 'Error',
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          url: window.location.href
+        };
+        
+        const enhancedError = new Error(errorMessage);
+        enhancedError.stack = errorInfo.stack;
+        (enhancedError as any).errorInfo = errorInfo;
+        
+        setCurrentError(enhancedError);
+        setShowErrorModal(true);
+      }
       
       return false; // デフォルトのエラーハンドリングを防ぐ
     };
@@ -3802,22 +3832,42 @@ function App() {
   const handleReactError = (error: Error, errorInfo: any) => {
     console.error('React Error Boundary caught an error:', error, errorInfo);
     
-    const enhancedErrorInfo = {
-      message: error.message,
-      stack: error.stack || 'No stack trace available',
-      type: 'ReactError',
-      componentStack: errorInfo.componentStack || 'No component stack available',
-      timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-      url: window.location.href
-    };
+    // 特定のエラーパターンをチェック
+    const errorMessage = error.message;
+    const shouldShowModal = errorMessage.includes('ReferenceError') ||
+                           errorMessage.includes('TypeError') ||
+                           errorMessage.includes('SyntaxError') ||
+                           errorMessage.includes('is not defined') ||
+                           errorMessage.includes('Cannot read properties') ||
+                           errorMessage.includes('handleCreateIncomeExpenseRecord') ||
+                           errorMessage.includes('handleUpdateIncomeExpenseRecord') ||
+                           errorMessage.includes('handleDeleteIncomeExpenseRecord') ||
+                           errorMessage.includes('editIncomeExpenseRecord') ||
+                           errorMessage.includes('viewIncomeExpenseRecord') ||
+                           errorMessage.includes('editingIncomeExpenseRecord') ||
+                           errorMessage.includes('incomeExpenseAmount') ||
+                           errorMessage.includes('incomeExpenseDate') ||
+                           errorMessage.includes('incomeExpenseNotes') ||
+                           errorMessage.includes('incomeExpenseType');
     
-    const enhancedError = new Error(error.message);
-    enhancedError.stack = error.stack;
-    (enhancedError as any).errorInfo = enhancedErrorInfo;
-    
-    setCurrentError(enhancedError);
-    setShowErrorModal(true);
+    if (shouldShowModal) {
+      const enhancedErrorInfo = {
+        message: errorMessage,
+        stack: error.stack || 'No stack trace available',
+        type: 'ReactError',
+        componentStack: errorInfo.componentStack || 'No component stack available',
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      
+      const enhancedError = new Error(errorMessage);
+      enhancedError.stack = error.stack;
+      (enhancedError as any).errorInfo = enhancedErrorInfo;
+      
+      setCurrentError(enhancedError);
+      setShowErrorModal(true);
+    }
   };
 
   // エラーハンドリングのテスト用関数（開発時のみ）
@@ -3832,6 +3882,40 @@ function App() {
           (window as any).nonExistentFunction();
         } catch (error) {
           console.error('テストエラーが発生しました:', error);
+        }
+      }, 1000);
+    }
+  };
+
+  // 特定のエラーパターンをテストする関数
+  const testSpecificError = (errorType: string) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`${errorType}エラーのテストを実行します...`);
+      
+      setTimeout(() => {
+        try {
+          // 特定のエラータイプに応じてエラーを発生
+          switch (errorType) {
+            case 'handleCreateIncomeExpenseRecord':
+              (window as any).handleCreateIncomeExpenseRecord();
+              break;
+            case 'handleUpdateIncomeExpenseRecord':
+              (window as any).handleUpdateIncomeExpenseRecord();
+              break;
+            case 'handleDeleteIncomeExpenseRecord':
+              (window as any).handleDeleteIncomeExpenseRecord();
+              break;
+            case 'editIncomeExpenseRecord':
+              (window as any).editIncomeExpenseRecord();
+              break;
+            case 'viewIncomeExpenseRecord':
+              (window as any).viewIncomeExpenseRecord();
+              break;
+            default:
+              (window as any).nonExistentFunction();
+          }
+        } catch (error) {
+          console.error(`${errorType}テストエラーが発生しました:`, error);
         }
       }, 1000);
     }
