@@ -12,6 +12,8 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     userCount: 0,
     errorCount: 0,
     updateRequestCount: 0,
+    linterErrorCount: 0,
+    testErrorCount: 0,
     loading: true
   });
 
@@ -27,15 +29,19 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
       }
 
       // 並列で複数のAPIを呼び出し
-      const [adminUsersResponse, errorReportsResponse, publicMemosResponse] = await Promise.all([
+      const [adminUsersResponse, errorReportsResponse, publicMemosResponse, linterErrorsResponse, testResultsResponse] = await Promise.all([
         fetch('/api/admin/users', { headers }),
         fetch('/api/admin/error-reports', { headers }),
-        fetch('/api/memos/public', { headers })
+        fetch('/api/memos/public', { headers }),
+        fetch('/api/admin/linter-errors', { headers }),
+        fetch('/api/admin/test-results', { headers })
       ]);
 
       let userCount = 0;
       let errorCount = 0;
       let updateRequestCount = 0;
+      let linterErrorCount = 0;
+      let testErrorCount = 0;
 
       // ユーザー数を取得
       if (adminUsersResponse.ok) {
@@ -57,10 +63,24 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
         ).length;
       }
 
+      // リンターエラー数を取得
+      if (linterErrorsResponse.ok) {
+        const linterData = await linterErrorsResponse.json();
+        linterErrorCount = linterData.errors?.length || 0;
+      }
+
+      // ユニットテストエラー数を取得
+      if (testResultsResponse.ok) {
+        const testData = await testResultsResponse.json();
+        testErrorCount = testData.failed || 0;
+      }
+
       setStats({
         userCount,
         errorCount,
         updateRequestCount,
+        linterErrorCount,
+        testErrorCount,
         loading: false
       });
     } catch (error) {
@@ -113,6 +133,12 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     }
     if (stats.updateRequestCount > 0) {
       statsParts.push(`💡 ${stats.updateRequestCount}件の更新要望`);
+    }
+    if (stats.linterErrorCount > 0) {
+      statsParts.push(`🔍 ${stats.linterErrorCount}件のリンターエラー`);
+    }
+    if (stats.testErrorCount > 0) {
+      statsParts.push(`🧪 ${stats.testErrorCount}件のテストエラー`);
     }
     return statsParts.length > 0 ? `\n\n📊 現在の状況: ${statsParts.join('、')}` : '';
   };
@@ -222,7 +248,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
               <p>{siteDescription}</p>
               
               {/* 統計データの表示 */}
-              {!stats.loading && (stats.userCount > 0 || stats.errorCount > 0 || stats.updateRequestCount > 0) && (
+              {!stats.loading && (stats.userCount > 0 || stats.errorCount > 0 || stats.updateRequestCount > 0 || stats.linterErrorCount > 0 || stats.testErrorCount > 0) && (
                 <div className="stats-display">
                   <h4>📊 現在の状況</h4>
                   <div className="stats-grid">
@@ -245,6 +271,20 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
                         <span className="stat-icon">💡</span>
                         <span className="stat-label">更新要望</span>
                         <span className="stat-value">{stats.updateRequestCount}件</span>
+                      </div>
+                    )}
+                    {stats.linterErrorCount > 0 && (
+                      <div className="stat-item">
+                        <span className="stat-icon">🔍</span>
+                        <span className="stat-label">リンターエラー</span>
+                        <span className="stat-value">{stats.linterErrorCount}件</span>
+                      </div>
+                    )}
+                    {stats.testErrorCount > 0 && (
+                      <div className="stat-item">
+                        <span className="stat-icon">🧪</span>
+                        <span className="stat-label">テストエラー</span>
+                        <span className="stat-value">{stats.testErrorCount}件</span>
                       </div>
                     )}
                   </div>
