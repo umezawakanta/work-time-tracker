@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './MemosComponent.css';
 import type { Memo, Reply } from '../types';
 import QuickReportModal from './QuickReportModal';
+import ErrorReportingModal from './ErrorReportingModal';
 
 interface MemosComponentProps {
   memos: Memo[];
@@ -99,6 +100,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   const [editingGenre, setEditingGenre] = useState<string | null>(null);
   const [editingGenreName, setEditingGenreName] = useState("");
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showErrorReportingModal, setShowErrorReportingModal] = useState(false);
   // 返信関連の状態
   const [editingReply, setEditingReply] = useState<string | null>(null);
   const [editingReplyContent, setEditingReplyContent] = useState("");
@@ -149,6 +151,44 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
           category: report.type === 'bug' ? '不具合報告' : '機能要望',
           isPublic: true,
           postType: 'update-request'
+        })
+      });
+
+      if (response.ok) {
+        alert('報告を投稿しました！');
+        loadMemos();
+      } else {
+        alert('報告の投稿に失敗しました。');
+      }
+    } catch (error) {
+      console.error('報告の投稿エラー:', error);
+      alert('報告の投稿に失敗しました。');
+    }
+  };
+
+  // エラーレポートの送信ハンドラー
+  const handleErrorReport = async (report: {
+    title: string;
+    content: string;
+    errorDetails: string;
+    userAgent: string;
+    timestamp: string;
+  }) => {
+    try {
+      const response = await fetch('/api/memos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          title: report.title,
+          content: report.content,
+          category: report.title === '不具合報告' ? '不具合報告' : '改善要望',
+          isPublic: true,
+          postType: report.title === '不具合報告' ? 'error_report' : 'update_request',
+          selectedFeature: report.errorDetails.split(': ')[1] || 'other',
+          tags: ['報告', report.title === '不具合報告' ? 'バグ' : '要望']
         })
       });
 
@@ -637,7 +677,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
             </div>
           )}
 
-          {/* 不具合報告・改善要望専用送信エリア */}
+          {/* 不具合報告・改善要望ボタン */}
           {showMemos && (
             <div className="report-request-section">
               <div className="report-request-header">
@@ -648,92 +688,25 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                 <p className="report-request-description">
                   バグやエラーの報告、機能改善の提案はこちらから送信してください。
                 </p>
-                
-                <div className="instruction-guide">
-                  <h5>送信手順：</h5>
-                  <div className="instruction-steps">
-                    <div className="step">
-                      <span className="step-number">1</span>
-                      <div className="step-content">
-                        <strong>対象機能を選択</strong>
-                        <p>不具合や改善要望が発生した機能を選択してください（必須）</p>
-                      </div>
-                    </div>
-                    <div className="step">
-                      <span className="step-number">2</span>
-                      <div className="step-content">
-                        <strong>詳細を記入</strong>
-                        <p>不具合の場合は再現手順、改善要望の場合は具体的な内容を記入してください（必須）</p>
-                      </div>
-                    </div>
-                    <div className="step">
-                      <span className="step-number">3</span>
-                      <div className="step-content">
-                        <strong>送信ボタンをクリック</strong>
-                        <p>「不具合報告を送信」または「改善要望を送信」ボタンをクリックしてください</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
               
-              <div className="report-request-form">
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="quickSelectedFeature">対象機能 <span className="required">*</span></label>
-                    <select
-                      id="quickSelectedFeature"
-                      value={memoSelectedFeature}
-                      onChange={(e) => setMemoSelectedFeature(e.target.value)}
-                      className={!memoSelectedFeature ? 'error' : ''}
-                    >
-                      {featureOptions.map((option) => (
-                        <option 
-                          key={option.value} 
-                          value={option.value}
-                          disabled={option.disabled}
-                        >
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="reportContent">内容 <span className="required">*</span></label>
-                    <textarea
-                      id="reportContent"
-                      value={memoContent}
-                      onChange={(e) => setMemoContent(e.target.value)}
-                      placeholder="不具合の詳細や改善要望を記入してください..."
-                      rows={4}
-                      className={!memoContent.trim() ? 'error' : ''}
-                    />
-                  </div>
-                </div>
-                
-                <div className="submit-buttons">
-                  <button
-                    type="button"
-                    className="submit-button bug-report"
-                    onClick={() => handleQuickSubmit('error_report')}
-                    disabled={!memoSelectedFeature || !memoContent.trim()}
-                    title="不具合報告を送信"
-                  >
-                    <i className="bi bi-bug"></i>
-                    <span>不具合報告を送信</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="submit-button update-request"
-                    onClick={() => handleQuickSubmit('update_request')}
-                    disabled={!memoSelectedFeature || !memoContent.trim()}
-                    title="改善要望を送信"
-                  >
-                    <i className="bi bi-lightbulb"></i>
-                    <span>改善要望を送信</span>
-                  </button>
-                </div>
+              <div className="report-request-actions">
+                <button
+                  className="report-button bug-report"
+                  onClick={() => setShowErrorReportingModal(true)}
+                  title="不具合報告を送信"
+                >
+                  <i className="bi bi-bug"></i>
+                  <span>不具合報告を送信</span>
+                </button>
+                <button
+                  className="report-button update-request"
+                  onClick={() => setShowErrorReportingModal(true)}
+                  title="改善要望を送信"
+                >
+                  <i className="bi bi-lightbulb"></i>
+                  <span>改善要望を送信</span>
+                </button>
               </div>
             </div>
           )}
@@ -1136,6 +1109,13 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
         onClose={() => setShowQuickReport(false)}
         onSubmit={handleQuickReport}
         buttonPosition={quickReportButtonPosition}
+      />
+
+      {/* エラーレポートモーダル */}
+      <ErrorReportingModal
+        isOpen={showErrorReportingModal}
+        onClose={() => setShowErrorReportingModal(false)}
+        onSubmit={handleErrorReport}
       />
     </div>
   );

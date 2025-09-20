@@ -1,25 +1,21 @@
-/* エラー報告モーダル */
-.error-modal-overlay {
+.error-reporting-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   z-index: 1000;
-  padding: 1rem;
-  /* スクロール位置に関係なく画面中央に固定 */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+  padding: 20px;
 }
 
-.error-modal-content {
+.error-reporting-modal {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   max-width: 600px;
   width: 100%;
   max-height: 90vh;
@@ -30,253 +26,240 @@
 @keyframes modalSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-20px) scale(0.95);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-.error-modal-header {
+.error-reporting-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 1.5rem 1rem 1.5rem;
-  border-bottom: 1px solid #e9ecef;
-  background: #fff5f5;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
 }
 
-.error-modal-header h2 {
+.error-reporting-header h3 {
   margin: 0;
-  color: #dc3545;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
-.error-modal-close {
+.error-reporting-close {
   background: none;
   border: none;
-  font-size: 1.5rem;
-  color: #6c757d;
+  font-size: 24px;
+  color: white;
   cursor: pointer;
-  padding: 0.25rem;
+  padding: 4px;
   border-radius: 4px;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s;
 }
 
-.error-modal-close:hover {
-  background: #f8f9fa;
-  color: #495057;
+.error-reporting-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
-.error-modal-body {
-  padding: 1.5rem;
+.error-reporting-body {
+  padding: 24px;
 }
 
-.error-info {
-  margin-bottom: 2rem;
-  padding: 1rem;
+.instruction-guide {
+  margin-bottom: 24px;
+  padding: 16px;
   background: #f8f9fa;
   border-radius: 8px;
-  border-left: 4px solid #dc3545;
+  border-left: 4px solid #667eea;
 }
 
-.error-info h3 {
-  margin: 0 0 1rem 0;
-  color: #dc3545;
-  font-size: 1.1rem;
-}
-
-.error-details p {
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
-  color: #495057;
-}
-
-.error-details strong {
-  color: #212529;
-}
-
-.error-stack {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  padding: 0.75rem;
-  font-family: 'Courier New', monospace;
-  font-size: 0.8rem;
-  color: #495057;
-  white-space: pre-wrap;
-  word-break: break-all;
-  max-height: 200px;
-  overflow-y: auto;
-  margin-top: 0.5rem;
-}
-
-.error-additional-info {
-  background: #e3f2fd;
-  border: 1px solid #bbdefb;
-  border-radius: 8px;
-  padding: 1rem;
-  margin: 1rem 0;
-}
-
-.error-additional-info h4 {
-  margin: 0 0 0.5rem 0;
-  color: #1976d2;
-  font-size: 1rem;
-}
-
-.error-additional-info p {
-  margin: 0.25rem 0;
-  font-size: 0.9rem;
+.instruction-guide h5 {
+  margin: 0 0 12px 0;
   color: #333;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
-.error-report-form {
+.instruction-steps {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 12px;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.step-number {
+  background: #667eea;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.step-content strong {
+  display: block;
+  color: #333;
+  font-size: 0.875rem;
+  margin-bottom: 4px;
+}
+
+.step-content p {
+  margin: 0;
+  color: #666;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.error-reporting-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .form-group label {
   font-weight: 600;
-  color: #495057;
+  color: #333;
   font-size: 0.9rem;
 }
 
-.form-group input,
+.required {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.form-group select,
 .form-group textarea {
-  padding: 0.75rem;
-  border: 1px solid #ced4da;
-  border-radius: 6px;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
   font-size: 0.9rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
 }
 
-.form-group input:focus,
+.form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group select.error,
+.form-group textarea.error {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
 }
 
 .form-group textarea {
   resize: vertical;
-  min-height: 120px;
+  min-height: 100px;
 }
 
-.character-count {
-  text-align: right;
-  font-size: 0.8rem;
-  color: #6c757d;
-  margin-top: 0.25rem;
-}
-
-.form-group label input[type="checkbox"] {
-  margin-right: 0.5rem;
-  width: auto;
-}
-
-.form-actions {
+.submit-buttons {
   display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e9ecef;
+  gap: 12px;
+  margin-top: 8px;
 }
 
-.cancel-button,
 .submit-button {
-  padding: 0.75rem 1.5rem;
+  flex: 1;
+  padding: 12px 20px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  min-width: 120px;
   justify-content: center;
-}
-
-.cancel-button {
-  background: #6c757d;
-  color: white;
-}
-
-.cancel-button:hover:not(:disabled) {
-  background: #5a6268;
-}
-
-.submit-button {
-  background: #dc3545;
-  color: white;
-}
-
-.submit-button:hover:not(:disabled) {
-  background: #c82333;
+  gap: 8px;
 }
 
 .submit-button:disabled {
-  background: #6c757d;
-  cursor: not-allowed;
   opacity: 0.6;
+  cursor: not-allowed;
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-  .error-modal-overlay {
-    padding: 0.5rem;
-  }
+.submit-button.bug-report {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+}
 
-  .error-modal-content {
+.submit-button.bug-report:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c0392b, #a93226);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.submit-button.update-request {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: white;
+}
+
+.submit-button.update-request:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e67e22, #d35400);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .error-reporting-overlay {
+    padding: 10px;
+  }
+  
+  .error-reporting-modal {
     max-height: 95vh;
   }
-
-  .error-modal-header {
-    padding: 1rem;
+  
+  .error-reporting-header {
+    padding: 16px 20px;
   }
-
-  .error-modal-header h2 {
-    font-size: 1.3rem;
+  
+  .error-reporting-body {
+    padding: 20px;
   }
-
-  .error-modal-body {
-    padding: 1rem;
-  }
-
-  .form-actions {
+  
+  .submit-buttons {
     flex-direction: column;
   }
-
-  .cancel-button,
-  .submit-button {
-    width: 100%;
+  
+  .instruction-steps {
+    gap: 8px;
   }
-}
-
-@media (max-width: 480px) {
-  .error-modal-header h2 {
-    font-size: 1.2rem;
+  
+  .step {
+    gap: 8px;
   }
-
-  .error-details p {
-    font-size: 0.8rem;
-  }
-
-  .error-stack {
-    font-size: 0.7rem;
+  
+  .step-number {
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
   }
 }

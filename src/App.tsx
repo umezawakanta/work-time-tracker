@@ -10,6 +10,7 @@ import HeaderComponent from "./components/HeaderComponent";
 import DiaryReminderIntegration from "./components/DiaryReminderIntegration";
 import HetamaIconComponent from "./components/HetamaIconComponent";
 import MemosComponent from "./components/MemosComponent";
+import ErrorReportingModal from "./components/ErrorReportingModal";
 import ReportsComponent from "./components/ReportsComponent";
 import AdminPanelComponent from "./components/AdminPanelComponent";
 import LoginComponent from "./components/LoginComponent";
@@ -239,6 +240,7 @@ function App() {
   const [memos, setMemos] = useState<Memo[]>([]);
   const [showMemos, setShowMemos] = useState(false);
   const [showMemoForm, setShowMemoForm] = useState(false);
+  const [showErrorReportingModal, setShowErrorReportingModal] = useState(false);
   const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
   const [memoTitle, setMemoTitle] = useState("");
 
@@ -3156,9 +3158,47 @@ ${errorInfo.stack}
     const handleErrorReport = (event: CustomEvent) => {
       const { category, content } = event.detail;
       setShowMemos(true);
-      setShowMemoForm(true);
+      setShowErrorReportingModal(true);
       setMemoCategory(category);
       setMemoContent(content);
+    };
+
+    // エラーレポートの送信ハンドラー
+    const handleErrorReportSubmit = async (report: {
+      title: string;
+      content: string;
+      errorDetails: string;
+      userAgent: string;
+      timestamp: string;
+    }) => {
+      try {
+        const response = await fetch('/api/memos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({
+            title: report.title,
+            content: report.content,
+            category: report.title === '不具合報告' ? '不具合報告' : '改善要望',
+            isPublic: true,
+            postType: report.title === '不具合報告' ? 'error_report' : 'update_request',
+            selectedFeature: report.errorDetails.split(': ')[1] || 'other',
+            tags: ['報告', report.title === '不具合報告' ? 'バグ' : '要望']
+          })
+        });
+
+        if (response.ok) {
+          alert('報告を投稿しました！');
+          loadMemos();
+        } else {
+          alert('報告の投稿に失敗しました。');
+        }
+      } catch (error) {
+        console.error('報告の投稿エラー:', error);
+        alert('報告の投稿に失敗しました。');
+      }
     };
     
     window.addEventListener('showErrorReport', handleErrorReport as EventListener);
@@ -6109,6 +6149,12 @@ ${errorInfo.stack}
           error={currentError}
           onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => void}
           buttonPosition={errorModalButtonPosition}
+        />
+        <ErrorReportingModal
+          isOpen={showErrorReportingModal}
+          onClose={() => setShowErrorReportingModal(false)}
+          onSubmit={handleErrorReportSubmit}
+          initialContent={memoContent}
         />
     </>
   );

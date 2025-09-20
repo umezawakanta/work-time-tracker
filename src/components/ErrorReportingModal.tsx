@@ -4,97 +4,83 @@ import './ErrorReportingModal.css';
 interface ErrorReportingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  error: Error | null;
-  onSubmit: (errorReport: {
+  onSubmit: (report: {
     title: string;
     content: string;
     errorDetails: string;
     userAgent: string;
     timestamp: string;
-  }) => void;
+  }) => Promise<void>;
+  initialCategory?: string;
+  initialContent?: string;
 }
 
 const ErrorReportingModal: React.FC<ErrorReportingModalProps> = ({
   isOpen,
   onClose,
-  error,
-  onSubmit
+  onSubmit,
+  initialCategory = '',
+  initialContent = ''
 }) => {
-  const [title, setTitle] = useState('');
+  const [selectedFeature, setSelectedFeature] = useState('');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // モーダル表示時にスクロールを無効化
+  // 機能選択肢
+  const featureOptions = [
+    { value: '', label: '対象機能を選択してください', disabled: true },
+    { value: 'time_tracking', label: '時間記録機能' },
+    { value: 'work_records', label: 'おしごと記録機能' },
+    { value: 'memos', label: 'メモ機能' },
+    { value: 'notifications', label: '通知機能' },
+    { value: 'admin_panel', label: '管理者パネル' },
+    { value: 'authentication', label: '認証機能' },
+    { value: 'ui_ux', label: 'UI/UX' },
+    { value: 'performance', label: 'パフォーマンス' },
+    { value: 'other', label: 'その他' }
+  ];
+
+  // モーダルが開かれた時の初期化
   useEffect(() => {
     if (isOpen) {
-      // 現在のスクロール位置を保存
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-      
-      return () => {
-        // モーダル閉じる時にスクロール位置を復元
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        window.scrollTo(0, scrollY);
-      };
+      setSelectedFeature('');
+      setContent(initialContent);
     }
-  }, [isOpen]);
+  }, [isOpen, initialContent]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !content.trim()) return;
+  const handleSubmit = async (type: 'error_report' | 'update_request') => {
+    if (!selectedFeature || !content.trim()) {
+      alert('対象機能と内容を入力してください。');
+      return;
+    }
 
     setIsSubmitting(true);
     
     try {
-      // エラーの詳細情報を構築
-      let errorDetails = '';
-      if (error) {
-        errorDetails = `${error.name}: ${error.message}\n`;
-        if (error.stack) {
-          errorDetails += `Stack Trace:\n${error.stack}\n`;
-        }
-        
-        // 追加のエラー情報がある場合
-        if ((error as any).errorInfo) {
-          const errorInfo = (error as any).errorInfo;
-          errorDetails += `\n詳細情報:\n`;
-          errorDetails += `タイプ: ${errorInfo.type}\n`;
-          errorDetails += `ファイル: ${errorInfo.filename}\n`;
-          errorDetails += `行: ${errorInfo.lineno}\n`;
-          errorDetails += `列: ${errorInfo.colno}\n`;
-          errorDetails += `URL: ${errorInfo.url}\n`;
-          errorDetails += `タイムスタンプ: ${errorInfo.timestamp}\n`;
-        }
-      }
-
-      const errorReport = {
-        title: title.trim(),
+      const report = {
+        title: type === 'error_report' ? '不具合報告' : '改善要望',
         content: content.trim(),
-        errorDetails: errorDetails,
+        errorDetails: `対象機能: ${featureOptions.find(f => f.value === selectedFeature)?.label || selectedFeature}`,
         userAgent: navigator.userAgent,
         timestamp: new Date().toISOString()
       };
 
-      await onSubmit(errorReport);
+      await onSubmit(report);
       
       // フォームをリセット
-      setTitle('');
+      setSelectedFeature('');
       setContent('');
       onClose();
     } catch (err) {
-      console.error('エラー報告の送信に失敗しました:', err);
-      alert('エラー報告の送信に失敗しました。もう一度お試しください。');
+      console.error('報告の送信に失敗しました:', err);
+      alert('報告の送信に失敗しました。もう一度お試しください。');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleClose = () => {
-    setTitle('');
+    setSelectedFeature('');
     setContent('');
     onClose();
   };
@@ -102,15 +88,15 @@ const ErrorReportingModal: React.FC<ErrorReportingModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="error-modal-overlay">
-      <div className="error-modal-content">
-        <div className="error-modal-header">
-          <h2>
+    <div className="error-reporting-overlay">
+      <div className="error-reporting-modal">
+        <div className="error-reporting-header">
+          <h3>
             <i className="bi bi-exclamation-triangle"></i>
-            エラー報告
-          </h2>
+            不具合報告・改善要望
+          </h3>
           <button
-            className="error-modal-close"
+            className="error-reporting-close"
             onClick={handleClose}
             aria-label="閉じる"
           >
@@ -118,104 +104,90 @@ const ErrorReportingModal: React.FC<ErrorReportingModalProps> = ({
           </button>
         </div>
 
-        <div className="error-modal-body">
-          <div className="error-info">
-            <h3>発生したエラー</h3>
-            <div className="error-details">
-              <p><strong>エラー名:</strong> {error?.name || '不明'}</p>
-              <p><strong>エラーメッセージ:</strong> {error?.message || '不明'}</p>
-              
-              {/* 追加のエラー情報を表示 */}
-              {(error as any)?.errorInfo && (
-                <div className="error-additional-info">
-                  <h4>詳細情報</h4>
-                  <p><strong>タイプ:</strong> {(error as any).errorInfo.type}</p>
-                  <p><strong>ファイル:</strong> {(error as any).errorInfo.filename}</p>
-                  <p><strong>行:</strong> {(error as any).errorInfo.lineno}</p>
-                  <p><strong>列:</strong> {(error as any).errorInfo.colno}</p>
-                  <p><strong>URL:</strong> {(error as any).errorInfo.url}</p>
-                  <p><strong>発生時刻:</strong> {(error as any).errorInfo.timestamp}</p>
+        <div className="error-reporting-body">
+          <div className="instruction-guide">
+            <h5>送信手順：</h5>
+            <div className="instruction-steps">
+              <div className="step">
+                <span className="step-number">1</span>
+                <div className="step-content">
+                  <strong>対象機能を選択</strong>
+                  <p>不具合や改善要望が発生した機能を選択してください（必須）</p>
                 </div>
-              )}
-              
-              {error?.stack && (
-                <details>
-                  <summary>スタックトレース</summary>
-                  <pre className="error-stack">{error.stack}</pre>
-                </details>
-              )}
+              </div>
+              <div className="step">
+                <span className="step-number">2</span>
+                <div className="step-content">
+                  <strong>詳細を記入</strong>
+                  <p>不具合の場合は再現手順、改善要望の場合は具体的な内容を記入してください（必須）</p>
+                </div>
+              </div>
+              <div className="step">
+                <span className="step-number">3</span>
+                <div className="step-content">
+                  <strong>送信ボタンをクリック</strong>
+                  <p>「不具合報告を送信」または「改善要望を送信」ボタンをクリックしてください</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="error-report-form">
+          <div className="error-reporting-form">
             <div className="form-group">
-              <label htmlFor="errorTitle">タイトル *</label>
-              <input
-                type="text"
-                id="errorTitle"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="エラーの概要を入力してください"
-                required
-                maxLength={100}
-              />
+              <label htmlFor="selectedFeature">対象機能 <span className="required">*</span></label>
+              <select
+                id="selectedFeature"
+                value={selectedFeature}
+                onChange={(e) => setSelectedFeature(e.target.value)}
+                className={!selectedFeature ? 'error' : ''}
+              >
+                {featureOptions.map((option) => (
+                  <option 
+                    key={option.value} 
+                    value={option.value}
+                    disabled={option.disabled}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </div>
-
+            
             <div className="form-group">
-              <label htmlFor="errorContent">詳細説明 *</label>
+              <label htmlFor="reportContent">内容 <span className="required">*</span></label>
               <textarea
-                id="errorContent"
+                id="reportContent"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="エラーが発生した状況や再現手順を詳しく説明してください"
-                rows={6}
-                required
-                maxLength={1000}
+                placeholder="不具合の詳細や改善要望を記入してください..."
+                rows={4}
+                className={!content.trim() ? 'error' : ''}
               />
-              <div className="character-count">
-                {content.length}/1000文字
-              </div>
             </div>
-
-            <div className="form-group">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={true}
-                  readOnly
-                />
-                このエラーを公開メモとして投稿し、開発者に報告します
-              </label>
-            </div>
-
-            <div className="form-actions">
+            
+            <div className="submit-buttons">
               <button
                 type="button"
-                onClick={handleClose}
-                className="cancel-button"
-                disabled={isSubmitting}
+                className="submit-button bug-report"
+                onClick={() => handleSubmit('error_report')}
+                disabled={!selectedFeature || !content.trim() || isSubmitting}
+                title="不具合報告を送信"
               >
-                キャンセル
+                <i className="bi bi-bug"></i>
+                <span>{isSubmitting ? '送信中...' : '不具合報告を送信'}</span>
               </button>
               <button
-                type="submit"
-                className="submit-button"
-                disabled={isSubmitting || !title.trim() || !content.trim()}
+                type="button"
+                className="submit-button update-request"
+                onClick={() => handleSubmit('update_request')}
+                disabled={!selectedFeature || !content.trim() || isSubmitting}
+                title="改善要望を送信"
               >
-                {isSubmitting ? (
-                  <>
-                    <i className="bi bi-hourglass-split"></i>
-                    送信中...
-                  </>
-                ) : (
-                  <>
-                    <i className="bi bi-send"></i>
-                    エラーを報告
-                  </>
-                )}
+                <i className="bi bi-lightbulb"></i>
+                <span>{isSubmitting ? '送信中...' : '改善要望を送信'}</span>
               </button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
