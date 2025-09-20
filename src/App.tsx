@@ -4012,8 +4012,13 @@ ${errorInfo.stack}
   };
 
   // エラー報告のコンテンツフォーマット関数
-  const formatErrorReportContent = (content: string, userAgent: string, timestamp: string) => {
-    return `APIエラーが発生しました。
+  const formatErrorReportContent = (
+    content: string,
+    userAgent: string,
+    timestamp: string,
+    errorType: string = "APIエラー"
+  ) => {
+    return `${errorType}が発生しました。
 
 --- エラー詳細 ---
 ${content}
