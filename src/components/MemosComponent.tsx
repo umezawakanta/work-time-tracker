@@ -665,6 +665,30 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                   不具合や改善要望は専用ボタンから送信してください。適切な機能を選択し、詳細な内容を記入してください。
                 </p>
               </div>
+              {/* 機能選択 */}
+              <div className="quick-feature-selection">
+                <label htmlFor="quickSelectedFeature">対象機能 <span className="required">*</span></label>
+                <select
+                  id="quickSelectedFeature"
+                  value={memoSelectedFeature}
+                  onChange={(e) => setMemoSelectedFeature(e.target.value)}
+                  className={!memoSelectedFeature ? 'error' : ''}
+                >
+                  {featureOptions.map((option) => (
+                    <option 
+                      key={option.value} 
+                      value={option.value}
+                      disabled={option.disabled}
+                    >
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <small className="form-help">
+                  不具合報告・改善要望の場合は対象となる機能を選択してください
+                </small>
+              </div>
+
               <div className="quick-buttons">
                 <button
                   type="button"
@@ -752,32 +776,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                 </select>
               </div>
 
-              {/* 不具合報告・更新要望の場合のみ機能選択を表示 */}
-              {(memoCategory === '不具合報告' || memoCategory === '更新要望') && (
-                <div className="form-group">
-                  <label htmlFor="selectedFeature">対象機能 <span className="required">*</span></label>
-                  <select
-                    id="selectedFeature"
-                    value={memoSelectedFeature}
-                    onChange={(e) => setMemoSelectedFeature(e.target.value)}
-                    required
-                    className={!memoSelectedFeature && memoCategory && (memoCategory === '不具合報告' || memoCategory === '更新要望') ? 'error' : ''}
-                  >
-                    {featureOptions.map((option) => (
-                      <option 
-                        key={option.value} 
-                        value={option.value}
-                        disabled={option.disabled}
-                      >
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <small className="form-help">
-                    不具合報告・更新要望の場合は対象となる機能を選択してください
-                  </small>
-                </div>
-              )}
 
               <div className="form-group">
                 <label htmlFor="memoPostType">投稿タイプ</label>

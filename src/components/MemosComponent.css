@@ -1344,6 +1344,58 @@
   line-height: 1.4;
 }
 
+.quick-feature-selection {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.quick-feature-selection label {
+  display: block;
+  color: white;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.quick-feature-selection .required {
+  color: #ffeb3b;
+  font-weight: 700;
+}
+
+.quick-feature-selection select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.quick-feature-selection select:focus {
+  outline: none;
+  border-color: #ffeb3b;
+  box-shadow: 0 0 0 3px rgba(255, 235, 59, 0.3);
+  background: white;
+}
+
+.quick-feature-selection select.error {
+  border-color: #ff4757;
+  background: #ffe6e6;
+}
+
+.quick-feature-selection .form-help {
+  display: block;
+  margin-top: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
 .quick-buttons {
   display: flex;
   gap: 1rem;
