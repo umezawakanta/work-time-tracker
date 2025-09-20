@@ -287,7 +287,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   const getAllCategories = () => {
     const defaultCategories = [
       "仕事", "学習", "趣味", "健康", "家族", "旅行", "読書", "映画", "音楽",
-      "スポーツ", "料理", "要望、リクエスト", "その他",
+      "スポーツ", "料理", "その他",
     ];
     // 削除されたデフォルトカテゴリを除外
     const availableDefaultCategories = defaultCategories.filter(category => !deletedDefaultCategories.includes(category));
@@ -333,10 +333,15 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   return (
     <div className="memos-section">
       <div className="section-header">
-        <h2>
-          <i className="bi bi-journal-text section-icon"></i>
-          メモ
-        </h2>
+        <div className="section-title">
+          <h2>
+            <i className="bi bi-journal-text section-icon"></i>
+            メモ
+          </h2>
+          <p className="section-description">
+            個人的なメモや記録を保存・管理できます。不具合報告や改善要望は専用ボタンから送信してください。
+          </p>
+        </div>
         <div className="section-controls">
           {showMemos && (
             <button
@@ -648,10 +653,18 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
             </div>
           )}
 
-          {/* ワンクリック送信ボタン */}
+          {/* 不具合報告・改善要望専用送信ボタン */}
           {showMemoForm && (
             <div className="quick-action-buttons">
-              <h4>クイック送信</h4>
+              <div className="quick-action-header">
+                <h4>
+                  <i className="bi bi-exclamation-triangle"></i>
+                  不具合報告・改善要望の送信
+                </h4>
+                <p className="quick-action-description">
+                  不具合や改善要望は専用ボタンから送信してください。適切な機能を選択し、詳細な内容を記入してください。
+                </p>
+              </div>
               <div className="quick-buttons">
                 <button
                   type="button"
@@ -660,7 +673,10 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                   title="不具合報告を送信"
                 >
                   <i className="bi bi-bug"></i>
-                  不具合報告を送信
+                  <span className="button-text">
+                    <strong>不具合報告</strong>
+                    <small>バグやエラーを報告</small>
+                  </span>
                 </button>
                 <button
                   type="button"
@@ -669,12 +685,15 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                   title="更新要望を送信"
                 >
                   <i className="bi bi-lightbulb"></i>
-                  更新要望を送信
+                  <span className="button-text">
+                    <strong>改善要望</strong>
+                    <small>機能改善を提案</small>
+                  </span>
                 </button>
               </div>
               <div className="quick-note">
                 <i className="bi bi-info-circle"></i>
-                上記のボタンをクリックすると、現在の内容で自動的に送信されます
+                <span>上記のボタンをクリックすると、現在の内容で自動的に送信されます。機能選択と内容入力が必須です。</span>
               </div>
             </div>
           )}
@@ -685,6 +704,14 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
               onSubmit={editingMemo ? handleUpdateMemo : handleCreateMemo}
               className="memo-form"
             >
+              <div className="form-header">
+                <h3>
+                  {editingMemo ? "メモを編集" : "新しいメモを追加"}
+                </h3>
+                <p className="form-description">
+                  個人的なメモや記録を作成します。不具合報告や改善要望は上記の専用ボタンをご利用ください。
+                </p>
+              </div>
               <div className="form-group">
                 <label htmlFor="memoTitle">タイトル（任意）</label>
                 <input

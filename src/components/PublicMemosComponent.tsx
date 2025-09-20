@@ -263,10 +263,15 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   return (
     <div className="public-memos-section">
       <div className="section-header">
-        <h2>
-          <span className="section-icon">🌍</span>
-          公開メモ
-        </h2>
+        <div className="section-title">
+          <h2>
+            <span className="section-icon">🌍</span>
+            公開メモ
+          </h2>
+          <p className="section-description">
+            他のユーザーと共有できる公開メモを閲覧できます。不具合報告や改善要望は専用ボタンから送信してください。
+          </p>
+        </div>
         <div className="section-controls">
           {showPublicMemos ? (
             <button
