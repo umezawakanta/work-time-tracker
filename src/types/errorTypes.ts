@@ -188,9 +188,9 @@ export const buildErrorInfo = (
     timestamp: apiErrorInfo?.timestamp || getTimestamp(),
     userAgent: apiErrorInfo?.userAgent || ERROR_DEFAULTS.USER_AGENT,
     url: apiErrorInfo?.url || extractedInfo?.url || ERROR_DEFAULTS.URL,
-    status: apiErrorInfo?.status || extractedInfo?.status,
+    status: apiErrorInfo?.status ?? extractedInfo?.status,
     statusText: apiErrorInfo?.statusText,
-    method: apiErrorInfo?.method || extractedInfo?.method
+    method: apiErrorInfo?.method ?? extractedInfo?.method
   };
 };
 
