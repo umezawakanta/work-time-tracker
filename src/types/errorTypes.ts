@@ -60,15 +60,17 @@ export interface ErrorInfo {
   method?: string;
 }
 
+// タイムスタンプを取得する関数
+export const getTimestamp = (): string => {
+  return new Date().toISOString();
+};
+
 // デフォルト値の定数
 export const ERROR_DEFAULTS = {
   FILENAME: 'Unknown',
   LINENO: 0,
   COLNO: 0,
   TYPE: 'Unknown',
-  get TIMESTAMP() {
-    return new Date().toISOString();
-  },
   USER_AGENT: typeof navigator !== "undefined" && navigator.userAgent
     ? navigator.userAgent
     : "",
@@ -94,7 +96,7 @@ export const buildErrorInfo = (
     lineno: ERROR_DEFAULTS.LINENO,
     colno: ERROR_DEFAULTS.COLNO,
     type: ERROR_DEFAULTS.TYPE,
-    timestamp: apiErrorInfo?.timestamp || ERROR_DEFAULTS.TIMESTAMP,
+    timestamp: apiErrorInfo?.timestamp || getTimestamp(),
     userAgent: apiErrorInfo?.userAgent || ERROR_DEFAULTS.USER_AGENT,
     url: apiErrorInfo?.url || extractedInfo?.url || ERROR_DEFAULTS.URL,
     status: apiErrorInfo?.status || extractedInfo?.status,
