@@ -96,7 +96,7 @@ module.exports = async function handler(req, res) {
     const { page = 1, limit = 20, unreadOnly = false } = req.query;
 
     // クエリ条件を構築
-    const query: any = { userId: user.userId };
+    const query = { userId: user.userId };
     if (unreadOnly === 'true') {
       query.isRead = false;
     }
