@@ -19,6 +19,7 @@ import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import NotificationComponent from "./components/NotificationComponent";
 import EggTimerComponent from "./components/EggTimerComponent";
+import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import {
@@ -55,6 +56,9 @@ import type {
 } from "./types";
 
 function App() {
+  // ローディング状態の管理
+  const loadingState = useLoadingState();
+  
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [user, setUser] = useState<User | null>(null);
@@ -70,7 +74,7 @@ function App() {
   const [currentError, setCurrentError] = useState<Error | null>(null);
   const [errorModalButtonPosition, setErrorModalButtonPosition] = useState<{ x: number; y: number } | undefined>(undefined);
 
-  // 各機能のローディング状態
+  // 各機能のローディング状態（LoadingStateManagerで管理）
   const [memosLoading, setMemosLoading] = useState(false);
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
   const [projectsLoading, setProjectsLoading] = useState(false);
@@ -3708,7 +3712,7 @@ ${errorInfo.stack}
   };
 
   const loadReportSummary = async () => {
-    setReportsLoading(true);
+    loadingState.setReportsLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/reports/summary", {
@@ -3725,12 +3729,12 @@ ${errorInfo.stack}
     } catch (error) {
       console.error("Failed to load report summary:", error);
     } finally {
-      setReportsLoading(false);
+      loadingState.setReportsLoading(false);
     }
   };
 
   const loadAdminUsers = async () => {
-    setAdminUsersLoading(true);
+    loadingState.setAdminUsersLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/admin/users", {
@@ -3752,7 +3756,7 @@ ${errorInfo.stack}
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
     } finally {
-      setAdminUsersLoading(false);
+      loadingState.setAdminUsersLoading(false);
     }
   };
 
@@ -4043,7 +4047,7 @@ ${errorInfo.stack}
 
   // メモ関連の関数
   const loadMemos = async () => {
-    setMemosLoading(true);
+    loadingState.setMemosLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const params = new URLSearchParams();
@@ -4086,7 +4090,7 @@ ${errorInfo.stack}
         );
       }
     } finally {
-      setMemosLoading(false);
+      loadingState.setMemosLoading(false);
     }
   };
 
@@ -5795,7 +5799,7 @@ ${errorInfo.stack}
                     setShowReports={setShowReports}
                     incomeExpenseRecords={incomeExpenseRecords}
                     workDiaries={workDiaries}
-                    reportsLoading={reportsLoading}
+                    reportsLoading={loadingState.reportsLoading}
                     reportSummary={reportSummary}
                     loadReportSummary={loadReportSummary}
                     closeOtherFeatures={closeOtherFeatures}
@@ -5866,7 +5870,7 @@ ${errorInfo.stack}
                   <MemosComponent
                     key={feature.id}
                     memos={memos}
-                    memosLoading={memosLoading}
+                    memosLoading={loadingState.memosLoading}
                     showMemos={showMemos}
                     setShowMemos={setShowMemos}
                     customCategories={customCategories}
@@ -6456,4 +6460,13 @@ ${errorInfo.stack}
   );
 }
 
-export default App;
+// AppコンポーネントをLoadingStateProviderでラップ
+const AppWithLoadingProvider = () => {
+  return (
+    <LoadingStateProvider>
+      <App />
+    </LoadingStateProvider>
+  );
+};
+
+export default AppWithLoadingProvider;
