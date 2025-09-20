@@ -95,7 +95,7 @@ module.exports = async function handler(req, res) {
         if (!recordObj.type) {
           console.warn(`[salary.js] Record with _id=${recordObj._id} is missing 'type' field. Possible client bug or legacy data.`);
           // Optionally, you could add a flag to the record for client-side handling:
-          recordObj.typeMissing = true;
+          // recordObj.typeMissing = true; // Removed to avoid breaking existing clients
         }
         return recordObj;
       });
