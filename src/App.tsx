@@ -5709,8 +5709,14 @@ ${errorInfo.stack}
                     setMemoContent={setMemoContent}
                     memoCategory={memoCategory}
                     setMemoCategory={setMemoCategory}
+                    memoTags={memoTags}
+                    setMemoTags={setMemoTags}
                     memoIsPublic={memoIsPublic}
                     setMemoIsPublic={setMemoIsPublic}
+                    memoIsFamilyOnly={memoIsFamilyOnly}
+                    setMemoIsFamilyOnly={setMemoIsFamilyOnly}
+                    memoIsAdminOnly={memoIsAdminOnly}
+                    setMemoIsAdminOnly={setMemoIsAdminOnly}
                     memoPostType={memoPostType}
                     setMemoPostType={setMemoPostType}
                     handleReplySubmit={handleReplySubmit}

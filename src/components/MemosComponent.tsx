@@ -24,8 +24,14 @@ interface MemosComponentProps {
   setMemoContent: (content: string) => void;
   memoCategory: string;
   setMemoCategory: (category: string) => void;
+  memoTags: string;
+  setMemoTags: (tags: string) => void;
   memoIsPublic: boolean;
   setMemoIsPublic: (isPublic: boolean) => void;
+  memoIsFamilyOnly: boolean;
+  setMemoIsFamilyOnly: (isFamilyOnly: boolean) => void;
+  memoIsAdminOnly: boolean;
+  setMemoIsAdminOnly: (isAdminOnly: boolean) => void;
   memoPostType: string;
   setMemoPostType: (postType: string) => void;
   handleReplySubmit: (memoId: string) => void;
@@ -61,8 +67,14 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   setMemoContent,
   memoCategory,
   setMemoCategory,
+  memoTags,
+  setMemoTags,
   memoIsPublic,
   setMemoIsPublic,
+  memoIsFamilyOnly,
+  setMemoIsFamilyOnly,
+  memoIsAdminOnly,
+  setMemoIsAdminOnly,
   memoPostType,
   setMemoPostType,
   handleReplySubmit,
