@@ -186,9 +186,13 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
 
   // 日時フォーマット関数
   const formatDateTime = (dateString: string) => {
-    if (!dateString) return '日付不明';
+    if (!dateString) {
+      return '日付不明';
+    }
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return '無効な日付';
+    if (isNaN(date.getTime())) {
+      return '無効な日付';
+    }
     return date.toLocaleString("ja-JP", {
       year: "numeric",
       month: "2-digit",
@@ -215,6 +219,21 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     return Array.from(new Set(allCategories)).sort();
   };
 
+  // メモの件数を計算する関数
+  const getMemoCounts = () => {
+    const totalMemos = memos.length;
+    const errorReports = memos.filter(memo => memo.postType === 'error_report').length;
+    const updateRequests = memos.filter(memo => memo.postType === 'update_request').length;
+    const generalMemos = memos.filter(memo => !memo.postType || memo.postType === 'general').length;
+    
+    return {
+      total: totalMemos,
+      errorReports,
+      updateRequests,
+      general: generalMemos
+    };
+  };
+
 
 
 
@@ -226,10 +245,27 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
           <h2>
             <i className="bi bi-journal-text section-icon"></i>
             メモ
+            <span className="memo-count-badge">
+              {getMemoCounts().total}件
+            </span>
           </h2>
           <p className="section-description">
             個人的なメモや記録を保存・管理できます。
           </p>
+          <div className="memo-stats">
+            <span className="stat-item">
+              <i className="bi bi-journal-text"></i>
+              一般: {getMemoCounts().general}件
+            </span>
+            <span className="stat-item">
+              <i className="bi bi-bug"></i>
+              不具合報告: {getMemoCounts().errorReports}件
+            </span>
+            <span className="stat-item">
+              <i className="bi bi-lightbulb"></i>
+              更新要望: {getMemoCounts().updateRequests}件
+            </span>
+          </div>
         </div>
         <div className="section-controls">
           {showMemos ? (

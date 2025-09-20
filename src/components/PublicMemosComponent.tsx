@@ -149,9 +149,13 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // 日時フォーマット関数
   const formatDateTime = (dateString: string) => {
-    if (!dateString) return '日付不明';
+    if (!dateString) {
+      return '日付不明';
+    }
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return '無効な日付';
+    if (isNaN(date.getTime())) {
+      return '無効な日付';
+    }
     return date.toLocaleString("ja-JP", {
       year: "numeric",
       month: "2-digit",
@@ -167,17 +171,15 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       return memo.title;
     }
     // タイトルが空の場合は内容の一行目を返す
-    const firstLine = memo.content.split("\n")[0].trim();
-    return firstLine || "無題のメモ";
+    return memo.content.split("\n")[0].trim() || "無題のメモ";
   };
 
   // 利用可能なジャンル一覧を取得（デフォルト + カスタム）
   const getAllGenres = () => {
-    const defaultGenres = [
+    return [
       "仕事", "学習", "趣味", "健康", "家族", "旅行", "読書", "映画", "音楽",
       "スポーツ", "料理", "要望、リクエスト", "その他",
     ];
-    return defaultGenres;
   };
 
   // 公開メモカテゴリを取得する関数
@@ -260,6 +262,21 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   const monthlyStats = getMonthlyStats();
 
+  // 公開メモの件数を計算する関数
+  const getPublicMemoCounts = () => {
+    const totalMemos = publicMemos.length;
+    const errorReports = publicMemos.filter(memo => memo.postType === 'error_report').length;
+    const updateRequests = publicMemos.filter(memo => memo.postType === 'update_request').length;
+    const generalMemos = publicMemos.filter(memo => !memo.postType || memo.postType === 'general').length;
+    
+    return {
+      total: totalMemos,
+      errorReports,
+      updateRequests,
+      general: generalMemos
+    };
+  };
+
   return (
     <div className="public-memos-section">
       <div className="section-header">
@@ -267,10 +284,27 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
           <h2>
             <span className="section-icon">🌍</span>
             公開メモ
+            <span className="memo-count-badge">
+              {getPublicMemoCounts().total}件
+            </span>
           </h2>
           <p className="section-description">
             他のユーザーと共有できる公開メモを閲覧できます。不具合報告や改善要望は専用ボタンから送信してください。
           </p>
+          <div className="memo-stats">
+            <span className="stat-item">
+              <i className="bi bi-journal-text"></i>
+              一般: {getPublicMemoCounts().general}件
+            </span>
+            <span className="stat-item">
+              <i className="bi bi-bug"></i>
+              不具合報告: {getPublicMemoCounts().errorReports}件
+            </span>
+            <span className="stat-item">
+              <i className="bi bi-lightbulb"></i>
+              更新要望: {getPublicMemoCounts().updateRequests}件
+            </span>
+          </div>
         </div>
         <div className="section-controls">
           {showPublicMemos ? (
@@ -564,12 +598,6 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                         </span>
                         {memo.postType === 'update_request' && (
                           <span className="update-request-badge"><i className="bi bi-lightbulb"></i> 更新要望</span>
-                        )}
-                        {memo.postType === 'admin_only' && (
-                          <span className="admin-only-badge"><i className="bi bi-shield-lock"></i> 管理者限定</span>
-                        )}
-                        {memo.postType === 'family_only' && (
-                          <span className="family-only-badge"><i className="bi bi-people"></i> 家族限定</span>
                         )}
                       </div>
                     </div>

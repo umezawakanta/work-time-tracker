@@ -1966,6 +1966,65 @@
   background: linear-gradient(135deg, #e67e22, #d35400);
 }
 
+/* メモ件数バッジ */
+.memo-count-badge {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* メモ統計 */
+.memo-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #495057;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.stat-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.stat-item i {
+  font-size: 0.9rem;
+  color: #007bff;
+}
+
+.stat-item:nth-child(2) i {
+  color: #dc3545;
+}
+
+.stat-item:nth-child(3) i {
+  color: #ffc107;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
   .report-request-actions {
@@ -1976,5 +2035,14 @@
   .report-button {
     min-width: auto;
     width: 100%;
+  }
+
+  .memo-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .stat-item {
+    justify-content: center;
   }
 }
