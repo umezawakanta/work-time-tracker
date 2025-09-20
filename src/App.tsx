@@ -1908,9 +1908,7 @@ ${errorInfo.stack}
         return;
       }
         const { apiFetch } = await import("./utils/apiClient");
-        const response = await apiFetch(
-          `/api/work-records/salary?userId=${user.id}`
-        );
+        const response = await apiFetch("/api/work-records/salary");
 
         const data = await response.json();
         if (data.success) {
@@ -2028,14 +2026,17 @@ ${errorInfo.stack}
 
       const response = await fetch("/api/work-records/salary", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem('access_token')}`
+        },
         body: JSON.stringify({
-          userId: user.id,
           date: incomeExpenseDate,
-          salary: amount,
+          amount: amount,
+          type: incomeExpenseType,
           transportation: 0,
-          miscellaneous: 0,
-          other: 0,
+          overtime: 0,
+          bonus: 0,
           notes: incomeExpenseNotes,
         }),
       });
@@ -2070,22 +2071,23 @@ ${errorInfo.stack}
           ? -Math.abs(Number(incomeExpenseAmount))
           : Math.abs(Number(incomeExpenseAmount));
 
-      const response = await fetch(
-        `/api/work-records/salary/${editingIncomeExpenseRecord._id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: user.id,
-            date: incomeExpenseDate,
-            salary: amount,
-            transportation: 0,
-            miscellaneous: 0,
-            other: 0,
-            notes: incomeExpenseNotes,
-          }),
-        }
-      );
+      const response = await fetch("/api/work-records/salary", {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({
+          id: editingIncomeExpenseRecord._id,
+          date: incomeExpenseDate,
+          amount: amount,
+          type: incomeExpenseType,
+          transportation: 0,
+          overtime: 0,
+          bonus: 0,
+          notes: incomeExpenseNotes,
+        }),
+      });
 
       const data = await response.json();
       if (data.success) {
@@ -3155,6 +3157,7 @@ ${errorInfo.stack}
       const { category, content } = event.detail;
       setShowErrorModal(true);
       setCurrentError({
+        name: 'Error',
         message: content,
         stack: ''
       });
