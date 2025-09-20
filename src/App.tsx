@@ -23,6 +23,7 @@ import { ErrorInfo, ERROR_DEFAULTS, buildErrorInfo, getErrorInfo, formatErrorInf
 import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './utils/authUtils';
 import type { ApiErrorInfo } from './utils/apiErrorHandler';
 import { apiFetch } from './utils/apiClient';
+import { buildApiUrl, createUserIdParam, createIdParam } from './utils/urlUtils';
 import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
@@ -1941,7 +1942,8 @@ ${errorInfo.stack}
       }
 
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
-        return await apiFetch(`/api/work-records/diary?userId=${encodeURIComponent(user.id)}`, {
+        const url = buildApiUrl('/api/work-records/diary', createUserIdParam(user.id));
+        return await apiFetch(url, {
           method: "GET",
           headers: createAuthHeaders(token)
         });
@@ -2363,7 +2365,8 @@ ${errorInfo.stack}
       // executeAuthenticatedRequest: 認証トークンの取得とエラーハンドリング
       // apiFetch: HTTPエラーの処理とエラー報告
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
-        return await apiFetch(`/api/work-records/salary?id=${encodeURIComponent(id)}`, {
+        const url = buildApiUrl('/api/work-records/salary', createIdParam(id));
+        return await apiFetch(url, {
           method: "DELETE",
           headers: createAuthHeaders(token)
         });
@@ -2397,7 +2400,8 @@ ${errorInfo.stack}
       // executeAuthenticatedRequest: 認証トークンの取得とエラーハンドリング
       // apiFetch: HTTPエラーの処理とエラー報告
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
-        return await apiFetch(`/api/work-records/diary?id=${encodeURIComponent(id)}`, {
+        const url = buildApiUrl('/api/work-records/diary', createIdParam(id));
+        return await apiFetch(url, {
           method: "DELETE",
           headers: createAuthHeaders(token)
         });
@@ -2434,7 +2438,8 @@ ${errorInfo.stack}
 
     try {
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
-        return await apiFetch(`/api/user-settings?userId=${encodeURIComponent(user.id)}`, {
+        const url = buildApiUrl('/api/user-settings', createUserIdParam(user.id));
+        return await apiFetch(url, {
           method: "GET",
           headers: createAuthHeaders(token)
         });
