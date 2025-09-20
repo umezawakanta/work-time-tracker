@@ -2702,7 +2702,6 @@ ${errorInfo.stack}
     const jstDateStr = new Date(date.getTime() + 9 * 60 * 60 * 1000)
       .toISOString()
       .split("T")[0];
-    setSalaryDate(jstDateStr);
     setDiaryDate(jstDateStr);
   };
 
