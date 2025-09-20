@@ -29,7 +29,7 @@ export function parseStatus(statusMatch: RegExpMatchArray | null, statusMatch2: 
   if (statusMatch?.[1]) {
     return parseInt(statusMatch[1], 10);
   } else if (statusMatch2?.[1]) {
-    return parseInt(statusMatch2[1], 10);
+    return parseInt(statusMatch2?.[1], 10);
   }
   return undefined;
 }
