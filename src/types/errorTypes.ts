@@ -42,7 +42,7 @@ export function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: A
     typeof (error as { errorInfo?: unknown }).errorInfo === "object" &&
     (error as { errorInfo?: unknown }).errorInfo !== null
   ) {
-    const info = (error as { errorInfo: any }).errorInfo;
+    const info = (error as { errorInfo: unknown }).errorInfo;
     return (
       typeof info.message === "string" &&
       typeof info.filename === "string" &&
