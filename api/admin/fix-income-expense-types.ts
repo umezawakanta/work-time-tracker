@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ensureDatabaseConnection, verifyJWT } from '../utils/database';
-import mongoose from 'mongoose';
+
+// 既存のAPIパターンに合わせてrequireを使用
+const { ensureDatabaseConnection, verifyJWT } = require('../utils/database');
+const mongoose = require('mongoose');
 
 // 支出を示すキーワード
 const EXPENSE_KEYWORDS = [
