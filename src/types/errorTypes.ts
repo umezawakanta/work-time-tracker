@@ -62,8 +62,8 @@ export function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: A
   return false;
 }
 
-// エラー情報の型定義
-export interface ErrorInfo {
+// ブラウザエラー情報の型定義
+export interface BrowserErrorInfo {
   message: string;
   stack?: string;
   filename: string;
@@ -73,10 +73,17 @@ export interface ErrorInfo {
   timestamp: string;
   userAgent: string;
   url: string;
+}
+
+// APIエラー情報の型定義
+export interface ApiErrorDetails {
   status?: number;
   statusText?: string;
   method?: string;
 }
+
+// 統合されたエラー情報の型定義
+export interface ErrorInfo extends BrowserErrorInfo, ApiErrorDetails {}
 
 // タイムスタンプを取得する関数
 export const getTimestamp = (): string => {

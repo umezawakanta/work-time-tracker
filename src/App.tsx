@@ -4030,6 +4030,22 @@ ${content}
 User Agent: ${userAgent}
 発生時刻: ${timestamp}`;
   };
+
+  // APIエラーレポートのコンテンツ生成関数
+  const formatApiErrorReportContent = (errorInfo: Partial<ErrorInfo>) => {
+    const { statusInfo, methodInfo } = formatErrorInfo(errorInfo);
+    return `APIエラーが発生しました。
+
+--- エラー詳細 ---
+URL: ${errorInfo.url}
+${statusInfo ? `${statusInfo}` : ''}
+${methodInfo ? `${methodInfo}` : ''}
+エラー: ${errorInfo.message}
+
+--- システム情報 ---
+User Agent: ${errorInfo.userAgent}
+発生時刻: ${errorInfo.timestamp}`;
+  };
   // SimpleErrorReportingModal用のエラー報告送信処理
   const handleSimpleErrorReport = async (report: {
     title: string;
@@ -4088,10 +4104,7 @@ User Agent: ${userAgent}
         },
         body: JSON.stringify({
           title: `[エラー報告] API Error - ${errorInfo.status}`,
-          content: (() => {
-            const { statusInfo, methodInfo } = formatErrorInfo(errorInfo);
-            return `APIエラーが発生しました。\n\n--- エラー詳細 ---\nURL: ${errorInfo.url}\n${statusInfo ? `${statusInfo}\n` : ''}${methodInfo ? `${methodInfo}\n` : ''}エラー: ${errorInfo.message}\n\n--- システム情報 ---\nUser Agent: ${errorInfo.userAgent}\n発生時刻: ${errorInfo.timestamp}`;
-          })(),
+          content: formatApiErrorReportContent(errorInfo),
           category: "エラー報告",
           tags: ["エラー", "バグ報告", "システム"],
           isPublic: true,
