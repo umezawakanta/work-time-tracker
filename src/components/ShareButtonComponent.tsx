@@ -267,25 +267,28 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
               <p>{siteDescription}</p>
               
               {/* 更新履歴の表示 */}
-              {getLatestChangelog() && (
-                <div className="update-info">
-                  <h4>🆕 最新更新</h4>
-                  <div className="update-details">
-                    <span className="update-version">v{getLatestChangelog()?.version}</span>
-                    <span className="update-type">
-                      {getLatestChangelog()?.type === 'bugfix' && '🐛 バグ修正'}
-                      {getLatestChangelog()?.type === 'feature' && '✨ 新機能'}
-                      {getLatestChangelog()?.type === 'improvement' && '⚡ 改善'}
-                      {getLatestChangelog()?.type === 'breaking' && '💥 破壊的変更'}
-                    </span>
-                    <div className="update-changes">
-                      {getLatestChangelog()?.changes.slice(0, 3).map((change, index) => (
-                        <div key={index} className="update-change-item">• {change}</div>
-                      ))}
+              {(() => {
+                const latest = getLatestChangelog();
+                return latest && (
+                  <div className="update-info">
+                    <h4>🆕 最新更新</h4>
+                    <div className="update-details">
+                      <span className="update-version">v{latest.version}</span>
+                      <span className="update-type">
+                        {latest.type === 'bugfix' && '🐛 バグ修正'}
+                        {latest.type === 'feature' && '✨ 新機能'}
+                        {latest.type === 'improvement' && '⚡ 改善'}
+                        {latest.type === 'breaking' && '💥 破壊的変更'}
+                      </span>
+                      <div className="update-changes">
+                        {latest.changes.slice(0, 3).map((change, index) => (
+                          <div key={index} className="update-change-item">• {change}</div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
               
               {/* 統計データの表示 */}
               {!stats.loading && (stats.userCount > 0 || stats.errorCount > 0 || stats.updateRequestCount > 0 || stats.linterErrorCount > 0 || stats.testErrorCount > 0) && (
