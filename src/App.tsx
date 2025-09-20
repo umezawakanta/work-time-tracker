@@ -21,6 +21,7 @@ import NotificationComponent from "./components/NotificationComponent";
 import { ErrorInfo, ERROR_DEFAULTS, buildErrorInfo, getErrorInfo, formatErrorInfo } from './types/errorTypes';
 import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './utils/authUtils';
 import type { ApiErrorInfo } from './utils/apiErrorHandler';
+import { apiFetch } from './utils/apiClient';
 import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
@@ -1901,7 +1902,6 @@ ${errorInfo.stack}
         return;
       }
 
-      const { apiFetch } = await import("./utils/apiClient");
       const response = await apiFetch("/api/work-records/salary", {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -2345,7 +2345,6 @@ ${errorInfo.stack}
   const handleDeleteIncomeExpenseRecord = async (id: string) => {
     try {
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
-        const { apiFetch } = await import("./utils/apiClient");
         const url = new URL('/api/work-records/salary', window.location.origin);
         url.searchParams.set('id', id);
         return await apiFetch(url.toString(), {
@@ -3912,7 +3911,6 @@ ${errorInfo.stack}
         params.append("search", memoSearchTerm);
       }
 
-      const { apiFetch } = await import("./utils/apiClient");
       const response = await apiFetch(`/api/memos?${params.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`,
