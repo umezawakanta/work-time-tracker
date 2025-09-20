@@ -201,7 +201,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 月の統計を計算
   const getMonthlySummary = (year: number, month: number) => {
-    if (!currentMonth) return { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
+    if (!currentMonth) {
+      return { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
+    }
     
     const monthlyIncomeRecords = (incomeExpenseRecords || []).filter(record => {
       const recordDate = new Date(record.date);
@@ -531,7 +533,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                       合計: ¥{selectedRecord.incomeRecords.reduce((sum: number, record: any) => sum + (record.amount || 0), 0).toLocaleString()}
                     </span>
                   </h4>
-                  {selectedRecord.incomeRecords.map((record, index) => (
+                  {selectedRecord.incomeRecords.map((record: any, index: number) => (
                     <div key={index} className="record-item">
                       <div className="record-header">
                         <span className="record-amount income">¥{(record.amount || 0).toLocaleString()}</span>
@@ -583,7 +585,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                       合計: ¥{selectedRecord.expenseRecords.reduce((sum: number, record: any) => sum + (record.amount || 0), 0).toLocaleString()}
                     </span>
                   </h4>
-                  {selectedRecord.expenseRecords.map((record, index) => (
+                  {selectedRecord.expenseRecords.map((record: any, index: number) => (
                     <div key={index} className="record-item">
                       <div className="record-header">
                         <span className="record-amount expense">¥{(record.amount || 0).toLocaleString()}</span>
@@ -674,6 +676,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     value={incomeExpenseType}
                     onChange={(e) => setIncomeExpenseType(e.target.value as "income" | "expense")}
                     required
+                    aria-label="収入・支出のタイプを選択"
                   >
                     <option value="income">収入</option>
                     <option value="expense">支出</option>
