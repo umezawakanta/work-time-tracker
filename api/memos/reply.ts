@@ -1,5 +1,51 @@
 const { ensureDatabaseConnection: ensureDBConnection, mongoose: mongooseDB } = require('../utils/database');
 
+// Memo schema
+const MemoSchema = new mongooseDB.Schema({
+  title: { type: String, required: true },
+  content: { type: String, required: true },
+  category: { type: String, required: true },
+  tags: [{ type: String }],
+  isPublic: { type: Boolean, default: false },
+  isFamilyOnly: { type: Boolean, default: false },
+  isAdminOnly: { type: Boolean, default: false },
+  userId: { type: String, required: true },
+  postType: { 
+    type: String, 
+    enum: ['update_request', 'error_report', 'general'], 
+    default: 'general' 
+  },
+  status: { 
+    type: String, 
+    enum: ['pending', 'in_progress', 'resolved', 'closed'], 
+    default: 'pending' 
+  },
+  adminResponse: { type: String },
+  adminResponseDate: { type: Date },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+const MemoModel = mongooseDB.models.Memo || mongooseDB.model('Memo', MemoSchema);
+
+// Notification schema
+const NotificationSchema = new mongooseDB.Schema({
+  userId: { type: String, required: true },
+  type: { 
+    type: String, 
+    enum: ['memo_response', 'status_update', 'admin_message', 'memo_reply'], 
+    required: true 
+  },
+  title: { type: String, required: true },
+  message: { type: String, required: true },
+  relatedMemoId: { type: String },
+  isRead: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+const NotificationModel = mongooseDB.models.Notification || mongooseDB.model('Notification', NotificationSchema);
+
 // Reply schema (独立したコレクション)
 const ReplySchemaDef = new mongooseDB.Schema(
   {
@@ -155,6 +201,26 @@ async function handleReplyRequest(req, res) {
       });
 
       const savedReply = await newReply.save();
+
+      // メモの作成者に通知を送信
+      try {
+        const memo = await MemoModel.findById(memoId);
+        if (memo && memo.userId !== userId) { // 自分自身のメモには通知しない
+          const notification = new NotificationModel({
+            userId: memo.userId,
+            type: 'memo_reply',
+            title: 'メモに返信がつきました',
+            message: `${authorName}さんが「${memo.title}」に返信しました。クリックして返信を確認してください。`,
+            relatedMemoId: memoId,
+          });
+
+          await notification.save();
+          console.log('Reply notification created for user:', memo.userId);
+        }
+      } catch (notificationError) {
+        console.error('Failed to create reply notification:', notificationError);
+        // 通知の作成に失敗しても返信は成功とする
+      }
 
       res.status(201).json({
         success: true,

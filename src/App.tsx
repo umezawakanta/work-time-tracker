@@ -5389,7 +5389,19 @@ ${errorInfo.stack}
 
           {/* 通知コンポーネント */}
           <div className="notification-wrapper">
-            <NotificationComponent />
+            <NotificationComponent 
+              onNavigateToMemo={(memoId: string) => {
+                // メモセクションを表示
+                setShowMemos(true);
+                // メモを検索して該当するメモを表示
+                loadMemos();
+                // 通知ドロップダウンを閉じる
+                setTimeout(() => {
+                  // 該当するメモをハイライトする処理（必要に応じて実装）
+                  console.log('Navigating to memo:', memoId);
+                }, 100);
+              }}
+            />
           </div>
 
           <main className="dashboard-main">

@@ -3,7 +3,7 @@ import './NotificationComponent.css';
 
 interface Notification {
   _id: string;
-  type: 'memo_response' | 'status_update' | 'admin_message';
+  type: 'memo_response' | 'status_update' | 'admin_message' | 'memo_reply';
   title: string;
   message: string;
   relatedMemoId?: string;
@@ -13,9 +13,10 @@ interface Notification {
 
 interface NotificationComponentProps {
   className?: string;
+  onNavigateToMemo?: (memoId: string) => void;
 }
 
-const NotificationComponent: React.FC<NotificationComponentProps> = ({ className = '' }) => {
+const NotificationComponent: React.FC<NotificationComponentProps> = ({ className = '', onNavigateToMemo }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -90,6 +91,18 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
     }
   };
 
+  // 通知クリック時の処理
+  const handleNotificationClick = (notification: Notification) => {
+    // 既読にする
+    markAsRead(notification._id);
+    
+    // メモ関連の通知の場合はメモセクションに移動
+    if ((notification.type === 'memo_response' || notification.type === 'memo_reply') && notification.relatedMemoId && onNavigateToMemo) {
+      onNavigateToMemo(notification.relatedMemoId);
+      setIsOpen(false);
+    }
+  };
+
   // コンポーネントマウント時に通知を取得
   useEffect(() => {
     loadNotifications();
@@ -138,6 +151,8 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
     switch (type) {
       case 'memo_response':
         return 'bi-reply';
+      case 'memo_reply':
+        return 'bi-chat-dots';
       case 'status_update':
         return 'bi-arrow-repeat';
       case 'admin_message':
@@ -152,6 +167,8 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
     switch (type) {
       case 'memo_response':
         return '#28a745';
+      case 'memo_reply':
+        return '#007bff';
       case 'status_update':
         return '#17a2b8';
       case 'admin_message':
@@ -227,7 +244,7 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
                   <div
                     key={notification._id}
                     className={`notification-item ${!notification.isRead ? 'unread' : ''}`}
-                    onClick={() => markAsRead(notification._id)}
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     <div className="notification-icon">
                       <i 

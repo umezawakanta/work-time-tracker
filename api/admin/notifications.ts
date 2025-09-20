@@ -32,7 +32,7 @@ const NotificationSchema = new mongooseDB.Schema({
   userId: { type: String, required: true },
   type: { 
     type: String, 
-    enum: ['memo_response', 'status_update', 'admin_message'], 
+    enum: ['memo_response', 'status_update', 'admin_message', 'memo_reply'], 
     required: true 
   },
   title: { type: String, required: true },
