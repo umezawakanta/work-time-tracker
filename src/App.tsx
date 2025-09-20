@@ -22,7 +22,7 @@ import VersionInfo from "./components/VersionInfo";
 import { ErrorInfo, getErrorInfo, formatErrorInfo, createErrorInfo } from './types/errorTypes';
 import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './utils/authUtils';
 import type { ApiErrorInfo } from './utils/apiErrorHandler';
-// Use static import for apiFetch due to frequent usage and immediate availability.
+// Static import for apiFetch - used frequently throughout the application
 import { apiFetch } from './utils/apiClient';
 import { buildApiUrl, createUserIdParam, createIdParam } from './utils/urlUtils';
 import EggTimerComponent from "./components/EggTimerComponent";
