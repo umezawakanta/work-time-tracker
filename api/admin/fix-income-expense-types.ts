@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 // 既存のAPIパターンに合わせてrequireを使用
-const { ensureDatabaseConnection, verifyJWT } = require('../utils/database');
-const { determineIncomeExpenseType } = require('../utils/incomeExpenseUtils');
-const mongoose = require('mongoose');
+import { ensureDatabaseConnection, verifyJWT } from '../utils/database';
+import { determineIncomeExpenseType } from '../utils/incomeExpenseUtils';
+import mongoose from 'mongoose';
 
 // 収支記録のスキーマ
 const IncomeExpenseRecordSchema = new mongoose.Schema({
