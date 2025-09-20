@@ -6,7 +6,7 @@ export const HTTP_METHODS = [
 ] as const;
 
 // HTTPメソッドの正規表現（一度だけ作成）
-export const HTTP_METHOD_REGEX = new RegExp(`\\b(${HTTP_METHODS.join("|")})\\b`);
+export const HTTP_METHOD_REGEX = new RegExp(`\\b(${HTTP_METHODS.join("|")})\\b`, "i");
 
 // エラー情報抽出用の正規表現パターン
 export const ERROR_PATTERNS = {
