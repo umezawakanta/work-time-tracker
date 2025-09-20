@@ -2,6 +2,9 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+// 共通ユーティリティ関数をインポート
+const { determineIncomeExpenseType } = require('../api/utils/incomeExpenseUtils');
+
 // データベース接続
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -14,13 +17,6 @@ if (!MONGODB_URI) {
   console.log('3. Vercelの環境変数を使用');
   process.exit(1);
 }
-
-// 支出を示すキーワード
-const EXPENSE_KEYWORDS = [
-  '支出', '支払', '費用', '交通費', '食費', '光熱費',
-  '家賃', '保険', '税金', '医療費', '教育費', '娯楽費',
-  '通信費', '水道光熱費', 'ガソリン代', '駐車場代'
-];
 
 async function connectDB() {
   try {
@@ -77,18 +73,9 @@ async function fixIncomeExpenseTypes() {
     // 各記録を確認して修正
     // bulkWrite用の操作配列を作成
     const bulkOps = recordsWithoutType.map(record => {
-      // メモの内容から収入/支出を判定
-      let newType = 'income'; // デフォルトは収入
-      if (record.notes) {
-        const notes = record.notes.toLowerCase();
-        // 支出を示すキーワードをチェック
-        if (EXPENSE_KEYWORDS.some(keyword => notes.includes(keyword.toLowerCase()))) {
-          newType = 'expense';
-        }
-      }
-      if (record.amount < 0) {
-        newType = 'expense';
-      }
+      // 共通ユーティリティ関数を使用してタイプを判定
+      const newType = determineIncomeExpenseType(record);
+
       return {
         updateOne: {
           filter: { _id: record._id },

@@ -2,14 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 // 既存のAPIパターンに合わせてrequireを使用
 const { ensureDatabaseConnection, verifyJWT } = require('../utils/database');
+const { determineIncomeExpenseType } = require('../utils/incomeExpenseUtils');
 const mongoose = require('mongoose');
-
-// 支出を示すキーワード
-const EXPENSE_KEYWORDS = [
-  '支出', '支払', '費用', '交通費', '食費', '光熱費',
-  '家賃', '保険', '税金', '医療費', '教育費', '娯楽費',
-  '通信費', '水道光熱費', 'ガソリン代', '駐車場代'
-];
 
 // 収支記録のスキーマ
 const IncomeExpenseRecordSchema = new mongoose.Schema({
@@ -60,21 +54,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // bulkWrite用の操作配列を作成
     const bulkOps = recordsWithoutType.map(record => {
-      // メモの内容から収入/支出を判定
-      let newType = 'income'; // デフォルトは収入
-      
-      if (record.notes) {
-        const notes = record.notes.toLowerCase();
-        // 支出を示すキーワードをチェック
-        if (EXPENSE_KEYWORDS.some(keyword => notes.includes(keyword.toLowerCase()))) {
-          newType = 'expense';
-        }
-      }
-      
-      // 金額が負の場合は支出
-      if (record.amount < 0) {
-        newType = 'expense';
-      }
+      // 共通ユーティリティ関数を使用してタイプを判定
+      const newType = determineIncomeExpenseType(record);
 
       return {
         updateOne: {
