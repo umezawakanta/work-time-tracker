@@ -19,7 +19,7 @@ import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import NotificationComponent from "./components/NotificationComponent";
 import VersionInfo from "./components/VersionInfo";
-import { ErrorInfo, ERROR_DEFAULTS, buildErrorInfo, getErrorInfo, formatErrorInfo } from './types/errorTypes';
+import { ErrorInfo, getErrorInfo, formatErrorInfo } from './types/errorTypes';
 import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './utils/authUtils';
 import type { ApiErrorInfo } from './utils/apiErrorHandler';
 import { apiFetch } from './utils/apiClient';
