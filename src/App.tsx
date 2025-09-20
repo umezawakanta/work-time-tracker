@@ -2187,8 +2187,8 @@ ${errorInfo.stack}
         setEditingIncomeExpenseRecord(null);
         setShowIncomeExpenseForm(false);
         // データを再読み込みして画面を更新
-        loadIncomeExpenseRecords();
-        loadWorkDiaries();
+        await loadIncomeExpenseRecords();
+        await loadWorkDiaries();
       } else {
         console.error('API Error Response:', data);
         
@@ -2378,8 +2378,8 @@ ${errorInfo.stack}
       if (data.success) {
         setMessage("収入・支出記録が削除されました！");
         // データを再読み込みして画面を更新
-        loadIncomeExpenseRecords();
-        loadWorkDiaries();
+        await loadIncomeExpenseRecords();
+        await loadWorkDiaries();
       } else {
         setMessage(`エラー: ${data.message}`);
       }

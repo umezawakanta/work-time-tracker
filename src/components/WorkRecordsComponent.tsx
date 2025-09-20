@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './WorkRecordsComponent.css';
 import type { IncomeExpenseRecord, WorkDiary, User } from '../types';
 import DeleteConfirmModal from './DeleteConfirmModal';
@@ -163,6 +163,27 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     type: string;
   } | null>(null);
 
+  // データが更新されたときに選択された記録も更新
+  useEffect(() => {
+    if (selectedDate) {
+      const records = getRecordsForDate(selectedDate);
+      if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.diaryRecord) {
+        setSelectedRecord(records);
+        // 複数の記録がある場合は、日記を優先表示
+        if (records.diaryRecord) {
+          setSelectedRecordType("diary");
+        } else if (records.incomeRecords.length > 0) {
+          setSelectedRecordType("income");
+        } else if (records.expenseRecords.length > 0) {
+          setSelectedRecordType("expense");
+        }
+      } else {
+        setSelectedRecord(null);
+        setSelectedRecordType(null);
+      }
+    }
+  }, [incomeExpenseRecords, workDiaries, selectedDate, getRecordsForDate]);
+
   // カレンダーの日付を生成
   const getCalendarDays = () => {
     const year = currentMonth.getFullYear();
@@ -184,7 +205,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   };
 
   // 指定された日付の記録を取得
-  const getRecordsForDate = (date: Date) => {
+  const getRecordsForDate = useCallback((date: Date) => {
     const dateString = date.toISOString().split('T')[0];
     const incomeRecords = (incomeExpenseRecords || []).filter(record => 
       new Date(record.date).toISOString().split('T')[0] === dateString && record.type === 'income'
@@ -197,7 +218,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     );
     
     return { incomeRecords, expenseRecords, diaryRecord };
-  };
+  }, [incomeExpenseRecords, workDiaries]);
 
   // 月の統計を計算
   const getMonthlySummary = (year: number, month: number) => {
