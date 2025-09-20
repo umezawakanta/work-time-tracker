@@ -1,6 +1,6 @@
 // 収入/支出判定の共通ユーティリティ
 
-// 支出を示すキーワード（小文字で事前処理）
+// 支出を示すキーワード
 const EXPENSE_KEYWORDS = [
   '支出', '支払', '費用', '交通費', '食費', '光熱費',
   '家賃', '保険', '税金', '医療費', '教育費', '娯楽費',
@@ -19,8 +19,8 @@ function determineIncomeExpenseType(record) {
   
   // メモの内容から支出を判定
   if (record.notes) {
-    const notes = record.notes.toLowerCase();
-    // 支出を示すキーワードをチェック（小文字で事前処理済み）
+    const notes = record.notes;
+    // 支出を示すキーワードをチェック（日本語なので大文字小文字の区別なし）
     if (EXPENSE_KEYWORDS.some(keyword => notes.includes(keyword))) {
       newType = 'expense';
     }
