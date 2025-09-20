@@ -2345,9 +2345,7 @@ ${errorInfo.stack}
   const handleDeleteIncomeExpenseRecord = async (id: string) => {
     try {
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
-        const url = new URL('/api/work-records/salary', window.location.origin);
-        url.searchParams.set('id', id);
-        return await apiFetch(url.toString(), {
+        return await apiFetch(`/api/work-records/salary?id=${encodeURIComponent(id)}`, {
           method: "DELETE",
           headers: createAuthHeaders(token)
         });
@@ -2378,8 +2376,7 @@ ${errorInfo.stack}
 
   const handleDeleteDiary = async (id: string) => {
     try {
-      const url = `/api/work-records/diary?id=${encodeURIComponent(id)}`;
-      const response = await fetch(url, {
+      const response = await fetch(`/api/work-records/diary?id=${encodeURIComponent(id)}`, {
         method: "DELETE",
       });
 
