@@ -72,7 +72,7 @@ URL: ${errorInfo.url}${statusInfo ? `\n${statusInfo}` : ''}${methodInfo ? `\n${m
 
 ${stackInfo}
 
-このエラーについて詳細を教えてください.
+このエラーについて詳細を教えてください。
       `.trim();
       setContent(autoContent);
     }
