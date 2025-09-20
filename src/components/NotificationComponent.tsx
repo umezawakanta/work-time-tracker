@@ -94,8 +94,8 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
   useEffect(() => {
     loadNotifications();
     
-    // 30秒ごとに通知を更新
-    const interval = setInterval(loadNotifications, 30000);
+    // 5分ごとに通知を更新（頻度を下げる）
+    const interval = setInterval(loadNotifications, 300000);
     
     return () => clearInterval(interval);
   }, []);

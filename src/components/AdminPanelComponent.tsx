@@ -856,11 +856,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
               )}
 
               {/* 返信フォーム（不具合報告タブ内） */}
-              {(() => {
-                const shouldShow = showResponseModal && selectedMemo && activeTab === 'errorreports';
-                console.log('Error reports response form check:', { showResponseModal, selectedMemo: !!selectedMemo, activeTab, shouldShow });
-                return shouldShow;
-              })() && (
+              {showResponseModal && selectedMemo && activeTab === 'errorreports' && (
                 <div className="response-form-container">
                   <div className="response-form-header">
                     <h4>
