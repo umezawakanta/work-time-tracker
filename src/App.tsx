@@ -4011,6 +4011,96 @@ ${errorInfo.stack}
     reportApiError(errorInfo, handleErrorReport);
   };
 
+  // エラー報告のコンテンツフォーマット関数
+  const formatErrorReportContent = (
+    content: string,
+    userAgent: string,
+    timestamp: string,
+    errorType: string = "APIエラー"
+  ) => {
+    return `${errorType}が発生しました。
+
+--- エラー詳細 ---
+${content}
+
+--- システム情報 ---
+User Agent: ${userAgent}
+発生時刻: ${timestamp}`;
+  };
+
+
+  // HTTPメソッドの定数配列
+  const HTTP_METHODS = [
+    "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "CONNECT", "TRACE"
+  ];
+
+  // エラー情報抽出用の正規表現パターン
+  const ERROR_PATTERNS = {
+    // URL: の後に続く文字列をマッチ
+    URL_EXPLICIT: /URL: ([^\n\s]+)/,
+    // APIエンドポイントのパスをマッチ
+    URL_API: /\/api\/[^\s\n]+/,
+    // ステータス: の後に続く数字をマッチ
+    STATUS_EXPLICIT: /ステータス: (\d+)/,
+    // 有効なHTTPステータスコード（100-599）をマッチ
+    STATUS_CODE: /\b(1\d{2}|2\d{2}|3\d{2}|4\d{2}|5\d{2})\b/,
+    // メソッド: の後に続く文字列をマッチ
+    METHOD_EXPLICIT: /メソッド: ([^\n\s]+)/
+  };
+
+  // Helper function to parse status from match results
+  function parseStatus(statusMatch: RegExpMatchArray | null, statusMatch2: RegExpMatchArray | null): number | undefined {
+    if (statusMatch?.[1]) {
+      return parseInt(statusMatch[1], 10);
+    } else if (statusMatch2?.[1]) {
+      return parseInt(statusMatch2[1], 10);
+    }
+    return undefined;
+  }
+
+  // Type guard to check if error has an errorInfo property (object).
+  // This does not validate the full structure of the errorInfo, only its presence as an object.
+  function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: ApiErrorInfo } {
+    return (
+      typeof error === "object" &&
+      error !== null &&
+      "errorInfo" in error &&
+      typeof (error as { errorInfo?: unknown }).errorInfo === "object" &&
+      (error as { errorInfo?: unknown }).errorInfo !== null
+    );
+  }
+
+  const getErrorInfo = (error: Error | null): ErrorInfo | undefined => {
+    if (!error) return undefined;
+
+    let apiErrorInfo: ApiErrorInfo | undefined;
+    if (hasApiErrorInfo(error)) {
+      apiErrorInfo = error.errorInfo;
+    }
+    
+    // エラーメッセージから詳細情報を抽出する試行
+    const errorMessage = error.message;
+    const urlMatch = errorMessage.match(ERROR_PATTERNS.URL_EXPLICIT);
+    const statusMatch = errorMessage.match(ERROR_PATTERNS.STATUS_EXPLICIT);
+    const methodMatch = errorMessage.match(ERROR_PATTERNS.METHOD_EXPLICIT);
+    
+    // より柔軟なパターンマッチング
+    const urlMatch2 = errorMessage.match(ERROR_PATTERNS.URL_API);
+    const statusMatch2 = errorMessage.match(ERROR_PATTERNS.STATUS_CODE);
+    // HTTPメソッドの動的正規表現を作成
+    const methodRegex = new RegExp(`\\b(${HTTP_METHODS.join("|")})\\b`);
+    const methodMatch2 = errorMessage.match(methodRegex);
+    
+    // 抽出された情報をまとめる
+    const extractedInfo = {
+      url: urlMatch?.[1] || urlMatch2?.[0],
+      status: parseStatus(statusMatch, statusMatch2),
+      method: methodMatch?.[1] || methodMatch2?.[1]
+    };
+    
+    return buildErrorInfo(error, apiErrorInfo, extractedInfo);
+  };
+
   // SimpleErrorReportingModal用のエラー報告送信処理
   const handleSimpleErrorReport = async (report: {
     title: string;
@@ -4055,100 +4145,49 @@ ${errorInfo.stack}
     }
   };
 
-  // エラー報告のコンテンツフォーマット関数
-  const formatErrorReportContent = (
-    content: string,
-    userAgent: string,
-    timestamp: string,
-    errorType: string = "APIエラー"
-  ) => {
-    return `${errorType}が発生しました。
+  // エラー報告の送信処理
+  const handleErrorReport = async (errorInfo: ApiErrorInfo) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      
+      // エラー報告を公開メモとして投稿
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: `[エラー報告] API Error - ${errorInfo.status}`,
+          content: `APIエラーが発生しました。\n\n--- エラー詳細 ---\nURL: ${errorInfo.url}\nステータス: ${errorInfo.status} ${errorInfo.statusText}\nメソッド: ${errorInfo.method}\nエラー: ${errorInfo.message}\n\n--- システム情報 ---\nUser Agent: ${errorInfo.userAgent}\n発生時刻: ${errorInfo.timestamp}`,
+          category: "エラー報告",
+          tags: ["エラー", "バグ報告", "システム"],
+          isPublic: true,
+          isFamilyOnly: false,
+          isAdminOnly: false,
+          postType: "update_request"
+        }),
+      });
 
---- エラー詳細 ---
-${content}
+      // 401エラーのチェック
+      handle401Error(response);
 
---- システム情報 ---
-User Agent: ${userAgent}
-発生時刻: ${timestamp}`;
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("エラー報告を送信しました。開発者が確認します。");
+        loadMemos(); // メモ一覧を更新
+        loadPublicMemos(); // 公開メモ一覧を更新
+      } else {
+        throw new Error(data.message || "エラー報告の送信に失敗しました");
+      }
+    } catch (error) {
+      console.error("エラー報告の送信に失敗しました:", error);
+      setMessage("エラー報告の送信に失敗しました。もう一度お試しください。");
+      throw error; // 例外を再投げしてErrorReportingModalでキャッチできるようにする
+    }
   };
 
-
-
-// HTTPメソッドの定数配列
-const HTTP_METHODS = [
-  "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "CONNECT", "TRACE"
-];
-
-// HTTPメソッドの正規表現（一度だけ作成）
-const HTTP_METHOD_REGEX = new RegExp(`\\b(${HTTP_METHODS.join("|")})\\b`);
-
-// エラー情報抽出用の正規表現パターン
-const ERROR_PATTERNS = {
-  // URL: の後に続く文字列をマッチ
-  URL_EXPLICIT: /URL: ([^\n\s]+)/,
-  // APIエンドポイントのパスをマッチ
-  URL_API: /\/api\/[^\s\n]+/,
-  // ステータス: の後に続く数字をマッチ
-  STATUS_EXPLICIT: /ステータス: (\d+)/,
-  // 有効なHTTPステータスコード（100-599）をマッチ
-  STATUS_CODE: /\b(1\d{2}|2\d{2}|3\d{2}|4\d{2}|5\d{2})\b/,
-  // メソッド: の後に続く文字列をマッチ
-  METHOD_EXPLICIT: /メソッド: ([^\n\s]+)/
-};
-
-// Helper function to parse status from match results
-function parseStatus(statusMatch: RegExpMatchArray | null, statusMatch2: RegExpMatchArray | null): number | undefined {
-  if (statusMatch?.[1]) {
-    return parseInt(statusMatch[1], 10);
-  } else if (statusMatch2?.[1]) {
-    return parseInt(statusMatch2[1], 10);
-  }
-  return undefined;
-}
-
-// Type guard to check if error has an errorInfo property (object).
-// This does not validate the full structure of the errorInfo, only its presence as an object.
-function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: ApiErrorInfo } {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "errorInfo" in error &&
-    typeof (error as { errorInfo?: unknown }).errorInfo === "object" &&
-    (error as { errorInfo?: unknown }).errorInfo !== null
-  );
-}
-
-const getErrorInfo = (error: Error | null): ErrorInfo | undefined => {
-  if (!error) return undefined;
-
-  let apiErrorInfo: ApiErrorInfo | undefined;
-  if (hasApiErrorInfo(error)) {
-    apiErrorInfo = error.errorInfo;
-  }
-  
-  // エラーメッセージから詳細情報を抽出する試行
-  const errorMessage = error.message;
-  const urlMatch = errorMessage.match(ERROR_PATTERNS.URL_EXPLICIT);
-  const statusMatch = errorMessage.match(ERROR_PATTERNS.STATUS_EXPLICIT);
-  const methodMatch = errorMessage.match(ERROR_PATTERNS.METHOD_EXPLICIT);
-  
-  // より柔軟なパターンマッチング
-  const urlMatch2 = errorMessage.match(ERROR_PATTERNS.URL_API);
-  const statusMatch2 = errorMessage.match(ERROR_PATTERNS.STATUS_CODE);
-  // 事前作成されたHTTPメソッドの正規表現を使用
-  const methodMatch2 = errorMessage.match(HTTP_METHOD_REGEX);
-  
-  // 抽出された情報をまとめる
-  const extractedInfo = {
-    url: urlMatch?.[1] || urlMatch2?.[0],
-    status: parseStatus(statusMatch, statusMatch2),
-    method: methodMatch?.[1] || methodMatch2?.[1]
-  };
-  
-  return buildErrorInfo(error, apiErrorInfo, extractedInfo);
-};
-
-function App() {
   // エラーハンドリング用のヘルパー関数
   const safeExecute = (fn: () => void, errorContext: string) => {
     try {
@@ -6368,6 +6407,6 @@ const AppWithProviders = () => {
       </TimeTrackingStateProvider>
     </LoadingStateProvider>
   );
-}
+};
 
 export default AppWithProviders;
