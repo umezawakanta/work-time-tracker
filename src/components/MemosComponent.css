@@ -1389,3 +1389,103 @@
     padding: 1rem;
   }
 }
+
+/* 折りたたみ式返信ヘッダーのスタイル */
+.replies-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
+}
+
+.replies-header:hover {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.replies-header h4 {
+  margin: 0;
+  color: #495057;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.replies-header h4 i {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.toggle-replies-button {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.toggle-replies-button:hover {
+  background: rgba(108, 117, 125, 0.1);
+  color: #495057;
+}
+
+.toggle-replies-button i {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.replies-content {
+  animation: slideDown 0.3s ease-out;
+  border: 1px solid #dee2e6;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  background: white;
+  padding: 1rem;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .replies-header {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .replies-header h4 {
+    font-size: 0.9rem;
+  }
+  
+  .toggle-replies-button {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .replies-content {
+    padding: 0.75rem;
+  }
+}

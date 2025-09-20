@@ -98,6 +98,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   // 返信関連の状態
   const [editingReply, setEditingReply] = useState<string | null>(null);
   const [editingReplyContent, setEditingReplyContent] = useState("");
+  const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
   // ページネーションの状態
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -233,6 +234,19 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     setMemoIsPublic(false);
     setEditingMemo(null);
     setShowMemoForm(false);
+  };
+
+  // 返信セクションの開閉を切り替える関数
+  const toggleReplies = (memoId: string) => {
+    setExpandedReplies(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(memoId)) {
+        newSet.delete(memoId);
+      } else {
+        newSet.add(memoId);
+      }
+      return newSet;
+    });
   };
 
 
@@ -856,110 +870,128 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
 
                     {/* 返信セクション */}
                     <div className="replies-section">
-                      <h4>返信 ({memo.replies?.length || 0})</h4>
+                      <div 
+                        className="replies-header"
+                        onClick={() => toggleReplies(memo.id)}
+                      >
+                        <h4>
+                          <i className="bi bi-chat-dots"></i>
+                          返信 ({memo.replies?.length || 0})
+                        </h4>
+                        <button 
+                          className="toggle-replies-button"
+                          title={expandedReplies.has(memo.id) ? '返信を閉じる' : '返信を開く'}
+                        >
+                          <i className={`bi ${expandedReplies.has(memo.id) ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
+                        </button>
+                      </div>
                       
-                      {(memo.replies || []).length > 0 && (
-                        <div className="replies-list">
-                          {(memo.replies || []).map((reply: Reply) => (
-                            <div key={reply.id} className="reply-item">
-                              <div className="reply-content">
-                                {editingReply === reply.id ? (
-                                  <div className="reply-edit-form">
-                                    <textarea
-                                      value={editingReplyContent}
-                                      onChange={(e) => setEditingReplyContent(e.target.value)}
-                                      className="reply-edit-textarea"
-                                      rows={3}
-                                      aria-label="返信を編集"
-                                    />
-                                    <div className="reply-edit-actions">
+                      {expandedReplies.has(memo.id) && (
+                        <div className="replies-content">
+                          {(memo.replies || []).length > 0 && (
+                            <div className="replies-list">
+                              {(memo.replies || []).map((reply: Reply) => (
+                                <div key={reply.id} className="reply-item">
+                                  <div className="reply-content">
+                                    {editingReply === reply.id ? (
+                                      <div className="reply-edit-form">
+                                        <textarea
+                                          value={editingReplyContent}
+                                          onChange={(e) => setEditingReplyContent(e.target.value)}
+                                          className="reply-edit-textarea"
+                                          rows={3}
+                                          aria-label="返信を編集"
+                                        />
+                                        <div className="reply-edit-actions">
+                                          <button
+                                            onClick={() => handleSaveEditReply(reply.id)}
+                                            className="save-reply-button"
+                                          >
+                                            保存
+                                          </button>
+                                          <button
+                                            onClick={handleCancelEditReply}
+                                            className="cancel-reply-button"
+                                          >
+                                            キャンセル
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <p>{reply.content}</p>
+                                    )}
+                                  </div>
+                                  <div className="reply-meta">
+                                    <span className="reply-date">
+                                      {formatDateTime(reply.createdAt)}
+                                    </span>
+                                    <span className="reply-author">
+                                      by {reply.author || user?.displayName || 'あなた'}
+                                    </span>
+                                    <div className="reply-actions">
                                       <button
-                                        onClick={() => handleSaveEditReply(reply.id)}
-                                        className="save-reply-button"
+                                        onClick={() => {
+                                          setEditingReply(reply.id);
+                                          setEditingReplyContent(reply.content);
+                                        }}
+                                        className="edit-reply-button"
+                                        title="編集"
                                       >
-                                        保存
+                                        <i className="bi bi-pencil"></i>
                                       </button>
                                       <button
-                                        onClick={handleCancelEditReply}
-                                        className="cancel-reply-button"
+                                        onClick={() => handleDeleteReply(reply.id)}
+                                        className="delete-reply-button"
+                                        title="削除"
                                       >
-                                        キャンセル
+                                        <i className="bi bi-trash"></i>
                                       </button>
                                     </div>
                                   </div>
-                                ) : (
-                                  <p>{reply.content}</p>
-                                )}
-                              </div>
-                              <div className="reply-meta">
-                                <span className="reply-date">
-                                  {formatDateTime(reply.createdAt)}
-                                </span>
-                                <span className="reply-author">
-                                  by {reply.author || user?.displayName || 'あなた'}
-                                </span>
-                                <div className="reply-actions">
-                                  <button
-                                    onClick={() => {
-                                      setEditingReply(reply.id);
-                                      setEditingReplyContent(reply.content);
-                                    }}
-                                    className="edit-reply-button"
-                                    title="編集"
-                                  >
-                                    <i className="bi bi-pencil"></i>
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteReply(reply.id)}
-                                    className="delete-reply-button"
-                                    title="削除"
-                                  >
-                                    <i className="bi bi-trash"></i>
-                                  </button>
                                 </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* 返信フォーム */}
+                          {replyingToMemo === memo.id ? (
+                            <div className="reply-form">
+                              <textarea
+                                value={replyContent}
+                                onChange={(e) => setReplyContent(e.target.value)}
+                                className="reply-textarea"
+                                rows={3}
+                                placeholder="返信を入力..."
+                                aria-label="返信を入力"
+                              />
+                              <div className="reply-form-actions">
+                                <button
+                                  onClick={() => handleReplySubmit(memo.id)}
+                                  className="submit-reply-button"
+                                  disabled={!replyContent.trim()}
+                                >
+                                  返信
+                                </button>
+                                <button
+                                  onClick={handleReplyCancel}
+                                  className="cancel-reply-button"
+                                >
+                                  キャンセル
+                                </button>
                               </div>
                             </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* 返信フォーム */}
-                      {replyingToMemo === memo.id ? (
-                        <div className="reply-form">
-                          <textarea
-                            value={replyContent}
-                            onChange={(e) => setReplyContent(e.target.value)}
-                            className="reply-textarea"
-                            rows={3}
-                            placeholder="返信を入力..."
-                            aria-label="返信を入力"
-                          />
-                          <div className="reply-form-actions">
+                          ) : (
                             <button
-                              onClick={() => handleReplySubmit(memo.id)}
-                              className="submit-reply-button"
-                              disabled={!replyContent.trim()}
+                              onClick={() => {
+                                setReplyingToMemo(memo.id);
+                                setReplyContent("");
+                              }}
+                              className="reply-button"
                             >
-                              返信
+                              💬 返信
                             </button>
-                            <button
-                              onClick={handleReplyCancel}
-                              className="cancel-reply-button"
-                            >
-                              キャンセル
-                            </button>
-                          </div>
+                          )}
                         </div>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            setReplyingToMemo(memo.id);
-                            setReplyContent("");
-                          }}
-                          className="reply-button"
-                        >
-                          💬 返信
-                        </button>
                       )}
                     </div>
 
