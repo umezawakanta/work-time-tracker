@@ -46,6 +46,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [adminResponse, setAdminResponse] = useState('');
   const [memoStatus, setMemoStatus] = useState<'pending' | 'in_progress' | 'resolved' | 'closed'>('pending');
   const [sendingResponse, setSendingResponse] = useState(false);
+  const [showResponseModal, setShowResponseModal] = useState(false);
   const [linterErrors, setLinterErrors] = useState<any[]>([]);
   const [linterErrorsLoading, setLinterErrorsLoading] = useState(false);
   const [linterErrorsError, setLinterErrorsError] = useState<string | null>(null);
@@ -267,6 +268,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
     setSelectedMemo(memo);
     setAdminResponse(memo.adminResponse || '');
     setMemoStatus(memo.status || 'pending');
+    setShowResponseModal(true);
   };
 
   // フォーム送信処理
@@ -1157,90 +1159,123 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
         </div>
       )}
 
-      {/* 通知送信モーダル */}
-      {selectedMemo && (
-        <div className="modal-overlay">
-          <div className="modal-content notification-modal">
-            <div className="modal-header">
-              <h3>
-                {selectedMemo.postType === 'error_report' ? '不具合報告への対応' : '更新要望への対応'}
-              </h3>
-              <button
-                className="close-button"
-                onClick={() => setSelectedMemo(null)}
-                aria-label="閉じる"
-              >
-                ×
-              </button>
+      {/* 返信ヘッダー */}
+      <div className="response-header">
+        <div className="response-header-content">
+          <div className="response-info">
+            <h3>
+              <i className="bi bi-reply"></i>
+              返信管理
+            </h3>
+            <div className="response-counts">
+              <span className="count-item">
+                <i className="bi bi-bug"></i>
+                不具合報告: {errorReports?.filter((report: any) => report.postType === 'error_report').length || 0}件
+              </span>
+              <span className="count-item">
+                <i className="bi bi-lightbulb"></i>
+                更新要望: {updateRequests?.filter((request: any) => request.postType === 'update_request').length || 0}件
+              </span>
             </div>
-            
-            <div className="modal-body">
-              <div className="memo-preview">
-                <h4>{selectedMemo.title || '無題'}</h4>
-                <p>{selectedMemo.content}</p>
-                <div className="memo-meta">
-                  <span>投稿者: {selectedMemo.author || '匿名'}</span>
-                  <span>投稿日: {new Date(selectedMemo.createdAt).toLocaleString('ja-JP')}</span>
-                </div>
+          </div>
+          <button
+            className="toggle-response-button"
+            onClick={() => setShowResponseModal(!showResponseModal)}
+            title={showResponseModal ? '返信フォームを閉じる' : '返信フォームを開く'}
+          >
+            <i className={`bi ${showResponseModal ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
+            {showResponseModal ? '閉じる' : '開く'}
+          </button>
+        </div>
+      </div>
+
+      {/* 返信フォーム（折りたたみ式） */}
+      {showResponseModal && selectedMemo && (
+        <div className="response-form-container">
+          <div className="response-form-header">
+            <h4>
+              {selectedMemo.postType === 'error_report' ? '不具合報告への対応' : '更新要望への対応'}
+            </h4>
+            <button
+              className="close-response-button"
+              onClick={() => {
+                setShowResponseModal(false);
+                setSelectedMemo(null);
+              }}
+              aria-label="閉じる"
+            >
+              <i className="bi bi-x"></i>
+            </button>
+          </div>
+          <div className="response-form-body">
+            <div className="memo-preview">
+              <h5>{selectedMemo.title || '無題'}</h5>
+              <p>{selectedMemo.content}</p>
+              <div className="memo-meta">
+                <span>投稿者: {selectedMemo.author || '匿名'}</span>
+                <span>投稿日: {new Date(selectedMemo.createdAt).toLocaleString('ja-JP')}</span>
+              </div>
+            </div>
+
+            <div className="response-form">
+              <div className="form-group">
+                <label htmlFor="memoStatus">ステータス</label>
+                <select
+                  id="memoStatus"
+                  value={memoStatus}
+                  onChange={(e) => setMemoStatus(e.target.value as any)}
+                  className="form-control"
+                >
+                  <option value="pending">未対応</option>
+                  <option value="in_progress">対応中</option>
+                  <option value="resolved">解決済み</option>
+                  <option value="closed">クローズ</option>
+                </select>
               </div>
 
-              <div className="response-form">
-                <div className="form-group">
-                  <label htmlFor="memoStatus">ステータス</label>
-                  <select
-                    id="memoStatus"
-                    value={memoStatus}
-                    onChange={(e) => setMemoStatus(e.target.value as any)}
-                    className="form-control"
-                  >
-                    <option value="pending">未対応</option>
-                    <option value="in_progress">対応中</option>
-                    <option value="resolved">解決済み</option>
-                    <option value="closed">クローズ</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="adminResponse">対応内容</label>
-                  <textarea
-                    id="adminResponse"
-                    value={adminResponse}
-                    onChange={(e) => setAdminResponse(e.target.value)}
-                    className="form-control"
-                    rows={6}
-                    placeholder="対応内容を入力してください..."
-                    required
-                  />
-                </div>
+              <div className="form-group">
+                <label htmlFor="adminResponse">対応内容</label>
+                <textarea
+                  id="adminResponse"
+                  value={adminResponse}
+                  onChange={(e) => setAdminResponse(e.target.value)}
+                  className="form-control"
+                  rows={6}
+                  placeholder="対応内容を入力してください..."
+                  required
+                />
               </div>
             </div>
+          </div>
 
-            <div className="modal-footer">
-              <button
-                className="btn btn-secondary"
-                onClick={() => setSelectedMemo(null)}
-                disabled={sendingResponse}
-              >
-                キャンセル
-              </button>
-              <button
-                className="btn btn-primary"
-                onClick={handleSendResponse}
-                disabled={sendingResponse || !adminResponse.trim()}
-              >
-                {sendingResponse ? (
-                  <>
-                    <i className="bi bi-hourglass-split"></i>
-                    送信中...
-                  </>
-                ) : (
-                  <>
-                    <i className="bi bi-send"></i>
-                    通知を送信
-                  </>
-                )}
-              </button>
-            </div>
+          <div className="response-form-footer">
+            <button
+              className="btn btn-secondary"
+              onClick={() => {
+                setShowResponseModal(false);
+                setSelectedMemo(null);
+              }}
+              disabled={sendingResponse}
+            >
+              キャンセル
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={handleSendResponse}
+              disabled={sendingResponse || !adminResponse.trim()}
+            >
+              {sendingResponse ? (
+                <>
+                  <i className="bi bi-hourglass-split"></i>
+                  送信中...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-send"></i>
+                  通知を送信
+                </>
+              )}
+            </button>
           </div>
         </div>
       )}
