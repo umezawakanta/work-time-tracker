@@ -1939,13 +1939,17 @@ ${errorInfo.stack}
       if (!user?.id) {
         return;
       }
-      const response = await fetch(`/api/work-records/diary?userId=${encodeURIComponent(user.id)}`);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
+        return await apiFetch(`/api/work-records/diary?userId=${encodeURIComponent(user.id)}`, {
+          method: "GET",
+          headers: createAuthHeaders(token)
+        });
+      });
 
-      const data = await response.json();
+      if (!result) return; // 認証エラーの場合
+
+      const data = await result.json();
       if (data.success) {
         setWorkDiaries(data.diaries);
       } else {
@@ -1953,6 +1957,13 @@ ${errorInfo.stack}
         setMessage(`日記の読み込みに失敗しました: ${data.message}`);
       }
     } catch (error) {
+      // エラー情報を取得してエラー報告モーダルを表示
+      const errorInfo = getErrorInfo(error instanceof Error ? error : null);
+      if (errorInfo) {
+        setCurrentError(error instanceof Error ? error : new Error(String(error)));
+        setShowSimpleErrorModal(true);
+      }
+      
       console.error("Failed to load work diaries:", error);
       setMessage(
         `日記の読み込みに失敗しました: ${
@@ -2422,10 +2433,16 @@ ${errorInfo.stack}
     }
 
     try {
-      const data = await executeAuthenticatedRequest(`/api/user-settings?userId=${encodeURIComponent(user.id)}`, {
-        method: "GET",
+      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
+        return await apiFetch(`/api/user-settings?userId=${encodeURIComponent(user.id)}`, {
+          method: "GET",
+          headers: createAuthHeaders(token)
+        });
       });
 
+      if (!result) return; // 認証エラーの場合
+
+      const data = await result.json();
       if (data.success) {
         const settings = data.settings;
 
@@ -2484,7 +2501,19 @@ ${errorInfo.stack}
         console.error("Failed to load settings:", data.message);
       }
     } catch (error) {
+      // エラー情報を取得してエラー報告モーダルを表示
+      const errorInfo = getErrorInfo(error instanceof Error ? error : null);
+      if (errorInfo) {
+        setCurrentError(error instanceof Error ? error : new Error(String(error)));
+        setShowSimpleErrorModal(true);
+      }
+      
       console.error("Failed to load user settings:", error);
+      setMessage(
+        `設定の読み込みに失敗しました: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   };
 
