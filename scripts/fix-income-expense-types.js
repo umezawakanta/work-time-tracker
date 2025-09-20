@@ -4,6 +4,13 @@ const mongoose = require('mongoose');
 // データベース接続
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/work-time-tracker';
 
+// 支出を示すキーワード
+const EXPENSE_KEYWORDS = [
+  '支出', '支払', '費用', '交通費', '食費', '光熱費',
+  '家賃', '保険', '税金', '医療費', '教育費', '娯楽費',
+  '通信費', '水道光熱費', 'ガソリン代', '駐車場代'
+];
+
 async function connectDB() {
   try {
     await mongoose.connect(MONGODB_URI, {
@@ -59,9 +66,14 @@ async function fixIncomeExpenseTypes() {
       let newType = 'income'; // デフォルトは収入
       if (record.notes) {
         const notes = record.notes.toLowerCase();
+<<<<<<< HEAD
         if (notes.includes('支出') || notes.includes('支払') || notes.includes('費用') || 
             notes.includes('交通費') || notes.includes('食費') || notes.includes('光熱費') ||
             notes.includes('家賃') || notes.includes('保険') || notes.includes('税金')) {
+=======
+        // 支出を示すキーワードをチェック
+        if (EXPENSE_KEYWORDS.some(keyword => notes.includes(keyword))) {
+>>>>>>> d3e02e9d3 (refactor: 支出キーワードを定数として切り出し)
           newType = 'expense';
         }
       }
