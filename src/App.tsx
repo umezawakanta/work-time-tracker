@@ -1914,16 +1914,20 @@ ${errorInfo.stack}
     setIncomeExpenseLoading(true);
     try {
       if (!user?.id) {
+        console.log('ユーザーIDがありません');
         return;
       }
+      console.log('収支データを読み込み中...', { userId: user.id });
       const { apiFetch } = await import("./utils/apiClient");
       const response = await apiFetch(
         `/api/work-records/salary?userId=${user.id}`
       );
 
       const data = await response.json();
+      console.log('収支データ取得結果:', data);
       if (data.success) {
         setIncomeExpenseRecords(data.records);
+        console.log('収支データを設定しました:', data.records);
       } else {
         console.error("Failed to load income/expense records:", data.message);
         setMessage(`収入・支出記録の読み込みに失敗しました: ${data.message}`);
@@ -2819,6 +2823,17 @@ ${errorInfo.stack}
     let totalIncome = 0;
     let totalExpense = 0;
 
+    console.log('収支計算デバッグ:', {
+      year,
+      month,
+      recordsCount: incomeExpenseRecords.length,
+      records: incomeExpenseRecords.map(r => ({
+        date: r.date,
+        amount: r.amount,
+        type: r.type
+      }))
+    });
+
     incomeExpenseRecords.forEach((record) => {
       const recordDate = new Date(record.date);
       if (recordDate >= startDate && recordDate <= endDate) {
@@ -2831,6 +2846,12 @@ ${errorInfo.stack}
     });
 
     const netIncome = totalIncome - totalExpense;
+
+    console.log('収支計算結果:', {
+      totalIncome,
+      totalExpense,
+      netIncome
+    });
 
     return {
       totalIncome,
