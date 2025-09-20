@@ -19,6 +19,7 @@ import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import NotificationComponent from "./components/NotificationComponent";
 import { ErrorInfo, ERROR_DEFAULTS, buildErrorInfo, getErrorInfo, formatErrorInfo } from './types/errorTypes';
+import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './utils/authUtils';
 import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
@@ -2342,20 +2343,16 @@ ${errorInfo.stack}
 
   const handleDeleteIncomeExpenseRecord = async (id: string) => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        setMessage('ログインが必要です');
-        return;
-      }
-
-      const { apiFetch } = await import("./utils/apiClient");
-      const response = await apiFetch(`/api/work-records/salary?id=${id}`, {
-        method: "DELETE",
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
+        const { apiFetch } = await import("./utils/apiClient");
+        return await apiFetch(`/api/work-records/salary?id=${id}`, {
+          method: "DELETE",
+          headers: createAuthHeaders(token)
+        });
       });
+
+      if (!result) return; // 認証エラーの場合
+      const response = result;
 
       const data = await response.json();
       if (data.success) {

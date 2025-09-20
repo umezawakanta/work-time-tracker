@@ -32,6 +32,29 @@ export function parseStatus(statusMatch: RegExpMatchArray | null, statusMatch2: 
   return undefined;
 }
 
+// ブラウザエラーイベントの型定義
+interface BrowserErrorEvent extends Error {
+  filename?: string;
+  lineno?: number;
+  colno?: number;
+  type?: string;
+}
+
+// Type guard to check if error has browser error properties
+export function hasBrowserErrorProperties(error: unknown): error is BrowserErrorEvent {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    error instanceof Error &&
+    (
+      'filename' in error ||
+      'lineno' in error ||
+      'colno' in error ||
+      'type' in error
+    )
+  );
+}
+
 // Type guard to check if error has an errorInfo property (object) with the expected structure.
 // This validates the presence and type of required ApiErrorInfo properties.
 export function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: ApiErrorInfo } {
@@ -130,22 +153,18 @@ export const buildErrorInfo = (
   }
 ): ErrorInfo => {
   // Try to extract fields from error object if present (for browser ErrorEvent, etc.)
-  const filename =
-    (error as any).filename ??
-    extractedInfo?.filename ??
-    ERROR_DEFAULTS.FILENAME;
-  const lineno =
-    (error as any).lineno ??
-    extractedInfo?.lineno ??
-    ERROR_DEFAULTS.LINENO;
-  const colno =
-    (error as any).colno ??
-    extractedInfo?.colno ??
-    ERROR_DEFAULTS.COLNO;
-  const type =
-    (error as any).type ??
-    extractedInfo?.type ??
-    ERROR_DEFAULTS.TYPE;
+  const filename = hasBrowserErrorProperties(error)
+    ? error.filename ?? extractedInfo?.filename ?? ERROR_DEFAULTS.FILENAME
+    : extractedInfo?.filename ?? ERROR_DEFAULTS.FILENAME;
+  const lineno = hasBrowserErrorProperties(error)
+    ? error.lineno ?? extractedInfo?.lineno ?? ERROR_DEFAULTS.LINENO
+    : extractedInfo?.lineno ?? ERROR_DEFAULTS.LINENO;
+  const colno = hasBrowserErrorProperties(error)
+    ? error.colno ?? extractedInfo?.colno ?? ERROR_DEFAULTS.COLNO
+    : extractedInfo?.colno ?? ERROR_DEFAULTS.COLNO;
+  const type = hasBrowserErrorProperties(error)
+    ? error.type ?? extractedInfo?.type ?? ERROR_DEFAULTS.TYPE
+    : extractedInfo?.type ?? ERROR_DEFAULTS.TYPE;
   return {
     message: error.message,
     stack: error.stack,
