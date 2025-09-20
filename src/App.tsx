@@ -4081,6 +4081,7 @@ ${errorInfo.stack}
     statusInfo,
     methodInfo,
     message,
+    errorDetails,
   }: {
     errorType?: string;
     content?: string;
@@ -4090,6 +4091,7 @@ ${errorInfo.stack}
     statusInfo?: string;
     methodInfo?: string;
     message?: string;
+    errorDetails?: string;
   }) => {
     return `${errorType}が発生しました。
 
@@ -4099,6 +4101,7 @@ ${statusInfo ? `${statusInfo}\n` : ''}
 ${methodInfo ? `${methodInfo}\n` : ''}
 ${message ? `エラー: ${message}\n` : ''}
 ${content ? `${content}\n` : ''}
+${errorDetails ? `詳細: ${errorDetails}\n` : ''}
 
 --- システム情報 ---
 User Agent: ${userAgent}
