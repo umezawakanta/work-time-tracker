@@ -94,7 +94,6 @@ module.exports = async function handler(req, res) {
     // ユーザーIDを正しく取得（JWTトークンの構造に応じて調整）
     const userId = user.userId || user.id;
     console.log('Fetching notifications for user:', userId);
-    console.log('User ID from JWT:', userId);
 
     const { page = 1, limit = 20, unreadOnly = false } = req.query;
 
