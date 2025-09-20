@@ -1060,7 +1060,7 @@ APIエラーが発生しました。
       // ネットワークエラーなど
       const errorInfo = {
         url: args[0]?.toString() || 'Unknown URL',
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         method: args[1]?.method || 'GET',
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent
