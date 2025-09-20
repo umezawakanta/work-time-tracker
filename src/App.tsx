@@ -4023,10 +4023,24 @@ User Agent: ${userAgent}
   };
 
   // エラー情報のヘルパー関数
+  // Type guard to check if error has errorInfo of type ApiErrorInfo
+  function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: ApiErrorInfo } {
+    return (
+      typeof error === "object" &&
+      error !== null &&
+      "errorInfo" in error &&
+      typeof (error as any).errorInfo === "object" &&
+      (error as any).errorInfo !== null
+    );
+  }
+
   const getErrorInfo = (error: Error | null) => {
     if (!error) return undefined;
-    
-    const errorInfo = (error as any).errorInfo;
+
+    let errorInfo: ApiErrorInfo | undefined = undefined;
+    if (hasApiErrorInfo(error)) {
+      errorInfo = error.errorInfo;
+    }
     return {
       message: error.message,
       stack: error.stack,
