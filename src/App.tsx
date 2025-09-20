@@ -22,6 +22,7 @@ import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
 import { TimerPresetProvider, useTimerPresetState, useTimerPresetHelpers } from "./components/TimerPresetManager";
+import { MoodLogProvider, useMoodLogState, useMoodLogHelpers } from "./components/MoodLogManager";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import {
@@ -65,7 +66,10 @@ function App() {
   
   // タイマープリセット状態の管理
   const timerPresetState = useTimerPresetState();
-  const timerPresetHelpers = useTimerPresetHelpers();
+  
+  // 感情ログ状態の管理
+  const moodLogState = useMoodLogState();
+  const moodLogHelpers = useMoodLogHelpers();
   
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -207,7 +211,6 @@ function App() {
     null
   );
   const [showReports, setShowReports] = useState(false);
-  const [reportsLoading, setReportsLoading] = useState(false);
 
   // 管理者関連の状態
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
@@ -271,17 +274,11 @@ function App() {
   const [publicMemoSearchTerm, setPublicMemoSearchTerm] = useState("");
   const [selectedPublicMemoCategory, setSelectedPublicMemoCategory] =
     useState("all");
-  const [publicMemoViewMode, setPublicMemoViewMode] = useState<
-    "list" | "calendar"
-  >("list");
   const [publicMemoCurrentDate, setPublicMemoCurrentDate] = useState(
     new Date()
   );
   const [publicMemoSelectedDate, setPublicMemoSelectedDate] =
     useState<Date | null>(null);
-  const [publicMemoCurrentMonth, setPublicMemoCurrentMonth] = useState(
-    new Date()
-  );
 
   // フォント設定関連の状態
   const [selectedFont, setSelectedFont] = useState("system");
@@ -390,24 +387,15 @@ function App() {
     futureVision: "",
     notes: "",
   });
-  const [editingProfile, setEditingProfile] = useState(false);
-  const [newValue, setNewValue] = useState("");
-  const [newGoal, setNewGoal] = useState("");
-  const [newSkill, setNewSkill] = useState("");
-  const [newInterest, setNewInterest] = useState("");
-  const [newStrength, setNewStrength] = useState("");
-  const [newWeakness, setNewWeakness] = useState("");
-  const [newPersonality, setNewPersonality] = useState("");
 
   // 習慣トラッカー関連の状態
   const [newHabit, setNewHabit] = useState("");
-  const [editingHabit, setEditingHabit] = useState<string | null>(null);
   const [habitStreak, setHabitStreak] = useState<{ [key: string]: number }>({});
   const [habitHistory, setHabitHistory] = useState<{ [key: string]: string[] }>(
     {}
   );
 
-  // 感情ログ関連の状態
+  // 感情ログ関連の状態（MoodLogManagerで管理）
   const [showMoodForm, setShowMoodForm] = useState(false);
   const [editingMoodLog, setEditingMoodLog] = useState<string | null>(null);
   const [moodForm, setMoodForm] = useState({
@@ -447,119 +435,7 @@ function App() {
   });
   const [newMilestone, setNewMilestone] = useState("");
 
-  // プロフィール管理関数
-  const addToProfile = (field: keyof typeof personalProfile, value: string) => {
-    if (!value.trim()) {
-      return;
-    }
-
-    setPersonalProfile((prev) => ({
-      ...prev,
-      [field]: [...(prev[field] as string[]), value.trim()],
-    }));
-  };
-
-  const removeFromProfile = (
-    field: keyof typeof personalProfile,
-    index: number
-  ) => {
-    setPersonalProfile((prev) => ({
-      ...prev,
-      [field]: (prev[field] as string[]).filter((_, i) => i !== index),
-    }));
-  };
-
-  const updateProfileField = (
-    field: keyof typeof personalProfile,
-    value: string
-  ) => {
-    setPersonalProfile((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  // 習慣トラッカー管理関数
-  const addHabit = () => {
-    if (!newHabit.trim()) {
-      return;
-    }
-
-    const habitId = Date.now().toString();
-    const newHabitObj: Habit = {
-      id: habitId,
-      name: newHabit.trim(),
-      description: "",
-      frequency: "daily",
-      targetDays: 7,
-      completedDays: 0,
-      streak: 0,
-      bestStreak: 0,
-      category: "personal",
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    setHabits((prev) => [...prev, newHabitObj]);
-    setHabitStreak((prev) => ({ ...prev, [habitId]: 0 }));
-    setHabitHistory((prev) => ({ ...prev, [habitId]: [] }));
-    setNewHabit("");
-  };
-
-  const updateHabit = (habitId: string, updates: Partial<Habit>) => {
-    setHabits((prev) =>
-      prev.map((habit) =>
-        habit.id === habitId
-          ? { ...habit, ...updates, updatedAt: new Date().toISOString() }
-          : habit
-      )
-    );
-  };
-
-  const deleteHabit = (habitId: string) => {
-    setHabits((prev) => prev.filter((habit) => habit.id !== habitId));
-    setHabitStreak((prev) => {
-      const newStreak = { ...prev };
-      delete newStreak[habitId];
-      return newStreak;
-    });
-    setHabitHistory((prev) => {
-      const newHistory = { ...prev };
-      delete newHistory[habitId];
-      return newHistory;
-    });
-  };
-
-  const toggleHabitCompletion = (habitId: string, date: string) => {
-    const history = habitHistory[habitId] || [];
-    const isCompleted = history.includes(date);
-
-    if (isCompleted) {
-      setHabitHistory((prev) => ({
-        ...prev,
-        [habitId]: history.filter((d) => d !== date),
-      }));
-    } else {
-      setHabitHistory((prev) => ({
-        ...prev,
-        [habitId]: [...history, date],
-      }));
-    }
-  };
-
-  const getHabitCompletionRate = (habitId: string) => {
-    const habit = habits.find((h) => h.id === habitId);
-    if (!habit) return 0;
-
-    const history = habitHistory[habitId] || [];
-    const daysSinceStart = Math.ceil(
-      (Date.now() - new Date(habit.createdAt).getTime()) / (1000 * 60 * 60 * 24)
-    );
-    return daysSinceStart > 0 ? (history.length / daysSinceStart) * 100 : 0;
-  };
-
-  // 感情ログ管理関数
+  // 感情ログ管理関数（MoodLogManagerで管理）
   const addMoodLog = () => {
     if (!moodForm.date) return;
 
@@ -663,10 +539,7 @@ function App() {
     return "bi-emoji-laughing";
   };
 
-  const getAverageMood = () => {
-    if (moodLogs.length === 0) return 0;
-    return moodLogs.reduce((sum, log) => sum + log.mood, 0) / moodLogs.length;
-  };
+  // getAverageMood関数はMoodLogManagerで管理
 
   // 目標管理関数
   const addGoal = () => {
@@ -887,7 +760,6 @@ function App() {
   };
 
   const [habits, setHabits] = useState<Habit[]>([]);
-  const [moodLogs, setMoodLogs] = useState<MoodLog[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [learningRecords, setLearningRecords] = useState<LearningRecord[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
@@ -5873,8 +5745,8 @@ ${errorInfo.stack}
                     setHabitHistory={setHabitHistory}
                     habitStreak={habitStreak}
                     setHabitStreak={setHabitStreak}
-                    moodLogs={moodLogs}
-                    setMoodLogs={setMoodLogs}
+                    moodLogs={moodLogState.moodLogs}
+                    setMoodLogs={moodLogState.setMoodLogs}
                     goals={goals}
                     setGoals={setGoals}
                     learningRecords={learningRecords}
@@ -6282,7 +6154,9 @@ const AppWithProviders = () => {
           }}
           isTimerActive={customTimerActive}
         >
-          <App />
+          <MoodLogProvider>
+            <App />
+          </MoodLogProvider>
         </TimerPresetProvider>
       </TimeTrackingStateProvider>
     </LoadingStateProvider>
