@@ -978,6 +978,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 setShowIncomeExpenseForm(true);
                 setShowDiaryForm(false);
                 setEditingIncomeExpenseRecord(null);
+                setIncomeExpenseType('income'); // デフォルト値を設定
                 setIncomeExpenseAmount('');
                 setIncomeExpenseDate('');
                 setIncomeExpenseNotes('');

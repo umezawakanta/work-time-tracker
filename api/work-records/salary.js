@@ -101,13 +101,20 @@ module.exports = async function handler(req, res) {
 
       if (!date || amount === undefined || !type) {
         console.log('Validation failed:', { date: !!date, amount: amount !== undefined, type: !!type });
+        
+        const missingFields = [];
+        if (!date) missingFields.push('日付');
+        if (amount === undefined) missingFields.push('金額');
+        if (!type) missingFields.push('タイプ');
+        
         return res.status(400).json({
           success: false,
-          message: '必須フィールドが不足しています',
+          message: `必須フィールドが不足しています: ${missingFields.join(', ')}`,
           details: {
             date: !!date,
             amount: amount !== undefined,
-            type: !!type
+            type: !!type,
+            missingFields: missingFields
           }
         });
       }

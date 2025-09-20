@@ -1998,6 +1998,19 @@ ${errorInfo.stack}
     if (!user?.id) return;
 
     try {
+      // 入力値の検証
+      console.log('Input values:', {
+        incomeExpenseDate,
+        incomeExpenseAmount,
+        incomeExpenseType,
+        incomeExpenseNotes
+      });
+
+      if (!incomeExpenseDate || !incomeExpenseAmount || !incomeExpenseType) {
+        setMessage("日付、金額、タイプは必須です。");
+        return;
+      }
+
       // 記録タイプに基づいて金額を正負に変換
       const amount =
         incomeExpenseType === "expense"
@@ -2037,7 +2050,21 @@ ${errorInfo.stack}
         loadIncomeExpenseRecords();
       } else {
         console.error('API Error Response:', data);
-        setMessage(`エラー: ${data.message}${data.details ? ` (詳細: ${JSON.stringify(data.details)})` : ''}`);
+        
+        // 詳細なエラーメッセージを作成
+        let errorMessage = `エラー: ${data.message}`;
+        if (data.details) {
+          const missingFields = [];
+          if (!data.details.date) missingFields.push('日付');
+          if (!data.details.amount) missingFields.push('金額');
+          if (!data.details.type) missingFields.push('タイプ');
+          
+          if (missingFields.length > 0) {
+            errorMessage += `\n不足しているフィールド: ${missingFields.join(', ')}`;
+          }
+        }
+        
+        setMessage(errorMessage);
       }
     } catch (error) {
       setMessage(
@@ -2051,6 +2078,19 @@ ${errorInfo.stack}
     if (!user?.id || !editingIncomeExpenseRecord) return;
 
     try {
+      // 入力値の検証
+      console.log('Update input values:', {
+        incomeExpenseDate,
+        incomeExpenseAmount,
+        incomeExpenseType,
+        incomeExpenseNotes
+      });
+
+      if (!incomeExpenseDate || !incomeExpenseAmount || !incomeExpenseType) {
+        setMessage("日付、金額、タイプは必須です。");
+        return;
+      }
+
       // 記録タイプに基づいて金額を正負に変換
       const amount =
         incomeExpenseType === "expense"
@@ -2092,7 +2132,21 @@ ${errorInfo.stack}
         loadIncomeExpenseRecords();
       } else {
         console.error('API Error Response:', data);
-        setMessage(`エラー: ${data.message}${data.details ? ` (詳細: ${JSON.stringify(data.details)})` : ''}`);
+        
+        // 詳細なエラーメッセージを作成
+        let errorMessage = `エラー: ${data.message}`;
+        if (data.details) {
+          const missingFields = [];
+          if (!data.details.date) missingFields.push('日付');
+          if (!data.details.amount) missingFields.push('金額');
+          if (!data.details.type) missingFields.push('タイプ');
+          
+          if (missingFields.length > 0) {
+            errorMessage += `\n不足しているフィールド: ${missingFields.join(', ')}`;
+          }
+        }
+        
+        setMessage(errorMessage);
       }
     } catch (error) {
       setMessage(
