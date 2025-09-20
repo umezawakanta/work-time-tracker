@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.0.1";
+export const APP_VERSION = "1.0.2";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,17 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.0.2",
+    date: "2025-01-21",
+    changes: [
+      "おしごと記録の編集・削除時の即時反映問題を修正",
+      "カレンダーと一覧表示の両方が即座に更新されるように改善",
+      "非同期処理の適切な待機によりデータ整合性を向上",
+      "WorkRecordsComponentの自動更新機能を追加"
+    ],
+    type: "bugfix"
+  },
   {
     version: "1.0.1",
     date: "2025-01-21",
