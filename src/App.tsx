@@ -4034,20 +4034,20 @@ User Agent: ${userAgent}
     "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "CONNECT", "TRACE"
   ];
 
-  // エラー情報抽出用の正規表現パターン
-  const ERROR_PATTERNS = {
-    // URL: の後に続く文字列をマッチ
-    URL_EXPLICIT: /URL: ([^\n\s]+)/,
-    // APIエンドポイントのパスをマッチ
-    URL_API: /\/api\/[^\s\n]+/,
-    // ステータス: の後に続く数字をマッチ
-    STATUS_EXPLICIT: /ステータス: (\d+)/,
-    // 有効なHTTPステータスコード（100-599）をマッチ
-    STATUS_CODE: /\b(1\d{2}|2\d{2}|3\d{2}|4\d{2}|5\d{2})\b/,
-    // メソッド: の後に続く文字列をマッチ
-    METHOD_EXPLICIT: /メソッド: ([^\n\s]+)/
-  };
 
+// エラー情報抽出用の正規表現パターン
+const ERROR_PATTERNS = {
+  // URL: の後に続く文字列をマッチ
+  URL_EXPLICIT: /URL: ([^\n\s]+)/,
+  // APIエンドポイントのパスをマッチ
+  URL_API: /\/api\/[^\s\n]+/,
+  // ステータス: の後に続く数字をマッチ
+  STATUS_EXPLICIT: /ステータス: (\d+)/,
+  // 有効なHTTPステータスコード（100-599）をマッチ
+  STATUS_CODE: /\b(1\d{2}|2\d{2}|3\d{2}|4\d{2}|5\d{2})\b/,
+  // メソッド: の後に続く文字列をマッチ
+  METHOD_EXPLICIT: /メソッド: ([^\n\s]+)/
+};
   // Helper function to parse status from match results
   function parseStatus(statusMatch: RegExpMatchArray | null, statusMatch2: RegExpMatchArray | null): number | undefined {
     if (statusMatch?.[1]) {
