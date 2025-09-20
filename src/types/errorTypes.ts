@@ -25,16 +25,12 @@ export const ERROR_DEFAULTS = {
   get TIMESTAMP() {
     return new Date().toISOString();
   },
-  get USER_AGENT() {
-    return typeof navigator !== "undefined" && navigator.userAgent
-      ? navigator.userAgent
-      : "";
-  },
-  get URL() {
-    return typeof window !== "undefined" && window.location && window.location.href
-      ? window.location.href
-      : "";
-  }
+  USER_AGENT: typeof navigator !== "undefined" && navigator.userAgent
+    ? navigator.userAgent
+    : "",
+  URL: typeof window !== "undefined" && window.location && window.location.href
+    ? window.location.href
+    : ""
 } as const;
 
 // エラー情報を構築するユーティリティ関数
