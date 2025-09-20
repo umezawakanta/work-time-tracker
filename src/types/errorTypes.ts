@@ -66,21 +66,31 @@ export function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: A
     (error as { errorInfo?: unknown }).errorInfo !== null
   ) {
     const info = (error as { errorInfo: unknown }).errorInfo;
+    
+    // 安全にプロパティにアクセスするためのヘルパー関数
+    const hasProperty = (obj: unknown, prop: string): boolean => {
+      return typeof obj === "object" && obj !== null && prop in obj;
+    };
+    
+    const getProperty = (obj: unknown, prop: string): unknown => {
+      return hasProperty(obj, prop) ? (obj as any)[prop] : undefined;
+    };
+    
     return (
       // 必須プロパティのみチェック
-      typeof info.message === "string" &&
-      typeof info.timestamp === "string" &&
-      typeof info.userAgent === "string" &&
+      typeof getProperty(info, "message") === "string" &&
+      typeof getProperty(info, "timestamp") === "string" &&
+      typeof getProperty(info, "userAgent") === "string" &&
       // オプショナルプロパティ: 存在すれば型チェック
-      (info.filename === undefined || typeof info.filename === "string") &&
-      (info.lineno === undefined || typeof info.lineno === "number") &&
-      (info.colno === undefined || typeof info.colno === "number") &&
-      (info.type === undefined || typeof info.type === "string") &&
-      (info.url === undefined || typeof info.url === "string") &&
-      (info.stack === undefined || typeof info.stack === "string") &&
-      (info.status === undefined || typeof info.status === "number") &&
-      (info.statusText === undefined || typeof info.statusText === "string") &&
-      (info.method === undefined || typeof info.method === "string")
+      (getProperty(info, "filename") === undefined || typeof getProperty(info, "filename") === "string") &&
+      (getProperty(info, "lineno") === undefined || typeof getProperty(info, "lineno") === "number") &&
+      (getProperty(info, "colno") === undefined || typeof getProperty(info, "colno") === "number") &&
+      (getProperty(info, "type") === undefined || typeof getProperty(info, "type") === "string") &&
+      (getProperty(info, "url") === undefined || typeof getProperty(info, "url") === "string") &&
+      (getProperty(info, "stack") === undefined || typeof getProperty(info, "stack") === "string") &&
+      (getProperty(info, "status") === undefined || typeof getProperty(info, "status") === "number") &&
+      (getProperty(info, "statusText") === undefined || typeof getProperty(info, "statusText") === "string") &&
+      (getProperty(info, "method") === undefined || typeof getProperty(info, "method") === "string")
     );
   }
   return false;
