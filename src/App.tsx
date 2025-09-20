@@ -5661,7 +5661,7 @@ ${errorInfo.stack}
                     handleUpdateDiary={handleUpdateDiary}
                     handleDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
                     handleDeleteDiary={handleDeleteDiary}
-                    editIncomeExpenseRecord={editIncomeExpenseRecord}
+                    editingIncomeExpenseRecord={editIncomeExpenseRecord}
                     viewIncomeExpenseRecord={viewIncomeExpenseRecord}
                     openDiaryForm={openDiaryForm}
                     loadMonthlyMemo={loadMonthlyMemo}
