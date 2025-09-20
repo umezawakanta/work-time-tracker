@@ -2378,9 +2378,8 @@ ${errorInfo.stack}
 
   const handleDeleteDiary = async (id: string) => {
     try {
-      const url = new URL('/api/work-records/diary', window.location.origin);
-      url.searchParams.set('id', id);
-      const response = await fetch(url.toString(), {
+      const url = `/api/work-records/diary?id=${encodeURIComponent(id)}`;
+      const response = await fetch(url, {
         method: "DELETE",
       });
 
