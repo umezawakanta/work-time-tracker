@@ -92,6 +92,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
+    console.log('Fetching notifications for user:', user.userId);
+
     const { page = 1, limit = 20, unreadOnly = false } = req.query;
 
     // クエリ条件を構築
@@ -100,6 +102,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       query.isRead = false;
     }
 
+    console.log('Query conditions:', query);
+
     // 通知を取得
     const notifications = await Notification.find(query)
       .sort({ createdAt: -1 })
@@ -107,11 +111,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .skip((Number(page) - 1) * Number(limit))
       .lean();
 
+    console.log('Found notifications:', notifications.length);
+
     // 未読通知数を取得
     const unreadCount = await Notification.countDocuments({ 
       userId: user.userId, 
       isRead: false 
     });
+
+    console.log('Unread count:', unreadCount);
 
     res.status(200).json({
       notifications,

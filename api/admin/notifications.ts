@@ -154,6 +154,9 @@ module.exports = async function handler(req, res) {
     await Memo.findByIdAndUpdate(memoId, updateData);
 
     // 通知を作成
+    console.log('Creating notification for user:', memo.userId);
+    console.log('Memo postType:', memo.postType);
+    
     const notification = new Notification({
       userId: memo.userId,
       type: 'memo_response',
@@ -163,6 +166,7 @@ module.exports = async function handler(req, res) {
     });
 
     await notification.save();
+    console.log('Notification created successfully:', notification._id);
 
     res.status(200).json({ 
       success: true, 

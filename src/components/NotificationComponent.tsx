@@ -39,6 +39,7 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
       }
 
       const data = await response.json();
+      console.log('Notifications loaded:', data);
       setNotifications(data.notifications || []);
       setUnreadCount(data.unreadCount || 0);
     } catch (error) {
@@ -92,6 +93,11 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
   // コンポーネントマウント時に通知を取得
   useEffect(() => {
     loadNotifications();
+    
+    // 30秒ごとに通知を更新
+    const interval = setInterval(loadNotifications, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   // 通知ドロップダウン外をクリックした時に閉じる
