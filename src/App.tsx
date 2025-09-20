@@ -22,6 +22,7 @@ import VersionInfo from "./components/VersionInfo";
 import { ErrorInfo, getErrorInfo, formatErrorInfo } from './types/errorTypes';
 import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './utils/authUtils';
 import type { ApiErrorInfo } from './utils/apiErrorHandler';
+// apiFetchは頻繁に使用されるため静的インポートを維持
 import { apiFetch } from './utils/apiClient';
 import { buildApiUrl, createUserIdParam, createIdParam } from './utils/urlUtils';
 import EggTimerComponent from "./components/EggTimerComponent";
