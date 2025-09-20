@@ -1887,10 +1887,23 @@ ${errorInfo.stack}
         console.log('ユーザーIDがありません');
         return;
       }
-        const { apiFetch } = await import("./utils/apiClient");
-        const response = await apiFetch("/api/work-records/salary");
+      
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        console.log('アクセストークンがありません');
+        setMessage('ログインが必要です');
+        return;
+      }
 
-        const data = await response.json();
+      const { apiFetch } = await import("./utils/apiClient");
+      const response = await apiFetch("/api/work-records/salary", {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
         if (data.success) {
           setIncomeExpenseRecords(data.records);
         } else {
