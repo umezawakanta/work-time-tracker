@@ -3889,13 +3889,7 @@ ${errorInfo.stack}
   };
 
   // エラー報告の送信処理
-  const handleErrorReport = async (errorReport: {
-    title: string;
-    content: string;
-    errorDetails: string;
-    userAgent: string;
-    timestamp: string;
-  }) => {
+  const handleErrorReport = async (errorInfo: ApiErrorInfo) => {
     try {
       const token = localStorage.getItem("access_token");
       
@@ -3907,8 +3901,8 @@ ${errorInfo.stack}
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: `[エラー報告] ${errorReport.title}`,
-          content: `${errorReport.content}\n\n--- エラー詳細 ---\n${errorReport.errorDetails}\n\n--- システム情報 ---\nUser Agent: ${errorReport.userAgent}\n発生時刻: ${errorReport.timestamp}`,
+          title: `[エラー報告] API Error - ${errorInfo.status}`,
+          content: `APIエラーが発生しました。\n\n--- エラー詳細 ---\nURL: ${errorInfo.url}\nステータス: ${errorInfo.status} ${errorInfo.statusText}\nメソッド: ${errorInfo.method}\nエラー: ${errorInfo.error}\n\n--- システム情報 ---\nUser Agent: ${errorInfo.userAgent}\n発生時刻: ${errorInfo.timestamp}`,
           category: "エラー報告",
           tags: ["エラー", "バグ報告", "システム"],
           isPublic: true,
