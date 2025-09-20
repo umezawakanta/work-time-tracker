@@ -1,4 +1,5 @@
 const { ensureDatabaseConnection: initDB, mongoose: mongooseDB } = require('../utils/database');
+const { verifyJWT } = require('../utils/validation');
 
 // TimeEntry スキーマを定義
 const TimeEntrySchema = new mongooseDB.Schema({
@@ -66,11 +67,12 @@ module.exports = async function handler(req, res) {
     await initDB();
     console.log('Database connected successfully');
     
-    const { userId } = req.query;
-    
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
+    // JWTトークンからユーザーIDを取得
+    const userInfo = await verifyJWT(req);
+    if (!userInfo) {
+      return res.status(401).json({ message: '認証が必要です' });
     }
+    const userId = userInfo.userId;
     
     console.log('Fetching time entries for userId:', userId);
 

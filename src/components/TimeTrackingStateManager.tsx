@@ -125,15 +125,12 @@ export const useTimeTrackingHelpers = () => {
   
   // 時間記録の履歴を取得
   const loadTimeEntries = async () => {
-    if (!timeTrackingState.currentTimeEntry) {
-      console.warn("ユーザーIDがありません。時間記録を取得できません。");
-      timeTrackingState.setTimeEntries([]);
-      return;
-    }
+    // ユーザーIDはJWTトークンから取得されるため、currentTimeEntryの存在は関係ない
+    // 時間記録の取得は常に実行する
 
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/time-entries", {
+      const response = await fetch("/api/time/entries", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
