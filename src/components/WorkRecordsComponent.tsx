@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import './WorkRecordsComponent.css';
 import type { IncomeExpenseRecord, WorkDiary, User } from '../types';
 import DeleteConfirmModal from './DeleteConfirmModal';
@@ -182,7 +182,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         setSelectedRecordType(null);
       }
     }
-  }, [incomeExpenseRecords, workDiaries, selectedDate, getRecordsForDate]);
+  }, [incomeExpenseRecords, workDiaries, selectedDate]);
 
   // カレンダーの日付を生成
   const getCalendarDays = () => {
@@ -205,7 +205,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   };
 
   // 指定された日付の記録を取得
-  const getRecordsForDate = useCallback((date: Date) => {
+  const getRecordsForDate = (date: Date) => {
     const dateString = date.toISOString().split('T')[0];
     const incomeRecords = (incomeExpenseRecords || []).filter(record => 
       new Date(record.date).toISOString().split('T')[0] === dateString && record.type === 'income'
@@ -218,7 +218,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     );
     
     return { incomeRecords, expenseRecords, diaryRecord };
-  }, [incomeExpenseRecords, workDiaries]);
+  };
 
   // 月の統計を計算
   const getMonthlySummary = (year: number, month: number) => {
