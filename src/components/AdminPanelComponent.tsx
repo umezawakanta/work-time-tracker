@@ -1,6 +1,84 @@
 import React, { useState, useEffect } from 'react';
 import './AdminPanelComponent.css';
 
+// ソースコードアイテムコンポーネント
+interface SourceCodeItemProps {
+  file: any;
+  onFileSelect: (file: any) => void;
+}
+
+const SourceCodeItem: React.FC<SourceCodeItemProps> = ({ file, onFileSelect }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const getFileIcon = (file: any) => {
+    if (file.type === 'directory') {
+      return isExpanded ? 'bi-folder2-open' : 'bi-folder2';
+    }
+    
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'tsx':
+      case 'ts':
+        return 'bi-filetype-tsx';
+      case 'js':
+      case 'jsx':
+        return 'bi-filetype-jsx';
+      case 'css':
+        return 'bi-filetype-css';
+      case 'json':
+        return 'bi-filetype-json';
+      case 'html':
+        return 'bi-filetype-html';
+      case 'md':
+        return 'bi-filetype-md';
+      default:
+        return 'bi-file-earmark';
+    }
+  };
+
+  const handleClick = () => {
+    if (file.type === 'directory') {
+      setIsExpanded(!isExpanded);
+    } else {
+      onFileSelect(file);
+    }
+  };
+
+  return (
+    <div className="source-code-item">
+      <div 
+        className="source-code-header clickable"
+        onClick={handleClick}
+      >
+        <div className="source-code-info">
+          <i className={`bi ${getFileIcon(file)}`}></i>
+          <span className="source-code-name">{file.name}</span>
+        </div>
+        <div className="source-code-meta">
+          <span className="source-code-path">{file.path}</span>
+          {file.type === 'directory' && (
+            <span className="expand-icon">
+              <i className={`bi bi-chevron-${isExpanded ? 'up' : 'down'}`}></i>
+            </span>
+          )}
+        </div>
+      </div>
+      
+      {isExpanded && file.children && (
+        <div className="source-code-children">
+          {file.children.map((child: any, index: number) => (
+            <SourceCodeItem 
+              key={index} 
+              file={child} 
+              onFileSelect={onFileSelect}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // 不具合報告アイテムコンポーネント
 interface ErrorReportItemProps {
   report: any;
@@ -135,6 +213,150 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [testResults, setTestResults] = useState<any>(null);
   const [testResultsLoading, setTestResultsLoading] = useState(false);
   const [testResultsError, setTestResultsError] = useState<string | null>(null);
+
+  // プロジェクト構造の定義
+  const projectStructure = [
+    {
+      name: 'src',
+      type: 'directory',
+      path: 'src',
+      children: [
+        {
+          name: 'components',
+          type: 'directory',
+          path: 'src/components',
+          children: [
+            { name: 'App.tsx', type: 'file', path: 'src/App.tsx' },
+            { name: 'AdminPanelComponent.tsx', type: 'file', path: 'src/components/AdminPanelComponent.tsx' },
+            { name: 'HeaderComponent.tsx', type: 'file', path: 'src/components/HeaderComponent.tsx' },
+            { name: 'MemosComponent.tsx', type: 'file', path: 'src/components/MemosComponent.tsx' },
+            { name: 'PublicMemosComponent.tsx', type: 'file', path: 'src/components/PublicMemosComponent.tsx' },
+            { name: 'WorkRecordsComponent.tsx', type: 'file', path: 'src/components/WorkRecordsComponent.tsx' },
+            { name: 'ReportsComponent.tsx', type: 'file', path: 'src/components/ReportsComponent.tsx' },
+            { name: 'LoginComponent.tsx', type: 'file', path: 'src/components/LoginComponent.tsx' },
+            { name: 'ShareButtonComponent.tsx', type: 'file', path: 'src/components/ShareButtonComponent.tsx' },
+            { name: 'ErrorReportingModal.tsx', type: 'file', path: 'src/components/ErrorReportingModal.tsx' },
+            { name: 'UserGreetingComponent.tsx', type: 'file', path: 'src/components/UserGreetingComponent.tsx' },
+            { name: 'VersionInfo.tsx', type: 'file', path: 'src/components/VersionInfo.tsx' },
+            { name: 'UserInfoComponent.tsx', type: 'file', path: 'src/components/UserInfoComponent.tsx' },
+            { name: 'SelfEncyclopediaComponent.tsx', type: 'file', path: 'src/components/SelfEncyclopediaComponent.tsx' },
+            { name: 'PrivacyPolicyComponent.tsx', type: 'file', path: 'src/components/PrivacyPolicyComponent.tsx' },
+            { name: 'TermsOfServiceComponent.tsx', type: 'file', path: 'src/components/TermsOfServiceComponent.tsx' },
+          ]
+        },
+        {
+          name: 'server',
+          type: 'directory',
+          path: 'src/server',
+          children: [
+            { name: 'database.ts', type: 'file', path: 'src/server/database.ts' },
+            { name: 'models.ts', type: 'file', path: 'src/server/models.ts' },
+            { name: 'auth.ts', type: 'file', path: 'src/server/auth.ts' },
+            { name: 'validation.ts', type: 'file', path: 'src/server/validation.ts' },
+            { name: 'types.ts', type: 'file', path: 'src/server/types.ts' },
+            { name: 'utils.ts', type: 'file', path: 'src/server/utils.ts' },
+          ]
+        },
+        {
+          name: 'types',
+          type: 'directory',
+          path: 'src/types',
+          children: [
+            { name: 'index.ts', type: 'file', path: 'src/types/index.ts' },
+          ]
+        },
+        {
+          name: 'utils',
+          type: 'directory',
+          path: 'src/utils',
+          children: [
+            { name: 'dateUtils.ts', type: 'file', path: 'src/utils/dateUtils.ts' },
+            { name: 'formatUtils.ts', type: 'file', path: 'src/utils/formatUtils.ts' },
+          ]
+        },
+        {
+          name: 'constants',
+          type: 'directory',
+          path: 'src/constants',
+          children: [
+            { name: 'cookingRecipes.ts', type: 'file', path: 'src/constants/cookingRecipes.ts' },
+            { name: 'fonts.ts', type: 'file', path: 'src/constants/fonts.ts' },
+            { name: 'themes.ts', type: 'file', path: 'src/constants/themes.ts' },
+          ]
+        },
+        { name: 'App.tsx', type: 'file', path: 'src/App.tsx' },
+        { name: 'App.css', type: 'file', path: 'src/App.css' },
+        { name: 'main.tsx', type: 'file', path: 'src/main.tsx' },
+        { name: 'types.ts', type: 'file', path: 'src/types.ts' },
+      ]
+    },
+    {
+      name: 'api',
+      type: 'directory',
+      path: 'api',
+      children: [
+        {
+          name: 'auth',
+          type: 'directory',
+          path: 'api/auth',
+          children: [
+            { name: 'login.ts', type: 'file', path: 'api/auth/login.ts' },
+            { name: 'register.ts', type: 'file', path: 'api/auth/register.ts' },
+            { name: 'verify.ts', type: 'file', path: 'api/auth/verify.ts' },
+          ]
+        },
+        {
+          name: 'memos',
+          type: 'directory',
+          path: 'api/memos',
+          children: [
+            { name: 'index.ts', type: 'file', path: 'api/memos/index.ts' },
+            { name: 'public.ts', type: 'file', path: 'api/memos/public.ts' },
+            { name: '[id].ts', type: 'file', path: 'api/memos/[id].ts' },
+            { name: 'reply.ts', type: 'file', path: 'api/memos/reply.ts' },
+          ]
+        },
+        {
+          name: 'work-records',
+          type: 'directory',
+          path: 'api/work-records',
+          children: [
+            { name: 'salary.ts', type: 'file', path: 'api/work-records/salary.ts' },
+            { name: 'diary.ts', type: 'file', path: 'api/work-records/diary.ts' },
+          ]
+        },
+        {
+          name: 'admin',
+          type: 'directory',
+          path: 'api/admin',
+          children: [
+            { name: 'users.ts', type: 'file', path: 'api/admin/users.ts' },
+            { name: 'user-edit.ts', type: 'file', path: 'api/admin/user-edit.ts' },
+            { name: 'user-delete.ts', type: 'file', path: 'api/admin/user-delete.ts' },
+          ]
+        },
+        {
+          name: 'utils',
+          type: 'directory',
+          path: 'api/utils',
+          children: [
+            { name: 'database.ts', type: 'file', path: 'api/utils/database.ts' },
+            { name: 'errorHandler.js', type: 'file', path: 'api/utils/errorHandler.js' },
+            { name: 'schemas.ts', type: 'file', path: 'api/utils/schemas.ts' },
+            { name: 'types.js', type: 'file', path: 'api/utils/types.js' },
+            { name: 'validation.ts', type: 'file', path: 'api/utils/validation.ts' },
+          ]
+        },
+        { name: 'user-settings.ts', type: 'file', path: 'api/user-settings.ts' },
+        { name: 'version/check.ts', type: 'file', path: 'api/version/check.ts' },
+      ]
+    },
+    { name: 'package.json', type: 'file', path: 'package.json' },
+    { name: 'tsconfig.json', type: 'file', path: 'tsconfig.json' },
+    { name: 'vite.config.ts', type: 'file', path: 'vite.config.ts' },
+    { name: 'vercel.json', type: 'file', path: 'vercel.json' },
+    { name: 'index.html', type: 'file', path: 'index.html' },
+  ];
   
   // 各タブの件数を管理する状態
   const [tabCounts, setTabCounts] = useState({
@@ -821,10 +1043,18 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                   </button>
                 </div>
                 <div className="source-code-content">
-                  <SourceCodeViewer
-                    isOpen={true}
-                    onClose={() => setActiveTab('users')}
-                  />
+                  <div className="source-code-list">
+                    {projectStructure.map((file, index) => (
+                      <SourceCodeItem 
+                        key={index} 
+                        file={file} 
+                        onFileSelect={(file) => {
+                          console.log('Selected file:', file);
+                          // ファイル選択時の処理（必要に応じて実装）
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
