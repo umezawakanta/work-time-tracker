@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ShareButtonComponent.css';
+import { APP_VERSION, getLatestChangelog } from '../constants/version';
 
 interface ShareButtonComponentProps {
   className?: string;
@@ -117,7 +118,25 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     };
   }
 
-  const siteTitle = `Work Time Tracker - ${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}`;
+  const siteTitle = `Work Time Tracker v${APP_VERSION} - ${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}`;
+  
+  // 最新の更新履歴を取得
+  const getLatestUpdateInfo = () => {
+    const latestChangelog = getLatestChangelog();
+    if (!latestChangelog) return '';
+    
+    const typeLabels = {
+      bugfix: "🐛 バグ修正",
+      feature: "✨ 新機能",
+      improvement: "⚡ 改善",
+      breaking: "💥 破壊的変更"
+    };
+    
+    const typeLabel = typeLabels[latestChangelog.type];
+    const changesText = latestChangelog.changes.slice(0, 2).join('、'); // 最初の2つの変更のみ表示
+    
+    return `\n\n🆕 最新更新 (v${latestChangelog.version}): ${typeLabel}\n${changesText}`;
+  };
   
   // 統計データを含む説明文を生成
   const getStatsText = () => {
@@ -143,7 +162,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     return statsParts.length > 0 ? `\n\n📊 現在の状況: ${statsParts.join('、')}` : '';
   };
   
-  const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！${getStatsText()}`;
+  const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！${getLatestUpdateInfo()}${getStatsText()}`;
   
   // Twitter用の短縮テキスト（280文字制限を考慮）
   const twitterText = `${siteTitle}\n\n${siteDescription}\n\n${siteUrl}`;
@@ -152,7 +171,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   // 文字数制限をチェックして必要に応じて短縮
   const maxTwitterLength = 280;
   const finalTwitterText = twitterTextLength > maxTwitterLength 
-    ? `${siteTitle}\n\n${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${getStatsText()}\n\n${siteUrl}`
+    ? `${siteTitle}\n\n${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${getLatestUpdateInfo()}${getStatsText()}\n\n${siteUrl}`
     : twitterText;
 
   const shareData = {
@@ -246,6 +265,27 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
             
             <div className="share-description">
               <p>{siteDescription}</p>
+              
+              {/* 更新履歴の表示 */}
+              {getLatestChangelog() && (
+                <div className="update-info">
+                  <h4>🆕 最新更新</h4>
+                  <div className="update-details">
+                    <span className="update-version">v{getLatestChangelog()?.version}</span>
+                    <span className="update-type">
+                      {getLatestChangelog()?.type === 'bugfix' && '🐛 バグ修正'}
+                      {getLatestChangelog()?.type === 'feature' && '✨ 新機能'}
+                      {getLatestChangelog()?.type === 'improvement' && '⚡ 改善'}
+                      {getLatestChangelog()?.type === 'breaking' && '💥 破壊的変更'}
+                    </span>
+                    <div className="update-changes">
+                      {getLatestChangelog()?.changes.slice(0, 3).map((change, index) => (
+                        <div key={index} className="update-change-item">• {change}</div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
               
               {/* 統計データの表示 */}
               {!stats.loading && (stats.userCount > 0 || stats.errorCount > 0 || stats.updateRequestCount > 0 || stats.linterErrorCount > 0 || stats.testErrorCount > 0) && (
