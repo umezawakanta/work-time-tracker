@@ -51,5 +51,5 @@ export const createIdParam = (id: string | undefined | null, paramName: string =
   if (!id) {
     throw new Error('ID is required but not provided');
   }
-  return { [paramName]: id };
+  return { [paramName]: String(id) };
 };
