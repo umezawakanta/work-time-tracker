@@ -5661,7 +5661,6 @@ ${errorInfo.stack}
                     handleUpdateDiary={handleUpdateDiary}
                     handleDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
                     handleDeleteDiary={handleDeleteDiary}
-                    viewIncomeExpenseRecord={viewIncomeExpenseRecord}
                     openDiaryForm={openDiaryForm}
                     loadMonthlyMemo={loadMonthlyMemo}
                     saveMonthlyMemo={saveMonthlyMemo}
@@ -5678,16 +5677,6 @@ ${errorInfo.stack}
                     showTimers={showTimers}
                     setShowTimers={setShowTimers}
                     closeOtherFeatures={closeOtherFeatures}
-                    timerPresets={timerPresetState.timerPresets}
-                    setTimerPresets={timerPresetState.setTimerPresets}
-                    startPresetTimer={timerPresetState.startPresetTimer}
-                    stopPresetTimer={timerPresetState.stopPresetTimer}
-                    resetPresetTimer={timerPresetState.resetPresetTimer}
-                    addPreset={timerPresetState.addPreset}
-                    updatePreset={timerPresetState.updatePreset}
-                    deletePreset={timerPresetState.deletePreset}
-                    savePresets={timerPresetState.savePresets}
-                    loadPresets={timerPresetState.loadPresets}
                   />
                 );
               } else if (feature.id === "egg-timer") {
@@ -5740,14 +5729,14 @@ ${errorInfo.stack}
                     habitStreak={habitStreak}
                     setHabitStreak={setHabitStreak}
                     moodLogs={moodLogState.moodLogs}
-                    setMoodLogs={moodLogState.setMoodLogs}
+                    setMoodLogs={moodLogState.setMoodLogs as React.Dispatch<React.SetStateAction<MoodLog[]>>}
                     goals={goals}
                     setGoals={setGoals}
                     learningRecords={learningRecords}
                     setLearningRecords={setLearningRecords}
                     timeEntries={timeEntries}
                     calculateTimeBreakdown={calculateTimeBreakdown}
-                    calculateProductivityTrend={calculateProductivityTrend}
+                    calculateProductivityTrend={calculateProductivityTrend as unknown as () => { date: string; workHours: number; dayOfWeek: string; }[]}
                     calculateProductivityStats={calculateProductivityStats}
                     loadTimeEntries={loadTimeEntries}
                     closeOtherFeatures={closeOtherFeatures}
@@ -6091,7 +6080,7 @@ ${errorInfo.stack}
           isOpen={showErrorModal}
           onClose={() => setShowErrorModal(false)}
           error={currentError}
-          onSubmit={handleErrorReport}
+          onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => void}
           buttonPosition={errorModalButtonPosition}
         />
       </div>
@@ -6118,7 +6107,7 @@ ${errorInfo.stack}
           isOpen={showErrorModal}
           onClose={() => setShowErrorModal(false)}
           error={currentError}
-          onSubmit={handleErrorReport}
+          onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => void}
           buttonPosition={errorModalButtonPosition}
         />
     </>
