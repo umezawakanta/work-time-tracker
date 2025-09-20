@@ -252,7 +252,7 @@ export const getErrorInfo = (error: Error | ApiErrorInfo | null): ErrorInfo | un
   // 抽出された情報をまとめる
   const extractedInfo = {
     url: urlMatch?.[1] || urlMatch2?.[0],
-    status: parseStatus(statusMatch, statusMatch2?.[1]),
+    status: parseStatus(statusMatch, statusMatch2),
     method: parseMethod(methodMatch, methodMatch2)
   };
   
