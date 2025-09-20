@@ -25,7 +25,7 @@ const WorkDiarySchema = new mongoose.Schema({
   date: { type: Date, required: true },
   title: { type: String, required: true },
   content: { type: String, required: true },
-  mood: { type: String, enum: ['😊', '😐', '😔', '😤', '😴', '🤔', '😍', '😢'], default: '😊' },
+  mood: { type: String, enum: ['1', '2', '3', '4', '5'], default: '3' },
   tags: [{ type: String }],
   isPrivate: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
@@ -98,7 +98,7 @@ export default async function handler(req, res) {
         date: utcDate,
         title,
         content,
-        mood: mood || '😊',
+        mood: mood || '3',
         tags: tags || [],
         isPrivate: isPrivate !== undefined ? isPrivate : true
       });
