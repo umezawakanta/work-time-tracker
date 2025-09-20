@@ -1,12 +1,81 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+const mongooseDB = require('mongoose');
+const jwtLib = require('jsonwebtoken');
+const dotenvLib = require('dotenv');
 
-// 既存のAPIパターンに合わせてrequireを使用
-const { ensureDatabaseConnection, verifyJWT } = require('../utils/database.js');
-const { determineIncomeExpenseType } = require('../utils/incomeExpenseUtils.js');
-const mongoose = require('mongoose');
+dotenvLib.config();
+
+// 支出を示すキーワード
+const EXPENSE_KEYWORDS = [
+  '支出', '支払', '費用', '交通費', '食費', '光熱費',
+  '家賃', '保険', '税金', '医療費', '教育費', '娯楽費',
+  '通信費', '水道光熱費', 'ガソリン代', '駐車場代'
+];
+
+// Database connection utility
+const ensureDatabaseConnectionAdmin = async () => {
+  const isConnected = mongooseDB.connection.readyState === 1;
+  if (isConnected) {
+    return;
+  }
+  console.warn('[admin/fix-income-expense-types] Database not connected, attempting to connect...');
+  try {
+    const { MONGODB_URI } = process.env;
+    if (!MONGODB_URI) {
+      throw new Error("MONGODB_URI environment variable is required but not set.");
+    }
+    await mongooseDB.connect(MONGODB_URI, {
+      dbName: 'workTimeTracker'
+    });
+    console.log('[admin/fix-income-expense-types] Database connected successfully');
+  } catch (error) {
+    console.error('[admin/fix-income-expense-types] Database connection failed:', error);
+    throw error;
+  }
+};
+
+// JWT verification utility
+const verifyJWTToken = async (req) => {
+  if (!req || !req.headers) {
+    console.log('Request or headers object is undefined');
+    return null;
+  }
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+
+  const token = authHeader.substring(7);
+  
+  try {
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+    return jwtLib.verify(token, jwtSecret);
+  } catch (error) {
+    console.error('JWT verification failed:', error);
+    return null;
+  }
+};
+
+// 収入/支出判定関数
+const determineIncomeExpenseType = (record: any) => {
+  const { notes, amount } = record;
+  let newType = 'income'; // デフォルトは収入
+  
+  // メモの内容から支出を判定
+  if (notes && EXPENSE_KEYWORDS.some(keyword => notes.includes(keyword))) {
+    newType = 'expense';
+  }
+  
+  // 金額が負の場合は支出
+  if (amount < 0) {
+    newType = 'expense';
+  }
+  
+  return newType;
+};
 
 // 収支記録のスキーマ
-const IncomeExpenseRecordSchema = new mongoose.Schema({
+const IncomeExpenseRecordSchema = new mongooseDB.Schema({
   userId: { type: String, required: true },
   date: { type: Date, required: true },
   amount: { type: Number, required: true },
@@ -16,22 +85,22 @@ const IncomeExpenseRecordSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-const IncomeExpenseRecord = mongoose.models.SalaryRecord || mongoose.model('SalaryRecord', IncomeExpenseRecordSchema);
+const IncomeExpenseRecord = mongooseDB.models.SalaryRecord || mongooseDB.model('SalaryRecord', IncomeExpenseRecordSchema);
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
   try {
     // 管理者権限を確認
-    const user = await verifyJWT(req);
+    const user = await verifyJWTToken(req);
     if (!user || !user.isAdmin) {
       return res.status(403).json({ message: 'Admin access required' });
     }
 
     // データベース接続
-    await ensureDatabaseConnection();
+    await ensureDatabaseConnectionAdmin();
 
     // typeフィールドが欠損している記録を取得
     const recordsWithoutType = await IncomeExpenseRecord.find({
