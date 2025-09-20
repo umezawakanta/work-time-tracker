@@ -2024,23 +2024,28 @@ ${errorInfo.stack}
           ? -Math.abs(Number(incomeExpenseAmount))
           : Math.abs(Number(incomeExpenseAmount));
 
+      const requestBody = {
+        date: incomeExpenseDate,
+        amount: amount,
+        type: incomeExpenseType,
+        transportation: 0,
+        overtime: 0,
+        bonus: 0,
+        notes: incomeExpenseNotes,
+      };
+
+      console.log('Creating income/expense record:', requestBody);
+
       const response = await fetch("/api/work-records/salary", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem('access_token')}`
         },
-        body: JSON.stringify({
-          date: incomeExpenseDate,
-          amount: amount,
-          type: incomeExpenseType,
-          transportation: 0,
-          overtime: 0,
-          bonus: 0,
-          notes: incomeExpenseNotes,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
       if (data.success) {
         setMessage("収入・支出記録が作成されました！");
@@ -2051,7 +2056,8 @@ ${errorInfo.stack}
         setShowIncomeExpenseForm(false);
         loadIncomeExpenseRecords();
       } else {
-        setMessage(`エラー: ${data.message}`);
+        console.error('API Error Response:', data);
+        setMessage(`エラー: ${data.message}${data.details ? ` (詳細: ${JSON.stringify(data.details)})` : ''}`);
       }
     } catch (error) {
       setMessage(
@@ -2071,24 +2077,29 @@ ${errorInfo.stack}
           ? -Math.abs(Number(incomeExpenseAmount))
           : Math.abs(Number(incomeExpenseAmount));
 
+      const requestBody = {
+        id: editingIncomeExpenseRecord._id,
+        date: incomeExpenseDate,
+        amount: amount,
+        type: incomeExpenseType,
+        transportation: 0,
+        overtime: 0,
+        bonus: 0,
+        notes: incomeExpenseNotes,
+      };
+
+      console.log('Updating income/expense record:', requestBody);
+
       const response = await fetch("/api/work-records/salary", {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem('access_token')}`
         },
-        body: JSON.stringify({
-          id: editingIncomeExpenseRecord._id,
-          date: incomeExpenseDate,
-          amount: amount,
-          type: incomeExpenseType,
-          transportation: 0,
-          overtime: 0,
-          bonus: 0,
-          notes: incomeExpenseNotes,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
       if (data.success) {
         setMessage("収入・支出記録を更新しました！");
@@ -2100,7 +2111,8 @@ ${errorInfo.stack}
         setShowIncomeExpenseForm(false);
         loadIncomeExpenseRecords();
       } else {
-        setMessage(`エラー: ${data.message}`);
+        console.error('API Error Response:', data);
+        setMessage(`エラー: ${data.message}${data.details ? ` (詳細: ${JSON.stringify(data.details)})` : ''}`);
       }
     } catch (error) {
       setMessage(

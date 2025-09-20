@@ -54,11 +54,15 @@ module.exports = async function handler(req, res) {
 
   try {
     // JWTトークンからユーザーIDを取得
+    console.log('Verifying JWT token...');
     const userInfo = await verifyJWT(req);
+    console.log('JWT verification result:', userInfo);
     if (!userInfo) {
+      console.log('JWT verification failed');
       return res.status(401).json({ message: '認証が必要です' });
     }
     const userId = userInfo.userId;
+    console.log('User ID:', userId);
 
     if (req.method === 'GET') {
       // 給料記録一覧を取得
@@ -90,12 +94,21 @@ module.exports = async function handler(req, res) {
 
     } else if (req.method === 'POST') {
       // 新しい収支記録を作成
+      console.log('POST request received:', req.body);
       const { date, amount, type, transportation, overtime, bonus, notes } = req.body;
 
+      console.log('Parsed fields:', { date, amount, type, transportation, overtime, bonus, notes });
+
       if (!date || amount === undefined || !type) {
+        console.log('Validation failed:', { date: !!date, amount: amount !== undefined, type: !!type });
         return res.status(400).json({
           success: false,
-          message: '必須フィールドが不足しています'
+          message: '必須フィールドが不足しています',
+          details: {
+            date: !!date,
+            amount: amount !== undefined,
+            type: !!type
+          }
         });
       }
 
@@ -200,10 +213,15 @@ module.exports = async function handler(req, res) {
 
   } catch (error) {
     console.error('Salary record API error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      details: process.env.NODE_ENV === 'development' ? {
+        message: error.message,
+        stack: error.stack
+      } : undefined
     });
   }
 }
