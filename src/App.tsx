@@ -4018,37 +4018,66 @@ ${errorInfo.stack}
     reportApiError(errorInfo, handleErrorReport);
   };
 
-  // エラー報告のコンテンツフォーマット関数
-  const formatErrorReportContent = (
-    content: string,
-    userAgent: string,
-    timestamp: string,
-    errorType: string = "APIエラー"
-  ) => {
+  // 汎用エラー報告コンテンツフォーマット関数
+  const formatGenericErrorReportContent = ({
+    errorType = "エラー",
+    content,
+    userAgent,
+    timestamp,
+    url,
+    statusInfo,
+    methodInfo,
+    message,
+  }: {
+    errorType?: string;
+    content?: string;
+    userAgent: string;
+    timestamp: string;
+    url?: string;
+    statusInfo?: string;
+    methodInfo?: string;
+    message?: string;
+  }) => {
     return `${errorType}が発生しました。
 
 --- エラー詳細 ---
-${content}
+${url ? `URL: ${url}\n` : ''}
+${statusInfo ? `${statusInfo}\n` : ''}
+${methodInfo ? `${methodInfo}\n` : ''}
+${message ? `エラー: ${message}\n` : ''}
+${content ? `${content}\n` : ''}
 
 --- システム情報 ---
 User Agent: ${userAgent}
 発生時刻: ${timestamp}`;
   };
 
-  // APIエラーレポートのコンテンツ生成関数
+  // 旧関数のラッパー（必要なら互換性維持のため）
+  const formatErrorReportContent = (
+    content: string,
+    userAgent: string,
+    timestamp: string,
+    errorType: string = "エラー"
+  ) => {
+    return formatGenericErrorReportContent({
+      errorType,
+      content,
+      userAgent,
+      timestamp,
+    });
+  };
+
   const formatApiErrorReportContent = (errorInfo: Partial<ErrorInfo>) => {
     const { statusInfo, methodInfo } = formatErrorInfo(errorInfo);
-    return `APIエラーが発生しました。
-
---- エラー詳細 ---
-URL: ${errorInfo.url}
-${statusInfo ? `${statusInfo}` : ''}
-${methodInfo ? `${methodInfo}` : ''}
-エラー: ${errorInfo.message}
-
---- システム情報 ---
-User Agent: ${errorInfo.userAgent}
-発生時刻: ${errorInfo.timestamp}`;
+    return formatGenericErrorReportContent({
+      errorType: "APIエラー",
+      url: errorInfo.url,
+      statusInfo,
+      methodInfo,
+      message: errorInfo.message,
+      userAgent: errorInfo.userAgent ?? "",
+      timestamp: errorInfo.timestamp ?? "",
+    });
   };
   // SimpleErrorReportingModal用のエラー報告送信処理
   const handleSimpleErrorReport = async (report: {
