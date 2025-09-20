@@ -55,6 +55,10 @@ const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
   useEffect(() => {
     if (isOpen && errorInfo) {
       // エラー情報から自動で内容を生成
+      const statusInfo = errorInfo.status ? `ステータス: ${errorInfo.status} ${errorInfo.statusText || ''}` : '';
+      const methodInfo = errorInfo.method ? `メソッド: ${errorInfo.method}` : '';
+      const stackInfo = errorInfo.stack ? `スタックトレース:\n${errorInfo.stack}` : '';
+      
       const autoContent = `
 エラーが発生しました。
 
@@ -64,13 +68,11 @@ const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
 列番号: ${errorInfo.colno || 0}
 エラータイプ: ${errorInfo.type || 'Unknown'}
 発生時刻: ${errorInfo.timestamp}
-URL: ${errorInfo.url}
-${errorInfo.status ? `ステータス: ${errorInfo.status} ${errorInfo.statusText || ''}` : ''}
-${errorInfo.method ? `メソッド: ${errorInfo.method}` : ''}
+URL: ${errorInfo.url}${statusInfo ? `\n${statusInfo}` : ''}${methodInfo ? `\n${methodInfo}` : ''}
 
-${errorInfo.stack ? `スタックトレース:\n${errorInfo.stack}` : ''}
+${stackInfo}
 
-このエラーについて詳細を教えてください。
+このエラーについて詳細を教えてください.
       `.trim();
       setContent(autoContent);
     }

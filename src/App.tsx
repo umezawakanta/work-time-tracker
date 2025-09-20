@@ -4034,7 +4034,20 @@ User Agent: ${userAgent}
     );
   }
 
-  const getErrorInfo = (error: Error | null): ApiErrorInfo | undefined => {
+  const getErrorInfo = (error: Error | null): {
+    message: string;
+    stack: string | undefined;
+    filename: string;
+    lineno: number;
+    colno: number;
+    type: string;
+    timestamp: string;
+    userAgent: string;
+    url: string;
+    status?: number;
+    statusText?: string;
+    method?: string;
+  } | undefined => {
     if (!error) return undefined;
 
     let errorInfo: ApiErrorInfo | undefined = undefined;
