@@ -23,8 +23,14 @@ export const ERROR_DEFAULTS = {
   COLNO: 0,
   TYPE: 'Unknown',
   TIMESTAMP: () => new Date().toISOString(),
-  USER_AGENT: () => navigator.userAgent,
-  URL: () => window.location.href
+  USER_AGENT: () =>
+    typeof navigator !== "undefined" && navigator.userAgent
+      ? navigator.userAgent
+      : "",
+  URL: () =>
+    typeof window !== "undefined" && window.location && window.location.href
+      ? window.location.href
+      : ""
 } as const;
 
 // エラー情報を構築するユーティリティ関数
