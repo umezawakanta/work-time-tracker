@@ -2001,7 +2001,7 @@ ${errorInfo.stack}
   // 生産性統計を計算
   const calculateProductivityStats = () => {
     const productivityData = calculateProductivityTrend();
-    const workHours = productivityData.map((day) => day.workHours);
+    const workHours = productivityData.map((day) => day.totalTime);
 
     const totalHours = workHours.length > 0 ? workHours.reduce((sum, hours) => sum + hours, 0) : 0;
     const averageHours = totalHours / workHours.length;
