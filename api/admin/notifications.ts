@@ -1,23 +1,23 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
+const mongooseDB = require('mongoose');
+const jwtLib = require('jsonwebtoken');
+const dotenvLib = require('dotenv');
 
-dotenv.config();
+dotenvLib.config();
 
 // Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
+const ensureDatabaseConnectionAdmin = async () => {
+  const isConnected = mongooseDB.connection.readyState === 1;
   if (isConnected) {
     return;
   }
   console.warn('[admin/notifications] Database not connected, attempting to connect...');
   try {
-    const MONGODB_URI = process.env.MONGODB_URI;
+    const { MONGODB_URI } = process.env;
     if (!MONGODB_URI) {
       throw new Error("MONGODB_URI environment variable is required but not set.");
     }
-    await mongoose.connect(MONGODB_URI, {
+    await mongooseDB.connect(MONGODB_URI, {
       dbName: 'workTimeTracker'
     });
     console.info('[admin/notifications] Database connected successfully');
@@ -28,7 +28,7 @@ const ensureDatabaseConnection = async () => {
 };
 
 // Notificationモデル
-const NotificationSchema = new mongoose.Schema({
+const NotificationSchema = new mongooseDB.Schema({
   userId: { type: String, required: true },
   type: { 
     type: String, 
@@ -43,10 +43,10 @@ const NotificationSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-const Notification = mongoose.models.Notification || mongoose.model('Notification', NotificationSchema);
+const NotificationModel = mongooseDB.models.Notification || mongooseDB.model('Notification', NotificationSchema);
 
 // Memoモデル
-const MemoSchema = new mongoose.Schema({
+const AdminMemoSchema = new mongooseDB.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
   category: { type: String, required: true },
@@ -71,7 +71,7 @@ const MemoSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-const Memo = mongoose.models.Memo || mongoose.model('Memo', MemoSchema);
+const MemoModel = mongooseDB.models.Memo || mongooseDB.model('Memo', AdminMemoSchema);
 
 // JWT verification utility
 const verifyJWTToken = async (req) => {
@@ -89,7 +89,7 @@ const verifyJWTToken = async (req) => {
   
   try {
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
-    return jwt.verify(token, jwtSecret);
+    return jwtLib.verify(token, jwtSecret);
   } catch (error) {
     console.error('JWT verification failed:', error);
     return null;
@@ -120,7 +120,7 @@ module.exports = async function handler(req, res) {
   try {
     console.log('Connecting to database...');
     // データベース接続
-    await ensureDatabaseConnection();
+    await ensureDatabaseConnectionAdmin();
     console.log('Database connected successfully');
 
     // 管理者認証
@@ -136,7 +136,7 @@ module.exports = async function handler(req, res) {
     }
 
     // メモを取得
-    const memo = await Memo.findById(memoId);
+    const memo = await MemoModel.findById(memoId);
     if (!memo) {
       return res.status(404).json({ error: 'Memo not found' });
     }
@@ -151,13 +151,13 @@ module.exports = async function handler(req, res) {
       updateData.status = status;
     }
 
-    await Memo.findByIdAndUpdate(memoId, updateData);
+    await MemoModel.findByIdAndUpdate(memoId, updateData);
 
     // 通知を作成
     console.log('Creating notification for user:', memo.userId);
     console.log('Memo postType:', memo.postType);
     
-    const notification = new Notification({
+    const notification = new NotificationModel({
       userId: memo.userId,
       type: 'memo_response',
       title: memo.postType === 'error_report' ? '不具合報告への対応完了' : '更新要望への対応完了',
