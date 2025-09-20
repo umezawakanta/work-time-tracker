@@ -1,6 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import './SimpleErrorReportingModal.css';
 
+// エラー情報の型定義
+interface ErrorInfo {
+  message: string;
+  stack?: string;
+  filename?: string;
+  lineno?: number;
+  colno?: number;
+  type?: string;
+  timestamp: string;
+  userAgent: string;
+  url: string;
+  status?: number;
+  statusText?: string;
+  method?: string;
+}
+
 interface SimpleErrorReportingModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -11,20 +27,7 @@ interface SimpleErrorReportingModalProps {
     userAgent: string;
     timestamp: string;
   }) => Promise<void>;
-  errorInfo?: {
-    message: string;
-    stack?: string;
-    filename?: string;
-    lineno?: number;
-    colno?: number;
-    type?: string;
-    timestamp: string;
-    userAgent: string;
-    url: string;
-    status?: number;
-    statusText?: string;
-    method?: string;
-  };
+  errorInfo?: ErrorInfo;
 }
 
 const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({

@@ -4022,19 +4022,8 @@ User Agent: ${userAgent}
 発生時刻: ${timestamp}`;
   };
 
-  // エラー情報のヘルパー関数
-  // Type guard to check if error has errorInfo of type ApiErrorInfo
-  function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: ApiErrorInfo } {
-    return (
-      typeof error === "object" &&
-      error !== null &&
-      "errorInfo" in error &&
-      typeof (error as { errorInfo?: unknown }).errorInfo === "object" &&
-      (error as { errorInfo?: unknown }).errorInfo !== null
-    );
-  }
-
-  const getErrorInfo = (error: Error | null): {
+  // エラー情報の型定義
+  interface ErrorInfo {
     message: string;
     stack: string | undefined;
     filename: string;
@@ -4047,7 +4036,20 @@ User Agent: ${userAgent}
     status?: number;
     statusText?: string;
     method?: string;
-  } | undefined => {
+  }
+
+  // Type guard to check if error has errorInfo of type ApiErrorInfo
+  function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: ApiErrorInfo } {
+    return (
+      typeof error === "object" &&
+      error !== null &&
+      "errorInfo" in error &&
+      typeof (error as { errorInfo?: unknown }).errorInfo === "object" &&
+      (error as { errorInfo?: unknown }).errorInfo !== null
+    );
+  }
+
+  const getErrorInfo = (error: Error | null): ErrorInfo | undefined => {
     if (!error) return undefined;
 
     let errorInfo: ApiErrorInfo | undefined = undefined;
@@ -4057,10 +4059,10 @@ User Agent: ${userAgent}
     return {
       message: error.message,
       stack: error.stack,
-      filename: errorInfo?.filename || 'Unknown',
-      lineno: errorInfo?.lineno || 0,
-      colno: errorInfo?.colno || 0,
-      type: errorInfo?.type || 'Unknown',
+      filename: 'Unknown',
+      lineno: 0,
+      colno: 0,
+      type: 'Unknown',
       timestamp: errorInfo?.timestamp || new Date().toISOString(),
       userAgent: errorInfo?.userAgent || navigator.userAgent,
       url: errorInfo?.url || window.location.href,
@@ -6306,17 +6308,7 @@ User Agent: ${userAgent}
           isOpen={showErrorModal}
           onClose={() => setShowErrorModal(false)}
           onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
-          errorInfo={currentError ? {
-            message: currentError.message,
-            stack: currentError.stack,
-            filename: (currentError as any).errorInfo?.filename,
-            lineno: (currentError as any).errorInfo?.lineno,
-            colno: (currentError as any).errorInfo?.colno,
-            type: (currentError as any).errorInfo?.type,
-            timestamp: (currentError as any).errorInfo?.timestamp || new Date().toISOString(),
-            userAgent: (currentError as any).errorInfo?.userAgent || navigator.userAgent,
-            url: (currentError as any).errorInfo?.url || window.location.href
-          } : undefined}
+          errorInfo={getErrorInfo(currentError)}
         />
 
         {/* 独立したエラー報告モーダル */}
