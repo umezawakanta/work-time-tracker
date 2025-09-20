@@ -21,6 +21,7 @@ import NotificationComponent from "./components/NotificationComponent";
 import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
+import { TimerPresetProvider, useTimerPresetState, useTimerPresetHelpers } from "./components/TimerPresetManager";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import {
@@ -43,7 +44,6 @@ import type {
   AdminUser,
   Book,
   Memo,
-  Reply,
   Character,
   IncomeExpenseRecord,
   WorkDiary,
@@ -52,7 +52,6 @@ import type {
   Habit,
   MoodLog,
   Goal,
-  Milestone,
   LearningRecord,
 } from "./types";
 
@@ -63,6 +62,10 @@ function App() {
   // 時間記録状態の管理
   const timeTrackingState = useTimeTrackingState();
   const timeTrackingHelpers = useTimeTrackingHelpers();
+  
+  // タイマープリセット状態の管理
+  const timerPresetState = useTimerPresetState();
+  const timerPresetHelpers = useTimerPresetHelpers();
   
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -80,7 +83,6 @@ function App() {
   const [errorModalButtonPosition, setErrorModalButtonPosition] = useState<{ x: number; y: number } | undefined>(undefined);
 
   // 各機能のローディング状態（LoadingStateManagerで管理）
-  const [memosLoading, setMemosLoading] = useState(false);
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
   const [projectsLoading, setProjectsLoading] = useState(false);
   const [booksLoading, setBooksLoading] = useState(false);
@@ -94,9 +96,7 @@ function App() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [description, setDescription] = useState("");
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
-  const [timeEntriesLoading, setTimeEntriesLoading] = useState(false);
   const [currentProject, setCurrentProject] = useState<string>("");
-  const [startTime, setStartTime] = useState<Date | null>(null);
 
   // ゆでたまごタイマーの状態（EggTimerComponentで管理）
   const [eggTimerActive, setEggTimerActive] = useState(false);
@@ -114,7 +114,6 @@ function App() {
   const [customTimerActive, setCustomTimerActive] = useState(false);
   const [customTimerPaused, setCustomTimerPaused] = useState(false);
   const [customTimerTime, setCustomTimerTime] = useState(0); // 残り時間（秒）
-  const [customTimerTimeLeft, setCustomTimerTimeLeft] = useState(0);
   const [customTimerInterval, setCustomTimerInterval] =
     useState<NodeJS.Timeout | null>(null);
   const [customTimerMinutes, setCustomTimerMinutes] = useState(5);
@@ -128,7 +127,7 @@ function App() {
   // タイマーセクションの表示状態
   const [showTimers, setShowTimers] = useState(false);
 
-  // タイマープリセットの状態
+  // タイマープリセットの状態（TimerPresetManagerで管理）
   const [timerPresets, setTimerPresets] = useState([
     { id: 1, name: "ポモドーロ", minutes: 25, seconds: 0, color: "#ef4444" },
     { id: 2, name: "短い休憩", minutes: 5, seconds: 0, color: "#10b981" },
@@ -4971,7 +4970,7 @@ ${errorInfo.stack}
     }
   };
 
-  // プリセットタイマーの関数
+  // プリセットタイマーの関数（TimerPresetManagerで管理）
   const startPresetTimer = (preset: (typeof timerPresets)[0]) => {
     if (customTimerActive) return;
 
@@ -5813,6 +5812,16 @@ ${errorInfo.stack}
                     showTimers={showTimers}
                     setShowTimers={setShowTimers}
                     closeOtherFeatures={closeOtherFeatures}
+                    timerPresets={timerPresetState.timerPresets}
+                    setTimerPresets={timerPresetState.setTimerPresets}
+                    startPresetTimer={timerPresetState.startPresetTimer}
+                    stopPresetTimer={timerPresetState.stopPresetTimer}
+                    resetPresetTimer={timerPresetState.resetPresetTimer}
+                    addPreset={timerPresetState.addPreset}
+                    updatePreset={timerPresetState.updatePreset}
+                    deletePreset={timerPresetState.deletePreset}
+                    savePresets={timerPresetState.savePresets}
+                    loadPresets={timerPresetState.loadPresets}
                   />
                 );
               } else if (feature.id === "egg-timer") {
@@ -6250,14 +6259,31 @@ ${errorInfo.stack}
   );
 }
 
-// AppコンポーネントをLoadingStateProviderとTimeTrackingStateProviderでラップ
+// Appコンポーネントを複数のプロバイダーでラップ
 const AppWithProviders = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [customTimerActive, setCustomTimerActive] = useState(false);
   
   return (
     <LoadingStateProvider>
       <TimeTrackingStateProvider user={user}>
-        <App />
+        <TimerPresetProvider 
+          onStartTimer={(minutes, seconds, name) => {
+            // カスタムタイマーを開始する処理
+            console.log(`Starting timer: ${name} for ${minutes}:${seconds}`);
+          }}
+          onStopTimer={() => {
+            // カスタムタイマーを停止する処理
+            console.log('Stopping timer');
+          }}
+          onResetTimer={() => {
+            // カスタムタイマーをリセットする処理
+            console.log('Resetting timer');
+          }}
+          isTimerActive={customTimerActive}
+        >
+          <App />
+        </TimerPresetProvider>
       </TimeTrackingStateProvider>
     </LoadingStateProvider>
   );
