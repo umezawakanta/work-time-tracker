@@ -1,5 +1,87 @@
 import React, { useState, useEffect } from 'react';
 import './AdminPanelComponent.css';
+
+// 不具合報告アイテムコンポーネント
+interface ErrorReportItemProps {
+  report: any;
+  formatDateTime: (date: string) => string;
+  onSelectMemo: (report: any) => void;
+}
+
+const ErrorReportItem: React.FC<ErrorReportItemProps> = ({ report, formatDateTime, onSelectMemo }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div className="error-report-item">
+      <div 
+        className="error-report-header clickable"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <h4 className="error-report-title">
+          {report.title}
+        </h4>
+        <div className="error-report-meta">
+          <span className="error-report-author">
+            <i className="bi bi-person"></i>
+            {report.author}
+          </span>
+          <span className="error-report-date">
+            <i className="bi bi-calendar"></i>
+            {formatDateTime(report.createdAt)}
+          </span>
+          <span className="expand-icon">
+            <i className={`bi bi-chevron-${isExpanded ? 'up' : 'down'}`}></i>
+          </span>
+        </div>
+      </div>
+      
+      {isExpanded && (
+        <div className="error-report-details">
+          <div className="error-report-content">
+            <p>{report.content}</p>
+          </div>
+          {(report.replies || []).length > 0 && (
+            <div className="error-report-replies">
+              <h5>返信 ({(report.replies || []).length}件)</h5>
+              {(report.replies || []).map((reply: any) => (
+                <div key={reply.id} className="error-report-reply">
+                  <div className="reply-header">
+                    <span className="reply-author">{reply.author}</span>
+                    <span className="reply-date">
+                      {formatDateTime(reply.createdAt)}
+                    </span>
+                  </div>
+                  <p className="reply-content">{reply.content}</p>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="error-report-actions">
+            <button
+              className="response-button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectMemo(report);
+              }}
+              title="対応を送信"
+            >
+              <i className="bi bi-reply"></i>
+              対応を送信
+            </button>
+            {report.status && (
+              <span className={`status-badge status-${report.status}`}>
+                {report.status === 'pending' && '未対応'}
+                {report.status === 'in_progress' && '対応中'}
+                {report.status === 'resolved' && '解決済み'}
+                {report.status === 'closed' && 'クローズ'}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 import type { AdminUser } from '../types';
 import SourceCodeViewer from './SourceCodeViewer';
 
@@ -797,60 +879,12 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
               ) : (
                 <div className="error-reports-list">
                   {errorReports.map((report) => (
-                    <div key={report.id} className="error-report-item">
-                      <div className="error-report-header">
-                        <h4 className="error-report-title">
-                          {report.title}
-                        </h4>
-                        <div className="error-report-meta">
-                          <span className="error-report-author">
-                            <i className="bi bi-person"></i>
-                            {report.author}
-                          </span>
-                          <span className="error-report-date">
-                            <i className="bi bi-calendar"></i>
-                            {formatDateTime(report.createdAt)}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="error-report-content">
-                        <p>{report.content}</p>
-                      </div>
-                      {(report.replies || []).length > 0 && (
-                        <div className="error-report-replies">
-                          <h5>返信 ({(report.replies || []).length}件)</h5>
-                          {(report.replies || []).map((reply: any) => (
-                            <div key={reply.id} className="error-report-reply">
-                              <div className="reply-header">
-                                <span className="reply-author">{reply.author}</span>
-                                <span className="reply-date">
-                                  {formatDateTime(reply.createdAt)}
-                                </span>
-                              </div>
-                              <p className="reply-content">{reply.content}</p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      <div className="error-report-actions">
-                        <button
-                          className="response-button"
-                          onClick={() => handleSelectMemo(report)}
-                          title="対応を送信"
-                        >
-                          <i className="bi bi-reply"></i>
-                          対応を送信
-                        </button>
-                        {report.status && (
-                          <span className={`status-badge status-${report.status}`}>
-                            {report.status === 'pending' && '未対応'}
-                            {report.status === 'in_progress' && '対応中'}
-                            {report.status === 'resolved' && '解決済み'}
-                            {report.status === 'closed' && 'クローズ'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                    <ErrorReportItem 
+                      key={report.id} 
+                      report={report} 
+                      formatDateTime={formatDateTime}
+                      onSelectMemo={handleSelectMemo}
+                    />
                   ))}
                 </div>
               )}

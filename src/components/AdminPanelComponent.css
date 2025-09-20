@@ -851,6 +851,18 @@
   margin-bottom: 1rem;
 }
 
+.error-report-header.clickable {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  padding: 0.5rem;
+  border-radius: 6px;
+  margin: -0.5rem;
+}
+
+.error-report-header.clickable:hover {
+  background-color: #f8f9fa;
+}
+
 .error-report-title {
   margin: 0 0 0.5rem 0;
   color: #333;
@@ -863,6 +875,8 @@
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .error-report-author,
@@ -877,6 +891,30 @@
 .error-report-author i,
 .error-report-date i {
   color: #ff6b6b;
+}
+
+.expand-icon {
+  color: #6c757d;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease;
+}
+
+.error-report-details {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
 }
 
 .error-report-content {
@@ -1328,6 +1366,11 @@
   .error-report-meta {
     flex-direction: column;
     gap: 0.5rem;
+    align-items: flex-start;
+  }
+  
+  .expand-icon {
+    align-self: flex-end;
   }
   
   .reply-header {
