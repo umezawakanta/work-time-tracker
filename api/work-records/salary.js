@@ -36,6 +36,11 @@ const IncomeExpenseRecordSchema = new mongoose.Schema({
 
 const IncomeExpenseRecord = mongoose.models.SalaryRecord || mongoose.model('SalaryRecord', IncomeExpenseRecordSchema);
 
+/**
+ * Handles HTTP requests for salary records.
+ * @param {import('http').IncomingMessage} req - The HTTP request object.
+ * @param {import('http').ServerResponse} res - The HTTP response object.
+ */
 module.exports = async function handler(req, res) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
