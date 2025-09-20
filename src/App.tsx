@@ -20,6 +20,7 @@ import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import NotificationComponent from "./components/NotificationComponent";
 import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
+import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import {
@@ -59,6 +60,10 @@ function App() {
   // ローディング状態の管理
   const loadingState = useLoadingState();
   
+  // 時間記録状態の管理
+  const timeTrackingState = useTimeTrackingState();
+  const timeTrackingHelpers = useTimeTrackingHelpers();
+  
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [user, setUser] = useState<User | null>(null);
@@ -83,10 +88,8 @@ function App() {
   const [incomeExpenseLoading, setIncomeExpenseLoading] = useState(false);
   const [diaryLoading, setDiaryLoading] = useState(false);
 
-  // 時間記録関連の状態
-  const [currentTimeEntry, setCurrentTimeEntry] = useState<TimeEntry | null>(
-    null
-  );
+  // 時間記録関連の状態（TimeTrackingStateManagerで管理）
+  const [currentTimeEntry, setCurrentTimeEntry] = useState<TimeEntry | null>(null);
   const [isTracking, setIsTracking] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [description, setDescription] = useState("");
@@ -2129,161 +2132,14 @@ ${errorInfo.stack}
     }
   };
 
-  // 時間記録の履歴を取得
-  const loadTimeEntries = async () => {
-    if (!user?.id) {
-      console.warn("ユーザーIDがありません。時間記録を取得できません。");
-      setTimeEntries([]);
-      return;
-    }
+  // 時間記録の履歴を取得（TimeTrackingStateManagerで管理）
+  const loadTimeEntries = timeTrackingHelpers.loadTimeEntries;
 
-    setTimeEntriesLoading(true);
-    try {
-      const response = await fetch(`/api/time/entries?userId=${user.id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      });
+  // 時間記録データからカテゴリ別の時間を計算（TimeTrackingStateManagerで管理）
+  const calculateTimeBreakdown = timeTrackingHelpers.calculateTimeBreakdown;
 
-      if (!response.ok) {
-        console.warn("時間記録APIが利用できません。モックデータを使用します。");
-        // モックデータを使用
-        setTimeEntries([]);
-        return;
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        setTimeEntries(data.entries);
-      } else {
-        console.warn(
-          "時間記録の取得に失敗しました。モックデータを使用します。"
-        );
-        setTimeEntries([]);
-      }
-    } catch (error) {
-      console.warn(
-        "時間記録の読み込みに失敗しました。モックデータを使用します。",
-        error
-      );
-      setTimeEntries([]);
-    } finally {
-      setTimeEntriesLoading(false);
-    }
-  };
-
-  // 時間記録データからカテゴリ別の時間を計算
-  const calculateTimeBreakdown = () => {
-    const today = new Date();
-    const startOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    );
-
-    // 今日の時間記録をフィルタリング
-    const todayEntries = (timeEntries || []).filter((entry) => {
-      const entryDate = new Date(entry.startTime);
-      return entryDate >= startOfDay && entry.endTime;
-    });
-
-    // カテゴリ別に時間を集計
-    const categories: { [key: string]: number } = {
-      仕事: 0,
-      学習: 0,
-      休憩: 0,
-      その他: 0,
-    };
-
-    todayEntries.forEach((entry) => {
-      const duration = entry.duration || 0; // 秒単位
-      const hours = duration / 3600; // 時間単位に変換
-
-      // 説明文からカテゴリを推定（簡単なキーワードマッチング）
-      const description = entry.description.toLowerCase();
-      if (
-        description.includes("仕事") ||
-        description.includes("work") ||
-        description.includes("作業")
-      ) {
-        categories["仕事"] += hours;
-      } else if (
-        description.includes("学習") ||
-        description.includes("study") ||
-        description.includes("勉強") ||
-        description.includes("読書")
-      ) {
-        categories["学習"] += hours;
-      } else if (
-        description.includes("休憩") ||
-        description.includes("break") ||
-        description.includes("休み")
-      ) {
-        categories["休憩"] += hours;
-      } else {
-        categories["その他"] += hours;
-      }
-    });
-
-    return categories;
-  };
-
-  // 過去7日間の生産性データを計算
-  const calculateProductivityTrend = () => {
-    const today = new Date();
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(today.getDate() - 6); // 7日間（今日含む）
-
-    const productivityData = [];
-
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(sevenDaysAgo);
-      date.setDate(sevenDaysAgo.getDate() + i);
-
-      const startOfDay = new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate()
-      );
-      const endOfDay = new Date(startOfDay);
-      endOfDay.setDate(startOfDay.getDate() + 1);
-
-      // その日の時間記録をフィルタリング
-      const dayEntries = (timeEntries || []).filter((entry) => {
-        const entryDate = new Date(entry.startTime);
-        return entryDate >= startOfDay && entryDate < endOfDay && entry.endTime;
-      });
-
-      // その日の総作業時間を計算（仕事と学習の時間）
-      const totalWorkHours = dayEntries.reduce((total, entry) => {
-        const duration = entry.duration || 0;
-        const hours = duration / 3600;
-        const description = entry.description.toLowerCase();
-
-        // 仕事と学習の時間のみをカウント
-        if (
-          description.includes("仕事") ||
-          description.includes("work") ||
-          description.includes("作業") ||
-          description.includes("学習") ||
-          description.includes("study") ||
-          description.includes("勉強") ||
-          description.includes("読書")
-        ) {
-          return total + hours;
-        }
-        return total;
-      }, 0);
-
-      productivityData.push({
-        date: date.toISOString().split("T")[0],
-        workHours: totalWorkHours,
-        dayOfWeek: ["日", "月", "火", "水", "木", "金", "土"][date.getDay()],
-      });
-    }
-
-    return productivityData;
-  };
+  // 過去7日間の生産性データを計算（TimeTrackingStateManagerで管理）
+  const calculateProductivityTrend = timeTrackingHelpers.calculateProductivityTrend;
 
   // 生産性統計を計算
   const calculateProductivityStats = () => {
@@ -4601,93 +4457,27 @@ ${errorInfo.stack}
     setAdminUsers([]);
   };
 
+  // 時間記録を開始（TimeTrackingStateManagerで管理）
   const handleStartTracking = async () => {
     if (!description.trim()) {
       setMessage("作業内容を入力してください");
       return;
     }
 
-    try {
-      const response = await fetch("/api/time/start", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: JSON.stringify({ description }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        const newEntry: TimeEntry = {
-          id: data.entry.id,
-          description,
-          startTime: new Date(data.entry.startTime),
-        };
-        setCurrentTimeEntry(newEntry);
-        setIsTracking(true);
-        setIsTimeTrackingActive(true);
-        setElapsedTime(0);
-        setMessage("時間記録を開始しました");
-      } else {
-        setMessage(`エラー: ${data.message}`);
-      }
-    } catch (error) {
-      console.error("❌ 時間記録開始エラー:", error);
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
+    const result = await timeTrackingHelpers.startTimeTracking(currentProject, description);
+    setMessage(result.message);
   };
 
+  // 時間記録を停止（TimeTrackingStateManagerで管理）
   const handleStopTracking = async () => {
-    if (!currentTimeEntry) {
-      setMessage("エラー: 記録中の時間記録が見つかりません");
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/time/stop", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: JSON.stringify({ entryId: currentTimeEntry.id }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setCurrentTimeEntry(null);
-        setIsTracking(false);
-        setIsTimeTrackingActive(false);
-        setElapsedTime(0);
-        setDescription("");
-        setMessage(
-          `時間記録を停止しました。記録時間: ${formatTime(data.entry.duration)}`
-        );
-      } else {
-        setMessage(`エラー: ${data.message}`);
-      }
-    } catch (error) {
-      console.error("❌ 時間記録停止エラー:", error);
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
+    const result = await timeTrackingHelpers.stopTimeTracking();
+    setMessage(result.message);
   };
 
-  // 時間記録を強制的にリセットする関数
+  // 時間記録を強制的にリセットする関数（TimeTrackingStateManagerで管理）
   const handleResetTracking = () => {
-    console.log("時間記録を強制リセットします");
-    setCurrentTimeEntry(null);
-    setIsTracking(false);
-    setIsTimeTrackingActive(false);
-    setElapsedTime(0);
-    setDescription("");
-    setMessage("時間記録をリセットしました");
+    const result = timeTrackingHelpers.resetTimeTracking();
+    setMessage(result.message);
   };
 
   // ゆでたまごタイマーの関数（EggTimerComponentで管理）
@@ -5706,15 +5496,15 @@ ${errorInfo.stack}
                     setShowTimeTracking={setShowTimeTracking}
                     projects={projects}
                     projectsLoading={projectsLoading}
-                    timeEntries={timeEntries}
-                    timeEntriesLoading={timeEntriesLoading}
-                    currentProject={currentProject}
-                    setCurrentProject={setCurrentProject}
-                    description={description}
-                    setDescription={setDescription}
-                    isTracking={isTracking}
-                    startTime={startTime}
-                    elapsedTime={elapsedTime}
+                    timeEntries={timeTrackingState.timeEntries}
+                    timeEntriesLoading={timeTrackingState.timeEntriesLoading}
+                    currentProject={timeTrackingState.currentProject}
+                    setCurrentProject={timeTrackingState.setCurrentProject}
+                    description={timeTrackingState.description}
+                    setDescription={timeTrackingState.setDescription}
+                    isTracking={timeTrackingState.isTracking}
+                    startTime={timeTrackingState.startTime}
+                    elapsedTime={timeTrackingState.elapsedTime}
                     loadProjects={loadProjects}
                     loadTimeEntries={loadTimeEntries}
                     handleStartTracking={handleStartTracking}
@@ -6460,13 +6250,17 @@ ${errorInfo.stack}
   );
 }
 
-// AppコンポーネントをLoadingStateProviderでラップ
-const AppWithLoadingProvider = () => {
+// AppコンポーネントをLoadingStateProviderとTimeTrackingStateProviderでラップ
+const AppWithProviders = () => {
+  const [user, setUser] = useState<User | null>(null);
+  
   return (
     <LoadingStateProvider>
-      <App />
+      <TimeTrackingStateProvider user={user}>
+        <App />
+      </TimeTrackingStateProvider>
     </LoadingStateProvider>
   );
 };
 
-export default AppWithLoadingProvider;
+export default AppWithProviders;
