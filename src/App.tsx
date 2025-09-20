@@ -976,7 +976,9 @@ function App() {
           
           console.error('XMLHttpRequestエラーが発生しました:', errorInfo);
           
-          const { statusInfo, methodInfo } = formatErrorInfo(errorInfo);
+          // ApiErrorInfoをErrorInfoに変換してからフォーマット
+          const convertedErrorInfo = getErrorInfo(errorInfo);
+          const { statusInfo, methodInfo } = formatErrorInfo(convertedErrorInfo || {});
           const errorDetails = `
 XMLHttpRequestエラーが発生しました。
 
@@ -1039,7 +1041,9 @@ ${methodInfo ? `- ${methodInfo}` : ''}
         console.error('APIエラーが発生しました:', errorInfo);
         
         // エラー詳細を構築
-        const { statusInfo, methodInfo } = formatErrorInfo(errorInfo);
+        // ApiErrorInfoをErrorInfoに変換してからフォーマット
+        const convertedErrorInfo = getErrorInfo(errorInfo);
+        const { statusInfo, methodInfo } = formatErrorInfo(convertedErrorInfo || {});
         const errorDetails = `
 APIエラーが発生しました。
 
