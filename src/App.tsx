@@ -3918,7 +3918,7 @@ ${errorInfo.stack}
         },
         body: JSON.stringify({
           title: `[エラー報告] API Error - ${errorInfo.status}`,
-          content: `APIエラーが発生しました。\n\n--- エラー詳細 ---\nURL: ${errorInfo.url}\nステータス: ${errorInfo.status} ${errorInfo.statusText}\nメソッド: ${errorInfo.method}\nエラー: ${errorInfo.error}\n\n--- システム情報 ---\nUser Agent: ${errorInfo.userAgent}\n発生時刻: ${errorInfo.timestamp}`,
+          content: `APIエラーが発生しました。\n\n--- エラー詳細 ---\nURL: ${errorInfo.url}\nステータス: ${errorInfo.status} ${errorInfo.statusText}\nメソッド: ${errorInfo.method}\nエラー: ${errorInfo.message}\n\n--- システム情報 ---\nUser Agent: ${errorInfo.userAgent}\n発生時刻: ${errorInfo.timestamp}`,
           category: "エラー報告",
           tags: ["エラー", "バグ報告", "システム"],
           isPublic: true,
