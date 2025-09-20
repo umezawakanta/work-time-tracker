@@ -1,40 +1,31 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken';
+// VercelRequest, VercelResponse types are not needed in CommonJS
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
 
-// データベース接続
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/work-time-tracker';
+dotenv.config();
 
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
-async function connectToDatabase() {
-  if (cached.conn) {
-    return cached.conn;
+// Database connection utility
+const ensureDatabaseConnection = async () => {
+  const isConnected = mongoose.connection.readyState === 1;
+  if (isConnected) {
+    return;
   }
-
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
-
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
-    });
-  }
-
+  console.warn('[admin/notifications] Database not connected, attempting to connect...');
   try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null;
-    throw e;
+    const MONGODB_URI = process.env.MONGODB_URI;
+    if (!MONGODB_URI) {
+      throw new Error("MONGODB_URI environment variable is required but not set.");
+    }
+    await mongoose.connect(MONGODB_URI, {
+      dbName: 'workTimeTracker'
+    });
+    console.info('[admin/notifications] Database connected successfully');
+  } catch (error) {
+    console.error('[admin/notifications] Database connection error:', error);
+    throw error;
   }
-
-  return cached.conn;
-}
+};
 
 // Notificationモデル
 const NotificationSchema = new mongoose.Schema({
@@ -82,8 +73,8 @@ const MemoSchema = new mongoose.Schema({
 
 const Memo = mongoose.models.Memo || mongoose.model('Memo', MemoSchema);
 
-// JWT検証関数
-const verifyJWTToken = async (req: NextApiRequest) => {
+// JWT verification utility
+const verifyJWTToken = async (req) => {
   if (!req || !req.headers) {
     console.log('Request or headers object is undefined');
     return null;
@@ -105,7 +96,7 @@ const verifyJWTToken = async (req: NextApiRequest) => {
   }
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+module.exports = async function handler(req, res) {
   console.log('Admin notifications API called:', req.method, req.url);
   
   // CORS設定
@@ -129,7 +120,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     console.log('Connecting to database...');
     // データベース接続
-    await connectToDatabase();
+    await ensureDatabaseConnection();
     console.log('Database connected successfully');
 
     // 管理者認証
