@@ -4029,8 +4029,8 @@ User Agent: ${userAgent}
       typeof error === "object" &&
       error !== null &&
       "errorInfo" in error &&
-      typeof (error as any).errorInfo === "object" &&
-      (error as any).errorInfo !== null
+      typeof (error as { errorInfo?: unknown }).errorInfo === "object" &&
+      (error as { errorInfo?: unknown }).errorInfo !== null
     );
   }
 
