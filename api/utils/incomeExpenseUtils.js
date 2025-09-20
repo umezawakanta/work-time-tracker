@@ -21,7 +21,11 @@ function determineIncomeExpenseType(record) {
   if (record.notes) {
     const notes = record.notes;
     // 支出を示すキーワードをチェック（日本語なので大文字小文字の区別なし）
-    if (EXPENSE_KEYWORDS.some(keyword => notes.includes(keyword))) {
+    if (EXPENSE_KEYWORDS.some(keyword => {
+      // 正規表現でキーワードが単語境界または前後が非日本語文字の場合のみ一致
+      const pattern = new RegExp(`(?:^|[^一-龠ぁ-んァ-ンa-zA-Z0-9])${keyword}(?:[^一-龠ぁ-んァ-ンa-zA-Z0-9]|$)`);
+      return pattern.test(notes);
+    })) {
       newType = 'expense';
     }
   }
