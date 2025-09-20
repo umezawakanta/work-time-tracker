@@ -65,18 +65,29 @@ export const getTimestamp = (): string => {
   return new Date().toISOString();
 };
 
+// Helper functions for default values
+function getDefaultUserAgent(): string {
+  if (typeof navigator !== "undefined" && navigator.userAgent) {
+    return navigator.userAgent;
+  }
+  return "";
+}
+
+function getDefaultUrl(): string {
+  if (typeof window !== "undefined" && window.location && window.location.href) {
+    return window.location.href;
+  }
+  return "";
+}
+
 // デフォルト値の定数
 export const ERROR_DEFAULTS = {
   FILENAME: 'Unknown',
   LINENO: 0,
   COLNO: 0,
   TYPE: 'Unknown',
-  USER_AGENT: typeof navigator !== "undefined" && navigator.userAgent
-    ? navigator.userAgent
-    : "",
-  URL: typeof window !== "undefined" && window.location && window.location.href
-    ? window.location.href
-    : ""
+  USER_AGENT: getDefaultUserAgent(),
+  URL: getDefaultUrl()
 } as const;
 
 // エラー情報を構築するユーティリティ関数
