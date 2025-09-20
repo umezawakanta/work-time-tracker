@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
-// データベース接続（統一された接続を使用）
+// データベース接続（グローバルキャッシュされた接続を使用）
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/work-time-tracker';
 
 let cached = global.mongoose;
