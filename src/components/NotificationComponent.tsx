@@ -3,7 +3,7 @@ import './NotificationComponent.css';
 
 interface Notification {
   _id: string;
-  type: 'memo_response' | 'status_update' | 'admin_message' | 'memo_reply';
+  type: 'memo_response' | 'status_update' | 'admin_message' | 'memo_reply' | 'admin_announcement';
   title: string;
   message: string;
   relatedMemoId?: string;
@@ -157,6 +157,8 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
         return 'bi-arrow-repeat';
       case 'admin_message':
         return 'bi-megaphone';
+      case 'admin_announcement':
+        return 'bi-bullhorn';
       default:
         return 'bi-bell';
     }
@@ -173,6 +175,8 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
         return '#17a2b8';
       case 'admin_message':
         return '#ffc107';
+      case 'admin_announcement':
+        return '#dc3545';
       default:
         return '#6c757d';
     }

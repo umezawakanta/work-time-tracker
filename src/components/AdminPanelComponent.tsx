@@ -211,6 +211,11 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [testResults, setTestResults] = useState<any>(null);
   const [testResultsLoading, setTestResultsLoading] = useState(false);
   const [testResultsError, setTestResultsError] = useState<string | null>(null);
+  const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
+  const [announcementTitle, setAnnouncementTitle] = useState('');
+  const [announcementMessage, setAnnouncementMessage] = useState('');
+  const [announcementTarget, setAnnouncementTarget] = useState<'all' | 'active'>('all');
+  const [sendingAnnouncement, setSendingAnnouncement] = useState(false);
 
   // プロジェクト構造の定義
   const projectStructure = [
@@ -586,6 +591,51 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
     console.log('Response modal should be shown now');
   };
 
+  // お知らせ送信機能
+  const handleSendAnnouncement = async () => {
+    if (!announcementTitle.trim() || !announcementMessage.trim()) {
+      alert('タイトルとメッセージを入力してください。');
+      return;
+    }
+
+    setSendingAnnouncement(true);
+    
+    try {
+      const response = await fetch('/api/admin/announcements', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({
+          title: announcementTitle.trim(),
+          message: announcementMessage.trim(),
+          targetUsers: announcementTarget
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          alert(`お知らせを${data.notificationCount}人のユーザーに送信しました！`);
+          setAnnouncementTitle('');
+          setAnnouncementMessage('');
+          setAnnouncementTarget('all');
+          setShowAnnouncementModal(false);
+        } else {
+          alert('お知らせの送信に失敗しました。');
+        }
+      } else {
+        alert('お知らせの送信に失敗しました。');
+      }
+    } catch (error) {
+      console.error('お知らせ送信エラー:', error);
+      alert('お知らせの送信に失敗しました。');
+    } finally {
+      setSendingAnnouncement(false);
+    }
+  };
+
   // ESCキーでモーダルを閉じる機能
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -793,6 +843,14 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
               <i className="bi bi-check-circle"></i>
               テスト結果
               <span className="tab-count">({tabCounts.testErrors})</span>
+            </button>
+            <button
+              className="admin-tab announcement-tab"
+              onClick={() => setShowAnnouncementModal(true)}
+              title="お知らせを送信"
+            >
+              <i className="bi bi-megaphone"></i>
+              お知らせ送信
             </button>
           </div>
 
@@ -1504,6 +1562,108 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
         onSubmit={handleSendResponse}
         loading={false}
       />
+
+      {/* お知らせ送信モーダル */}
+      {showAnnouncementModal && (
+        <div className="announcement-modal-overlay">
+          <div className="announcement-modal">
+            <div className="announcement-modal-header">
+              <h3>
+                <i className="bi bi-megaphone"></i>
+                お知らせ送信
+              </h3>
+              <button
+                onClick={() => {
+                  setShowAnnouncementModal(false);
+                  setAnnouncementTitle('');
+                  setAnnouncementMessage('');
+                  setAnnouncementTarget('all');
+                }}
+                className="close-announcement-button"
+                title="閉じる"
+              >
+                <i className="bi bi-x"></i>
+              </button>
+            </div>
+
+            <div className="announcement-modal-body">
+              <div className="form-group">
+                <label htmlFor="announcementTitle">タイトル</label>
+                <input
+                  id="announcementTitle"
+                  type="text"
+                  value={announcementTitle}
+                  onChange={(e) => setAnnouncementTitle(e.target.value)}
+                  placeholder="お知らせのタイトルを入力"
+                  className="form-control"
+                  disabled={sendingAnnouncement}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="announcementTarget">送信先</label>
+                <select
+                  id="announcementTarget"
+                  value={announcementTarget}
+                  onChange={(e) => setAnnouncementTarget(e.target.value as 'all' | 'active')}
+                  className="form-control"
+                  disabled={sendingAnnouncement}
+                >
+                  <option value="all">全ユーザー</option>
+                  <option value="active">アクティブユーザー（過去30日以内）</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="announcementMessage">メッセージ</label>
+                <textarea
+                  id="announcementMessage"
+                  value={announcementMessage}
+                  onChange={(e) => setAnnouncementMessage(e.target.value)}
+                  placeholder="お知らせの内容を入力"
+                  className="form-control"
+                  rows={6}
+                  disabled={sendingAnnouncement}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="announcement-modal-footer">
+              <button
+                onClick={() => {
+                  setShowAnnouncementModal(false);
+                  setAnnouncementTitle('');
+                  setAnnouncementMessage('');
+                  setAnnouncementTarget('all');
+                }}
+                className="btn btn-secondary"
+                disabled={sendingAnnouncement}
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleSendAnnouncement}
+                className="btn btn-primary"
+                disabled={sendingAnnouncement || !announcementTitle.trim() || !announcementMessage.trim()}
+              >
+                {sendingAnnouncement ? (
+                  <>
+                    <i className="bi bi-hourglass-split"></i>
+                    送信中...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-send"></i>
+                    お知らせを送信
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

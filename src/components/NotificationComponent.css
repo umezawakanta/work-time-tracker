@@ -180,6 +180,10 @@
   color: #007bff;
 }
 
+.notification-type-icon[data-type="admin_announcement"] {
+  color: #dc3545;
+}
+
 .notification-type-icon[data-type="status_update"] {
   color: #17a2b8;
 }

@@ -1,4 +1,3 @@
-// VercelRequest, VercelResponse types are not needed in CommonJS
 const mongooseDB = require('mongoose');
 const jwtLib = require('jsonwebtoken');
 const dotenvLib = require('dotenv');
@@ -11,7 +10,7 @@ const ensureDatabaseConnectionAdmin = async () => {
   if (isConnected) {
     return;
   }
-  console.warn('[admin/notifications] Database not connected, attempting to connect...');
+  console.warn('[admin/announcements] Database not connected, attempting to connect...');
   try {
     const { MONGODB_URI } = process.env;
     if (!MONGODB_URI) {
@@ -20,9 +19,9 @@ const ensureDatabaseConnectionAdmin = async () => {
     await mongooseDB.connect(MONGODB_URI, {
       dbName: 'workTimeTracker'
     });
-    console.info('[admin/notifications] Database connected successfully');
+    console.info('[admin/announcements] Database connected successfully');
   } catch (error) {
-    console.error('[admin/notifications] Database connection error:', error);
+    console.error('[admin/announcements] Database connection error:', error);
     throw error;
   }
 };
@@ -45,33 +44,16 @@ const NotificationSchema = new mongooseDB.Schema({
 
 const NotificationModel = mongooseDB.models.Notification || mongooseDB.model('Notification', NotificationSchema);
 
-// Memoモデル
-const AdminMemoSchema = new mongooseDB.Schema({
-  title: { type: String, required: true },
-  content: { type: String, required: true },
-  category: { type: String, required: true },
-  tags: [{ type: String }],
-  isPublic: { type: Boolean, default: false },
-  isFamilyOnly: { type: Boolean, default: false },
-  isAdminOnly: { type: Boolean, default: false },
-  userId: { type: String, required: true },
-  postType: { 
-    type: String, 
-    enum: ['update_request', 'error_report', 'general'], 
-    default: 'general' 
-  },
-  status: { 
-    type: String, 
-    enum: ['pending', 'in_progress', 'resolved', 'closed'], 
-    default: 'pending' 
-  },
-  adminResponse: { type: String },
-  adminResponseDate: { type: Date },
+// Userモデル
+const UserSchema = new mongooseDB.Schema({
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, enum: ['user', 'admin'], default: 'user' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
 
-const MemoModel = mongooseDB.models.Memo || mongooseDB.model('Memo', AdminMemoSchema);
+const UserModel = mongooseDB.models.User || mongooseDB.model('User', UserSchema);
 
 // JWT verification utility
 const verifyJWTToken = async (req) => {
@@ -97,7 +79,7 @@ const verifyJWTToken = async (req) => {
 };
 
 module.exports = async function handler(req, res) {
-  console.log('Admin notifications API called:', req.method, req.url);
+  console.log('Admin announcements API called:', req.method, req.url);
   
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
@@ -129,58 +111,60 @@ module.exports = async function handler(req, res) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { memoId, response, status } = req.body;
+    const { title, message, targetUsers } = req.body;
 
-    if (!memoId || !response) {
-      return res.status(400).json({ error: 'Memo ID and response are required' });
+    if (!title || !message) {
+      return res.status(400).json({ error: 'Title and message are required' });
     }
 
-    // メモを取得
-    const memo = await MemoModel.findById(memoId);
-    if (!memo) {
-      return res.status(404).json({ error: 'Memo not found' });
+    // 対象ユーザーを取得
+    let userIds = [];
+    if (targetUsers === 'all') {
+      // 全ユーザーに送信
+      const users = await UserModel.find({}, '_id');
+      userIds = users.map(user => user._id.toString());
+    } else if (targetUsers === 'active') {
+      // アクティブユーザーに送信（過去30日以内にログインしたユーザー）
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const users = await UserModel.find({ 
+        updatedAt: { $gte: thirtyDaysAgo } 
+      }, '_id');
+      userIds = users.map(user => user._id.toString());
+    } else if (Array.isArray(targetUsers)) {
+      // 指定されたユーザーに送信
+      userIds = targetUsers;
+    } else {
+      return res.status(400).json({ error: 'Invalid target users' });
     }
 
-    // メモを更新
-    const updateData: any = {
-      adminResponse: response,
-      adminResponseDate: new Date(),
-    };
-
-    if (status) {
-      updateData.status = status;
+    if (userIds.length === 0) {
+      return res.status(400).json({ error: 'No target users found' });
     }
 
-    await MemoModel.findByIdAndUpdate(memoId, updateData);
+    // 各ユーザーに通知を作成
+    const notifications = [];
+    for (const userId of userIds) {
+      const notification = new NotificationModel({
+        userId: userId,
+        type: 'admin_announcement',
+        title: title,
+        message: message,
+      });
 
-    // 通知を作成
-    console.log('Creating notification for user:', memo.userId);
-    console.log('Memo postType:', memo.postType);
-    
-    const notification = new NotificationModel({
-      userId: memo.userId,
-      type: 'memo_response',
-      title: memo.postType === 'error_report' ? '不具合報告への対応完了' : '更新要望への対応完了',
-      message: response,
-      relatedMemoId: memoId,
-    } as any);
-
-    await notification.save();
-    console.log('Notification created successfully:', notification._id);
+      await notification.save();
+      notifications.push(notification);
+      console.log(`Announcement notification created for user: ${userId}`);
+    }
 
     res.status(200).json({ 
       success: true, 
-      message: 'Response sent and notification created',
-      notification: {
-        id: notification._id,
-        title: notification.title,
-        message: notification.message,
-        createdAt: notification.createdAt
-      }
+      message: `Announcement sent to ${notifications.length} users`,
+      notificationCount: notifications.length
     });
 
   } catch (error) {
-    console.error('Error in notifications API:', error);
+    console.error('Error in announcements API:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }

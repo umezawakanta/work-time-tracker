@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 export interface INotification extends mongoose.Document {
   _id: mongoose.Types.ObjectId;
   userId: string;
-  type: 'memo_response' | 'status_update' | 'admin_message' | 'memo_reply';
+  type: 'memo_response' | 'status_update' | 'admin_message' | 'memo_reply' | 'admin_announcement';
   title: string;
   message: string;
   relatedMemoId?: string;
@@ -16,7 +16,7 @@ const NotificationSchema = new mongoose.Schema<INotification>({
   userId: { type: String, required: true },
   type: { 
     type: String, 
-    enum: ['memo_response', 'status_update', 'admin_message', 'memo_reply'], 
+    enum: ['memo_response', 'status_update', 'admin_message', 'memo_reply', 'admin_announcement'], 
     required: true 
   },
   title: { type: String, required: true },
