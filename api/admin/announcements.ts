@@ -157,11 +157,15 @@ module.exports = async function handler(req, res) {
 
         const savedNotification = await notification.save();
         notifications.push(savedNotification);
-        console.log(`Announcement notification created for user: ${userId}`, {
-          notificationId: savedNotification._id,
-          title: savedNotification.title,
-          type: savedNotification.type
-        });
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`Announcement notification created for user: ${userId}`, {
+            notificationId: savedNotification._id,
+            title: savedNotification.title,
+            type: savedNotification.type
+          });
+        } else {
+          console.log(`Announcement notification created for a user`);
+        }
       } catch (error) {
         console.error(`Failed to create notification for user ${userId}:`, error);
       }
