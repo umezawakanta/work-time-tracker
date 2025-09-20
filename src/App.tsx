@@ -4137,7 +4137,7 @@ User Agent: ${userAgent}
             content: report.content,
             userAgent: report.userAgent,
             timestamp: report.timestamp,
-            message: report.errorDetails,
+            errorDetails: report.errorDetails,
           }),
           category: "エラー報告",
           tags: ["エラー", "バグ報告", "システム"],
