@@ -40,7 +40,7 @@ const VersionInfo: React.FC<VersionInfoProps> = ({ className = '' }) => {
             </button>
           </div>
           <div className="changelog-content">
-            {CHANGELOG.map((entry, index) => (
+            {CHANGELOG.map((entry) => (
               <div key={entry.version} className={`changelog-entry ${entry.type}`}>
                 <div className="changelog-version">
                   <span className="version-number">{entry.version}</span>
