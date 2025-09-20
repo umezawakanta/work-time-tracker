@@ -943,25 +943,28 @@ function App() {
   const originalXHR = window.XMLHttpRequest;
   
   // XMLHttpRequestもラップ
-  window.XMLHttpRequest = function() {
+  const WrappedXHR = function(this: any) {
     const xhr = new originalXHR();
     const originalOpen = xhr.open;
     const originalSend = xhr.send;
     
-    xhr.open = function(method, url, ...args) {
-      this._method = method;
-      this._url = url;
+    (xhr as any)._method = '';
+    (xhr as any)._url = '';
+    
+    xhr.open = function(method: string, url: string | URL, ...args: any[]) {
+      (this as any)._method = method;
+      (this as any)._url = url;
       return originalOpen.apply(this, [method, url, ...args]);
     };
     
-    xhr.send = function(...args) {
+    xhr.send = function(...args: any[]) {
       this.addEventListener('loadend', function() {
         if (this.status >= 400) {
           const errorInfo = {
-            url: this._url || 'Unknown URL',
+            url: (this as any)._url || 'Unknown URL',
             status: this.status,
             statusText: this.statusText,
-            method: this._method || 'GET',
+            method: (this as any)._method || 'GET',
             timestamp: new Date().toISOString(),
             userAgent: navigator.userAgent
           };
@@ -995,6 +998,22 @@ XMLHttpRequestエラーが発生しました。
     
     return xhr;
   };
+  
+  // XMLHttpRequestのプロパティをコピー
+  Object.setPrototypeOf(WrappedXHR, originalXHR);
+  Object.defineProperty(WrappedXHR, 'prototype', {
+    value: originalXHR.prototype,
+    writable: false
+  });
+  
+  // 定数プロパティをコピー
+  Object.defineProperty(WrappedXHR, 'UNSENT', { value: 0 });
+  Object.defineProperty(WrappedXHR, 'OPENED', { value: 1 });
+  Object.defineProperty(WrappedXHR, 'HEADERS_RECEIVED', { value: 2 });
+  Object.defineProperty(WrappedXHR, 'LOADING', { value: 3 });
+  Object.defineProperty(WrappedXHR, 'DONE', { value: 4 });
+  
+  (window as any).XMLHttpRequest = WrappedXHR;
   
   window.fetch = async (...args) => {
     try {
