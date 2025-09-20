@@ -23,7 +23,8 @@ const connectDB = async () => {
 const IncomeExpenseRecordSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   date: { type: Date, required: true },
-  salary: { type: Number, required: true }, // 正の値は収入、負の値は支出
+  amount: { type: Number, required: true }, // salaryからamountに変更
+  type: { type: String, enum: ['income', 'expense'], required: true }, // 収入/支出のタイプを追加
   transportation: { type: Number, default: 0 },
   overtime: { type: Number, default: 0 },
   bonus: { type: Number, default: 0 },
@@ -68,11 +69,8 @@ export default async function handler(req, res) {
         .limit(50);
 
 
-      // レスポンスにtypeフィールドを追加
-      const recordsWithType = records.map(record => ({
-        ...record.toObject(),
-        type: record.salary >= 0 ? 'income' : 'expense'
-      }));
+      // レスポンスをそのまま返す（amountとtypeフィールドが既に含まれている）
+      const recordsWithType = records.map(record => record.toObject());
 
       res.status(200).json({
         success: true,
@@ -80,10 +78,10 @@ export default async function handler(req, res) {
       });
 
     } else if (req.method === 'POST') {
-      // 新しい給料記録を作成
-      const { userId, date, salary, transportation, overtime, bonus, notes } = req.body;
+      // 新しい収支記録を作成
+      const { userId, date, amount, type, transportation, overtime, bonus, notes } = req.body;
 
-      if (!userId || !date || salary === undefined) {
+      if (!userId || !date || amount === undefined || !type) {
         return res.status(400).json({
           success: false,
           message: '必須フィールドが不足しています'
@@ -97,7 +95,8 @@ export default async function handler(req, res) {
       const record = new IncomeExpenseRecord({
         userId,
         date: utcDate,
-        salary: Number(salary),
+        amount: Number(amount),
+        type: type,
         transportation: Number(transportation) || 0,
         overtime: Number(overtime) || 0,
         bonus: Number(bonus) || 0,
@@ -109,15 +108,12 @@ export default async function handler(req, res) {
       res.status(201).json({
         success: true,
         message: '収支記録が作成されました',
-        record: {
-          ...record.toObject(),
-          type: record.salary >= 0 ? 'income' : 'expense'
-        }
+        record: record.toObject()
       });
 
     } else if (req.method === 'PUT') {
-      // 給料記録を更新
-      const { id, date, salary, transportation, overtime, bonus, notes } = req.body;
+      // 収支記録を更新
+      const { id, date, amount, type, transportation, overtime, bonus, notes } = req.body;
 
       if (!id) {
         return res.status(400).json({
@@ -135,7 +131,8 @@ export default async function handler(req, res) {
         const utcDate = new Date(jstDate.getTime() - (9 * 60 * 60 * 1000));
         updateData.date = utcDate;
       }
-      if (salary !== undefined) updateData.salary = Number(salary);
+      if (amount !== undefined) updateData.amount = Number(amount);
+      if (type !== undefined) updateData.type = type;
       if (transportation !== undefined) updateData.transportation = Number(transportation);
       if (overtime !== undefined) updateData.overtime = Number(overtime);
       if (bonus !== undefined) updateData.bonus = Number(bonus);
@@ -157,10 +154,7 @@ export default async function handler(req, res) {
       res.status(200).json({
         success: true,
         message: '収支記録が更新されました',
-        record: {
-          ...record.toObject(),
-          type: record.salary >= 0 ? 'income' : 'expense'
-        }
+        record: record.toObject()
       });
 
     } else if (req.method === 'DELETE') {
