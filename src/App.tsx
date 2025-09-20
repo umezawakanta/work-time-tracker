@@ -2345,6 +2345,8 @@ ${errorInfo.stack}
 
   const handleDeleteIncomeExpenseRecord = async (id: string) => {
     try {
+      // executeAuthenticatedRequest: 認証トークンの取得とエラーハンドリング
+      // apiFetch: HTTPエラーの処理とエラー報告
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
         return await apiFetch(`/api/work-records/salary?id=${encodeURIComponent(id)}`, {
           method: "DELETE",
@@ -2377,6 +2379,8 @@ ${errorInfo.stack}
 
   const handleDeleteDiary = async (id: string) => {
     try {
+      // executeAuthenticatedRequest: 認証トークンの取得とエラーハンドリング
+      // apiFetch: HTTPエラーの処理とエラー報告
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
         return await apiFetch(`/api/work-records/diary?id=${encodeURIComponent(id)}`, {
           method: "DELETE",
