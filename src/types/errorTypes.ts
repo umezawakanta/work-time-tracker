@@ -67,15 +67,16 @@ export function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: A
   ) {
     const info = (error as { errorInfo: unknown }).errorInfo;
     return (
+      // 必須プロパティのみチェック
       typeof info.message === "string" &&
-      typeof info.filename === "string" &&
-      typeof info.lineno === "number" &&
-      typeof info.colno === "number" &&
-      typeof info.type === "string" &&
       typeof info.timestamp === "string" &&
       typeof info.userAgent === "string" &&
-      typeof info.url === "string" &&
-      // Optional properties: if present, check type
+      // オプショナルプロパティ: 存在すれば型チェック
+      (info.filename === undefined || typeof info.filename === "string") &&
+      (info.lineno === undefined || typeof info.lineno === "number") &&
+      (info.colno === undefined || typeof info.colno === "number") &&
+      (info.type === undefined || typeof info.type === "string") &&
+      (info.url === undefined || typeof info.url === "string") &&
       (info.stack === undefined || typeof info.stack === "string") &&
       (info.status === undefined || typeof info.status === "number") &&
       (info.statusText === undefined || typeof info.statusText === "string") &&
@@ -168,10 +169,10 @@ export const buildErrorInfo = (
   return {
     message: error.message,
     stack: error.stack,
-    filename,
-    lineno,
-    colno,
-    type,
+    filename: apiErrorInfo?.filename ?? filename,
+    lineno: apiErrorInfo?.lineno ?? lineno,
+    colno: apiErrorInfo?.colno ?? colno,
+    type: apiErrorInfo?.type ?? type,
     timestamp: apiErrorInfo?.timestamp || getTimestamp(),
     userAgent: apiErrorInfo?.userAgent || ERROR_DEFAULTS.USER_AGENT,
     url: apiErrorInfo?.url || extractedInfo?.url || ERROR_DEFAULTS.URL,
