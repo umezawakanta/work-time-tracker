@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './SimpleErrorReportingModal.css';
-import { ErrorInfo, formatErrorInfo, ERROR_DEFAULTS } from '../types/errorTypes';
+import { ErrorInfo, formatErrorInfo, ERROR_DEFAULTS, getTimestamp } from '../types/errorTypes';
 
 interface SimpleErrorReportingModalProps {
   isOpen: boolean;
@@ -25,7 +25,7 @@ const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
     lineno: ERROR_DEFAULTS.LINENO,
     colno: ERROR_DEFAULTS.COLNO,
     type: ERROR_DEFAULTS.TYPE,
-    timestamp: new Date().toISOString(),
+    timestamp: getTimestamp(),
     userAgent: ERROR_DEFAULTS.USER_AGENT,
     url: ERROR_DEFAULTS.URL
   }

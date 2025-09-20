@@ -2362,9 +2362,9 @@ ${errorInfo.stack}
       }
     } catch (error) {
       // エラー情報を取得してエラー報告モーダルを表示
-      const errorInfo = getErrorInfo(error as Error | ApiErrorInfo);
+      const errorInfo = getErrorInfo(error instanceof Error ? error : null);
       if (errorInfo) {
-        setCurrentError(error as Error);
+        setCurrentError(error instanceof Error ? error : new Error(String(error)));
         setShowSimpleErrorModal(true);
       }
       
