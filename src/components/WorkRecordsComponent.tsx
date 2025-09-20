@@ -163,6 +163,27 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     type: string;
   } | null>(null);
 
+  // データが更新されたときに選択された記録も更新
+  useEffect(() => {
+    if (selectedDate) {
+      const records = getRecordsForDate(selectedDate);
+      if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.diaryRecord) {
+        setSelectedRecord(records);
+        // 複数の記録がある場合は、日記を優先表示
+        if (records.diaryRecord) {
+          setSelectedRecordType("diary");
+        } else if (records.incomeRecords.length > 0) {
+          setSelectedRecordType("income");
+        } else if (records.expenseRecords.length > 0) {
+          setSelectedRecordType("expense");
+        }
+      } else {
+        setSelectedRecord(null);
+        setSelectedRecordType(null);
+      }
+    }
+  }, [incomeExpenseRecords, workDiaries, selectedDate]);
+
   // カレンダーの日付を生成
   const getCalendarDays = () => {
     const year = currentMonth.getFullYear();
