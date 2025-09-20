@@ -196,7 +196,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'email' | 'role' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors' | 'testresults'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors' | 'testresults' | 'announcements'>('users');
   const [errorReports, setErrorReports] = useState<any[]>([]);
   const [errorReportsLoading, setErrorReportsLoading] = useState(false);
   const [errorReportsError, setErrorReportsError] = useState<string | null>(null);
@@ -845,11 +845,14 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
               <span className="tab-count">({tabCounts.testErrors})</span>
             </button>
             <button
-              className="admin-tab announcement-tab"
-              onClick={() => setShowAnnouncementModal(true)}
+              className={`admin-tab announcement-tab ${activeTab === 'announcements' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('announcements');
+                setShowAnnouncementModal(true);
+              }}
               title="お知らせを送信"
             >
-              <i className="bi bi-megaphone"></i>
+              <i className="bi bi-bullhorn"></i>
               お知らせ送信
             </button>
           </div>
@@ -1514,6 +1517,59 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* お知らせ送信タブ */}
+            {activeTab === 'announcements' && (
+              <div className="tab-pane">
+                <div className="tab-header">
+                  <h3>お知らせ送信</h3>
+                  <div className="tab-actions">
+                    <button
+                      onClick={() => setShowAnnouncementModal(true)}
+                      className="primary-button"
+                      title="新しいお知らせを作成"
+                    >
+                      <i className="bi bi-plus-circle"></i>
+                      新しいお知らせ
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('users')}
+                      className="back-button"
+                      title="ユーザー管理に戻る"
+                    >
+                      <i className="bi bi-arrow-left"></i>
+                    </button>
+                  </div>
+                </div>
+                <div className="announcement-content">
+                  <div className="announcement-info">
+                    <div className="info-card">
+                      <div className="info-icon">
+                        <i className="bi bi-bullhorn"></i>
+                      </div>
+                      <div className="info-content">
+                        <h4>お知らせ機能について</h4>
+                        <p>管理者からユーザーに重要な情報を通知できます。</p>
+                        <ul>
+                          <li>全ユーザーまたはアクティブユーザーに送信可能</li>
+                          <li>通知はリアルタイムで配信されます</li>
+                          <li>ユーザーは通知センターで確認できます</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="announcement-actions">
+                    <button
+                      onClick={() => setShowAnnouncementModal(true)}
+                      className="announcement-create-button"
+                    >
+                      <i className="bi bi-bullhorn"></i>
+                      お知らせを作成
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
