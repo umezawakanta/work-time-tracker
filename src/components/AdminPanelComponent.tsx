@@ -293,6 +293,15 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
     setMemoStatus(memo.status || 'pending');
     setShowResponseModal(true);
     console.log('Response modal should be shown now');
+    
+    // 状態設定後の確認（非同期なので次のレンダリングで確認）
+    setTimeout(() => {
+      console.log('State after setting:', { 
+        showResponseModal: true, 
+        selectedMemo: memo,
+        shouldRender: true && memo
+      });
+    }, 100);
   };
 
   // ESCキーでモーダルを閉じる機能
@@ -1237,8 +1246,18 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
       </div>
 
       {/* 返信フォーム（折りたたみ式） */}
-      {console.log('Modal render check:', { showResponseModal, selectedMemo: !!selectedMemo, memoId: selectedMemo?.id })}
-      {showResponseModal && selectedMemo && (
+      {console.log('Modal render check:', { 
+        showResponseModal, 
+        selectedMemo: !!selectedMemo, 
+        memoId: selectedMemo?.id,
+        selectedMemoType: selectedMemo?.postType,
+        shouldShow: showResponseModal && selectedMemo
+      })}
+      {(() => {
+        const shouldShow = showResponseModal && selectedMemo;
+        console.log('Condition check:', { showResponseModal, selectedMemo: !!selectedMemo, shouldShow });
+        return shouldShow;
+      })() && (
         <div className="response-form-container">
           <div className="response-form-header">
             <h4>
