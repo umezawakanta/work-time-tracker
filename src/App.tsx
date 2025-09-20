@@ -22,7 +22,7 @@ import VersionInfo from "./components/VersionInfo";
 import { ErrorInfo, getErrorInfo, formatErrorInfo, createErrorInfo } from './types/errorTypes';
 import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './utils/authUtils';
 import type { ApiErrorInfo } from './utils/apiErrorHandler';
-// apiFetchは頻繁に使用されるため静的インポートを維持
+// apiFetchは頻繁に使用されるため、静的インポートを維持します。静的インポートはアプリ起動時にモジュールを即座に読み込むため、パフォーマンス向上やモジュールの即時利用が可能となり、動的インポートによる遅延やオーバーヘッドを回避できます。
 import { apiFetch } from './utils/apiClient';
 import { buildApiUrl, createUserIdParam, createIdParam } from './utils/urlUtils';
 import EggTimerComponent from "./components/EggTimerComponent";
