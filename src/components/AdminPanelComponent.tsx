@@ -35,7 +35,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'email' | 'role' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors' | 'testresults'>('users');
   const [errorReports, setErrorReports] = useState<any[]>([]);
   const [errorReportsLoading, setErrorReportsLoading] = useState(false);
   const [errorReportsError, setErrorReportsError] = useState<string | null>(null);
@@ -49,6 +49,9 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [linterErrors, setLinterErrors] = useState<any[]>([]);
   const [linterErrorsLoading, setLinterErrorsLoading] = useState(false);
   const [linterErrorsError, setLinterErrorsError] = useState<string | null>(null);
+  const [testResults, setTestResults] = useState<any>(null);
+  const [testResultsLoading, setTestResultsLoading] = useState(false);
+  const [testResultsError, setTestResultsError] = useState<string | null>(null);
 
   // ユーザー編集フォームの初期化
   useEffect(() => {
@@ -182,6 +185,32 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
       setLinterErrorsError(error instanceof Error ? error.message : 'リンターエラーの取得に失敗しました');
     } finally {
       setLinterErrorsLoading(false);
+    }
+  };
+
+  // テスト結果を取得する関数
+  const loadTestResults = async () => {
+    setTestResultsLoading(true);
+    setTestResultsError(null);
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('/api/admin/test-results', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('テスト結果の取得に失敗しました');
+      }
+
+      const data = await response.json();
+      setTestResults(data);
+    } catch (error) {
+      console.error('テスト結果取得エラー:', error);
+      setTestResultsError(error instanceof Error ? error.message : 'テスト結果の取得に失敗しました');
+    } finally {
+      setTestResultsLoading(false);
     }
   };
 
@@ -408,6 +437,18 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             >
               <i className="bi bi-exclamation-triangle"></i>
               リンターエラー
+            </button>
+            <button
+              className={`admin-tab ${activeTab === 'testresults' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('testresults');
+                if (!testResults) {
+                  loadTestResults();
+                }
+              }}
+            >
+              <i className="bi bi-check-circle"></i>
+              テスト結果
             </button>
           </div>
 
@@ -959,6 +1000,154 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                           )}
                         </div>
                       ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* テスト結果タブ */}
+            {activeTab === 'testresults' && (
+              <div className="tab-pane">
+                <div className="tab-header">
+                  <h3>ユニットテスト結果</h3>
+                  <div className="tab-actions">
+                    <button
+                      onClick={loadTestResults}
+                      className="refresh-button"
+                      title="テスト結果を更新"
+                    >
+                      <i className="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('users')}
+                      className="back-button"
+                      title="ユーザー管理に戻る"
+                    >
+                      <i className="bi bi-arrow-left"></i>
+                    </button>
+                  </div>
+                </div>
+                <div className="test-results-content">
+                  {testResultsLoading ? (
+                    <div className="loading-message">
+                      <i className="bi bi-hourglass-split"></i>
+                      テスト結果を読み込み中...
+                    </div>
+                  ) : testResultsError ? (
+                    <div className="error-message">
+                      <i className="bi bi-exclamation-triangle"></i>
+                      {testResultsError}
+                      <button
+                        onClick={loadTestResults}
+                        className="retry-button"
+                        title="再試行"
+                      >
+                        <i className="bi bi-arrow-clockwise"></i>
+                        再試行
+                      </button>
+                    </div>
+                  ) : !testResults ? (
+                    <div className="no-data-message">
+                      <i className="bi bi-info-circle"></i>
+                      テスト結果を読み込んでください
+                    </div>
+                  ) : (
+                    <div className="test-results-list">
+                      {/* テスト結果サマリー */}
+                      <div className="test-summary">
+                        <div className="summary-stats">
+                          <div className="stat-card passed">
+                            <i className="bi bi-check-circle"></i>
+                            <div className="stat-info">
+                              <span className="stat-number">{testResults.passed || 0}</span>
+                              <span className="stat-label">成功</span>
+                            </div>
+                          </div>
+                          <div className="stat-card failed">
+                            <i className="bi bi-x-circle"></i>
+                            <div className="stat-info">
+                              <span className="stat-number">{testResults.failed || 0}</span>
+                              <span className="stat-label">失敗</span>
+                            </div>
+                          </div>
+                          <div className="stat-card skipped">
+                            <i className="bi bi-skip-forward"></i>
+                            <div className="stat-info">
+                              <span className="stat-number">{testResults.skipped || 0}</span>
+                              <span className="stat-label">スキップ</span>
+                            </div>
+                          </div>
+                          <div className="stat-card total">
+                            <i className="bi bi-list-ol"></i>
+                            <div className="stat-info">
+                              <span className="stat-number">{testResults.total || 0}</span>
+                              <span className="stat-label">合計</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="test-coverage">
+                          <div className="coverage-info">
+                            <span className="coverage-label">カバレッジ</span>
+                            <span className="coverage-percentage">{testResults.coverage || 0}%</span>
+                          </div>
+                          <div className="coverage-bar">
+                            <div 
+                              className="coverage-fill" 
+                              style={{ width: `${testResults.coverage || 0}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* テスト詳細 */}
+                      {testResults.tests && testResults.tests.length > 0 && (
+                        <div className="test-details">
+                          <h4>テスト詳細</h4>
+                          <div className="test-list">
+                            {testResults.tests.map((test: any, index: number) => (
+                              <div key={index} className={`test-item ${test.status}`}>
+                                <div className="test-header">
+                                  <div className="test-status">
+                                    <i className={`bi ${
+                                      test.status === 'passed' ? 'bi-check-circle' :
+                                      test.status === 'failed' ? 'bi-x-circle' :
+                                      'bi-skip-forward'
+                                    }`}></i>
+                                    <span className="status-text">
+                                      {test.status === 'passed' ? '成功' :
+                                       test.status === 'failed' ? '失敗' : 'スキップ'}
+                                    </span>
+                                  </div>
+                                  <div className="test-duration">
+                                    {test.duration}ms
+                                  </div>
+                                </div>
+                                <div className="test-name">
+                                  {test.name}
+                                </div>
+                                {test.error && (
+                                  <div className="test-error">
+                                    <pre>{test.error}</pre>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 実行時間 */}
+                      <div className="test-timing">
+                        <div className="timing-info">
+                          <i className="bi bi-clock"></i>
+                          <span>実行時間: {testResults.duration || 0}ms</span>
+                        </div>
+                        <div className="timing-info">
+                          <i className="bi bi-calendar"></i>
+                          <span>実行日時: {testResults.timestamp ? new Date(testResults.timestamp).toLocaleString('ja-JP') : '不明'}</span>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
