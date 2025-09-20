@@ -145,11 +145,14 @@ async function handleRequest(req, res) {
 
     if (req.method === 'GET') {
       // メモの一覧を取得
-      const { category, search } = req.query;
+      const { category, search, adminOnly } = req.query;
       let query: any = {};
       
-      // 管理者の場合はすべてのメモを取得、一般ユーザーの場合は自分のメモのみ
-      if (userInfo.role !== 'admin') {
+      // 管理者パネル用のリクエストの場合は、不具合報告と更新要望のみを取得
+      if (userInfo.role === 'admin' && adminOnly === 'true') {
+        query.postType = { $in: ['error_report', 'update_request'] };
+      } else {
+        // 一般ユーザーは自分のメモのみ
         query.userId = userInfo.userId;
       }
       
