@@ -966,6 +966,7 @@ function App() {
       this.addEventListener('loadend', function() {
         if (this.status >= 400) {
           const errorInfo = {
+            message: `XMLHttpRequest Error: ${this.status} ${this.statusText}`,
             url: (this as any)._url || 'Unknown URL',
             status: this.status,
             statusText: this.statusText,
