@@ -2353,9 +2353,8 @@ ${errorInfo.stack}
       });
 
       if (!result) return; // 認証エラーの場合
-      const response = result;
 
-      const data = await response.json();
+      const data = await result.json();
       if (data.success) {
         setMessage("収入・支出記録が削除されました！");
         loadIncomeExpenseRecords();
