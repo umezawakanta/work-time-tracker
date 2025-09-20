@@ -4053,7 +4053,12 @@ User Agent: ${userAgent}
     // より柔軟なパターンマッチング
     const urlMatch2 = errorMessage.match(/\/api\/[^\s\n]+/);
     const statusMatch2 = errorMessage.match(/\b(1\d{2}|2\d{2}|3\d{2}|4\d{2}|5\d{2})\b/);
-    const methodMatch2 = errorMessage.match(/(GET|POST|PUT|DELETE|PATCH)/);
+    // Use a constant array of HTTP methods for robust matching
+    const HTTP_METHODS = [
+      "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "CONNECT", "TRACE"
+    ];
+    const methodRegex = new RegExp(`\\b(${HTTP_METHODS.join("|")})\\b`);
+    const methodMatch2 = errorMessage.match(methodRegex);
     
     // 抽出された情報をまとめる
     const extractedInfo = {
