@@ -1,0 +1,751 @@
+import React, { useState, useEffect } from 'react';
+import './PublicMemosComponent.css';
+import type { Memo, Reply, User } from '../types';
+
+interface PublicMemosComponentProps {
+  publicMemos: Memo[];
+  publicMemosLoading: boolean;
+  showPublicMemos: boolean;
+  setShowPublicMemos: (show: boolean) => void;
+  user: User | null;
+  loadPublicMemos: () => void;
+  closeOtherFeatures: (activeFeature: string) => void;
+  handleReplySubmit: (memoId: string) => void;
+  handleReplyCancel: () => void;
+  handleEditReply: (replyId: string, content: string) => void;
+  handleSaveEditReply: (replyId: string) => void;
+  handleCancelEditReply: () => void;
+  handleDeleteReply: (replyId: string) => void;
+  replyContent: string;
+  setReplyContent: (content: string) => void;
+}
+
+const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
+  publicMemos,
+  publicMemosLoading,
+  showPublicMemos,
+  setShowPublicMemos,
+  user,
+  loadPublicMemos,
+  closeOtherFeatures,
+  handleReplySubmit,
+  handleReplyCancel,
+  handleEditReply,
+  handleSaveEditReply,
+  handleCancelEditReply,
+  handleDeleteReply,
+  replyContent,
+  setReplyContent,
+}) => {
+  // 内部状態
+  const [publicMemoSelectedDate, setPublicMemoSelectedDate] = useState<Date | null>(null);
+  const [publicMemoCurrentMonth, setPublicMemoCurrentMonth] = useState(new Date());
+  const [selectedPublicMemoCategory, setSelectedPublicMemoCategory] = useState("all");
+  const [publicMemoSearchTerm, setPublicMemoSearchTerm] = useState("");
+  const [replyingToMemo, setReplyingToMemo] = useState<string | null>(null);
+  const [editingReply, setEditingReply] = useState<string | null>(null);
+  const [editingReplyContent, setEditingReplyContent] = useState("");
+  const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  // 日付フィルタリング用の状態
+  const [filterByDate, setFilterByDate] = useState<Date | null>(null);
+
+  // ページネーション用の関数
+  const getPaginatedMemos = () => {
+    let filteredMemos = publicMemos || [];
+    
+    // 日付でフィルタリング
+    if (filterByDate) {
+      const filterYear = filterByDate.getFullYear();
+      const filterMonth = filterByDate.getMonth();
+      const filterDay = filterByDate.getDate();
+      
+      filteredMemos = filteredMemos.filter(memo => {
+        const memoDate = new Date(memo.createdAt);
+        const memoYear = memoDate.getFullYear();
+        const memoMonth = memoDate.getMonth();
+        const memoDay = memoDate.getDate();
+        
+        return memoYear === filterYear && memoMonth === filterMonth && memoDay === filterDay;
+      });
+    }
+    
+    // カテゴリでフィルタリング
+    if (selectedPublicMemoCategory !== "all") {
+      filteredMemos = filteredMemos.filter(memo => memo.category === selectedPublicMemoCategory);
+    }
+    
+    // 検索語でフィルタリング
+    if (publicMemoSearchTerm.trim()) {
+      const searchTerm = publicMemoSearchTerm.toLowerCase();
+      filteredMemos = filteredMemos.filter(memo => 
+        memo.title.toLowerCase().includes(searchTerm) ||
+        memo.content.toLowerCase().includes(searchTerm) ||
+        memo.category.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredMemos.slice(startIndex, endIndex);
+  };
+
+  const getTotalPages = () => {
+    let filteredMemos = publicMemos || [];
+    
+    // 日付でフィルタリング
+    if (filterByDate) {
+      const filterYear = filterByDate.getFullYear();
+      const filterMonth = filterByDate.getMonth();
+      const filterDay = filterByDate.getDate();
+      
+      filteredMemos = filteredMemos.filter(memo => {
+        const memoDate = new Date(memo.createdAt);
+        const memoYear = memoDate.getFullYear();
+        const memoMonth = memoDate.getMonth();
+        const memoDay = memoDate.getDate();
+        
+        return memoYear === filterYear && memoMonth === filterMonth && memoDay === filterDay;
+      });
+    }
+    
+    // カテゴリでフィルタリング
+    if (selectedPublicMemoCategory !== "all") {
+      filteredMemos = filteredMemos.filter(memo => memo.category === selectedPublicMemoCategory);
+    }
+    
+    // 検索語でフィルタリング
+    if (publicMemoSearchTerm.trim()) {
+      const searchTerm = publicMemoSearchTerm.toLowerCase();
+      filteredMemos = filteredMemos.filter(memo => 
+        memo.title.toLowerCase().includes(searchTerm) ||
+        memo.content.toLowerCase().includes(searchTerm) ||
+        memo.category.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    return Math.ceil(filteredMemos.length / itemsPerPage);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // 返信セクションの開閉を切り替える関数
+  const toggleReplies = (memoId: string) => {
+    setExpandedReplies(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(memoId)) {
+        newSet.delete(memoId);
+      } else {
+        newSet.add(memoId);
+      }
+      return newSet;
+    });
+  };
+
+  // 返信関連の関数はpropsから受け取る
+
+  // 日時フォーマット関数
+  const formatDateTime = (dateString: string) => {
+    if (!dateString) {
+      return '日付不明';
+    }
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return '無効な日付';
+    }
+    return date.toLocaleString("ja-JP", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  // メモのタイトルを取得するヘルパー関数
+  const getMemoTitle = (memo: Memo): string => {
+    if (memo.title && memo.title.trim()) {
+      return memo.title;
+    }
+    // タイトルが空の場合は内容の一行目を返す
+    return memo.content.split("\n")[0].trim() || "無題のメモ";
+  };
+
+  // 利用可能なジャンル一覧を取得（デフォルト + カスタム）
+  const getAllGenres = () => {
+    return [
+      "仕事", "学習", "趣味", "健康", "家族", "旅行", "読書", "映画", "音楽",
+      "スポーツ", "料理", "要望、リクエスト", "その他",
+    ];
+  };
+
+  // 公開メモカテゴリを取得する関数
+  const getPublicMemoCategories = () => {
+    const memoCategories = new Set((publicMemos || []).map((memo) => memo.category));
+    const allCategories = [...memoCategories, ...getAllGenres()];
+    return Array.from(new Set(allCategories)).sort();
+  };
+
+  // 選択された日付の公開メモを取得
+  const getPublicMemosForDate = (date: Date) => {
+    const filterYear = date.getFullYear();
+    const filterMonth = date.getMonth();
+    const filterDay = date.getDate();
+    
+    return (publicMemos || []).filter(memo => {
+      const memoDate = new Date(memo.createdAt);
+      const memoYear = memoDate.getFullYear();
+      const memoMonth = memoDate.getMonth();
+      const memoDay = memoDate.getDate();
+      
+      return memoYear === filterYear && memoMonth === filterMonth && memoDay === filterDay;
+    });
+  };
+
+  // カレンダーの日付を生成
+  const getCalendarDays = () => {
+    const year = publicMemoCurrentMonth.getFullYear();
+    const month = publicMemoCurrentMonth.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    
+    const days = [];
+    const currentDate = new Date(startDate);
+    
+    for (let i = 0; i < 42; i++) {
+      days.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    return days;
+  };
+
+  // 月の統計を計算
+  const getMonthlyStats = () => {
+    const year = publicMemoCurrentMonth.getFullYear();
+    const month = publicMemoCurrentMonth.getMonth();
+    
+    const monthlyMemos = publicMemos.filter(memo => {
+      const memoDate = new Date(memo.createdAt);
+      return memoDate.getFullYear() === year && memoDate.getMonth() === month;
+    });
+    
+    return {
+      totalMemos: monthlyMemos.length,
+      categories: [...new Set(monthlyMemos.map(memo => memo.category))].length,
+      mostActiveDay: getMostActiveDay(monthlyMemos),
+    };
+  };
+
+  // 最もアクティブな日を取得
+  const getMostActiveDay = (memos: Memo[]) => {
+    const dayCounts: { [key: string]: number } = {};
+    
+    memos.forEach(memo => {
+      const day = new Date(memo.createdAt).getDate();
+      dayCounts[day] = (dayCounts[day] || 0) + 1;
+    });
+    
+    const mostActiveDay = Object.entries(dayCounts).length > 0 
+      ? Object.entries(dayCounts).reduce((a, b) => 
+          dayCounts[a[0]] > dayCounts[b[0]] ? a : b
+        )
+      : ['', 0];
+    
+    return mostActiveDay ? parseInt(String(mostActiveDay[0])) : null;
+  };
+
+  const monthlyStats = getMonthlyStats();
+
+  // 公開メモの件数を計算する関数
+  const getPublicMemoCounts = () => {
+    const totalMemos = publicMemos.length;
+    const errorReports = publicMemos.filter(memo => memo.postType === 'error_report').length;
+    const updateRequests = publicMemos.filter(memo => memo.postType === 'update_request').length;
+    const generalMemos = publicMemos.filter(memo => !memo.postType || memo.postType === 'general').length;
+    
+    return {
+      total: totalMemos,
+      errorReports,
+      updateRequests,
+      general: generalMemos
+    };
+  };
+
+  return (
+    <div className="public-memos-section">
+      <div className="section-header">
+        <div className="section-title">
+          <h2>
+            <span className="section-icon">🌍</span>
+            公開メモ
+            <span className="memo-count-badge">
+              {getPublicMemoCounts().total}件
+            </span>
+          </h2>
+          <p className="section-description">
+            他のユーザーと共有できる公開メモを閲覧できます。不具合報告や改善要望は専用ボタンから送信してください。
+          </p>
+          <div className="memo-stats">
+            <span className="stat-item">
+              <i className="bi bi-journal-text"></i>
+              一般: {getPublicMemoCounts().general}件
+            </span>
+            <span className="stat-item">
+              <i className="bi bi-bug"></i>
+              不具合報告: {getPublicMemoCounts().errorReports}件
+            </span>
+            <span className="stat-item">
+              <i className="bi bi-lightbulb"></i>
+              更新要望: {getPublicMemoCounts().updateRequests}件
+            </span>
+          </div>
+        </div>
+        <div className="section-controls">
+          {showPublicMemos ? (
+            <button
+              onClick={() => setShowPublicMemos(false)}
+              className="close-section-button"
+              title="セクションを閉じる"
+            >
+              ✕
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                closeOtherFeatures("public-memos");
+                setShowPublicMemos(true);
+                if (publicMemos.length === 0) {
+                  loadPublicMemos();
+                }
+              }}
+              className="show-section-button"
+              title="セクションを表示"
+            >
+              ▶️
+            </button>
+          )}
+        </div>
+      </div>
+
+      {showPublicMemos && (
+        <div className="public-memos-content">
+          <div className="public-memos-header">
+            <button
+              onClick={loadPublicMemos}
+              className="refresh-button"
+              title="公開メモを更新"
+            >
+              🔄
+            </button>
+          </div>
+
+          {/* 月別統計 */}
+          <div className="monthly-stats">
+            <h3>📊 {publicMemoCurrentMonth.getFullYear()}年{publicMemoCurrentMonth.getMonth() + 1}月の統計</h3>
+            <div className="stats-grid">
+              <div className="stat-item">
+                <span className="stat-label">総メモ数</span>
+                <span className="stat-value">{monthlyStats.totalMemos}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">カテゴリ数</span>
+                <span className="stat-value">{monthlyStats.categories}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">最もアクティブな日</span>
+                <span className="stat-value">
+                  {monthlyStats.mostActiveDay ? `${monthlyStats.mostActiveDay}日` : 'なし'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* カレンダー表示 */}
+          <div className="public-memo-calendar">
+            <div className="calendar-header">
+              <button
+                onClick={() => {
+                  const newMonth = new Date(publicMemoCurrentMonth);
+                  newMonth.setMonth(newMonth.getMonth() - 1);
+                  setPublicMemoCurrentMonth(newMonth);
+                }}
+                className="calendar-nav-button"
+              >
+                ← 前月
+              </button>
+              <h3>
+                {publicMemoCurrentMonth.getFullYear()}年{publicMemoCurrentMonth.getMonth() + 1}月
+              </h3>
+              <button
+                onClick={() => {
+                  const newMonth = new Date(publicMemoCurrentMonth);
+                  newMonth.setMonth(newMonth.getMonth() + 1);
+                  setPublicMemoCurrentMonth(newMonth);
+                }}
+                className="calendar-nav-button"
+              >
+                次月 →
+              </button>
+            </div>
+            
+            <div className="calendar-grid">
+              <div className="calendar-weekdays">
+                {['日', '月', '火', '水', '木', '金', '土'].map(day => (
+                  <div key={day} className="weekday">{day}</div>
+                ))}
+              </div>
+              
+              <div className="calendar-days">
+                {getCalendarDays().map((date, index) => {
+                  const isCurrentMonth = date.getMonth() === publicMemoCurrentMonth.getMonth();
+                  const isToday = date.toDateString() === new Date().toDateString();
+                  const isSelected = publicMemoSelectedDate?.toDateString() === date.toDateString();
+                  const memosForDate = getPublicMemosForDate(date);
+                  
+                  return (
+                    <div
+                      key={index}
+                      className={`calendar-day ${isCurrentMonth ? 'current-month' : 'other-month'} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${memosForDate.length > 0 ? 'has-memos' : ''}`}
+                      onClick={() => {
+                        setPublicMemoSelectedDate(date);
+                        setFilterByDate(date);
+                        setCurrentPage(1); // ページを1にリセット
+                      }}
+                    >
+                      <span className="day-number">{date.getDate()}</span>
+                      {memosForDate.length > 0 && (
+                        <div className="memo-indicator">
+                          <span className="memo-count">{memosForDate.length}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* 検索・フィルター */}
+          <div className="public-memo-controls">
+            <div className="search-controls">
+              <input
+                type="text"
+                placeholder="公開メモを検索..."
+                value={publicMemoSearchTerm}
+                onChange={(e) => {
+                  setPublicMemoSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="search-input"
+              />
+              <button
+                onClick={() => {
+                  // 検索機能（実装予定）
+                  console.log('検索:', publicMemoSearchTerm);
+                }}
+                className="search-button"
+              >
+                検索
+              </button>
+            </div>
+            
+            <div className="category-controls">
+              <select
+                value={selectedPublicMemoCategory}
+                onChange={(e) => {
+                  setSelectedPublicMemoCategory(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="category-select"
+                aria-label="カテゴリでフィルター"
+              >
+                <option value="all">すべてのカテゴリ</option>
+                {getPublicMemoCategories().map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            {(selectedPublicMemoCategory !== "all" || publicMemoSearchTerm || filterByDate) && (
+              <button
+                onClick={() => {
+                  setSelectedPublicMemoCategory("all");
+                  setPublicMemoSearchTerm("");
+                  setFilterByDate(null);
+                  setCurrentPage(1);
+                  loadPublicMemos();
+                }}
+                className="reset-button"
+                title="フィルターをリセット"
+              >
+                🔄 リセット
+              </button>
+            )}
+          </div>
+
+          {/* フィルター情報表示 */}
+          {filterByDate && (
+            <div className="filter-info">
+              <span className="filter-label">
+                <i className="bi bi-calendar"></i>
+                日付フィルター: {filterByDate.toLocaleDateString('ja-JP', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+              </span>
+              <button
+                onClick={() => {
+                  setFilterByDate(null);
+                  setCurrentPage(1);
+                }}
+                className="clear-date-filter-button"
+                title="日付フィルターをクリア"
+              >
+                <i className="bi bi-x"></i>
+              </button>
+            </div>
+          )}
+
+          {/* ページネーション（上部） */}
+          {getTotalPages() > 1 && (
+            <div className="pagination pagination-top">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="pagination-button prev"
+              >
+                ← 前へ
+              </button>
+              
+              <div className="pagination-numbers">
+                {Array.from({ length: getTotalPages() }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`pagination-button number ${
+                      currentPage === page ? 'active' : ''
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+              
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === getTotalPages()}
+                className="pagination-button next"
+              >
+                次へ →
+              </button>
+            </div>
+          )}
+
+          {/* ページ情報（上部） */}
+          <div className="pagination-info pagination-info-top">
+            {publicMemos.length > 0 && (
+              <p>
+                {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, publicMemos.length)} / {publicMemos.length} 件
+              </p>
+            )}
+          </div>
+
+          {/* 公開メモ一覧 */}
+          <div className="public-memos-list">
+            {publicMemosLoading ? (
+              <div className="data-loading">
+                <div className="spinner"></div>
+                <p>公開メモを読み込み中...</p>
+              </div>
+            ) : getPaginatedMemos().length === 0 ? (
+              <p className="no-memos">公開メモがありません</p>
+            ) : (
+              <>
+                {getPaginatedMemos().map((memo) => (
+                  <div key={memo.id} className="public-memo-item">
+                    <div className="memo-header">
+                      <h3>{getMemoTitle(memo)}</h3>
+                      <div className="memo-meta">
+                        <span 
+                          className="memo-category clickable-category"
+                          onClick={() => {
+                            setSelectedPublicMemoCategory(memo.category);
+                            setCurrentPage(1);
+                          }}
+                          title={`${memo.category}でフィルター`}
+                        >
+                          {memo.category}
+                        </span>
+                        <span className="memo-date">
+                          作成: {formatDateTime(memo.createdAt)}
+                        </span>
+                        {memo.updatedAt && memo.updatedAt !== memo.createdAt && (
+                          <span className="memo-updated">
+                            更新: {formatDateTime(memo.updatedAt)}
+                          </span>
+                        )}
+                        <span className="author-info">
+                          by {memo.author || '匿名'}
+                        </span>
+                        {memo.postType === 'update_request' && (
+                          <span className="update-request-badge"><i className="bi bi-lightbulb"></i> 更新要望</span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="memo-content">
+                      <p>{memo.content}</p>
+                    </div>
+                    
+                    {memo.tags && memo.tags.length > 0 && (
+                      <div className="memo-tags">
+                        {memo.tags.map((tag, index) => (
+                          <span key={index} className="tag">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* 返信セクション */}
+                    <div className="replies-section">
+                      <div 
+                        className="replies-header"
+                        onClick={() => toggleReplies(memo.id)}
+                      >
+                        <h4>
+                          <i className="bi bi-chat-dots"></i>
+                          返信 ({memo.replies?.length || 0})
+                        </h4>
+                        <button 
+                          className="toggle-replies-button"
+                          title={expandedReplies.has(memo.id) ? '返信を閉じる' : '返信を開く'}
+                        >
+                          <i className={`bi ${expandedReplies.has(memo.id) ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
+                        </button>
+                      </div>
+                      
+                      {expandedReplies.has(memo.id) && (
+                        <div className="replies-content">
+                          {(memo.replies || []).length > 0 && (
+                            <div className="replies-list">
+                              {(memo.replies || []).map((reply: Reply) => (
+                                <div key={reply.id} className="reply-item">
+                                  <div className="reply-content">
+                                    {editingReply === reply.id ? (
+                                      <div className="reply-edit-form">
+                                        <textarea
+                                          value={editingReplyContent}
+                                          onChange={(e) => setEditingReplyContent(e.target.value)}
+                                          className="reply-edit-textarea"
+                                          rows={3}
+                                          aria-label="返信を編集"
+                                        />
+                                        <div className="reply-edit-actions">
+                                          <button
+                                            onClick={() => handleSaveEditReply(reply.id)}
+                                            className="save-reply-button"
+                                          >
+                                            保存
+                                          </button>
+                                          <button
+                                            onClick={handleCancelEditReply}
+                                            className="cancel-reply-button"
+                                          >
+                                            キャンセル
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <p>{reply.content}</p>
+                                    )}
+                                  </div>
+                                  
+                                  <div className="reply-meta">
+                                    <span className="reply-date">
+                                      {formatDateTime(reply.createdAt)}
+                                    </span>
+                                    <span className="reply-author">
+                                      by {reply.author || '匿名'}
+                                    </span>
+                                    {user && (user.email === reply.authorEmail || user.role === 'admin') && (
+                                      <div className="reply-actions">
+                                        <button
+                                          onClick={() => handleEditReply(reply.id, reply.content)}
+                                          className="edit-reply-button"
+                                        >
+                                          編集
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteReply(reply.id)}
+                                          className="delete-reply-button"
+                                        >
+                                          削除
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {/* 返信フォーム */}
+                          {replyingToMemo === memo.id ? (
+                            <div className="reply-form">
+                              <textarea
+                                value={replyContent}
+                                onChange={(e) => setReplyContent(e.target.value)}
+                                placeholder="返信を入力..."
+                                className="reply-textarea"
+                                rows={3}
+                              />
+                              <div className="reply-form-actions">
+                                <button
+                                  onClick={() => handleReplySubmit(memo.id)}
+                                  className="submit-reply-button"
+                                  disabled={!replyContent.trim()}
+                                >
+                                  返信
+                                </button>
+                                <button
+                                  onClick={handleReplyCancel}
+                                  className="cancel-reply-button"
+                                >
+                                  キャンセル
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setReplyingToMemo(memo.id)}
+                              className="reply-button"
+                            >
+                              返信する
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PublicMemosComponent;

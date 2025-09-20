@@ -1,0 +1,39 @@
+/* UserGreetingComponent.css - ユーザーグリーティングコンポーネント専用のスタイル */
+
+.user-greeting {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.header-character {
+  font-size: 1.2rem;
+}
+
+.current-character-svg {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.default-character {
+  font-size: 1.2rem;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .user-greeting {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-greeting {
+    font-size: 0.8rem;
+  }
+}

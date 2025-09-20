@@ -4,9 +4,29 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="shortcut icon" href="/icon.svg" />
-    <link rel="apple-touch-icon" href="/icon-180x180.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Work Time Tracker</title>
+    <title>Work Time Tracker - 可愛いキャラクターと一緒に作業時間を管理</title>
+    
+    <!-- SNS Share Meta Tags -->
+    <meta name="description" content="可愛いキャラクターと一緒に作業時間を管理できるWebアプリです。タイマー機能、メモ機能、作業記録など、効率的な作業管理をサポートします。" />
+    <meta name="keywords" content="作業時間管理,タイマー,メモ,作業記録,キャラクター,可愛い,効率的" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://work-time-tracker-five.vercel.app/" />
+    <meta property="og:title" content="Work Time Tracker - 可愛いキャラクターと一緒に作業時間を管理" />
+    <meta property="og:description" content="可愛いキャラクターと一緒に作業時間を管理できるWebアプリです。タイマー機能、メモ機能、作業記録など、効率的な作業管理をサポートします。" />
+    <meta property="og:image" content="https://work-time-tracker-five.vercel.app/icon-512x512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:site_name" content="Work Time Tracker" />
+    <meta property="og:locale" content="ja_JP" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://work-time-tracker-five.vercel.app/" />
+    <meta name="twitter:title" content="Work Time Tracker - 可愛いキャラクターと一緒に作業時間を管理" />
+    <meta name="twitter:description" content="可愛いキャラクターと一緒に作業時間を管理できるWebアプリです。タイマー機能、メモ機能、作業記録など、効率的な作業管理をサポートします。" />
+    <meta name="twitter:image" content="https://work-time-tracker-five.vercel.app/icon-512x512.png" />
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
@@ -18,18 +38,41 @@
     <link rel="apple-touch-icon" href="/icon-180x180.png" />
     
     <!-- Theme Colors -->
-    <meta name="theme-color" content="#3b82f6" />
+    <meta name="theme-color" content="#3b82f6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1e40af" media="(prefers-color-scheme: dark)" />
     <meta name="msapplication-TileColor" content="#3b82f6" />
+    <meta name="msapplication-navbutton-color" content="#3b82f6" />
+    <meta name="msapplication-TileImage" content="/icon-152x152.png" />
+    <meta name="msapplication-navbutton-color" content="#3b82f6" />
     <meta name="msapplication-TileImage" content="/icon-152x152.png" />
     
     <!-- Additional PWA Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="application-name" content="Work Time Tracker" />
     
-    <!-- Cache Control -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <!-- PWA Badge Support -->
+    <meta name="apple-mobile-web-app-badge" content="true" />
+    
+    <!-- Cache Control for Safari PWA -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+    
+    <!-- Safari PWA specific fixes -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="apple-mobile-web-app-orientations" content="portrait" />
+    
+    <!-- Prevent zoom on input focus for Safari -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    
+    <!-- Google Fonts - Japanese and English -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   </head>
   <body>
     <div id="root"></div>

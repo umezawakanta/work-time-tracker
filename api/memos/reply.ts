@@ -1,198 +1,250 @@
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
+const { ensureDatabaseConnection: ensureDBConnection, mongoose: mongooseDB } = require('../utils/database');
 
-// データベース接続
-const connectDB = async () => {
-  if (mongoose.connections[0].readyState) {
-    return;
-  }
-  
-  try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      dbName: 'workTimeTracker'
-    });
-  } catch (error) {
-    console.error('Database connection error:', error);
-  }
-};
-
-// JWTトークンからユーザー情報を取得
-const getUserFromToken = (req) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-  
-  const token = authHeader.substring(7);
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return decoded;
-  } catch (error) {
-    console.error('JWT verification error:', error);
-    return null;
-  }
-};
-
-// 返信スキーマ
-const ReplySchema = new mongoose.Schema({
-  memoId: { type: String, required: true },
-  content: { type: String, required: true },
-  authorName: { type: String, required: true },
-  authorEmail: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
-});
-
-const Reply = mongoose.models.Reply || mongoose.model('Reply', ReplySchema);
-
-// メモスキーマ（返信を取得するため）
-const MemoSchema = new mongoose.Schema({
+// Memo schema
+const MemoSchema = new mongooseDB.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
   category: { type: String, required: true },
-  tags: [String],
+  tags: [{ type: String }],
   isPublic: { type: Boolean, default: false },
+  isFamilyOnly: { type: Boolean, default: false },
+  isAdminOnly: { type: Boolean, default: false },
   userId: { type: String, required: true },
+  postType: { 
+    type: String, 
+    enum: ['update_request', 'error_report', 'general'], 
+    default: 'general' 
+  },
+  status: { 
+    type: String, 
+    enum: ['pending', 'in_progress', 'resolved', 'closed'], 
+    default: 'pending' 
+  },
+  adminResponse: { type: String },
+  adminResponseDate: { type: Date },
   createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
 });
 
-const Memo = mongoose.models.Memo || mongoose.model('Memo', MemoSchema);
+const MemoModel = mongooseDB.models.Memo || mongooseDB.model('Memo', MemoSchema);
+
+// Notification schema
+const NotificationSchema = new mongooseDB.Schema({
+  userId: { type: String, required: true },
+  type: { 
+    type: String, 
+    enum: ['memo_response', 'status_update', 'admin_message', 'memo_reply'], 
+    required: true 
+  },
+  title: { type: String, required: true },
+  message: { type: String, required: true },
+  relatedMemoId: { type: String },
+  isRead: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+const NotificationModel = mongooseDB.models.Notification || mongooseDB.model('Notification', NotificationSchema);
+
+// Reply schema (独立したコレクション)
+const ReplySchemaDef = new mongooseDB.Schema(
+  {
+    content: { type: String, required: true },
+    authorName: { type: String, required: true },
+    authorEmail: { type: String, required: true },
+    memoId: { type: mongooseDB.Schema.Types.ObjectId, ref: 'Memo', required: true },
+    userId: { type: String, required: false } // 既存データとの互換性のためオプショナルに変更
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
+);
+
+const ReplyModel = mongooseDB.models.Reply || mongooseDB.model("Reply", ReplySchemaDef);
 
 module.exports = async function handler(req, res) {
   // CORS設定
-  const allowedOrigins = [
-    'http://localhost:3000',
-    'https://work-time-tracker-five.vercel.app',
-    /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/
-  ];
+  const { origin } = req.headers;
+  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
+
+  const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
   
-  const origin = req.headers.origin;
-  const isAllowedOrigin = allowedOrigins.some(allowedOrigin => {
-    if (typeof allowedOrigin === 'string') {
-      return allowedOrigin === origin;
-    } else {
-      return allowedOrigin.test(origin);
-    }
-  });
+  const isAllowedOrigin = origin
+    && origin !== "null"
+    && origin !== null
+    && origin !== undefined
+    && origin.length > 0
+    && (allowedOrigins.includes(origin) || isPreview);
 
   if (isAllowedOrigin) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
-  
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method not allowed' });
-  }
-
-  try {
-    await connectDB();
-
-    // JWTトークンからユーザー情報を取得
-    const user = getUserFromToken(req);
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: '認証が必要です'
-      });
-    }
-
-    const { memoId, content } = req.body;
-
-    // バリデーション
-    if (!memoId || !content) {
-      return res.status(400).json({
-        success: false,
-        message: 'メモIDと返信内容が必要です'
-      });
-    }
-
-    // メモが存在するかチェック
-    const memo = await Memo.findById(memoId);
-    if (!memo) {
-      return res.status(404).json({
-        success: false,
-        message: 'メモが見つかりません'
-      });
-    }
-
-    // メモが公開されているかチェック
-    if (!memo.isPublic) {
-      return res.status(403).json({
-        success: false,
-        message: 'このメモは公開されていません'
-      });
-    }
-
-    // 返信を作成
-    const reply = new Reply({
-      memoId,
-      content: content.trim(),
-      authorName: user.displayName || user.email,
-      authorEmail: user.email
+  if (req.method !== 'GET' && req.method !== 'POST') {
+    res.status(405).json({
+      success: false,
+      error: 'Method not allowed',
     });
+    return;
+  }
 
-    await reply.save();
-
-    // 元のメモの所有者の普通のメモにも返信をコピー
+  // リクエストボディの解析（POSTリクエストの場合）
+  if (req.method === 'POST') {
     try {
-      console.log('🔍 Searching for private memo:', {
-        userId: memo.userId,
-        title: memo.title,
-        content: memo.content.substring(0, 50) + '...'
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk.toString();
       });
       
-      // 元のメモの所有者の普通のメモを検索（タイトルで検索）
-      const privateMemo = await Memo.findOne({
-        userId: memo.userId,
-        isPublic: false,
-        title: memo.title
+      req.on('end', async () => {
+        try {
+          req.body = JSON.parse(body);
+          await handleReplyRequest(req, res);
+        } catch (parseError) {
+          console.error('❌ JSON parse error:', parseError);
+          res.status(400).json({
+            success: false,
+            message: 'リクエストデータの解析に失敗しました',
+            error: 'Invalid JSON'
+          });
+        }
       });
+    } catch (error) {
+      console.error('❌ Request body parsing error:', error);
+      res.status(400).json({
+        success: false,
+        message: 'リクエストの処理に失敗しました',
+        error: 'Request parsing failed'
+      });
+    }
+  } else {
+    await handleReplyRequest(req, res);
+  }
+};
 
-      console.log('🔍 Private memo found:', privateMemo ? privateMemo._id.toString() : 'None');
-
-      if (privateMemo) {
-        // 普通のメモにも返信を作成
-        const privateReply = new Reply({
-          memoId: privateMemo._id.toString(),
-          content: content.trim(),
-          authorName: user.displayName || user.email,
-          authorEmail: user.email
-        });
-
-        await privateReply.save();
-        console.log('✅ Reply copied to private memo:', privateMemo._id.toString());
-      } else {
-        console.log('⚠️ No matching private memo found for copying reply');
-      }
-    } catch (copyError) {
-      console.warn('⚠️ Failed to copy reply to private memo:', copyError);
-      // コピーに失敗してもメインの返信は成功とする
+async function handleReplyRequest(req, res) {
+  try {
+    // Ensure database connection is established
+    await ensureDBConnection();
+    
+    
+    // Get authorization token
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authorization token required',
+      });
     }
 
-    res.status(201).json({
-      success: true,
-      message: '返信を投稿しました',
-      reply: {
-        id: reply._id.toString(),
-        memoId: reply.memoId,
-        content: reply.content,
-        authorName: reply.authorName,
-        createdAt: reply.createdAt.toISOString()
+    const token = authHeader.substring(7);
+    
+    // Verify token (simplified - in production, use proper JWT verification)
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid authorization token',
+      });
+    }
+
+    if (req.method === 'GET') {
+      // Get replies for a specific memo
+      const { memoId } = req.query;
+      
+      if (!memoId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Memo ID is required',
+        });
       }
-    });
+
+      const replies = await ReplyModel.find({ memoId }).sort({ createdAt: 1 });
+
+      res.status(200).json({
+        success: true,
+        replies: replies.map(reply => ({
+          id: reply._id.toString(),
+          content: reply.content,
+          authorName: reply.authorName,
+          authorEmail: reply.authorEmail,
+          createdAt: reply.createdAt ? reply.createdAt.toISOString() : new Date().toISOString(),
+          updatedAt: reply.updatedAt ? reply.updatedAt.toISOString() : new Date().toISOString(),
+        }))
+      });
+
+    } else if (req.method === 'POST') {
+      // Create new reply
+      const { memoId, content, authorName, authorEmail, userId } = req.body;
+      
+      if (!memoId || !content || !authorName || !authorEmail) {
+        return res.status(400).json({
+          success: false,
+          message: 'memoId, content, authorName, and authorEmail are required',
+        });
+      }
+
+      const newReply = new ReplyModel({
+        content: content.trim(),
+        authorName: authorName.trim(),
+        authorEmail: authorEmail.trim(),
+        memoId: new mongooseDB.Types.ObjectId(memoId), // ObjectIdに変換
+        userId: userId || null // userIdが提供されない場合はnullを設定
+      });
+
+      const savedReply = await newReply.save();
+
+      // メモの作成者に通知を送信
+      try {
+        const memo = await MemoModel.findById(memoId);
+        if (memo && memo.userId !== userId) { // 自分自身のメモには通知しない
+          const notification = new NotificationModel({
+            userId: memo.userId,
+            type: 'memo_reply',
+            title: 'メモに返信がつきました',
+            message: `${authorName}さんが「${memo.title}」に返信しました。クリックして返信を確認してください。`,
+            relatedMemoId: memoId,
+          });
+
+          await notification.save();
+          console.log('Reply notification created for user:', memo.userId);
+        }
+      } catch (notificationError) {
+        console.error('Failed to create reply notification:', notificationError);
+        // 通知の作成に失敗しても返信は成功とする
+      }
+
+      res.status(201).json({
+        success: true,
+        message: 'Reply created successfully',
+        reply: {
+          id: newReply._id.toString(),
+          content: newReply.content,
+          authorName: newReply.authorName,
+          authorEmail: newReply.authorEmail,
+          createdAt: newReply.createdAt ? newReply.createdAt.toISOString() : new Date().toISOString(),
+          updatedAt: newReply.updatedAt ? newReply.updatedAt.toISOString() : new Date().toISOString(),
+        }
+      });
+    }
 
   } catch (error) {
-    console.error('Reply creation error:', error);
+    console.error('❌ Reply operation error:', error);
+
     res.status(500).json({
       success: false,
-      message: 'サーバーエラーが発生しました'
+      message: 'An error occurred while processing the reply',
+      error: process.env.NODE_ENV === 'development'
+        ? (error instanceof Error ? error.message : String(error))
+        : 'Internal server error',
     });
   }
-}
+};

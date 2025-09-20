@@ -1,8 +1,6 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const { serialize } = require('cookie');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+const { mongoose, jwt, ensureDatabaseConnection: initDB, User: UserModel } = require('../utils/database');
 const { 
   createValidationError, 
   createAuthError, 
@@ -11,98 +9,9 @@ const {
   sendErrorResponse 
 } = require('../utils/errorHandler');
 
-dotenv.config();
+require('dotenv').config();
 
-// Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
-  
-  if (isConnected) {
-    return;
-  }
 
-  console.warn('[auth/login] Database not connected, attempting to connect...');
-  
-  try {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    if (!MONGODB_URI) {
-      throw new Error("MONGODB_URI environment variable is required but not set.");
-    }
-    
-    if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
-      return;
-    }
-
-    // 接続オプションを追加してタイムアウトと再接続を最適化
-    await mongoose.connect(MONGODB_URI, {
-      dbName: 'workTimeTracker',
-      maxPoolSize: 10, // 接続プールサイズ
-      serverSelectionTimeoutMS: 15000, // サーバー選択タイムアウト (15秒)
-      socketTimeoutMS: 45000, // ソケットタイムアウト
-      bufferCommands: false, // コマンドバッファリング無効化
-      connectTimeoutMS: 10000, // 接続タイムアウト
-      maxIdleTimeMS: 30000, // 最大アイドル時間
-    });
-
-    console.log("✅ MongoDB connected successfully");
-
-    // 接続状態の監視
-    mongoose.connection.on("error", (error) => {
-      console.error("❌ MongoDB connection error:", error);
-    });
-
-    mongoose.connection.on("disconnected", () => {
-      console.warn("⚠️ MongoDB disconnected");
-    });
-
-    mongoose.connection.on("reconnected", () => {
-      console.log("🔄 MongoDB reconnected");
-    });
-  } catch (error) {
-    console.error('[auth/login] Failed to connect to database:', error);
-    throw new Error('Database connection failed: ' + (error && error.message ? error.message : String(error)));
-  }
-};
-
-// User schema
-const UserSchema = new mongoose.Schema(
-  {
-    email: { type: String, required: true, unique: true, index: true },
-    displayName: { type: String, required: true },
-    password: { type: String, required: true },
-    role: { type: String, default: "user" },
-    isVerified: { type: Boolean, default: false },
-    isAdmin: { type: Boolean, default: false },
-    roles: [{ type: String }],
-    avatar: { type: String },
-    preferences: { type: mongoose.Schema.Types.Mixed, default: {} },
-    status: {
-      type: String,
-      enum: ["active", "inactive", "suspended"],
-      default: "active",
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
-
-// Virtual for user ID
-UserSchema.virtual("id").get(function () {
-  return this._id.toHexString();
-});
-
-// Ensure virtual fields are serialized
-UserSchema.set("toJSON", {
-  virtuals: true,
-  transform: function (doc, ret) {
-    const { _id, __v, password, ...cleanRet } = ret;
-    return cleanRet;
-  },
-});
-
-const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 // Robust JSON reader for Vercel Node (handles object, string, or raw stream)
 async function readJson(req) {
@@ -119,15 +28,15 @@ async function readJson(req) {
       req.on('end', () => resolve(data));
       req.on('error', reject);
     });
-    return raw ? JSON.parse(raw) : {};
+    return raw && (raw as string).trim() ? JSON.parse(raw as string) : null;
   } catch {
-    throw Object.assign(new Error('Invalid JSON'), { statusCode: 400 });
+    throw Object.assign(new Error('Invalid JSON'), { statusCode: 400 } as any);
   }
 }
 
 async function handler(req, res) {
   // CORS設定
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
   const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
   
@@ -166,20 +75,12 @@ async function handler(req, res) {
   }
 
   try {
-    console.log('🔐 User login started');
 
     // Ensure database connection is established
-    await ensureDatabaseConnection();
+    await initDB();
 
     // Read JSON body safely across environments
     const body = await readJson(req);
-    console.log('📥 Login request meta', {
-      contentType: req.headers['content-type'],
-      contentLength: req.headers['content-length'],
-      bodyType: typeof body,
-      hasEmail: Boolean(body && body.email),
-      // 機密情報は含めない
-    });
     const {
       email,
       password,
@@ -212,17 +113,7 @@ async function handler(req, res) {
     const emailLc = (email || '').toLowerCase();
     const maskedEmail = emailLc.replace(/^[^@]+/, '***');
     
-    console.log('[auth/login] findOne(users) start', {
-      modelReady: Boolean(User),
-      connState: mongoose.connection && mongoose.connection.readyState,
-      dbName: mongoose.connection && mongoose.connection.name,
-      email: maskedEmail,
-    });
-    const user = await User.findOne({ email: emailLc });
-    console.log('[auth/login] findOne(users) done', {
-      found: Boolean(user),
-      id: (user && user._id) || (user && user.id) || null,
-    });
+    const user = await UserModel.findOne({ email: emailLc });
 
     if (!user) {
       return sendErrorResponse(res, 401, createAuthError(
@@ -325,11 +216,6 @@ async function handler(req, res) {
       console.warn('⚠️ Failed to set auth cookie:', e);
     }
 
-    console.log('✅ User login successful:', {
-      userId: user.id,
-      email: user.email ? user.email.replace(/^[^@]+/, '***') : '[REDACTED]', // メールアドレスをマスク
-      rememberMe,
-    });
 
     res.status(200).json(response);
   } catch (error) {

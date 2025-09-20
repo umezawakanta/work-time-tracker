@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const { mongoose } = require('../../utils/database');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
@@ -32,7 +32,6 @@ module.exports = async (req, res) => {
   }
 
   try {
-    console.log('📚 Book detail API request started');
     
     // Ensure database connection
     await ensureDatabaseConnection();
@@ -55,11 +54,6 @@ module.exports = async (req, res) => {
         return handleError(res, { statusCode: 404, message: '本が見つかりません' });
       }
 
-      console.log('✅ Book retrieved:', {
-        bookId: book._id.toString(),
-        title: book.title,
-        userId: userInfo.userId,
-      });
 
       res.status(200).json({
         success: true,
@@ -94,11 +88,6 @@ module.exports = async (req, res) => {
         return handleError(res, { statusCode: 404, message: '本が見つかりません' });
       }
 
-      console.log('✅ Book updated successfully:', {
-        bookId: book._id.toString(),
-        title: book.title,
-        userId: userInfo.userId,
-      });
 
       res.status(200).json({
         success: true,
@@ -126,11 +115,6 @@ module.exports = async (req, res) => {
         return handleError(res, { statusCode: 404, message: '本が見つかりません' });
       }
 
-      console.log('✅ Book deleted successfully:', {
-        bookId: book._id.toString(),
-        title: book.title,
-        userId: userInfo.userId,
-      });
 
       res.status(200).json({
         success: true,

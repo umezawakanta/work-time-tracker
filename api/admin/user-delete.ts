@@ -12,13 +12,12 @@ const ensureDatabaseConnection = async () => {
   }
   console.warn('[admin/user-delete] Database not connected, attempting to connect...');
   try {
-    const MONGODB_URI = process.env.MONGODB_URI;
+    const { MONGODB_URI } = process.env;
     if (!MONGODB_URI) {
       throw new Error("MONGODB_URI environment variable is required but not set.");
     }
     
     if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
       return;
     }
 
@@ -32,7 +31,6 @@ const ensureDatabaseConnection = async () => {
       maxIdleTimeMS: 30000,
     });
 
-    console.log("✅ MongoDB connected successfully");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[admin/user-delete] Failed to connect to database:', message);
@@ -93,7 +91,7 @@ const verifyJWT = (token) => {
 
 module.exports = async function handler(req, res) {
   // CORS設定
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
   const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
   const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
@@ -118,7 +116,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    console.log('🗑️ Admin user delete request started');
 
     // Ensure database connection
     await ensureDatabaseConnection();
@@ -184,10 +181,6 @@ module.exports = async function handler(req, res) {
     // ユーザーを削除
     await User.findByIdAndDelete(userId);
 
-    console.log('✅ User deleted successfully:', {
-      deletedUserId: userId,
-      adminUserId: userInfo.userId,
-    });
 
     // レスポンスの構築
     res.status(200).json({

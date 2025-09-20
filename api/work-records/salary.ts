@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { verifyJWT } from '../utils/validation';
 
 dotenv.config();
 
@@ -7,26 +8,24 @@ dotenv.config();
 const connectDB = async () => {
   try {
     if (mongoose.connection.readyState === 1) {
-      console.log('Database already connected');
       return;
     }
     
-    console.log('Connecting to database...');
     await mongoose.connect(process.env.MONGODB_URI, {
       dbName: 'workTimeTracker'
     });
-    console.log('Database connected successfully');
   } catch (error) {
     console.error('Database connection error:', error);
     throw error;
   }
 };
 
-// 給料記録のスキーマ
-const SalaryRecordSchema = new mongoose.Schema({
+// 収支記録のスキーマ
+const IncomeExpenseRecordSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   date: { type: Date, required: true },
-  salary: { type: Number, required: true },
+  amount: { type: Number, required: true }, // salaryからamountに変更
+  type: { type: String, enum: ['income', 'expense'], required: true }, // 収入/支出のタイプを追加
   transportation: { type: Number, default: 0 },
   overtime: { type: Number, default: 0 },
   bonus: { type: Number, default: 0 },
@@ -35,9 +34,9 @@ const SalaryRecordSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-const SalaryRecord = mongoose.models.SalaryRecord || mongoose.model('SalaryRecord', SalaryRecordSchema);
+const IncomeExpenseRecord = mongoose.models.SalaryRecord || mongoose.model('SalaryRecord', IncomeExpenseRecordSchema);
 
-export default async function handler(req, res) {
+export default async function handler(req: any, res: any) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
     ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin) ? req.headers.origin : 'https://work-time-tracker-five.vercel.app'
@@ -54,38 +53,69 @@ export default async function handler(req, res) {
   await connectDB();
 
   try {
+    // JWTトークンからユーザーIDを取得
+    console.log('Verifying JWT token...');
+    const userInfo = await verifyJWT(req);
+    console.log('JWT verification result:', userInfo);
+    if (!userInfo) {
+      console.log('JWT verification failed');
+      return res.status(401).json({ message: '認証が必要です' });
+    }
+    const userId = userInfo.userId;
+    console.log('User ID:', userId);
+
     if (req.method === 'GET') {
       // 給料記録一覧を取得
-      const { userId } = req.query;
-      
-      console.log('Salary API - GET request, userId:', userId);
-      
-      if (!userId) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'ユーザーIDが必要です' 
-        });
-      }
 
-      const records = await SalaryRecord.find({ userId })
+      const records = await IncomeExpenseRecord.find({ userId })
         .sort({ date: -1 })
         .limit(50);
 
-      console.log('Salary records found:', records.length);
+
+      // データベースのsalaryフィールドをamountフィールドに変換
+      const recordsWithType = records.map(record => {
+        const recordObj = record.toObject();
+        // salaryフィールドをamountフィールドに変換
+        if (recordObj.salary !== undefined) {
+          recordObj.amount = recordObj.salary;
+          delete recordObj.salary;
+        }
+        // typeフィールドが存在しない場合は、amountの正負で判定
+        if (!recordObj.type) {
+          recordObj.type = recordObj.amount >= 0 ? 'income' : 'expense';
+        }
+        return recordObj;
+      });
 
       res.status(200).json({
         success: true,
-        records
+        records: recordsWithType
       });
 
     } else if (req.method === 'POST') {
-      // 新しい給料記録を作成
-      const { userId, date, salary, transportation, overtime, bonus, notes } = req.body;
+      // 新しい収支記録を作成
+      console.log('POST request received:', req.body);
+      const { date, amount, type, transportation, overtime, bonus, notes } = req.body;
 
-      if (!userId || !date || salary === undefined) {
+      console.log('Parsed fields:', { date, amount, type, transportation, overtime, bonus, notes });
+
+      if (!date || amount === undefined || !type) {
+        console.log('Validation failed:', { date: !!date, amount: amount !== undefined, type: !!type });
+        
+        const missingFields = [];
+        if (!date) missingFields.push('日付');
+        if (amount === undefined) missingFields.push('金額');
+        if (!type) missingFields.push('タイプ');
+        
         return res.status(400).json({
           success: false,
-          message: '必須フィールドが不足しています'
+          message: `必須フィールドが不足しています: ${missingFields.join(', ')}`,
+          details: {
+            date: !!date,
+            amount: amount !== undefined,
+            type: !!type,
+            missingFields: missingFields
+          }
         });
       }
 
@@ -93,10 +123,11 @@ export default async function handler(req, res) {
       const jstDate = new Date(date);
       const utcDate = new Date(jstDate.getTime() - (9 * 60 * 60 * 1000));
       
-      const record = new SalaryRecord({
+      const record = new IncomeExpenseRecord({
         userId,
         date: utcDate,
-        salary: Number(salary),
+        amount: Number(amount),
+        type: type,
         transportation: Number(transportation) || 0,
         overtime: Number(overtime) || 0,
         bonus: Number(bonus) || 0,
@@ -107,13 +138,13 @@ export default async function handler(req, res) {
 
       res.status(201).json({
         success: true,
-        message: '給料記録が作成されました',
-        record
+        message: '収支記録が作成されました',
+        record: record.toObject()
       });
 
     } else if (req.method === 'PUT') {
-      // 給料記録を更新
-      const { id, date, salary, transportation, overtime, bonus, notes } = req.body;
+      // 収支記録を更新
+      const { id, date, amount, type, transportation, overtime, bonus, notes } = req.body;
 
       if (!id) {
         return res.status(400).json({
@@ -131,13 +162,14 @@ export default async function handler(req, res) {
         const utcDate = new Date(jstDate.getTime() - (9 * 60 * 60 * 1000));
         updateData.date = utcDate;
       }
-      if (salary !== undefined) updateData.salary = Number(salary);
+      if (amount !== undefined) updateData.amount = Number(amount);
+      if (type !== undefined) updateData.type = type;
       if (transportation !== undefined) updateData.transportation = Number(transportation);
       if (overtime !== undefined) updateData.overtime = Number(overtime);
       if (bonus !== undefined) updateData.bonus = Number(bonus);
       if (notes !== undefined) updateData.notes = notes;
 
-      const record = await SalaryRecord.findByIdAndUpdate(
+      const record = await IncomeExpenseRecord.findByIdAndUpdate(
         id,
         updateData,
         { new: true }
@@ -152,8 +184,8 @@ export default async function handler(req, res) {
 
       res.status(200).json({
         success: true,
-        message: '給料記録が更新されました',
-        record
+        message: '収支記録が更新されました',
+        record: record.toObject()
       });
 
     } else if (req.method === 'DELETE') {
@@ -167,7 +199,7 @@ export default async function handler(req, res) {
         });
       }
 
-      const record = await SalaryRecord.findByIdAndDelete(id);
+      const record = await IncomeExpenseRecord.findByIdAndDelete(id);
 
       if (!record) {
         return res.status(404).json({
@@ -178,7 +210,7 @@ export default async function handler(req, res) {
 
       res.status(200).json({
         success: true,
-        message: '給料記録が削除されました'
+        message: '収支記録が削除されました'
       });
 
     } else {
@@ -188,10 +220,15 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Salary record API error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      details: process.env.NODE_ENV === 'development' ? {
+        message: error.message,
+        stack: error.stack
+      } : undefined
     });
   }
 }

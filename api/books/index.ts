@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const { mongoose } = require('../utils/database');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
@@ -32,7 +32,6 @@ module.exports = async (req, res) => {
   }
 
   try {
-    console.log('📚 Books API request started');
     
     // Ensure database connection
     await ensureDatabaseConnection();
@@ -47,10 +46,6 @@ module.exports = async (req, res) => {
       // 本の一覧を取得
       const books = await Book.find({}).sort({ createdAt: -1 });
 
-      console.log('✅ Books list retrieved:', {
-        count: books.length,
-        userId: userInfo.userId,
-      });
 
       res.status(200).json({
         success: true,
@@ -95,11 +90,6 @@ module.exports = async (req, res) => {
 
       const savedBook = await newBook.save();
 
-      console.log('✅ Book created successfully:', {
-        bookId: savedBook._id.toString(),
-        title: savedBook.title,
-        userId: userInfo.userId,
-      });
 
       res.status(201).json({
         success: true,

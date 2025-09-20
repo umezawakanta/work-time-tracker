@@ -1,9 +1,48 @@
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
+const mongooseInstance = require('mongoose');
+const jsonwebtoken = require('jsonwebtoken');
+
+// User schema
+const UserSchemaDef = new mongooseInstance.Schema(
+  {
+    email: { type: String, required: true, unique: true, index: true },
+    displayName: { type: String, required: true },
+    password: { type: String, required: true },
+    role: { type: String, default: "user" },
+    isVerified: { type: Boolean, default: false },
+    isAdmin: { type: Boolean, default: false },
+    roles: [{ type: String }],
+    avatar: { type: String },
+    preferences: { type: mongooseInstance.Schema.Types.Mixed, default: {} },
+    status: {
+      type: String,
+      enum: ["active", "inactive", "suspended"],
+      default: "active",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// Virtual for user ID
+UserSchemaDef.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+// Ensure virtual fields are serialized
+UserSchemaDef.set("toJSON", {
+  virtuals: true,
+  transform: function (doc, ret) {
+    const { _id, __v, password, ...cleanRet } = ret;
+    return cleanRet;
+  },
+});
+
+const UserModel = mongooseInstance.models.User || mongooseInstance.model("User", UserSchemaDef);
 
 // Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
+const initDatabaseConnection = async () => {
+  const isConnected = mongooseInstance.connection.readyState === 1;
   
   if (isConnected) {
     return;
@@ -12,22 +51,26 @@ const ensureDatabaseConnection = async () => {
   console.warn('[database] Database not connected, attempting to connect...');
   
   try {
-    const MONGODB_URI = process.env.MONGODB_URI;
+    const { MONGODB_URI } = process.env;
     
     if (!MONGODB_URI) {
       throw new Error('MONGODB_URI environment variable is not set');
     }
 
     if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
       return;
     }
 
-    await mongoose.connect(MONGODB_URI, {
+    await mongooseInstance.connect(MONGODB_URI, {
       dbName: 'workTimeTracker',
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 15000,
+      socketTimeoutMS: 45000,
+      bufferCommands: false,
+      connectTimeoutMS: 10000,
+      maxIdleTimeMS: 30000,
     });
 
-    console.log("✅ MongoDB connected successfully");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[database] Failed to connect to database:', message);
@@ -36,7 +79,13 @@ const ensureDatabaseConnection = async () => {
 };
 
 // JWT verification utility
-const verifyJWT = async (req) => {
+const verifyJWTToken = async (req) => {
+  // リクエストオブジェクトとヘッダーの存在チェック
+  if (!req || !req.headers) {
+    console.log('Request or headers object is undefined');
+    return null;
+  }
+
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return null;
@@ -46,8 +95,7 @@ const verifyJWT = async (req) => {
   
   try {
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
-    const decoded = jwt.verify(token, jwtSecret);
-    return decoded;
+    return jsonwebtoken.verify(token, jwtSecret);
   } catch (error) {
     console.error('JWT verification failed:', error);
     return null;
@@ -68,7 +116,10 @@ const handleError = (res, error, message = 'Internal server error') => {
 };
 
 module.exports = {
-  ensureDatabaseConnection,
-  verifyJWT,
-  handleError
+  ensureDatabaseConnection: initDatabaseConnection,
+  verifyJWT: verifyJWTToken,
+  handleError,
+  mongoose: mongooseInstance,
+  jwt: jsonwebtoken,
+  User: UserModel
 };

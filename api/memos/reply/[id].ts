@@ -1,62 +1,18 @@
-const mongoose = require('mongoose');
+const { mongoose: mongooseLib, ensureDatabaseConnection: connectDB } = require('../../utils/database');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-// Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
-  if (isConnected) {
-    return;
-  }
-  console.warn('[memos/reply/[id]] Database not connected, attempting to connect...');
-  try {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    if (!MONGODB_URI) {
-      throw new Error("MONGODB_URI environment variable is required but not set.");
-    }
-    
-    if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
-      return;
-    }
+// Database connection utility is now imported from database.ts
 
-    await mongoose.connect(MONGODB_URI, {
-      dbName: 'workTimeTracker',
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 15000,
-      socketTimeoutMS: 45000,
-      bufferCommands: false,
-      connectTimeoutMS: 10000,
-      maxIdleTimeMS: 30000,
-    });
-
-    console.log("✅ MongoDB connected successfully");
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error('[memos/reply/[id]] Failed to connect to database:', message);
-    throw new Error(`Database connection failed: ${message}`);
-  }
-};
-
-// Memo schema
-const MemoSchema = new mongoose.Schema(
+// Reply schema (独立したコレクション)
+const ReplySchema = new mongooseLib.Schema(
   {
-    title: { type: String, required: true },
     content: { type: String, required: true },
-    category: { type: String, required: true },
-    tags: [{ type: String }],
-    isPublic: { type: Boolean, default: false },
-    authorId: { type: String, required: true },
     authorName: { type: String, required: true },
     authorEmail: { type: String, required: true },
-    replies: [{
-      id: { type: String, required: true },
-      content: { type: String, required: true },
-      authorName: { type: String, required: true },
-      authorEmail: { type: String, required: true },
-      createdAt: { type: Date, default: Date.now }
-    }]
+    memoId: { type: mongooseLib.Schema.Types.ObjectId, ref: 'Memo', required: true },
+    userId: { type: String, required: false } // 既存データとの互換性のためオプショナルに変更
   },
   {
     timestamps: true,
@@ -64,7 +20,7 @@ const MemoSchema = new mongoose.Schema(
   },
 );
 
-const Memo = mongoose.models.Memo || mongoose.model("Memo", MemoSchema);
+const Reply = mongooseLib.models.Reply || mongooseLib.model("Reply", ReplySchema);
 
 /**
  * Update reply request interface
@@ -115,10 +71,8 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    console.log(`📝 Reply ${req.method} operation started`);
-    
     // Ensure database connection is established
-    await ensureDatabaseConnection();
+    await connectDB();
     
     const { id: replyId } = req.query;
     
@@ -149,18 +103,8 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Find the memo containing the reply
-    const memo = await Memo.findOne({ 'replies.id': replyId });
-    
-    if (!memo) {
-      return res.status(404).json({
-        success: false,
-        message: 'Reply not found',
-      });
-    }
-
-    // Find the specific reply
-    const reply = memo.replies.find(r => r.id === replyId);
+    // Find the reply directly by ID
+    const reply = await Reply.findById(replyId);
     
     if (!reply) {
       return res.status(404).json({
@@ -180,15 +124,26 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      // Update the reply content
-      reply.content = content.trim();
-      memo.markModified('replies');
-      await memo.save();
-
-      console.log('✅ Reply updated successfully:', {
+      // Update the reply content using findByIdAndUpdate to avoid validation issues
+      const updatedReply = await Reply.findByIdAndUpdate(
         replyId,
-        memoId: memo._id,
-      });
+        { 
+          content: content.trim(),
+          updatedAt: new Date()
+        },
+        { 
+          new: true,
+          runValidators: false // バリデーションをスキップして既存データを更新
+        }
+      );
+
+      if (!updatedReply) {
+        return res.status(404).json({
+          success: false,
+          message: 'Reply not found',
+        });
+      }
+
 
       res.status(200).json({
         success: true,
@@ -197,13 +152,8 @@ module.exports = async function handler(req, res) {
 
     } else if (req.method === 'DELETE') {
       // Delete reply
-      memo.replies = memo.replies.filter(r => r.id !== replyId);
-      await memo.save();
+      await Reply.findByIdAndDelete(replyId);
 
-      console.log('✅ Reply deleted successfully:', {
-        replyId,
-        memoId: memo._id,
-      });
 
       res.status(200).json({
         success: true,

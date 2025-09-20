@@ -4,7 +4,8 @@ import mongoose from 'mongoose';
 const SalaryRecordSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   date: { type: Date, required: true },
-  salary: { type: Number, required: true },
+  amount: { type: Number, required: true }, // salaryからamountに変更
+  type: { type: String, enum: ['income', 'expense'], required: true }, // 収入/支出のタイプを追加
   transportation: { type: Number, default: 0 },
   overtime: { type: Number, default: 0 },
   bonus: { type: Number, default: 0 },
@@ -19,7 +20,7 @@ const WorkDiarySchema = new mongoose.Schema({
   date: { type: Date, required: true },
   title: { type: String, required: true },
   content: { type: String, required: true },
-  mood: { type: String, enum: ['😊', '😐', '😔', '😤', '😴', '🤔', '😍', '😢'], default: '😊' },
+  mood: { type: String, enum: ['1', '2', '3', '4', '5'], default: '3' },
   tags: [{ type: String }],
   isPrivate: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },

@@ -1,0 +1,96 @@
+/* PrivacyPolicyComponent.css - プライバシーポリシーコンポーネント専用のスタイル */
+
+.privacy-policy-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  line-height: 1.6;
+}
+
+.privacy-policy-content h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  border-bottom: 3px solid #3498db;
+  padding-bottom: 1rem;
+}
+
+.last-updated {
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+  margin-bottom: 2rem;
+}
+
+.privacy-policy-content section {
+  margin-bottom: 2rem;
+}
+
+.privacy-policy-content h2 {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid #3498db;
+  padding-left: 1rem;
+}
+
+.privacy-policy-content h3 {
+  color: #34495e;
+  font-size: 1.4rem;
+  margin: 1.5rem 0 0.5rem 0;
+}
+
+.privacy-policy-content p {
+  color: #555;
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+
+.privacy-policy-content ul {
+  color: #555;
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.privacy-policy-content li {
+  margin-bottom: 0.5rem;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .privacy-policy-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .privacy-policy-content h1 {
+    font-size: 2rem;
+  }
+  
+  .privacy-policy-content h2 {
+    font-size: 1.5rem;
+  }
+  
+  .privacy-policy-content h3 {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .privacy-policy-container {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+  
+  .privacy-policy-content h1 {
+    font-size: 1.8rem;
+  }
+  
+  .privacy-policy-content h2 {
+    font-size: 1.3rem;
+  }
+}

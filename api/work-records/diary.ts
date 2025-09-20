@@ -7,15 +7,12 @@ dotenv.config();
 const connectDB = async () => {
   try {
     if (mongoose.connection.readyState === 1) {
-      console.log('Database already connected');
       return;
     }
     
-    console.log('Connecting to database...');
-    await mongoose.connect(process.env.MONGODB_URI, {
+    await mongoose.connect(process.env.MONGODB_URI || '', {
       dbName: 'workTimeTracker'
     });
-    console.log('Database connected successfully');
   } catch (error) {
     console.error('Database connection error:', error);
     throw error;
@@ -28,7 +25,7 @@ const WorkDiarySchema = new mongoose.Schema({
   date: { type: Date, required: true },
   title: { type: String, required: true },
   content: { type: String, required: true },
-  mood: { type: String, enum: ['😊', '😐', '😔', '😤', '😴', '🤔', '😍', '😢'], default: '😊' },
+  mood: { type: String, enum: ['1', '2', '3', '4', '5'], default: '3' },
   tags: [{ type: String }],
   isPrivate: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
@@ -58,7 +55,6 @@ export default async function handler(req, res) {
       // 日記一覧を取得
       const { userId, isPrivate } = req.query;
       
-      console.log('Diary API - GET request, userId:', userId);
       
       if (!userId) {
         return res.status(400).json({ 
@@ -67,7 +63,7 @@ export default async function handler(req, res) {
         });
       }
 
-      const query = { userId };
+      const query: any = { userId };
       if (isPrivate !== undefined) {
         query.isPrivate = isPrivate === 'true';
       }
@@ -76,7 +72,6 @@ export default async function handler(req, res) {
         .sort({ date: -1 })
         .limit(50);
 
-      console.log('Diaries found:', diaries.length);
 
       res.status(200).json({
         success: true,
@@ -103,7 +98,7 @@ export default async function handler(req, res) {
         date: utcDate,
         title,
         content,
-        mood: mood || '😊',
+        mood: mood || '3',
         tags: tags || [],
         isPrivate: isPrivate !== undefined ? isPrivate : true
       });
@@ -127,7 +122,7 @@ export default async function handler(req, res) {
         });
       }
 
-      const updateData = {
+      const updateData: any = {
         updatedAt: new Date()
       };
 
@@ -136,11 +131,21 @@ export default async function handler(req, res) {
         const utcDate = new Date(jstDate.getTime() - (9 * 60 * 60 * 1000));
         updateData.date = utcDate;
       }
-      if (title) updateData.title = title;
-      if (content) updateData.content = content;
-      if (mood) updateData.mood = mood;
-      if (tags) updateData.tags = tags;
-      if (isPrivate !== undefined) updateData.isPrivate = isPrivate;
+      if (title) {
+        updateData.title = title;
+      }
+      if (content) {
+        updateData.content = content;
+      }
+      if (mood) {
+        updateData.mood = mood;
+      }
+      if (tags) {
+        updateData.tags = tags;
+      }
+      if (isPrivate !== undefined) {
+        updateData.isPrivate = isPrivate;
+      }
 
       const diary = await WorkDiary.findByIdAndUpdate(
         id,

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const { mongoose } = require('../utils/database');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
@@ -22,7 +22,6 @@ const ensureDatabaseConnection = async () => {
     }
 
     if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
       return;
     }
 
@@ -30,7 +29,6 @@ const ensureDatabaseConnection = async () => {
       dbName: 'workTimeTracker',
     });
 
-    console.log("✅ MongoDB connected successfully");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[memos/id] Failed to connect to database:', message);
@@ -40,11 +38,13 @@ const ensureDatabaseConnection = async () => {
 
 // Memo Schema
 const MemoSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+  title: { type: String, required: false }, // タイトルを必須でなくする
   content: { type: String, required: true },
   category: { type: String, required: true },
   tags: [{ type: String }],
   isPublic: { type: Boolean, default: false },
+  isFamilyOnly: { type: Boolean, default: false },
+  isAdminOnly: { type: Boolean, default: false },
   userId: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
@@ -104,7 +104,6 @@ module.exports = async (req, res) => {
   }
 
   try {
-    console.log('📝 Memo detail API request started');
     
     // Ensure database connection
     await ensureDatabaseConnection();
@@ -139,11 +138,6 @@ module.exports = async (req, res) => {
         });
       }
 
-      console.log('✅ Memo retrieved:', {
-        memoId: memo._id.toString(),
-        title: memo.title,
-        userId: userInfo.userId,
-      });
 
       res.status(200).json({
         success: true,
@@ -155,6 +149,8 @@ module.exports = async (req, res) => {
           category: memo.category,
           tags: memo.tags || [],
           isPublic: memo.isPublic,
+          isFamilyOnly: memo.isFamilyOnly || false,
+          isAdminOnly: memo.isAdminOnly || false,
           createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
           updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
         },
@@ -162,6 +158,13 @@ module.exports = async (req, res) => {
     } else if (req.method === 'PUT') {
       // メモを更新
       const updateData = req.body || {};
+      
+      // タイトルがない場合は内容の一行目をタイトルとして使用
+      if (updateData.title !== undefined && (!updateData.title || !updateData.title.trim())) {
+        if (updateData.content) {
+          updateData.title = updateData.content.split('\n')[0].trim() || '無題';
+        }
+      }
       
       const memo = await Memo.findOneAndUpdate(
         { _id: id, userId: userInfo.userId },
@@ -177,11 +180,6 @@ module.exports = async (req, res) => {
         });
       }
 
-      console.log('✅ Memo updated successfully:', {
-        memoId: memo._id.toString(),
-        title: memo.title,
-        userId: userInfo.userId,
-      });
 
       res.status(200).json({
         success: true,
@@ -193,6 +191,8 @@ module.exports = async (req, res) => {
           category: memo.category,
           tags: memo.tags || [],
           isPublic: memo.isPublic,
+          isFamilyOnly: memo.isFamilyOnly || false,
+          isAdminOnly: memo.isAdminOnly || false,
           createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
           updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
         },
@@ -208,11 +208,6 @@ module.exports = async (req, res) => {
         });
       }
 
-      console.log('✅ Memo deleted successfully:', {
-        memoId: memo._id.toString(),
-        title: memo.title,
-        userId: userInfo.userId,
-      });
 
       res.status(200).json({
         success: true,

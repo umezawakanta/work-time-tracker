@@ -1,0 +1,64 @@
+/* UserInfoComponent.css - シンプルで確実な表示 */
+
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
+  visibility: visible;
+  opacity: 1;
+}
+
+.user-info span {
+  background: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #555;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  visibility: visible;
+  opacity: 1;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 1024px) {
+  .user-info {
+    gap: 0.8rem;
+    justify-content: center;
+  }
+  .user-info span {
+    max-width: 150px;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .user-info {
+    gap: 0.6rem;
+  }
+  .user-info span {
+    max-width: 120px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-info {
+    gap: 0.4rem;
+  }
+  .user-info span {
+    max-width: 100px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+  }
+}

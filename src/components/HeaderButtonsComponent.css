@@ -1,0 +1,78 @@
+/* HeaderButtonsComponent.css - 究極シンプルボタンデザイン */
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.header-buttons button {
+  position: relative;
+  min-width: 44px;
+  min-height: 44px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.header-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.theme-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.font-button {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.feature-button {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* レスポンシブ */
+@media (max-width: 1024px) {
+  .header-buttons {
+    gap: 0.4rem;
+  }
+  .header-buttons button {
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-buttons {
+    gap: 0.3rem;
+  }
+  .header-buttons button {
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-buttons {
+    gap: 0.2rem;
+  }
+  .header-buttons button {
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 0.8rem;
+  }
+}

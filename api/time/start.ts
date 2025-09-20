@@ -1,5 +1,5 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
-const mongoose = require('mongoose');
+const { mongoose } = require('../utils/database');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
@@ -49,7 +49,6 @@ module.exports = async function handler(req, res) {
 
     await timeEntry.save();
 
-    console.log('[time/start] Time entry created:', timeEntry._id);
 
     return res.status(200).json({
       success: true,

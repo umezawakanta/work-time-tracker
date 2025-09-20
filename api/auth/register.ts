@@ -1,6 +1,6 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
 const bcrypt = require('bcryptjs');
-const mongoose = require('mongoose');
+const { mongoose, jwt, ensureDatabaseConnection } = require('../utils/database');
 const dotenv = require('dotenv');
 // Type definitions are now in comments for reference
 const { 
@@ -15,41 +15,7 @@ const {
 
 dotenv.config();
 
-// Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
-  if (isConnected) {
-    return;
-  }
-  console.warn('[auth/register] Database not connected, attempting to connect...');
-  try {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    if (!MONGODB_URI) {
-      throw new Error("MONGODB_URI environment variable is required but not set.");
-    }
-    
-    if (MONGODB_URI === "memory://") {
-      console.log("🧪 MongoDB connection skipped (memory mode for testing)");
-      return;
-    }
-
-    await mongoose.connect(MONGODB_URI, {
-      dbName: 'workTimeTracker',
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 15000,
-      socketTimeoutMS: 45000,
-      bufferCommands: false,
-      connectTimeoutMS: 10000,
-      maxIdleTimeMS: 30000,
-    });
-
-    console.log("✅ MongoDB connected successfully");
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error('[auth/register] Failed to connect to database:', message);
-    throw new Error(`Database connection failed: ${message}`);
-  }
-};
+// Database connection utility is now imported from database.ts
 
 
 // User schema
@@ -156,7 +122,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    console.log('📝 User registration started');
     
     // Ensure database connection is established
     await ensureDatabaseConnection();
@@ -229,10 +194,6 @@ module.exports = async function handler(req, res) {
 
     await newUser.save();
 
-    console.log('✅ User registration successful:', {
-      userId: newUser.id,
-      email: newUser.email ? newUser.email.replace(/^[^@]+/, '***') : '[REDACTED]', // メールアドレスをマスク
-    });
 
     // レスポンスの構築（パスワードは除外）
     const response = {
