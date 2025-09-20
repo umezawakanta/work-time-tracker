@@ -69,8 +69,20 @@ export default async function handler(req, res) {
         .limit(50);
 
 
-      // レスポンスをそのまま返す（amountとtypeフィールドが既に含まれている）
-      const recordsWithType = records.map(record => record.toObject());
+      // データベースのsalaryフィールドをamountフィールドに変換
+      const recordsWithType = records.map(record => {
+        const recordObj = record.toObject();
+        // salaryフィールドをamountフィールドに変換
+        if (recordObj.salary !== undefined) {
+          recordObj.amount = recordObj.salary;
+          delete recordObj.salary;
+        }
+        // typeフィールドが存在しない場合は、amountの正負で判定
+        if (!recordObj.type) {
+          recordObj.type = recordObj.amount >= 0 ? 'income' : 'expense';
+        }
+        return recordObj;
+      });
 
       res.status(200).json({
         success: true,
