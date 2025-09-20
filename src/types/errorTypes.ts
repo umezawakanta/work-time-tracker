@@ -242,11 +242,18 @@ export const getErrorInfo = (error: Error | ApiErrorInfo | null): ErrorInfo | un
   // 事前作成されたHTTPメソッドの正規表現を使用
   const methodMatch2 = errorMessage.match(HTTP_METHOD_REGEX);
   
+  // HTTPメソッド抽出用のヘルパー関数
+  function parseMethod(match1: RegExpMatchArray | null, match2: RegExpMatchArray | null): string | undefined {
+    if (match1 && match1[1]) return match1[1];
+    if (match2 && match2[1]) return match2[1];
+    return undefined;
+  }
+
   // 抽出された情報をまとめる
   const extractedInfo = {
     url: urlMatch?.[1] || urlMatch2?.[0],
     status: parseStatus(statusMatch, statusMatch2),
-    method: methodMatch?.[1] || methodMatch2?.[1]
+    method: parseMethod(methodMatch, methodMatch2)
   };
   
   return buildErrorInfo(error, apiErrorInfo, extractedInfo);
