@@ -101,7 +101,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // ユーザーIDを正しく取得
     const userId = user.userId || user.id;
     console.log('Marking notification as read for user:', userId);
-    console.log('User object from JWT:', user);
 
     // 通知を既読にする
     const notification = await Notification.findOneAndUpdate(
