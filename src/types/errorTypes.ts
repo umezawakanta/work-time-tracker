@@ -32,16 +32,34 @@ export function parseStatus(statusMatch: RegExpMatchArray | null, statusMatch2: 
   return undefined;
 }
 
-// Type guard to check if error has an errorInfo property (object).
-// This does not validate the full structure of the errorInfo, only its presence as an object.
+// Type guard to check if error has an errorInfo property (object) with the expected structure.
+// This validates the presence and type of required ApiErrorInfo properties.
 export function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: ApiErrorInfo } {
-  return (
+  if (
     typeof error === "object" &&
     error !== null &&
     "errorInfo" in error &&
     typeof (error as { errorInfo?: unknown }).errorInfo === "object" &&
     (error as { errorInfo?: unknown }).errorInfo !== null
-  );
+  ) {
+    const info = (error as { errorInfo: any }).errorInfo;
+    return (
+      typeof info.message === "string" &&
+      typeof info.filename === "string" &&
+      typeof info.lineno === "number" &&
+      typeof info.colno === "number" &&
+      typeof info.type === "string" &&
+      typeof info.timestamp === "string" &&
+      typeof info.userAgent === "string" &&
+      typeof info.url === "string" &&
+      // Optional properties: if present, check type
+      (info.stack === undefined || typeof info.stack === "string") &&
+      (info.status === undefined || typeof info.status === "number") &&
+      (info.statusText === undefined || typeof info.statusText === "string") &&
+      (info.method === undefined || typeof info.method === "string")
+    );
+  }
+  return false;
 }
 
 // エラー情報の型定義
