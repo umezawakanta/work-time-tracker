@@ -1104,6 +1104,143 @@ function App() {
     }
   };
 
+  // APIエラーハンドリング用のfetchラッパー
+  const originalFetch = window.fetch;
+  const originalXHR = window.XMLHttpRequest;
+  
+  // XMLHttpRequestもラップ
+  window.XMLHttpRequest = function() {
+    const xhr = new originalXHR();
+    const originalOpen = xhr.open;
+    const originalSend = xhr.send;
+    
+    xhr.open = function(method, url, ...args) {
+      this._method = method;
+      this._url = url;
+      return originalOpen.apply(this, [method, url, ...args]);
+    };
+    
+    xhr.send = function(...args) {
+      this.addEventListener('loadend', function() {
+        if (this.status >= 400) {
+          const errorInfo = {
+            url: this._url || 'Unknown URL',
+            status: this.status,
+            statusText: this.statusText,
+            method: this._method || 'GET',
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent
+          };
+          
+          console.error('XMLHttpRequestエラーが発生しました:', errorInfo);
+          
+          const errorDetails = `
+XMLHttpRequestエラーが発生しました。
+
+エラー詳細:
+- URL: ${errorInfo.url}
+- ステータス: ${errorInfo.status} ${errorInfo.statusText}
+- メソッド: ${errorInfo.method}
+- 時刻: ${errorInfo.timestamp}
+- ユーザーエージェント: ${errorInfo.userAgent}
+
+このエラーは自動的に検出されました。
+          `.trim();
+          
+          setTimeout(() => {
+            setShowMemos(true);
+            setShowMemoForm(true);
+            setMemoCategory('不具合報告');
+            setMemoContent(errorDetails);
+          }, 2000);
+        }
+      });
+      
+      return originalSend.apply(this, args);
+    };
+    
+    return xhr;
+  };
+  
+  window.fetch = async (...args) => {
+    try {
+      const response = await originalFetch(...args);
+      
+      // 4xx, 5xxエラーをキャッチ
+      if (!response.ok) {
+        const errorInfo = {
+          url: args[0]?.toString() || 'Unknown URL',
+          status: response.status,
+          statusText: response.statusText,
+          method: args[1]?.method || 'GET',
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent
+        };
+        
+        console.error('APIエラーが発生しました:', errorInfo);
+        
+        // エラー詳細を構築
+        const errorDetails = `
+APIエラーが発生しました。
+
+エラー詳細:
+- URL: ${errorInfo.url}
+- ステータス: ${errorInfo.status} ${errorInfo.statusText}
+- メソッド: ${errorInfo.method}
+- 時刻: ${errorInfo.timestamp}
+- ユーザーエージェント: ${errorInfo.userAgent}
+
+このエラーは自動的に検出されました。
+        `.trim();
+        
+        // 2秒後に不具合報告画面に遷移
+        setTimeout(() => {
+          setShowMemos(true);
+          setShowMemoForm(true);
+          setMemoCategory('不具合報告');
+          setMemoContent(errorDetails);
+        }, 2000);
+      }
+      
+      return response;
+    } catch (error) {
+      // ネットワークエラーなど
+      const errorInfo = {
+        url: args[0]?.toString() || 'Unknown URL',
+        error: error.message,
+        method: args[1]?.method || 'GET',
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent
+      };
+      
+      console.error('ネットワークエラーが発生しました:', errorInfo);
+      
+      // エラー詳細を構築
+      const errorDetails = `
+ネットワークエラーが発生しました。
+
+エラー詳細:
+- URL: ${errorInfo.url}
+- エラーメッセージ: ${errorInfo.error}
+- メソッド: ${errorInfo.method}
+- 時刻: ${errorInfo.timestamp}
+- ユーザーエージェント: ${errorInfo.userAgent}
+
+このエラーは自動的に検出されました。
+      `.trim();
+      
+      // 2秒後に不具合報告画面に遷移
+      setTimeout(() => {
+        setShowMemos(true);
+        setShowMemoForm(true);
+        setMemoCategory('不具合報告');
+        setMemoContent(errorDetails);
+      }, 2000);
+      
+      throw error;
+    }
+  };
+
   // グローバルエラーハンドリング
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
@@ -1495,6 +1632,8 @@ ${errorInfo.stack}
       console.error = originalConsoleError;
       console.warn = originalConsoleWarn;
       window.onerror = null;
+      window.fetch = originalFetch; // fetch関数も元に戻す
+      window.XMLHttpRequest = originalXHR; // XMLHttpRequestも元に戻す
     };
   }, []);
 
