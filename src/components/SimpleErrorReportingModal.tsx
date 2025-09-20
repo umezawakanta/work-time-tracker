@@ -43,7 +43,9 @@ const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
   useEffect(() => {
     if (isOpen && errorInfo) {
       // エラー情報から自動で内容を生成
-      const statusInfo = errorInfo.status ? `ステータス: ${errorInfo.status} ${errorInfo.statusText || ''}` : '';
+      const statusInfo = errorInfo.status
+        ? `ステータス: ${errorInfo.status}${errorInfo.statusText ? ` ${errorInfo.statusText}` : ''}`
+        : '';
       const methodInfo = errorInfo.method ? `メソッド: ${errorInfo.method}` : '';
       const stackInfo = errorInfo.stack ? `スタックトレース:\n${errorInfo.stack}` : '';
       
