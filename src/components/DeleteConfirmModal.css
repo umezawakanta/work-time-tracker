@@ -9,11 +9,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
   padding: 1rem;
   /* スクロール位置に関係なく画面中央に固定 */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
+  /* モーダルを確実に画面中央に配置 */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
 }
 
 .delete-confirm-content {
@@ -26,6 +32,10 @@
   overflow-y: auto;
   border: 1px solid var(--border-color, #e0e0e0);
   animation: modalSlideIn 0.3s ease-out;
+  /* モーダルコンテンツを確実に中央に配置 */
+  margin: auto;
+  position: relative;
+  z-index: 10000;
 }
 
 @keyframes modalSlideIn {
@@ -177,17 +187,17 @@
 
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
+  .delete-confirm-overlay {
+    padding: 0.5rem;
+  }
+  
   .delete-confirm-content {
-    margin: 0.5rem;
-    max-width: calc(100% - 1rem);
+    max-width: 95vw;
+    max-height: 95vh;
   }
   
   .delete-confirm-header {
-    padding: 1rem 1rem 0.75rem;
-  }
-  
-  .delete-confirm-header h3 {
-    font-size: 1.1rem;
+    padding: 1rem;
   }
   
   .delete-confirm-body {
@@ -195,12 +205,12 @@
   }
   
   .delete-confirm-actions {
-    padding: 0.75rem 1rem 1rem;
+    padding: 1rem;
     flex-direction: column;
   }
   
   .cancel-btn,
   .confirm-btn {
-    padding: 0.875rem 1rem;
+    width: 100%;
   }
 }
