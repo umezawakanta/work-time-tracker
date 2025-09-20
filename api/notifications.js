@@ -1,6 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken';
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 // データベース接続
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/work-time-tracker';
@@ -77,7 +76,7 @@ const verifyJWTToken = async (req: NextApiRequest) => {
   }
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
