@@ -1111,6 +1111,32 @@ function App() {
       setCurrentError(enhancedError);
       setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
+      
+      // エラー発生時に不具合報告ページに遷移
+      setTimeout(() => {
+        setShowMemos(true);
+        setShowMemoForm(true);
+        // 不具合報告のカテゴリを設定
+        setMemoCategory('不具合報告');
+        // エラー情報をメモの内容に自動入力
+        const errorDetails = `
+エラーが発生しました。
+
+エラーメッセージ: ${errorInfo.message}
+ファイル: ${errorInfo.filename}
+行番号: ${errorInfo.lineno}
+列番号: ${errorInfo.colno}
+エラータイプ: ${errorInfo.type}
+発生時刻: ${errorInfo.timestamp}
+URL: ${errorInfo.url}
+
+スタックトレース:
+${errorInfo.stack}
+
+このエラーについて詳細を教えてください。
+        `.trim();
+        setMemoContent(errorDetails);
+      }, 2000); // 2秒後に遷移
     };
 
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
@@ -1133,6 +1159,29 @@ function App() {
       setCurrentError(error);
       setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
+      
+      // エラー発生時に不具合報告ページに遷移
+      setTimeout(() => {
+        setShowMemos(true);
+        setShowMemoForm(true);
+        // 不具合報告のカテゴリを設定
+        setMemoCategory('不具合報告');
+        // エラー情報をメモの内容に自動入力
+        const errorDetails = `
+Promise拒否エラーが発生しました。
+
+エラーメッセージ: ${errorInfo.message}
+エラータイプ: ${errorInfo.type}
+発生時刻: ${errorInfo.timestamp}
+URL: ${errorInfo.url}
+
+スタックトレース:
+${errorInfo.stack}
+
+このエラーについて詳細を教えてください。
+        `.trim();
+        setMemoContent(errorDetails);
+      }, 2000); // 2秒後に遷移
     };
 
     // コンソールエラーもキャッチ
@@ -1222,6 +1271,29 @@ function App() {
         
         setCurrentError(error);
         setShowErrorModal(true);
+        
+        // エラー発生時に不具合報告ページに遷移
+        setTimeout(() => {
+          setShowMemos(true);
+          setShowMemoForm(true);
+          // 不具合報告のカテゴリを設定
+          setMemoCategory('不具合報告');
+          // エラー情報をメモの内容に自動入力
+          const errorDetails = `
+コンソールエラーが発生しました。
+
+エラーメッセージ: ${errorMessage}
+エラータイプ: ${errorInfo.type}
+発生時刻: ${errorInfo.timestamp}
+URL: ${errorInfo.url}
+
+スタックトレース:
+${errorInfo.stack}
+
+このエラーについて詳細を教えてください。
+          `.trim();
+          setMemoContent(errorDetails);
+        }, 2000); // 2秒後に遷移
       }
     };
 
@@ -1252,6 +1324,29 @@ function App() {
         
         setCurrentError(error);
         setShowErrorModal(true);
+        
+        // エラー発生時に不具合報告ページに遷移
+        setTimeout(() => {
+          setShowMemos(true);
+          setShowMemoForm(true);
+          // 不具合報告のカテゴリを設定
+          setMemoCategory('不具合報告');
+          // エラー情報をメモの内容に自動入力
+          const errorDetails = `
+コンソール警告が発生しました。
+
+警告メッセージ: ${warningMessage}
+エラータイプ: ${errorInfo.type}
+発生時刻: ${errorInfo.timestamp}
+URL: ${errorInfo.url}
+
+スタックトレース:
+${errorInfo.stack}
+
+この警告について詳細を教えてください。
+          `.trim();
+          setMemoContent(errorDetails);
+        }, 2000); // 2秒後に遷移
       }
     };
 
@@ -1344,6 +1439,32 @@ function App() {
         
         setCurrentError(enhancedError);
         setShowErrorModal(true);
+        
+        // エラー発生時に不具合報告ページに遷移
+        setTimeout(() => {
+          setShowMemos(true);
+          setShowMemoForm(true);
+          // 不具合報告のカテゴリを設定
+          setMemoCategory('不具合報告');
+          // エラー情報をメモの内容に自動入力
+          const errorDetails = `
+window.onerrorでエラーが発生しました。
+
+エラーメッセージ: ${errorMessage}
+ファイル: ${errorInfo.filename}
+行番号: ${errorInfo.lineno}
+列番号: ${errorInfo.colno}
+エラータイプ: ${errorInfo.type}
+発生時刻: ${errorInfo.timestamp}
+URL: ${errorInfo.url}
+
+スタックトレース:
+${errorInfo.stack}
+
+このエラーについて詳細を教えてください。
+          `.trim();
+          setMemoContent(errorDetails);
+        }, 2000); // 2秒後に遷移
       }
       
       return false; // デフォルトのエラーハンドリングを防ぐ

@@ -106,13 +106,31 @@ const verifyJWTToken = async (req: NextApiRequest) => {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log('Admin notifications API called:', req.method, req.url);
+  
+  // CORS設定
+  res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
+    ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin) ? req.headers.origin : 'https://work-time-tracker-five.vercel.app'
+    : '*'
+  );
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
   if (req.method !== 'POST') {
+    console.log('Method not allowed:', req.method);
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
+    console.log('Connecting to database...');
     // データベース接続
     await connectToDatabase();
+    console.log('Database connected successfully');
 
     // 管理者認証
     const user = await verifyJWTToken(req);
