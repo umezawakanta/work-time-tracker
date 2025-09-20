@@ -53,42 +53,38 @@ async function fixIncomeExpenseTypes() {
     }
     
     // 各記録を確認して修正
-    let fixedCount = 0;
-    for (const record of recordsWithoutType) {
-      console.log(`記録ID: ${record._id}, 金額: ${record.amount}, メモ: ${record.notes}`);
-      
+    // bulkWrite用の操作配列を作成
+    const bulkOps = recordsWithoutType.map(record => {
       // メモの内容から収入/支出を判定
       let newType = 'income'; // デフォルトは収入
-      
       if (record.notes) {
         const notes = record.notes.toLowerCase();
-        // 支出を示すキーワードをチェック
         if (notes.includes('支出') || notes.includes('支払') || notes.includes('費用') || 
             notes.includes('交通費') || notes.includes('食費') || notes.includes('光熱費') ||
             notes.includes('家賃') || notes.includes('保険') || notes.includes('税金')) {
           newType = 'expense';
         }
       }
-      
-      // 金額が負の場合は支出
       if (record.amount < 0) {
         newType = 'expense';
       }
-      
-      // 記録を更新
-      await IncomeExpenseRecord.updateOne(
-        { _id: record._id },
-        { 
-          $set: { 
-            type: newType,
-            updatedAt: new Date()
+      return {
+        updateOne: {
+          filter: { _id: record._id },
+          update: {
+            $set: {
+              type: newType,
+              updatedAt: new Date()
+            }
           }
         }
-      );
-      
-      console.log(`  → ${newType} として修正`);
-      fixedCount++;
-    }
+      };
+    });
+
+    // bulkWriteで一括更新
+    const bulkResult = await IncomeExpenseRecord.bulkWrite(bulkOps);
+    const fixedCount = bulkResult.modifiedCount;
+    console.log(`修正完了: ${fixedCount}件の記録を修正しました`);
     
     console.log(`修正完了: ${fixedCount}件の記録を修正しました`);
     
