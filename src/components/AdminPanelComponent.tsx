@@ -295,6 +295,24 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
     console.log('Response modal should be shown now');
   };
 
+  // ESCキーでモーダルを閉じる機能
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showResponseModal) {
+        console.log('ESC key pressed, closing modal');
+        setShowResponseModal(false);
+        setSelectedMemo(null);
+      }
+    };
+
+    if (showResponseModal) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [showResponseModal]);
+
   // フォーム送信処理
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1219,7 +1237,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
       </div>
 
       {/* 返信フォーム（折りたたみ式） */}
-      {console.log('Modal render check:', { showResponseModal, selectedMemo: !!selectedMemo })}
+      {console.log('Modal render check:', { showResponseModal, selectedMemo: !!selectedMemo, memoId: selectedMemo?.id })}
       {showResponseModal && selectedMemo && (
         <div className="response-form-container">
           <div className="response-form-header">
@@ -1229,8 +1247,10 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             <button
               className="close-response-button"
               onClick={() => {
+                console.log('Close button clicked');
                 setShowResponseModal(false);
                 setSelectedMemo(null);
+                console.log('Modal should be closed now');
               }}
               aria-label="閉じる"
             >
@@ -1282,8 +1302,10 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             <button
               className="btn btn-secondary"
               onClick={() => {
+                console.log('Cancel button clicked');
                 setShowResponseModal(false);
                 setSelectedMemo(null);
+                console.log('Modal should be closed now');
               }}
               disabled={sendingResponse}
             >
