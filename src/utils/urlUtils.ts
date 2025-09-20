@@ -35,7 +35,7 @@ export const buildApiUrl = (endpoint: string, params: Record<string, string | nu
  * @returns 検証済みのユーザーIDパラメータオブジェクト
  */
 export const createUserIdParam = (userId: string | undefined | null, paramName: string = 'userId'): Record<string, string> => {
-  if (!userId) {
+  if (!userId || typeof userId !== 'string') {
     throw new Error('User ID is required but not provided');
   }
   return { [paramName]: userId };
@@ -48,8 +48,8 @@ export const createUserIdParam = (userId: string | undefined | null, paramName: 
  * @returns 検証済みのIDパラメータオブジェクト
  */
 export const createIdParam = (id: string | undefined | null, paramName: string = 'id'): Record<string, string> => {
-  if (!id) {
+  if (!id || typeof id !== 'string') {
     throw new Error('ID is required but not provided');
   }
-  return { [paramName]: String(id) };
+  return { [paramName]: id };
 };
