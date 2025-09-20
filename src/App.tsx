@@ -18,7 +18,7 @@ import TimersComponent from "./components/TimersComponent";
 import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import NotificationComponent from "./components/NotificationComponent";
-import { ErrorInfo, ERROR_DEFAULTS } from './types/errorTypes';
+import { ErrorInfo, ERROR_DEFAULTS, buildErrorInfo } from './types/errorTypes';
 import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
@@ -4039,9 +4039,9 @@ User Agent: ${userAgent}
   const getErrorInfo = (error: Error | null): ErrorInfo | undefined => {
     if (!error) return undefined;
 
-    let errorInfo: ApiErrorInfo | undefined;
+    let apiErrorInfo: ApiErrorInfo | undefined;
     if (hasApiErrorInfo(error)) {
-      errorInfo = error.errorInfo;
+      apiErrorInfo = error.errorInfo;
     }
     
     // エラーメッセージから詳細情報を抽出する試行
@@ -4055,20 +4055,14 @@ User Agent: ${userAgent}
     const statusMatch2 = errorMessage.match(/\b(1\d{2}|2\d{2}|3\d{2}|4\d{2}|5\d{2})\b/);
     const methodMatch2 = errorMessage.match(/(GET|POST|PUT|DELETE|PATCH)/);
     
-    return {
-      message: error.message,
-      stack: error.stack,
-      filename: ERROR_DEFAULTS.FILENAME,
-      lineno: ERROR_DEFAULTS.LINENO,
-      colno: ERROR_DEFAULTS.COLNO,
-      type: ERROR_DEFAULTS.TYPE,
-      timestamp: errorInfo?.timestamp || new Date().toISOString(),
-      userAgent: errorInfo?.userAgent || navigator.userAgent,
-      url: errorInfo?.url || urlMatch?.[1] || urlMatch2?.[0] || window.location.href,
-      status: errorInfo?.status || (statusMatch?.[1] ? parseInt(statusMatch[1]) : undefined) || (statusMatch2?.[1] ? parseInt(statusMatch2[1]) : undefined),
-      statusText: errorInfo?.statusText,
-      method: errorInfo?.method || methodMatch?.[1] || methodMatch2?.[1]
+    // 抽出された情報をまとめる
+    const extractedInfo = {
+      url: urlMatch?.[1] || urlMatch2?.[0],
+      status: statusMatch?.[1] ? parseInt(statusMatch[1]) : (statusMatch2?.[1] ? parseInt(statusMatch2[1]) : undefined),
+      method: methodMatch?.[1] || methodMatch2?.[1]
     };
+    
+    return buildErrorInfo(error, apiErrorInfo, extractedInfo);
   };
 
   // SimpleErrorReportingModal用のエラー報告送信処理
