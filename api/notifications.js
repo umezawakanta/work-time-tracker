@@ -54,7 +54,7 @@ const NotificationSchema = new mongoose.Schema({
 const Notification = mongoose.models.Notification || mongoose.model('Notification', NotificationSchema);
 
 // JWT検証関数
-const verifyJWTToken = async (req: NextApiRequest) => {
+const verifyJWTToken = async (req) => {
   if (!req || !req.headers) {
     console.log('Request or headers object is undefined');
     return null;
