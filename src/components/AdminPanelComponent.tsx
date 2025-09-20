@@ -53,6 +53,15 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [testResults, setTestResults] = useState<any>(null);
   const [testResultsLoading, setTestResultsLoading] = useState(false);
   const [testResultsError, setTestResultsError] = useState<string | null>(null);
+  
+  // 各タブの件数を管理する状態
+  const [tabCounts, setTabCounts] = useState({
+    users: 0,
+    errorReports: 0,
+    updateRequests: 0,
+    linterErrors: 0,
+    testErrors: 0
+  });
 
   // ユーザー編集フォームの初期化
   useEffect(() => {
@@ -67,6 +76,11 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
       setShowUserForm(false);
     }
   }, [editingUser]);
+
+  // ユーザー数の更新
+  useEffect(() => {
+    setTabCounts(prev => ({ ...prev, users: adminUsers.length }));
+  }, [adminUsers]);
 
   // 検索・ソート機能
   const filteredUsers = (adminUsers || [])
@@ -100,7 +114,9 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setErrorReports(data.errorReports || []);
+          const reports = data.errorReports || [];
+          setErrorReports(reports);
+          setTabCounts(prev => ({ ...prev, errorReports: reports.length }));
         } else {
           console.error('API returned error:', data.message);
           setErrorReportsError(data.message || 'エラーレポートの取得に失敗しました');
@@ -144,6 +160,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             memo.postType === 'update_request'
           );
           setUpdateRequests(updateRequestsData);
+          setTabCounts(prev => ({ ...prev, updateRequests: updateRequestsData.length }));
         } else {
           console.error('API returned error:', data.message);
           setUpdateRequestsError(data.message || '更新要望の取得に失敗しました');
@@ -182,7 +199,9 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
       }
 
       const data = await response.json();
-      setLinterErrors(data.errors || []);
+      const errors = data.errors || [];
+      setLinterErrors(errors);
+      setTabCounts(prev => ({ ...prev, linterErrors: errors.length }));
     } catch (error) {
       console.error('リンターエラー取得エラー:', error);
       setLinterErrorsError(error instanceof Error ? error.message : 'リンターエラーの取得に失敗しました');
@@ -209,6 +228,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
 
       const data = await response.json();
       setTestResults(data);
+      setTabCounts(prev => ({ ...prev, testErrors: data.failed || 0 }));
     } catch (error) {
       console.error('テスト結果取得エラー:', error);
       setTestResultsError(error instanceof Error ? error.message : 'テスト結果の取得に失敗しました');
@@ -398,6 +418,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             >
               <i className="bi bi-people"></i>
               ユーザー管理
+              <span className="tab-count">({tabCounts.users})</span>
             </button>
             <button
               className={`admin-tab ${activeTab === 'sourcecode' ? 'active' : ''}`}
@@ -417,6 +438,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             >
               <i className="bi bi-bug"></i>
               不具合報告
+              <span className="tab-count">({tabCounts.errorReports})</span>
             </button>
             <button
               className={`admin-tab ${activeTab === 'updaterequests' ? 'active' : ''}`}
@@ -429,6 +451,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             >
               <i className="bi bi-lightbulb"></i>
               更新要望
+              <span className="tab-count">({tabCounts.updateRequests})</span>
             </button>
             <button
               className={`admin-tab ${activeTab === 'lintererrors' ? 'active' : ''}`}
@@ -441,6 +464,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             >
               <i className="bi bi-exclamation-triangle"></i>
               リンターエラー
+              <span className="tab-count">({tabCounts.linterErrors})</span>
             </button>
             <button
               className={`admin-tab ${activeTab === 'testresults' ? 'active' : ''}`}
@@ -453,6 +477,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             >
               <i className="bi bi-check-circle"></i>
               テスト結果
+              <span className="tab-count">({tabCounts.testErrors})</span>
             </button>
           </div>
 
