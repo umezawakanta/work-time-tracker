@@ -1344,6 +1344,45 @@
   line-height: 1.4;
 }
 
+.step-guide {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.step-guide h5 {
+  color: white;
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.step-guide h5::before {
+  content: "📋";
+  font-size: 1.1rem;
+}
+
+.step-guide ol {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.step-guide li {
+  margin-bottom: 0.5rem;
+}
+
+.step-guide li:last-child {
+  margin-bottom: 0;
+}
+
 .quick-feature-selection {
   margin-bottom: 1.5rem;
   padding: 1rem;

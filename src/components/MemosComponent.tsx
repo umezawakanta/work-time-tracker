@@ -339,27 +339,11 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
             メモ
           </h2>
           <p className="section-description">
-            個人的なメモや記録を保存・管理できます。不具合報告や改善要望は専用ボタンから送信してください。
+            個人的なメモや記録を保存・管理できます。<br/>
+            <strong>不具合報告・改善要望</strong>は、メモ作成フォーム内の専用エリアから送信してください。
           </p>
         </div>
         <div className="section-controls">
-          {showMemos && (
-            <button
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                setQuickReportButtonPosition({
-                  x: rect.left + rect.width / 2,
-                  y: rect.top + rect.height / 2
-                });
-                setShowQuickReport(true);
-              }}
-              className="quick-report-button"
-              title="不具合報告・機能要望を投稿"
-            >
-              <i className="bi bi-bug"></i>
-              報告
-            </button>
-          )}
           {showMemos ? (
             <button
               onClick={() => setShowMemos(false)}
@@ -653,7 +637,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
             </div>
           )}
 
-          {/* 不具合報告・改善要望専用送信ボタン */}
+          {/* 不具合報告・改善要望専用送信エリア */}
           {showMemoForm && (
             <div className="quick-action-buttons">
               <div className="quick-action-header">
@@ -661,9 +645,14 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                   <i className="bi bi-exclamation-triangle"></i>
                   不具合報告・改善要望の送信
                 </h4>
-                <p className="quick-action-description">
-                  不具合や改善要望は専用ボタンから送信してください。適切な機能を選択し、詳細な内容を記入してください。
-                </p>
+                <div className="step-guide">
+                  <h5>送信手順：</h5>
+                  <ol>
+                    <li>対象機能を選択してください（必須）</li>
+                    <li>不具合や改善要望の詳細を記入してください</li>
+                    <li>「不具合報告」または「改善要望」ボタンをクリックして送信</li>
+                  </ol>
+                </div>
               </div>
               {/* 機能選択 */}
               <div className="quick-feature-selection">
@@ -733,7 +722,8 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                   {editingMemo ? "メモを編集" : "新しいメモを追加"}
                 </h3>
                 <p className="form-description">
-                  個人的なメモや記録を作成します。不具合報告や改善要望は上記の専用ボタンをご利用ください。
+                  個人的なメモや記録を作成します。<br/>
+                  <strong>不具合報告・改善要望</strong>は、上記の専用エリアから送信してください。
                 </p>
               </div>
               <div className="form-group">
