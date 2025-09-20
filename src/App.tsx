@@ -4066,9 +4066,19 @@ User Agent: ${userAgent}
     const methodMatch2 = errorMessage.match(methodRegex);
     
     // 抽出された情報をまとめる
+    // Helper function to parse status from match results
+    function parseStatus(statusMatch: RegExpMatchArray | null, statusMatch2: RegExpMatchArray | null): number | undefined {
+      if (statusMatch?.[1]) {
+        return parseInt(statusMatch[1]);
+      } else if (statusMatch2?.[1]) {
+        return parseInt(statusMatch2[1]);
+      }
+      return undefined;
+    }
+
     const extractedInfo = {
       url: urlMatch?.[1] || urlMatch2?.[0],
-      status: statusMatch?.[1] ? parseInt(statusMatch[1]) : (statusMatch2?.[1] ? parseInt(statusMatch2[1]) : undefined),
+      status: parseStatus(statusMatch, statusMatch2),
       method: methodMatch?.[1] || methodMatch2?.[1]
     };
     
