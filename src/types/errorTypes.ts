@@ -181,9 +181,38 @@ export const buildErrorInfo = (
   };
 };
 
+// ApiErrorInfoかどうかをチェックする型ガード
+export function isApiErrorInfo(error: unknown): error is ApiErrorInfo {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    "timestamp" in error &&
+    "userAgent" in error
+  );
+}
+
 // エラー情報を抽出・構築するメイン関数
-export const getErrorInfo = (error: Error | null): ErrorInfo | undefined => {
+export const getErrorInfo = (error: Error | ApiErrorInfo | null): ErrorInfo | undefined => {
   if (!error) return undefined;
+
+  // ApiErrorInfoの場合は直接変換
+  if (isApiErrorInfo(error)) {
+    return {
+      message: error.message,
+      stack: undefined,
+      filename: ERROR_DEFAULTS.FILENAME,
+      lineno: ERROR_DEFAULTS.LINENO,
+      colno: ERROR_DEFAULTS.COLNO,
+      type: ERROR_DEFAULTS.TYPE,
+      timestamp: error.timestamp,
+      userAgent: error.userAgent,
+      url: error.url || ERROR_DEFAULTS.URL,
+      status: error.status,
+      statusText: error.statusText,
+      method: error.method
+    };
+  }
 
   let apiErrorInfo: ApiErrorInfo | undefined;
   if (hasApiErrorInfo(error)) {

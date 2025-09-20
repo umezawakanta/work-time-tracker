@@ -20,6 +20,7 @@ import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import NotificationComponent from "./components/NotificationComponent";
 import { ErrorInfo, ERROR_DEFAULTS, buildErrorInfo, getErrorInfo, formatErrorInfo } from './types/errorTypes';
 import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './utils/authUtils';
+import type { ApiErrorInfo } from './utils/apiErrorHandler';
 import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
@@ -2362,7 +2363,13 @@ ${errorInfo.stack}
         setMessage(`エラー: ${data.message}`);
       }
     } catch (error) {
-      // APIエラーの場合は自動的にエラー報告モーダルが表示される
+      // エラー情報を取得してエラー報告モーダルを表示
+      const errorInfo = getErrorInfo(error as Error | ApiErrorInfo);
+      if (errorInfo) {
+        setCurrentError(error as Error);
+        setShowSimpleErrorModal(true);
+      }
+      
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
