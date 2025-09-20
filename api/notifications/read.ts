@@ -21,7 +21,10 @@ async function connectToDatabase() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      ...opts,
+      dbName: 'workTimeTracker'
+    }).then((mongoose) => {
       return mongoose;
     });
   }
