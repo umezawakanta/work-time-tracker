@@ -54,7 +54,7 @@ const NotificationSchema = new mongoose.Schema({
 const Notification = mongoose.models.Notification || mongoose.model('Notification', NotificationSchema);
 
 // JWT検証関数
-const verifyJWTToken = async (req: NextApiRequest) => {
+const verifyJWTToken = async (req) => {
   if (!req || !req.headers) {
     console.log('Request or headers object is undefined');
     return null;
@@ -96,7 +96,7 @@ module.exports = async function handler(req, res) {
     const { page = 1, limit = 20, unreadOnly = false } = req.query;
 
     // クエリ条件を構築
-    const query: any = { userId: user.userId };
+    const query = { userId: user.userId };
     if (unreadOnly === 'true') {
       query.isRead = false;
     }

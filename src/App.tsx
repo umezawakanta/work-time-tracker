@@ -1887,10 +1887,23 @@ ${errorInfo.stack}
         console.log('ユーザーIDがありません');
         return;
       }
-        const { apiFetch } = await import("./utils/apiClient");
-        const response = await apiFetch("/api/work-records/salary");
+      
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        console.log('アクセストークンがありません');
+        setMessage('ログインが必要です');
+        return;
+      }
 
-        const data = await response.json();
+      const { apiFetch } = await import("./utils/apiClient");
+      const response = await apiFetch("/api/work-records/salary", {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
         if (data.success) {
           setIncomeExpenseRecords(data.records);
         } else {
@@ -1943,7 +1956,18 @@ ${errorInfo.stack}
   // ユーザーIDを直接受け取る関数
   const loadIncomeExpenseRecordsWithUserId = async (userId: string) => {
     try {
-      const response = await fetch(`/api/work-records/salary?userId=${userId}`);
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        console.log('アクセストークンがありません');
+        return;
+      }
+
+      const response = await fetch(`/api/work-records/salary`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       const data = await response.json();
       if (data.success) {
         setIncomeExpenseRecords(data.records);
@@ -1955,7 +1979,18 @@ ${errorInfo.stack}
 
   const loadWorkDiariesWithUserId = async (userId: string) => {
     try {
-      const response = await fetch(`/api/work-records/diary?userId=${userId}`);
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        console.log('アクセストークンがありません');
+        return;
+      }
+
+      const response = await fetch(`/api/work-records/diary`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       const data = await response.json();
       if (data.success) {
         setWorkDiaries(data.diaries);
