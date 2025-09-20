@@ -2346,7 +2346,9 @@ ${errorInfo.stack}
     try {
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
         const { apiFetch } = await import("./utils/apiClient");
-        return await apiFetch(`/api/work-records/salary?id=${id}`, {
+        const url = new URL('/api/work-records/salary', window.location.origin);
+        url.searchParams.set('id', id);
+        return await apiFetch(url.toString(), {
           method: "DELETE",
           headers: createAuthHeaders(token)
         });
@@ -2377,7 +2379,9 @@ ${errorInfo.stack}
 
   const handleDeleteDiary = async (id: string) => {
     try {
-      const response = await fetch(`/api/work-records/diary?id=${id}`, {
+      const url = new URL('/api/work-records/diary', window.location.origin);
+      url.searchParams.set('id', id);
+      const response = await fetch(url.toString(), {
         method: "DELETE",
       });
 
@@ -4051,20 +4055,6 @@ User Agent: ${userAgent}
 発生時刻: ${timestamp}`;
   };
 
-  // 旧関数のラッパー（必要なら互換性維持のため）
-  const formatErrorReportContent = (
-    content: string,
-    userAgent: string,
-    timestamp: string,
-    errorType: string = "エラー"
-  ) => {
-    return formatGenericErrorReportContent({
-      errorType,
-      content,
-      userAgent,
-      timestamp,
-    });
-  };
 
   const formatApiErrorReportContent = (errorInfo: Partial<ErrorInfo>) => {
     const { statusInfo, methodInfo } = formatErrorInfo(errorInfo);
@@ -4098,7 +4088,11 @@ User Agent: ${userAgent}
         },
         body: JSON.stringify({
           title: `[${report.title}] ${new Date().toLocaleString('ja-JP')}`,
-          content: formatErrorReportContent(report.content, report.userAgent, report.timestamp),
+          content: formatGenericErrorReportContent({
+            content: report.content,
+            userAgent: report.userAgent,
+            timestamp: report.timestamp,
+          }),
           category: "エラー報告",
           tags: ["エラー", "バグ報告", "システム"],
           isPublic: true,
