@@ -1,7 +1,7 @@
 // エラー情報の型定義
 export interface ErrorInfo {
   message: string;
-  stack: string | undefined;
+  stack?: string;
   filename: string;
   lineno: number;
   colno: number;
