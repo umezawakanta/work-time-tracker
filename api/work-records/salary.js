@@ -90,9 +90,10 @@ module.exports = async function handler(req, res) {
           recordObj.amount = recordObj.salary;
           delete recordObj.salary;
         }
-        // typeフィールドが存在しない場合は、amountの正負で判定
+        // typeフィールドが存在しない場合は、デフォルトでincomeとする
+        // 既存のデータの整合性を保つため、amountの正負で判定しない
         if (!recordObj.type) {
-          recordObj.type = recordObj.amount >= 0 ? 'income' : 'expense';
+          recordObj.type = 'income';
         }
         return recordObj;
       });
