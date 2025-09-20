@@ -211,6 +211,11 @@ const SourceCodeViewer: React.FC<SourceCodeViewerProps> = ({ isOpen, onClose }) 
           } else {
             throw new Error(data.error || 'Failed to load file');
           }
+        } else if (response.status === 503) {
+          // 本番環境でのソースコードアクセス不可
+          const data = await response.json();
+          setFileError(`本番環境ではソースコードの閲覧はできません。\n\n${data.message}\n\n${data.suggestion}`);
+          return;
         } else {
           const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
           throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
@@ -450,30 +455,38 @@ export default ${file.name.replace('.tsx', '').replace('.ts', '')};`;
                     <div className="file-error">
                       <div className="error-header">
                         <i className="bi bi-exclamation-triangle"></i>
-                        <h4>ファイルの読み込みに失敗しました</h4>
+                        <h4>
+                          {fileError.includes('本番環境') ? 'ソースコード閲覧不可' : 'ファイルの読み込みに失敗しました'}
+                        </h4>
                       </div>
                       <div className="error-message">
-                        <p><strong>エラー:</strong> {fileError}</p>
+                        <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>{fileError}</pre>
                         <p><strong>ファイル:</strong> {selectedFile.path}</p>
                         <p><strong>時間:</strong> {new Date().toLocaleString('ja-JP')}</p>
                       </div>
                       <div className="error-actions">
-                        <button 
-                          className="retry-button"
-                          onClick={() => handleFileSelect(selectedFile)}
-                        >
-                          <i className="bi bi-arrow-clockwise"></i>
-                          再試行
-                        </button>
+                        {!fileError.includes('本番環境') && (
+                          <button 
+                            className="retry-button"
+                            onClick={() => handleFileSelect(selectedFile)}
+                          >
+                            <i className="bi bi-arrow-clockwise"></i>
+                            再試行
+                          </button>
+                        )}
                       </div>
-                      <div className="sample-content-notice">
-                        <p><i className="bi bi-info-circle"></i> 以下はサンプルコンテンツです</p>
-                      </div>
-                      <pre className="code-content">
-                        <code className={`language-${getLanguageFromExtension(selectedFile.name)}`}>
-                          {fileContent}
-                        </code>
-                      </pre>
+                      {!fileError.includes('本番環境') && (
+                        <>
+                          <div className="sample-content-notice">
+                            <p><i className="bi bi-info-circle"></i> 以下はサンプルコンテンツです</p>
+                          </div>
+                          <pre className="code-content">
+                            <code className={`language-${getLanguageFromExtension(selectedFile.name)}`}>
+                              {fileContent}
+                            </code>
+                          </pre>
+                        </>
+                      )}
                     </div>
                   ) : (
                     <pre className="code-content">

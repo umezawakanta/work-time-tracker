@@ -25,8 +25,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'File type not allowed' });
     }
 
-    // プロジェクトルートからの相対パス
-    const filePath = join(process.cwd(), safePath);
+    // Vercel環境でのパス解決
+    let filePath: string;
+    
+    // 本番環境では、ソースファイルは別の場所にある可能性がある
+    if (process.env.NODE_ENV === 'production') {
+      // Vercelの本番環境では、ソースファイルは通常利用できない
+      // 代わりに、ビルドされたファイルの情報を返すか、エラーメッセージを返す
+      return res.status(503).json({
+        error: 'Source code access not available in production',
+        message: 'ソースコードの閲覧は開発環境でのみ利用可能です。',
+        suggestion: 'ローカル環境で開発サーバーを起動してご利用ください。'
+      });
+    } else {
+      // 開発環境では通常のパス解決
+      filePath = join(process.cwd(), safePath);
+    }
     
     try {
       const content = await readFile(filePath, 'utf-8');
