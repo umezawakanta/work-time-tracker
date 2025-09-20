@@ -21,6 +21,9 @@ interface SimpleErrorReportingModalProps {
     timestamp: string;
     userAgent: string;
     url: string;
+    status?: number;
+    statusText?: string;
+    method?: string;
   };
 }
 
@@ -62,6 +65,8 @@ const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
 エラータイプ: ${errorInfo.type || 'Unknown'}
 発生時刻: ${errorInfo.timestamp}
 URL: ${errorInfo.url}
+${errorInfo.status ? `ステータス: ${errorInfo.status} ${errorInfo.statusText || ''}` : ''}
+${errorInfo.method ? `メソッド: ${errorInfo.method}` : ''}
 
 ${errorInfo.stack ? `スタックトレース:\n${errorInfo.stack}` : ''}
 

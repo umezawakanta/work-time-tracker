@@ -2338,9 +2338,19 @@ ${errorInfo.stack}
 
   const handleDeleteIncomeExpenseRecord = async (id: string) => {
     try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        setMessage('ログインが必要です');
+        return;
+      }
+
       const { apiFetch } = await import("./utils/apiClient");
       const response = await apiFetch(`/api/work-records/salary?id=${id}`, {
         method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       const data = await response.json();
@@ -4026,7 +4036,10 @@ User Agent: ${userAgent}
       type: errorInfo?.type || 'Unknown',
       timestamp: errorInfo?.timestamp || new Date().toISOString(),
       userAgent: errorInfo?.userAgent || navigator.userAgent,
-      url: errorInfo?.url || window.location.href
+      url: errorInfo?.url || window.location.href,
+      status: errorInfo?.status,
+      statusText: errorInfo?.statusText,
+      method: errorInfo?.method
     };
   };
 
