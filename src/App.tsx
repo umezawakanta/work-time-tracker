@@ -4029,6 +4029,25 @@ User Agent: ${userAgent}
   };
 
 
+  // HTTPメソッドの定数配列
+  const HTTP_METHODS = [
+    "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "CONNECT", "TRACE"
+  ];
+
+  // エラー情報抽出用の正規表現パターン
+  const ERROR_PATTERNS = {
+    // URL: の後に続く文字列をマッチ
+    URL_EXPLICIT: /URL: ([^\n\s]+)/,
+    // APIエンドポイントのパスをマッチ
+    URL_API: /\/api\/[^\s\n]+/,
+    // ステータス: の後に続く数字をマッチ
+    STATUS_EXPLICIT: /ステータス: (\d+)/,
+    // 有効なHTTPステータスコード（100-599）をマッチ
+    STATUS_CODE: /\b(1\d{2}|2\d{2}|3\d{2}|4\d{2}|5\d{2})\b/,
+    // メソッド: の後に続く文字列をマッチ
+    METHOD_EXPLICIT: /メソッド: ([^\n\s]+)/
+  };
+
   // Type guard to check if error has errorInfo of type ApiErrorInfo
   // ApiErrorInfo contains: message, status?, statusText?, url?, method?, timestamp, userAgent
   function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: ApiErrorInfo } {
@@ -4051,17 +4070,14 @@ User Agent: ${userAgent}
     
     // エラーメッセージから詳細情報を抽出する試行
     const errorMessage = error.message;
-    const urlMatch = errorMessage.match(/URL: ([^\n\s]+)/);
-    const statusMatch = errorMessage.match(/ステータス: (\d+)/);
-    const methodMatch = errorMessage.match(/メソッド: ([^\n\s]+)/);
+    const urlMatch = errorMessage.match(ERROR_PATTERNS.URL_EXPLICIT);
+    const statusMatch = errorMessage.match(ERROR_PATTERNS.STATUS_EXPLICIT);
+    const methodMatch = errorMessage.match(ERROR_PATTERNS.METHOD_EXPLICIT);
     
     // より柔軟なパターンマッチング
-    const urlMatch2 = errorMessage.match(/\/api\/[^\s\n]+/);
-    const statusMatch2 = errorMessage.match(/\b(1\d{2}|2\d{2}|3\d{2}|4\d{2}|5\d{2})\b/);
-    // Use a constant array of HTTP methods for robust matching
-    const HTTP_METHODS = [
-      "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "CONNECT", "TRACE"
-    ];
+    const urlMatch2 = errorMessage.match(ERROR_PATTERNS.URL_API);
+    const statusMatch2 = errorMessage.match(ERROR_PATTERNS.STATUS_CODE);
+    // HTTPメソッドの動的正規表現を作成
     const methodRegex = new RegExp(`\\b(${HTTP_METHODS.join("|")})\\b`);
     const methodMatch2 = errorMessage.match(methodRegex);
     
