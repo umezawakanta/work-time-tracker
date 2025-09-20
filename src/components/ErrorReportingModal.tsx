@@ -67,13 +67,14 @@ const ErrorReportingModal: React.FC<ErrorReportingModalProps> = ({
 
       await onSubmit(report);
       
-      // フォームをリセット
+      // 送信成功時のみフォームをリセットしてモーダルを閉じる
       setSelectedFeature('');
       setContent('');
       onClose();
     } catch (err) {
       console.error('報告の送信に失敗しました:', err);
       alert('報告の送信に失敗しました。もう一度お試しください。');
+      // エラー時はモーダルを閉じない
     } finally {
       setIsSubmitting(false);
     }
@@ -85,7 +86,9 @@ const ErrorReportingModal: React.FC<ErrorReportingModalProps> = ({
     onClose();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div className="error-reporting-overlay">

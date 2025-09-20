@@ -90,13 +90,14 @@ ${errorInfo.stack ? `スタックトレース:\n${errorInfo.stack}` : ''}
 
       await onSubmit(report);
       
-      // フォームをリセット
+      // 送信成功時のみフォームをリセットしてモーダルを閉じる
       setSelectedFeature('');
       setContent('');
       onClose();
     } catch (err) {
       console.error('報告の送信に失敗しました:', err);
       alert('報告の送信に失敗しました。もう一度お試しください。');
+      // エラー時はモーダルを閉じない
     } finally {
       setIsSubmitting(false);
     }

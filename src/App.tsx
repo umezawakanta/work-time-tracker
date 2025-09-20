@@ -3945,11 +3945,13 @@ ${errorInfo.stack}
         setMessage("エラー報告を送信しました。ありがとうございます。");
         setShowSimpleErrorModal(false);
       } else {
-        throw new Error("エラー報告の送信に失敗しました");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "エラー報告の送信に失敗しました");
       }
     } catch (error) {
       console.error("エラー報告送信エラー:", error);
       setMessage("エラー報告の送信に失敗しました。もう一度お試しください。");
+      throw error; // 例外を再投げしてSimpleErrorReportingModalでキャッチできるようにする
     }
   };
 
@@ -3987,11 +3989,12 @@ ${errorInfo.stack}
         loadMemos(); // メモ一覧を更新
         loadPublicMemos(); // 公開メモ一覧を更新
       } else {
-        setMessage(`エラー報告の送信に失敗しました: ${data.message}`);
+        throw new Error(data.message || "エラー報告の送信に失敗しました");
       }
     } catch (error) {
       console.error("エラー報告の送信に失敗しました:", error);
       setMessage("エラー報告の送信に失敗しました。もう一度お試しください。");
+      throw error; // 例外を再投げしてErrorReportingModalでキャッチできるようにする
     }
   };
 
