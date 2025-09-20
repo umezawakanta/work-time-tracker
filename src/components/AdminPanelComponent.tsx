@@ -287,10 +287,12 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   };
 
   const handleSelectMemo = (memo: any) => {
+    console.log('handleSelectMemo called with memo:', memo);
     setSelectedMemo(memo);
     setAdminResponse(memo.adminResponse || '');
     setMemoStatus(memo.status || 'pending');
     setShowResponseModal(true);
+    console.log('Response modal should be shown now');
   };
 
   // フォーム送信処理
@@ -1217,6 +1219,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
       </div>
 
       {/* 返信フォーム（折りたたみ式） */}
+      {console.log('Modal render check:', { showResponseModal, selectedMemo: !!selectedMemo })}
       {showResponseModal && selectedMemo && (
         <div className="response-form-container">
           <div className="response-form-header">
