@@ -18,6 +18,7 @@ import TimersComponent from "./components/TimersComponent";
 import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import NotificationComponent from "./components/NotificationComponent";
+import { ErrorInfo, ERROR_DEFAULTS } from './types/errorTypes';
 import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
@@ -4022,21 +4023,6 @@ User Agent: ${userAgent}
 発生時刻: ${timestamp}`;
   };
 
-  // エラー情報の型定義
-  interface ErrorInfo {
-    message: string;
-    stack: string | undefined;
-    filename: string;
-    lineno: number;
-    colno: number;
-    type: string;
-    timestamp: string;
-    userAgent: string;
-    url: string;
-    status?: number;
-    statusText?: string;
-    method?: string;
-  }
 
   // Type guard to check if error has errorInfo of type ApiErrorInfo
   function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: ApiErrorInfo } {
@@ -4059,10 +4045,10 @@ User Agent: ${userAgent}
     return {
       message: error.message,
       stack: error.stack,
-      filename: 'Unknown',
-      lineno: 0,
-      colno: 0,
-      type: 'Unknown',
+      filename: ERROR_DEFAULTS.FILENAME,
+      lineno: ERROR_DEFAULTS.LINENO,
+      colno: ERROR_DEFAULTS.COLNO,
+      type: ERROR_DEFAULTS.TYPE,
       timestamp: errorInfo?.timestamp || new Date().toISOString(),
       userAgent: errorInfo?.userAgent || navigator.userAgent,
       url: errorInfo?.url || window.location.href,

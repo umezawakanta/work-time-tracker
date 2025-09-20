@@ -1,21 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './SimpleErrorReportingModal.css';
-
-// エラー情報の型定義
-interface ErrorInfo {
-  message: string;
-  stack?: string;
-  filename?: string;
-  lineno?: number;
-  colno?: number;
-  type?: string;
-  timestamp: string;
-  userAgent: string;
-  url: string;
-  status?: number;
-  statusText?: string;
-  method?: string;
-}
+import { ErrorInfo } from '../types/errorTypes';
 
 interface SimpleErrorReportingModalProps {
   isOpen: boolean;
