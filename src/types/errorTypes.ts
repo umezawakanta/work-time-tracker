@@ -146,3 +146,18 @@ export const getErrorInfo = (error: Error | null): ErrorInfo | undefined => {
   
   return buildErrorInfo(error, apiErrorInfo, extractedInfo);
 };
+
+// エラー情報をフォーマットするユーティリティ関数
+export const formatErrorInfo = (errorInfo: Partial<ErrorInfo>): {
+  statusInfo: string;
+  methodInfo: string;
+  stackInfo: string;
+} => {
+  const statusInfo = errorInfo.status
+    ? `ステータス: ${errorInfo.status}${errorInfo.statusText ? ` ${errorInfo.statusText}` : ''}`
+    : '';
+  const methodInfo = errorInfo.method ? `メソッド: ${errorInfo.method}` : '';
+  const stackInfo = errorInfo.stack ? `スタックトレース:\n${errorInfo.stack}` : '';
+  
+  return { statusInfo, methodInfo, stackInfo };
+};

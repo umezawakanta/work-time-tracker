@@ -18,7 +18,7 @@ import TimersComponent from "./components/TimersComponent";
 import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import NotificationComponent from "./components/NotificationComponent";
-import { ErrorInfo, ERROR_DEFAULTS, buildErrorInfo, getErrorInfo } from './types/errorTypes';
+import { ErrorInfo, ERROR_DEFAULTS, buildErrorInfo, getErrorInfo, formatErrorInfo } from './types/errorTypes';
 import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
@@ -972,13 +972,14 @@ function App() {
           
           console.error('XMLHttpRequestエラーが発生しました:', errorInfo);
           
+          const { statusInfo, methodInfo } = formatErrorInfo(errorInfo);
           const errorDetails = `
 XMLHttpRequestエラーが発生しました。
 
 エラー詳細:
 - URL: ${errorInfo.url}
-- ステータス: ${errorInfo.status} ${errorInfo.statusText}
-- メソッド: ${errorInfo.method}
+${statusInfo ? `- ${statusInfo}` : ''}
+${methodInfo ? `- ${methodInfo}` : ''}
 - 時刻: ${errorInfo.timestamp}
 - ユーザーエージェント: ${errorInfo.userAgent}
 
@@ -1034,13 +1035,14 @@ XMLHttpRequestエラーが発生しました。
         console.error('APIエラーが発生しました:', errorInfo);
         
         // エラー詳細を構築
+        const { statusInfo, methodInfo } = formatErrorInfo(errorInfo);
         const errorDetails = `
 APIエラーが発生しました。
 
 エラー詳細:
 - URL: ${errorInfo.url}
-- ステータス: ${errorInfo.status} ${errorInfo.statusText}
-- メソッド: ${errorInfo.method}
+${statusInfo ? `- ${statusInfo}` : ''}
+${methodInfo ? `- ${methodInfo}` : ''}
 - 時刻: ${errorInfo.timestamp}
 - ユーザーエージェント: ${errorInfo.userAgent}
 
@@ -4086,7 +4088,10 @@ User Agent: ${userAgent}
         },
         body: JSON.stringify({
           title: `[エラー報告] API Error - ${errorInfo.status}`,
-          content: `APIエラーが発生しました。\n\n--- エラー詳細 ---\nURL: ${errorInfo.url}\nステータス: ${errorInfo.status} ${errorInfo.statusText}\nメソッド: ${errorInfo.method}\nエラー: ${errorInfo.message}\n\n--- システム情報 ---\nUser Agent: ${errorInfo.userAgent}\n発生時刻: ${errorInfo.timestamp}`,
+          content: (() => {
+            const { statusInfo, methodInfo } = formatErrorInfo(errorInfo);
+            return `APIエラーが発生しました。\n\n--- エラー詳細 ---\nURL: ${errorInfo.url}\n${statusInfo ? `${statusInfo}\n` : ''}${methodInfo ? `${methodInfo}\n` : ''}エラー: ${errorInfo.message}\n\n--- システム情報 ---\nUser Agent: ${errorInfo.userAgent}\n発生時刻: ${errorInfo.timestamp}`;
+          })(),
           category: "エラー報告",
           tags: ["エラー", "バグ報告", "システム"],
           isPublic: true,

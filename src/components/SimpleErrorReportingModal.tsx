@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './SimpleErrorReportingModal.css';
-import { ErrorInfo } from '../types/errorTypes';
+import { ErrorInfo, formatErrorInfo } from '../types/errorTypes';
 
 interface SimpleErrorReportingModalProps {
   isOpen: boolean;
@@ -43,11 +43,7 @@ const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
   useEffect(() => {
     if (isOpen && errorInfo) {
       // エラー情報から自動で内容を生成
-      const statusInfo = errorInfo.status
-        ? `ステータス: ${errorInfo.status}${errorInfo.statusText ? ` ${errorInfo.statusText}` : ''}`
-        : '';
-      const methodInfo = errorInfo.method ? `メソッド: ${errorInfo.method}` : '';
-      const stackInfo = errorInfo.stack ? `スタックトレース:\n${errorInfo.stack}` : '';
+      const { statusInfo, methodInfo, stackInfo } = formatErrorInfo(errorInfo);
       
       const autoContent = `
 エラーが発生しました。
