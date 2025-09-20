@@ -3151,6 +3151,17 @@ ${errorInfo.stack}
     };
 
     checkAuth();
+    
+    // エラー報告イベントをリッスン
+    const handleErrorReport = (event: CustomEvent) => {
+      const { category, content } = event.detail;
+      setShowMemos(true);
+      setShowMemoForm(true);
+      setMemoCategory(category);
+      setMemoContent(content);
+    };
+    
+    window.addEventListener('showErrorReport', handleErrorReport as EventListener);
 
     // Service Workerの登録（Safari対応改善）
     if ("serviceWorker" in navigator) {
@@ -3196,6 +3207,11 @@ ${errorInfo.stack}
           console.error("Service Worker registration failed:", error);
         });
     }
+    
+    // クリーンアップ処理
+    return () => {
+      window.removeEventListener('showErrorReport', handleErrorReport as EventListener);
+    };
   }, []);
 
   // バッジの更新

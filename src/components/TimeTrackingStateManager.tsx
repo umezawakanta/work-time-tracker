@@ -138,6 +138,27 @@ export const useTimeTrackingHelpers = () => {
 
       if (!response.ok) {
         console.warn("時間記録APIが利用できません。モックデータを使用します。");
+        
+        // 警告でも不具合報告フォームを表示
+        const errorDetails = `
+時間記録APIの取得に失敗しました。
+
+エラー詳細:
+- ステータス: ${response.status} ${response.statusText}
+- 時刻: ${new Date().toISOString()}
+- ユーザーエージェント: ${navigator.userAgent}
+
+このエラーは自動的に検出されました。
+        `.trim();
+        
+        // グローバルな状態更新関数を呼び出すためのイベントを発火
+        window.dispatchEvent(new CustomEvent('showErrorReport', {
+          detail: {
+            category: '不具合報告',
+            content: errorDetails
+          }
+        }));
+        
         timeTrackingState.setTimeEntries([]);
         return;
       }
