@@ -80,7 +80,7 @@ async function fixIncomeExpenseTypes() {
       // メモの内容から収入/支出を判定
       let newType = 'income'; // デフォルトは収入
       if (record.notes) {
-        const notes = (record.notes || '').toLowerCase();
+        const notes = record.notes.toLowerCase();
         // 支出を示すキーワードをチェック
         if (EXPENSE_KEYWORDS.some(keyword => notes.includes(keyword.toLowerCase()))) {
           newType = 'expense';
