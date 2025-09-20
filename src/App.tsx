@@ -4085,9 +4085,9 @@ User Agent: ${userAgent}
     // Helper function to parse status from match results
     function parseStatus(statusMatch: RegExpMatchArray | null, statusMatch2: RegExpMatchArray | null): number | undefined {
       if (statusMatch?.[1]) {
-        return parseInt(statusMatch[1]);
+        return parseInt(statusMatch[1], 10);
       } else if (statusMatch2?.[1]) {
-        return parseInt(statusMatch2[1]);
+        return parseInt(statusMatch2[1], 10);
       }
       return undefined;
     }
