@@ -4,209 +4,201 @@ import './SimpleErrorReportingModal.css';
 interface SimpleErrorReportingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  error: Error | null;
-  onSubmit: (errorReport: {
+  onSubmit: (report: {
     title: string;
     content: string;
     errorDetails: string;
     userAgent: string;
     timestamp: string;
-  }) => void;
-  buttonPosition?: { x: number; y: number };
+  }) => Promise<void>;
+  errorInfo?: {
+    message: string;
+    stack?: string;
+    filename?: string;
+    lineno?: number;
+    colno?: number;
+    type?: string;
+    timestamp: string;
+    userAgent: string;
+    url: string;
+  };
 }
 
 const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
   isOpen,
   onClose,
-  error,
   onSubmit,
-  buttonPosition
+  errorInfo
 }) => {
-  const [message, setMessage] = useState('');
+  const [selectedFeature, setSelectedFeature] = useState('');
+  const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // モーダル表示時の処理
-  useEffect(() => {
-    if (isOpen) {
-      // スクロール制御は行わず、モーダルを画面内に表示
-      // 必要に応じてスクロール位置を調整
-      if (buttonPosition) {
-        const modalHeight = 400; // モーダルの推定高さ
-        const viewportHeight = window.innerHeight;
-        const scrollY = window.scrollY;
-        const buttonY = buttonPosition.y + scrollY;
-        
-        // ボタンが画面下部にある場合は上にスクロール
-        if (buttonY + modalHeight > viewportHeight + scrollY) {
-          const targetScrollY = Math.max(0, buttonY - viewportHeight + modalHeight + 20);
-          window.scrollTo({
-            top: targetScrollY,
-            behavior: 'smooth'
-          });
-        }
-      }
-    }
-  }, [isOpen, buttonPosition]);
+  // 機能選択肢
+  const featureOptions = [
+    { value: '', label: '対象機能を選択してください', disabled: true },
+    { value: 'time_tracking', label: '時間記録機能' },
+    { value: 'work_records', label: 'おしごと記録機能' },
+    { value: 'memos', label: 'メモ機能' },
+    { value: 'notifications', label: '通知機能' },
+    { value: 'admin_panel', label: '管理者パネル' },
+    { value: 'authentication', label: '認証機能' },
+    { value: 'ui_ux', label: 'UI/UX' },
+    { value: 'performance', label: 'パフォーマンス' },
+    { value: 'other', label: 'その他' }
+  ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!message.trim()) return;
+  // モーダルが開かれた時の初期化
+  useEffect(() => {
+    if (isOpen && errorInfo) {
+      // エラー情報から自動で内容を生成
+      const autoContent = `
+エラーが発生しました。
+
+エラーメッセージ: ${errorInfo.message}
+ファイル: ${errorInfo.filename || 'Unknown'}
+行番号: ${errorInfo.lineno || 0}
+列番号: ${errorInfo.colno || 0}
+エラータイプ: ${errorInfo.type || 'Unknown'}
+発生時刻: ${errorInfo.timestamp}
+URL: ${errorInfo.url}
+
+${errorInfo.stack ? `スタックトレース:\n${errorInfo.stack}` : ''}
+
+このエラーについて詳細を教えてください。
+      `.trim();
+      setContent(autoContent);
+    }
+  }, [isOpen, errorInfo]);
+
+  const handleSubmit = async (type: 'error_report' | 'update_request') => {
+    if (!selectedFeature || !content.trim()) {
+      alert('対象機能と内容を入力してください。');
+      return;
+    }
 
     setIsSubmitting(true);
     
     try {
-      // エラーの詳細情報を簡潔に構築
-      let errorDetails = '';
-      if (error) {
-        errorDetails = `${error.name}: ${error.message}`;
-        if ((error as any).errorInfo) {
-          const errorInfo = (error as any).errorInfo;
-          errorDetails += `\n場所: ${errorInfo.filename}:${errorInfo.lineno}`;
-        }
-      }
-
-      const errorReport = {
-        title: `エラー報告: ${new Date().toLocaleString('ja-JP')}`,
-        content: message.trim(),
-        errorDetails: errorDetails,
+      const report = {
+        title: type === 'error_report' ? '不具合報告' : '改善要望',
+        content: content.trim(),
+        errorDetails: `対象機能: ${featureOptions.find(f => f.value === selectedFeature)?.label || selectedFeature}`,
         userAgent: navigator.userAgent,
         timestamp: new Date().toISOString()
       };
 
-      await onSubmit(errorReport);
+      await onSubmit(report);
       
       // フォームをリセット
-      setMessage('');
+      setSelectedFeature('');
+      setContent('');
       onClose();
     } catch (err) {
-      console.error('エラー報告の送信に失敗しました:', err);
-      alert('エラー報告の送信に失敗しました。もう一度お試しください。');
+      console.error('報告の送信に失敗しました:', err);
+      alert('報告の送信に失敗しました。もう一度お試しください。');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleClose = () => {
-    setMessage('');
+    setSelectedFeature('');
+    setContent('');
     onClose();
   };
 
-  if (!isOpen) return null;
-
-  // ボタン位置に基づくモーダルの位置計算
-  const getModalStyle = () => {
-    if (!buttonPosition) {
-      return {}; // デフォルトの中央表示
-    }
-
-    const modalWidth = 500;
-    const modalHeight = 400;
-    const padding = 20;
-    
-    // ビューポート内に収まるように位置を調整
-    let left = buttonPosition.x - modalWidth / 2;
-    let top = buttonPosition.y - modalHeight / 2;
-    
-    // 左端からはみ出さないように調整
-    if (left < padding) {
-      left = padding;
-    }
-    
-    // 右端からはみ出さないように調整
-    if (left + modalWidth > window.innerWidth - padding) {
-      left = window.innerWidth - modalWidth - padding;
-    }
-    
-    // 上端からはみ出さないように調整
-    if (top < padding) {
-      top = padding;
-    }
-    
-    // 下端からはみ出さないように調整
-    if (top + modalHeight > window.innerHeight - padding) {
-      top = window.innerHeight - modalHeight - padding;
-    }
-    
-    return {
-      position: 'fixed' as const,
-      left: `${left}px`,
-      top: `${top}px`,
-      transform: 'none',
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start'
-    };
-  };
+  if (!isOpen) {
+    return null;
+  }
 
   return (
-    <div 
-      className="simple-error-modal-overlay"
-      style={getModalStyle()}
-    >
-      <div className="simple-error-modal-content">
-        <div className="simple-error-modal-header">
-          <h3>
+    <div className="simple-error-reporting-overlay">
+      <div className="simple-error-reporting-modal">
+        <div className="simple-error-reporting-header">
+          <h2>
             <i className="bi bi-exclamation-triangle"></i>
             エラーが発生しました
-          </h3>
+          </h2>
           <button
-            className="simple-error-modal-close"
             onClick={handleClose}
-            aria-label="閉じる"
+            className="close-button"
+            title="閉じる"
           >
-            ×
+            <i className="bi bi-x"></i>
           </button>
         </div>
 
-        <div className="simple-error-modal-body">
-          <div className="error-preview">
-            <p><strong>エラー:</strong> {error?.message || '不明なエラー'}</p>
+        <div className="simple-error-reporting-body">
+          <div className="error-info">
+            <p className="error-message">
+              <i className="bi bi-bug"></i>
+              申し訳ございません。エラーが発生しました。詳細を報告していただけると、迅速に修正いたします。
+            </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="simple-error-form">
-            <div className="form-group">
-              <label htmlFor="errorMessage">何が起こりましたか？</label>
-              <textarea
-                id="errorMessage"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="エラーの状況や再現手順を簡単に教えてください"
-                rows={4}
-                required
-                maxLength={500}
-              />
-              <div className="character-count">
-                {message.length}/500文字
-              </div>
-            </div>
+          <div className="form-group">
+            <label htmlFor="feature-select">対象機能</label>
+            <select
+              id="feature-select"
+              value={selectedFeature}
+              onChange={(e) => setSelectedFeature(e.target.value)}
+              className="form-control"
+              required
+            >
+              {featureOptions.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.value}
+                  disabled={option.disabled}
+                >
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-            <div className="form-actions">
-              <button
-                type="button"
-                onClick={handleClose}
-                className="cancel-btn"
-                disabled={isSubmitting}
-              >
-                キャンセル
-              </button>
-              <button
-                type="submit"
-                className="submit-btn"
-                disabled={isSubmitting || !message.trim()}
-              >
-                {isSubmitting ? (
-                  <>
-                    <i className="bi bi-hourglass-split"></i>
-                    送信中...
-                  </>
-                ) : (
-                  <>
-                    <i className="bi bi-send"></i>
-                    報告する
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+          <div className="form-group">
+            <label htmlFor="content-textarea">エラーの詳細</label>
+            <textarea
+              id="content-textarea"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="エラーの詳細や再現手順を教えてください..."
+              className="form-control"
+              rows={8}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="simple-error-reporting-footer">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleClose}
+            disabled={isSubmitting}
+          >
+            キャンセル
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={() => handleSubmit('error_report')}
+            disabled={!selectedFeature || !content.trim() || isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <i className="bi bi-hourglass-split"></i>
+                送信中...
+              </>
+            ) : (
+              <>
+                <i className="bi bi-bug"></i>
+                不具合報告を送信
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

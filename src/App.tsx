@@ -84,6 +84,7 @@ function App() {
   // エラー報告関連の状態
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [currentError, setCurrentError] = useState<Error | null>(null);
+  const [showSimpleErrorModal, setShowSimpleErrorModal] = useState(false);
   const [errorModalButtonPosition, setErrorModalButtonPosition] = useState<{ x: number; y: number } | undefined>(undefined);
 
   // 各機能のローディング状態（LoadingStateManagerで管理）
@@ -1447,31 +1448,10 @@ ${errorInfo.stack}
         setCurrentError(enhancedError);
         setShowErrorModal(true);
         
-        // エラー発生時に不具合報告ページに遷移
+        // エラー発生時に独立したモーダルを表示
         setTimeout(() => {
-          setShowMemos(true);
-          setShowMemoForm(true);
-          // 不具合報告のカテゴリを設定
-          setMemoCategory('不具合報告');
-          // エラー情報をメモの内容に自動入力
-          const errorDetails = `
-window.onerrorでエラーが発生しました。
-
-エラーメッセージ: ${errorMessage}
-ファイル: ${errorInfo.filename}
-行番号: ${errorInfo.lineno}
-列番号: ${errorInfo.colno}
-エラータイプ: ${errorInfo.type}
-発生時刻: ${errorInfo.timestamp}
-URL: ${errorInfo.url}
-
-スタックトレース:
-${errorInfo.stack}
-
-このエラーについて詳細を教えてください。
-          `.trim();
-          setMemoContent(errorDetails);
-        }, 2000); // 2秒後に遷移
+          setShowSimpleErrorModal(true);
+        }, 1000); // 1秒後にモーダルを表示
       }
       
       return false; // デフォルトのエラーハンドリングを防ぐ
@@ -3907,6 +3887,48 @@ ${errorInfo.stack}
     reportApiError(errorInfo, handleErrorReport);
   };
 
+  // SimpleErrorReportingModal用のエラー報告送信処理
+  const handleSimpleErrorReport = async (report: {
+    title: string;
+    content: string;
+    errorDetails: string;
+    userAgent: string;
+    timestamp: string;
+  }) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      
+      // エラー報告を公開メモとして投稿
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: `[${report.title}] ${new Date().toLocaleString('ja-JP')}`,
+          content: report.content,
+          category: "エラー報告",
+          tags: ["エラー", "バグ報告", "システム"],
+          isPublic: true,
+          isFamilyOnly: false,
+          isAdminOnly: false,
+          postType: "error_report"
+        }),
+      });
+
+      if (response.ok) {
+        setMessage("エラー報告を送信しました。ありがとうございます。");
+        setShowSimpleErrorModal(false);
+      } else {
+        throw new Error("エラー報告の送信に失敗しました");
+      }
+    } catch (error) {
+      console.error("エラー報告送信エラー:", error);
+      setMessage("エラー報告の送信に失敗しました。もう一度お試しください。");
+    }
+  };
+
   // エラー報告の送信処理
   const handleErrorReport = async (errorInfo: ApiErrorInfo) => {
     try {
@@ -6091,8 +6113,26 @@ ${errorInfo.stack}
           isOpen={showErrorModal}
           onClose={() => setShowErrorModal(false)}
           error={currentError}
-          onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => void}
+          onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
           buttonPosition={errorModalButtonPosition}
+        />
+
+        {/* 独立したエラー報告モーダル */}
+        <SimpleErrorReportingModal
+          isOpen={showSimpleErrorModal}
+          onClose={() => setShowSimpleErrorModal(false)}
+          onSubmit={handleSimpleErrorReport}
+          errorInfo={currentError ? {
+            message: currentError.message,
+            stack: currentError.stack,
+            filename: (currentError as any).errorInfo?.filename,
+            lineno: (currentError as any).errorInfo?.lineno,
+            colno: (currentError as any).errorInfo?.colno,
+            type: (currentError as any).errorInfo?.type,
+            timestamp: (currentError as any).errorInfo?.timestamp || new Date().toISOString(),
+            userAgent: (currentError as any).errorInfo?.userAgent || navigator.userAgent,
+            url: (currentError as any).errorInfo?.url || window.location.href
+          } : undefined}
         />
       </div>
     );
@@ -6118,7 +6158,7 @@ ${errorInfo.stack}
           isOpen={showErrorModal}
           onClose={() => setShowErrorModal(false)}
           error={currentError}
-          onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => void}
+          onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
           buttonPosition={errorModalButtonPosition}
         />
     </>
