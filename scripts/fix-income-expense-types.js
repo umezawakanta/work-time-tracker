@@ -66,14 +66,8 @@ async function fixIncomeExpenseTypes() {
       let newType = 'income'; // デフォルトは収入
       if (record.notes) {
         const notes = record.notes.toLowerCase();
-<<<<<<< HEAD
-        if (notes.includes('支出') || notes.includes('支払') || notes.includes('費用') || 
-            notes.includes('交通費') || notes.includes('食費') || notes.includes('光熱費') ||
-            notes.includes('家賃') || notes.includes('保険') || notes.includes('税金')) {
-=======
         // 支出を示すキーワードをチェック
         if (EXPENSE_KEYWORDS.some(keyword => notes.includes(keyword))) {
->>>>>>> d3e02e9d3 (refactor: 支出キーワードを定数として切り出し)
           newType = 'expense';
         }
       }
@@ -96,8 +90,6 @@ async function fixIncomeExpenseTypes() {
     // bulkWriteで一括更新
     const bulkResult = await IncomeExpenseRecord.bulkWrite(bulkOps);
     const fixedCount = bulkResult.modifiedCount;
-    console.log(`修正完了: ${fixedCount}件の記録を修正しました`);
-    
     console.log(`修正完了: ${fixedCount}件の記録を修正しました`);
     
   } catch (error) {

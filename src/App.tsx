@@ -2820,24 +2820,36 @@ ${errorInfo.stack}
     let totalIncome = 0;
     let totalExpense = 0;
 
-
-    incomeExpenseRecords.forEach((record) => {
-      const recordDate = new Date(record.date);
-      if (recordDate >= startDate && recordDate <= endDate) {
-        if (record.type === 'income') {
-          totalIncome += record.amount;
-        } else if (record.type === 'expense') {
-          totalExpense += record.amount;
+    // incomeExpenseRecordsが存在する場合のみ処理
+    if (incomeExpenseRecords && incomeExpenseRecords.length > 0) {
+      incomeExpenseRecords.forEach((record) => {
+        const recordDate = new Date(record.date);
+        if (recordDate >= startDate && recordDate <= endDate) {
+          if (record.type === 'income') {
+            totalIncome += record.amount;
+          } else if (record.type === 'expense') {
+            totalExpense += record.amount;
+          }
         }
-      }
-    });
+      });
+    }
 
     const netIncome = totalIncome - totalExpense;
 
     console.log('収支計算結果:', {
       totalIncome,
       totalExpense,
-      netIncome
+      netIncome,
+      recordsCount: incomeExpenseRecords?.length || 0,
+      recordsInMonth: incomeExpenseRecords?.filter(record => {
+        const recordDate = new Date(record.date);
+        return recordDate >= startDate && recordDate <= endDate;
+      }).map(record => ({
+        id: record._id,
+        type: record.type,
+        amount: record.amount,
+        date: record.date
+      })) || []
     });
 
     return {
