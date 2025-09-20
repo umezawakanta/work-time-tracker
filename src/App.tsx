@@ -954,7 +954,7 @@ function App() {
     xhr.open = function(method: string, url: string | URL, ...args: any[]) {
       (this as any)._method = method;
       (this as any)._url = url;
-      return originalOpen.apply(this, [method, url, ...args]);
+      return originalOpen.apply(this, [method, url, args[0] ?? true, args[1], args[2]]);
     };
     
     xhr.send = function(...args: any[]) {
