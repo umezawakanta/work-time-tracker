@@ -55,7 +55,15 @@ module.exports = async function handler(req, res) {
   try {
     // JWTトークンからユーザーIDを取得
     console.log('Verifying JWT token...');
-    console.log('Authorization header:', req.headers.authorization);
+    if (req.headers.authorization) {
+      // Log only the presence and a masked version of the token
+      const masked = req.headers.authorization.length > 10
+        ? req.headers.authorization.slice(0, 7) + '...' + req.headers.authorization.slice(-3)
+        : '[too short to mask]';
+      console.log('Authorization header present. Masked value:', masked);
+    } else {
+      console.log('Authorization header not present.');
+    }
     const userInfo = await verifyJWT(req);
     console.log('JWT verification result:', userInfo);
     if (!userInfo) {
