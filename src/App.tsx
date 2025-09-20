@@ -3968,6 +3968,7 @@ ${errorInfo.stack}
           isPublic: memoIsPublic,
           isFamilyOnly: memoIsFamilyOnly,
           isAdminOnly: memoIsAdminOnly,
+          postType: memoPostType,
         }),
       });
 

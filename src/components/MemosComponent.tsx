@@ -129,6 +129,65 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     }
   };
 
+  // クイック送信のハンドラー
+  const handleQuickSubmit = async (postType: 'error_report' | 'update_request') => {
+    if (!memoContent.trim()) {
+      alert('内容を入力してください');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const finalTitle = memoTitle.trim() || memoContent.split("\n")[0].trim() || "無題";
+      const tags = memoTags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
+
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: finalTitle,
+          content: memoContent,
+          category: postType === 'error_report' ? '不具合報告' : '更新要望',
+          tags,
+          isPublic: true,
+          isFamilyOnly: false,
+          isAdminOnly: false,
+          postType: postType,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          alert(`${postType === 'error_report' ? '不具合報告' : '更新要望'}を送信しました！`);
+          setMemoTitle("");
+          setMemoContent("");
+          setMemoCategory("");
+          setMemoTags("");
+          setMemoIsPublic(false);
+          setMemoIsFamilyOnly(false);
+          setMemoIsAdminOnly(false);
+          setMemoPostType("general");
+          loadMemos();
+        } else {
+          alert(data.message || '送信に失敗しました');
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(errorData.message || `送信に失敗しました (${response.status})`);
+      }
+    } catch (error) {
+      console.error('クイック送信エラー:', error);
+      alert('送信に失敗しました');
+    }
+  };
+
   // ページネーション用の関数
   const getPaginatedMemos = () => {
     // カテゴリでフィルタリング
@@ -527,6 +586,37 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                 >
                   <i className="bi bi-arrow-clockwise"></i> すべてリセット
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* ワンクリック送信ボタン */}
+          {showMemoForm && (
+            <div className="quick-action-buttons">
+              <h4>クイック送信</h4>
+              <div className="quick-buttons">
+                <button
+                  type="button"
+                  className="quick-button bug-report"
+                  onClick={() => handleQuickSubmit('error_report')}
+                  title="不具合報告を送信"
+                >
+                  <i className="bi bi-bug"></i>
+                  不具合報告を送信
+                </button>
+                <button
+                  type="button"
+                  className="quick-button update-request"
+                  onClick={() => handleQuickSubmit('update_request')}
+                  title="更新要望を送信"
+                >
+                  <i className="bi bi-lightbulb"></i>
+                  更新要望を送信
+                </button>
+              </div>
+              <div className="quick-note">
+                <i className="bi bi-info-circle"></i>
+                上記のボタンをクリックすると、現在の内容で自動的に送信されます
               </div>
             </div>
           )}
