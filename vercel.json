@@ -1,17 +1,15 @@
 {
-  "version": 2,
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
   "installCommand": "pnpm install",
+  "framework": "vite",
   "functions": {
     "api/**/*.ts": {
-      "maxDuration": 30
+      "runtime": "nodejs20.x"
+    },
+    "api/**/*.js": {
+      "runtime": "nodejs20.x"
     }
   },
-  "rewrites": [
-    {
-      "source": "/((?!api).*)",
-      "destination": "/index.html"
-    }
-  ]
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./"
 }
