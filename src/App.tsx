@@ -4048,8 +4048,18 @@ User Agent: ${userAgent}
     METHOD_EXPLICIT: /メソッド: ([^\n\s]+)/
   };
 
+  // Helper function to parse status from match results
+  function parseStatus(statusMatch: RegExpMatchArray | null, statusMatch2: RegExpMatchArray | null): number | undefined {
+    if (statusMatch?.[1]) {
+      return parseInt(statusMatch[1], 10);
+    } else if (statusMatch2?.[1]) {
+      return parseInt(statusMatch2[1], 10);
+    }
+    return undefined;
+  }
+
   // Type guard to check if error has an errorInfo property (object).
-  // This does not validate the full structure of ApiErrorInfo, only its presence as an object.
+  // This does not validate the full structure of the errorInfo, only its presence as an object.
   function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: ApiErrorInfo } {
     return (
       typeof error === "object" &&
@@ -4082,16 +4092,6 @@ User Agent: ${userAgent}
     const methodMatch2 = errorMessage.match(methodRegex);
     
     // 抽出された情報をまとめる
-    // Helper function to parse status from match results
-    function parseStatus(statusMatch: RegExpMatchArray | null, statusMatch2: RegExpMatchArray | null): number | undefined {
-      if (statusMatch?.[1]) {
-        return parseInt(statusMatch[1], 10);
-      } else if (statusMatch2?.[1]) {
-        return parseInt(statusMatch2[1], 10);
-      }
-      return undefined;
-    }
-
     const extractedInfo = {
       url: urlMatch?.[1] || urlMatch2?.[0],
       status: parseStatus(statusMatch, statusMatch2),
