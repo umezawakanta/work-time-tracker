@@ -1,0 +1,240 @@
+/* MemoCountDisplay.css - メモ件数表示コンポーネントのスタイル */
+
+.memo-count-display {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.memo-count-display:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.memo-count-display.compact {
+  padding: 0.5rem;
+  min-width: 150px;
+}
+
+.memo-count-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.memo-count-header i {
+  color: #3b82f6;
+  font-size: 1.1rem;
+}
+
+.memo-count-title {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.memo-count-total {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+.memo-count-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.memo-count-section {
+  border-left: 3px solid #e5e7eb;
+  padding-left: 0.75rem;
+}
+
+.memo-count-section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.memo-count-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.memo-count-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.memo-count-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.memo-count-item i {
+  font-size: 0.9rem;
+  width: 16px;
+  text-align: center;
+}
+
+.memo-count-item.general {
+  color: #374151;
+}
+
+.memo-count-item.general i {
+  color: #6b7280;
+}
+
+.memo-count-item.error {
+  color: #dc2626;
+}
+
+.memo-count-item.error i {
+  color: #dc2626;
+}
+
+.memo-count-item.update {
+  color: #d97706;
+}
+
+.memo-count-item.update i {
+  color: #d97706;
+}
+
+.memo-count-loading,
+.memo-count-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  padding: 0.5rem;
+  text-align: center;
+  justify-content: center;
+}
+
+.memo-count-loading i {
+  color: #3b82f6;
+  animation: spin 1s linear infinite;
+}
+
+.memo-count-error i {
+  color: #dc2626;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* コンパクトモードのスタイル */
+.memo-count-display.compact .memo-count-details {
+  display: none;
+}
+
+.memo-count-display.compact .memo-count-header {
+  margin-bottom: 0;
+}
+
+.memo-count-display.compact .memo-count-total {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.4rem;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .memo-count-display {
+    min-width: 120px;
+    padding: 0.5rem;
+  }
+
+  .memo-count-display.compact {
+    min-width: 100px;
+    padding: 0.4rem;
+  }
+
+  .memo-count-header {
+    font-size: 0.8rem;
+  }
+
+  .memo-count-title {
+    font-size: 0.75rem;
+  }
+
+  .memo-count-total {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .memo-count-item {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .memo-count-section-title {
+    font-size: 0.75rem;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .memo-count-display {
+    background: rgba(31, 41, 55, 0.95);
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .memo-count-header {
+    color: #e5e7eb;
+  }
+
+  .memo-count-title {
+    color: #9ca3af;
+  }
+
+  .memo-count-section-title {
+    color: #9ca3af;
+  }
+
+  .memo-count-item.general {
+    color: #e5e7eb;
+  }
+
+  .memo-count-item.general i {
+    color: #9ca3af;
+  }
+
+  .memo-count-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .memo-count-loading,
+  .memo-count-error {
+    color: #9ca3af;
+  }
+}

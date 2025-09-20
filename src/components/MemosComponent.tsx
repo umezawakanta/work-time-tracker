@@ -4,6 +4,7 @@ import type { Memo, Reply } from '../types';
 
 interface MemosComponentProps {
   memos: Memo[];
+  publicMemos: Memo[];
   memosLoading: boolean;
   showMemos: boolean;
   setShowMemos: (show: boolean) => void;
@@ -45,6 +46,7 @@ interface MemosComponentProps {
 
 const MemosComponent: React.FC<MemosComponentProps> = ({
   memos,
+  publicMemos,
   memosLoading,
   showMemos,
   setShowMemos,
@@ -219,12 +221,13 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     return Array.from(new Set(allCategories)).sort();
   };
 
-  // メモの件数を計算する関数
+  // メモの件数を計算する関数（個人メモ + 公開メモ）
   const getMemoCounts = () => {
-    const totalMemos = memos.length;
-    const errorReports = memos.filter(memo => memo.postType === 'error_report').length;
-    const updateRequests = memos.filter(memo => memo.postType === 'update_request').length;
-    const generalMemos = memos.filter(memo => !memo.postType || memo.postType === 'general').length;
+    const allMemos = [...memos, ...publicMemos];
+    const totalMemos = allMemos.length;
+    const errorReports = allMemos.filter(memo => memo.postType === 'error_report').length;
+    const updateRequests = allMemos.filter(memo => memo.postType === 'update_request').length;
+    const generalMemos = allMemos.filter(memo => !memo.postType || memo.postType === 'general').length;
     
     return {
       total: totalMemos,

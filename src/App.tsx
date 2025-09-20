@@ -3031,6 +3031,9 @@ ${errorInfo.stack}
         Promise.all([loadMemos(), loadPublicMemos()]).catch((error) => {
           console.error("Background reload failed:", error);
         });
+        
+        // メモ件数更新イベントを発火
+        window.dispatchEvent(new CustomEvent('memoReplyCreated'));
       } else {
         setMessage(data.message || "返信の投稿に失敗しました");
       }
@@ -3157,6 +3160,24 @@ ${errorInfo.stack}
 
     
     window.addEventListener('showErrorReport', handleErrorReport as EventListener);
+
+    // メモ件数更新のイベントリスナー
+    const handleMemoCountUpdate = () => {
+      // メモ件数を更新するイベントを発火
+      window.dispatchEvent(new CustomEvent('updateMemoCounts'));
+    };
+
+    // メモ関連の操作時にイベントを発火
+    const memoOperations = [
+      'memoCreated',
+      'memoUpdated', 
+      'memoDeleted',
+      'memoReplyCreated'
+    ];
+
+    memoOperations.forEach(eventName => {
+      window.addEventListener(eventName, handleMemoCountUpdate);
+    });
 
     // Service Workerの登録（Safari対応改善）
     if ("serviceWorker" in navigator) {
@@ -3872,6 +3893,9 @@ ${errorInfo.stack}
         setMemoIsAdminOnly(false);
         setShowMemoForm(false);
         loadMemos();
+        
+        // メモ件数更新イベントを発火
+        window.dispatchEvent(new CustomEvent('memoCreated'));
       } else {
         setMessage(`メモの追加失敗: ${data.message}`);
       }
@@ -4217,6 +4241,9 @@ ${errorInfo.stack}
         setEditingMemo(null);
         setShowMemoForm(false);
         loadMemos();
+        
+        // メモ件数更新イベントを発火
+        window.dispatchEvent(new CustomEvent('memoUpdated'));
       } else {
         setMessage(`メモの更新失敗: ${data.message}`);
       }
@@ -4249,6 +4276,9 @@ ${errorInfo.stack}
       if (data.success) {
         setMessage("メモを削除しました");
         loadMemos();
+        
+        // メモ件数更新イベントを発火
+        window.dispatchEvent(new CustomEvent('memoDeleted'));
       } else {
         setMessage(`メモの削除失敗: ${data.message}`);
       }
@@ -5563,6 +5593,7 @@ ${errorInfo.stack}
                   <MemosComponent
                     key={feature.id}
                     memos={memos}
+                    publicMemos={publicMemos}
                     memosLoading={loadingState.memosLoading}
                     showMemos={showMemos}
                     setShowMemos={setShowMemos}
@@ -6112,9 +6143,18 @@ ${errorInfo.stack}
         <SimpleErrorReportingModal
           isOpen={showErrorModal}
           onClose={() => setShowErrorModal(false)}
-          error={currentError}
           onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
-          buttonPosition={errorModalButtonPosition}
+          errorInfo={currentError ? {
+            message: currentError.message,
+            stack: currentError.stack,
+            filename: (currentError as any).errorInfo?.filename,
+            lineno: (currentError as any).errorInfo?.lineno,
+            colno: (currentError as any).errorInfo?.colno,
+            type: (currentError as any).errorInfo?.type,
+            timestamp: (currentError as any).errorInfo?.timestamp || new Date().toISOString(),
+            userAgent: (currentError as any).errorInfo?.userAgent || navigator.userAgent,
+            url: (currentError as any).errorInfo?.url || window.location.href
+          } : undefined}
         />
 
         {/* 独立したエラー報告モーダル */}
@@ -6157,9 +6197,18 @@ ${errorInfo.stack}
         <SimpleErrorReportingModal
           isOpen={showErrorModal}
           onClose={() => setShowErrorModal(false)}
-          error={currentError}
           onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
-          buttonPosition={errorModalButtonPosition}
+          errorInfo={currentError ? {
+            message: currentError.message,
+            stack: currentError.stack,
+            filename: (currentError as any).errorInfo?.filename,
+            lineno: (currentError as any).errorInfo?.lineno,
+            colno: (currentError as any).errorInfo?.colno,
+            type: (currentError as any).errorInfo?.type,
+            timestamp: (currentError as any).errorInfo?.timestamp || new Date().toISOString(),
+            userAgent: (currentError as any).errorInfo?.userAgent || navigator.userAgent,
+            url: (currentError as any).errorInfo?.url || window.location.href
+          } : undefined}
         />
     </>
   );
