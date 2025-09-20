@@ -4025,6 +4025,7 @@ User Agent: ${userAgent}
 
 
   // Type guard to check if error has errorInfo of type ApiErrorInfo
+  // ApiErrorInfo contains: message, status?, statusText?, url?, method?, timestamp, userAgent
   function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: ApiErrorInfo } {
     return (
       typeof error === "object" &&
@@ -4038,7 +4039,7 @@ User Agent: ${userAgent}
   const getErrorInfo = (error: Error | null): ErrorInfo | undefined => {
     if (!error) return undefined;
 
-    let errorInfo: ApiErrorInfo | undefined = undefined;
+    let errorInfo: ApiErrorInfo | undefined;
     if (hasApiErrorInfo(error)) {
       errorInfo = error.errorInfo;
     }
