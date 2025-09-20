@@ -4042,6 +4042,18 @@ User Agent: ${userAgent}
     if (hasApiErrorInfo(error)) {
       errorInfo = error.errorInfo;
     }
+    
+    // エラーメッセージから詳細情報を抽出する試行
+    const errorMessage = error.message;
+    const urlMatch = errorMessage.match(/URL: ([^\n\s]+)/);
+    const statusMatch = errorMessage.match(/ステータス: (\d+)/);
+    const methodMatch = errorMessage.match(/メソッド: ([^\n\s]+)/);
+    
+    // より柔軟なパターンマッチング
+    const urlMatch2 = errorMessage.match(/\/api\/[^\s\n]+/);
+    const statusMatch2 = errorMessage.match(/(\d{3})/);
+    const methodMatch2 = errorMessage.match(/(GET|POST|PUT|DELETE|PATCH)/);
+    
     return {
       message: error.message,
       stack: error.stack,
@@ -4051,10 +4063,10 @@ User Agent: ${userAgent}
       type: ERROR_DEFAULTS.TYPE,
       timestamp: errorInfo?.timestamp || new Date().toISOString(),
       userAgent: errorInfo?.userAgent || navigator.userAgent,
-      url: errorInfo?.url || window.location.href,
-      status: errorInfo?.status,
+      url: errorInfo?.url || urlMatch?.[1] || urlMatch2?.[0] || window.location.href,
+      status: errorInfo?.status || (statusMatch?.[1] ? parseInt(statusMatch[1]) : undefined) || (statusMatch2?.[1] ? parseInt(statusMatch2[1]) : undefined),
       statusText: errorInfo?.statusText,
-      method: errorInfo?.method
+      method: errorInfo?.method || methodMatch?.[1] || methodMatch2?.[1]
     };
   };
 
