@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './SimpleErrorReportingModal.css';
-import { ErrorInfo, formatErrorInfo } from '../types/errorTypes';
+import { ErrorInfo, formatErrorInfo, ERROR_DEFAULTS } from '../types/errorTypes';
 
 interface SimpleErrorReportingModalProps {
   isOpen: boolean;
@@ -19,7 +19,16 @@ const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  errorInfo
+  errorInfo = {
+    message: '',
+    filename: ERROR_DEFAULTS.FILENAME,
+    lineno: ERROR_DEFAULTS.LINENO,
+    colno: ERROR_DEFAULTS.COLNO,
+    type: ERROR_DEFAULTS.TYPE,
+    timestamp: new Date().toISOString(),
+    userAgent: ERROR_DEFAULTS.USER_AGENT,
+    url: ERROR_DEFAULTS.URL
+  }
 }) => {
   const [selectedFeature, setSelectedFeature] = useState('');
   const [content, setContent] = useState('');
