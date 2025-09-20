@@ -638,75 +638,75 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
           )}
 
           {/* 不具合報告・改善要望専用送信エリア */}
-          {showMemoForm && (
-            <div className="quick-action-buttons">
-              <div className="quick-action-header">
-                <h4>
+          {showMemos && (
+            <div className="report-request-section">
+              <div className="report-request-header">
+                <h3>
                   <i className="bi bi-exclamation-triangle"></i>
-                  不具合報告・改善要望の送信
-                </h4>
-                <div className="step-guide">
-                  <h5>送信手順：</h5>
-                  <ol>
-                    <li>対象機能を選択してください（必須）</li>
-                    <li>不具合や改善要望の詳細を記入してください</li>
-                    <li>「不具合報告」または「改善要望」ボタンをクリックして送信</li>
-                  </ol>
-                </div>
+                  不具合報告・改善要望
+                </h3>
+                <p className="report-request-description">
+                  バグやエラーの報告、機能改善の提案はこちらから送信してください
+                </p>
               </div>
-              {/* 機能選択 */}
-              <div className="quick-feature-selection">
-                <label htmlFor="quickSelectedFeature">対象機能 <span className="required">*</span></label>
-                <select
-                  id="quickSelectedFeature"
-                  value={memoSelectedFeature}
-                  onChange={(e) => setMemoSelectedFeature(e.target.value)}
-                  className={!memoSelectedFeature ? 'error' : ''}
-                >
-                  {featureOptions.map((option) => (
-                    <option 
-                      key={option.value} 
-                      value={option.value}
-                      disabled={option.disabled}
+              
+              <div className="report-request-form">
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="quickSelectedFeature">対象機能 <span className="required">*</span></label>
+                    <select
+                      id="quickSelectedFeature"
+                      value={memoSelectedFeature}
+                      onChange={(e) => setMemoSelectedFeature(e.target.value)}
+                      className={!memoSelectedFeature ? 'error' : ''}
                     >
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <small className="form-help">
-                  不具合報告・改善要望の場合は対象となる機能を選択してください
-                </small>
-              </div>
-
-              <div className="quick-buttons">
-                <button
-                  type="button"
-                  className="quick-button bug-report"
-                  onClick={() => handleQuickSubmit('error_report')}
-                  title="不具合報告を送信"
-                >
-                  <i className="bi bi-bug"></i>
-                  <span className="button-text">
-                    <strong>不具合報告</strong>
-                    <small>バグやエラーを報告</small>
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  className="quick-button update-request"
-                  onClick={() => handleQuickSubmit('update_request')}
-                  title="更新要望を送信"
-                >
-                  <i className="bi bi-lightbulb"></i>
-                  <span className="button-text">
-                    <strong>改善要望</strong>
-                    <small>機能改善を提案</small>
-                  </span>
-                </button>
-              </div>
-              <div className="quick-note">
-                <i className="bi bi-info-circle"></i>
-                <span>上記のボタンをクリックすると、現在の内容で自動的に送信されます。機能選択と内容入力が必須です。</span>
+                      {featureOptions.map((option) => (
+                        <option 
+                          key={option.value} 
+                          value={option.value}
+                          disabled={option.disabled}
+                        >
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="reportContent">内容 <span className="required">*</span></label>
+                    <textarea
+                      id="reportContent"
+                      value={memoContent}
+                      onChange={(e) => setMemoContent(e.target.value)}
+                      placeholder="不具合の詳細や改善要望を記入してください..."
+                      rows={4}
+                      className={!memoContent.trim() ? 'error' : ''}
+                    />
+                  </div>
+                </div>
+                
+                <div className="submit-buttons">
+                  <button
+                    type="button"
+                    className="submit-button bug-report"
+                    onClick={() => handleQuickSubmit('error_report')}
+                    disabled={!memoSelectedFeature || !memoContent.trim()}
+                    title="不具合報告を送信"
+                  >
+                    <i className="bi bi-bug"></i>
+                    <span>不具合報告を送信</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="submit-button update-request"
+                    onClick={() => handleQuickSubmit('update_request')}
+                    disabled={!memoSelectedFeature || !memoContent.trim()}
+                    title="改善要望を送信"
+                  >
+                    <i className="bi bi-lightbulb"></i>
+                    <span>改善要望を送信</span>
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -723,7 +723,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                 </h3>
                 <p className="form-description">
                   個人的なメモや記録を作成します。<br/>
-                  <strong>不具合報告・改善要望</strong>は、上記の専用エリアから送信してください。
+                  <strong>不具合報告・改善要望</strong>は、上記の専用セクションから送信してください。
                 </p>
               </div>
               <div className="form-group">
