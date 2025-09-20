@@ -2422,8 +2422,9 @@ ${errorInfo.stack}
     }
 
     try {
-      const response = await fetch(`/api/user-settings?userId=${encodeURIComponent(user.id)}`);
-      const data = await response.json();
+      const data = await executeAuthenticatedRequest(`/api/user-settings?userId=${encodeURIComponent(user.id)}`, {
+        method: "GET",
+      });
 
       if (data.success) {
         const settings = data.settings;
