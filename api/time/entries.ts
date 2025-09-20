@@ -1,5 +1,5 @@
-const { ensureDatabaseConnection: initDB, mongoose: mongooseDB } = require('../utils/database');
-const { verifyJWT } = require('../utils/validation');
+import { ensureDatabaseConnection as initDB, mongoose as mongooseDB } from '../utils/database';
+import { verifyJWT } from '../utils/validation';
 
 // TimeEntry スキーマを定義
 const TimeEntrySchema = new mongooseDB.Schema({
@@ -52,7 +52,7 @@ const TimeEntrySchema = new mongooseDB.Schema({
 
 const TimeEntry = mongooseDB.models.TimeEntry || mongooseDB.model('TimeEntry', TimeEntrySchema);
 
-module.exports = async function handler(req, res) {
+export default async function handler(req: any, res: any) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }

@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const { verifyJWT } = require('../utils/validation');
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import { verifyJWT } from '../utils/validation';
 
 dotenv.config();
 
@@ -36,7 +36,7 @@ const IncomeExpenseRecordSchema = new mongoose.Schema({
 
 const IncomeExpenseRecord = mongoose.models.SalaryRecord || mongoose.model('SalaryRecord', IncomeExpenseRecordSchema);
 
-module.exports = async function handler(req, res) {
+export default async function handler(req: any, res: any) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
     ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin) ? req.headers.origin : 'https://work-time-tracker-five.vercel.app'

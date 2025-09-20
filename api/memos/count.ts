@@ -1,4 +1,4 @@
-const { ensureDatabaseConnection: ensureDBConnection, mongoose: mongooseDB } = require('../utils/database');
+import { ensureDatabaseConnection as ensureDBConnection, mongoose as mongooseDB } from '../utils/database';
 
 // Memo schema
 const MemoSchema = new mongooseDB.Schema({
@@ -52,7 +52,7 @@ const verifyJWTToken = async (req) => {
   }
 };
 
-module.exports = async function handler(req, res) {
+export default async function handler(req: any, res: any) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production'
     ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin) ? req.headers.origin : 'https://work-time-tracker-five.vercel.app'
