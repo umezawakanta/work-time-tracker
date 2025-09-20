@@ -41,7 +41,6 @@ import LanguageFontSettings from "./components/LanguageFontSettings";
 import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
 import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
 import { setErrorReportCallback, reportApiError } from "./utils/apiClient";
-import type { ApiErrorInfo } from "./utils/apiErrorHandler";
 
 import type {
   User,
@@ -967,6 +966,7 @@ function App() {
       this.addEventListener('loadend', function() {
         if (this.status >= 400) {
           const errorInfo = {
+            message: `XMLHttpRequest Error: ${this.status} ${this.statusText}`,
             url: (this as any)._url || 'Unknown URL',
             status: this.status,
             statusText: this.statusText,
@@ -1031,6 +1031,7 @@ ${methodInfo ? `- ${methodInfo}` : ''}
       // 4xx, 5xxエラーをキャッチ
       if (!response.ok) {
         const errorInfo = {
+          message: `API Error: ${response.status} ${response.statusText}`,
           url: args[0]?.toString() || 'Unknown URL',
           status: response.status,
           statusText: response.statusText,
