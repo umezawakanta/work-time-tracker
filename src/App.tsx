@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import CharacterHome from "./components/CharacterHome";
-import CustomTimer from "./components/CustomTimer";
 import ProjectsSection from "./components/ProjectsSection";
 import CookingTimerSection from "./components/CookingTimerSection";
-import TimeTrackingSection from "./components/TimeTrackingSection";
 import LoginForm from "./components/LoginForm";
-import PresetTimersSection from "./components/PresetTimersSection";
-import TimerStatsSection from "./components/TimerStatsSection";
-import TimerHistoryComponent from "./components/TimerHistoryComponent";
 import SelfAnalysisComponent from "./components/SelfAnalysisComponent";
 import BookshelfComponent from "./components/BookshelfComponent";
 import HeaderComponent from "./components/HeaderComponent";
@@ -23,6 +18,7 @@ import TimersComponent from "./components/TimersComponent";
 import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import NotificationComponent from "./components/NotificationComponent";
+import EggTimerComponent from "./components/EggTimerComponent";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import {
@@ -95,24 +91,17 @@ function App() {
   const [currentProject, setCurrentProject] = useState<string>("");
   const [startTime, setStartTime] = useState<Date | null>(null);
 
-  // ゆでたまごタイマーの状態
+  // ゆでたまごタイマーの状態（EggTimerComponentで管理）
   const [eggTimerActive, setEggTimerActive] = useState(false);
   const [eggTimerPaused, setEggTimerPaused] = useState(false);
-  const [eggTimerTime, setEggTimerTime] = useState(0); // 残り時間（秒）
-  const [eggTimerInterval, setEggTimerInterval] =
-    useState<NodeJS.Timeout | null>(null);
-  const [eggTimerType, setEggTimerType] = useState<"soft" | "medium" | "hard">(
-    "medium"
-  );
-  const [eggTimerSound, setEggTimerSound] = useState<
-    "bell" | "chime" | "beep" | "alarm"
-  >("bell");
-  const [eggTimerOriginalTime, setEggTimerOriginalTime] = useState(0); // 元の時間を保存
-  const [eggTimerPhase, setEggTimerPhase] = useState<
-    "heating" | "boiling" | "cooking"
-  >("heating"); // 現在の段階
-  const [eggTimerPhaseTime, setEggTimerPhaseTime] = useState(0); // 現在の段階の残り時間
-  const [eggTimerPhaseName, setEggTimerPhaseName] = useState(""); // 現在の段階名
+  const [eggTimerTime, setEggTimerTime] = useState(0);
+  const [eggTimerInterval, setEggTimerInterval] = useState<NodeJS.Timeout | null>(null);
+  const [eggTimerType, setEggTimerType] = useState<"soft" | "medium" | "hard">("medium");
+  const [eggTimerSound, setEggTimerSound] = useState<"bell" | "chime" | "beep" | "alarm">("bell");
+  const [eggTimerOriginalTime, setEggTimerOriginalTime] = useState(0);
+  const [eggTimerPhase, setEggTimerPhase] = useState<"heating" | "boiling" | "cooking">("heating");
+  const [eggTimerPhaseTime, setEggTimerPhaseTime] = useState(0);
+  const [eggTimerPhaseName, setEggTimerPhaseName] = useState("");
 
   // カスタムタイマーの状態
   const [customTimerActive, setCustomTimerActive] = useState(false);
@@ -4697,7 +4686,7 @@ ${errorInfo.stack}
     setMessage("時間記録をリセットしました");
   };
 
-  // ゆでたまごタイマーの関数
+  // ゆでたまごタイマーの関数（EggTimerComponentで管理）
   const getEggTimerDuration = (type: "soft" | "medium" | "hard") => {
     switch (type) {
       case "soft":
@@ -4718,6 +4707,11 @@ ${errorInfo.stack}
   ) => {
     const phases = getRecipePhases(recipeKey, eggType);
     return phases.reduce((total, phase) => total + phase.duration, 0);
+  };
+
+  // ゆでたまごタイマー用の総時間計算
+  const getEggTimerTotalTime = (eggType: "soft" | "medium" | "hard") => {
+    return getTotalCookingTime("egg-timer", eggType);
   };
 
   const handleStartCookingTimer = () => {
@@ -4790,6 +4784,7 @@ ${errorInfo.stack}
     );
   };
 
+  // ゆでたまごタイマーの関数（EggTimerComponentで管理）
   const pauseEggTimer = () => {
     // バックグラウンドタイマーの場合
     if (serviceWorker && backgroundTimerActive) {
@@ -4835,6 +4830,7 @@ ${errorInfo.stack}
     setEggTimerTime(getEggTimerDuration(eggTimerType));
   };
 
+  // ゆでたまごタイマーの音声再生（EggTimerComponentで管理）
   const playEggTimerSound = async () => {
     if (!timerSettings.enableSounds) return;
 
@@ -6023,6 +6019,39 @@ ${errorInfo.stack}
                     showTimers={showTimers}
                     setShowTimers={setShowTimers}
                     closeOtherFeatures={closeOtherFeatures}
+                  />
+                );
+              } else if (feature.id === "egg-timer") {
+                return (
+                  <EggTimerComponent
+                    key={feature.id}
+                    eggTimerActive={eggTimerActive}
+                    eggTimerPaused={eggTimerPaused}
+                    eggTimerTime={eggTimerTime}
+                    eggTimerOriginalTime={eggTimerOriginalTime}
+                    eggTimerPhase={eggTimerPhase}
+                    eggTimerPhaseTime={eggTimerPhaseTime}
+                    eggTimerPhaseName={eggTimerPhaseName}
+                    eggTimerSound={eggTimerSound}
+                    eggTimerType={eggTimerType}
+                    setEggTimerActive={setEggTimerActive}
+                    setEggTimerPaused={setEggTimerPaused}
+                    setEggTimerTime={setEggTimerTime}
+                    setEggTimerOriginalTime={setEggTimerOriginalTime}
+                    setEggTimerPhase={setEggTimerPhase}
+                    setEggTimerPhaseTime={setEggTimerPhaseTime}
+                    setEggTimerPhaseName={setEggTimerPhaseName}
+                    setEggTimerSound={setEggTimerSound}
+                    setEggTimerType={setEggTimerType}
+                    setEggTimerInterval={setEggTimerInterval}
+                    getEggTimerDuration={getEggTimerDuration}
+                    getTotalCookingTime={getEggTimerTotalTime}
+                    formatTime={formatTime}
+                    playBellSound={playBellSound}
+                    playChimeSound={playChimeSound}
+                    playBeepSound={playBeepSound}
+                    playAlarmSound={playAlarmSound}
+                    timerSettings={timerSettings}
                   />
                 );
               } else if (feature.id === "self-analysis") {
