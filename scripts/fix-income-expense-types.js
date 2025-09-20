@@ -20,9 +20,6 @@ if (!MONGODB_URI) {
 
 async function connectDB() {
   try {
-    if (!MONGODB_URI) {
-      throw new Error('MONGODB_URI environment variable is not set');
-    }
     
     await mongoose.connect(MONGODB_URI, {
       dbName: 'workTimeTracker'
