@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './AdminPanelComponent.css';
+import ResponseFormModal from './ResponseFormModal';
 
 // ソースコードアイテムコンポーネント
 interface SourceCodeItemProps {
@@ -203,9 +204,6 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [updateRequestsLoading, setUpdateRequestsLoading] = useState(false);
   const [updateRequestsError, setUpdateRequestsError] = useState<string | null>(null);
   const [selectedMemo, setSelectedMemo] = useState<any>(null);
-  const [adminResponse, setAdminResponse] = useState('');
-  const [memoStatus, setMemoStatus] = useState<'pending' | 'in_progress' | 'resolved' | 'closed'>('pending');
-  const [sendingResponse, setSendingResponse] = useState(false);
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [linterErrors, setLinterErrors] = useState<any[]>([]);
   const [linterErrorsLoading, setLinterErrorsLoading] = useState(false);
@@ -542,13 +540,11 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   };
 
   // 通知送信機能
-  const handleSendResponse = async () => {
-    if (!selectedMemo || !adminResponse.trim()) {
-      alert('対応内容を入力してください');
-      return;
-    }
-
-    setSendingResponse(true);
+  const handleSendResponse = async (responseData: {
+    memoId: string;
+    response: string;
+    status: 'pending' | 'in_progress' | 'resolved' | 'closed';
+  }) => {
     try {
       const token = localStorage.getItem('access_token');
       const response = await fetch('/api/admin/notifications', {
@@ -558,9 +554,9 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          memoId: selectedMemo.id,
-          response: adminResponse,
-          status: memoStatus,
+          memoId: responseData.memoId,
+          response: responseData.response,
+          status: responseData.status,
         }),
       });
 
@@ -571,11 +567,6 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
       const result = await response.json();
       alert('通知を送信しました');
       
-      // フォームをリセット
-      setSelectedMemo(null);
-      setAdminResponse('');
-      setMemoStatus('pending');
-      
       // データを再読み込み
       if (activeTab === 'errorreports') {
         loadErrorReports();
@@ -584,28 +575,15 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
       }
     } catch (error) {
       console.error('通知送信エラー:', error);
-      alert(error instanceof Error ? error.message : '通知の送信に失敗しました');
-    } finally {
-      setSendingResponse(false);
+      throw error;
     }
   };
 
   const handleSelectMemo = (memo: any) => {
     console.log('handleSelectMemo called with memo:', memo);
     setSelectedMemo(memo);
-    setAdminResponse(memo.adminResponse || '');
-    setMemoStatus(memo.status || 'pending');
     setShowResponseModal(true);
     console.log('Response modal should be shown now');
-    
-    // 状態設定後の確認（非同期なので次のレンダリングで確認）
-    setTimeout(() => {
-      console.log('State after setting:', { 
-        showResponseModal: true, 
-        selectedMemo: memo,
-        shouldRender: true && memo
-      });
-    }, 100);
   };
 
   // ESCキーでモーダルを閉じる機能
@@ -649,9 +627,13 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
 
   // 日時フォーマット関数
   const formatDateTime = (dateString: string) => {
-    if (!dateString) return '日付不明';
+    if (!dateString) {
+      return '日付不明';
+    }
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return '無効な日付';
+    if (isNaN(date.getTime())) {
+      return '無効な日付';
+    }
     return date.toLocaleString("ja-JP", {
       year: "numeric",
       month: "2-digit",
@@ -1119,96 +1101,6 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                 </div>
               )}
 
-              {/* 返信フォーム（不具合報告タブ内） */}
-              {showResponseModal && selectedMemo && activeTab === 'errorreports' && (
-                <div className="response-form-container">
-                  <div className="response-form-header">
-                    <h4>
-                      {selectedMemo.postType === 'error_report' ? '不具合報告への対応' : '更新要望への対応'}
-                    </h4>
-                    <button
-                      className="close-response-button"
-                      onClick={() => {
-                        console.log('Close button clicked');
-                        setShowResponseModal(false);
-                        setSelectedMemo(null);
-                        console.log('Modal should be closed now');
-                      }}
-                      aria-label="閉じる"
-                    >
-                      <i className="bi bi-x"></i>
-                    </button>
-                  </div>
-                  <div className="response-form-body">
-                    <div className="memo-preview">
-                      <h4>対象メモ</h4>
-                      <p><strong>タイトル:</strong> {selectedMemo.title}</p>
-                      <p><strong>内容:</strong> {selectedMemo.content}</p>
-                      <p><strong>投稿者:</strong> {selectedMemo.author}</p>
-                      <p><strong>投稿日時:</strong> {formatDateTime(selectedMemo.createdAt)}</p>
-                    </div>
-                    <div className="response-form">
-                      <div className="form-group">
-                        <label htmlFor="memoStatus">ステータス</label>
-                        <select
-                          id="memoStatus"
-                          value={memoStatus}
-                          onChange={(e) => setMemoStatus(e.target.value as any)}
-                          className="form-control"
-                        >
-                          <option value="pending">未対応</option>
-                          <option value="in_progress">対応中</option>
-                          <option value="resolved">解決済み</option>
-                          <option value="closed">クローズ</option>
-                        </select>
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="adminResponse">管理者からの返信</label>
-                        <textarea
-                          id="adminResponse"
-                          value={adminResponse}
-                          onChange={(e) => setAdminResponse(e.target.value)}
-                          placeholder="対応内容や返信を入力してください..."
-                          className="form-control"
-                          rows={4}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="response-form-footer">
-                    <button
-                      className="btn btn-secondary"
-                      onClick={() => {
-                        console.log('Cancel button clicked');
-                        setShowResponseModal(false);
-                        setSelectedMemo(null);
-                        console.log('Modal should be closed now');
-                      }}
-                      disabled={sendingResponse}
-                    >
-                      キャンセル
-                    </button>
-                    <button
-                      className="btn btn-primary"
-                      onClick={handleSendResponse}
-                      disabled={sendingResponse || !adminResponse.trim()}
-                    >
-                      {sendingResponse ? (
-                        <>
-                          <i className="bi bi-hourglass-split"></i>
-                          送信中...
-                        </>
-                      ) : (
-                        <>
-                          <i className="bi bi-send"></i>
-                          通知を送信
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              )}
                 </div>
               </div>
             )}
@@ -1329,100 +1221,6 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                     </div>
                   )}
 
-                  {/* 返信フォーム（更新要望タブ内） */}
-                  {(() => {
-                    const shouldShow = showResponseModal && selectedMemo && activeTab === 'updaterequests';
-                    console.log('Update requests response form check:', { showResponseModal, selectedMemo: !!selectedMemo, activeTab, shouldShow });
-                    return shouldShow;
-                  })() && (
-                    <div className="response-form-container">
-                      <div className="response-form-header">
-                        <h4>
-                          {selectedMemo.postType === 'error_report' ? '不具合報告への対応' : '更新要望への対応'}
-                        </h4>
-                        <button
-                          className="close-response-button"
-                          onClick={() => {
-                            console.log('Close button clicked');
-                            setShowResponseModal(false);
-                            setSelectedMemo(null);
-                            console.log('Modal should be closed now');
-                          }}
-                          aria-label="閉じる"
-                        >
-                          <i className="bi bi-x"></i>
-                        </button>
-                      </div>
-                      <div className="response-form-body">
-                        <div className="memo-preview">
-                          <h4>対象メモ</h4>
-                          <p><strong>タイトル:</strong> {selectedMemo.title}</p>
-                          <p><strong>内容:</strong> {selectedMemo.content}</p>
-                          <p><strong>投稿者:</strong> {selectedMemo.author}</p>
-                          <p><strong>投稿日時:</strong> {formatDateTime(selectedMemo.createdAt)}</p>
-                        </div>
-                        <div className="response-form">
-                          <div className="form-group">
-                            <label htmlFor="memoStatus2">ステータス</label>
-                            <select
-                              id="memoStatus2"
-                              value={memoStatus}
-                              onChange={(e) => setMemoStatus(e.target.value as any)}
-                              className="form-control"
-                            >
-                              <option value="pending">未対応</option>
-                              <option value="in_progress">対応中</option>
-                              <option value="resolved">解決済み</option>
-                              <option value="closed">クローズ</option>
-                            </select>
-                          </div>
-                          <div className="form-group">
-                            <label htmlFor="adminResponse2">管理者からの返信</label>
-                            <textarea
-                              id="adminResponse2"
-                              value={adminResponse}
-                              onChange={(e) => setAdminResponse(e.target.value)}
-                              placeholder="対応内容や返信を入力してください..."
-                              className="form-control"
-                              rows={4}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="response-form-footer">
-                        <button
-                          className="btn btn-secondary"
-                          onClick={() => {
-                            console.log('Cancel button clicked');
-                            setShowResponseModal(false);
-                            setSelectedMemo(null);
-                            console.log('Modal should be closed now');
-                          }}
-                          disabled={sendingResponse}
-                        >
-                          キャンセル
-                        </button>
-                        <button
-                          className="btn btn-primary"
-                          onClick={handleSendResponse}
-                          disabled={sendingResponse || !adminResponse.trim()}
-                        >
-                          {sendingResponse ? (
-                            <>
-                              <i className="bi bi-hourglass-split"></i>
-                              送信中...
-                            </>
-                          ) : (
-                            <>
-                              <i className="bi bi-send"></i>
-                              通知を送信
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             )}
@@ -1695,6 +1493,17 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
         </div>
       </div>
 
+      {/* 返信フォームモーダル */}
+      <ResponseFormModal
+        isOpen={showResponseModal}
+        onClose={() => {
+          setShowResponseModal(false);
+          setSelectedMemo(null);
+        }}
+        memo={selectedMemo}
+        onSubmit={handleSendResponse}
+        loading={false}
+      />
     </div>
   );
 };
