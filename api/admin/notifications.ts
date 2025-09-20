@@ -163,7 +163,7 @@ module.exports = async function handler(req, res) {
       title: memo.postType === 'error_report' ? '不具合報告への対応完了' : '更新要望への対応完了',
       message: response,
       relatedMemoId: memoId,
-    });
+    } as any);
 
     await notification.save();
     console.log('Notification created successfully:', notification._id);
