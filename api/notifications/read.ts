@@ -39,6 +39,8 @@ async function connectToDatabase() {
 // Notificationモデル
 const NotificationSchema = new mongoose.Schema({
   userId: { type: String, required: true },
+  // 'admin_announcement': General announcements from admins to all users.
+  // 'admin_message': Direct messages from admins to specific users.
   type: { 
     type: String, 
     enum: ['memo_response', 'status_update', 'memo_reply', 'admin_announcement', 'admin_message'], 
