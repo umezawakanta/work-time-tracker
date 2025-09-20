@@ -73,7 +73,7 @@ export function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: A
     };
     
     const getProperty = (obj: unknown, prop: string): unknown => {
-      return hasProperty(obj, prop) ? (obj as any)[prop] : undefined;
+      return hasProperty(obj, prop) ? (obj as Record<string, unknown>)[prop] : undefined;
     };
     
     return (
