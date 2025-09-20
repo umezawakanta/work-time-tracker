@@ -453,65 +453,32 @@ function App() {
       createdAt: new Date().toISOString(),
     };
 
-    setMoodLogs((prev) => [...prev, newMoodLog]);
-    resetMoodForm();
+    moodLogState.setMoodLogs([...moodLogState.moodLogs, newMoodLog]);
+    moodLogState.resetMoodForm();
   };
 
   const updateMoodLog = (moodLogId: string, updates: Partial<MoodLog>) => {
-    setMoodLogs((prev) =>
-      prev.map((log) => (log.id === moodLogId ? { ...log, ...updates } : log))
-    );
+    moodLogState.updateMoodLog(moodLogId, updates);
   };
 
   const deleteMoodLog = (moodLogId: string) => {
-    setMoodLogs((prev) => prev.filter((log) => log.id !== moodLogId));
+    moodLogState.deleteMoodLog(moodLogId);
   };
 
   const resetMoodForm = () => {
-    setMoodForm({
-      date: new Date().toISOString().split("T")[0],
-      mood: 5,
-      energy: 5,
-      stress: 5,
-      notes: "",
-      activities: [],
-      weather: "sunny",
-      sleep: 8,
-    });
-    setNewActivity("");
-    setShowMoodForm(false);
-    setEditingMoodLog(null);
+    moodLogState.resetMoodForm();
   };
 
   const addActivity = () => {
-    if (!newActivity.trim()) return;
-    setMoodForm((prev) => ({
-      ...prev,
-      activities: [...prev.activities, newActivity.trim()],
-    }));
-    setNewActivity("");
+    moodLogState.addActivity();
   };
 
   const removeActivity = (index: number) => {
-    setMoodForm((prev) => ({
-      ...prev,
-      activities: prev.activities.filter((_, i) => i !== index),
-    }));
+    moodLogState.removeActivity(index);
   };
 
   const editMoodLog = (log: MoodLog) => {
-    setMoodForm({
-      date: log.date,
-      mood: log.mood,
-      energy: log.energy,
-      stress: log.stress,
-      notes: log.notes,
-      activities: log.activities,
-      weather: log.weather,
-      sleep: log.sleep,
-    });
-    setEditingMoodLog(log.id);
-    setShowMoodForm(true);
+    moodLogState.editMoodLog(log);
   };
 
   const saveMoodLog = () => {
