@@ -5,10 +5,10 @@
   "framework": "vite",
   "functions": {
     "api/**/*.ts": {
-      "runtime": "nodejs20.x"
+      "runtime": "@vercel/node@3.0.7"
     },
     "api/**/*.js": {
-      "runtime": "nodejs20.x"
+      "runtime": "@vercel/node@3.0.7"
     }
   },
   "ignoreCommand": "git diff --quiet HEAD^ HEAD ./"
