@@ -1935,7 +1935,7 @@ ${errorInfo.stack}
       if (!user?.id) {
         return;
       }
-      const response = await fetch(`/api/work-records/diary?userId=${user.id}`);
+      const response = await fetch(`/api/work-records/diary?userId=${encodeURIComponent(user.id)}`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -2418,7 +2418,7 @@ ${errorInfo.stack}
     }
 
     try {
-      const response = await fetch(`/api/user-settings?userId=${user.id}`);
+      const response = await fetch(`/api/user-settings?userId=${encodeURIComponent(user.id)}`);
       const data = await response.json();
 
       if (data.success) {
