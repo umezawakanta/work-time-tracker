@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './SimpleErrorReportingModal.css';
+import { ErrorInfo, formatErrorInfo, ERROR_DEFAULTS, getTimestamp } from '../types/errorTypes';
 
 interface SimpleErrorReportingModalProps {
   isOpen: boolean;
@@ -11,24 +12,26 @@ interface SimpleErrorReportingModalProps {
     userAgent: string;
     timestamp: string;
   }) => Promise<void>;
-  errorInfo?: {
-    message: string;
-    stack?: string;
-    filename?: string;
-    lineno?: number;
-    colno?: number;
-    type?: string;
-    timestamp: string;
-    userAgent: string;
-    url: string;
-  };
+  errorInfo?: ErrorInfo;
 }
 
 const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  errorInfo
+  errorInfo = {
+    message: '',
+    filename: ERROR_DEFAULTS.FILENAME,
+    lineno: ERROR_DEFAULTS.LINENO,
+    colno: ERROR_DEFAULTS.COLNO,
+    type: ERROR_DEFAULTS.TYPE,
+    timestamp: getTimestamp(),
+    userAgent: ERROR_DEFAULTS.USER_AGENT,
+    url: ERROR_DEFAULTS.URL,
+    status: '',
+    statusText: '',
+    method: ''
+  }
 }) => {
   const [selectedFeature, setSelectedFeature] = useState('');
   const [content, setContent] = useState('');
@@ -52,6 +55,8 @@ const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
   useEffect(() => {
     if (isOpen && errorInfo) {
       // エラー情報から自動で内容を生成
+      const { statusInfo, methodInfo, stackInfo } = formatErrorInfo(errorInfo);
+      
       const autoContent = `
 エラーが発生しました。
 
@@ -61,9 +66,9 @@ const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
 列番号: ${errorInfo.colno || 0}
 エラータイプ: ${errorInfo.type || 'Unknown'}
 発生時刻: ${errorInfo.timestamp}
-URL: ${errorInfo.url}
+URL: ${errorInfo.url}${statusInfo ? `\n${statusInfo}` : ''}${methodInfo ? `\n${methodInfo}` : ''}
 
-${errorInfo.stack ? `スタックトレース:\n${errorInfo.stack}` : ''}
+${stackInfo}
 
 このエラーについて詳細を教えてください。
       `.trim();
