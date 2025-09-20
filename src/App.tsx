@@ -4020,7 +4020,7 @@ ${errorInfo.stack}
         },
         body: JSON.stringify({
           title: `[${report.title}] ${new Date().toLocaleString('ja-JP')}`,
-          content: report.content,
+          content: `APIエラーが発生しました。\n\n--- エラー詳細 ---\n${report.content}\n\n--- システム情報 ---\nUser Agent: ${report.userAgent}\n発生時刻: ${report.timestamp}`,
           category: "エラー報告",
           tags: ["エラー", "バグ報告", "システム"],
           isPublic: true,
@@ -6257,10 +6257,10 @@ ${errorInfo.stack}
           errorInfo={currentError ? {
             message: currentError.message,
             stack: currentError.stack,
-            filename: (currentError as any).errorInfo?.filename,
-            lineno: (currentError as any).errorInfo?.lineno,
-            colno: (currentError as any).errorInfo?.colno,
-            type: (currentError as any).errorInfo?.type,
+            filename: (currentError as any).errorInfo?.filename || 'Unknown',
+            lineno: (currentError as any).errorInfo?.lineno || 0,
+            colno: (currentError as any).errorInfo?.colno || 0,
+            type: (currentError as any).errorInfo?.type || 'Unknown',
             timestamp: (currentError as any).errorInfo?.timestamp || new Date().toISOString(),
             userAgent: (currentError as any).errorInfo?.userAgent || navigator.userAgent,
             url: (currentError as any).errorInfo?.url || window.location.href
@@ -6293,10 +6293,10 @@ ${errorInfo.stack}
           errorInfo={currentError ? {
             message: currentError.message,
             stack: currentError.stack,
-            filename: (currentError as any).errorInfo?.filename,
-            lineno: (currentError as any).errorInfo?.lineno,
-            colno: (currentError as any).errorInfo?.colno,
-            type: (currentError as any).errorInfo?.type,
+            filename: (currentError as any).errorInfo?.filename || 'Unknown',
+            lineno: (currentError as any).errorInfo?.lineno || 0,
+            colno: (currentError as any).errorInfo?.colno || 0,
+            type: (currentError as any).errorInfo?.type || 'Unknown',
             timestamp: (currentError as any).errorInfo?.timestamp || new Date().toISOString(),
             userAgent: (currentError as any).errorInfo?.userAgent || navigator.userAgent,
             url: (currentError as any).errorInfo?.url || window.location.href
