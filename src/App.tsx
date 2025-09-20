@@ -4034,7 +4034,7 @@ User Agent: ${userAgent}
     );
   }
 
-  const getErrorInfo = (error: Error | null) => {
+  const getErrorInfo = (error: Error | null): ApiErrorInfo | undefined => {
     if (!error) return undefined;
 
     let errorInfo: ApiErrorInfo | undefined = undefined;
