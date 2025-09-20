@@ -6,6 +6,8 @@ export const HTTP_METHODS = [
 ] as const;
 
 // HTTPメソッドの正規表現（一度だけ作成）
+// This regex is constructed once at module load time for performance.
+// It matches any of the defined HTTP methods (case-insensitive) as a whole word.
 export const HTTP_METHOD_REGEX = new RegExp(`\\b(${HTTP_METHODS.join("|")})\\b`, "i");
 
 // エラー情報抽出用の正規表現パターン
