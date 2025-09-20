@@ -4052,7 +4052,7 @@ User Agent: ${userAgent}
     
     // より柔軟なパターンマッチング
     const urlMatch2 = errorMessage.match(/\/api\/[^\s\n]+/);
-    const statusMatch2 = errorMessage.match(/(\d{3})/);
+    const statusMatch2 = errorMessage.match(/\b(1\d{2}|2\d{2}|3\d{2}|4\d{2}|5\d{2})\b/);
     const methodMatch2 = errorMessage.match(/(GET|POST|PUT|DELETE|PATCH)/);
     
     return {
