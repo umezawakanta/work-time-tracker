@@ -41,7 +41,7 @@ const NotificationSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   type: { 
     type: String, 
-    enum: ['memo_response', 'status_update', 'admin_message'], 
+    enum: ['memo_response', 'status_update', 'admin_message', 'memo_reply', 'admin_announcement'], 
     required: true 
   },
   title: { type: String, required: true },
@@ -98,9 +98,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Notification ID is required' });
     }
 
+    // ユーザーIDを正しく取得
+    const userId = user.userId || user.id;
+    console.log('Marking notification as read for user:', userId);
+    console.log('User object from JWT:', user);
+
     // 通知を既読にする
     const notification = await Notification.findOneAndUpdate(
-      { _id: notificationId, userId: user.userId },
+      { _id: notificationId, userId: userId },
       { isRead: true },
       { new: true }
     );
