@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const { verifyJWT } = require('../utils/validation');
 
 dotenv.config();
 
@@ -35,7 +36,7 @@ const IncomeExpenseRecordSchema = new mongoose.Schema({
 
 const IncomeExpenseRecord = mongoose.models.SalaryRecord || mongoose.model('SalaryRecord', IncomeExpenseRecordSchema);
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
     ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin) ? req.headers.origin : 'https://work-time-tracker-five.vercel.app'
@@ -52,17 +53,15 @@ export default async function handler(req, res) {
   await connectDB();
 
   try {
+    // JWTトークンからユーザーIDを取得
+    const userInfo = await verifyJWT(req);
+    if (!userInfo) {
+      return res.status(401).json({ message: '認証が必要です' });
+    }
+    const userId = userInfo.userId;
+
     if (req.method === 'GET') {
       // 給料記録一覧を取得
-      const { userId } = req.query;
-      
-      
-      if (!userId) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'ユーザーIDが必要です' 
-        });
-      }
 
       const records = await IncomeExpenseRecord.find({ userId })
         .sort({ date: -1 })
@@ -91,9 +90,9 @@ export default async function handler(req, res) {
 
     } else if (req.method === 'POST') {
       // 新しい収支記録を作成
-      const { userId, date, amount, type, transportation, overtime, bonus, notes } = req.body;
+      const { date, amount, type, transportation, overtime, bonus, notes } = req.body;
 
-      if (!userId || !date || amount === undefined || !type) {
+      if (!date || amount === undefined || !type) {
         return res.status(400).json({
           success: false,
           message: '必須フィールドが不足しています'
