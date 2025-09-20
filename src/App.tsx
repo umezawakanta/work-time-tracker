@@ -2377,11 +2377,16 @@ ${errorInfo.stack}
 
   const handleDeleteDiary = async (id: string) => {
     try {
-      const response = await fetch(`/api/work-records/diary?id=${encodeURIComponent(id)}`, {
-        method: "DELETE",
+      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
+        return await apiFetch(`/api/work-records/diary?id=${encodeURIComponent(id)}`, {
+          method: "DELETE",
+          headers: createAuthHeaders(token)
+        });
       });
 
-      const data = await response.json();
+      if (!result) return; // 認証エラーの場合
+
+      const data = await result.json();
       if (data.success) {
         setMessage("日記が削除されました！");
         loadWorkDiaries();
@@ -2389,6 +2394,13 @@ ${errorInfo.stack}
         setMessage(`エラー: ${data.message}`);
       }
     } catch (error) {
+      // エラー情報を取得してエラー報告モーダルを表示
+      const errorInfo = getErrorInfo(error instanceof Error ? error : null);
+      if (errorInfo) {
+        setCurrentError(error instanceof Error ? error : new Error(String(error)));
+        setShowSimpleErrorModal(true);
+      }
+      
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
