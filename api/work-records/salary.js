@@ -93,9 +93,8 @@ module.exports = async function handler(req, res) {
         // typeフィールドが存在しない場合は、デフォルトでincomeとする
         // 既存のデータの整合性を保つため、amountの正負で判定しない
         if (!recordObj.type) {
-          console.warn(`[salary.js] Record with _id=${recordObj._id} is missing 'type' field. Possible client bug or legacy data.`);
-          // Optionally, you could add a flag to the record for client-side handling:
-          // recordObj.typeMissing = true; // Removed to avoid breaking existing clients
+          console.warn(`[salary.js] Record with _id=${recordObj._id} is missing 'type' field. Possible client bug or legacy data. Setting default type to 'income'.`);
+          recordObj.type = "income";
         }
         return recordObj;
       });
