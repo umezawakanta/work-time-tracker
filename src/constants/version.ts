@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.0.2";
+export const APP_VERSION = "1.0.3";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,17 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.0.3",
+    date: "2025-01-21",
+    changes: [
+      "管理者お知らせ通知機能の不具合を修正",
+      "データベース名の不一致による通知表示問題を解決",
+      "通知作成と取得で同じデータベースにアクセスするように改善",
+      "ユーザーに管理者お知らせが正しく表示されるように修正"
+    ],
+    type: "bugfix"
+  },
   {
     version: "1.0.2",
     date: "2025-01-21",

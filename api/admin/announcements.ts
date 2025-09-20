@@ -144,17 +144,35 @@ module.exports = async function handler(req, res) {
 
     // 各ユーザーに通知を作成
     const notifications = [];
+    console.log(`Creating notifications for ${userIds.length} users`);
+    
     for (const userId of userIds) {
-      const notification = new NotificationModel({
-        userId: userId,
-        type: 'admin_announcement',
-        title: title,
-        message: message,
-      });
+      try {
+        const notification = new NotificationModel({
+          userId: userId,
+          type: 'admin_announcement',
+          title: title,
+          message: message,
+        });
 
-      await notification.save();
-      notifications.push(notification);
-      console.log(`Announcement notification created for user: ${userId}`);
+        const savedNotification = await notification.save();
+        notifications.push(savedNotification);
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`Announcement notification created for user: ${userId}`, {
+            notificationId: savedNotification._id,
+            title: savedNotification.title,
+            type: savedNotification.type
+          });
+        } else {
+          console.log(`Announcement notification created for a user`);
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error(`Failed to create notification for user ${userId}:`, error);
+        } else {
+          console.error('Failed to create notification for a user:', error);
+        }
+      }
     }
 
     res.status(200).json({ 

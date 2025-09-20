@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
-// データベース接続
+// データベース接続（グローバルキャッシュされた接続を使用）
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/work-time-tracker';
 
 let cached = global.mongoose;
@@ -20,7 +20,10 @@ async function connectToDatabase() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      ...opts,
+      dbName: 'workTimeTracker'
+    }).then((mongoose) => {
       return mongoose;
     });
   }
@@ -91,12 +94,14 @@ module.exports = async function handler(req, res) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    console.log('Fetching notifications for user:', user.userId);
+    // ユーザーIDを正しく取得（JWTトークンの構造に応じて調整）
+    const userId = user.userId || user.id;
+    console.log('Fetching notifications for user:', userId);
 
     const { page = 1, limit = 20, unreadOnly = false } = req.query;
 
     // クエリ条件を構築
-    const query = { userId: user.userId };
+    const query = { userId: userId };
     if (unreadOnly === 'true') {
       query.isRead = false;
     }
@@ -114,7 +119,7 @@ module.exports = async function handler(req, res) {
 
     // 未読通知数を取得
     const unreadCount = await Notification.countDocuments({ 
-      userId: user.userId, 
+      userId: userId, 
       isRead: false 
     });
 
