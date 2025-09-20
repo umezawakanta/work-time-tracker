@@ -22,15 +22,19 @@ export const ERROR_DEFAULTS = {
   LINENO: 0,
   COLNO: 0,
   TYPE: 'Unknown',
-  TIMESTAMP: () => new Date().toISOString(),
-  USER_AGENT: () =>
-    typeof navigator !== "undefined" && navigator.userAgent
+  get TIMESTAMP() {
+    return new Date().toISOString();
+  },
+  get USER_AGENT() {
+    return typeof navigator !== "undefined" && navigator.userAgent
       ? navigator.userAgent
-      : "",
-  URL: () =>
-    typeof window !== "undefined" && window.location && window.location.href
+      : "";
+  },
+  get URL() {
+    return typeof window !== "undefined" && window.location && window.location.href
       ? window.location.href
-      : ""
+      : "";
+  }
 } as const;
 
 // エラー情報を構築するユーティリティ関数
@@ -50,9 +54,9 @@ export const buildErrorInfo = (
     lineno: ERROR_DEFAULTS.LINENO,
     colno: ERROR_DEFAULTS.COLNO,
     type: ERROR_DEFAULTS.TYPE,
-    timestamp: apiErrorInfo?.timestamp || ERROR_DEFAULTS.TIMESTAMP(),
-    userAgent: apiErrorInfo?.userAgent || ERROR_DEFAULTS.USER_AGENT(),
-    url: apiErrorInfo?.url || extractedInfo?.url || ERROR_DEFAULTS.URL(),
+    timestamp: apiErrorInfo?.timestamp || ERROR_DEFAULTS.TIMESTAMP,
+    userAgent: apiErrorInfo?.userAgent || ERROR_DEFAULTS.USER_AGENT,
+    url: apiErrorInfo?.url || extractedInfo?.url || ERROR_DEFAULTS.URL,
     status: apiErrorInfo?.status || extractedInfo?.status,
     statusText: apiErrorInfo?.statusText,
     method: apiErrorInfo?.method || extractedInfo?.method
