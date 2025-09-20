@@ -4000,6 +4000,36 @@ ${errorInfo.stack}
     reportApiError(errorInfo, handleErrorReport);
   };
 
+  // エラー報告のコンテンツフォーマット関数
+  const formatErrorReportContent = (content: string, userAgent: string, timestamp: string) => {
+    return `APIエラーが発生しました。
+
+--- エラー詳細 ---
+${content}
+
+--- システム情報 ---
+User Agent: ${userAgent}
+発生時刻: ${timestamp}`;
+  };
+
+  // エラー情報のヘルパー関数
+  const getErrorInfo = (error: Error | null) => {
+    if (!error) return undefined;
+    
+    const errorInfo = (error as any).errorInfo;
+    return {
+      message: error.message,
+      stack: error.stack,
+      filename: errorInfo?.filename || 'Unknown',
+      lineno: errorInfo?.lineno || 0,
+      colno: errorInfo?.colno || 0,
+      type: errorInfo?.type || 'Unknown',
+      timestamp: errorInfo?.timestamp || new Date().toISOString(),
+      userAgent: errorInfo?.userAgent || navigator.userAgent,
+      url: errorInfo?.url || window.location.href
+    };
+  };
+
   // SimpleErrorReportingModal用のエラー報告送信処理
   const handleSimpleErrorReport = async (report: {
     title: string;
@@ -4020,7 +4050,7 @@ ${errorInfo.stack}
         },
         body: JSON.stringify({
           title: `[${report.title}] ${new Date().toLocaleString('ja-JP')}`,
-          content: `APIエラーが発生しました。\n\n--- エラー詳細 ---\n${report.content}\n\n--- システム情報 ---\nUser Agent: ${report.userAgent}\n発生時刻: ${report.timestamp}`,
+          content: formatErrorReportContent(report.content, report.userAgent, report.timestamp),
           category: "エラー報告",
           tags: ["エラー", "バグ報告", "システム"],
           isPublic: true,
@@ -6254,17 +6284,7 @@ ${errorInfo.stack}
           isOpen={showSimpleErrorModal}
           onClose={() => setShowSimpleErrorModal(false)}
           onSubmit={handleSimpleErrorReport}
-          errorInfo={currentError ? {
-            message: currentError.message,
-            stack: currentError.stack,
-            filename: (currentError as any).errorInfo?.filename || 'Unknown',
-            lineno: (currentError as any).errorInfo?.lineno || 0,
-            colno: (currentError as any).errorInfo?.colno || 0,
-            type: (currentError as any).errorInfo?.type || 'Unknown',
-            timestamp: (currentError as any).errorInfo?.timestamp || new Date().toISOString(),
-            userAgent: (currentError as any).errorInfo?.userAgent || navigator.userAgent,
-            url: (currentError as any).errorInfo?.url || window.location.href
-          } : undefined}
+          errorInfo={getErrorInfo(currentError)}
         />
       </div>
     );
@@ -6290,17 +6310,7 @@ ${errorInfo.stack}
           isOpen={showErrorModal}
           onClose={() => setShowErrorModal(false)}
           onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
-          errorInfo={currentError ? {
-            message: currentError.message,
-            stack: currentError.stack,
-            filename: (currentError as any).errorInfo?.filename || 'Unknown',
-            lineno: (currentError as any).errorInfo?.lineno || 0,
-            colno: (currentError as any).errorInfo?.colno || 0,
-            type: (currentError as any).errorInfo?.type || 'Unknown',
-            timestamp: (currentError as any).errorInfo?.timestamp || new Date().toISOString(),
-            userAgent: (currentError as any).errorInfo?.userAgent || navigator.userAgent,
-            url: (currentError as any).errorInfo?.url || window.location.href
-          } : undefined}
+          errorInfo={getErrorInfo(currentError)}
         />
     </>
   );
