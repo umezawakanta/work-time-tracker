@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (record.notes) {
         const notes = record.notes.toLowerCase();
         // 支出を示すキーワードをチェック
-        if (EXPENSE_KEYWORDS.some(keyword => notes.includes(keyword))) {
+        if (EXPENSE_KEYWORDS.some(keyword => notes.includes(keyword.toLowerCase()))) {
           newType = 'expense';
         }
       }
