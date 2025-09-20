@@ -167,7 +167,11 @@ module.exports = async function handler(req, res) {
           console.log(`Announcement notification created for a user`);
         }
       } catch (error) {
-        console.error(`Failed to create notification for user ${userId}:`, error);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error(`Failed to create notification for user ${userId}:`, error);
+        } else {
+          console.error('Failed to create notification for a user:', error);
+        }
       }
     }
 
