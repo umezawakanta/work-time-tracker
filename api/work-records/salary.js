@@ -56,11 +56,7 @@ module.exports = async function handler(req, res) {
     // JWTトークンからユーザーIDを取得
     console.log('Verifying JWT token...');
     if (req.headers.authorization) {
-      // Log only the presence and a masked version of the token
-      const masked = req.headers.authorization.length > 10
-        ? req.headers.authorization.slice(0, 7) + '...' + req.headers.authorization.slice(-3)
-        : '[too short to mask]';
-      console.log('Authorization header present. Masked value:', masked);
+      console.log('Authorization header present.');
     } else {
       console.log('Authorization header not present.');
     }
