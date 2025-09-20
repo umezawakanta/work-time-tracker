@@ -4029,11 +4029,13 @@ User Agent: ${userAgent}
   };
 
 
-  // HTTPメソッドの定数配列
-  const HTTP_METHODS = [
-    "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "CONNECT", "TRACE"
-  ];
 
+// HTTPメソッドの定数配列
+const HTTP_METHODS = [
+  "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "CONNECT", "TRACE"
+];
+
+function App() {
   // エラー情報抽出用の正規表現パターン
   const ERROR_PATTERNS = {
     // URL: の後に続く文字列をマッチ
