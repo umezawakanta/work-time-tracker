@@ -10,7 +10,6 @@ import HeaderComponent from "./components/HeaderComponent";
 import DiaryReminderIntegration from "./components/DiaryReminderIntegration";
 import HetamaIconComponent from "./components/HetamaIconComponent";
 import MemosComponent from "./components/MemosComponent";
-import ErrorReportingModal from "./components/ErrorReportingModal";
 import ReportsComponent from "./components/ReportsComponent";
 import AdminPanelComponent from "./components/AdminPanelComponent";
 import LoginComponent from "./components/LoginComponent";
@@ -240,7 +239,6 @@ function App() {
   const [memos, setMemos] = useState<Memo[]>([]);
   const [showMemos, setShowMemos] = useState(false);
   const [showMemoForm, setShowMemoForm] = useState(false);
-  const [showErrorReportingModal, setShowErrorReportingModal] = useState(false);
   const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
   const [memoTitle, setMemoTitle] = useState("");
 
@@ -263,8 +261,6 @@ function App() {
   const [memoCategory, setMemoCategory] = useState("");
   const [memoTags, setMemoTags] = useState("");
   const [memoIsPublic, setMemoIsPublic] = useState(false);
-  const [memoPostType, setMemoPostType] = useState("normal"); // normal, update_request, admin_only, family_only
-  const [memoSelectedFeature, setMemoSelectedFeature] = useState("");
   const [memoIsFamilyOnly, setMemoIsFamilyOnly] = useState(false);
   const [memoIsAdminOnly, setMemoIsAdminOnly] = useState(false);
   const [memoSearchTerm, setMemoSearchTerm] = useState("");
@@ -3157,49 +3153,13 @@ ${errorInfo.stack}
     // エラー報告イベントをリッスン
     const handleErrorReport = (event: CustomEvent) => {
       const { category, content } = event.detail;
-      setShowMemos(true);
-      setShowErrorReportingModal(true);
-      setMemoCategory(category);
-      setMemoContent(content);
+      setShowErrorModal(true);
+      setCurrentError({
+        message: content,
+        stack: ''
+      });
     };
 
-    // エラーレポートの送信ハンドラー
-    const handleErrorReportSubmit = async (report: {
-      title: string;
-      content: string;
-      errorDetails: string;
-      userAgent: string;
-      timestamp: string;
-    }) => {
-      try {
-        const response = await fetch('/api/memos', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: JSON.stringify({
-            title: report.title,
-            content: report.content,
-            category: report.title === '不具合報告' ? '不具合報告' : '改善要望',
-            isPublic: true,
-            postType: report.title === '不具合報告' ? 'error_report' : 'update_request',
-            selectedFeature: report.errorDetails.split(': ')[1] || 'other',
-            tags: ['報告', report.title === '不具合報告' ? 'バグ' : '要望']
-          })
-        });
-
-        if (response.ok) {
-          alert('報告を投稿しました！');
-          loadMemos();
-        } else {
-          alert('報告の投稿に失敗しました。');
-        }
-      } catch (error) {
-        console.error('報告の投稿エラー:', error);
-        alert('報告の投稿に失敗しました。');
-      }
-    };
     
     window.addEventListener('showErrorReport', handleErrorReport as EventListener);
 
@@ -3870,11 +3830,6 @@ ${errorInfo.stack}
       return;
     }
 
-    // 不具合報告・更新要望の場合は機能選択を必須にする
-    if ((memoCategory === '不具合報告' || memoCategory === '更新要望') && !memoSelectedFeature) {
-      setMessage("不具合報告・更新要望の場合は対象機能を選択してください");
-      return;
-    }
 
     // タイトルがない場合は内容の一行目をタイトルとして使用
     const finalTitle =
@@ -3887,12 +3842,6 @@ ${errorInfo.stack}
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0);
 
-      // 不具合報告・更新要望の場合は機能情報を内容に含める
-      let finalContent = memoContent;
-      if ((memoCategory === '不具合報告' || memoCategory === '更新要望') && memoSelectedFeature) {
-        const selectedFeatureLabel = featureOptions.find(opt => opt.value === memoSelectedFeature)?.label || memoSelectedFeature;
-        finalContent = `【対象機能】${selectedFeatureLabel}\n\n${memoContent}`;
-      }
 
       const response = await fetch("/api/memos", {
         method: "POST",
@@ -3902,13 +3851,13 @@ ${errorInfo.stack}
         },
         body: JSON.stringify({
           title: finalTitle,
-          content: finalContent,
+          content: memoContent,
           category: memoCategory,
           tags,
           isPublic: memoIsPublic,
           isFamilyOnly: memoIsFamilyOnly,
           isAdminOnly: memoIsAdminOnly,
-          postType: memoPostType,
+          postType: "general",
         }),
       });
 
@@ -3923,7 +3872,6 @@ ${errorInfo.stack}
         setMemoContent("");
         setMemoCategory("");
         setMemoTags("");
-        setMemoSelectedFeature("");
         setMemoIsPublic(false);
         setMemoIsFamilyOnly(false);
         setMemoIsAdminOnly(false);
@@ -5605,10 +5553,6 @@ ${errorInfo.stack}
                     setMemoIsFamilyOnly={setMemoIsFamilyOnly}
                     memoIsAdminOnly={memoIsAdminOnly}
                     setMemoIsAdminOnly={setMemoIsAdminOnly}
-                    memoPostType={memoPostType}
-                    setMemoPostType={setMemoPostType}
-                    memoSelectedFeature={memoSelectedFeature}
-                    setMemoSelectedFeature={setMemoSelectedFeature}
                     handleReplySubmit={handleReplySubmit}
                     handleReplyCancel={handleReplyCancel}
                     handleEditReply={handleEditReply}
@@ -6161,12 +6105,6 @@ ${errorInfo.stack}
           error={currentError}
           onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => void}
           buttonPosition={errorModalButtonPosition}
-        />
-        <ErrorReportingModal
-          isOpen={showErrorReportingModal}
-          onClose={() => setShowErrorReportingModal(false)}
-          onSubmit={handleErrorReport as unknown as (report: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
-          initialContent={memoContent}
         />
     </>
   );

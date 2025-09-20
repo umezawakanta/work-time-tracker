@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import './MemosComponent.css';
 import type { Memo, Reply } from '../types';
-import QuickReportModal from './QuickReportModal';
-import ErrorReportingModal from './ErrorReportingModal';
 
 interface MemosComponentProps {
   memos: Memo[];
@@ -33,10 +31,6 @@ interface MemosComponentProps {
   setMemoIsFamilyOnly: (isFamilyOnly: boolean) => void;
   memoIsAdminOnly: boolean;
   setMemoIsAdminOnly: (isAdminOnly: boolean) => void;
-  memoPostType: string;
-  setMemoPostType: (postType: string) => void;
-  memoSelectedFeature: string;
-  setMemoSelectedFeature: (feature: string) => void;
   handleReplySubmit: (memoId: string) => void;
   handleReplyCancel: () => void;
   handleEditReply: (replyId: string, content: string) => void;
@@ -78,10 +72,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   setMemoIsFamilyOnly,
   memoIsAdminOnly,
   setMemoIsAdminOnly,
-  memoPostType,
-  setMemoPostType,
-  memoSelectedFeature,
-  setMemoSelectedFeature,
   handleReplySubmit,
   handleReplyCancel,
   handleEditReply,
@@ -99,8 +89,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   const [showGenreManagement, setShowGenreManagement] = useState(false);
   const [editingGenre, setEditingGenre] = useState<string | null>(null);
   const [editingGenreName, setEditingGenreName] = useState("");
-  const [showInstructions, setShowInstructions] = useState(false);
-  const [showErrorReportingModal, setShowErrorReportingModal] = useState(false);
   // 返信関連の状態
   const [editingReply, setEditingReply] = useState<string | null>(null);
   const [editingReplyContent, setEditingReplyContent] = useState("");
@@ -132,146 +120,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     { value: "other", label: "その他" },
   ];
 
-  // 簡易報告機能の状態
-  const [showQuickReport, setShowQuickReport] = useState(false);
-  const [quickReportButtonPosition, setQuickReportButtonPosition] = useState<{ x: number; y: number } | undefined>(undefined);
 
-  // 簡易報告のハンドラー
-  const handleQuickReport = async (report: { title: string; content: string; type: 'bug' | 'feature' }) => {
-    try {
-      const response = await fetch('/api/memos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          title: report.title,
-          content: report.content,
-          category: report.type === 'bug' ? '不具合報告' : '機能要望',
-          isPublic: true,
-          postType: 'update-request'
-        })
-      });
-
-      if (response.ok) {
-        alert('報告を投稿しました！');
-        loadMemos();
-      } else {
-        alert('報告の投稿に失敗しました。');
-      }
-    } catch (error) {
-      console.error('報告の投稿エラー:', error);
-      alert('報告の投稿に失敗しました。');
-    }
-  };
-
-  // エラーレポートの送信ハンドラー
-  const handleErrorReport = async (report: {
-    title: string;
-    content: string;
-    errorDetails: string;
-    userAgent: string;
-    timestamp: string;
-  }) => {
-    try {
-      const response = await fetch('/api/memos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          title: report.title,
-          content: report.content,
-          category: report.title === '不具合報告' ? '不具合報告' : '改善要望',
-          isPublic: true,
-          postType: report.title === '不具合報告' ? 'error_report' : 'update_request',
-          selectedFeature: report.errorDetails.split(': ')[1] || 'other',
-          tags: ['報告', report.title === '不具合報告' ? 'バグ' : '要望']
-        })
-      });
-
-      if (response.ok) {
-        alert('報告を投稿しました！');
-        loadMemos();
-      } else {
-        alert('報告の投稿に失敗しました。');
-      }
-    } catch (error) {
-      console.error('報告の投稿エラー:', error);
-      alert('報告の投稿に失敗しました。');
-    }
-  };
-
-  // クイック送信のハンドラー
-  const handleQuickSubmit = async (postType: 'error_report' | 'update_request') => {
-    if (!memoSelectedFeature) {
-      alert('機能を選択してください');
-      return;
-    }
-    
-    if (!memoContent.trim()) {
-      alert('内容を入力してください');
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem("access_token");
-      const selectedFeatureLabel = featureOptions.find(opt => opt.value === memoSelectedFeature)?.label || memoSelectedFeature;
-      const finalTitle = memoTitle.trim() || memoContent.split("\n")[0].trim() || "無題";
-      const tags = memoTags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag.length > 0);
-
-      // 機能情報を内容に含める
-      const contentWithFeature = `【対象機能】${selectedFeatureLabel}\n\n${memoContent}`;
-
-      const response = await fetch("/api/memos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: finalTitle,
-          content: contentWithFeature,
-          category: postType === 'error_report' ? '不具合報告' : '更新要望',
-          tags,
-          isPublic: true,
-          isFamilyOnly: false,
-          isAdminOnly: false,
-          postType: postType,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          alert(`${postType === 'error_report' ? '不具合報告' : '更新要望'}を送信しました！`);
-          setMemoTitle("");
-          setMemoContent("");
-          setMemoCategory("");
-          setMemoTags("");
-          setMemoSelectedFeature("");
-          setMemoIsPublic(false);
-          setMemoIsFamilyOnly(false);
-          setMemoIsAdminOnly(false);
-          setMemoPostType("general");
-          loadMemos();
-        } else {
-          alert(data.message || '送信に失敗しました');
-        }
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        alert(errorData.message || `送信に失敗しました (${response.status})`);
-      }
-    } catch (error) {
-      console.error('クイック送信エラー:', error);
-      alert('送信に失敗しました');
-    }
-  };
 
   // ページネーション用の関数
   const getPaginatedMemos = () => {
@@ -379,8 +228,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
             メモ
           </h2>
           <p className="section-description">
-            個人的なメモや記録を保存・管理できます。<br/>
-            <strong>不具合報告・改善要望</strong>は、下記の専用セクションから送信してください。
+            個人的なメモや記録を保存・管理できます。
           </p>
         </div>
         <div className="section-controls">
@@ -411,14 +259,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
         <div className="memos-content">
           <div className="memos-header">
             <div className="memos-header-left">
-              <button
-                onClick={() => setShowInstructions(!showInstructions)}
-                className="instructions-button"
-                title="不具合報告・更新要望の出し方"
-              >
-                <i className="bi bi-question-circle"></i>
-                不具合報告・更新要望の出し方
-              </button>
             </div>
             <div className="memos-header-right">
               <button
@@ -433,97 +273,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
             </div>
           </div>
 
-          {/* 不具合報告・更新要望の説明セクション */}
-          {showInstructions && (
-            <div className="instructions-section">
-              <div className="instructions-header">
-                <h3><i className="bi bi-info-circle"></i> 不具合報告・更新要望の出し方</h3>
-                <button
-                  className="close-instructions-button"
-                  onClick={() => setShowInstructions(false)}
-                  title="閉じる"
-                >
-                  <i className="bi bi-x"></i>
-                </button>
-              </div>
-              
-              <div className="instructions-content">
-                <div className="instruction-card">
-                  <div className="instruction-header">
-                    <i className="bi bi-bug instruction-icon bug-icon"></i>
-                    <h4>不具合報告の出し方</h4>
-                  </div>
-                  <div className="instruction-steps">
-                    <ol>
-                      <li>メモの「投稿タイプ」で「不具合報告」を選択</li>
-                      <li>タイトルに不具合の概要を記入（例：「ログインできない」）</li>
-                      <li>内容に以下の情報を含めて記入：
-                        <ul>
-                          <li>発生した不具合の詳細</li>
-                          <li>再現手順（どの操作で発生するか）</li>
-                          <li>使用環境（ブラウザ、OS等）</li>
-                          <li>エラーメッセージがあれば記載</li>
-                        </ul>
-                      </li>
-                      <li>「公開」にチェックを入れる</li>
-                      <li>「保存」ボタンを押して投稿</li>
-                    </ol>
-                  </div>
-                  <div className="instruction-example">
-                    <h5>例：</h5>
-                    <div className="example-content">
-                      <strong>タイトル：</strong> ログイン時にエラーが発生する<br/>
-                      <strong>内容：</strong> ログインボタンを押すと「Internal Server Error」が表示されます。<br/>
-                      再現手順：1. ログインページにアクセス 2. メールアドレスとパスワードを入力 3. ログインボタンをクリック<br/>
-                      環境：Chrome 120.0.0.0、Windows 11
-                    </div>
-                  </div>
-                </div>
-
-                <div className="instruction-card">
-                  <div className="instruction-header">
-                    <i className="bi bi-lightbulb instruction-icon idea-icon"></i>
-                    <h4>更新要望の出し方</h4>
-                  </div>
-                  <div className="instruction-steps">
-                    <ol>
-                      <li>メモの「投稿タイプ」で「更新要望」を選択</li>
-                      <li>タイトルに要望の概要を記入（例：「ダークモードの追加」）</li>
-                      <li>内容に以下の情報を含めて記入：
-                        <ul>
-                          <li>実装してほしい機能の詳細</li>
-                          <li>なぜその機能が必要か（使用場面、メリット等）</li>
-                          <li>具体的な仕様やデザイン案があれば記載</li>
-                        </ul>
-                      </li>
-                      <li>「公開」にチェックを入れる</li>
-                      <li>「保存」ボタンを押して投稿</li>
-                    </ol>
-                  </div>
-                  <div className="instruction-example">
-                    <h5>例：</h5>
-                    <div className="example-content">
-                      <strong>タイトル：</strong> ダークモードの追加<br/>
-                      <strong>内容：</strong> 夜間の使用時に目が疲れるので、ダークモードを追加してほしいです。<br/>
-                      背景色を黒系、文字色を白系にして、既存の機能はそのまま維持していただければと思います。<br/>
-                      設定画面で切り替えできるようにしていただけると助かります。
-                    </div>
-                  </div>
-                </div>
-
-                <div className="instruction-tips">
-                  <h4><i className="bi bi-lightbulb"></i> 投稿のコツ</h4>
-                  <ul>
-                    <li>具体的で分かりやすいタイトルをつける</li>
-                    <li>不具合報告では再現手順を詳しく書く</li>
-                    <li>更新要望では実装理由を明確にする</li>
-                    <li>他のユーザーも参考になるように投稿する</li>
-                    <li>管理者からの返信を待つ（通知でお知らせします）</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* カテゴリ管理ボタン */}
           <div className="memos-controls">
@@ -677,39 +426,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
             </div>
           )}
 
-          {/* 不具合報告・改善要望ボタン */}
-          {showMemos && (
-            <div className="report-request-section">
-              <div className="report-request-header">
-                <h3>
-                  <i className="bi bi-exclamation-triangle"></i>
-                  不具合報告・改善要望
-                </h3>
-                <p className="report-request-description">
-                  バグやエラーの報告、機能改善の提案はこちらから送信してください。
-                </p>
-              </div>
-              
-              <div className="report-request-actions">
-                <button
-                  className="report-button bug-report"
-                  onClick={() => setShowErrorReportingModal(true)}
-                  title="不具合報告を送信"
-                >
-                  <i className="bi bi-bug"></i>
-                  <span>不具合報告を送信</span>
-                </button>
-                <button
-                  className="report-button update-request"
-                  onClick={() => setShowErrorReportingModal(true)}
-                  title="改善要望を送信"
-                >
-                  <i className="bi bi-lightbulb"></i>
-                  <span>改善要望を送信</span>
-                </button>
-              </div>
-            </div>
-          )}
 
           {/* メモフォーム */}
           {showMemoForm && (
@@ -722,8 +438,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                   {editingMemo ? "メモを編集" : "新しいメモを追加"}
                 </h3>
                 <p className="form-description">
-                  個人的なメモや記録を作成します。<br/>
-                  <strong>不具合報告・改善要望</strong>は、上記の専用セクションから送信してください。
+                  個人的なメモや記録を作成します。
                 </p>
               </div>
               <div className="form-group">
@@ -767,20 +482,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
               </div>
 
 
-              <div className="form-group">
-                <label htmlFor="memoPostType">投稿タイプ</label>
-                <select
-                  id="memoPostType"
-                  value={memoPostType}
-                  onChange={(e) => setMemoPostType(e.target.value)}
-                  required
-                >
-                  <option value="normal">通常のメモ</option>
-                  <option value="update_request">更新要望</option>
-                  <option value="admin_only">管理者限定</option>
-                  <option value="family_only">家族限定</option>
-                </select>
-              </div>
 
               <div className="form-group">
                 <label>
@@ -817,7 +518,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                   setMemoContent("");
                   setMemoCategory("");
                   setMemoIsPublic(false);
-                  setMemoPostType("normal");
                   setShowMemoForm(true);
                 }}
                 className="create-memo-button"
@@ -929,12 +629,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                         )}
                         {memo.postType === 'update_request' && (
                           <span className="update-request-badge"><i className="bi bi-lightbulb"></i> 更新要望</span>
-                        )}
-                        {memo.postType === 'admin_only' && (
-                          <span className="admin-only-badge"><i className="bi bi-shield-lock"></i> 管理者限定</span>
-                        )}
-                        {memo.postType === 'family_only' && (
-                          <span className="family-only-badge"><i className="bi bi-people"></i> 家族限定</span>
                         )}
                       </div>
                     </div>
@@ -1076,7 +770,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                           setMemoContent(memo.content || '');
                           setMemoCategory(memo.category || '');
                           setMemoIsPublic(memo.isPublic || false);
-                          setMemoPostType(memo.postType || 'normal');
                           setShowMemoForm(true);
                         }}
                         className="edit-button"
@@ -1103,20 +796,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
         </div>
       )}
 
-      {/* 簡易報告モーダル */}
-      <QuickReportModal
-        isOpen={showQuickReport}
-        onClose={() => setShowQuickReport(false)}
-        onSubmit={handleQuickReport}
-        buttonPosition={quickReportButtonPosition}
-      />
-
-      {/* エラーレポートモーダル */}
-      <ErrorReportingModal
-        isOpen={showErrorReportingModal}
-        onClose={() => setShowErrorReportingModal(false)}
-        onSubmit={handleErrorReport}
-      />
     </div>
   );
 };
