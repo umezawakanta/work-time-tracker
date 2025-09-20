@@ -27,7 +27,10 @@ const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
     type: ERROR_DEFAULTS.TYPE,
     timestamp: getTimestamp(),
     userAgent: ERROR_DEFAULTS.USER_AGENT,
-    url: ERROR_DEFAULTS.URL
+    url: ERROR_DEFAULTS.URL,
+    status: ERROR_DEFAULTS.STATUS,
+    statusText: ERROR_DEFAULTS.STATUS_TEXT,
+    method: ERROR_DEFAULTS.METHOD
   }
 }) => {
   const [selectedFeature, setSelectedFeature] = useState('');
