@@ -1,9 +1,9 @@
 // 既存の収支記録のtypeフィールドを修正するスクリプト
 const mongoose = require('mongoose');
 require('dotenv').config();
-
+const path = require('path');
 // 共通ユーティリティ関数をインポート
-const { determineIncomeExpenseType } = require('../api/utils/incomeExpenseUtils');
+const { determineIncomeExpenseType } = require(path.join(__dirname, '../api/utils/incomeExpenseUtils'));
 
 // データベース接続
 const MONGODB_URI = process.env.MONGODB_URI;
