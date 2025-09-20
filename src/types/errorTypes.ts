@@ -275,3 +275,31 @@ export const formatErrorInfo = (errorInfo: Partial<ErrorInfo>): {
   
   return { statusInfo, methodInfo, stackInfo };
 };
+
+// エラーメッセージ構築用のユーティリティ関数
+export const createErrorMessage = (
+  errorType: 'XMLHttpRequest' | 'API',
+  status: number,
+  statusText: string
+): string => {
+  return `${errorType} Error: ${status} ${statusText}`;
+};
+
+// エラー情報オブジェクト構築用のユーティリティ関数
+export const createErrorInfo = (
+  errorType: 'XMLHttpRequest' | 'API',
+  status: number,
+  statusText: string,
+  url: string,
+  method: string
+): ApiErrorInfo => {
+  return {
+    message: createErrorMessage(errorType, status, statusText),
+    url,
+    status,
+    statusText,
+    method,
+    timestamp: getTimestamp(),
+    userAgent: getDefaultUserAgent()
+  };
+};

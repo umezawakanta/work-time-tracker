@@ -19,7 +19,7 @@ import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import NotificationComponent from "./components/NotificationComponent";
 import VersionInfo from "./components/VersionInfo";
-import { ErrorInfo, getErrorInfo, formatErrorInfo } from './types/errorTypes';
+import { ErrorInfo, getErrorInfo, formatErrorInfo, createErrorInfo } from './types/errorTypes';
 import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './utils/authUtils';
 import type { ApiErrorInfo } from './utils/apiErrorHandler';
 // apiFetchは頻繁に使用されるため静的インポートを維持
@@ -966,15 +966,13 @@ function App() {
     xhr.send = function(...args: any[]) {
       this.addEventListener('loadend', function() {
         if (this.status >= 400) {
-          const errorInfo = {
-            message: `XMLHttpRequest Error: ${this.status} ${this.statusText}`,
-            url: (this as any)._url || 'Unknown URL',
-            status: this.status,
-            statusText: this.statusText,
-            method: (this as any)._method || 'GET',
-            timestamp: new Date().toISOString(),
-            userAgent: navigator.userAgent
-          };
+          const errorInfo = createErrorInfo(
+            'XMLHttpRequest',
+            this.status,
+            this.statusText,
+            (this as any)._url || 'Unknown URL',
+            (this as any)._method || 'GET'
+          );
           
           console.error('XMLHttpRequestエラーが発生しました:', errorInfo);
           
@@ -1031,15 +1029,13 @@ ${methodInfo ? `- ${methodInfo}` : ''}
       
       // 4xx, 5xxエラーをキャッチ
       if (!response.ok) {
-        const errorInfo = {
-          message: `API Error: ${response.status} ${response.statusText}`,
-          url: args[0]?.toString() || 'Unknown URL',
-          status: response.status,
-          statusText: response.statusText,
-          method: args[1]?.method || 'GET',
-          timestamp: new Date().toISOString(),
-          userAgent: navigator.userAgent
-        };
+        const errorInfo = createErrorInfo(
+          'API',
+          response.status,
+          response.statusText,
+          args[0]?.toString() || 'Unknown URL',
+          args[1]?.method || 'GET'
+        );
         
         console.error('APIエラーが発生しました:', errorInfo);
         
