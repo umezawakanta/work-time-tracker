@@ -340,7 +340,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
           </h2>
           <p className="section-description">
             個人的なメモや記録を保存・管理できます。<br/>
-            <strong>不具合報告・改善要望</strong>は、メモ作成フォーム内の専用エリアから送信してください。
+            <strong>不具合報告・改善要望</strong>は、下記の専用セクションから送信してください。
           </p>
         </div>
         <div className="section-controls">
@@ -646,8 +646,35 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                   不具合報告・改善要望
                 </h3>
                 <p className="report-request-description">
-                  バグやエラーの報告、機能改善の提案はこちらから送信してください
+                  バグやエラーの報告、機能改善の提案はこちらから送信してください。
                 </p>
+                
+                <div className="instruction-guide">
+                  <h5>送信手順：</h5>
+                  <div className="instruction-steps">
+                    <div className="step">
+                      <span className="step-number">1</span>
+                      <div className="step-content">
+                        <strong>対象機能を選択</strong>
+                        <p>不具合や改善要望が発生した機能を選択してください（必須）</p>
+                      </div>
+                    </div>
+                    <div className="step">
+                      <span className="step-number">2</span>
+                      <div className="step-content">
+                        <strong>詳細を記入</strong>
+                        <p>不具合の場合は再現手順、改善要望の場合は具体的な内容を記入してください（必須）</p>
+                      </div>
+                    </div>
+                    <div className="step">
+                      <span className="step-number">3</span>
+                      <div className="step-content">
+                        <strong>送信ボタンをクリック</strong>
+                        <p>「不具合報告を送信」または「改善要望を送信」ボタンをクリックしてください</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               
               <div className="report-request-form">
