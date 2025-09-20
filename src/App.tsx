@@ -6153,7 +6153,7 @@ ${errorInfo.stack}
         <ErrorReportingModal
           isOpen={showErrorReportingModal}
           onClose={() => setShowErrorReportingModal(false)}
-          onSubmit={handleErrorReportSubmit}
+          onSubmit={handleErrorReport as unknown as (report: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
           initialContent={memoContent}
         />
     </>
