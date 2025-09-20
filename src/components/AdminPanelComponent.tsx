@@ -128,7 +128,9 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
     setUpdateRequestsError(null);
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch('/api/memos/public', {
+      
+      // 管理者権限でアクセスするため、/api/memosを使用
+      const response = await fetch('/api/memos', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

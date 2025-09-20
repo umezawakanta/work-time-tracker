@@ -19,6 +19,18 @@ const MemoSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   authorName: { type: String, required: false }, // 作成者名を追加
   authorEmail: { type: String, required: false }, // 作成者メールを追加
+  postType: { 
+    type: String, 
+    enum: ['update_request', 'error_report', 'general'], 
+    default: 'general' 
+  },
+  status: { 
+    type: String, 
+    enum: ['pending', 'in_progress', 'resolved', 'closed'], 
+    default: 'pending' 
+  },
+  adminResponse: { type: String },
+  adminResponseDate: { type: Date },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
@@ -134,7 +146,12 @@ async function handleRequest(req, res) {
     if (req.method === 'GET') {
       // メモの一覧を取得
       const { category, search } = req.query;
-      let query: any = { userId: userInfo.userId };
+      let query: any = {};
+      
+      // 管理者の場合はすべてのメモを取得、一般ユーザーの場合は自分のメモのみ
+      if (userInfo.role !== 'admin') {
+        query.userId = userInfo.userId;
+      }
       
       if (category && category !== 'all') {
         query.category = category;
@@ -189,6 +206,10 @@ async function handleRequest(req, res) {
             isAdminOnly: memo.isAdminOnly || false,
             author: memo.authorName || '匿名', // メモの作成者名を追加
             authorEmail: memo.authorEmail, // メモの作成者メールを追加
+            postType: memo.postType || 'general',
+            status: memo.status || 'pending',
+            adminResponse: memo.adminResponse,
+            adminResponseDate: memo.adminResponseDate ? memo.adminResponseDate.toISOString() : null,
             createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
             updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
             replies: replies.map(reply => ({
@@ -228,7 +249,7 @@ async function handleRequest(req, res) {
     } else if (req.method === 'POST') {
       // 新しいメモを追加
       try {
-        const { title, content, category, tags, isPublic, isFamilyOnly, isAdminOnly } = req.body;
+        const { title, content, category, tags, isPublic, isFamilyOnly, isAdminOnly, postType, status } = req.body;
 
         // 必須フィールドの検証
         if (!content || !category) {
@@ -255,6 +276,8 @@ async function handleRequest(req, res) {
           userId: userInfo.userId,
           authorName: userInfo.displayName || userInfo.email || '匿名', // 作成者名を保存
           authorEmail: userInfo.email, // 作成者メールを保存
+          postType: postType || 'general',
+          status: status || 'pending',
         });
 
         const savedMemo = await newMemo.save();
