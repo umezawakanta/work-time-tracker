@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import jwt from 'jsonwebtoken';
 
 const execAsync = promisify(exec);
 
@@ -31,7 +32,6 @@ const verifyJWTToken = async (req: NextApiRequest) => {
   
   try {
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
-    const jwt = require('jsonwebtoken');
     return jwt.verify(token, jwtSecret);
   } catch (error) {
     console.error('JWT verification failed:', error);
