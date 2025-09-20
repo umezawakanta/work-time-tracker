@@ -55,6 +55,7 @@ module.exports = async function handler(req, res) {
   try {
     // JWTトークンからユーザーIDを取得
     console.log('Verifying JWT token...');
+    console.log('Authorization header:', req.headers.authorization);
     const userInfo = await verifyJWT(req);
     console.log('JWT verification result:', userInfo);
     if (!userInfo) {
