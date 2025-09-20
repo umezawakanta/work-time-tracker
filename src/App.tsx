@@ -264,6 +264,7 @@ function App() {
   const [memoTags, setMemoTags] = useState("");
   const [memoIsPublic, setMemoIsPublic] = useState(false);
   const [memoPostType, setMemoPostType] = useState("normal"); // normal, update_request, admin_only, family_only
+  const [memoSelectedFeature, setMemoSelectedFeature] = useState("");
   const [memoIsFamilyOnly, setMemoIsFamilyOnly] = useState(false);
   const [memoIsAdminOnly, setMemoIsAdminOnly] = useState(false);
   const [memoSearchTerm, setMemoSearchTerm] = useState("");
@@ -967,6 +968,24 @@ function App() {
       description: "自分自身を深く理解するための分析ツール",
       component: null, // 自己分析セクション
     },
+  ];
+
+  // 機能選択肢の定義
+  const featureOptions = [
+    { value: "", label: "機能を選択してください", disabled: true },
+    { value: "time-tracking", label: "時間管理" },
+    { value: "cooking-timer", label: "料理タイマー" },
+    { value: "projects", label: "プロジェクト" },
+    { value: "reports", label: "レポート" },
+    { value: "admin-panel", label: "管理者パネル" },
+    { value: "bookshelf", label: "本棚" },
+    { value: "memos", label: "メモ" },
+    { value: "public-memos", label: "公開メモ" },
+    { value: "work-records", label: "お仕事記録" },
+    { value: "timers", label: "タイマー" },
+    { value: "self-analysis", label: "じぶん図鑑" },
+    { value: "general", label: "全般" },
+    { value: "other", label: "その他" },
   ];
 
   // 機能の表示順序を取得
@@ -3943,6 +3962,12 @@ ${errorInfo.stack}
       return;
     }
 
+    // 不具合報告・更新要望の場合は機能選択を必須にする
+    if ((memoCategory === '不具合報告' || memoCategory === '更新要望') && !memoSelectedFeature) {
+      setMessage("不具合報告・更新要望の場合は対象機能を選択してください");
+      return;
+    }
+
     // タイトルがない場合は内容の一行目をタイトルとして使用
     const finalTitle =
       memoTitle.trim() || memoContent.split("\n")[0].trim() || "無題";
@@ -3954,6 +3979,13 @@ ${errorInfo.stack}
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0);
 
+      // 不具合報告・更新要望の場合は機能情報を内容に含める
+      let finalContent = memoContent;
+      if ((memoCategory === '不具合報告' || memoCategory === '更新要望') && memoSelectedFeature) {
+        const selectedFeatureLabel = featureOptions.find(opt => opt.value === memoSelectedFeature)?.label || memoSelectedFeature;
+        finalContent = `【対象機能】${selectedFeatureLabel}\n\n${memoContent}`;
+      }
+
       const response = await fetch("/api/memos", {
         method: "POST",
         headers: {
@@ -3962,7 +3994,7 @@ ${errorInfo.stack}
         },
         body: JSON.stringify({
           title: finalTitle,
-          content: memoContent,
+          content: finalContent,
           category: memoCategory,
           tags,
           isPublic: memoIsPublic,
@@ -3983,6 +4015,7 @@ ${errorInfo.stack}
         setMemoContent("");
         setMemoCategory("");
         setMemoTags("");
+        setMemoSelectedFeature("");
         setMemoIsPublic(false);
         setMemoIsFamilyOnly(false);
         setMemoIsAdminOnly(false);
@@ -5719,6 +5752,8 @@ ${errorInfo.stack}
                     setMemoIsAdminOnly={setMemoIsAdminOnly}
                     memoPostType={memoPostType}
                     setMemoPostType={setMemoPostType}
+                    memoSelectedFeature={memoSelectedFeature}
+                    setMemoSelectedFeature={setMemoSelectedFeature}
                     handleReplySubmit={handleReplySubmit}
                     handleReplyCancel={handleReplyCancel}
                     handleEditReply={handleEditReply}

@@ -34,6 +34,8 @@ interface MemosComponentProps {
   setMemoIsAdminOnly: (isAdminOnly: boolean) => void;
   memoPostType: string;
   setMemoPostType: (postType: string) => void;
+  memoSelectedFeature: string;
+  setMemoSelectedFeature: (feature: string) => void;
   handleReplySubmit: (memoId: string) => void;
   handleReplyCancel: () => void;
   handleEditReply: (replyId: string, content: string) => void;
@@ -77,6 +79,8 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   setMemoIsAdminOnly,
   memoPostType,
   setMemoPostType,
+  memoSelectedFeature,
+  setMemoSelectedFeature,
   handleReplySubmit,
   handleReplyCancel,
   handleEditReply,
@@ -107,6 +111,24 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     const saved = localStorage.getItem("deletedDefaultCategories");
     return saved ? JSON.parse(saved) : [];
   });
+
+  // 機能選択肢の定義
+  const featureOptions = [
+    { value: "", label: "機能を選択してください", disabled: true },
+    { value: "time-tracking", label: "時間管理" },
+    { value: "cooking-timer", label: "料理タイマー" },
+    { value: "projects", label: "プロジェクト" },
+    { value: "reports", label: "レポート" },
+    { value: "admin-panel", label: "管理者パネル" },
+    { value: "bookshelf", label: "本棚" },
+    { value: "memos", label: "メモ" },
+    { value: "public-memos", label: "公開メモ" },
+    { value: "work-records", label: "お仕事記録" },
+    { value: "timers", label: "タイマー" },
+    { value: "self-analysis", label: "じぶん図鑑" },
+    { value: "general", label: "全般" },
+    { value: "other", label: "その他" },
+  ];
 
   // 簡易報告機能の状態
   const [showQuickReport, setShowQuickReport] = useState(false);
@@ -144,6 +166,11 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
 
   // クイック送信のハンドラー
   const handleQuickSubmit = async (postType: 'error_report' | 'update_request') => {
+    if (!memoSelectedFeature) {
+      alert('機能を選択してください');
+      return;
+    }
+    
     if (!memoContent.trim()) {
       alert('内容を入力してください');
       return;
@@ -151,11 +178,15 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
 
     try {
       const token = localStorage.getItem("access_token");
+      const selectedFeatureLabel = featureOptions.find(opt => opt.value === memoSelectedFeature)?.label || memoSelectedFeature;
       const finalTitle = memoTitle.trim() || memoContent.split("\n")[0].trim() || "無題";
       const tags = memoTags
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0);
+
+      // 機能情報を内容に含める
+      const contentWithFeature = `【対象機能】${selectedFeatureLabel}\n\n${memoContent}`;
 
       const response = await fetch("/api/memos", {
         method: "POST",
@@ -165,7 +196,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
         },
         body: JSON.stringify({
           title: finalTitle,
-          content: memoContent,
+          content: contentWithFeature,
           category: postType === 'error_report' ? '不具合報告' : '更新要望',
           tags,
           isPublic: true,
@@ -183,6 +214,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
           setMemoContent("");
           setMemoCategory("");
           setMemoTags("");
+          setMemoSelectedFeature("");
           setMemoIsPublic(false);
           setMemoIsFamilyOnly(false);
           setMemoIsAdminOnly(false);
@@ -692,6 +724,33 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                   ))}
                 </select>
               </div>
+
+              {/* 不具合報告・更新要望の場合のみ機能選択を表示 */}
+              {(memoCategory === '不具合報告' || memoCategory === '更新要望') && (
+                <div className="form-group">
+                  <label htmlFor="selectedFeature">対象機能 <span className="required">*</span></label>
+                  <select
+                    id="selectedFeature"
+                    value={memoSelectedFeature}
+                    onChange={(e) => setMemoSelectedFeature(e.target.value)}
+                    required
+                    className={!memoSelectedFeature && memoCategory && (memoCategory === '不具合報告' || memoCategory === '更新要望') ? 'error' : ''}
+                  >
+                    {featureOptions.map((option) => (
+                      <option 
+                        key={option.value} 
+                        value={option.value}
+                        disabled={option.disabled}
+                      >
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <small className="form-help">
+                    不具合報告・更新要望の場合は対象となる機能を選択してください
+                  </small>
+                </div>
+              )}
 
               <div className="form-group">
                 <label htmlFor="memoPostType">投稿タイプ</label>
