@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { APP_VERSION, CHANGELOG, formatChangelogEntry } from '../constants/version';
+import { APP_VERSION, CHANGELOG } from '../constants/version';
 import './VersionInfo.css';
 
 interface VersionInfoProps {
