@@ -1,7 +1,7 @@
 // 共通バリデーション関数
 
 // パスワード検証
-export const validatePassword = (password) => {
+const validatePassword = (password) => {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
   return {
     isValid: passwordRegex.test(password),
@@ -10,7 +10,7 @@ export const validatePassword = (password) => {
 };
 
 // メールアドレス検証
-export const validateEmail = (email) => {
+const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return {
     isValid: emailRegex.test(email),
@@ -19,7 +19,7 @@ export const validateEmail = (email) => {
 };
 
 // 表示名検証
-export const validateDisplayName = (displayName) => {
+const validateDisplayName = (displayName) => {
   const trimmed = displayName && displayName.trim();
   return {
     isValid: trimmed && trimmed.length >= 2 && trimmed.length <= 50,
@@ -28,7 +28,7 @@ export const validateDisplayName = (displayName) => {
 };
 
 // CORS設定の共通関数
-export const setupCORS = (req, res) => {
+const setupCORS = (req, res) => {
   const origin = req.headers.origin;
   const allowedOrigins = [
     'http://localhost:3000',
@@ -46,4 +46,31 @@ export const setupCORS = (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   
   return { origin, isAllowedOrigin };
+};
+
+// JWT検証関数
+const verifyJWT = async (req) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+
+  const token = authHeader.substring(7);
+  
+  try {
+    const jwt = require('jsonwebtoken');
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+    return jwt.verify(token, jwtSecret);
+  } catch (error) {
+    console.error('JWT verification failed:', error);
+    return null;
+  }
+};
+
+module.exports = {
+  validatePassword,
+  validateEmail,
+  validateDisplayName,
+  setupCORS,
+  verifyJWT
 };
