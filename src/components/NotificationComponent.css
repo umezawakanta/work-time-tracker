@@ -87,7 +87,8 @@
 }
 
 .mark-all-read-button,
-.refresh-button {
+.refresh-button,
+.close-notification-button {
   background: none;
   border: none;
   color: #666;
@@ -99,9 +100,19 @@
 }
 
 .mark-all-read-button:hover,
-.refresh-button:hover {
+.refresh-button:hover,
+.close-notification-button:hover {
   background: #f0f0f0;
   color: #333;
+}
+
+.close-notification-button {
+  color: #dc3545;
+}
+
+.close-notification-button:hover {
+  background: #f8d7da;
+  color: #721c24;
 }
 
 .notification-content {

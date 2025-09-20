@@ -94,6 +94,39 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
     loadNotifications();
   }, []);
 
+  // 通知ドロップダウン外をクリックした時に閉じる
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (isOpen && !target.closest('.notification-container')) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isOpen]);
+
+  // ESCキーで通知ドロップダウンを閉じる
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [isOpen]);
+
   // 通知の種類に応じたアイコンを取得
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -155,6 +188,13 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
                 title="更新"
               >
                 <i className="bi bi-arrow-clockwise"></i>
+              </button>
+              <button
+                className="close-notification-button"
+                onClick={() => setIsOpen(false)}
+                title="閉じる"
+              >
+                <i className="bi bi-x"></i>
               </button>
             </div>
           </div>
