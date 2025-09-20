@@ -993,7 +993,7 @@ XMLHttpRequestエラーが発生しました。
         }
       });
       
-      return originalSend.apply(this, args);
+      return originalSend.apply(this, [args[0]]);
     };
     
     return xhr;
