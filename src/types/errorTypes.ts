@@ -116,15 +116,36 @@ export const buildErrorInfo = (
     url?: string;
     status?: number;
     method?: string;
+    filename?: string;
+    lineno?: number;
+    colno?: number;
+    type?: string;
   }
 ): ErrorInfo => {
+  // Try to extract fields from error object if present (for browser ErrorEvent, etc.)
+  const filename =
+    (error as any).filename ??
+    extractedInfo?.filename ??
+    ERROR_DEFAULTS.FILENAME;
+  const lineno =
+    (error as any).lineno ??
+    extractedInfo?.lineno ??
+    ERROR_DEFAULTS.LINENO;
+  const colno =
+    (error as any).colno ??
+    extractedInfo?.colno ??
+    ERROR_DEFAULTS.COLNO;
+  const type =
+    (error as any).type ??
+    extractedInfo?.type ??
+    ERROR_DEFAULTS.TYPE;
   return {
     message: error.message,
     stack: error.stack,
-    filename: ERROR_DEFAULTS.FILENAME,
-    lineno: ERROR_DEFAULTS.LINENO,
-    colno: ERROR_DEFAULTS.COLNO,
-    type: ERROR_DEFAULTS.TYPE,
+    filename,
+    lineno,
+    colno,
+    type,
     timestamp: apiErrorInfo?.timestamp || getTimestamp(),
     userAgent: apiErrorInfo?.userAgent || ERROR_DEFAULTS.USER_AGENT,
     url: apiErrorInfo?.url || extractedInfo?.url || ERROR_DEFAULTS.URL,
