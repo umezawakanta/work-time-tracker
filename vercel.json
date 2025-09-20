@@ -1,15 +1,17 @@
 {
+  "version": 2,
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
   "installCommand": "pnpm install",
-  "framework": "vite",
   "functions": {
     "api/**/*.ts": {
-      "runtime": "@vercel/node@3.0.7"
-    },
-    "api/**/*.js": {
-      "runtime": "@vercel/node@3.0.7"
+      "maxDuration": 30
     }
   },
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./"
+  "rewrites": [
+    {
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
+    }
+  ]
 }
