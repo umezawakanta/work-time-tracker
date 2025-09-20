@@ -87,7 +87,7 @@ const IncomeExpenseRecordSchema = new mongooseDB.Schema({
 
 const IncomeExpenseRecord = mongooseDB.models.SalaryRecord || mongooseDB.model('SalaryRecord', IncomeExpenseRecordSchema);
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
