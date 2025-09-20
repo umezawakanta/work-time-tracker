@@ -4048,8 +4048,8 @@ User Agent: ${userAgent}
     METHOD_EXPLICIT: /メソッド: ([^\n\s]+)/
   };
 
-  // Type guard to check if error has errorInfo of type ApiErrorInfo
-  // ApiErrorInfo contains: message, status?, statusText?, url?, method?, timestamp, userAgent
+  // Type guard to check if error has an errorInfo property (object).
+  // This does not validate the full structure of ApiErrorInfo, only its presence as an object.
   function hasApiErrorInfo(error: unknown): error is Error & { errorInfo: ApiErrorInfo } {
     return (
       typeof error === "object" &&
