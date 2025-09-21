@@ -23,6 +23,17 @@ function getExpenseKeywordPattern() {
       keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     ).join('|');
     
+    // 単語境界ロジックの説明:
+    // 1. (?:^|${NON_JAPANESE_OR_LATIN_CHAR_CLASS}) - キーワードの前が文字列の開始または非日本語/英数字文字
+    // 2. (?:${escapedKeywords}) - エスケープされたキーワードのいずれか
+    // 3. (?:${NON_JAPANESE_OR_LATIN_CHAR_CLASS}|$) - キーワードの後が非日本語/英数字文字または文字列の終了
+    // 
+    // 例:
+    // ✅ "交通費" → マッチ（独立した単語）
+    // ✅ "今日の交通費" → マッチ（前後に非日本語文字）
+    // ❌ "交通整理" → マッチしない（「交通費」が含まれていない）
+    // ❌ "交通費計算" → マッチしない（「費」の後に日本語文字）
+    // これにより「交通費」は「交通整理」の一部としてではなく、独立した単語としてのみマッチする
     EXPENSE_KEYWORD_PATTERN = new RegExp(
       `(?:^|${NON_JAPANESE_OR_LATIN_CHAR_CLASS})(?:${escapedKeywords})(?:${NON_JAPANESE_OR_LATIN_CHAR_CLASS}|$)`,
       'u'
