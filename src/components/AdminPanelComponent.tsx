@@ -1614,6 +1614,13 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                 </div>
               </div>
             )}
+
+            {/* API一覧タブ */}
+            {activeTab === 'apilist' && (
+              <div className="tab-pane">
+                <ApiListComponent />
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1660,12 +1667,6 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
         loading={false}
       />
 
-      {/* API一覧タブ */}
-      {activeTab === 'apilist' && (
-        <div className="tab-pane">
-          <ApiListComponent />
-        </div>
-      )}
 
       {/* お知らせ送信モーダル */}
       {showAnnouncementModal && (
