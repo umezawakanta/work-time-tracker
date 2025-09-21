@@ -461,7 +461,9 @@ function App() {
 
   // 感情ログ管理関数（MoodLogManagerで管理）
   const addMoodLog = () => {
-    if (!moodForm.date) return;
+    if (!moodForm.date) {
+      return;
+    }
 
     const moodLogId = Date.now().toString();
     const newMoodLog: MoodLog = {
@@ -523,10 +525,18 @@ function App() {
   };
 
   const getMoodEmoji = (mood: number) => {
-    if (mood <= 2) return "bi-emoji-frown";
-    if (mood <= 4) return "bi-emoji-expressionless";
-    if (mood <= 6) return "bi-emoji-neutral";
-    if (mood <= 8) return "bi-emoji-smile";
+    if (mood <= 2) {
+      return "bi-emoji-frown";
+    }
+    if (mood <= 4) {
+      return "bi-emoji-expressionless";
+    }
+    if (mood <= 6) {
+      return "bi-emoji-neutral";
+    }
+    if (mood <= 8) {
+      return "bi-emoji-smile";
+    }
     return "bi-emoji-laughing";
   };
 
@@ -534,7 +544,9 @@ function App() {
 
   // 目標管理関数
   const addGoal = () => {
-    if (!goalForm.title.trim()) return;
+    if (!goalForm.title.trim()) {
+      return;
+    }
 
     const goalId = Date.now().toString();
     const newGoal: Goal = {
@@ -615,7 +627,9 @@ function App() {
   };
 
   const addMilestone = () => {
-    if (!newMilestone.trim()) return;
+    if (!newMilestone.trim()) {
+      return;
+    }
 
     const milestoneId = Date.now().toString();
     setGoalForm((prev) => ({
@@ -848,7 +862,9 @@ function App() {
 
   // 機能の表示順序を取得
   const getFeatureOrder = () => {
-    if (!userSettings) return features.map((f) => f.id);
+    if (!userSettings) {
+      return features.map((f) => f.id);
+    }
 
     // 既存の順序を保持しつつ、新しい機能を追加
     let order = [...userSettings.featureOrder];
@@ -939,12 +955,10 @@ function App() {
       hiddenFeatures = (hiddenFeatures || []).filter((id) => id !== "self-analysis");
     }
 
-    const visibleFeatures = (order || [])
+    return (order || [])
       .filter((id) => !(hiddenFeatures || []).includes(id))
       .map((id) => features.find((f) => f.id === id))
       .filter(Boolean) as Feature[];
-
-    return visibleFeatures;
   };
 
   // 401エラーハンドリング用のヘルパー関数
@@ -1542,8 +1556,7 @@ ${errorInfo.stack}
 
   // フォント適用関数
   const applyFont = (fontValue: string) => {
-    const root = document.documentElement;
-    const body = document.body;
+    const { documentElement: root, body } = document;
 
     if (fontValue === "system") {
       root.style.setProperty("--app-font-family", "");

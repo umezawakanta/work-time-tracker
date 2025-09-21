@@ -1,48 +1,10 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-const { determineHealthStatus, createHealthCheckController, clearHealthCheckTimeout } = require('../utils/healthCheckUtils');
-const { getCheckableEndpoints } = require('../config/api-endpoints.js');
-
-dotenv.config();
-
-// Database connection utility
-const ensureDatabaseConnection = async () => {
-  const isConnected = mongoose.connection.readyState === 1;
-  if (isConnected) {
-    return;
-  }
-  console.warn('[admin/api-health-check] Database not connected, attempting to connect...');
-  try {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    if (!MONGODB_URI) {
-      throw new Error("MONGODB_URI environment variable is required but not set.");
-    }
-    
-    if (MONGODB_URI === "memory://") {
-      return;
-    }
-
-    await mongoose.connect(MONGODB_URI, {
-      dbName: 'workTimeTracker',
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 15000,
-      socketTimeoutMS: 45000,
-      bufferCommands: false,
-      connectTimeoutMS: 10000,
-      maxIdleTimeMS: 30000,
-    });
-
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error('[admin/api-health-check] Failed to connect to database:', message);
-    throw new Error(`Database connection failed: ${message}`);
-  }
-};
+const { ensureDatabaseConnection: dbConnect, verifyJWT: authVerify, handleError: errorHandler } = require('../utils/database');
+const { determineHealthStatus: healthStatus, createHealthCheckController: createController, clearHealthCheckTimeout: clearHealthTimeout } = require('../utils/healthCheckUtils');
+const { getCheckableEndpoints: getEndpoints } = require('../config/api-endpoints.js');
 
 // 実際のAPIエンドポイントのヘルスチェック
-const checkApiHealth = async (endpoint, method) => {
+const performHealthCheck = async (endpoint, method) => {
   const startTime = Date.now();
   const baseUrl = process.env.API_URL;
   if (!baseUrl) {
@@ -50,7 +12,7 @@ const checkApiHealth = async (endpoint, method) => {
   }
   
   // AbortControllerを使用してタイムアウトを設定
-  const { controller, timeoutId } = createHealthCheckController();
+  const { controller, timeoutId } = createController();
   
   try {
     const response = await fetch(`${baseUrl}${endpoint}`, {
@@ -62,10 +24,10 @@ const checkApiHealth = async (endpoint, method) => {
       signal: controller.signal
     });
 
-    clearHealthCheckTimeout(timeoutId);
+    clearHealthTimeout(timeoutId);
 
     const responseTime = Date.now() - startTime;
-    const status = determineHealthStatus(response.status, responseTime);
+    const status = healthStatus(response.status, responseTime);
 
     return {
       endpoint,
@@ -77,7 +39,7 @@ const checkApiHealth = async (endpoint, method) => {
     };
 
   } catch (error) {
-    clearHealthCheckTimeout(timeoutId);
+    clearHealthTimeout(timeoutId);
     const responseTime = Date.now() - startTime;
 
     return {
@@ -118,7 +80,7 @@ const checkApiHealth = async (endpoint, method) => {
 
 module.exports = async function handler(req, res) {
   // CORS設定
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
 
   const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
@@ -145,50 +107,27 @@ module.exports = async function handler(req, res) {
 
   try {
     // データベース接続
-    await ensureDatabaseConnection();
+    await dbConnect();
 
-    // 管理者認証
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        message: '認証が必要です',
-        error: 'Authentication required',
-      });
-    }
-
-    // JWTトークンを検証してユーザー情報を取得
-    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
-    let userInfo;
-    try {
-      const token = authHeader.substring(7);
-      const decoded = jwt.verify(token, jwtSecret);
-      userInfo = decoded;
-    } catch (error) {
-      return res.status(401).json({
-        success: false,
-        message: '無効な認証トークンです',
-        error: 'Invalid authentication token',
-      });
+    // JWT認証
+    const userInfo = await authVerify(req);
+    if (!userInfo) {
+      return errorHandler(res, { statusCode: 401, message: '認証が必要です' });
     }
 
     // 管理者権限の確認
     if (userInfo.role !== 'admin' || !userInfo.isAdmin) {
-      return res.status(403).json({
-        success: false,
-        message: '管理者権限が必要です',
-        error: 'Admin privileges required',
-      });
+      return errorHandler(res, { statusCode: 403, message: '管理者権限が必要です' });
     }
 
     const { endpoints } = req.body;
     
     // チェック対象のエンドポイントを決定
-    const checkEndpoints = endpoints || getCheckableEndpoints();
+    const checkEndpoints = endpoints || getEndpoints();
 
     // 並列でヘルスチェックを実行
     const healthCheckPromises = checkEndpoints.map(({ path, method }) => 
-      checkApiHealth(path, method)
+      performHealthCheck(path, method)
     );
 
     const results = await Promise.all(healthCheckPromises);
@@ -216,13 +155,6 @@ module.exports = async function handler(req, res) {
 
   } catch (error) {
     console.error('❌ API health check error:', error);
-
-    res.status(500).json({
-      success: false,
-      message: 'ヘルスチェック中にエラーが発生しました',
-      error: process.env.NODE_ENV === 'development'
-        ? (error instanceof Error ? error.message : String(error))
-        : 'Internal server error',
-    });
+    return errorHandler(res, error, 'ヘルスチェック中にエラーが発生しました');
   }
 };
