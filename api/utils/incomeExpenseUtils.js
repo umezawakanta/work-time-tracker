@@ -34,11 +34,6 @@ function determineIncomeExpenseType(record) {
       }
     }
   
-  // 金額が負の場合は支出
-  if (record.amount < 0) {
-    newType = 'expense';
-  }
-  
   return newType;
 }
 
