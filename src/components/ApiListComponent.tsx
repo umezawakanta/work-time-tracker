@@ -389,8 +389,7 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
                     </span>
                   </td>
                   <td>
-                    <div className="action-buttons">
-                    </div>
+                    {/* <div className="action-buttons"></div> */}
                   </td>
                 </tr>
               ))}
