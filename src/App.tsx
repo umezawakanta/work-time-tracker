@@ -2811,22 +2811,23 @@ ${errorInfo.stack}
     const startDate = new Date(year, month, 1);
     const endDate = new Date(year, month + 1, 0);
 
+    // 月間の記録を一度だけフィルタリング
+    const recordsInMonth = (incomeExpenseRecords || []).filter(record => {
+      const recordDate = new Date(record.date);
+      return recordDate >= startDate && recordDate <= endDate;
+    });
+
     let totalIncome = 0;
     let totalExpense = 0;
 
-    // incomeExpenseRecordsが存在する場合のみ処理
-    if (incomeExpenseRecords && incomeExpenseRecords.length > 0) {
-      incomeExpenseRecords.forEach((record) => {
-        const recordDate = new Date(record.date);
-        if (recordDate >= startDate && recordDate <= endDate) {
-          if (record.type === 'income') {
-            totalIncome += record.amount;
-          } else if (record.type === 'expense') {
-            totalExpense += record.amount;
-          }
-        }
-      });
-    }
+    // フィルタリング済みの記録を処理
+    recordsInMonth.forEach((record) => {
+      if (record.type === 'income') {
+        totalIncome += record.amount;
+      } else if (record.type === 'expense') {
+        totalExpense += record.amount;
+      }
+    });
 
     const netIncome = totalIncome - totalExpense;
 
@@ -2835,25 +2836,19 @@ ${errorInfo.stack}
       totalExpense,
       netIncome,
       recordsCount: incomeExpenseRecords?.length || 0,
-      recordsInMonth: incomeExpenseRecords?.filter(record => {
-        const recordDate = new Date(record.date);
-        return recordDate >= startDate && recordDate <= endDate;
-      }).map(record => ({
+      recordsInMonth: recordsInMonth.map(record => ({
         id: record._id,
         type: record.type,
         amount: record.amount,
         date: record.date
-      })) || []
+      }))
     });
 
     return {
       totalIncome,
       totalExpense,
       netIncome,
-      recordCount: (incomeExpenseRecords || []).filter((record) => {
-        const recordDate = new Date(record.date);
-        return recordDate >= startDate && recordDate <= endDate;
-      }).length,
+      recordCount: recordsInMonth.length,
     };
   };
 

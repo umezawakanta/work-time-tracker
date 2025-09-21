@@ -50,7 +50,7 @@ function determineTypesForRecords(records) {
   }));
 }
 
-export {
+module.exports = {
   EXPENSE_KEYWORDS,
   determineIncomeExpenseType,
   determineTypesForRecords
