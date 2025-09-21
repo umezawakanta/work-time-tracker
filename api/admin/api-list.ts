@@ -120,7 +120,7 @@ const HEALTH_CHECK_TIMEOUT_MS = 5000; // ヘルスチェックのタイムアウ
 // 実際のAPIエンドポイントのヘルスチェック
 const checkApiHealth = async (endpoint, method) => {
   const startTime = Date.now();
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://work-time-tracker-five.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.FALLBACK_API_URL || '';
   
   // AbortControllerを使用してタイムアウトを設定
   const controller = new AbortController();
