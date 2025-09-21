@@ -1,5 +1,5 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
-const { ensureDatabaseConnection: dbConnect, verifyJWT: authVerify, handleError: errorHandler } = require('../utils/database');
+const { ensureDatabaseConnection: dbConnectHealth, verifyJWT: authVerifyHealth, handleError: errorHandlerHealth } = require('../utils/database');
 const { determineHealthStatus: healthStatus, createHealthCheckController: createController, clearHealthCheckTimeout: clearHealthTimeout } = require('../utils/healthCheckUtils');
 const { getCheckableEndpoints: getEndpoints } = require('../config/api-endpoints.js');
 
@@ -114,17 +114,17 @@ module.exports = async function handler(req, res) {
 
   try {
     // データベース接続
-    await dbConnect();
+    await dbConnectHealth();
 
     // JWT認証
-    const userInfo = await authVerify(req);
+    const userInfo = await authVerifyHealth(req);
     if (!userInfo) {
-      return errorHandler(res, { statusCode: 401, message: '認証が必要です' });
+      return errorHandlerHealth(res, { statusCode: 401, message: '認証が必要です' });
     }
 
     // 管理者権限の確認
     if (userInfo.role !== 'admin' || !userInfo.isAdmin) {
-      return errorHandler(res, { statusCode: 403, message: '管理者権限が必要です' });
+      return errorHandlerHealth(res, { statusCode: 403, message: '管理者権限が必要です' });
     }
 
     const { endpoints } = req.body;
@@ -162,6 +162,6 @@ module.exports = async function handler(req, res) {
 
   } catch (error) {
     console.error('❌ API health check error:', error);
-    return errorHandler(res, error, 'ヘルスチェック中にエラーが発生しました');
+    return errorHandlerHealth(res, error, 'ヘルスチェック中にエラーが発生しました');
   }
 };
