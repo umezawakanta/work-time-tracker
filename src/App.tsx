@@ -2808,10 +2808,13 @@ ${errorInfo.stack}
     return days;
   };
 
+  // 環境変数をbooleanとして解釈するヘルパー関数
+  const envVarIsTrue = (key: string): boolean => process.env[key] === 'true';
+
   // デバッグログの出力条件をチェックするヘルパー関数
   const shouldLogBalanceCalculation = () => {
-    return process.env.NODE_ENV === 'development' && 
-           process.env.REACT_APP_DEBUG_BALANCE_CALCULATION === 'true';
+    return process.env.NODE_ENV === 'development' &&
+           envVarIsTrue('REACT_APP_DEBUG_BALANCE_CALCULATION');
   };
 
   // 月間収支を計算する関数
