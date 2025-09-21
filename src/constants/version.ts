@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.0.3";
+export const APP_VERSION = "1.0.4";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,19 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.0.4",
+    date: "2025-01-21",
+    changes: [
+      "収支記録の支出登録処理の不具合を修正",
+      "データベースに常に正の値で保存し、表示時にtypeに基づいて正負を決定するように改善",
+      "正規表現の最適化とパフォーマンス向上",
+      "環境変数アクセスの安全性向上",
+      "コードの可読性と保守性を大幅に改善",
+      "重複するコメントとロジックをヘルパー関数に集約"
+    ],
+    type: "bugfix"
+  },
   {
     version: "1.0.3",
     date: "2025-01-21",
