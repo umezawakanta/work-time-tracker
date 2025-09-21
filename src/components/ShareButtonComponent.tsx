@@ -178,7 +178,17 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     return statsParts.length > 0 ? `\n\n📊 現在の状況: ${statsParts.join('、')}` : '';
   };
   
-  const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！\n\n${randomElements.versionMessage}${getLatestUpdateInfo()}${getStatsText()}`;
+  const getSiteDescription = () => {
+    const intro = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
+    const features = `${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。`;
+    const promise = `ユーザーから要求があった機能をすぐに実装します！`;
+    const versionMsg = `\n\n${randomElements.versionMessage}`;
+    const latestUpdate = getLatestUpdateInfo();
+    const statsText = getStatsText();
+    return `${intro}${features}${promise}${versionMsg}${latestUpdate}${statsText}`;
+  };
+
+  const siteDescription = getSiteDescription();
   
   // Twitter用の短縮テキスト（280文字制限を考慮）
   const twitterText = `${siteTitle}\n\n${siteDescription}\n\n${siteUrl}`;
