@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -34,6 +35,23 @@ const WorkDiarySchema = new mongoose.Schema({
 
 const WorkDiary = mongoose.models.WorkDiary || mongoose.model('WorkDiary', WorkDiarySchema);
 
+// JWT認証ヘルパー関数
+const verifyJWT = (req) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+
+  const token = authHeader.substring(7);
+  try {
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+    return jwt.verify(token, jwtSecret);
+  } catch (error) {
+    console.error('JWT verification failed:', error);
+    return null;
+  }
+};
+
 export default async function handler(req, res) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
@@ -55,15 +73,25 @@ export default async function handler(req, res) {
       // 日記一覧を取得
       const { userId, isPrivate } = req.query;
       
+      // JWT認証からユーザーIDを取得（フォールバック）
+      let actualUserId = userId;
+      if (!actualUserId) {
+        const user = verifyJWT(req);
+        if (user && user.id) {
+          actualUserId = user.id;
+          console.log('User ID obtained from JWT token:', actualUserId);
+        }
+      }
       
-      if (!userId) {
+      if (!actualUserId) {
+        console.warn('User ID not provided in query parameters or JWT token');
         return res.status(400).json({ 
           success: false, 
           message: 'ユーザーIDが必要です' 
         });
       }
 
-      const query: any = { userId };
+      const query: any = { userId: actualUserId };
       if (isPrivate !== undefined) {
         query.isPrivate = isPrivate === 'true';
       }
@@ -82,7 +110,17 @@ export default async function handler(req, res) {
       // 新しい日記を作成
       const { userId, date, title, content, mood, tags, isPrivate } = req.body;
 
-      if (!userId || !date || !title || !content) {
+      // JWT認証からユーザーIDを取得（フォールバック）
+      let actualUserId = userId;
+      if (!actualUserId) {
+        const user = verifyJWT(req);
+        if (user && user.id) {
+          actualUserId = user.id;
+          console.log('User ID obtained from JWT token for POST:', actualUserId);
+        }
+      }
+
+      if (!actualUserId || !date || !title || !content) {
         return res.status(400).json({
           success: false,
           message: '必須フィールドが不足しています'
@@ -94,7 +132,7 @@ export default async function handler(req, res) {
       const utcDate = new Date(jstDate.getTime() - (9 * 60 * 60 * 1000));
       
       const diary = new WorkDiary({
-        userId,
+        userId: actualUserId,
         date: utcDate,
         title,
         content,
@@ -113,13 +151,23 @@ export default async function handler(req, res) {
 
     } else if (req.method === 'PUT') {
       // 日記を更新
-      const { id, date, title, content, mood, tags, isPrivate } = req.body;
+      const { id, userId, date, title, content, mood, tags, isPrivate } = req.body;
 
       if (!id) {
         return res.status(400).json({
           success: false,
           message: '日記IDが必要です'
         });
+      }
+
+      // JWT認証からユーザーIDを取得（フォールバック）
+      let actualUserId = userId;
+      if (!actualUserId) {
+        const user = verifyJWT(req);
+        if (user && user.id) {
+          actualUserId = user.id;
+          console.log('User ID obtained from JWT token for PUT:', actualUserId);
+        }
       }
 
       const updateData: any = {
@@ -147,8 +195,14 @@ export default async function handler(req, res) {
         updateData.isPrivate = isPrivate;
       }
 
-      const diary = await WorkDiary.findByIdAndUpdate(
-        id,
+      // ユーザーIDが提供されている場合は、そのユーザーの日記のみ更新可能にする
+      const query: any = { _id: id };
+      if (actualUserId) {
+        query.userId = actualUserId;
+      }
+
+      const diary = await WorkDiary.findOneAndUpdate(
+        query,
         updateData,
         { new: true }
       );
@@ -168,7 +222,7 @@ export default async function handler(req, res) {
 
     } else if (req.method === 'DELETE') {
       // 日記を削除
-      const { id } = req.query;
+      const { id, userId } = req.query;
 
       if (!id) {
         return res.status(400).json({
@@ -177,7 +231,23 @@ export default async function handler(req, res) {
         });
       }
 
-      const diary = await WorkDiary.findByIdAndDelete(id);
+      // JWT認証からユーザーIDを取得（フォールバック）
+      let actualUserId = userId;
+      if (!actualUserId) {
+        const user = verifyJWT(req);
+        if (user && user.id) {
+          actualUserId = user.id;
+          console.log('User ID obtained from JWT token for DELETE:', actualUserId);
+        }
+      }
+
+      // ユーザーIDが提供されている場合は、そのユーザーの日記のみ削除可能にする
+      const query: any = { _id: id };
+      if (actualUserId) {
+        query.userId = actualUserId;
+      }
+
+      const diary = await WorkDiary.findOneAndDelete(query);
 
       if (!diary) {
         return res.status(404).json({

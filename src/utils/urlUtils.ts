@@ -36,7 +36,8 @@ export const buildApiUrl = (endpoint: string, params: Record<string, string | nu
  */
 export const createUserIdParam = (userId: string | undefined | null, paramName: string = 'userId'): Record<string, string> => {
   if (!userId || typeof userId !== 'string') {
-    throw new Error('User ID is required but not provided');
+    console.warn('User ID is required but not provided, returning empty object');
+    return {};
   }
   return { [paramName]: userId };
 };
