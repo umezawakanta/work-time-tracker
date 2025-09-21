@@ -10,16 +10,12 @@ const HEALTH_CHECK_TIMEOUT_MS = 5000; // ヘルスチェックのタイムアウ
 // 実際のAPIエンドポイントのヘルスチェック
 const checkApiHealth = async (endpoint, method) => {
   const startTime = Date.now();
-  const baseUrl = process.env.API_URL;
-  if (!baseUrl) {
-    throw new Error("API_URL environment variable is required but not set.");
-  }
   
   // AbortControllerを使用してタイムアウトを設定
   const { controller, timeoutId } = createHealthCheckController();
   
   try {
-    const response = await fetch(`${baseUrl}${endpoint}`, {
+    const response = await fetch(endpoint, {
       method: method,
       headers: {
         'Content-Type': 'application/json',
