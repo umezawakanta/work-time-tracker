@@ -1,6 +1,5 @@
 import React from 'react';
 import './NotificationDetailModal.css';
-
 import { Notification } from '../types/notification';
 
 interface NotificationDetailModalProps {

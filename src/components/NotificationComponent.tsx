@@ -1,16 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import './NotificationComponent.css';
 import NotificationDetailModal from './NotificationDetailModal';
-
-interface Notification {
-  _id: string;
-  type: 'memo_response' | 'status_update' | 'admin_message' | 'memo_reply' | 'admin_announcement';
-  title: string;
-  message: string;
-  relatedMemoId?: string;
-  isRead: boolean;
-  createdAt: string;
-}
+import { Notification } from '../types/notification';
 
 interface NotificationComponentProps {
   className?: string;
