@@ -95,6 +95,20 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     loadStats();
   }, []);
   
+  // バージョン紹介文言の配列
+  const versionMessages = [
+    '最新バージョン1.0.5で更新要望・不具合報告機能を追加！',
+    'v1.0.5でユーザビリティが大幅に向上しました！',
+    '新機能満載のv1.0.5をぜひお試しください！',
+    'v1.0.5でエラーハンドリングが改善されました！',
+    '最新アップデートv1.0.5でより使いやすく！',
+    'v1.0.5で新機能と改善が追加されました！',
+    '最新版v1.0.5でパフォーマンスが向上！',
+    'v1.0.5でコード品質が大幅に改善されました！',
+    '新バージョンv1.0.5で機能が充実！',
+    'v1.0.5でユーザーエクスペリエンスが向上！'
+  ];
+
   // ランダムな要素を生成する関数
   function generateRandomElements() {
     const adjectives = ['可愛い', '素敵な', '楽しい', '便利な', '効率的な', '魅力的な', '実用的な', '革新的な', '優しい', '親しみやすい', '頼もしい', '面白い', '素晴らしい', '驚きの', '特別な', 'ユニークな'];
@@ -108,13 +122,15 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     const randomActivity = activities[Math.floor(Math.random() * activities.length)];
     const randomFeatures = features.sort(() => 0.5 - Math.random()).slice(0, 3);
     const randomBenefit = benefits[Math.floor(Math.random() * benefits.length)];
+    const randomVersionMessage = versionMessages[Math.floor(Math.random() * versionMessages.length)];
     
     return {
       adjective: randomAdjective,
       character: randomCharacter,
       activity: randomActivity,
       features: randomFeatures,
-      benefit: randomBenefit
+      benefit: randomBenefit,
+      versionMessage: randomVersionMessage
     };
   }
 
@@ -162,7 +178,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     return statsParts.length > 0 ? `\n\n📊 現在の状況: ${statsParts.join('、')}` : '';
   };
   
-  const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！${getLatestUpdateInfo()}${getStatsText()}`;
+  const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！\n\n${randomElements.versionMessage}${getLatestUpdateInfo()}${getStatsText()}`;
   
   // Twitter用の短縮テキスト（280文字制限を考慮）
   const twitterText = `${siteTitle}\n\n${siteDescription}\n\n${siteUrl}`;
@@ -171,7 +187,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   // 文字数制限をチェックして必要に応じて短縮
   const maxTwitterLength = 280;
   const finalTwitterText = twitterTextLength > maxTwitterLength 
-    ? `${siteTitle}\n\n${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${getLatestUpdateInfo()}${getStatsText()}\n\n${siteUrl}`
+    ? `${siteTitle}\n\n${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。\n\n${randomElements.versionMessage}${getLatestUpdateInfo()}${getStatsText()}\n\n${siteUrl}`
     : twitterText;
 
   const shareData = {
