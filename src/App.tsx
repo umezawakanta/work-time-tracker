@@ -2068,9 +2068,7 @@ ${errorInfo.stack}
         return;
       }
 
-      // データベースには常に正の値で保存（表示時にtypeに基づいて正負を決定）
-      // 注意: このamountは常に正の値として保存されるため、表示時は必ずtypeフィールドと組み合わせて使用すること
-      const amount = Math.abs(Number(incomeExpenseAmount));
+      const amount = normalizeAmountForStorage(incomeExpenseAmount);
 
       const requestBody = {
         date: incomeExpenseDate,
@@ -2146,9 +2144,7 @@ ${errorInfo.stack}
         return;
       }
 
-      // データベースには常に正の値で保存（表示時にtypeに基づいて正負を決定）
-      // 注意: このamountは常に正の値として保存されるため、表示時は必ずtypeフィールドと組み合わせて使用すること
-      const amount = Math.abs(Number(incomeExpenseAmount));
+      const amount = normalizeAmountForStorage(incomeExpenseAmount);
 
       const requestBody = {
         id: editingIncomeExpenseRecord._id,
@@ -2810,6 +2806,15 @@ ${errorInfo.stack}
 
   // 環境変数をbooleanとして解釈するヘルパー関数
   const envVarIsTrue = (key: string): boolean => process.env[key] === 'true';
+
+  /**
+   * 金額を正の値に正規化する
+   * データベースには常に正の値で保存（表示時にtypeに基づいて正負を決定）
+   * 注意: このamountは常に正の値として保存されるため、表示時は必ずtypeフィールドと組み合わせて使用すること
+   */
+  const normalizeAmountForStorage = (amount: string | number): number => {
+    return Math.abs(Number(amount));
+  };
 
   // デバッグログの出力条件をチェックするヘルパー関数
   const shouldLogBalanceCalculation = () => {
