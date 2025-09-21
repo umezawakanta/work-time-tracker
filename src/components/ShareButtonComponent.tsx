@@ -22,7 +22,7 @@ const versionMessages = [
 
 const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [randomElements, setRandomElements] = useState(() => generateRandomElements());
+  const [randomElements, setRandomElements] = useState(() => generateRandomElements(versionMessages));
   const [stats, setStats] = useState({
     userCount: 0,
     errorCount: 0,
@@ -110,7 +110,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   }, []);
 
   // ランダムな要素を生成する関数
-  function generateRandomElements() {
+  function generateRandomElements(versionMessages: string[]) {
     const adjectives = ['可愛い', '素敵な', '楽しい', '便利な', '効率的な', '魅力的な', '実用的な', '革新的な', '優しい', '親しみやすい', '頼もしい', '面白い', '素晴らしい', '驚きの', '特別な', 'ユニークな'];
     const characters = ['キャラクター', '仲間', 'パートナー', 'お友達', 'アシスタント', 'サポーター', '相棒', 'チームメイト', 'ガイド', 'コーチ', 'メンター', 'バディ'];
     const activities = ['作業時間管理', '時間トラッキング', 'プロジェクト管理', 'タスク管理', '時間記録', '作業効率化', '生産性向上', '時間活用', 'スケジュール管理', '進捗管理', '目標達成', '成果向上'];
@@ -188,7 +188,10 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
 
   const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！\n\n${randomElements.versionMessage}${latestUpdate}${statsText}`;
   
-  // Twitter用の短縮テキストを生成する関数
+  /**
+   * Twitter用の短縮テキストを生成
+   * 文字数制限（280文字）を超える場合は統計情報と最新アップデート情報を省略
+   */
   const generateTwitterText = () => {
     const baseText = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
     const versionInfo = `\n\n${randomElements.versionMessage}${latestUpdate}${statsText}`;
@@ -240,7 +243,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
           await navigator.clipboard.writeText(copyText);
           alert('テキストをコピーしました！');
           // コピー成功後に新しいランダム要素を生成
-          setRandomElements(generateRandomElements());
+          setRandomElements(generateRandomElements(versionMessages));
           return;
         } catch (err) {
           console.error('コピーに失敗しました:', err);
@@ -251,7 +254,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
           if (navigator.share) {
             await navigator.share(shareData);
             // ネイティブシェア成功後に新しいランダム要素を生成
-            setRandomElements(generateRandomElements());
+            setRandomElements(generateRandomElements(versionMessages));
             return;
           }
         } catch (err) {
@@ -265,7 +268,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     }
     
     // シェア処理完了後に新しいランダム要素を生成
-    setRandomElements(generateRandomElements());
+    setRandomElements(generateRandomElements(versionMessages));
   };
 
   return (
@@ -273,7 +276,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
       <button
         className="share-button"
         onClick={() => {
-          setRandomElements(generateRandomElements());
+          setRandomElements(generateRandomElements(versionMessages));
           setIsOpen(!isOpen);
         }}
         aria-label="シェア"

@@ -1,15 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './NotificationComponent.css';
-
-interface Notification {
-  _id: string;
-  type: 'memo_response' | 'status_update' | 'admin_message' | 'memo_reply' | 'admin_announcement';
-  title: string;
-  message: string;
-  relatedMemoId?: string;
-  isRead: boolean;
-  createdAt: string;
-}
+import NotificationDetailModal from './NotificationDetailModal';
+import { Notification } from '../types/notification';
 
 interface NotificationComponentProps {
   className?: string;
@@ -22,6 +14,8 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   // 通知を取得
   const loadNotifications = async () => {
@@ -96,11 +90,33 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
     // 既読にする
     markAsRead(notification._id);
     
-    // メモ関連の通知の場合はメモセクションに移動
-    if ((notification.type === 'memo_response' || notification.type === 'memo_reply') && notification.relatedMemoId && onNavigateToMemo) {
-      onNavigateToMemo(notification.relatedMemoId);
-      setIsOpen(false);
-    }
+    // 通知詳細モーダルを表示
+    setSelectedNotification(notification);
+    setShowDetailModal(true);
+    setIsOpen(false);
+  };
+
+  // 通知詳細モーダルを閉じる
+  const handleCloseDetailModal = () => {
+    setShowDetailModal(false);
+    setSelectedNotification(null);
+  };
+
+  // メッセージの表示用テキストを生成する関数
+  const renderNotificationMessage = (message: string) => {
+    const isTruncated = message.length > 100;
+    const displayMessage = isTruncated
+      ? `${message.substring(0, 100)}...`
+      : message;
+    
+    return (
+      <>
+        {displayMessage}
+        {isTruncated && (
+          <span className="read-more-link">続きを読む</span>
+        )}
+      </>
+    );
   };
 
   // コンポーネントマウント時に通知を取得
@@ -164,23 +180,6 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
     }
   };
 
-  // 通知の種類に応じた色を取得
-  const getNotificationColor = (type: string) => {
-    switch (type) {
-      case 'memo_response':
-        return '#28a745';
-      case 'memo_reply':
-        return '#007bff';
-      case 'status_update':
-        return '#17a2b8';
-      case 'admin_message':
-        return '#ffc107';
-      case 'admin_announcement':
-        return '#dc3545';
-      default:
-        return '#6c757d';
-    }
-  };
 
   return (
     <div className={`notification-container ${className}`}>
@@ -258,7 +257,9 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
                     </div>
                     <div className="notification-content">
                       <h4 className="notification-title">{notification.title}</h4>
-                      <p className="notification-message">{notification.message}</p>
+                      <p className="notification-message">
+                        {renderNotificationMessage(notification.message)}
+                      </p>
                       <span className="notification-date">
                         {new Date(notification.createdAt).toLocaleString('ja-JP')}
                       </span>
@@ -273,6 +274,14 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
           </div>
         </div>
       )}
+
+      {/* 通知詳細モーダル */}
+      <NotificationDetailModal
+        isOpen={showDetailModal}
+        onClose={handleCloseDetailModal}
+        notification={selectedNotification}
+        onNavigateToMemo={onNavigateToMemo}
+      />
     </div>
   );
 };
