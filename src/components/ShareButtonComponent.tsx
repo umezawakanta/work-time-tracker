@@ -20,10 +20,12 @@ const getVersionMessages = (version: string) => [
   `v${version}でユーザーエクスペリエンスが向上！`
 ];
 
-// バージョン紹介文言の配列をメモ化（APP_VERSIONは実行時に変更されないため）
-const versionMessages = getVersionMessages(APP_VERSION);
+
+
 
 const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className = '' }) => {
+  // バージョン紹介文言の配列をメモ化（APP_VERSIONは実行時に変更されないため）
+  const versionMessages = useMemo(() => getVersionMessages(APP_VERSION), []);
   const [isOpen, setIsOpen] = useState(false);
   const [randomElements, setRandomElements] = useState(() => generateRandomElements());
   const [stats, setStats] = useState({
