@@ -395,12 +395,14 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
     setTabCounts(prev => ({ ...prev, users: adminUsers.length }));
   }, [adminUsers]);
 
-  // API一覧のエラー件数を定期的に取得
+  // API一覧のエラー件数を「apilist」タブがアクティブなときのみ定期的に取得
   useEffect(() => {
-    loadApiErrorCount();
-    const interval = setInterval(loadApiErrorCount, 30000); // 30秒ごとに更新
-    return () => clearInterval(interval);
-  }, []);
+    if (activeTab === 'apilist') {
+      loadApiErrorCount();
+      const interval = setInterval(loadApiErrorCount, 30000); // 30秒ごとに更新
+      return () => clearInterval(interval);
+    }
+  }, [activeTab]);
 
   // 検索・ソート機能
   const filteredUsers = (adminUsers || [])
