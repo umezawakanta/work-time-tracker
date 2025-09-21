@@ -2834,7 +2834,10 @@ ${errorInfo.stack}
     const netIncome = totalIncome - totalExpense;
 
     // 開発環境でのみデバッグログを出力
-    if (process.env.NODE_ENV === 'development') {
+    if (
+      process.env.NODE_ENV === 'development' &&
+      process.env.REACT_APP_DEBUG_BALANCE_CALCULATION === 'true'
+    ) {
       console.log('収支計算結果:', {
         totalIncome,
         totalExpense,
