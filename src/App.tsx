@@ -2069,6 +2069,7 @@ ${errorInfo.stack}
       }
 
       // データベースには常に正の値で保存（表示時にtypeに基づいて正負を決定）
+      // 注意: このamountは常に正の値として保存されるため、表示時は必ずtypeフィールドと組み合わせて使用すること
       const amount = Math.abs(Number(incomeExpenseAmount));
 
       const requestBody = {
@@ -2146,6 +2147,7 @@ ${errorInfo.stack}
       }
 
       // データベースには常に正の値で保存（表示時にtypeに基づいて正負を決定）
+      // 注意: このamountは常に正の値として保存されるため、表示時は必ずtypeフィールドと組み合わせて使用すること
       const amount = Math.abs(Number(incomeExpenseAmount));
 
       const requestBody = {
@@ -2831,21 +2833,22 @@ ${errorInfo.stack}
 
     const netIncome = totalIncome - totalExpense;
 
-    console.log('収支計算結果:', {
-      totalIncome,
-      totalExpense,
-      netIncome,
-      recordsCount: incomeExpenseRecords?.length || 0,
-      recordsInMonthCount: recordsInMonth.length,
-      ...(process.env.NODE_ENV === 'development' && {
+    // 開発環境でのみデバッグログを出力
+    if (process.env.NODE_ENV === 'development') {
+      console.log('収支計算結果:', {
+        totalIncome,
+        totalExpense,
+        netIncome,
+        recordsCount: incomeExpenseRecords?.length || 0,
+        recordsInMonthCount: recordsInMonth.length,
         recordsInMonthSample: recordsInMonth.slice(0, 10).map(record => ({
           id: record._id,
           type: record.type,
           amount: record.amount,
           date: record.date
         }))
-      })
-    });
+      });
+    }
 
     return {
       totalIncome,
