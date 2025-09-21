@@ -1,7 +1,7 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
-const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
-const { determineHealthStatus, createHealthCheckController, clearHealthCheckTimeout } = require('../utils/healthCheckUtils');
-const { API_ENDPOINTS, getCheckableEndpoints } = require('../config/api-endpoints.js');
+const { ensureDatabaseConnection: dbConnect, verifyJWT: authVerify, handleError: errorHandler } = require('../utils/database');
+const { determineHealthStatus: healthStatus, createHealthCheckController: createController, clearHealthCheckTimeout: clearHealthTimeout } = require('../utils/healthCheckUtils');
+const { API_ENDPOINTS, getCheckableEndpoints: getEndpoints } = require('../config/api-endpoints.js');
 
 // 時間関連の定数
 const ONE_HOUR_MS = 60 * 60 * 1000; // 1時間のミリ秒
@@ -12,7 +12,7 @@ const checkApiHealth = async (endpoint, method) => {
   const startTime = Date.now();
   
   // AbortControllerを使用してタイムアウトを設定
-  const { controller, timeoutId } = createHealthCheckController();
+  const { controller, timeoutId } = createController();
   
   try {
     const response = await fetch(endpoint, {
@@ -23,10 +23,10 @@ const checkApiHealth = async (endpoint, method) => {
       signal: controller.signal
     });
 
-    clearHealthCheckTimeout(timeoutId);
+    clearHealthTimeout(timeoutId);
 
     const responseTime = Date.now() - startTime;
-    const status = determineHealthStatus(response.status, responseTime);
+    const status = healthStatus(response.status, responseTime);
 
     return {
       endpoint,
@@ -38,7 +38,7 @@ const checkApiHealth = async (endpoint, method) => {
     };
 
   } catch (error) {
-    clearHealthCheckTimeout(timeoutId);
+    clearHealthTimeout(timeoutId);
     const responseTime = Date.now() - startTime;
 
     return {
@@ -67,7 +67,7 @@ const limitConcurrency = async (tasks, limit = 5) => {
 const getRealApiMetrics = async () => {
   try {
     // 設定ファイルからチェック可能なエンドポイントを取得
-    const checkableEndpoints = getCheckableEndpoints();
+    const checkableEndpoints = getEndpoints();
 
     // 並列実行数を制限してヘルスチェックを実行（最大5個まで同時実行）
     const healthCheckTasks = checkableEndpoints.map(({ path, method }) => 
@@ -183,22 +183,22 @@ module.exports = async (req, res) => {
   }
 
   if (req.method !== 'GET') {
-    return handleError(res, { statusCode: 405, message: 'メソッドが許可されていません' });
+    return errorHandler(res, { statusCode: 405, message: 'メソッドが許可されていません' });
   }
 
   try {
     // データベース接続
-    await ensureDatabaseConnection();
+    await dbConnect();
 
     // JWT認証
-    const userInfo = await verifyJWT(req);
+    const userInfo = await authVerify(req);
     if (!userInfo) {
-      return handleError(res, { statusCode: 401, message: '認証が必要です' });
+      return errorHandler(res, { statusCode: 401, message: '認証が必要です' });
     }
 
     // 管理者権限の確認
     if (userInfo.role !== 'admin' || !userInfo.isAdmin) {
-      return handleError(res, { statusCode: 403, message: '管理者権限が必要です' });
+      return errorHandler(res, { statusCode: 403, message: '管理者権限が必要です' });
     }
 
     // 実際のメトリクスデータを取得
@@ -232,6 +232,6 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('❌ API list error:', error);
-    return handleError(res, error, 'API一覧取得中にエラーが発生しました');
+    return errorHandler(res, error, 'API一覧取得中にエラーが発生しました');
   }
 };
