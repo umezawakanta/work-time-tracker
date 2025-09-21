@@ -122,6 +122,17 @@ const checkApiHealth = async (endpoint, method) => {
   const startTime = Date.now();
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.FALLBACK_API_URL || '';
   
+  // If baseUrl is empty, return error result immediately
+  if (!baseUrl) {
+    return {
+      endpoint,
+      method,
+      status: 'error',
+      responseTime: 0,
+      error: 'Base URL for API health check is not configured.',
+      lastChecked: new Date().toISOString()
+    };
+  }
   // AbortControllerを使用してタイムアウトを設定
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), HEALTH_CHECK_TIMEOUT_MS);
