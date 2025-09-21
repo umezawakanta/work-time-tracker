@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './ShareButtonComponent.css';
 import { APP_VERSION, getLatestChangelog } from '../constants/version';
 
@@ -6,26 +6,21 @@ interface ShareButtonComponentProps {
   className?: string;
 }
 
-// バージョン紹介文言の配列を生成する関数
-const getVersionMessages = (version: string) => [
-  `最新バージョン${version}で更新要望・不具合報告機能を追加！`,
-  `v${version}でユーザビリティが大幅に向上しました！`,
-  `新機能満載のv${version}をぜひお試しください！`,
-  `v${version}でエラーハンドリングが改善されました！`,
-  `最新アップデートv${version}でより使いやすく！`,
-  `v${version}で新機能と改善が追加されました！`,
-  `最新版v${version}でパフォーマンスが向上！`,
-  `v${version}でコード品質が大幅に改善されました！`,
-  `新バージョンv${version}で機能が充実！`,
-  `v${version}でユーザーエクスペリエンスが向上！`
+// バージョン紹介文言の配列（コンポーネント外で定義）
+const versionMessages = [
+  `最新バージョン${APP_VERSION}で更新要望・不具合報告機能を追加！`,
+  `v${APP_VERSION}でユーザビリティが大幅に向上しました！`,
+  `新機能満載のv${APP_VERSION}をぜひお試しください！`,
+  `v${APP_VERSION}でエラーハンドリングが改善されました！`,
+  `最新アップデートv${APP_VERSION}でより使いやすく！`,
+  `v${APP_VERSION}で新機能と改善が追加されました！`,
+  `最新版v${APP_VERSION}でパフォーマンスが向上！`,
+  `v${APP_VERSION}でコード品質が大幅に改善されました！`,
+  `新バージョンv${APP_VERSION}で機能が充実！`,
+  `v${APP_VERSION}でユーザーエクスペリエンスが向上！`
 ];
 
-
-
-
 const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className = '' }) => {
-  // バージョン紹介文言の配列をメモ化（APP_VERSIONは実行時に変更されないため）
-  const versionMessages = useMemo(() => getVersionMessages(APP_VERSION), []);
   const [isOpen, setIsOpen] = useState(false);
   const [randomElements, setRandomElements] = useState(() => generateRandomElements());
   const [stats, setStats] = useState({
@@ -188,19 +183,27 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   };
   
   // 基礎テキスト要素を生成するユーティリティ関数（メモ化）
+<<<<<<< HEAD
   // メモ化: statsに依存しない静的テキスト要素のみ
+=======
+>>>>>>> 37866f6d5 (refactor: ShareButtonComponentのテキスト生成ロジックをメモ化してパフォーマンスを向上)
   const baseTextElements = useMemo(() => {
     const intro = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
     const features = `${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。`;
     const promise = `ユーザーから要求があった機能をすぐに実装します！`;
     const versionMsg = `\n\n${randomElements.versionMessage}`;
     const latestUpdate = getLatestUpdateInfo();
+<<<<<<< HEAD
+=======
+    const statsText = getStatsText();
+>>>>>>> 37866f6d5 (refactor: ShareButtonComponentのテキスト生成ロジックをメモ化してパフォーマンスを向上)
     
     return {
       intro,
       features,
       promise,
       versionMsg,
+<<<<<<< HEAD
       latestUpdate
     };
   }, [randomElements]);
@@ -210,6 +213,15 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
 
   const getSiteDescription = () => {
     return `${baseTextElements.intro}${baseTextElements.features}${baseTextElements.promise}${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${statsText}`;
+=======
+      latestUpdate,
+      statsText
+    };
+  }, [randomElements, stats.loading, stats.userCount, stats.errorCount, stats.updateRequestCount, stats.linterErrorCount, stats.testErrorCount]);
+
+  const getSiteDescription = () => {
+    return `${baseTextElements.intro}${baseTextElements.features}${baseTextElements.promise}${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${baseTextElements.statsText}`;
+>>>>>>> 37866f6d5 (refactor: ShareButtonComponentのテキスト生成ロジックをメモ化してパフォーマンスを向上)
   };
 
   const siteDescription = getSiteDescription();
@@ -229,7 +241,11 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     }
     
     // 文字数制限を超える場合は短縮版を使用
+<<<<<<< HEAD
     // Fallback: Omit stats and latest update info, keeping only version message
+=======
+    // Fallback: omit stats and latest update info for brevity
+>>>>>>> 37866f6d5 (refactor: ShareButtonComponentのテキスト生成ロジックをメモ化してパフォーマンスを向上)
     const shortVersionInfo = baseTextElements.versionMsg;
     return `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
   };
