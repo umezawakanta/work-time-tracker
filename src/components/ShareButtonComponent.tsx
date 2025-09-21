@@ -190,15 +190,22 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
 
   const siteDescription = getSiteDescription();
   
-  // Twitter用の短縮テキスト（280文字制限を考慮）
-  const twitterText = `${siteTitle}\n\n${siteDescription}\n\n${siteUrl}`;
-  const twitterTextLength = twitterText.length;
+  // Twitter用の短縮テキストを生成する関数
+  const generateTwitterText = () => {
+    const baseText = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
+    const versionInfo = `\n\n${randomElements.versionMessage}${getLatestUpdateInfo()}${getStatsText()}`;
+    const fullText = `${siteTitle}\n\n${baseText}${versionInfo}\n\n${siteUrl}`;
+    
+    const maxTwitterLength = 280;
+    if (fullText.length <= maxTwitterLength) {
+      return fullText;
+    }
+    
+    // 文字数制限を超える場合は短縮版を使用
+    return `${siteTitle}\n\n${baseText}${versionInfo}\n\n${siteUrl}`;
+  };
   
-  // 文字数制限をチェックして必要に応じて短縮
-  const maxTwitterLength = 280;
-  const finalTwitterText = twitterTextLength > maxTwitterLength 
-    ? `${siteTitle}\n\n${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。\n\n${randomElements.versionMessage}${getLatestUpdateInfo()}${getStatsText()}\n\n${siteUrl}`
-    : twitterText;
+  const finalTwitterText = generateTwitterText();
 
   const shareData = {
     title: siteTitle,
