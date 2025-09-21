@@ -53,7 +53,7 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
     try {
       // getAuthToken expects a callback of type (errorMessage: string) => void.
       // It will call this callback if an error occurs during token retrieval.
-      const token = getAuthToken(setError as (errorMessage: string) => void);
+      const token = getAuthToken(setError);
       if (!token) return;
 
       const response = await fetch('/api/admin/api-list', {
