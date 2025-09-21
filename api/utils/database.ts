@@ -115,9 +115,6 @@ const handleError = (res, error, message = 'Internal server error') => {
   });
 };
 
-// Admin-specific database connection (alias for ensureDatabaseConnection)
-
-
 module.exports = {
   ensureDatabaseConnection: initDatabaseConnection,
   verifyJWT: verifyJWTToken,
