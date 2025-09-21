@@ -162,6 +162,24 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
     }
   }, [isOpen]);
 
+  // 通知の種類に応じたアイコンを取得
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'memo_response':
+        return 'bi-reply';
+      case 'memo_reply':
+        return 'bi-chat-dots';
+      case 'status_update':
+        return 'bi-arrow-repeat';
+      case 'admin_message':
+        return 'bi-megaphone';
+      case 'admin_announcement':
+        return 'bi-bullhorn';
+      default:
+        return 'bi-bell';
+    }
+  };
+
 
   return (
     <div className={`notification-container ${className}`}>
@@ -233,7 +251,7 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
                   >
                     <div className="notification-icon">
                       <i 
-                        className={`bi bi-bell notification-type-icon`}
+                        className={`bi ${getNotificationIcon(notification.type)} notification-type-icon`}
                         data-type={notification.type}
                       ></i>
                     </div>
