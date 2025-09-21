@@ -143,12 +143,12 @@ export const getBugReportCategories = () => {
  * メモ機能から除外するカテゴリの定数
  */
 export const EXCLUDED_MEMO_CATEGORIES = [
-  'エラー報告',
-  '更新リクエスト', 
-  '更新要望',
-  '要望、リクエスト',
-  '不具合報告',
-  'バグ報告',
-  '改善要望',
-  'フィードバック'
+  'エラー報告',        // "Error report" - synonym for bug report
+  '更新リクエスト',    // "Update request" - user input variation
+  '更新要望',         // "Update demand/request" - synonym for update request
+  '要望、リクエスト',  // "Demand, request" - legacy/combined term
+  '不具合報告',        // "Bug report" - standard term
+  'バグ報告',         // "Bug report" - synonym for 不具合報告
+  '改善要望',         // "Improvement request" - related category
+  'フィードバック'     // "Feedback" - general feedback category
 ];
