@@ -16,6 +16,16 @@ interface ApiEndpoint {
   successfulChecks?: number;
 }
 
+interface HealthCheckResult {
+  endpoint: string;
+  method: string;
+  status: 'healthy' | 'warning' | 'error' | 'unknown';
+  responseTime: number;
+  statusCode?: number;
+  error?: string;
+  lastChecked: string;
+}
+
 interface ApiListComponentProps {
   className?: string;
 }
@@ -84,7 +94,7 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
       
       // 結果を既存のAPI一覧にマージ
       const updatedEndpoints = apiEndpoints.map(api => {
-        const healthResult = data.results.find((r: any) => 
+        const healthResult = data.results.find((r: HealthCheckResult) => 
           r.endpoint === api.path && r.method === api.method
         );
         
@@ -131,12 +141,29 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
       return endpoint.status === filter;
     })
     .sort((a, b) => {
-      let aValue = a[sortBy as keyof ApiEndpoint];
-      let bValue = b[sortBy as keyof ApiEndpoint];
+      let aValue: string | number = '';
+      let bValue: string | number = '';
 
-      if (sortBy === 'lastChecked') {
-        aValue = new Date(aValue as string).getTime();
-        bValue = new Date(bValue as string).getTime();
+      switch (sortBy) {
+        case 'path':
+          aValue = a.path;
+          bValue = b.path;
+          break;
+        case 'status':
+          aValue = a.status;
+          bValue = b.status;
+          break;
+        case 'lastChecked':
+          aValue = new Date(a.lastChecked).getTime();
+          bValue = new Date(b.lastChecked).getTime();
+          break;
+        case 'errorCount':
+          aValue = a.errorCount;
+          bValue = b.errorCount;
+          break;
+        default:
+          aValue = a.path;
+          bValue = b.path;
       }
 
       if (sortOrder === 'asc') {
