@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import './ShareButtonComponent.css';
 import { APP_VERSION, getLatestChangelog } from '../constants/version';
 
