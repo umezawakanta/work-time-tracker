@@ -216,6 +216,19 @@
   overflow: hidden;
 }
 
+.read-more-link {
+  color: #007bff;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 0.25rem;
+}
+
+.read-more-link:hover {
+  color: #0056b3;
+  text-decoration: none;
+}
+
 .notification-date {
   font-size: 0.75rem;
   color: #999;

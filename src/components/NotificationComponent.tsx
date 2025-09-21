@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './NotificationComponent.css';
+import NotificationDetailModal from './NotificationDetailModal';
 
 interface Notification {
   _id: string;
@@ -22,6 +23,8 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   // 通知を取得
   const loadNotifications = async () => {
@@ -96,11 +99,16 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
     // 既読にする
     markAsRead(notification._id);
     
-    // メモ関連の通知の場合はメモセクションに移動
-    if ((notification.type === 'memo_response' || notification.type === 'memo_reply') && notification.relatedMemoId && onNavigateToMemo) {
-      onNavigateToMemo(notification.relatedMemoId);
-      setIsOpen(false);
-    }
+    // 通知詳細モーダルを表示
+    setSelectedNotification(notification);
+    setShowDetailModal(true);
+    setIsOpen(false);
+  };
+
+  // 通知詳細モーダルを閉じる
+  const handleCloseDetailModal = () => {
+    setShowDetailModal(false);
+    setSelectedNotification(null);
   };
 
   // コンポーネントマウント時に通知を取得
@@ -258,7 +266,15 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
                     </div>
                     <div className="notification-content">
                       <h4 className="notification-title">{notification.title}</h4>
-                      <p className="notification-message">{notification.message}</p>
+                      <p className="notification-message">
+                        {notification.message.length > 100 
+                          ? `${notification.message.substring(0, 100)}...` 
+                          : notification.message
+                        }
+                        {notification.message.length > 100 && (
+                          <span className="read-more-link">続きを読む</span>
+                        )}
+                      </p>
                       <span className="notification-date">
                         {new Date(notification.createdAt).toLocaleString('ja-JP')}
                       </span>
@@ -273,6 +289,14 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
           </div>
         </div>
       )}
+
+      {/* 通知詳細モーダル */}
+      <NotificationDetailModal
+        isOpen={showDetailModal}
+        onClose={handleCloseDetailModal}
+        notification={selectedNotification}
+        onNavigateToMemo={onNavigateToMemo}
+      />
     </div>
   );
 };
