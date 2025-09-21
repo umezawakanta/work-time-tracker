@@ -2808,6 +2808,12 @@ ${errorInfo.stack}
     return days;
   };
 
+  // デバッグログの出力条件をチェックするヘルパー関数
+  const shouldLogBalanceCalculation = () => {
+    return process.env.NODE_ENV === 'development' && 
+           process.env.REACT_APP_DEBUG_BALANCE_CALCULATION === 'true';
+  };
+
   // 月間収支を計算する関数
   const getMonthlySummary = (year: number, month: number) => {
     const startDate = new Date(year, month, 1);
@@ -2833,11 +2839,8 @@ ${errorInfo.stack}
 
     const netIncome = totalIncome - totalExpense;
 
-    // 開発環境でのみデバッグログを出力
-    if (
-      process.env.NODE_ENV === 'development' &&
-      process.env.REACT_APP_DEBUG_BALANCE_CALCULATION === 'true'
-    ) {
+    // デバッグログを出力（条件に基づく）
+    if (shouldLogBalanceCalculation()) {
       console.log('収支計算結果:', {
         totalIncome,
         totalExpense,
