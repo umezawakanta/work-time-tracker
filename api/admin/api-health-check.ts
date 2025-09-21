@@ -44,6 +44,10 @@ const checkApiHealth = async (endpoint, method) => {
   const startTime = Date.now();
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
   
+  // AbortControllerを使用してタイムアウトを設定
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  
   try {
     const response = await fetch(`${baseUrl}${endpoint}`, {
       method: method,
@@ -51,9 +55,10 @@ const checkApiHealth = async (endpoint, method) => {
         'Content-Type': 'application/json',
         // 認証が必要なエンドポイントの場合は適切なヘッダーを追加
       },
-      // タイムアウト設定
-      timeout: 5000
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
 
     const responseTime = Date.now() - startTime;
     
@@ -77,6 +82,7 @@ const checkApiHealth = async (endpoint, method) => {
     };
 
   } catch (error) {
+    clearTimeout(timeoutId);
     const responseTime = Date.now() - startTime;
     
     return {

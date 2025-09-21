@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './ApiListComponent.css';
+import { getAuthToken } from '../utils/authUtils';
+
+// 成功率計算のユーティリティ関数
+const calculateSuccessRate = (totalChecks: number, successfulChecks: number): number => {
+  return totalChecks > 0 ? Math.round((successfulChecks / totalChecks) * 100) : 0;
+};
 
 interface ApiEndpoint {
   id: string;
@@ -43,9 +49,11 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
   const loadApiEndpoints = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      const token = localStorage.getItem('access_token');
+      const token = getAuthToken(setError);
+      if (!token) return;
+
       const response = await fetch('/api/admin/api-list', {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -71,7 +79,9 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
     setError(null);
     
     try {
-      const token = localStorage.getItem('access_token');
+      const token = getAuthToken(setError);
+      if (!token) return;
+
       const response = await fetch('/api/admin/api-health-check', {
         method: 'POST',
         headers: {
@@ -102,7 +112,7 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
           // 実際の成功率を計算（過去のチェック回数と成功回数に基づく）
           const totalChecks = (api.totalChecks || 0) + 1;
           const successfulChecks = (api.successfulChecks || 0) + (healthResult.status === 'healthy' ? 1 : 0);
-          const actualSuccessRate = totalChecks > 0 ? Math.round((successfulChecks / totalChecks) * 100) : 0;
+          const actualSuccessRate = calculateSuccessRate(totalChecks, successfulChecks);
           
           return {
             ...api,
