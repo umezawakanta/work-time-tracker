@@ -6,18 +6,18 @@ interface ShareButtonComponentProps {
   className?: string;
 }
 
-// バージョン紹介文言の配列（コンポーネント外で定義）
-const versionMessages = [
-  `最新バージョン${APP_VERSION}で更新要望・不具合報告機能を追加！`,
-  `v${APP_VERSION}でユーザビリティが大幅に向上しました！`,
-  `新機能満載のv${APP_VERSION}をぜひお試しください！`,
-  `v${APP_VERSION}でエラーハンドリングが改善されました！`,
-  `最新アップデートv${APP_VERSION}でより使いやすく！`,
-  `v${APP_VERSION}で新機能と改善が追加されました！`,
-  `最新版v${APP_VERSION}でパフォーマンスが向上！`,
-  `v${APP_VERSION}でコード品質が大幅に改善されました！`,
-  `新バージョンv${APP_VERSION}で機能が充実！`,
-  `v${APP_VERSION}でユーザーエクスペリエンスが向上！`
+// バージョン紹介文言の配列を生成する関数
+const getVersionMessages = (version: string) => [
+  `最新バージョン${version}で更新要望・不具合報告機能を追加！`,
+  `v${version}でユーザビリティが大幅に向上しました！`,
+  `新機能満載のv${version}をぜひお試しください！`,
+  `v${version}でエラーハンドリングが改善されました！`,
+  `最新アップデートv${version}でより使いやすく！`,
+  `v${version}で新機能と改善が追加されました！`,
+  `最新版v${version}でパフォーマンスが向上！`,
+  `v${version}でコード品質が大幅に改善されました！`,
+  `新バージョンv${version}で機能が充実！`,
+  `v${version}でユーザーエクスペリエンスが向上！`
 ];
 
 const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className = '' }) => {
@@ -122,6 +122,9 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     const randomActivity = activities[Math.floor(Math.random() * activities.length)];
     const randomFeatures = features.sort(() => 0.5 - Math.random()).slice(0, 3);
     const randomBenefit = benefits[Math.floor(Math.random() * benefits.length)];
+    
+    // バージョン紹介文言を動的に生成
+    const versionMessages = getVersionMessages(APP_VERSION);
     const randomVersionMessage = versionMessages[Math.floor(Math.random() * versionMessages.length)];
     
     return {
