@@ -45,7 +45,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
       }
 
       // 並列で複数のAPIを呼び出し
-      const [adminUsersResponse, errorReportsResponse, publicMemosResponse, linterErrorsResponse, testResultsResponse, apiListResponse] = await Promise.all([
+      const responses = await Promise.all([
         fetch('/api/admin/users', { headers }),
         fetch('/api/admin/error-reports', { headers }),
         fetch('/api/memos/public', { headers }),
@@ -53,6 +53,15 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
         fetch('/api/admin/test-results', { headers }),
         fetch('/api/admin/api-list', { headers })
       ]);
+
+      const [
+        adminUsersResponse,
+        errorReportsResponse,
+        publicMemosResponse,
+        linterErrorsResponse,
+        testResultsResponse,
+        apiListResponse
+      ] = responses;
 
       let userCount = 0;
       let errorCount = 0;

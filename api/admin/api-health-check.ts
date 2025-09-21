@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { determineHealthStatus, createHealthCheckController, clearHealthCheckTimeout } = require('../utils/healthCheckUtils');
+const { getCheckableEndpoints } = require('../config/api-endpoints');
 
 dotenv.config();
 
@@ -90,21 +91,7 @@ const checkApiHealth = async (endpoint, method) => {
   }
 };
 
-// 主要なAPIエンドポイントのリスト
-const MAIN_API_ENDPOINTS = [
-  { path: '/api/auth/login', method: 'POST' },
-  { path: '/api/auth/register', method: 'POST' },
-  { path: '/api/time/entries', method: 'GET' },
-  { path: '/api/projects/list', method: 'GET' },
-  { path: '/api/memos', method: 'GET' },
-  { path: '/api/work-records/diary', method: 'GET' },
-  { path: '/api/work-records/salary', method: 'GET' },
-  { path: '/api/books', method: 'GET' },
-  { path: '/api/reports/summary', method: 'GET' },
-  { path: '/api/notifications', method: 'GET' },
-  { path: '/api/version/check', method: 'GET' },
-  { path: '/api/user-settings', method: 'GET' }
-];
+// 主要なAPIエンドポイントのリストは設定ファイルから取得
 
 /**
  * Health check response object structure:
@@ -197,7 +184,7 @@ module.exports = async function handler(req, res) {
     const { endpoints } = req.body;
     
     // チェック対象のエンドポイントを決定
-    const checkEndpoints = endpoints || MAIN_API_ENDPOINTS;
+    const checkEndpoints = endpoints || getCheckableEndpoints();
 
     // 並列でヘルスチェックを実行
     const healthCheckPromises = checkEndpoints.map(({ path, method }) => 
