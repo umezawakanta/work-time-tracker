@@ -202,7 +202,9 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     }
     
     // 文字数制限を超える場合は短縮版を使用
-    return `${siteTitle}\n\n${baseText}${versionInfo}\n\n${siteUrl}`;
+    // Fallback: omit stats and latest update info for brevity
+    const shortVersionInfo = `\n\n${randomElements.versionMessage}`;
+    return `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
   };
   
   const finalTwitterText = generateTwitterText();
