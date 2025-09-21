@@ -171,11 +171,35 @@ const checkApiHealth = async (endpoint, method) => {
 const getRealApiMetrics = async () => {
   try {
     // 主要なAPIエンドポイントのみをチェック（認証が必要なエンドポイントは除外）
-    const checkableEndpoints = API_ENDPOINTS.filter(endpoint => 
-      !endpoint.path.includes('/admin/') && 
-      !endpoint.path.includes('/auth/') &&
-      endpoint.method === 'GET'
-    );
+    const checkableEndpoints = API_ENDPOINTS.filter(endpoint => {
+      // 管理者専用エンドポイントは除外
+      if (endpoint.path.includes('/admin/')) {
+        return false;
+      }
+      
+      // 認証が必要なエンドポイントは除外
+      if (endpoint.path.includes('/auth/')) {
+        return false;
+      }
+      
+      // チェック可能なエンドポイントを明示的に指定
+      const checkablePaths = [
+        '/api/time/entries',
+        '/api/projects/list',
+        '/api/memos',
+        '/api/memos/public',
+        '/api/memos/count',
+        '/api/work-records/diary',
+        '/api/work-records/salary',
+        '/api/books',
+        '/api/reports/summary',
+        '/api/notifications',
+        '/api/version/check',
+        '/api/user-settings'
+      ];
+      
+      return checkablePaths.includes(endpoint.path);
+    });
 
     // 並列でヘルスチェックを実行
     const healthCheckPromises = checkableEndpoints.map(({ path, method }) => 
