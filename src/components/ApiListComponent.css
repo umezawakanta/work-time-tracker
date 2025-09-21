@@ -1,0 +1,501 @@
+/* API一覧コンポーネントのスタイル */
+.api-list-container {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.api-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.api-list-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.refresh-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.health-check-button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.health-check-button:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.health-check-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinning {
+    animation: none;
+  }
+}
+.api-list-controls {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.filter-controls,
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-controls label,
+.sort-controls label {
+  font-weight: 500;
+  color: #555;
+  white-space: nowrap;
+}
+
+.filter-controls select,
+.sort-controls select {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background: white;
+  font-size: 0.875rem;
+}
+
+.sort-order-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.375rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.sort-order-button:hover {
+  background: #5a6268;
+}
+
+.error-message,
+.loading-message {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.loading-message {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.api-list-table-container {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.api-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.api-list-table th {
+  background: #f8f9fa;
+  padding: 1rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #e9ecef;
+  white-space: nowrap;
+}
+
+.api-list-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: top;
+}
+
+.api-endpoint-row:hover {
+  background: #f8f9fa;
+}
+
+.api-endpoint-row.status-error {
+  background: #fff5f5;
+}
+
+.api-endpoint-row.status-warning {
+  background: #fffbf0;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.method-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  min-width: 3rem;
+  text-align: center;
+}
+
+.path-cell code {
+  background: #f8f9fa;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: #e83e8c;
+}
+
+.description-cell {
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+.success-rate {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 80px;
+}
+
+.success-rate-bar {
+  flex: 1;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.success-rate-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #dc3545 0%, #ffc107 50%, #28a745 100%);
+  transition: width 0.3s ease;
+}
+
+.success-rate-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 35px;
+  text-align: right;
+}
+
+.error-count {
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background: #f8f9fa;
+  color: #6c757d;
+}
+
+.error-count.has-errors {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.response-time {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: #495057;
+}
+
+.no-data {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.last-checked {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.test-button,
+.details-button {
+  background: none;
+  border: 1px solid #dee2e6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #6c757d;
+  transition: all 0.2s;
+  font-size: 0.8rem;
+}
+
+.test-button:hover {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.details-button:hover {
+  background: #6c757d;
+  color: white;
+  border-color: #6c757d;
+}
+
+.no-data-message {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+.no-data-message i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.api-stats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #495057;
+}
+
+.stat-value.healthy {
+  color: #28a745;
+}
+
+.stat-value.warning {
+  color: #ffc107;
+}
+
+.stat-value.error {
+  color: #dc3545;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 1200px) {
+  .api-list-table {
+    font-size: 0.8rem;
+  }
+  
+  .api-list-table th,
+  .api-list-table td {
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .description-cell {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .api-list-container {
+    padding: 1rem;
+  }
+  
+  .api-list-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .api-list-controls {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .filter-controls,
+  .sort-controls {
+    justify-content: space-between;
+  }
+  
+  .api-list-table-container {
+    overflow-x: auto;
+  }
+  
+  .api-list-table {
+    min-width: 800px;
+  }
+  
+  .api-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .stat-item {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .api-list-container {
+    background: #2d3748;
+    color: #e2e8f0;
+  }
+  
+  .api-list-header h2 {
+    color: #e2e8f0;
+  }
+  
+  .api-list-controls {
+    background: #4a5568;
+    border-color: #718096;
+  }
+  
+  .api-list-table-container {
+    background: #4a5568;
+  }
+  
+  .api-list-table th {
+    background: #2d3748;
+    color: #e2e8f0;
+    border-color: #718096;
+  }
+  
+  .api-list-table td {
+    border-color: #718096;
+    color: #e2e8f0;
+  }
+  
+  .api-endpoint-row:hover {
+    background: #2d3748;
+  }
+  
+  .api-endpoint-row.status-error {
+    background: #742a2a;
+  }
+  
+  .api-endpoint-row.status-warning {
+    background: #744210;
+  }
+  
+  .path-cell code {
+    background: #2d3748;
+    color: #f687b3;
+  }
+  
+  .api-stats {
+    background: #4a5568;
+    border-color: #718096;
+  }
+  
+  .stat-label {
+    color: #a0aec0;
+  }
+  
+  .stat-value {
+    color: #e2e8f0;
+  }
+}

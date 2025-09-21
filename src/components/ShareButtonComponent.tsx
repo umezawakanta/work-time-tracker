@@ -29,6 +29,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     updateRequestCount: 0,
     linterErrorCount: 0,
     testErrorCount: 0,
+    apiErrorCount: 0,
     loading: true
   });
 
@@ -44,19 +45,30 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
       }
 
       // 並列で複数のAPIを呼び出し
-      const [adminUsersResponse, errorReportsResponse, publicMemosResponse, linterErrorsResponse, testResultsResponse] = await Promise.all([
+      const responses = await Promise.all([
         fetch('/api/admin/users', { headers }),
         fetch('/api/admin/error-reports', { headers }),
         fetch('/api/memos/public', { headers }),
         fetch('/api/admin/linter-errors', { headers }),
-        fetch('/api/admin/test-results', { headers })
+        fetch('/api/admin/test-results', { headers }),
+        fetch('/api/admin/api-list', { headers })
       ]);
+
+      const [
+        adminUsersResponse,
+        errorReportsResponse,
+        publicMemosResponse,
+        linterErrorsResponse,
+        testResultsResponse,
+        apiListResponse
+      ] = responses;
 
       let userCount = 0;
       let errorCount = 0;
       let updateRequestCount = 0;
       let linterErrorCount = 0;
       let testErrorCount = 0;
+      let apiErrorCount = 0;
 
       // ユーザー数を取得
       if (adminUsersResponse.ok) {
@@ -90,12 +102,19 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
         testErrorCount = testData.failed || 0;
       }
 
+      // APIエラー数を取得
+      if (apiListResponse.ok) {
+        const apiData = await apiListResponse.json();
+        apiErrorCount = apiData.stats?.error || 0;
+      }
+
       setStats({
         userCount,
         errorCount,
         updateRequestCount,
         linterErrorCount,
         testErrorCount,
+        apiErrorCount,
         loading: false
       });
     } catch (error) {
@@ -179,7 +198,25 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     if (stats.testErrorCount > 0) {
       statsParts.push(`🧪 ${stats.testErrorCount}件のテストエラー`);
     }
+    if (stats.apiErrorCount > 0) {
+      statsParts.push(`🔧 ${stats.apiErrorCount}件のAPIエラー`);
+    }
     return statsParts.length > 0 ? `\n\n📊 現在の状況: ${statsParts.join('、')}` : '';
+  };
+
+  // 短縮統計テキストを生成（Twitter用）
+  const getShortStatsText = () => {
+    if (stats.loading) {
+      return '';
+    }
+    const shortStatsParts = [];
+    if (stats.updateRequestCount > 0) {
+      shortStatsParts.push(`💡${stats.updateRequestCount}件の更新要望`);
+    }
+    if (stats.apiErrorCount > 0) {
+      shortStatsParts.push(`🔧${stats.apiErrorCount}件のAPIエラー`);
+    }
+    return shortStatsParts.length > 0 ? `\n\n📊 ${shortStatsParts.join('、')}` : '';
   };
   
   // 動的に変化する部分は都度計算
@@ -203,9 +240,18 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     }
     
     // 文字数制限を超える場合は短縮版を使用
-    // Fallback prioritization: If the character limit is exceeded, omit stats and latest update info, but always keep the version message, as it is the most important update for users.
-    const shortVersionInfo = `\n\n${randomElements.versionMessage}`;
-    return `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
+    // まず統計情報のみの短縮版を試す
+    const shortStatsText = getShortStatsText();
+    const shortVersionInfo = `\n\n${randomElements.versionMessage}${shortStatsText}`;
+    const shortText = `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
+    
+    if (shortText.length <= maxTwitterLength) {
+      return shortText;
+    }
+    
+    // それでも長い場合は統計情報を完全に省略
+    const minimalVersionInfo = `\n\n${randomElements.versionMessage}`;
+    return `${siteTitle}\n\n${baseText}${minimalVersionInfo}\n\n${siteUrl}`;
   };
   
   const finalTwitterText = generateTwitterText();

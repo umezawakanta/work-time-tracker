@@ -1,7 +1,6 @@
-const { mongoose } = require('../../utils/database');
+const { mongoose, ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
-const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
 const { BookSchema } = require('../utils/schemas');
 // Type definitions are now in comments for reference
 

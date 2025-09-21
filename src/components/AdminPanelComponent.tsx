@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './AdminPanelComponent.css';
 import ResponseFormModal from './ResponseFormModal';
+import ApiListComponent from './ApiListComponent';
+import { getAuthToken } from '../utils/authUtils';
+
+// タブの型定義
+type AdminTab = 'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors' | 'testresults' | 'announcements' | 'apilist' | 'responses';
 
 // ソースコードアイテムコンポーネント
 interface SourceCodeItemProps {
@@ -196,10 +201,11 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'email' | 'role' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors' | 'testresults' | 'announcements'>('users');
+  const [activeTab, setActiveTab] = useState<AdminTab>('users');
   const [errorReports, setErrorReports] = useState<any[]>([]);
   const [errorReportsLoading, setErrorReportsLoading] = useState(false);
   const [errorReportsError, setErrorReportsError] = useState<string | null>(null);
+  const [apiErrorCount, setApiErrorCount] = useState(0);
   const [updateRequests, setUpdateRequests] = useState<any[]>([]);
   const [updateRequestsLoading, setUpdateRequestsLoading] = useState(false);
   const [updateRequestsError, setUpdateRequestsError] = useState<string | null>(null);
@@ -388,6 +394,15 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   useEffect(() => {
     setTabCounts(prev => ({ ...prev, users: adminUsers.length }));
   }, [adminUsers]);
+
+  // API一覧のエラー件数を「apilist」タブがアクティブなときのみ定期的に取得
+  useEffect(() => {
+    if (activeTab === 'apilist') {
+      loadApiErrorCount();
+      const interval = setInterval(loadApiErrorCount, 120000); // 2分ごとに更新（負荷軽減）
+      return () => clearInterval(interval);
+    }
+  }, [activeTab]);
 
   // 検索・ソート機能
   const filteredUsers = (adminUsers || [])
@@ -589,6 +604,29 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
     setSelectedMemo(memo);
     setShowResponseModal(true);
     console.log('Response modal should be shown now');
+  };
+
+  // API一覧のエラー件数を取得
+  const loadApiErrorCount = async () => {
+    try {
+      const token = getAuthToken((message) => console.error(message));
+      if (!token) return;
+      
+      const response = await fetch('/api/admin/api-list', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.stats) {
+          setApiErrorCount(data.stats.error || 0);
+        }
+      }
+    } catch (error) {
+      console.error('API一覧エラー件数取得エラー:', error);
+    }
   };
 
   // お知らせ送信機能
@@ -854,6 +892,25 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             >
               <i className="bi bi-bullhorn"></i>
               お知らせ送信
+            </button>
+            <button
+              className={`admin-tab ${activeTab === 'apilist' ? 'active' : ''}`}
+              onClick={() => setActiveTab('apilist')}
+              title="API一覧・監視"
+            >
+              <i className="bi bi-list-ul"></i>
+              API一覧
+              {apiErrorCount > 0 && (
+                <span className="error-count-badge">{apiErrorCount}</span>
+              )}
+            </button>
+            <button
+              className={`admin-tab ${activeTab === 'responses' ? 'active' : ''}`}
+              onClick={() => setActiveTab('responses')}
+              title="返信管理"
+            >
+              <i className="bi bi-reply"></i>
+              返信管理
             </button>
           </div>
 
@@ -1573,39 +1630,46 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                 </div>
               </div>
             )}
+
+            {/* API一覧タブ */}
+            {activeTab === 'apilist' && (
+              <div className="tab-pane">
+                <ApiListComponent />
+              </div>
+            )}
+
+            {/* 返信管理タブ */}
+            {activeTab === 'responses' && (
+              <div className="tab-pane">
+                <div className="tab-header">
+                  <h3>
+                    <i className="bi bi-reply"></i>
+                    返信管理
+                  </h3>
+                  <div className="response-counts">
+                    <span className="count-item">
+                      <i className="bi bi-bug"></i>
+                      不具合報告: {errorReports?.filter((report: any) => report.postType === 'error_report').length || 0}件
+                    </span>
+                    <span className="count-item">
+                      <i className="bi bi-lightbulb"></i>
+                      更新要望: {updateRequests?.filter((request: any) => request.postType === 'update_request').length || 0}件
+                    </span>
+                  </div>
+                  <button
+                    className="toggle-response-button"
+                    onClick={() => setShowResponseModal(!showResponseModal)}
+                    title={showResponseModal ? '返信フォームを閉じる' : '返信フォームを開く'}
+                  >
+                    <i className={`bi ${showResponseModal ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
+                    {showResponseModal ? '閉じる' : '開く'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
-
-      {/* 返信ヘッダー */}
-      <div className="response-header">
-        <div className="response-header-content">
-          <div className="response-info">
-            <h3>
-              <i className="bi bi-reply"></i>
-              返信管理
-            </h3>
-            <div className="response-counts">
-              <span className="count-item">
-                <i className="bi bi-bug"></i>
-                不具合報告: {errorReports?.filter((report: any) => report.postType === 'error_report').length || 0}件
-              </span>
-              <span className="count-item">
-                <i className="bi bi-lightbulb"></i>
-                更新要望: {updateRequests?.filter((request: any) => request.postType === 'update_request').length || 0}件
-              </span>
-            </div>
-          </div>
-          <button
-            className="toggle-response-button"
-            onClick={() => setShowResponseModal(!showResponseModal)}
-            title={showResponseModal ? '返信フォームを閉じる' : '返信フォームを開く'}
-          >
-            <i className={`bi ${showResponseModal ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
-            {showResponseModal ? '閉じる' : '開く'}
-          </button>
-        </div>
-      </div>
 
       {/* 返信フォームモーダル */}
       <ResponseFormModal
@@ -1618,6 +1682,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
         onSubmit={handleSendResponse}
         loading={false}
       />
+
 
       {/* お知らせ送信モーダル */}
       {showAnnouncementModal && (
