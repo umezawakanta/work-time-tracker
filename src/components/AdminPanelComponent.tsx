@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './AdminPanelComponent.css';
 import ResponseFormModal from './ResponseFormModal';
+import ApiListComponent from './ApiListComponent';
 
 // ソースコードアイテムコンポーネント
 interface SourceCodeItemProps {
@@ -196,7 +197,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'email' | 'role' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors' | 'testresults' | 'announcements'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors' | 'testresults' | 'announcements' | 'apilist'>('users');
   const [errorReports, setErrorReports] = useState<any[]>([]);
   const [errorReportsLoading, setErrorReportsLoading] = useState(false);
   const [errorReportsError, setErrorReportsError] = useState<string | null>(null);
@@ -854,6 +855,14 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             >
               <i className="bi bi-bullhorn"></i>
               お知らせ送信
+            </button>
+            <button
+              className={`admin-tab ${activeTab === 'apilist' ? 'active' : ''}`}
+              onClick={() => setActiveTab('apilist')}
+              title="API一覧・監視"
+            >
+              <i className="bi bi-list-ul"></i>
+              API一覧
             </button>
           </div>
 
@@ -1618,6 +1627,13 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
         onSubmit={handleSendResponse}
         loading={false}
       />
+
+      {/* API一覧タブ */}
+      {activeTab === 'apilist' && (
+        <div className="tab-pane">
+          <ApiListComponent />
+        </div>
+      )}
 
       {/* お知らせ送信モーダル */}
       {showAnnouncementModal && (
