@@ -399,7 +399,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   useEffect(() => {
     if (activeTab === 'apilist') {
       loadApiErrorCount();
-      const interval = setInterval(loadApiErrorCount, 30000); // 30秒ごとに更新
+      const interval = setInterval(loadApiErrorCount, 120000); // 2分ごとに更新（負荷軽減）
       return () => clearInterval(interval);
     }
   }, [activeTab]);

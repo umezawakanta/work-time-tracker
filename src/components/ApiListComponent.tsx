@@ -178,6 +178,10 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
           bValue = b.path;
       }
 
+      if (aValue === bValue) {
+        return 0;
+      }
+      
       if (sortOrder === 'asc') {
         return aValue > bValue ? 1 : -1;
       } else {

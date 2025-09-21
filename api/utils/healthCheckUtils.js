@@ -24,7 +24,12 @@ const determineHealthStatus = (statusCode, responseTime) => {
     return 'warning';
   }
   
-  // レスポンス時間が長すぎる場合
+  // レスポンス時間が非常に長い場合（エラー）
+  if (responseTime > RESPONSE_TIME_ERROR_THRESHOLD) {
+    return 'error';
+  }
+  
+  // レスポンス時間が長い場合（警告）
   if (responseTime > RESPONSE_TIME_WARNING_THRESHOLD) {
     return 'warning';
   }

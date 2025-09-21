@@ -52,14 +52,25 @@ const checkApiHealth = async (endpoint, method) => {
   }
 };
 
+// 並列実行制限用のヘルパー関数
+const limitConcurrency = async (tasks, limit = 5) => {
+  const results = [];
+  for (let i = 0; i < tasks.length; i += limit) {
+    const batch = tasks.slice(i, i + limit);
+    const batchResults = await Promise.all(batch);
+    results.push(...batchResults);
+  }
+  return results;
+};
+
 // 実際のメトリクスデータを取得
 const getRealApiMetrics = async () => {
   try {
     // 設定ファイルからチェック可能なエンドポイントを取得
     const checkableEndpoints = getCheckableEndpoints();
 
-    // 並列でヘルスチェックを実行
-    const healthCheckPromises = checkableEndpoints.map(({ path, method }) => 
+    // 並列実行数を制限してヘルスチェックを実行（最大5個まで同時実行）
+    const healthCheckTasks = checkableEndpoints.map(({ path, method }) => 
       checkApiHealth(path, method).catch(error => ({
         endpoint: path,
         method: method,
@@ -70,7 +81,7 @@ const getRealApiMetrics = async () => {
       }))
     );
 
-    const results = await Promise.all(healthCheckPromises);
+    const results = await limitConcurrency(healthCheckTasks, 5);
 
     // チェック結果をマップに変換（効率的な検索のため）
     const healthResultsMap = new Map();
