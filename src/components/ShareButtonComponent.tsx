@@ -122,8 +122,6 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     const randomActivity = activities[Math.floor(Math.random() * activities.length)];
     const randomFeatures = features.sort(() => 0.5 - Math.random()).slice(0, 3);
     const randomBenefit = benefits[Math.floor(Math.random() * benefits.length)];
-    
-    // バージョン紹介文言を動的に生成（メモ化された配列を使用）
     const randomVersionMessage = versionMessages[Math.floor(Math.random() * versionMessages.length)];
     
     return {
