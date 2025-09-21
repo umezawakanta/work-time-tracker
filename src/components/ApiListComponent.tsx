@@ -131,12 +131,12 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
       return endpoint.status === filter;
     })
     .sort((a, b) => {
-      let aValue: any = a[sortBy];
-      let bValue: any = b[sortBy];
+      let aValue = a[sortBy as keyof ApiEndpoint];
+      let bValue = b[sortBy as keyof ApiEndpoint];
 
       if (sortBy === 'lastChecked') {
-        aValue = new Date(aValue).getTime();
-        bValue = new Date(bValue).getTime();
+        aValue = new Date(aValue as string).getTime();
+        bValue = new Date(bValue as string).getTime();
       }
 
       if (sortOrder === 'asc') {
