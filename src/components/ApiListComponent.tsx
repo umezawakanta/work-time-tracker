@@ -346,21 +346,15 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
                     <div className="action-buttons">
                       <button
                         className="test-button"
-                        onClick={() => {
-                          // APIテスト機能（将来実装）
-                          console.log('Test API:', endpoint.path);
-                        }}
-                        title="APIテスト"
+                        disabled
+                        title="APIテスト（未実装）"
                       >
                         <i className="bi bi-play-circle"></i>
                       </button>
                       <button
                         className="details-button"
-                        onClick={() => {
-                          // 詳細表示機能（将来実装）
-                          console.log('Show details:', endpoint.id);
-                        }}
-                        title="詳細表示"
+                        disabled
+                        title="詳細表示（未実装）"
                       >
                         <i className="bi bi-info-circle"></i>
                       </button>
