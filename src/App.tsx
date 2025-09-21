@@ -2808,7 +2808,7 @@ ${errorInfo.stack}
   // Only works for variables prefixed with REACT_APP_ (as these are exposed to the browser by the build system)
   const isEnvVarTrue = (key: string): boolean => {
     if (!key.startsWith('REACT_APP_')) {
-      console.warn(`Environment variable "${key}" does not start with "REACT_APP_". It will not be available in the browser.`);
+      console.warn(`Environment variable "${key}" does not start with "REACT_APP_". Only variables with this prefix are available in the browser. Please rename it to "REACT_APP_${key}" or check if you're using the correct variable name.`);
       return false;
     }
     // Only check process.env for valid REACT_APP_ keys
