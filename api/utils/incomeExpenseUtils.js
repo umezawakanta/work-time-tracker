@@ -28,13 +28,13 @@ const EXPENSE_KEYWORD_PATTERNS = EXPENSE_KEYWORDS.map(keyword => {
 function determineIncomeExpenseType(record) {
   let newType = 'income'; // デフォルトは収入
   
-    // メモの内容から支出を判定
-    if (record.notes) {
-      // 事前にコンパイルした正規表現パターンを使用してキーワードをチェック
-      if (EXPENSE_KEYWORD_PATTERNS.some(pattern => pattern.test(record.notes))) {
-        newType = 'expense';
-      }
+  // メモの内容から支出を判定
+  if (record.notes) {
+    // 事前にコンパイルした正規表現パターンを使用してキーワードをチェック
+    if (EXPENSE_KEYWORD_PATTERNS.some(pattern => pattern.test(record.notes))) {
+      newType = 'expense';
     }
+  }
   
   return newType;
 }
