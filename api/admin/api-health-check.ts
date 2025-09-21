@@ -2,7 +2,6 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
-const fetch = require('node-fetch');
 
 dotenv.config();
 
