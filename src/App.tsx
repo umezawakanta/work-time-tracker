@@ -2068,11 +2068,8 @@ ${errorInfo.stack}
         return;
       }
 
-      // 記録タイプに基づいて金額を正負に変換
-      const amount =
-        incomeExpenseType === "expense"
-          ? -Math.abs(Number(incomeExpenseAmount))
-          : Math.abs(Number(incomeExpenseAmount));
+      // データベースには常に正の値で保存（表示時にtypeに基づいて正負を決定）
+      const amount = Math.abs(Number(incomeExpenseAmount));
 
       const requestBody = {
         date: incomeExpenseDate,
@@ -2148,11 +2145,8 @@ ${errorInfo.stack}
         return;
       }
 
-      // 記録タイプに基づいて金額を正負に変換
-      const amount =
-        incomeExpenseType === "expense"
-          ? -Math.abs(Number(incomeExpenseAmount))
-          : Math.abs(Number(incomeExpenseAmount));
+      // データベースには常に正の値で保存（表示時にtypeに基づいて正負を決定）
+      const amount = Math.abs(Number(incomeExpenseAmount));
 
       const requestBody = {
         id: editingIncomeExpenseRecord._id,
