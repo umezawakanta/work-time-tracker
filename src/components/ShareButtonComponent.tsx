@@ -199,7 +199,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
       latestUpdate,
       statsText
     };
-  }, [randomElements, stats.loading, stats.userCount, stats.errorCount, stats.updateRequestCount, stats.linterErrorCount, stats.testErrorCount]);
+  }, [randomElements, stats]);
 
   const getSiteDescription = () => {
     return `${baseTextElements.intro}${baseTextElements.features}${baseTextElements.promise}${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${baseTextElements.statsText}`;
