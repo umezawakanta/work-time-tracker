@@ -2836,12 +2836,15 @@ ${errorInfo.stack}
       totalExpense,
       netIncome,
       recordsCount: incomeExpenseRecords?.length || 0,
-      recordsInMonth: recordsInMonth.map(record => ({
-        id: record._id,
-        type: record.type,
-        amount: record.amount,
-        date: record.date
-      }))
+      recordsInMonth:
+        process.env.NODE_ENV === 'development'
+          ? recordsInMonth.slice(0, 10).map(record => ({
+              id: record._id,
+              type: record.type,
+              amount: record.amount,
+              date: record.date
+            }))
+          : recordsInMonth.length
     });
 
     return {
