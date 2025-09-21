@@ -2811,8 +2811,7 @@ ${errorInfo.stack}
       console.warn(`Environment variable "${key}" does not start with "REACT_APP_". It will not be available in the browser.`);
       return false;
     }
-    
-    // 安全な環境変数アクセス（undefined チェック付き）
+    // Only check process.env for valid REACT_APP_ keys
     const envValue = process.env[key];
     return envValue === 'true';
   };
