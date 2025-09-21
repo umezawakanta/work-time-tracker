@@ -142,11 +142,11 @@ module.exports = async function handler(req, res) {
     // 統計情報を計算
     const stats = {
       total: results.length,
-      healthy: results.filter(r => r.status === 'healthy').length,
-      warning: results.filter(r => r.status === 'warning').length,
-      error: results.filter(r => r.status === 'error').length,
+      healthy: results.filter((r: any) => r.status === 'healthy').length,
+      warning: results.filter((r: any) => r.status === 'warning').length,
+      error: results.filter((r: any) => r.status === 'error').length,
       averageResponseTime: Math.round(
-        results.reduce((sum, r) => sum + r.responseTime, 0) / results.length
+        results.reduce((sum: number, r: any) => sum + r.responseTime, 0) / results.length
       ),
       lastChecked: new Date().toISOString()
     };
