@@ -130,7 +130,7 @@ const checkApiHealth = async (endpoint, method) => {
       method,
       status: 'error',
       responseTime: 0,
-      error: 'Base URL for API health check is not configured.',
+      error: 'NEXT_PUBLIC_API_URL or FALLBACK_API_URL environment variable is not configured for health checks.',
       lastChecked: new Date().toISOString()
     };
   }
