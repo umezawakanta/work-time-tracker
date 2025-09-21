@@ -188,26 +188,28 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   };
   
   // 基礎テキスト要素を生成するユーティリティ関数（メモ化）
+  // メモ化: statsに依存しない静的テキスト要素のみ
   const baseTextElements = useMemo(() => {
     const intro = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
     const features = `${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。`;
     const promise = `ユーザーから要求があった機能をすぐに実装します！`;
     const versionMsg = `\n\n${randomElements.versionMessage}`;
     const latestUpdate = getLatestUpdateInfo();
-    const statsText = getStatsText();
     
     return {
       intro,
       features,
       promise,
       versionMsg,
-      latestUpdate,
-      statsText
+      latestUpdate
     };
-  }, [randomElements, stats]);
+  }, [randomElements]);
+
+  // statsに依存する部分はuseMemo外で都度計算
+  const statsText = getStatsText();
 
   const getSiteDescription = () => {
-    return `${baseTextElements.intro}${baseTextElements.features}${baseTextElements.promise}${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${baseTextElements.statsText}`;
+    return `${baseTextElements.intro}${baseTextElements.features}${baseTextElements.promise}${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${statsText}`;
   };
 
   const siteDescription = getSiteDescription();
