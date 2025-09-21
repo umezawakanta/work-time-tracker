@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.0.4";
+export const APP_VERSION = "1.0.5";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,21 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.0.5",
+    date: "2025-01-21",
+    changes: [
+      "更新要望送信機能を追加（専用UIとモーダル）",
+      "不具合報告機能を追加（詳細な報告フォーム）",
+      "メモ機能から不具合報告・更新要望関連カテゴリを分離",
+      "エラーハンドリングの改善（alertから個別フィールドエラー表示に変更）",
+      "カテゴリ管理の一元化とコードの重複削除",
+      "フォームバリデーションの強化とユーザビリティ向上",
+      "コンテンツフォーマット用ユーティリティ関数の追加",
+      "コードの保守性と一貫性を大幅に改善"
+    ],
+    type: "feature"
+  },
   {
     version: "1.0.4",
     date: "2025-01-21",

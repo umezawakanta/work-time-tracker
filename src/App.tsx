@@ -41,7 +41,19 @@ import {
 import LanguageFontSettings from "./components/LanguageFontSettings";
 import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
 import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
+import UpdateRequestModal from "./components/UpdateRequestModal";
+import BugReportModal from "./components/BugReportModal";
 import { setErrorReportCallback, reportApiError } from "./utils/apiClient";
+import {
+  formatUpdateRequestContent,
+  formatBugReportContent,
+  getUpdateRequestTags,
+  getBugReportTags,
+  formatUpdateRequestTitle,
+  formatBugReportTitle,
+  type UpdateRequestData,
+  type BugReportData,
+} from "./utils/requestFormatters";
 
 import type {
   User,
@@ -93,6 +105,12 @@ function App() {
   const [currentError, setCurrentError] = useState<Error | null>(null);
   const [showSimpleErrorModal, setShowSimpleErrorModal] = useState(false);
   const [errorModalButtonPosition, setErrorModalButtonPosition] = useState<{ x: number; y: number } | undefined>(undefined);
+
+  // 更新要望関連の状態
+  const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false);
+
+  // 不具合報告関連の状態
+  const [showBugReportModal, setShowBugReportModal] = useState(false);
 
   // 各機能のローディング状態（LoadingStateManagerで管理）
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
@@ -4205,6 +4223,82 @@ User Agent: ${userAgent}
     }
   };
 
+  // 更新要望送信処理
+  const handleUpdateRequest = async (updateRequest: UpdateRequestData) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      
+      // 更新要望を公開メモとして投稿
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: formatUpdateRequestTitle(updateRequest.title),
+          content: formatUpdateRequestContent(updateRequest),
+          category: "更新要望",
+          tags: getUpdateRequestTags(),
+          isPublic: true,
+          isFamilyOnly: false,
+          isAdminOnly: false,
+          postType: "update_request"
+        }),
+      });
+
+      if (response.ok) {
+        setMessage("更新要望を送信しました。ありがとうございます。");
+        setShowUpdateRequestModal(false);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "更新要望の送信に失敗しました");
+      }
+    } catch (error) {
+      console.error("更新要望送信エラー:", error);
+      setMessage("更新要望の送信に失敗しました。もう一度お試しください。");
+      throw error;
+    }
+  };
+
+  // 不具合報告送信処理
+  const handleBugReport = async (bugReport: BugReportData) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      
+      // 不具合報告を公開メモとして投稿
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: formatBugReportTitle(bugReport.title),
+          content: formatBugReportContent(bugReport),
+          category: "不具合報告",
+          tags: getBugReportTags(),
+          isPublic: true,
+          isFamilyOnly: false,
+          isAdminOnly: false,
+          postType: "error_report"
+        }),
+      });
+
+      if (response.ok) {
+        setMessage("不具合報告を送信しました。ありがとうございます。");
+        setShowBugReportModal(false);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "不具合報告の送信に失敗しました");
+      }
+    } catch (error) {
+      console.error("不具合報告送信エラー:", error);
+      setMessage("不具合報告の送信に失敗しました。もう一度お試しください。");
+      throw error;
+    }
+  };
+
   // エラー報告の送信処理
   const handleErrorReport = async (errorInfo: ApiErrorInfo) => {
     try {
@@ -5653,6 +5747,8 @@ User Agent: ${userAgent}
             setShowFeatureSettings={setShowFeatureSettings}
             loadUserSettings={loadUserSettings}
             isTimeTrackingActive={isTimeTrackingActive}
+            onUpdateRequestClick={() => setShowUpdateRequestModal(true)}
+            onBugReportClick={() => setShowBugReportModal(true)}
           />
 
           {/* バージョン情報 */}
@@ -6411,6 +6507,20 @@ User Agent: ${userAgent}
           onClose={() => setShowSimpleErrorModal(false)}
           onSubmit={handleSimpleErrorReport}
           errorInfo={getErrorInfo(currentError)}
+        />
+
+        {/* 更新要望モーダル */}
+        <UpdateRequestModal
+          isOpen={showUpdateRequestModal}
+          onClose={() => setShowUpdateRequestModal(false)}
+          onSubmit={handleUpdateRequest}
+        />
+
+        {/* 不具合報告モーダル */}
+        <BugReportModal
+          isOpen={showBugReportModal}
+          onClose={() => setShowBugReportModal(false)}
+          onSubmit={handleBugReport}
         />
       </div>
     );

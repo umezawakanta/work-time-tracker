@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './MemosComponent.css';
 import type { Memo, Reply } from '../types';
+import { EXCLUDED_MEMO_CATEGORIES } from '../utils/requestFormatters';
 
 interface MemosComponentProps {
   memos: Memo[];
@@ -218,7 +219,15 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   const getMemoCategories = () => {
     const memoCategories = new Set(memos.map((memo) => memo.category));
     const allCategories = [...memoCategories, ...getAllCategories()];
-    return Array.from(new Set(allCategories)).sort();
+    
+    // 不具合報告・更新要望に関連するカテゴリを除外
+    const excludedCategories = EXCLUDED_MEMO_CATEGORIES;
+    
+    const filteredCategories = allCategories.filter(category => 
+      !excludedCategories.includes(category)
+    );
+    
+    return Array.from(new Set(filteredCategories)).sort();
   };
 
   // メモの件数を計算する関数（個人メモ + 公開メモ）
