@@ -192,7 +192,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
     const excludedCategories = EXCLUDED_MEMO_CATEGORIES;
     
     const filteredCategories = allCategories.filter(category => 
-      !excludedCategories.includes(category as any)
+      !excludedCategories.includes(category)
     );
     
     return Array.from(new Set(filteredCategories)).sort();
