@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
-const { determineHealthStatus, createHealthCheckController, clearHealthCheckTimeout } = require('../utils/healthCheckUtils');
+const { determineHealthStatus, createHealthCheckController, clearHealthCheckTimeout } = require('../../utils/healthCheckUtils');
 const { API_ENDPOINTS, getCheckableEndpoints } = require('../config/api-endpoints');
 
 dotenv.config();
