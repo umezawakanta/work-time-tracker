@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './NotificationComponent.css';
 import NotificationDetailModal from './NotificationDetailModal';
 
@@ -111,6 +111,23 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
     setSelectedNotification(null);
   };
 
+  // メッセージの表示用テキストを生成する関数
+  const renderNotificationMessage = (message: string) => {
+    const isTruncated = message.length > 100;
+    const displayMessage = isTruncated
+      ? `${message.substring(0, 100)}...`
+      : message;
+    
+    return (
+      <>
+        {displayMessage}
+        {isTruncated && (
+          <span className="read-more-link">続きを読む</span>
+        )}
+      </>
+    );
+  };
+
   // コンポーネントマウント時に通知を取得
   useEffect(() => {
     loadNotifications();
@@ -154,41 +171,6 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
     }
   }, [isOpen]);
 
-  // 通知の種類に応じたアイコンを取得
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'memo_response':
-        return 'bi-reply';
-      case 'memo_reply':
-        return 'bi-chat-dots';
-      case 'status_update':
-        return 'bi-arrow-repeat';
-      case 'admin_message':
-        return 'bi-megaphone';
-      case 'admin_announcement':
-        return 'bi-bullhorn';
-      default:
-        return 'bi-bell';
-    }
-  };
-
-  // 通知の種類に応じた色を取得
-  const getNotificationColor = (type: string) => {
-    switch (type) {
-      case 'memo_response':
-        return '#28a745';
-      case 'memo_reply':
-        return '#007bff';
-      case 'status_update':
-        return '#17a2b8';
-      case 'admin_message':
-        return '#ffc107';
-      case 'admin_announcement':
-        return '#dc3545';
-      default:
-        return '#6c757d';
-    }
-  };
 
   return (
     <div className={`notification-container ${className}`}>
@@ -260,26 +242,15 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
                   >
                     <div className="notification-icon">
                       <i 
-                        className={`bi ${getNotificationIcon(notification.type)} notification-type-icon`}
+                        className={`bi bi-bell notification-type-icon`}
                         data-type={notification.type}
                       ></i>
                     </div>
                     <div className="notification-content">
                       <h4 className="notification-title">{notification.title}</h4>
-                      {(() => {
-                        const isTruncated = notification.message.length > 100;
-                        const displayMessage = isTruncated
-                          ? `${notification.message.substring(0, 100)}...`
-                          : notification.message;
-                        return (
-                          <p className="notification-message">
-                            {displayMessage}
-                            {isTruncated && (
-                              <span className="read-more-link">続きを読む</span>
-                            )}
-                          </p>
-                        );
-                      })()}
+                      <p className="notification-message">
+                        {renderNotificationMessage(notification.message)}
+                      </p>
                       <span className="notification-date">
                         {new Date(notification.createdAt).toLocaleString('ja-JP')}
                       </span>
