@@ -266,15 +266,20 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
                     </div>
                     <div className="notification-content">
                       <h4 className="notification-title">{notification.title}</h4>
-                      <p className="notification-message">
-                        {notification.message.length > 100 
-                          ? `${notification.message.substring(0, 100)}...` 
-                          : notification.message
-                        }
-                        {notification.message.length > 100 && (
-                          <span className="read-more-link">続きを読む</span>
-                        )}
-                      </p>
+                      {(() => {
+                        const isTruncated = notification.message.length > 100;
+                        const displayMessage = isTruncated
+                          ? `${notification.message.substring(0, 100)}...`
+                          : notification.message;
+                        return (
+                          <p className="notification-message">
+                            {displayMessage}
+                            {isTruncated && (
+                              <span className="read-more-link">続きを読む</span>
+                            )}
+                          </p>
+                        );
+                      })()}
                       <span className="notification-date">
                         {new Date(notification.createdAt).toLocaleString('ja-JP')}
                       </span>
