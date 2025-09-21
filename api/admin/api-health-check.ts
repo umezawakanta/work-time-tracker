@@ -5,6 +5,9 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+// タイムアウト関連の定数
+const HEALTH_CHECK_TIMEOUT_MS = 5000; // ヘルスチェックのタイムアウト（5秒）
+
 // Database connection utility
 const ensureDatabaseConnection = async () => {
   const isConnected = mongoose.connection.readyState === 1;
@@ -46,7 +49,7 @@ const checkApiHealth = async (endpoint, method) => {
   
   // AbortControllerを使用してタイムアウトを設定
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  const timeoutId = setTimeout(() => controller.abort(), HEALTH_CHECK_TIMEOUT_MS);
   
   try {
     const response = await fetch(`${baseUrl}${endpoint}`, {

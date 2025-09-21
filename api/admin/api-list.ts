@@ -113,6 +113,9 @@ const API_ENDPOINTS = [
   { path: '/api/user-settings', method: 'PUT', description: 'ユーザー設定更新' }
 ];
 
+// 時間関連の定数
+const ONE_HOUR_MS = 60 * 60 * 1000; // 1時間のミリ秒
+
 // モックデータ生成（開発・デモ用）
 // 注意: 本番環境では実際のログやメトリクスから取得する必要があります
 const generateMockApiData = () => {
@@ -140,7 +143,7 @@ const generateMockApiData = () => {
       method: endpoint.method,
       description: endpoint.description,
       status: randomStatus,
-      lastChecked: new Date(Date.now() - Math.floor(Math.random() * 3600000)).toISOString(), // 過去1時間以内（デモ用）
+      lastChecked: new Date(Date.now() - Math.floor(Math.random() * ONE_HOUR_MS)).toISOString(), // 過去1時間以内（デモ用）
       responseTime: responseTime,
       errorCount: errorCount,
       successRate: successRate,
