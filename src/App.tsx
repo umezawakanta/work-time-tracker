@@ -2805,7 +2805,15 @@ ${errorInfo.stack}
   };
 
   // 環境変数をbooleanとして解釈するヘルパー関数
-  const isEnvVarTrue = (key: string): boolean => process.env[key] === 'true';
+  // Only works for variables prefixed with REACT_APP_ (as per Create React App)
+  const isEnvVarTrue = (key: string): boolean => {
+    if (!key.startsWith('REACT_APP_')) {
+      console.warn(`Environment variable "${key}" does not start with "REACT_APP_". It will not be available in the browser.`);
+    }
+    // Access as process.env.REACT_APP_*
+    // @ts-ignore
+    return process.env[key] === 'true';
+  };
 
   /**
    * 金額を正の値に正規化する
