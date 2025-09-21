@@ -188,7 +188,10 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
 
   const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！\n\n${randomElements.versionMessage}${latestUpdate}${statsText}`;
   
-  // Twitter用の短縮テキストを生成する関数
+  /**
+   * Twitter用の短縮テキストを生成
+   * 文字数制限（280文字）を超える場合は統計情報と最新アップデート情報を省略
+   */
   const generateTwitterText = () => {
     const baseText = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
     const versionInfo = `\n\n${randomElements.versionMessage}${latestUpdate}${statsText}`;
@@ -199,8 +202,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
       return fullText;
     }
     
-    // 文字数制限を超える場合は短縮版を使用
-    // Fallback prioritization: If the character limit is exceeded, omit stats and latest update info, but always keep the version message, as it is the most important update for users.
+    // 文字数制限を超える場合は短縮版を使用（バージョンメッセージは必須）
     const shortVersionInfo = `\n\n${randomElements.versionMessage}`;
     return `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
   };
