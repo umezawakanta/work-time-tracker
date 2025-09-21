@@ -20,6 +20,9 @@ const getVersionMessages = (version: string) => [
   `v${version}でユーザーエクスペリエンスが向上！`
 ];
 
+// バージョン紹介文言の配列をメモ化（APP_VERSIONは実行時に変更されないため）
+const versionMessages = getVersionMessages(APP_VERSION);
+
 const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [randomElements, setRandomElements] = useState(() => generateRandomElements());
@@ -123,8 +126,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     const randomFeatures = features.sort(() => 0.5 - Math.random()).slice(0, 3);
     const randomBenefit = benefits[Math.floor(Math.random() * benefits.length)];
     
-    // バージョン紹介文言を動的に生成
-    const versionMessages = getVersionMessages(APP_VERSION);
+    // バージョン紹介文言を動的に生成（メモ化された配列を使用）
     const randomVersionMessage = versionMessages[Math.floor(Math.random() * versionMessages.length)];
     
     return {
