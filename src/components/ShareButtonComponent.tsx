@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import './ShareButtonComponent.css';
 import { APP_VERSION, getLatestChangelog } from '../constants/version';
 
@@ -6,21 +6,26 @@ interface ShareButtonComponentProps {
   className?: string;
 }
 
-// バージョン紹介文言の配列（コンポーネント外で定義）
-const versionMessages = [
-  `最新バージョン${APP_VERSION}で更新要望・不具合報告機能を追加！`,
-  `v${APP_VERSION}でユーザビリティが大幅に向上しました！`,
-  `新機能満載のv${APP_VERSION}をぜひお試しください！`,
-  `v${APP_VERSION}でエラーハンドリングが改善されました！`,
-  `最新アップデートv${APP_VERSION}でより使いやすく！`,
-  `v${APP_VERSION}で新機能と改善が追加されました！`,
-  `最新版v${APP_VERSION}でパフォーマンスが向上！`,
-  `v${APP_VERSION}でコード品質が大幅に改善されました！`,
-  `新バージョンv${APP_VERSION}で機能が充実！`,
-  `v${APP_VERSION}でユーザーエクスペリエンスが向上！`
+// バージョン紹介文言の配列を生成する関数
+const getVersionMessages = (version: string) => [
+  `最新バージョン${version}で更新要望・不具合報告機能を追加！`,
+  `v${version}でユーザビリティが大幅に向上しました！`,
+  `新機能満載のv${version}をぜひお試しください！`,
+  `v${version}でエラーハンドリングが改善されました！`,
+  `最新アップデートv${version}でより使いやすく！`,
+  `v${version}で新機能と改善が追加されました！`,
+  `最新版v${version}でパフォーマンスが向上！`,
+  `v${version}でコード品質が大幅に改善されました！`,
+  `新バージョンv${version}で機能が充実！`,
+  `v${version}でユーザーエクスペリエンスが向上！`
 ];
 
+
+
+
 const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className = '' }) => {
+  // バージョン紹介文言の配列をメモ化（APP_VERSIONは実行時に変更されないため）
+  const versionMessages = useMemo(() => getVersionMessages(APP_VERSION), []);
   const [isOpen, setIsOpen] = useState(false);
   const [randomElements, setRandomElements] = useState(() => generateRandomElements());
   const [stats, setStats] = useState({
@@ -122,6 +127,8 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     const randomActivity = activities[Math.floor(Math.random() * activities.length)];
     const randomFeatures = features.sort(() => 0.5 - Math.random()).slice(0, 3);
     const randomBenefit = benefits[Math.floor(Math.random() * benefits.length)];
+    
+    // バージョン紹介文言を動的に生成（メモ化された配列を使用）
     const randomVersionMessage = versionMessages[Math.floor(Math.random() * versionMessages.length)];
     
     return {
@@ -139,7 +146,9 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   // 最新の更新履歴を取得
   const getLatestUpdateInfo = () => {
     const latestChangelog = getLatestChangelog();
-    if (!latestChangelog) return '';
+    if (!latestChangelog) {
+      return '';
+    }
     
     const typeLabels = {
       bugfix: "🐛 バグ修正",
@@ -178,22 +187,35 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     return statsParts.length > 0 ? `\n\n📊 現在の状況: ${statsParts.join('、')}` : '';
   };
   
-  const getSiteDescription = () => {
+  // 基礎テキスト要素を生成するユーティリティ関数（メモ化）
+  const baseTextElements = useMemo(() => {
     const intro = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
     const features = `${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。`;
     const promise = `ユーザーから要求があった機能をすぐに実装します！`;
     const versionMsg = `\n\n${randomElements.versionMessage}`;
     const latestUpdate = getLatestUpdateInfo();
     const statsText = getStatsText();
-    return `${intro}${features}${promise}${versionMsg}${latestUpdate}${statsText}`;
+    
+    return {
+      intro,
+      features,
+      promise,
+      versionMsg,
+      latestUpdate,
+      statsText
+    };
+  }, [randomElements, stats]);
+
+  const getSiteDescription = () => {
+    return `${baseTextElements.intro}${baseTextElements.features}${baseTextElements.promise}${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${baseTextElements.statsText}`;
   };
 
   const siteDescription = getSiteDescription();
   
   // Twitter用の短縮テキストを生成する関数
   const generateTwitterText = () => {
-    const baseText = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
-    const versionInfo = `\n\n${randomElements.versionMessage}${getLatestUpdateInfo()}${getStatsText()}`;
+    const baseText = baseTextElements.intro;
+    const versionInfo = `${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${baseTextElements.statsText}`;
     const fullText = `${siteTitle}\n\n${baseText}${versionInfo}\n\n${siteUrl}`;
     
     const maxTwitterLength = 280;
@@ -203,7 +225,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     
     // 文字数制限を超える場合は短縮版を使用
     // Fallback: omit stats and latest update info for brevity
-    const shortVersionInfo = `\n\n${randomElements.versionMessage}`;
+    const shortVersionInfo = baseTextElements.versionMsg;
     return `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
   };
   
