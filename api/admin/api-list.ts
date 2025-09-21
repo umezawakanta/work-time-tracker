@@ -121,18 +121,10 @@ const HEALTH_CHECK_TIMEOUT_MS = 5000; // ヘルスチェックのタイムアウ
 // 実際のAPIエンドポイントのヘルスチェック
 const checkApiHealth = async (endpoint, method) => {
   const startTime = Date.now();
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.FALLBACK_API_URL || '';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.FALLBACK_API_URL;
   
-  // If baseUrl is empty, return error result immediately
   if (!baseUrl) {
-    return {
-      endpoint,
-      method,
-      status: 'error',
-      responseTime: 0,
-      error: 'NEXT_PUBLIC_API_URL or FALLBACK_API_URL environment variable is not configured for health checks.',
-      lastChecked: new Date().toISOString()
-    };
+    throw new Error('Base URL for API health check is not configured. Please set NEXT_PUBLIC_API_URL or FALLBACK_API_URL in your environment.');
   }
   // AbortControllerを使用してタイムアウトを設定
   const { controller, timeoutId } = createHealthCheckController();
@@ -177,19 +169,27 @@ const checkApiHealth = async (endpoint, method) => {
 
 // 実際のメトリクスデータを取得
 const getRealApiMetrics = async () => {
-  // 主要なAPIエンドポイントのみをチェック（認証が必要なエンドポイントは除外）
-  const checkableEndpoints = API_ENDPOINTS.filter(endpoint => 
-    !endpoint.path.includes('/admin/') && 
-    !endpoint.path.includes('/auth/') &&
-    endpoint.method === 'GET'
-  );
+  try {
+    // 主要なAPIエンドポイントのみをチェック（認証が必要なエンドポイントは除外）
+    const checkableEndpoints = API_ENDPOINTS.filter(endpoint => 
+      !endpoint.path.includes('/admin/') && 
+      !endpoint.path.includes('/auth/') &&
+      endpoint.method === 'GET'
+    );
 
-  // 並列でヘルスチェックを実行
-  const healthCheckPromises = checkableEndpoints.map(({ path, method }) => 
-    checkApiHealth(path, method)
-  );
+    // 並列でヘルスチェックを実行
+    const healthCheckPromises = checkableEndpoints.map(({ path, method }) => 
+      checkApiHealth(path, method).catch(error => ({
+        endpoint: path,
+        method: method,
+        status: 'error',
+        responseTime: 0,
+        error: error.message,
+        lastChecked: new Date().toISOString()
+      }))
+    );
 
-  const results = await Promise.all(healthCheckPromises);
+    const results = await Promise.all(healthCheckPromises);
 
   // 結果をAPI一覧形式に変換
   return API_ENDPOINTS.map((endpoint, index) => {
@@ -224,6 +224,11 @@ const getRealApiMetrics = async () => {
       };
     }
   });
+  } catch (error) {
+    console.error('[admin/api-list] Failed to get real API metrics:', error);
+    // エラーが発生した場合は空の配列を返す
+    return [];
+  }
 };
 
 /**
