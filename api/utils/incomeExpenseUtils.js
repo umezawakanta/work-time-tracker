@@ -13,20 +13,29 @@ const EXPENSE_KEYWORDS = [
 // 独立したキーワードとしてのみ判定します。
 const NON_JAPANESE_OR_LATIN_CHAR_CLASS = '[^一-龠ぁ-んァ-ンa-zA-Z0-9]';
 
+// 単語境界パターンを作成するヘルパー関数
+function createWordBoundaryPattern(keywords, boundaryCharClass) {
+  // キーワードをエスケープして結合
+  const escapedKeywords = keywords.map(keyword => 
+    keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  ).join('|');
+  
+  // 単語境界パターンのテンプレート
+  // 1. (?:^|${boundaryCharClass}) - キーワードの前が文字列の開始または境界文字
+  // 2. (?:${escapedKeywords}) - エスケープされたキーワードのいずれか
+  // 3. (?:${boundaryCharClass}|$) - キーワードの後が境界文字または文字列の終了
+  const patternTemplate = `(?:^|${boundaryCharClass})(?:${escapedKeywords})(?:${boundaryCharClass}|$)`;
+  
+  return new RegExp(patternTemplate, 'u');
+}
+
 // 遅延初期化で単一の結合正規表現を作成
 let EXPENSE_KEYWORD_PATTERN = null;
 
 function getExpenseKeywordPattern() {
   if (!EXPENSE_KEYWORD_PATTERN) {
-    // エスケープされたキーワードを結合して単一の正規表現を作成
-    const escapedKeywords = EXPENSE_KEYWORDS.map(keyword => 
-      keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    ).join('|');
-    
     // 単語境界ロジックの説明:
-    // 1. (?:^|${NON_JAPANESE_OR_LATIN_CHAR_CLASS}) - キーワードの前が文字列の開始または非日本語/英数字文字
-    // 2. (?:${escapedKeywords}) - エスケープされたキーワードのいずれか
-    // 3. (?:${NON_JAPANESE_OR_LATIN_CHAR_CLASS}|$) - キーワードの後が非日本語/英数字文字または文字列の終了
+    // 日本語（漢字・ひらがな・カタカナ）および英数字以外の文字を境界として使用
     // 
     // 例:
     // ✅ "交通費" → マッチ（独立した単語）
@@ -34,10 +43,7 @@ function getExpenseKeywordPattern() {
     // ❌ "交通整理" → マッチしない（「交通費」が含まれていない）
     // ❌ "交通費計算" → マッチしない（「費」の後に日本語文字）
     // これにより「交通費」は「交通整理」の一部としてではなく、独立した単語としてのみマッチする
-    EXPENSE_KEYWORD_PATTERN = new RegExp(
-      `(?:^|${NON_JAPANESE_OR_LATIN_CHAR_CLASS})(?:${escapedKeywords})(?:${NON_JAPANESE_OR_LATIN_CHAR_CLASS}|$)`,
-      'u'
-    );
+    EXPENSE_KEYWORD_PATTERN = createWordBoundaryPattern(EXPENSE_KEYWORDS, NON_JAPANESE_OR_LATIN_CHAR_CLASS);
   }
   return EXPENSE_KEYWORD_PATTERN;
 }
