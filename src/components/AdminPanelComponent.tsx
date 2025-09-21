@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './AdminPanelComponent.css';
 import ResponseFormModal from './ResponseFormModal';
 import ApiListComponent from './ApiListComponent';
+import { getAuthToken } from '../utils/authUtils';
 
 // タブの型定義
 type AdminTab = 'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors' | 'testresults' | 'announcements' | 'apilist' | 'responses';
@@ -606,7 +607,9 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   // API一覧のエラー件数を取得
   const loadApiErrorCount = async () => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = getAuthToken((message) => console.error(message));
+      if (!token) return;
+      
       const response = await fetch('/api/admin/api-list', {
         headers: {
           'Authorization': `Bearer ${token}`,

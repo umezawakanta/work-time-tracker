@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const { determineHealthStatus, createHealthCheckController, clearHealthCheckTimeout } = require('../utils/healthCheckUtils');
 
 dotenv.config();
 
@@ -134,8 +135,7 @@ const checkApiHealth = async (endpoint, method) => {
     };
   }
   // AbortControllerを使用してタイムアウトを設定
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), HEALTH_CHECK_TIMEOUT_MS);
+  const { controller, timeoutId } = createHealthCheckController();
   
   try {
     const response = await fetch(`${baseUrl}${endpoint}`, {
@@ -145,20 +145,11 @@ const checkApiHealth = async (endpoint, method) => {
       },
       signal: controller.signal
     });
-    
-    clearTimeout(timeoutId);
+
+    clearHealthCheckTimeout(timeoutId);
 
     const responseTime = Date.now() - startTime;
-    
-    let status = 'healthy';
-    
-    if (response.status >= 500) {
-      status = 'error';
-    } else if (response.status >= 400) {
-      status = 'warning';
-    } else if (responseTime > 2000) {
-      status = 'warning';
-    }
+    const status = determineHealthStatus(response.status, responseTime);
 
     return {
       endpoint,
@@ -170,9 +161,9 @@ const checkApiHealth = async (endpoint, method) => {
     };
 
   } catch (error) {
-    clearTimeout(timeoutId);
+    clearHealthCheckTimeout(timeoutId);
     const responseTime = Date.now() - startTime;
-    
+
     return {
       endpoint,
       method,
