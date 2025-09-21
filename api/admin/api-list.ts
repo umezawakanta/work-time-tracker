@@ -215,39 +215,47 @@ const getRealApiMetrics = async () => {
 
     const results = await Promise.all(healthCheckPromises);
 
-  // 結果をAPI一覧形式に変換
-  return API_ENDPOINTS.map((endpoint, index) => {
-    const healthResult = results.find(r => r.endpoint === endpoint.path && r.method === endpoint.method);
-    
-    if (healthResult) {
-      return {
-        id: `api-${index + 1}`,
-        path: endpoint.path,
-        method: endpoint.method,
-        description: endpoint.description,
-        status: healthResult.status,
-        lastChecked: healthResult.lastChecked,
-        responseTime: healthResult.responseTime,
-        errorCount: healthResult.status === 'error' ? 1 : 0,
-        successRate: healthResult.status === 'healthy' ? 100 : healthResult.status === 'warning' ? 80 : 0,
-        lastError: healthResult.error || undefined
-      };
-    } else {
-      // チェックできなかったエンドポイントはunknownとして扱う
-      return {
-        id: `api-${index + 1}`,
-        path: endpoint.path,
-        method: endpoint.method,
-        description: endpoint.description,
-        status: 'unknown',
-        lastChecked: new Date().toISOString(),
-        responseTime: 0,
-        errorCount: 0,
-        successRate: 0,
-        lastError: undefined
-      };
-    }
-  });
+    // チェック結果をマップに変換（効率的な検索のため）
+    const healthResultsMap = new Map();
+    results.forEach(result => {
+      const key = `${result.endpoint}:${result.method}`;
+      healthResultsMap.set(key, result);
+    });
+
+    // 結果をAPI一覧形式に変換
+    return API_ENDPOINTS.map((endpoint, index) => {
+      const key = `${endpoint.path}:${endpoint.method}`;
+      const healthResult = healthResultsMap.get(key);
+      
+      if (healthResult) {
+        return {
+          id: `api-${index + 1}`,
+          path: endpoint.path,
+          method: endpoint.method,
+          description: endpoint.description,
+          status: healthResult.status,
+          lastChecked: healthResult.lastChecked,
+          responseTime: healthResult.responseTime,
+          errorCount: healthResult.status === 'error' ? 1 : 0,
+          successRate: healthResult.status === 'healthy' ? 100 : healthResult.status === 'warning' ? 80 : 0,
+          lastError: healthResult.error || undefined
+        };
+      } else {
+        // チェックできなかったエンドポイントはunknownとして扱う
+        return {
+          id: `api-${index + 1}`,
+          path: endpoint.path,
+          method: endpoint.method,
+          description: endpoint.description,
+          status: 'unknown',
+          lastChecked: new Date().toISOString(),
+          responseTime: 0,
+          errorCount: 0,
+          successRate: 0,
+          lastError: undefined
+        };
+      }
+    });
   } catch (error) {
     console.error('[admin/api-list] Failed to get real API metrics:', error);
     // エラーが発生した場合は空の配列を返す

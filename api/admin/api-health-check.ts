@@ -43,8 +43,10 @@ const ensureDatabaseConnection = async () => {
 // 実際のAPIエンドポイントのヘルスチェック
 const checkApiHealth = async (endpoint, method) => {
   const startTime = Date.now();
-  // Ensure the API base URL is set; do not use a hardcoded fallback
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api'; // fallback to '/api' if not set, consistent with api-list.ts
+  const baseUrl = process.env.API_URL;
+  if (!baseUrl) {
+    throw new Error("API_URL environment variable is required but not set.");
+  }
   
   // AbortControllerを使用してタイムアウトを設定
   const { controller, timeoutId } = createHealthCheckController();
