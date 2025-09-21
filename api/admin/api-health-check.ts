@@ -50,8 +50,8 @@ const performHealthCheck = async (endpoint, method) => {
 };
 
 // 並列実行制限用のヘルパー関数
-const limitConcurrencyHealth = async (tasks, limit = 5) => {
-  const results = [];
+const limitConcurrencyHealth = async (tasks: any[], limit = 5) => {
+  const results: any[] = [];
   for (let i = 0; i < tasks.length; i += limit) {
     const batch = tasks.slice(i, i + limit);
     const batchResults = await Promise.all(batch);
