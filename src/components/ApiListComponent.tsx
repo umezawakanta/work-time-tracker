@@ -87,15 +87,20 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
         );
         
         if (healthResult) {
+          // 実際の成功率を計算（過去のチェック回数と成功回数に基づく）
+          const totalChecks = (api.totalChecks || 0) + 1;
+          const successfulChecks = (api.successfulChecks || 0) + (healthResult.status === 'healthy' ? 1 : 0);
+          const actualSuccessRate = totalChecks > 0 ? Math.round((successfulChecks / totalChecks) * 100) : 0;
+          
           return {
             ...api,
             status: healthResult.status,
             responseTime: healthResult.responseTime,
             lastChecked: healthResult.lastChecked,
             errorCount: healthResult.status === 'error' ? api.errorCount + 1 : api.errorCount,
-            successRate: healthResult.status === 'healthy' ? 
-              Math.min(100, api.successRate + 1) : 
-              Math.max(0, api.successRate - 1)
+            successRate: actualSuccessRate,
+            totalChecks: totalChecks,
+            successfulChecks: successfulChecks
           };
         }
         

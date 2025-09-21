@@ -113,20 +113,21 @@ const API_ENDPOINTS = [
   { path: '/api/user-settings', method: 'PUT', description: 'ユーザー設定更新' }
 ];
 
-// モックデータ生成（実際の実装では、ログやメトリクスから取得）
+// モックデータ生成（開発・デモ用）
+// 注意: 本番環境では実際のログやメトリクスから取得する必要があります
 const generateMockApiData = () => {
   return API_ENDPOINTS.map((endpoint, index) => {
-    // ランダムなステータス生成（実際の実装では、実際のヘルスチェック結果を使用）
+    // ランダムなステータス生成（デモ用 - 本番では実際のヘルスチェック結果を使用）
     const statuses = ['healthy', 'warning', 'error', 'unknown'];
     const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
     
-    // ランダムなエラー数生成
+    // ランダムなエラー数生成（デモ用）
     const errorCount = Math.floor(Math.random() * 10);
     
-    // 成功率計算
+    // 成功率計算（デモ用 - 本番では実際の統計から計算）
     const successRate = Math.max(0, 100 - (errorCount * 10) - Math.floor(Math.random() * 20));
     
-    // 応答時間生成
+    // 応答時間生成（デモ用）
     const responseTime = Math.floor(Math.random() * 500) + 50;
     
     return {
@@ -135,11 +136,11 @@ const generateMockApiData = () => {
       method: endpoint.method,
       description: endpoint.description,
       status: randomStatus,
-      lastChecked: new Date(Date.now() - Math.floor(Math.random() * 3600000)).toISOString(), // 過去1時間以内
+      lastChecked: new Date(Date.now() - Math.floor(Math.random() * 3600000)).toISOString(), // 過去1時間以内（デモ用）
       responseTime: responseTime,
       errorCount: errorCount,
       successRate: successRate,
-      lastError: errorCount > 0 ? `エラー例: ${endpoint.path}で${Math.floor(Math.random() * 5) + 1}件のエラーが発生` : undefined
+      lastError: errorCount > 0 ? `エラー例: ${endpoint.path}で${Math.floor(Math.random() * 5) + 1}件のエラーが発生（デモ用）` : undefined
     };
   });
 };
