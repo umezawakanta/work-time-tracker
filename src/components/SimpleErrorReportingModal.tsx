@@ -28,8 +28,8 @@ const SimpleErrorReportingModal: React.FC<SimpleErrorReportingModalProps> = ({
     timestamp: getTimestamp(),
     userAgent: ERROR_DEFAULTS.USER_AGENT,
     url: ERROR_DEFAULTS.URL,
-    status: '',
-    statusText: '',
+    status: undefined,
+    statusText: undefined,
     method: ''
   }
 }) => {
