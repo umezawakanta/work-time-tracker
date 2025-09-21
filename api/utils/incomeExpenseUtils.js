@@ -7,15 +7,29 @@ const EXPENSE_KEYWORDS = [
   '通信費', '水道光熱費', 'ガソリン代', '駐車場代'
 ];
 
-// 事前にコンパイルした正規表現パターンをキャッシュ
+// 最適化された単一の結合正規表現パターン
 // この正規表現は、キーワードの前後が日本語（漢字: 一-龠, ひらがな: ぁ-ん, カタカナ: ァ-ン）や英数字でない場合にマッチします。
 // これにより、例えば「交通費」などのキーワードが他の単語の一部として現れる場合（例:「交通整理」）は除外し、
-// 日本語（漢字・ひらがな・カタカナ）および英数字以外の文字を表す文字クラスです。
+// 独立したキーワードとしてのみ判定します。
 const NON_JAPANESE_OR_LATIN_CHAR_CLASS = '[^一-龠ぁ-んァ-ンa-zA-Z0-9]';
-const EXPENSE_KEYWORD_PATTERNS = EXPENSE_KEYWORDS.map(keyword => {
-  const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(`(?:^|${NON_JAPANESE_OR_LATIN_CHAR_CLASS})${escapedKeyword}(?:${NON_JAPANESE_OR_LATIN_CHAR_CLASS}|$)`, 'u');
-});
+
+// 遅延初期化で単一の結合正規表現を作成
+let EXPENSE_KEYWORD_PATTERN = null;
+
+function getExpenseKeywordPattern() {
+  if (!EXPENSE_KEYWORD_PATTERN) {
+    // エスケープされたキーワードを結合して単一の正規表現を作成
+    const escapedKeywords = EXPENSE_KEYWORDS.map(keyword => 
+      keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    ).join('|');
+    
+    EXPENSE_KEYWORD_PATTERN = new RegExp(
+      `(?:^|${NON_JAPANESE_OR_LATIN_CHAR_CLASS})(?:${escapedKeywords})(?:${NON_JAPANESE_OR_LATIN_CHAR_CLASS}|$)`,
+      'u'
+    );
+  }
+  return EXPENSE_KEYWORD_PATTERN;
+}
 
 /**
  * 記録のメモと金額から収入/支出のタイプを判定する
@@ -29,8 +43,8 @@ function determineIncomeExpenseType(record) {
   
   // メモの内容から支出を判定
   if (record.notes) {
-    // 事前にコンパイルした正規表現パターンを使用してキーワードをチェック
-    if (EXPENSE_KEYWORD_PATTERNS.some(pattern => pattern.test(record.notes))) {
+    // 最適化された単一の結合正規表現パターンを使用してキーワードをチェック
+    if (getExpenseKeywordPattern().test(record.notes)) {
       newType = 'expense';
     }
   }
