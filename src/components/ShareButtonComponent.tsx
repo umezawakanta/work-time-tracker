@@ -201,11 +201,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     };
   }, [randomElements, stats]);
 
-  const getSiteDescription = () => {
-    return `${baseTextElements.intro}${baseTextElements.features}${baseTextElements.promise}${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${baseTextElements.statsText}`;
-  };
-
-  const siteDescription = getSiteDescription();
+  const siteDescription = `${baseTextElements.intro}${baseTextElements.features}${baseTextElements.promise}${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${baseTextElements.statsText}`;
   
   // Twitter用の短縮テキストを生成する関数
   const generateTwitterText = () => {
