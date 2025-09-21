@@ -2809,10 +2809,12 @@ ${errorInfo.stack}
   const isEnvVarTrue = (key: string): boolean => {
     if (!key.startsWith('REACT_APP_')) {
       console.warn(`Environment variable "${key}" does not start with "REACT_APP_". It will not be available in the browser.`);
+      return false;
     }
-    // Access as process.env.REACT_APP_*
-    // @ts-ignore
-    return process.env[key] === 'true';
+    
+    // 安全な環境変数アクセス（undefined チェック付き）
+    const envValue = process.env[key];
+    return envValue === 'true';
   };
 
   /**
@@ -2826,8 +2828,11 @@ ${errorInfo.stack}
 
   // デバッグログの出力条件をチェックするヘルパー関数
   const shouldLogBalanceCalculation = () => {
-    return process.env.NODE_ENV === 'development' &&
-           isEnvVarTrue('REACT_APP_DEBUG_BALANCE_CALCULATION');
+    // 開発環境かどうかを安全にチェック
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const debugEnabled = isEnvVarTrue('REACT_APP_DEBUG_BALANCE_CALCULATION');
+    
+    return isDevelopment && debugEnabled;
   };
 
   // 月間収支を計算する関数
