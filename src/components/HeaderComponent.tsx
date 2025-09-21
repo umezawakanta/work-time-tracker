@@ -26,6 +26,7 @@ interface HeaderComponentProps {
   loadUserSettings: () => void;
   isTimeTrackingActive: boolean;
   onUpdateRequestClick: () => void;
+  onBugReportClick: () => void;
 }
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
@@ -43,6 +44,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   loadUserSettings,
   isTimeTrackingActive,
   onUpdateRequestClick,
+  onBugReportClick,
 }) => {
   return (
     <header className="dashboard-header">
@@ -94,9 +96,17 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
         </div>
       </div>
 
-      {/* 右上固定：シェアボタン、更新要望ボタン、ログアウトボタン */}
+      {/* 右上固定：シェアボタン、不具合報告ボタン、更新要望ボタン、ログアウトボタン */}
       <div className="header-top-right">
         <ShareButtonComponent />
+        <button
+          onClick={onBugReportClick}
+          className="bug-report-button"
+          title="不具合を報告"
+        >
+          <i className="bi bi-bug"></i>
+          <span>不具合報告</span>
+        </button>
         <button
           onClick={onUpdateRequestClick}
           className="update-request-button"

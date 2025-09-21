@@ -42,6 +42,7 @@ import LanguageFontSettings from "./components/LanguageFontSettings";
 import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
 import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
 import UpdateRequestModal from "./components/UpdateRequestModal";
+import BugReportModal from "./components/BugReportModal";
 import { setErrorReportCallback, reportApiError } from "./utils/apiClient";
 
 import type {
@@ -97,6 +98,9 @@ function App() {
 
   // 更新要望関連の状態
   const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false);
+
+  // 不具合報告関連の状態
+  const [showBugReportModal, setShowBugReportModal] = useState(false);
 
   // 各機能のローディング状態（LoadingStateManagerで管理）
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
@@ -4252,6 +4256,52 @@ User Agent: ${userAgent}
     }
   };
 
+  // 不具合報告送信処理
+  const handleBugReport = async (bugReport: {
+    title: string;
+    content: string;
+    category: string;
+    severity: string;
+    steps: string;
+    expectedBehavior: string;
+    actualBehavior: string;
+  }) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      
+      // 不具合報告を公開メモとして投稿
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: `[不具合報告] ${bugReport.title}`,
+          content: `**カテゴリ:** ${bugReport.category}\n**重要度:** ${bugReport.severity}\n\n**再現手順:**\n${bugReport.steps || '記載なし'}\n\n**期待される動作:**\n${bugReport.expectedBehavior || '記載なし'}\n\n**実際の動作:**\n${bugReport.actualBehavior || '記載なし'}\n\n**詳細説明:**\n${bugReport.content}`,
+          category: "不具合報告",
+          tags: ["不具合報告", "バグ", "エラー"],
+          isPublic: true,
+          isFamilyOnly: false,
+          isAdminOnly: false,
+          postType: "error_report"
+        }),
+      });
+
+      if (response.ok) {
+        setMessage("不具合報告を送信しました。ありがとうございます。");
+        setShowBugReportModal(false);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "不具合報告の送信に失敗しました");
+      }
+    } catch (error) {
+      console.error("不具合報告送信エラー:", error);
+      setMessage("不具合報告の送信に失敗しました。もう一度お試しください。");
+      throw error;
+    }
+  };
+
   // エラー報告の送信処理
   const handleErrorReport = async (errorInfo: ApiErrorInfo) => {
     try {
@@ -5701,6 +5751,7 @@ User Agent: ${userAgent}
             loadUserSettings={loadUserSettings}
             isTimeTrackingActive={isTimeTrackingActive}
             onUpdateRequestClick={() => setShowUpdateRequestModal(true)}
+            onBugReportClick={() => setShowBugReportModal(true)}
           />
 
           {/* バージョン情報 */}
@@ -6466,6 +6517,13 @@ User Agent: ${userAgent}
           isOpen={showUpdateRequestModal}
           onClose={() => setShowUpdateRequestModal(false)}
           onSubmit={handleUpdateRequest}
+        />
+
+        {/* 不具合報告モーダル */}
+        <BugReportModal
+          isOpen={showBugReportModal}
+          onClose={() => setShowBugReportModal(false)}
+          onSubmit={handleBugReport}
         />
       </div>
     );
