@@ -20,40 +20,35 @@ const NotificationDetailModal: React.FC<NotificationDetailModalProps> = ({
     return null;
   }
 
-  // 通知の種類に応じたアイコンを取得
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'memo_response':
-        return 'bi-reply';
-      case 'memo_reply':
-        return 'bi-chat-dots';
-      case 'status_update':
-        return 'bi-arrow-repeat';
-      case 'admin_message':
-        return 'bi-megaphone';
-      case 'admin_announcement':
-        return 'bi-bullhorn';
-      default:
-        return 'bi-bell';
-    }
-  };
-
-  // 通知の種類に応じたラベルを取得
-  const getNotificationTypeLabel = (type: string) => {
-    switch (type) {
-      case 'memo_response':
-        return 'メモ返信';
-      case 'memo_reply':
-        return 'メモコメント';
-      case 'status_update':
-        return 'ステータス更新';
-      case 'admin_message':
-        return '管理者メッセージ';
-      case 'admin_announcement':
-        return 'お知らせ';
-      default:
-        return '通知';
-    }
+  // 通知の種類に応じた設定を取得
+  const getNotificationConfig = (type: string) => {
+    const configs = {
+      memo_response: {
+        icon: 'bi-reply',
+        label: 'メモ返信'
+      },
+      memo_reply: {
+        icon: 'bi-chat-dots',
+        label: 'メモコメント'
+      },
+      status_update: {
+        icon: 'bi-arrow-repeat',
+        label: 'ステータス更新'
+      },
+      admin_message: {
+        icon: 'bi-megaphone',
+        label: '管理者メッセージ'
+      },
+      admin_announcement: {
+        icon: 'bi-bullhorn',
+        label: 'お知らせ'
+      }
+    };
+    
+    return configs[type as keyof typeof configs] || {
+      icon: 'bi-bell',
+      label: '通知'
+    };
   };
 
   const handleMemoNavigation = () => {
@@ -69,11 +64,11 @@ const NotificationDetailModal: React.FC<NotificationDetailModalProps> = ({
         <div className="notification-detail-modal-header">
           <div className="notification-detail-type">
             <i 
-              className={`bi ${getNotificationIcon(notification.type)} notification-detail-icon`}
+              className={`bi ${getNotificationConfig(notification.type).icon} notification-detail-icon`}
               data-type={notification.type}
             ></i>
             <span className="notification-detail-type-label">
-              {getNotificationTypeLabel(notification.type)}
+              {getNotificationConfig(notification.type).label}
             </span>
           </div>
           <button
