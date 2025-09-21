@@ -182,7 +182,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         setSelectedRecordType(null);
       }
     }
-  }, [incomeExpenseRecords, workDiaries, selectedDate]);
+  }, [selectedDate, incomeExpenseRecords.length, workDiaries.length]);
 
   // カレンダーの日付を生成
   const getCalendarDays = () => {
