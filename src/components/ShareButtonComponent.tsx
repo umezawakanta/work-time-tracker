@@ -189,19 +189,20 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     const promise = `ユーザーから要求があった機能をすぐに実装します！`;
     const versionMsg = `\n\n${randomElements.versionMessage}`;
     const latestUpdate = getLatestUpdateInfo();
-    const statsText = getStatsText();
     
     return {
       intro,
       features,
       promise,
       versionMsg,
-      latestUpdate,
-      statsText
+      latestUpdate
     };
-  }, [randomElements, stats]);
+  }, [randomElements]);
 
-  const siteDescription = `${baseTextElements.intro}${baseTextElements.features}${baseTextElements.promise}${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${baseTextElements.statsText}`;
+  // statsに依存する部分はuseMemo外で都度計算
+  const statsText = getStatsText();
+
+  const siteDescription = `${baseTextElements.intro}${baseTextElements.features}${baseTextElements.promise}${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${statsText}`;
   
   /**
    * Twitter用の短縮テキストを生成
@@ -209,7 +210,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
    */
   const generateTwitterText = () => {
     const baseText = baseTextElements.intro;
-    const versionInfo = `${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${baseTextElements.statsText}`;
+    const versionInfo = `${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${statsText}`;
     const fullText = `${siteTitle}\n\n${baseText}${versionInfo}\n\n${siteUrl}`;
     
     const maxTwitterLength = 280;
