@@ -12,6 +12,8 @@ interface ApiEndpoint {
   errorCount: number;
   successRate: number;
   lastError?: string;
+  totalChecks?: number;
+  successfulChecks?: number;
 }
 
 interface ApiListComponentProps {

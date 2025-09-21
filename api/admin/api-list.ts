@@ -197,7 +197,7 @@ module.exports = async function handler(req, res) {
     res.status(405).json({
       success: false,
       error: 'Method not allowed',
-    } as ApiListResponse);
+    });
     return;
   }
 
@@ -212,7 +212,7 @@ module.exports = async function handler(req, res) {
         success: false,
         message: '認証が必要です',
         error: 'Authentication required',
-      } as ApiListResponse);
+      });
     }
 
     // JWTトークンを検証してユーザー情報を取得
@@ -227,7 +227,7 @@ module.exports = async function handler(req, res) {
         success: false,
         message: '無効な認証トークンです',
         error: 'Invalid authentication token',
-      } as ApiListResponse);
+      });
     }
 
     // 管理者権限の確認
@@ -236,7 +236,7 @@ module.exports = async function handler(req, res) {
         success: false,
         message: '管理者権限が必要です',
         error: 'Admin privileges required',
-      } as ApiListResponse);
+      });
     }
 
     // API一覧データを生成
