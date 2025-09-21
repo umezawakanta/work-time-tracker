@@ -2068,11 +2068,7 @@ ${errorInfo.stack}
         return;
       }
 
-      // 記録タイプに基づいて金額を正負に変換
-      const amount =
-        incomeExpenseType === "expense"
-          ? -Math.abs(Number(incomeExpenseAmount))
-          : Math.abs(Number(incomeExpenseAmount));
+      const amount = normalizeAmountForStorage(incomeExpenseAmount);
 
       const requestBody = {
         date: incomeExpenseDate,
@@ -2148,11 +2144,7 @@ ${errorInfo.stack}
         return;
       }
 
-      // 記録タイプに基づいて金額を正負に変換
-      const amount =
-        incomeExpenseType === "expense"
-          ? -Math.abs(Number(incomeExpenseAmount))
-          : Math.abs(Number(incomeExpenseAmount));
+      const amount = normalizeAmountForStorage(incomeExpenseAmount);
 
       const requestBody = {
         id: editingIncomeExpenseRecord._id,
@@ -2812,42 +2804,83 @@ ${errorInfo.stack}
     return days;
   };
 
+  // 環境変数をbooleanとして解釈するヘルパー関数
+  // Only works for variables prefixed with REACT_APP_ (as these are exposed to the browser by the build system)
+  const isEnvVarTrue = (key: string): boolean => {
+    if (!key.startsWith('REACT_APP_')) {
+      console.warn(`Environment variable "${key}" does not start with "REACT_APP_". Only variables with this prefix are available in the browser. Please rename it to "REACT_APP_${key}" or check if you're using the correct variable name.`);
+      return false;
+    }
+    // Only check process.env for valid REACT_APP_ keys
+    const envValue = process.env[key];
+    return envValue === 'true';
+  };
+
+  /**
+   * 金額を正の値に正規化する
+   * データベースには常に正の値で保存（表示時にtypeに基づいて正負を決定）
+   * 注意: このamountは常に正の値として保存されるため、表示時は必ずtypeフィールドと組み合わせて使用すること
+   */
+  const normalizeAmountForStorage = (amount: string | number): number => {
+    return Math.abs(Number(amount));
+  };
+
+  // デバッグログの出力条件をチェックするヘルパー関数
+  const shouldLogBalanceCalculation = () => {
+    // 開発環境かどうかを安全にチェック
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const debugEnabled = isEnvVarTrue('REACT_APP_DEBUG_BALANCE_CALCULATION');
+    
+    return isDevelopment && debugEnabled;
+  };
+
   // 月間収支を計算する関数
   const getMonthlySummary = (year: number, month: number) => {
     const startDate = new Date(year, month, 1);
     const endDate = new Date(year, month + 1, 0);
 
+    // 月間の記録を一度だけフィルタリング
+    const recordsInMonth = (incomeExpenseRecords || []).filter(record => {
+      const recordDate = new Date(record.date);
+      return recordDate >= startDate && recordDate <= endDate;
+    });
+
     let totalIncome = 0;
     let totalExpense = 0;
 
-
-    incomeExpenseRecords.forEach((record) => {
-      const recordDate = new Date(record.date);
-      if (recordDate >= startDate && recordDate <= endDate) {
-        if (record.type === 'income') {
-          totalIncome += record.amount;
-        } else if (record.type === 'expense') {
-          totalExpense += record.amount;
-        }
+    // フィルタリング済みの記録を処理
+    recordsInMonth.forEach((record) => {
+      if (record.type === 'income') {
+        totalIncome += record.amount;
+      } else if (record.type === 'expense') {
+        totalExpense += record.amount;
       }
     });
 
     const netIncome = totalIncome - totalExpense;
 
-    console.log('収支計算結果:', {
-      totalIncome,
-      totalExpense,
-      netIncome
-    });
+    // デバッグログを出力（条件に基づく）
+    if (shouldLogBalanceCalculation()) {
+      console.log('収支計算結果:', {
+        totalIncome,
+        totalExpense,
+        netIncome,
+        recordsCount: incomeExpenseRecords?.length || 0,
+        recordsInMonthCount: recordsInMonth.length,
+        recordsInMonthSample: recordsInMonth.slice(0, 10).map(record => ({
+          id: record._id,
+          type: record.type,
+          amount: record.amount,
+          date: record.date
+        }))
+      });
+    }
 
     return {
       totalIncome,
       totalExpense,
       netIncome,
-      recordCount: (incomeExpenseRecords || []).filter((record) => {
-        const recordDate = new Date(record.date);
-        return recordDate >= startDate && recordDate <= endDate;
-      }).length,
+      recordCount: recordsInMonth.length,
     };
   };
 

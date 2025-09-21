@@ -90,9 +90,26 @@ module.exports = async function handler(req, res) {
           recordObj.amount = recordObj.salary;
           delete recordObj.salary;
         }
-        // typeフィールドが存在しない場合は、amountの正負で判定
+        // typeフィールドが存在しない場合は、デフォルトでincomeとする
+        // 既存のデータの整合性を保つため、amountの正負で判定しない
         if (!recordObj.type) {
-          recordObj.type = recordObj.amount >= 0 ? 'income' : 'expense';
+          // ログ出力はDEBUG環境変数が 'true' の場合のみ構造化（DEBUGモード）、通常は簡易メッセージ
+          if (process.env.DEBUG === 'true') {
+            const logData = {
+              level: 'warn',
+              component: 'salary.js',
+              message: 'Record missing type field',
+              recordId: recordObj._id,
+              action: 'Setting default type to income',
+              reason: 'Possible client bug or legacy data'
+            };
+            console.warn(JSON.stringify(logData));
+          } else {
+            console.warn(
+              `Record missing type field (recordId: ${recordObj._id}) - Setting default type to income`
+            );
+          }
+          recordObj.type = "income";
         }
         return recordObj;
       });
