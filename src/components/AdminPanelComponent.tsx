@@ -3,6 +3,9 @@ import './AdminPanelComponent.css';
 import ResponseFormModal from './ResponseFormModal';
 import ApiListComponent from './ApiListComponent';
 
+// タブの型定義
+type AdminTab = 'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors' | 'testresults' | 'announcements' | 'apilist' | 'responses';
+
 // ソースコードアイテムコンポーネント
 interface SourceCodeItemProps {
   file: any;
@@ -197,7 +200,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'email' | 'role' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors' | 'testresults' | 'announcements' | 'apilist' | 'responses'>('users');
+  const [activeTab, setActiveTab] = useState<AdminTab>('users');
   const [errorReports, setErrorReports] = useState<any[]>([]);
   const [errorReportsLoading, setErrorReportsLoading] = useState(false);
   const [errorReportsError, setErrorReportsError] = useState<string | null>(null);
