@@ -50,7 +50,7 @@ const performHealthCheck = async (endpoint, method) => {
 };
 
 // 並列実行制限用のヘルパー関数
-const limitConcurrency = async (tasks, limit = 5) => {
+const limitConcurrencyHealth = async (tasks, limit = 5) => {
   const results = [];
   for (let i = 0; i < tasks.length; i += limit) {
     const batch = tasks.slice(i, i + limit);
@@ -137,7 +137,7 @@ module.exports = async function handler(req, res) {
       performHealthCheck(path, method)
     );
 
-    const results = await limitConcurrency(healthCheckTasks, 5);
+    const results = await limitConcurrencyHealth(healthCheckTasks, 5);
 
     // 統計情報を計算
     const stats = {
