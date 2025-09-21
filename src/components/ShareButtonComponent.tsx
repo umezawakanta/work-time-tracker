@@ -219,7 +219,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     }
     
     // 文字数制限を超える場合は短縮版を使用
-    // Fallback: omit stats and latest update info, but keep version message to stay within character limits
+    // As a fallback: omit stats and latest update info, but keep version message to stay within character limits
     const shortVersionInfo = baseTextElements.versionMsg;
     return `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
   };
