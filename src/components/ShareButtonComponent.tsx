@@ -6,21 +6,21 @@ interface ShareButtonComponentProps {
   className?: string;
 }
 
+// バージョン紹介文言の配列（コンポーネント外で定義）
+const versionMessages = [
+  `最新バージョン${APP_VERSION}で更新要望・不具合報告機能を追加！`,
+  `v${APP_VERSION}でユーザビリティが大幅に向上しました！`,
+  `新機能満載のv${APP_VERSION}をぜひお試しください！`,
+  `v${APP_VERSION}でエラーハンドリングが改善されました！`,
+  `最新アップデートv${APP_VERSION}でより使いやすく！`,
+  `v${APP_VERSION}で新機能と改善が追加されました！`,
+  `最新版v${APP_VERSION}でパフォーマンスが向上！`,
+  `v${APP_VERSION}でコード品質が大幅に改善されました！`,
+  `新バージョンv${APP_VERSION}で機能が充実！`,
+  `v${APP_VERSION}でユーザーエクスペリエンスが向上！`
+];
 
 const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className = '' }) => {
-  // バージョン紹介文言の配列（コンポーネント内で定義）
-  const versionMessages = [
-    `最新バージョン${APP_VERSION}で更新要望・不具合報告機能を追加！`,
-    `v${APP_VERSION}でユーザビリティが大幅に向上しました！`,
-    `新機能満載のv${APP_VERSION}をぜひお試しください！`,
-    `v${APP_VERSION}でエラーハンドリングが改善されました！`,
-    `最新アップデートv${APP_VERSION}でより使いやすく！`,
-    `v${APP_VERSION}で新機能と改善が追加されました！`,
-    `最新版v${APP_VERSION}でパフォーマンスが向上！`,
-    `v${APP_VERSION}でコード品質が大幅に改善されました！`,
-    `新バージョンv${APP_VERSION}で機能が充実！`,
-    `v${APP_VERSION}でユーザーエクスペリエンスが向上！`
-  ];
   const [isOpen, setIsOpen] = useState(false);
   const [randomElements, setRandomElements] = useState(() => generateRandomElements());
   const [stats, setStats] = useState({
@@ -200,14 +200,8 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
       return fullText;
     }
     
-<<<<<<< HEAD
-    // 文字数制限を超える場合は短縮版を使用（バージョンメッセージは必須）
-=======
     // 文字数制限を超える場合は短縮版を使用
-    // Fallback: omit stats and latest update info for brevity
->>>>>>> 04b9b8aa7 (Update src/components/ShareButtonComponent.tsx)
-    const shortVersionInfo = `\n\n${randomElements.versionMessage}`;
-    return `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
+    return `${siteTitle}\n\n${baseText}${versionInfo}\n\n${siteUrl}`;
   };
   
   const finalTwitterText = generateTwitterText();
