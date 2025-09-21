@@ -44,6 +44,16 @@ import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
 import UpdateRequestModal from "./components/UpdateRequestModal";
 import BugReportModal from "./components/BugReportModal";
 import { setErrorReportCallback, reportApiError } from "./utils/apiClient";
+import {
+  formatUpdateRequestContent,
+  formatBugReportContent,
+  getUpdateRequestTags,
+  getBugReportTags,
+  formatUpdateRequestTitle,
+  formatBugReportTitle,
+  type UpdateRequestData,
+  type BugReportData,
+} from "./utils/requestFormatters";
 
 import type {
   User,
@@ -4214,12 +4224,7 @@ User Agent: ${userAgent}
   };
 
   // 更新要望送信処理
-  const handleUpdateRequest = async (updateRequest: {
-    title: string;
-    content: string;
-    category: string;
-    priority: string;
-  }) => {
+  const handleUpdateRequest = async (updateRequest: UpdateRequestData) => {
     try {
       const token = localStorage.getItem("access_token");
       
@@ -4231,10 +4236,10 @@ User Agent: ${userAgent}
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: `[更新要望] ${updateRequest.title}`,
-          content: `**カテゴリ:** ${updateRequest.category}\n**優先度:** ${updateRequest.priority}\n\n**詳細内容:**\n${updateRequest.content}`,
+          title: formatUpdateRequestTitle(updateRequest.title),
+          content: formatUpdateRequestContent(updateRequest),
           category: "更新要望",
-          tags: ["更新要望", "改善提案", "フィードバック"],
+          tags: getUpdateRequestTags(),
           isPublic: true,
           isFamilyOnly: false,
           isAdminOnly: false,
@@ -4257,15 +4262,7 @@ User Agent: ${userAgent}
   };
 
   // 不具合報告送信処理
-  const handleBugReport = async (bugReport: {
-    title: string;
-    content: string;
-    category: string;
-    severity: string;
-    steps: string;
-    expectedBehavior: string;
-    actualBehavior: string;
-  }) => {
+  const handleBugReport = async (bugReport: BugReportData) => {
     try {
       const token = localStorage.getItem("access_token");
       
@@ -4277,10 +4274,10 @@ User Agent: ${userAgent}
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: `[不具合報告] ${bugReport.title}`,
-          content: `**カテゴリ:** ${bugReport.category}\n**重要度:** ${bugReport.severity}\n\n**再現手順:**\n${bugReport.steps || '記載なし'}\n\n**期待される動作:**\n${bugReport.expectedBehavior || '記載なし'}\n\n**実際の動作:**\n${bugReport.actualBehavior || '記載なし'}\n\n**詳細説明:**\n${bugReport.content}`,
+          title: formatBugReportTitle(bugReport.title),
+          content: formatBugReportContent(bugReport),
           category: "不具合報告",
-          tags: ["不具合報告", "バグ", "エラー"],
+          tags: getBugReportTags(),
           isPublic: true,
           isFamilyOnly: false,
           isAdminOnly: false,

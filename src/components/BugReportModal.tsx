@@ -28,6 +28,7 @@ const BugReportModal: React.FC<BugReportModalProps> = ({
   const [expectedBehavior, setExpectedBehavior] = useState('');
   const [actualBehavior, setActualBehavior] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   const categories = [
     { value: 'ui', label: 'UI/UX問題' },
@@ -46,15 +47,33 @@ const BugReportModal: React.FC<BugReportModalProps> = ({
     { value: 'critical', label: '緊急' },
   ];
 
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {};
+    
+    if (!title.trim()) {
+      newErrors.title = 'タイトルは必須項目です。';
+    }
+    if (!content.trim()) {
+      newErrors.content = '詳細説明は必須項目です。';
+    }
+    if (!category) {
+      newErrors.category = 'カテゴリは必須項目です。';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title.trim() || !content.trim() || !category) {
-      alert('タイトル、内容、カテゴリは必須項目です。');
+    if (!validateForm()) {
       return;
     }
 
     setIsSubmitting(true);
+    setErrors({});
+    
     try {
       await onSubmit({
         title: title.trim(),
@@ -74,10 +93,11 @@ const BugReportModal: React.FC<BugReportModalProps> = ({
       setSteps('');
       setExpectedBehavior('');
       setActualBehavior('');
+      setErrors({});
       onClose();
     } catch (error) {
       console.error('不具合報告の送信に失敗しました:', error);
-      alert('不具合報告の送信に失敗しました。もう一度お試しください。');
+      setErrors({ submit: '不具合報告の送信に失敗しました。もう一度お試しください。' });
     } finally {
       setIsSubmitting(false);
     }
@@ -127,8 +147,10 @@ const BugReportModal: React.FC<BugReportModalProps> = ({
               disabled={isSubmitting}
               maxLength={100}
               required
+              className={errors.title ? 'error' : ''}
             />
             <div className="character-count">{title.length}/100</div>
+            {errors.title && <div className="error-message">{errors.title}</div>}
           </div>
 
           <div className="form-row">
@@ -143,6 +165,7 @@ const BugReportModal: React.FC<BugReportModalProps> = ({
                 onChange={(e) => setCategory(e.target.value)}
                 disabled={isSubmitting}
                 required
+                className={errors.category ? 'error' : ''}
               >
                 <option value="">カテゴリを選択してください</option>
                 {categories.map((cat) => (
@@ -151,6 +174,7 @@ const BugReportModal: React.FC<BugReportModalProps> = ({
                   </option>
                 ))}
               </select>
+              {errors.category && <div className="error-message">{errors.category}</div>}
             </div>
 
             <div className="form-group">
@@ -238,9 +262,18 @@ const BugReportModal: React.FC<BugReportModalProps> = ({
               rows={4}
               maxLength={1000}
               required
+              className={errors.content ? 'error' : ''}
             />
             <div className="character-count">{content.length}/1000</div>
+            {errors.content && <div className="error-message">{errors.content}</div>}
           </div>
+
+          {errors.submit && (
+            <div className="error-message submit-error">
+              <i className="bi bi-exclamation-triangle"></i>
+              {errors.submit}
+            </div>
+          )}
 
           <div className="form-actions">
             <button
@@ -255,7 +288,7 @@ const BugReportModal: React.FC<BugReportModalProps> = ({
             <button
               type="submit"
               className="submit-button"
-              disabled={!title.trim() || !content.trim() || !category || isSubmitting}
+              disabled={isSubmitting}
             >
               <i className="bi bi-send"></i>
               {isSubmitting ? '送信中...' : '不具合を報告'}

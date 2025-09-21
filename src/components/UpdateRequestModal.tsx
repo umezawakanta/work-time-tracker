@@ -22,6 +22,7 @@ const UpdateRequestModal: React.FC<UpdateRequestModalProps> = ({
   const [category, setCategory] = useState('');
   const [priority, setPriority] = useState('medium');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   const categories = [
     { value: 'ui', label: 'UI/UX改善' },
@@ -39,15 +40,33 @@ const UpdateRequestModal: React.FC<UpdateRequestModalProps> = ({
     { value: 'urgent', label: '緊急' },
   ];
 
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {};
+    
+    if (!title.trim()) {
+      newErrors.title = 'タイトルは必須項目です。';
+    }
+    if (!content.trim()) {
+      newErrors.content = '内容は必須項目です。';
+    }
+    if (!category) {
+      newErrors.category = 'カテゴリは必須項目です。';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title.trim() || !content.trim() || !category) {
-      alert('タイトル、内容、カテゴリは必須項目です。');
+    if (!validateForm()) {
       return;
     }
 
     setIsSubmitting(true);
+    setErrors({});
+    
     try {
       await onSubmit({
         title: title.trim(),
@@ -61,10 +80,11 @@ const UpdateRequestModal: React.FC<UpdateRequestModalProps> = ({
       setContent('');
       setCategory('');
       setPriority('medium');
+      setErrors({});
       onClose();
     } catch (error) {
       console.error('更新要望の送信に失敗しました:', error);
-      alert('更新要望の送信に失敗しました。もう一度お試しください。');
+      setErrors({ submit: '更新要望の送信に失敗しました。もう一度お試しください。' });
     } finally {
       setIsSubmitting(false);
     }
@@ -114,8 +134,10 @@ const UpdateRequestModal: React.FC<UpdateRequestModalProps> = ({
               disabled={isSubmitting}
               maxLength={100}
               required
+              className={errors.title ? 'error' : ''}
             />
             <div className="character-count">{title.length}/100</div>
+            {errors.title && <div className="error-message">{errors.title}</div>}
           </div>
 
           <div className="form-row">
@@ -130,6 +152,7 @@ const UpdateRequestModal: React.FC<UpdateRequestModalProps> = ({
                 onChange={(e) => setCategory(e.target.value)}
                 disabled={isSubmitting}
                 required
+                className={errors.category ? 'error' : ''}
               >
                 <option value="">カテゴリを選択してください</option>
                 {categories.map((cat) => (
@@ -138,6 +161,7 @@ const UpdateRequestModal: React.FC<UpdateRequestModalProps> = ({
                   </option>
                 ))}
               </select>
+              {errors.category && <div className="error-message">{errors.category}</div>}
             </div>
 
             <div className="form-group">
@@ -174,9 +198,18 @@ const UpdateRequestModal: React.FC<UpdateRequestModalProps> = ({
               rows={6}
               maxLength={1000}
               required
+              className={errors.content ? 'error' : ''}
             />
             <div className="character-count">{content.length}/1000</div>
+            {errors.content && <div className="error-message">{errors.content}</div>}
           </div>
+
+          {errors.submit && (
+            <div className="error-message submit-error">
+              <i className="bi bi-exclamation-triangle"></i>
+              {errors.submit}
+            </div>
+          )}
 
           <div className="form-actions">
             <button
@@ -191,7 +224,7 @@ const UpdateRequestModal: React.FC<UpdateRequestModalProps> = ({
             <button
               type="submit"
               className="submit-button"
-              disabled={!title.trim() || !content.trim() || !category || isSubmitting}
+              disabled={isSubmitting}
             >
               <i className="bi bi-send"></i>
               {isSubmitting ? '送信中...' : '更新要望を送信'}

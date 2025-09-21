@@ -149,6 +149,35 @@
   cursor: not-allowed;
 }
 
+.form-group input.error,
+.form-group select.error,
+.form-group textarea.error {
+  border-color: #e74c3c;
+  background: #fdf2f2;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.error-message i {
+  font-size: 0.9rem;
+}
+
+.submit-error {
+  background: #fdf2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  color: #dc2626;
+}
+
 .form-group textarea {
   resize: vertical;
   min-height: 120px;
