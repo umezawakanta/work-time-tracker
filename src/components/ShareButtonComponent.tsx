@@ -183,37 +183,19 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   };
   
   // 基礎テキスト要素を生成するユーティリティ関数（メモ化）
-<<<<<<< HEAD
-  // メモ化: statsに依存しない静的テキスト要素のみ
-=======
->>>>>>> 37866f6d5 (refactor: ShareButtonComponentのテキスト生成ロジックをメモ化してパフォーマンスを向上)
   const baseTextElements = useMemo(() => {
     const intro = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
     const features = `${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。`;
     const promise = `ユーザーから要求があった機能をすぐに実装します！`;
     const versionMsg = `\n\n${randomElements.versionMessage}`;
     const latestUpdate = getLatestUpdateInfo();
-<<<<<<< HEAD
-=======
     const statsText = getStatsText();
->>>>>>> 37866f6d5 (refactor: ShareButtonComponentのテキスト生成ロジックをメモ化してパフォーマンスを向上)
     
     return {
       intro,
       features,
       promise,
       versionMsg,
-<<<<<<< HEAD
-      latestUpdate
-    };
-  }, [randomElements]);
-
-  // statsに依存する部分はuseMemo外で都度計算
-  const statsText = getStatsText();
-
-  const getSiteDescription = () => {
-    return `${baseTextElements.intro}${baseTextElements.features}${baseTextElements.promise}${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${statsText}`;
-=======
       latestUpdate,
       statsText
     };
@@ -221,7 +203,6 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
 
   const getSiteDescription = () => {
     return `${baseTextElements.intro}${baseTextElements.features}${baseTextElements.promise}${baseTextElements.versionMsg}${baseTextElements.latestUpdate}${baseTextElements.statsText}`;
->>>>>>> 37866f6d5 (refactor: ShareButtonComponentのテキスト生成ロジックをメモ化してパフォーマンスを向上)
   };
 
   const siteDescription = getSiteDescription();
@@ -241,11 +222,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     }
     
     // 文字数制限を超える場合は短縮版を使用
-<<<<<<< HEAD
-    // Fallback: Omit stats and latest update info, keeping only version message
-=======
     // Fallback: omit stats and latest update info for brevity
->>>>>>> 37866f6d5 (refactor: ShareButtonComponentのテキスト生成ロジックをメモ化してパフォーマンスを向上)
     const shortVersionInfo = baseTextElements.versionMsg;
     return `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
   };
