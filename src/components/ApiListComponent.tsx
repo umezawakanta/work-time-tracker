@@ -351,20 +351,7 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
                   </td>
                   <td>
                     <div className="action-buttons">
-                      <button
-                        className="test-button"
-                        disabled
-                        title="APIテスト（未実装）"
-                      >
-                        <i className="bi bi-play-circle"></i>
-                      </button>
-                      <button
-                        className="details-button"
-                        disabled
-                        title="詳細表示（未実装）"
-                      >
-                        <i className="bi bi-info-circle"></i>
-                      </button>
+                      {/* Placeholder buttons for unimplemented features removed to avoid user confusion */}
                     </div>
                   </td>
                 </tr>
