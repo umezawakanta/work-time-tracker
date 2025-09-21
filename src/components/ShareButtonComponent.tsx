@@ -268,7 +268,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     }
     
     // シェア処理完了後に新しいランダム要素を生成
-            setRandomElements(generateRandomElements(versionMessages));
+    setRandomElements(generateRandomElements(versionMessages));
   };
 
   return (
