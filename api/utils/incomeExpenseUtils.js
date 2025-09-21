@@ -17,18 +17,20 @@ const EXPENSE_KEYWORDS = [
 function determineIncomeExpenseType(record) {
   let newType = 'income'; // デフォルトは収入
   
-  // メモの内容から支出を判定
-  if (record.notes) {
-    const notes = record.notes;
-    // 支出を示すキーワードをチェック（日本語なので大文字小文字の区別なし）
-    if (EXPENSE_KEYWORDS.some(keyword => {
-      // 正規表現でキーワードが単語境界または前後が非日本語文字の場合のみ一致
-      const pattern = new RegExp(`(?:^|[^一-龠ぁ-んァ-ンa-zA-Z0-9])${keyword}(?:[^一-龠ぁ-んァ-ンa-zA-Z0-9]|$)`);
-      return pattern.test(notes);
-    })) {
-      newType = 'expense';
+    // メモの内容から支出を判定
+    if (record.notes) {
+      const notes = record.notes;
+      // 支出を示すキーワードをチェック（日本語なので大文字小文字の区別なし）
+      if (EXPENSE_KEYWORDS.some(keyword => {
+        // 正規表現でキーワードが単語境界または前後が非日本語文字の場合のみ一致
+        // 特殊文字をエスケープしてから正規表現を作成
+        const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const pattern = new RegExp(`(?:^|[^一-龠ぁ-んァ-ンa-zA-Z0-9])${escapedKeyword}(?:[^一-龠ぁ-んァ-ンa-zA-Z0-9]|$)`);
+        return pattern.test(notes);
+      })) {
+        newType = 'expense';
+      }
     }
-  }
   
   // 金額が負の場合は支出
   if (record.amount < 0) {
