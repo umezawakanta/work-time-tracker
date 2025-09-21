@@ -200,7 +200,12 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
       return fullText;
     }
     
+<<<<<<< HEAD
     // 文字数制限を超える場合は短縮版を使用（バージョンメッセージは必須）
+=======
+    // 文字数制限を超える場合は短縮版を使用
+    // Fallback: omit stats and latest update info for brevity
+>>>>>>> 04b9b8aa7 (Update src/components/ShareButtonComponent.tsx)
     const shortVersionInfo = `\n\n${randomElements.versionMessage}`;
     return `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
   };
