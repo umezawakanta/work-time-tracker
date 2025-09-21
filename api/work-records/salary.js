@@ -93,7 +93,7 @@ module.exports = async function handler(req, res) {
         // typeフィールドが存在しない場合は、デフォルトでincomeとする
         // 既存のデータの整合性を保つため、amountの正負で判定しない
         if (!recordObj.type) {
-          // ログ出力はDEBUGモードのときのみ構造化、通常は簡易メッセージ
+          // ログ出力はDEBUG環境変数が 'true' の場合のみ構造化（DEBUGモード）、通常は簡易メッセージ
           if (process.env.DEBUG === 'true') {
             const logData = {
               level: 'warn',
