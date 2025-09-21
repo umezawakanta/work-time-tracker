@@ -201,6 +201,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [errorReports, setErrorReports] = useState<any[]>([]);
   const [errorReportsLoading, setErrorReportsLoading] = useState(false);
   const [errorReportsError, setErrorReportsError] = useState<string | null>(null);
+  const [apiErrorCount, setApiErrorCount] = useState(0);
   const [updateRequests, setUpdateRequests] = useState<any[]>([]);
   const [updateRequestsLoading, setUpdateRequestsLoading] = useState(false);
   const [updateRequestsError, setUpdateRequestsError] = useState<string | null>(null);
@@ -389,6 +390,13 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   useEffect(() => {
     setTabCounts(prev => ({ ...prev, users: adminUsers.length }));
   }, [adminUsers]);
+
+  // API一覧のエラー件数を定期的に取得
+  useEffect(() => {
+    loadApiErrorCount();
+    const interval = setInterval(loadApiErrorCount, 30000); // 30秒ごとに更新
+    return () => clearInterval(interval);
+  }, []);
 
   // 検索・ソート機能
   const filteredUsers = (adminUsers || [])
@@ -590,6 +598,27 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
     setSelectedMemo(memo);
     setShowResponseModal(true);
     console.log('Response modal should be shown now');
+  };
+
+  // API一覧のエラー件数を取得
+  const loadApiErrorCount = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('/api/admin/api-list', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.stats) {
+          setApiErrorCount(data.stats.error || 0);
+        }
+      }
+    } catch (error) {
+      console.error('API一覧エラー件数取得エラー:', error);
+    }
   };
 
   // お知らせ送信機能
@@ -863,6 +892,9 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
             >
               <i className="bi bi-list-ul"></i>
               API一覧
+              {apiErrorCount > 0 && (
+                <span className="error-count-badge">{apiErrorCount}</span>
+              )}
             </button>
           </div>
 
