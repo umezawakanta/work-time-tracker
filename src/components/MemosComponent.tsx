@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './MemosComponent.css';
 import type { Memo, Reply } from '../types';
+import { EXCLUDED_MEMO_CATEGORIES } from '../utils/requestFormatters';
 
 interface MemosComponentProps {
   memos: Memo[];
@@ -220,13 +221,10 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     const allCategories = [...memoCategories, ...getAllCategories()];
     
     // 不具合報告・更新要望に関連するカテゴリを除外
-    const excludedCategories = [
-      'エラー報告', '更新リクエスト', '更新要望', '要望、リクエスト',
-      '不具合報告', 'バグ報告', '改善要望', 'フィードバック'
-    ];
+    const excludedCategories = EXCLUDED_MEMO_CATEGORIES;
     
     const filteredCategories = allCategories.filter(category => 
-      !excludedCategories.includes(category)
+      !excludedCategories.includes(category as any)
     );
     
     return Array.from(new Set(filteredCategories)).sort();

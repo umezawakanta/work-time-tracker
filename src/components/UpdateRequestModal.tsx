@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './UpdateRequestModal.css';
+import { getUpdateRequestCategories } from '../utils/requestFormatters';
 
 interface UpdateRequestModalProps {
   isOpen: boolean;
@@ -24,14 +25,7 @@ const UpdateRequestModal: React.FC<UpdateRequestModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
-  const categories = [
-    { value: 'ui', label: 'UI/UX改善' },
-    { value: 'feature', label: '新機能追加' },
-    { value: 'performance', label: 'パフォーマンス改善' },
-    { value: 'bugfix', label: 'バグ修正' },
-    { value: 'accessibility', label: 'アクセシビリティ' },
-    { value: 'other', label: 'その他' },
-  ];
+  const categories = getUpdateRequestCategories();
 
   const priorities = [
     { value: 'low', label: '低' },

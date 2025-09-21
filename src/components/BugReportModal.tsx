@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './BugReportModal.css';
+import { getBugReportCategories } from '../utils/requestFormatters';
 
 interface BugReportModalProps {
   isOpen: boolean;
@@ -30,15 +31,7 @@ const BugReportModal: React.FC<BugReportModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
-  const categories = [
-    { value: 'ui', label: 'UI/UX問題' },
-    { value: 'functionality', label: '機能不具合' },
-    { value: 'performance', label: 'パフォーマンス問題' },
-    { value: 'data', label: 'データ関連' },
-    { value: 'login', label: 'ログイン・認証' },
-    { value: 'api', label: 'API関連' },
-    { value: 'other', label: 'その他' },
-  ];
+  const categories = getBugReportCategories();
 
   const severities = [
     { value: 'low', label: '低' },

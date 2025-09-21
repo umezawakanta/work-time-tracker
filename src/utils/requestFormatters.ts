@@ -17,21 +17,25 @@ export interface BugReportData {
   actualBehavior: string;
 }
 
-// カテゴリラベルのマッピング
-const CATEGORY_LABELS = {
-  // 更新要望カテゴリ
+// 更新要望カテゴリラベルのマッピング
+export const UPDATE_REQUEST_CATEGORY_LABELS = {
   ui: 'UI/UX改善',
   feature: '新機能追加',
   performance: 'パフォーマンス改善',
   bugfix: 'バグ修正',
   accessibility: 'アクセシビリティ',
   other: 'その他',
-  
-  // 不具合報告カテゴリ
+} as const;
+
+// 不具合報告カテゴリラベルのマッピング
+export const BUG_REPORT_CATEGORY_LABELS = {
+  ui: 'UI/UX問題',
   functionality: '機能不具合',
+  performance: 'パフォーマンス問題',
   data: 'データ関連',
   login: 'ログイン・認証',
   api: 'API関連',
+  other: 'その他',
 } as const;
 
 // 優先度ラベルのマッピング
@@ -54,7 +58,7 @@ const SEVERITY_LABELS = {
  * 更新要望のコンテンツをフォーマットする
  */
 export const formatUpdateRequestContent = (data: UpdateRequestData): string => {
-  const categoryLabel = CATEGORY_LABELS[data.category as keyof typeof CATEGORY_LABELS] || data.category;
+  const categoryLabel = UPDATE_REQUEST_CATEGORY_LABELS[data.category as keyof typeof UPDATE_REQUEST_CATEGORY_LABELS] || data.category;
   const priorityLabel = PRIORITY_LABELS[data.priority as keyof typeof PRIORITY_LABELS] || data.priority;
   
   return `**カテゴリ:** ${categoryLabel}
@@ -68,7 +72,7 @@ ${data.content}`;
  * 不具合報告のコンテンツをフォーマットする
  */
 export const formatBugReportContent = (data: BugReportData): string => {
-  const categoryLabel = CATEGORY_LABELS[data.category as keyof typeof CATEGORY_LABELS] || data.category;
+  const categoryLabel = BUG_REPORT_CATEGORY_LABELS[data.category as keyof typeof BUG_REPORT_CATEGORY_LABELS] || data.category;
   const severityLabel = SEVERITY_LABELS[data.severity as keyof typeof SEVERITY_LABELS] || data.severity;
   
   return `**カテゴリ:** ${categoryLabel}
@@ -114,3 +118,37 @@ export const formatUpdateRequestTitle = (title: string): string => {
 export const formatBugReportTitle = (title: string): string => {
   return `[不具合報告] ${title}`;
 };
+
+/**
+ * 更新要望のカテゴリ配列を取得する
+ */
+export const getUpdateRequestCategories = () => {
+  return Object.entries(UPDATE_REQUEST_CATEGORY_LABELS).map(([value, label]) => ({
+    value,
+    label,
+  }));
+};
+
+/**
+ * 不具合報告のカテゴリ配列を取得する
+ */
+export const getBugReportCategories = () => {
+  return Object.entries(BUG_REPORT_CATEGORY_LABELS).map(([value, label]) => ({
+    value,
+    label,
+  }));
+};
+
+/**
+ * メモ機能から除外するカテゴリの定数
+ */
+export const EXCLUDED_MEMO_CATEGORIES = [
+  'エラー報告',
+  '更新リクエスト', 
+  '更新要望',
+  '要望、リクエスト',
+  '不具合報告',
+  'バグ報告',
+  '改善要望',
+  'フィードバック'
+];
