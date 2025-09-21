@@ -223,7 +223,7 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
           <label>ステータス:</label>
           <select
             value={filter}
-            onChange={(e) => setFilter(e.target.value as any)}
+            onChange={(e) => setFilter(e.target.value as 'all' | 'healthy' | 'warning' | 'error')}
             title="ステータスフィルター"
           >
             <option value="all">すべて</option>
