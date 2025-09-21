@@ -183,19 +183,40 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     return statsParts.length > 0 ? `\n\n📊 現在の状況: ${statsParts.join('、')}` : '';
   };
   
-  // 動的に変化する部分は都度計算
-  const latestUpdate = getLatestUpdateInfo();
-  const statsText = getStatsText();
+  // 基礎テキスト要素を生成するユーティリティ関数
+  const generateBaseTextElements = () => {
+    const intro = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
+    const features = `${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。`;
+    const promise = `ユーザーから要求があった機能をすぐに実装します！`;
+    const versionMsg = `\n\n${randomElements.versionMessage}`;
+    const latestUpdate = getLatestUpdateInfo();
+    const statsText = getStatsText();
+    
+    return {
+      intro,
+      features,
+      promise,
+      versionMsg,
+      latestUpdate,
+      statsText
+    };
+  };
 
-  const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！\n\n${randomElements.versionMessage}${latestUpdate}${statsText}`;
+  const getSiteDescription = () => {
+    const elements = generateBaseTextElements();
+    return `${elements.intro}${elements.features}${elements.promise}${elements.versionMsg}${elements.latestUpdate}${elements.statsText}`;
+  };
+
+  const siteDescription = getSiteDescription();
   
   /**
    * Twitter用の短縮テキストを生成
    * 文字数制限（280文字）を超える場合は統計情報と最新アップデート情報を省略
    */
   const generateTwitterText = () => {
-    const baseText = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
-    const versionInfo = `\n\n${randomElements.versionMessage}${latestUpdate}${statsText}`;
+    const elements = generateBaseTextElements();
+    const baseText = elements.intro;
+    const versionInfo = `${elements.versionMsg}${elements.latestUpdate}${elements.statsText}`;
     const fullText = `${siteTitle}\n\n${baseText}${versionInfo}\n\n${siteUrl}`;
     
     const maxTwitterLength = 280;
@@ -204,7 +225,9 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     }
     
     // 文字数制限を超える場合は短縮版を使用
-    return `${siteTitle}\n\n${baseText}${versionInfo}\n\n${siteUrl}`;
+    // Fallback: omit stats and latest update info for brevity
+    const shortVersionInfo = elements.versionMsg;
+    return `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
   };
   
   const finalTwitterText = generateTwitterText();
