@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.0.7";
+export const APP_VERSION = "1.0.8";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,23 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.0.8",
+    date: "2024-12-22",
+    changes: [
+      "APIヘルスチェック機能を追加（管理者パネルにAPI一覧タブ）",
+      "全APIエンドポイントのリアルタイムヘルスチェック機能",
+      "レスポンス時間とエラー率の統計表示機能",
+      "APIヘルスチェック用ユーティリティ（healthCheckUtils.js）",
+      "APIエンドポイント設定ファイル（api-endpoints.js）で一元管理",
+      "並列実行制限の実装（最大5個まで同時実行）",
+      "APIエラー件数取得の最適化（ポーリング間隔を2分に延長）",
+      "ソート機能の安定性向上（同値の場合の適切な処理）",
+      "マージコンフリクトの解決と変数名重複問題の修正",
+      "TypeScriptの型推論エラーの修正とコード品質の向上"
+    ],
+    type: "feature"
+  },
   {
     version: "1.0.7",
     date: "2024-12-19",
