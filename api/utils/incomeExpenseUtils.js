@@ -8,6 +8,9 @@ const EXPENSE_KEYWORDS = [
 ];
 
 // 事前にコンパイルした正規表現パターンをキャッシュ
+// この正規表現は、キーワードの前後が日本語（漢字: 一-龠, ひらがな: ぁ-ん, カタカナ: ァ-ン）や英数字でない場合にマッチします。
+// これにより、例えば「交通費」などのキーワードが他の単語の一部として現れる場合（例:「交通費用」）は除外し、
+// 独立したキーワードとしてのみ判定します。
 const EXPENSE_KEYWORD_PATTERNS = EXPENSE_KEYWORDS.map(keyword => {
   const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   return new RegExp(`(?:^|[^一-龠ぁ-んァ-ンa-zA-Z0-9])${escapedKeyword}(?:[^一-龠ぁ-んァ-ンa-zA-Z0-9]|$)`);
