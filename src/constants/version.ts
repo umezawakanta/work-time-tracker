@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.0.5";
+export const APP_VERSION = "1.0.6";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.0.6",
+    date: "2025-01-21",
+    changes: [
+      "シェア機能にバージョン紹介文言を追加（10種類のランダムメッセージ）",
+      "Twitter用短縮テキスト生成ロジックを関数化して可読性を向上",
+      "パフォーマンス最適化（不要なuseMemoを削除）",
+      "コードの保守性と一貫性を改善",
+      "シェアメッセージの多様性とユーザーエクスペリエンスを向上"
+    ],
+    type: "feature"
+  },
   {
     version: "1.0.5",
     date: "2025-01-21",
