@@ -51,8 +51,8 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
     setError(null);
 
     try {
-      // getAuthToken expects a callback of type (errorMessage: string) => void.
-      // It will call this callback if an error occurs during token retrieval.
+      // getAuthToken is a synchronous function that returns the token directly.
+      // If an error occurs during token retrieval, it will call the provided callback with the error message.
       const token = getAuthToken(setError);
       if (!token) return;
 
