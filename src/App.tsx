@@ -2805,7 +2805,7 @@ ${errorInfo.stack}
   };
 
   // 環境変数をbooleanとして解釈するヘルパー関数
-  // Only works for variables prefixed with REACT_APP_ (as per Create React App)
+  // Only works for variables prefixed with REACT_APP_ (as these are exposed to the browser by the build system)
   const isEnvVarTrue = (key: string): boolean => {
     if (!key.startsWith('REACT_APP_')) {
       console.warn(`Environment variable "${key}" does not start with "REACT_APP_". It will not be available in the browser.`);
