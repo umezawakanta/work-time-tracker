@@ -17,7 +17,7 @@ const EXPENSE_KEYWORDS = [
 function determineIncomeExpenseType(record) {
   let newType = 'income'; // デフォルトは収入
   
-    // メモの内容から支出を判定
+    // メモの内容から支出を判定。
     if (record.notes) {
       const notes = record.notes;
       // 支出を示すキーワードをチェック（日本語なので大文字小文字の区別なし）
