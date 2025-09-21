@@ -100,6 +100,61 @@
   font-size: 0.9rem;
 }
 
+/* 更新履歴表示のスタイル */
+.update-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-radius: 8px;
+  border: 1px solid #e1bee7;
+}
+
+.update-info h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #7b1fa2;
+}
+
+.update-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.update-version {
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  background: #7b1fa2;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  display: inline-block;
+  width: fit-content;
+}
+
+.update-type {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #7b1fa2;
+}
+
+.update-changes {
+  margin-top: 0.5rem;
+}
+
+.update-change-item {
+  font-size: 0.8rem;
+  color: #555;
+  margin-bottom: 0.25rem;
+  line-height: 1.4;
+}
+
+.update-change-item:last-child {
+  margin-bottom: 0;
+}
+
 /* 統計データ表示のスタイル */
 .stats-display {
   margin-top: 1rem;
@@ -310,4 +365,27 @@
   .share-buttons {
     padding: 0.8rem 1rem;
   }
+}
+
+/* ダークテーマ対応 */
+[data-theme="dark"] .update-info {
+  background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
+  border-color: #7b1fa2;
+}
+
+[data-theme="dark"] .update-info h4 {
+  color: #e1bee7;
+}
+
+[data-theme="dark"] .update-version {
+  background: #e1bee7;
+  color: #4a148c;
+}
+
+[data-theme="dark"] .update-type {
+  color: #e1bee7;
+}
+
+[data-theme="dark"] .update-change-item {
+  color: #e0e0e0;
 }

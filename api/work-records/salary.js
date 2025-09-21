@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const { verifyJWT } = require('../utils/validation');
+const { warn } = require('../utils/logger');
 
 dotenv.config();
 
@@ -36,6 +37,11 @@ const IncomeExpenseRecordSchema = new mongoose.Schema({
 
 const IncomeExpenseRecord = mongoose.models.SalaryRecord || mongoose.model('SalaryRecord', IncomeExpenseRecordSchema);
 
+/**
+ * Handles HTTP requests for salary records.
+ * @param {import('http').IncomingMessage} req - The HTTP request object.
+ * @param {import('http').ServerResponse} res - The HTTP response object.
+ */
 module.exports = async function handler(req, res) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
@@ -55,6 +61,11 @@ module.exports = async function handler(req, res) {
   try {
     // JWTトークンからユーザーIDを取得
     console.log('Verifying JWT token...');
+    if (req.headers.authorization) {
+      console.log('Authorization header present.');
+    } else {
+      console.log('Authorization header not present.');
+    }
     const userInfo = await verifyJWT(req);
     console.log('JWT verification result:', userInfo);
     if (!userInfo) {
@@ -80,9 +91,15 @@ module.exports = async function handler(req, res) {
           recordObj.amount = recordObj.salary;
           delete recordObj.salary;
         }
-        // typeフィールドが存在しない場合は、amountの正負で判定
+        // typeフィールドが存在しない場合は、デフォルトでincomeとする
+        // 既存のデータの整合性を保つため、amountの正負で判定しない
         if (!recordObj.type) {
-          recordObj.type = recordObj.amount >= 0 ? 'income' : 'expense';
+          warn('salary.js', 'Record missing type field', {
+            recordId: recordObj._id,
+            action: 'Setting default type to income',
+            reason: 'Possible client bug or legacy data'
+          });
+          recordObj.type = "income";
         }
         return recordObj;
       });

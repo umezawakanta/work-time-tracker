@@ -62,7 +62,7 @@
   flex-wrap: wrap; /* 必要に応じて折り返し */
 }
 
-/* 右上固定：シェアボタンとログアウトボタン */
+/* 右上固定：シェアボタン、不具合報告ボタン、更新要望ボタン、ログアウトボタン */
 .header-top-right {
   position: absolute;
   top: 1rem;
@@ -73,6 +73,66 @@
   visibility: visible !important;
   opacity: 1 !important;
   z-index: 20; /* 他の要素より上に表示 */
+}
+
+/* 不具合報告ボタン */
+.bug-report-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.bug-report-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
+.bug-report-button i {
+  font-size: 1rem;
+}
+
+.bug-report-button span {
+  font-size: 0.85rem;
+}
+
+/* 更新要望ボタン */
+.update-request-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
+}
+
+.update-request-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
+}
+
+.update-request-button i {
+  font-size: 1rem;
+}
+
+.update-request-button span {
+  font-size: 0.85rem;
 }
 
 /* ユーザー情報 - シンプル化 */

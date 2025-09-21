@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './PublicMemosComponent.css';
 import type { Memo, Reply, User } from '../types';
+import { EXCLUDED_MEMO_CATEGORIES } from '../utils/requestFormatters';
 
 interface PublicMemosComponentProps {
   publicMemos: Memo[];
@@ -178,7 +179,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   const getAllGenres = () => {
     return [
       "仕事", "学習", "趣味", "健康", "家族", "旅行", "読書", "映画", "音楽",
-      "スポーツ", "料理", "要望、リクエスト", "その他",
+      "スポーツ", "料理", "その他",
     ];
   };
 
@@ -186,7 +187,15 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   const getPublicMemoCategories = () => {
     const memoCategories = new Set((publicMemos || []).map((memo) => memo.category));
     const allCategories = [...memoCategories, ...getAllGenres()];
-    return Array.from(new Set(allCategories)).sort();
+    
+    // 不具合報告・更新要望に関連するカテゴリを除外
+    const excludedCategories = EXCLUDED_MEMO_CATEGORIES;
+    
+    const filteredCategories = allCategories.filter(category => 
+      !excludedCategories.includes(category)
+    );
+    
+    return Array.from(new Set(filteredCategories)).sort();
   };
 
   // 選択された日付の公開メモを取得

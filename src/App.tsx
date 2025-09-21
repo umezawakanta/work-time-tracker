@@ -18,6 +18,13 @@ import TimersComponent from "./components/TimersComponent";
 import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import NotificationComponent from "./components/NotificationComponent";
+import VersionInfo from "./components/VersionInfo";
+import { ErrorInfo, getErrorInfo, formatErrorInfo, createErrorInfo } from './types/errorTypes';
+import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './utils/authUtils';
+import type { ApiErrorInfo } from './utils/apiErrorHandler';
+// Static import for apiFetch - used frequently throughout the application
+import { apiFetch } from './utils/apiClient';
+import { buildApiUrl, createUserIdParam, createIdParam } from './utils/urlUtils';
 import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
@@ -34,8 +41,19 @@ import {
 import LanguageFontSettings from "./components/LanguageFontSettings";
 import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
 import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
+import UpdateRequestModal from "./components/UpdateRequestModal";
+import BugReportModal from "./components/BugReportModal";
 import { setErrorReportCallback, reportApiError } from "./utils/apiClient";
-import type { ApiErrorInfo } from "./utils/apiErrorHandler";
+import {
+  formatUpdateRequestContent,
+  formatBugReportContent,
+  getUpdateRequestTags,
+  getBugReportTags,
+  formatUpdateRequestTitle,
+  formatBugReportTitle,
+  type UpdateRequestData,
+  type BugReportData,
+} from "./utils/requestFormatters";
 
 import type {
   User,
@@ -55,6 +73,7 @@ import type {
   Goal,
   LearningRecord,
 } from "./types";
+
 
 function App() {
   // ローディング状態の管理
@@ -86,6 +105,12 @@ function App() {
   const [currentError, setCurrentError] = useState<Error | null>(null);
   const [showSimpleErrorModal, setShowSimpleErrorModal] = useState(false);
   const [errorModalButtonPosition, setErrorModalButtonPosition] = useState<{ x: number; y: number } | undefined>(undefined);
+
+  // 更新要望関連の状態
+  const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false);
+
+  // 不具合報告関連の状態
+  const [showBugReportModal, setShowBugReportModal] = useState(false);
 
   // 各機能のローディング状態（LoadingStateManagerで管理）
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
@@ -959,24 +984,26 @@ function App() {
     xhr.send = function(...args: any[]) {
       this.addEventListener('loadend', function() {
         if (this.status >= 400) {
-          const errorInfo = {
-            url: (this as any)._url || 'Unknown URL',
-            status: this.status,
-            statusText: this.statusText,
-            method: (this as any)._method || 'GET',
-            timestamp: new Date().toISOString(),
-            userAgent: navigator.userAgent
-          };
+          const errorInfo = createErrorInfo(
+            'XMLHttpRequest',
+            this.status,
+            this.statusText,
+            (this as any)._url || 'Unknown URL',
+            (this as any)._method || 'GET'
+          );
           
           console.error('XMLHttpRequestエラーが発生しました:', errorInfo);
           
+          // ApiErrorInfoをErrorInfoに変換してからフォーマット
+          const convertedErrorInfo = getErrorInfo(errorInfo);
+          const { statusInfo, methodInfo } = formatErrorInfo(convertedErrorInfo || {});
           const errorDetails = `
 XMLHttpRequestエラーが発生しました。
 
 エラー詳細:
 - URL: ${errorInfo.url}
-- ステータス: ${errorInfo.status} ${errorInfo.statusText}
-- メソッド: ${errorInfo.method}
+${statusInfo ? `- ${statusInfo}` : ''}
+${methodInfo ? `- ${methodInfo}` : ''}
 - 時刻: ${errorInfo.timestamp}
 - ユーザーエージェント: ${errorInfo.userAgent}
 
@@ -1020,25 +1047,27 @@ XMLHttpRequestエラーが発生しました。
       
       // 4xx, 5xxエラーをキャッチ
       if (!response.ok) {
-        const errorInfo = {
-          url: args[0]?.toString() || 'Unknown URL',
-          status: response.status,
-          statusText: response.statusText,
-          method: args[1]?.method || 'GET',
-          timestamp: new Date().toISOString(),
-          userAgent: navigator.userAgent
-        };
+        const errorInfo = createErrorInfo(
+          'API',
+          response.status,
+          response.statusText,
+          args[0]?.toString() || 'Unknown URL',
+          args[1]?.method || 'GET'
+        );
         
         console.error('APIエラーが発生しました:', errorInfo);
         
         // エラー詳細を構築
+        // ApiErrorInfoをErrorInfoに変換してからフォーマット
+        const convertedErrorInfo = getErrorInfo(errorInfo);
+        const { statusInfo, methodInfo } = formatErrorInfo(convertedErrorInfo || {});
         const errorDetails = `
 APIエラーが発生しました。
 
 エラー詳細:
 - URL: ${errorInfo.url}
-- ステータス: ${errorInfo.status} ${errorInfo.statusText}
-- メソッド: ${errorInfo.method}
+${statusInfo ? `- ${statusInfo}` : ''}
+${methodInfo ? `- ${methodInfo}` : ''}
 - 時刻: ${errorInfo.timestamp}
 - ユーザーエージェント: ${errorInfo.userAgent}
 
@@ -1887,10 +1916,22 @@ ${errorInfo.stack}
         console.log('ユーザーIDがありません');
         return;
       }
-        const { apiFetch } = await import("./utils/apiClient");
-        const response = await apiFetch("/api/work-records/salary");
+      
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        console.log('アクセストークンがありません');
+        setMessage('ログインが必要です');
+        return;
+      }
 
-        const data = await response.json();
+      const response = await apiFetch("/api/work-records/salary", {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
         if (data.success) {
           setIncomeExpenseRecords(data.records);
         } else {
@@ -1915,13 +1956,18 @@ ${errorInfo.stack}
       if (!user?.id) {
         return;
       }
-      const response = await fetch(`/api/work-records/diary?userId=${user.id}`);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
+        const url = buildApiUrl('/api/work-records/diary', createUserIdParam(user.id));
+        return await apiFetch(url, {
+          method: "GET",
+          headers: createAuthHeaders(token)
+        });
+      });
 
-      const data = await response.json();
+      if (!result) return; // 認証エラーの場合
+
+      const data = await result.json();
       if (data.success) {
         setWorkDiaries(data.diaries);
       } else {
@@ -1929,6 +1975,13 @@ ${errorInfo.stack}
         setMessage(`日記の読み込みに失敗しました: ${data.message}`);
       }
     } catch (error) {
+      // エラー情報を取得してエラー報告モーダルを表示
+      const errorInfo = getErrorInfo(error instanceof Error ? error : null);
+      if (errorInfo) {
+        setCurrentError(error instanceof Error ? error : new Error(String(error)));
+        setShowSimpleErrorModal(true);
+      }
+      
       console.error("Failed to load work diaries:", error);
       setMessage(
         `日記の読み込みに失敗しました: ${
@@ -1943,7 +1996,18 @@ ${errorInfo.stack}
   // ユーザーIDを直接受け取る関数
   const loadIncomeExpenseRecordsWithUserId = async (userId: string) => {
     try {
-      const response = await fetch(`/api/work-records/salary?userId=${userId}`);
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        console.log('アクセストークンがありません');
+        return;
+      }
+
+      const response = await fetch(`/api/work-records/salary`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       const data = await response.json();
       if (data.success) {
         setIncomeExpenseRecords(data.records);
@@ -1955,7 +2019,18 @@ ${errorInfo.stack}
 
   const loadWorkDiariesWithUserId = async (userId: string) => {
     try {
-      const response = await fetch(`/api/work-records/diary?userId=${userId}`);
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        console.log('アクセストークンがありません');
+        return;
+      }
+
+      const response = await fetch(`/api/work-records/diary`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       const data = await response.json();
       if (data.success) {
         setWorkDiaries(data.diaries);
@@ -2011,11 +2086,7 @@ ${errorInfo.stack}
         return;
       }
 
-      // 記録タイプに基づいて金額を正負に変換
-      const amount =
-        incomeExpenseType === "expense"
-          ? -Math.abs(Number(incomeExpenseAmount))
-          : Math.abs(Number(incomeExpenseAmount));
+      const amount = normalizeAmountForStorage(incomeExpenseAmount);
 
       const requestBody = {
         date: incomeExpenseDate,
@@ -2091,11 +2162,7 @@ ${errorInfo.stack}
         return;
       }
 
-      // 記録タイプに基づいて金額を正負に変換
-      const amount =
-        incomeExpenseType === "expense"
-          ? -Math.abs(Number(incomeExpenseAmount))
-          : Math.abs(Number(incomeExpenseAmount));
+      const amount = normalizeAmountForStorage(incomeExpenseAmount);
 
       const requestBody = {
         id: editingIncomeExpenseRecord._id,
@@ -2129,7 +2196,9 @@ ${errorInfo.stack}
         setIncomeExpenseNotes("");
         setEditingIncomeExpenseRecord(null);
         setShowIncomeExpenseForm(false);
-        loadIncomeExpenseRecords();
+        // データを再読み込みして画面を更新
+        await loadIncomeExpenseRecords();
+        await loadWorkDiaries();
       } else {
         console.error('API Error Response:', data);
         
@@ -2303,20 +2372,35 @@ ${errorInfo.stack}
 
   const handleDeleteIncomeExpenseRecord = async (id: string) => {
     try {
-      const { apiFetch } = await import("./utils/apiClient");
-      const response = await apiFetch(`/api/work-records/salary?id=${id}`, {
-        method: "DELETE",
+      // executeAuthenticatedRequest: 認証トークンの取得とエラーハンドリング
+      // apiFetch: HTTPエラーの処理とエラー報告
+      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
+        const url = buildApiUrl('/api/work-records/salary', createIdParam(id));
+        return await apiFetch(url, {
+          method: "DELETE",
+          headers: createAuthHeaders(token)
+        });
       });
 
-      const data = await response.json();
+      if (!result) return; // 認証エラーの場合
+
+      const data = await result.json();
       if (data.success) {
         setMessage("収入・支出記録が削除されました！");
-        loadIncomeExpenseRecords();
+        // データを再読み込みして画面を更新
+        await loadIncomeExpenseRecords();
+        await loadWorkDiaries();
       } else {
         setMessage(`エラー: ${data.message}`);
       }
     } catch (error) {
-      // APIエラーの場合は自動的にエラー報告モーダルが表示される
+      // エラー情報を取得してエラー報告モーダルを表示
+      const errorInfo = getErrorInfo(error instanceof Error ? error : null);
+      if (errorInfo) {
+        setCurrentError(error instanceof Error ? error : new Error(String(error)));
+        setShowSimpleErrorModal(true);
+      }
+      
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -2325,11 +2409,19 @@ ${errorInfo.stack}
 
   const handleDeleteDiary = async (id: string) => {
     try {
-      const response = await fetch(`/api/work-records/diary?id=${id}`, {
-        method: "DELETE",
+      // executeAuthenticatedRequest: 認証トークンの取得とエラーハンドリング
+      // apiFetch: HTTPエラーの処理とエラー報告
+      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
+        const url = buildApiUrl('/api/work-records/diary', createIdParam(id));
+        return await apiFetch(url, {
+          method: "DELETE",
+          headers: createAuthHeaders(token)
+        });
       });
 
-      const data = await response.json();
+      if (!result) return; // 認証エラーの場合
+
+      const data = await result.json();
       if (data.success) {
         setMessage("日記が削除されました！");
         loadWorkDiaries();
@@ -2337,6 +2429,13 @@ ${errorInfo.stack}
         setMessage(`エラー: ${data.message}`);
       }
     } catch (error) {
+      // エラー情報を取得してエラー報告モーダルを表示
+      const errorInfo = getErrorInfo(error instanceof Error ? error : null);
+      if (errorInfo) {
+        setCurrentError(error instanceof Error ? error : new Error(String(error)));
+        setShowSimpleErrorModal(true);
+      }
+      
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -2350,9 +2449,17 @@ ${errorInfo.stack}
     }
 
     try {
-      const response = await fetch(`/api/user-settings?userId=${user.id}`);
-      const data = await response.json();
+      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
+        const url = buildApiUrl('/api/user-settings', createUserIdParam(user.id));
+        return await apiFetch(url, {
+          method: "GET",
+          headers: createAuthHeaders(token)
+        });
+      });
 
+      if (!result) return; // 認証エラーの場合
+
+      const data = await result.json();
       if (data.success) {
         const settings = data.settings;
 
@@ -2411,7 +2518,19 @@ ${errorInfo.stack}
         console.error("Failed to load settings:", data.message);
       }
     } catch (error) {
+      // エラー情報を取得してエラー報告モーダルを表示
+      const errorInfo = getErrorInfo(error instanceof Error ? error : null);
+      if (errorInfo) {
+        setCurrentError(error instanceof Error ? error : new Error(String(error)));
+        setShowSimpleErrorModal(true);
+      }
+      
       console.error("Failed to load user settings:", error);
+      setMessage(
+        `設定の読み込みに失敗しました: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   };
 
@@ -2703,42 +2822,83 @@ ${errorInfo.stack}
     return days;
   };
 
+  // 環境変数をbooleanとして解釈するヘルパー関数
+  // Only works for variables prefixed with REACT_APP_ (as these are exposed to the browser by the build system)
+  const isEnvVarTrue = (key: string): boolean => {
+    if (!key.startsWith('REACT_APP_')) {
+      console.warn(`Environment variable "${key}" does not start with "REACT_APP_". Only variables with this prefix are available in the browser. Please rename it to "REACT_APP_${key}" or check if you're using the correct variable name.`);
+      return false;
+    }
+    // Only check process.env for valid REACT_APP_ keys
+    const envValue = process.env[key];
+    return envValue === 'true';
+  };
+
+  /**
+   * 金額を正の値に正規化する
+   * データベースには常に正の値で保存（表示時にtypeに基づいて正負を決定）
+   * 注意: このamountは常に正の値として保存されるため、表示時は必ずtypeフィールドと組み合わせて使用すること
+   */
+  const normalizeAmountForStorage = (amount: string | number): number => {
+    return Math.abs(Number(amount));
+  };
+
+  // デバッグログの出力条件をチェックするヘルパー関数
+  const shouldLogBalanceCalculation = () => {
+    // 開発環境かどうかを安全にチェック
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const debugEnabled = isEnvVarTrue('REACT_APP_DEBUG_BALANCE_CALCULATION');
+    
+    return isDevelopment && debugEnabled;
+  };
+
   // 月間収支を計算する関数
   const getMonthlySummary = (year: number, month: number) => {
     const startDate = new Date(year, month, 1);
     const endDate = new Date(year, month + 1, 0);
 
+    // 月間の記録を一度だけフィルタリング
+    const recordsInMonth = (incomeExpenseRecords || []).filter(record => {
+      const recordDate = new Date(record.date);
+      return recordDate >= startDate && recordDate <= endDate;
+    });
+
     let totalIncome = 0;
     let totalExpense = 0;
 
-
-    incomeExpenseRecords.forEach((record) => {
-      const recordDate = new Date(record.date);
-      if (recordDate >= startDate && recordDate <= endDate) {
-        if (record.type === 'income') {
-          totalIncome += record.amount;
-        } else if (record.type === 'expense') {
-          totalExpense += record.amount;
-        }
+    // フィルタリング済みの記録を処理
+    recordsInMonth.forEach((record) => {
+      if (record.type === 'income') {
+        totalIncome += record.amount;
+      } else if (record.type === 'expense') {
+        totalExpense += record.amount;
       }
     });
 
     const netIncome = totalIncome - totalExpense;
 
-    console.log('収支計算結果:', {
-      totalIncome,
-      totalExpense,
-      netIncome
-    });
+    // デバッグログを出力（条件に基づく）
+    if (shouldLogBalanceCalculation()) {
+      console.log('収支計算結果:', {
+        totalIncome,
+        totalExpense,
+        netIncome,
+        recordsCount: incomeExpenseRecords?.length || 0,
+        recordsInMonthCount: recordsInMonth.length,
+        recordsInMonthSample: recordsInMonth.slice(0, 10).map(record => ({
+          id: record._id,
+          type: record.type,
+          amount: record.amount,
+          date: record.date
+        }))
+      });
+    }
 
     return {
       totalIncome,
       totalExpense,
       netIncome,
-      recordCount: (incomeExpenseRecords || []).filter((record) => {
-        const recordDate = new Date(record.date);
-        return recordDate >= startDate && recordDate <= endDate;
-      }).length,
+      recordCount: recordsInMonth.length,
     };
   };
 
@@ -3856,7 +4016,6 @@ ${errorInfo.stack}
         params.append("search", memoSearchTerm);
       }
 
-      const { apiFetch } = await import("./utils/apiClient");
       const response = await apiFetch(`/api/memos?${params.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -3965,6 +4124,56 @@ ${errorInfo.stack}
     reportApiError(errorInfo, handleErrorReport);
   };
 
+  // 汎用エラー報告コンテンツフォーマット関数
+  const formatGenericErrorReportContent = ({
+    errorType = "エラー",
+    content,
+    userAgent,
+    timestamp,
+    url,
+    statusInfo,
+    methodInfo,
+    message,
+    errorDetails,
+  }: {
+    errorType?: string;
+    content?: string;
+    userAgent: string;
+    timestamp: string;
+    url?: string;
+    statusInfo?: string;
+    methodInfo?: string;
+    message?: string;
+    errorDetails?: string;
+  }) => {
+    return `${errorType}が発生しました。
+
+--- エラー詳細 ---
+${url ? `URL: ${url}\n` : ''}
+${statusInfo ? `${statusInfo}\n` : ''}
+${methodInfo ? `${methodInfo}\n` : ''}
+${message ? `エラー: ${message}\n` : ''}
+${content ? `${content}\n` : ''}
+${errorDetails ? `詳細: ${errorDetails}\n` : ''}
+
+--- システム情報 ---
+User Agent: ${userAgent}
+発生時刻: ${timestamp}`;
+  };
+
+
+  const formatApiErrorReportContent = (errorInfo: Partial<ErrorInfo>) => {
+    const { statusInfo, methodInfo } = formatErrorInfo(errorInfo);
+    return formatGenericErrorReportContent({
+      errorType: "APIエラー",
+      url: errorInfo.url,
+      statusInfo,
+      methodInfo,
+      message: errorInfo.message,
+      userAgent: errorInfo.userAgent ?? "",
+      timestamp: errorInfo.timestamp ?? "",
+    });
+  };
   // SimpleErrorReportingModal用のエラー報告送信処理
   const handleSimpleErrorReport = async (report: {
     title: string;
@@ -3985,7 +4194,12 @@ ${errorInfo.stack}
         },
         body: JSON.stringify({
           title: `[${report.title}] ${new Date().toLocaleString('ja-JP')}`,
-          content: report.content,
+          content: formatGenericErrorReportContent({
+            content: report.content,
+            userAgent: report.userAgent,
+            timestamp: report.timestamp,
+            errorDetails: report.errorDetails,
+          }),
           category: "エラー報告",
           tags: ["エラー", "バグ報告", "システム"],
           isPublic: true,
@@ -4009,6 +4223,82 @@ ${errorInfo.stack}
     }
   };
 
+  // 更新要望送信処理
+  const handleUpdateRequest = async (updateRequest: UpdateRequestData) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      
+      // 更新要望を公開メモとして投稿
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: formatUpdateRequestTitle(updateRequest.title),
+          content: formatUpdateRequestContent(updateRequest),
+          category: "更新要望",
+          tags: getUpdateRequestTags(),
+          isPublic: true,
+          isFamilyOnly: false,
+          isAdminOnly: false,
+          postType: "update_request"
+        }),
+      });
+
+      if (response.ok) {
+        setMessage("更新要望を送信しました。ありがとうございます。");
+        setShowUpdateRequestModal(false);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "更新要望の送信に失敗しました");
+      }
+    } catch (error) {
+      console.error("更新要望送信エラー:", error);
+      setMessage("更新要望の送信に失敗しました。もう一度お試しください。");
+      throw error;
+    }
+  };
+
+  // 不具合報告送信処理
+  const handleBugReport = async (bugReport: BugReportData) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      
+      // 不具合報告を公開メモとして投稿
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: formatBugReportTitle(bugReport.title),
+          content: formatBugReportContent(bugReport),
+          category: "不具合報告",
+          tags: getBugReportTags(),
+          isPublic: true,
+          isFamilyOnly: false,
+          isAdminOnly: false,
+          postType: "error_report"
+        }),
+      });
+
+      if (response.ok) {
+        setMessage("不具合報告を送信しました。ありがとうございます。");
+        setShowBugReportModal(false);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "不具合報告の送信に失敗しました");
+      }
+    } catch (error) {
+      console.error("不具合報告送信エラー:", error);
+      setMessage("不具合報告の送信に失敗しました。もう一度お試しください。");
+      throw error;
+    }
+  };
+
   // エラー報告の送信処理
   const handleErrorReport = async (errorInfo: ApiErrorInfo) => {
     try {
@@ -4023,7 +4313,7 @@ ${errorInfo.stack}
         },
         body: JSON.stringify({
           title: `[エラー報告] API Error - ${errorInfo.status}`,
-          content: `APIエラーが発生しました。\n\n--- エラー詳細 ---\nURL: ${errorInfo.url}\nステータス: ${errorInfo.status} ${errorInfo.statusText}\nメソッド: ${errorInfo.method}\nエラー: ${errorInfo.message}\n\n--- システム情報 ---\nUser Agent: ${errorInfo.userAgent}\n発生時刻: ${errorInfo.timestamp}`,
+          content: formatApiErrorReportContent(errorInfo),
           category: "エラー報告",
           tags: ["エラー", "バグ報告", "システム"],
           isPublic: true,
@@ -5457,7 +5747,14 @@ ${errorInfo.stack}
             setShowFeatureSettings={setShowFeatureSettings}
             loadUserSettings={loadUserSettings}
             isTimeTrackingActive={isTimeTrackingActive}
+            onUpdateRequestClick={() => setShowUpdateRequestModal(true)}
+            onBugReportClick={() => setShowBugReportModal(true)}
           />
+
+          {/* バージョン情報 */}
+          <div className="version-wrapper">
+            <VersionInfo />
+          </div>
 
           {/* 通知コンポーネント */}
           <div className="notification-wrapper">
@@ -6201,17 +6498,7 @@ ${errorInfo.stack}
           isOpen={showErrorModal}
           onClose={() => setShowErrorModal(false)}
           onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
-          errorInfo={currentError ? {
-            message: currentError.message,
-            stack: currentError.stack,
-            filename: (currentError as any).errorInfo?.filename,
-            lineno: (currentError as any).errorInfo?.lineno,
-            colno: (currentError as any).errorInfo?.colno,
-            type: (currentError as any).errorInfo?.type,
-            timestamp: (currentError as any).errorInfo?.timestamp || new Date().toISOString(),
-            userAgent: (currentError as any).errorInfo?.userAgent || navigator.userAgent,
-            url: (currentError as any).errorInfo?.url || window.location.href
-          } : undefined}
+          errorInfo={getErrorInfo(currentError)}
         />
 
         {/* 独立したエラー報告モーダル */}
@@ -6219,17 +6506,21 @@ ${errorInfo.stack}
           isOpen={showSimpleErrorModal}
           onClose={() => setShowSimpleErrorModal(false)}
           onSubmit={handleSimpleErrorReport}
-          errorInfo={currentError ? {
-            message: currentError.message,
-            stack: currentError.stack,
-            filename: (currentError as any).errorInfo?.filename,
-            lineno: (currentError as any).errorInfo?.lineno,
-            colno: (currentError as any).errorInfo?.colno,
-            type: (currentError as any).errorInfo?.type,
-            timestamp: (currentError as any).errorInfo?.timestamp || new Date().toISOString(),
-            userAgent: (currentError as any).errorInfo?.userAgent || navigator.userAgent,
-            url: (currentError as any).errorInfo?.url || window.location.href
-          } : undefined}
+          errorInfo={getErrorInfo(currentError)}
+        />
+
+        {/* 更新要望モーダル */}
+        <UpdateRequestModal
+          isOpen={showUpdateRequestModal}
+          onClose={() => setShowUpdateRequestModal(false)}
+          onSubmit={handleUpdateRequest}
+        />
+
+        {/* 不具合報告モーダル */}
+        <BugReportModal
+          isOpen={showBugReportModal}
+          onClose={() => setShowBugReportModal(false)}
+          onSubmit={handleBugReport}
         />
       </div>
     );
@@ -6255,17 +6546,7 @@ ${errorInfo.stack}
           isOpen={showErrorModal}
           onClose={() => setShowErrorModal(false)}
           onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
-          errorInfo={currentError ? {
-            message: currentError.message,
-            stack: currentError.stack,
-            filename: (currentError as any).errorInfo?.filename,
-            lineno: (currentError as any).errorInfo?.lineno,
-            colno: (currentError as any).errorInfo?.colno,
-            type: (currentError as any).errorInfo?.type,
-            timestamp: (currentError as any).errorInfo?.timestamp || new Date().toISOString(),
-            userAgent: (currentError as any).errorInfo?.userAgent || navigator.userAgent,
-            url: (currentError as any).errorInfo?.url || window.location.href
-          } : undefined}
+          errorInfo={getErrorInfo(currentError)}
         />
     </>
   );

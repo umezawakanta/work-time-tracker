@@ -21,7 +21,10 @@ async function connectToDatabase() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      ...opts,
+      dbName: 'workTimeTracker'
+    }).then((mongoose) => {
       return mongoose;
     });
   }
@@ -39,9 +42,11 @@ async function connectToDatabase() {
 // Notificationモデル
 const NotificationSchema = new mongoose.Schema({
   userId: { type: String, required: true },
+  // 'admin_announcement': General announcements from admins to all users.
+  // 'admin_message': Direct messages from admins to specific users.
   type: { 
     type: String, 
-    enum: ['memo_response', 'status_update', 'admin_message'], 
+    enum: ['memo_response', 'status_update', 'memo_reply', 'admin_announcement', 'admin_message'], 
     required: true 
   },
   title: { type: String, required: true },
@@ -98,9 +103,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Notification ID is required' });
     }
 
+    // ユーザーIDを正しく取得
+    const userId = user.userId || user.id;
+    console.log('Marking notification as read for user:', userId);
+
     // 通知を既読にする
     const notification = await Notification.findOneAndUpdate(
-      { _id: notificationId, userId: user.userId },
+      { _id: notificationId, userId: userId },
       { isRead: true },
       { new: true }
     );
