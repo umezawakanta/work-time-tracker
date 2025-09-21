@@ -2805,7 +2805,7 @@ ${errorInfo.stack}
   };
 
   // 環境変数をbooleanとして解釈するヘルパー関数
-  const envVarIsTrue = (key: string): boolean => process.env[key] === 'true';
+  const isEnvVarTrue = (key: string): boolean => process.env[key] === 'true';
 
   /**
    * 金額を正の値に正規化する
@@ -2819,7 +2819,7 @@ ${errorInfo.stack}
   // デバッグログの出力条件をチェックするヘルパー関数
   const shouldLogBalanceCalculation = () => {
     return process.env.NODE_ENV === 'development' &&
-           envVarIsTrue('REACT_APP_DEBUG_BALANCE_CALCULATION');
+           isEnvVarTrue('REACT_APP_DEBUG_BALANCE_CALCULATION');
   };
 
   // 月間収支を計算する関数
