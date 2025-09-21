@@ -46,24 +46,6 @@ const NotificationDetailModal: React.FC<NotificationDetailModalProps> = ({
     }
   };
 
-  // 通知の種類に応じた色を取得
-  const getNotificationColor = (type: string) => {
-    switch (type) {
-      case 'memo_response':
-        return '#28a745';
-      case 'memo_reply':
-        return '#007bff';
-      case 'status_update':
-        return '#17a2b8';
-      case 'admin_message':
-        return '#ffc107';
-      case 'admin_announcement':
-        return '#dc3545';
-      default:
-        return '#6c757d';
-    }
-  };
-
   // 通知の種類に応じたラベルを取得
   const getNotificationTypeLabel = (type: string) => {
     switch (type) {
