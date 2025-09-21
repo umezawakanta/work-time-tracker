@@ -181,22 +181,37 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     return statsParts.length > 0 ? `\n\n📊 現在の状況: ${statsParts.join('、')}` : '';
   };
   
-  const getSiteDescription = () => {
+  // 基礎テキスト要素を生成するユーティリティ関数
+  const generateBaseTextElements = () => {
     const intro = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
     const features = `${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。`;
     const promise = `ユーザーから要求があった機能をすぐに実装します！`;
     const versionMsg = `\n\n${randomElements.versionMessage}`;
     const latestUpdate = getLatestUpdateInfo();
     const statsText = getStatsText();
-    return `${intro}${features}${promise}${versionMsg}${latestUpdate}${statsText}`;
+    
+    return {
+      intro,
+      features,
+      promise,
+      versionMsg,
+      latestUpdate,
+      statsText
+    };
+  };
+
+  const getSiteDescription = () => {
+    const elements = generateBaseTextElements();
+    return `${elements.intro}${elements.features}${elements.promise}${elements.versionMsg}${elements.latestUpdate}${elements.statsText}`;
   };
 
   const siteDescription = getSiteDescription();
   
   // Twitter用の短縮テキストを生成する関数
   const generateTwitterText = () => {
-    const baseText = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
-    const versionInfo = `\n\n${randomElements.versionMessage}${getLatestUpdateInfo()}${getStatsText()}`;
+    const elements = generateBaseTextElements();
+    const baseText = elements.intro;
+    const versionInfo = `${elements.versionMsg}${elements.latestUpdate}${elements.statsText}`;
     const fullText = `${siteTitle}\n\n${baseText}${versionInfo}\n\n${siteUrl}`;
     
     const maxTwitterLength = 280;
@@ -206,7 +221,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     
     // 文字数制限を超える場合は短縮版を使用
     // Fallback: omit stats and latest update info for brevity
-    const shortVersionInfo = `\n\n${randomElements.versionMessage}`;
+    const shortVersionInfo = elements.versionMsg;
     return `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
   };
   
