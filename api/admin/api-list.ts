@@ -116,9 +116,9 @@ const API_ENDPOINTS = [
 // モックデータ生成（開発・デモ用）
 // 注意: 本番環境では実際のログやメトリクスから取得する必要があります
 const generateMockApiData = () => {
-  // 本番環境ではモックデータを使用しないように警告
+  // 本番環境ではモックデータを使用しないように警告し、返さない
   if (process.env.NODE_ENV === 'production') {
-    console.warn('[API List] Using mock data in production environment. This should be replaced with actual metrics.');
+    throw new Error('[API List] モックデータは本番環境で使用できません。実際のメトリクスデータを取得してください。');
   }
   return API_ENDPOINTS.map((endpoint, index) => {
     // ランダムなステータス生成（デモ用 - 本番では実際のヘルスチェック結果を使用）
