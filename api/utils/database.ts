@@ -115,8 +115,12 @@ const handleError = (res, error, message = 'Internal server error') => {
   });
 };
 
+// Admin-specific database connection (alias for ensureDatabaseConnection)
+const ensureDatabaseConnectionAdmin = initDatabaseConnection;
+
 module.exports = {
   ensureDatabaseConnection: initDatabaseConnection,
+  ensureDatabaseConnectionAdmin: ensureDatabaseConnectionAdmin,
   verifyJWT: verifyJWTToken,
   handleError,
   mongoose: mongooseInstance,

@@ -1,6 +1,43 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { verifyJWT } from '../utils/validation';
-import { ensureDatabaseConnectionAdmin } from '../utils/database';
+// VercelRequest, VercelResponse types are not needed in CommonJS
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+// Database connection utility
+const ensureDatabaseConnection = async () => {
+  const isConnected = mongoose.connection.readyState === 1;
+  if (isConnected) {
+    return;
+  }
+  console.warn('[admin/api-list] Database not connected, attempting to connect...');
+  try {
+    const MONGODB_URI = process.env.MONGODB_URI;
+    if (!MONGODB_URI) {
+      throw new Error("MONGODB_URI environment variable is required but not set.");
+    }
+    
+    if (MONGODB_URI === "memory://") {
+      return;
+    }
+
+    await mongoose.connect(MONGODB_URI, {
+      dbName: 'workTimeTracker',
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 15000,
+      socketTimeoutMS: 45000,
+      bufferCommands: false,
+      connectTimeoutMS: 10000,
+      maxIdleTimeMS: 30000,
+    });
+
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('[admin/api-list] Failed to connect to database:', message);
+    throw new Error(`Database connection failed: ${message}`);
+  }
+};
 
 // APIエンドポイントの定義
 const API_ENDPOINTS = [
@@ -107,19 +144,98 @@ const generateMockApiData = () => {
   });
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+/**
+ * API list response object structure:
+ * @typedef {Object} ApiListResponse
+ * @property {boolean} success
+ * @property {string} message
+ * @property {Array<Object>} [endpoints]
+ * @property {string} endpoints[].id
+ * @property {string} endpoints[].path
+ * @property {string} endpoints[].method
+ * @property {string} endpoints[].description
+ * @property {string} endpoints[].status
+ * @property {string} endpoints[].lastChecked
+ * @property {number} endpoints[].responseTime
+ * @property {number} endpoints[].errorCount
+ * @property {number} endpoints[].successRate
+ * @property {string} [endpoints[].lastError]
+ * @property {Object} [stats]
+ * @property {number} stats.total
+ * @property {number} stats.healthy
+ * @property {number} stats.warning
+ * @property {number} stats.error
+ * @property {number} stats.unknown
+ * @property {number} stats.averageResponseTime
+ * @property {number} stats.totalErrors
+ * @property {number} stats.averageSuccessRate
+ * @property {string} [lastUpdated]
+ * @property {string} [error]
+ */
+
+module.exports = async function handler(req, res) {
+  // CORS設定
+  const origin = req.headers.origin;
+  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
+
+  const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
+  const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
+
+  res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Cache-Control', 'no-store');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    res.status(405).json({
+      success: false,
+      error: 'Method not allowed',
+    } as ApiListResponse);
+    return;
   }
 
   try {
     // データベース接続
-    await ensureDatabaseConnectionAdmin();
+    await ensureDatabaseConnection();
 
     // 管理者認証
-    const user = await verifyJWT(req);
-    if (!user || user.role !== 'admin') {
-      return res.status(401).json({ error: 'Unauthorized' });
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: '認証が必要です',
+        error: 'Authentication required',
+      } as ApiListResponse);
+    }
+
+    // JWTトークンを検証してユーザー情報を取得
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+    let userInfo;
+    try {
+      const token = authHeader.substring(7);
+      const decoded = jwt.verify(token, jwtSecret);
+      userInfo = decoded;
+    } catch (error) {
+      return res.status(401).json({
+        success: false,
+        message: '無効な認証トークンです',
+        error: 'Invalid authentication token',
+      } as ApiListResponse);
+    }
+
+    // 管理者権限の確認
+    if (userInfo.role !== 'admin' || !userInfo.isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: '管理者権限が必要です',
+        error: 'Admin privileges required',
+      } as ApiListResponse);
     }
 
     // API一覧データを生成
@@ -141,15 +257,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       )
     };
 
-    res.status(200).json({
+    const response = {
       success: true,
+      message: 'API一覧を取得しました',
       endpoints: apiEndpoints,
       stats: stats,
       lastUpdated: new Date().toISOString()
-    });
+    };
+
+    res.status(200).json(response);
 
   } catch (error) {
-    console.error('Error in API list endpoint:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('❌ API list error:', error);
+
+    res.status(500).json({
+      success: false,
+      message: 'API一覧取得中にエラーが発生しました',
+      error: process.env.NODE_ENV === 'development'
+        ? (error instanceof Error ? error.message : String(error))
+        : 'Internal server error',
+    } as ApiListResponse);
   }
-}
+};
