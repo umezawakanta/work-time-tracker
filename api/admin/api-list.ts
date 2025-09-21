@@ -115,40 +115,112 @@ const API_ENDPOINTS = [
 
 // 時間関連の定数
 const ONE_HOUR_MS = 60 * 60 * 1000; // 1時間のミリ秒
+const HEALTH_CHECK_TIMEOUT_MS = 5000; // ヘルスチェックのタイムアウト（5秒）
 
-// モックデータ生成（開発・デモ用）
-// 注意: 本番環境では実際のログやメトリクスから取得する必要があります
-const generateMockApiData = () => {
-  // 本番環境ではモックデータを使用しないように警告し、返さない
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('[API List] モックデータは本番環境で使用できません。実際のメトリクスデータを取得してください。');
-  }
-  return API_ENDPOINTS.map((endpoint, index) => {
-    // ランダムなステータス生成（デモ用 - 本番では実際のヘルスチェック結果を使用）
-    const statuses = ['healthy', 'warning', 'error', 'unknown'];
-    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+// 実際のAPIエンドポイントのヘルスチェック
+const checkApiHealth = async (endpoint, method) => {
+  const startTime = Date.now();
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://work-time-tracker-five.vercel.app';
+  
+  // AbortControllerを使用してタイムアウトを設定
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), HEALTH_CHECK_TIMEOUT_MS);
+  
+  try {
+    const response = await fetch(`${baseUrl}${endpoint}`, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      signal: controller.signal
+    });
     
-    // ランダムなエラー数生成（デモ用）
-    const errorCount = Math.floor(Math.random() * 10);
+    clearTimeout(timeoutId);
+
+    const responseTime = Date.now() - startTime;
     
-    // 成功率計算（デモ用 - 本番では実際の統計から計算）
-    const successRate = Math.max(0, 100 - (errorCount * 10) - Math.floor(Math.random() * 20));
+    let status = 'healthy';
     
-    // 応答時間生成（デモ用）
-    const responseTime = Math.floor(Math.random() * 500) + 50;
+    if (response.status >= 500) {
+      status = 'error';
+    } else if (response.status >= 400) {
+      status = 'warning';
+    } else if (responseTime > 2000) {
+      status = 'warning';
+    }
+
+    return {
+      endpoint,
+      method,
+      status,
+      responseTime,
+      statusCode: response.status,
+      lastChecked: new Date().toISOString()
+    };
+
+  } catch (error) {
+    clearTimeout(timeoutId);
+    const responseTime = Date.now() - startTime;
     
     return {
-      id: `api-${index + 1}`,
-      path: endpoint.path,
-      method: endpoint.method,
-      description: endpoint.description,
-      status: randomStatus,
-      lastChecked: new Date(Date.now() - Math.floor(Math.random() * ONE_HOUR_MS)).toISOString(), // 過去1時間以内（デモ用）
-      responseTime: responseTime,
-      errorCount: errorCount,
-      successRate: successRate,
-      lastError: errorCount > 0 ? `エラー例: ${endpoint.path}で${Math.floor(Math.random() * 5) + 1}件のエラーが発生（デモ用）` : undefined
+      endpoint,
+      method,
+      status: 'error',
+      responseTime,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      lastChecked: new Date().toISOString()
     };
+  }
+};
+
+// 実際のメトリクスデータを取得
+const getRealApiMetrics = async () => {
+  // 主要なAPIエンドポイントのみをチェック（認証が必要なエンドポイントは除外）
+  const checkableEndpoints = API_ENDPOINTS.filter(endpoint => 
+    !endpoint.path.includes('/admin/') && 
+    !endpoint.path.includes('/auth/') &&
+    endpoint.method === 'GET'
+  );
+
+  // 並列でヘルスチェックを実行
+  const healthCheckPromises = checkableEndpoints.map(({ path, method }) => 
+    checkApiHealth(path, method)
+  );
+
+  const results = await Promise.all(healthCheckPromises);
+
+  // 結果をAPI一覧形式に変換
+  return API_ENDPOINTS.map((endpoint, index) => {
+    const healthResult = results.find(r => r.endpoint === endpoint.path && r.method === endpoint.method);
+    
+    if (healthResult) {
+      return {
+        id: `api-${index + 1}`,
+        path: endpoint.path,
+        method: endpoint.method,
+        description: endpoint.description,
+        status: healthResult.status,
+        lastChecked: healthResult.lastChecked,
+        responseTime: healthResult.responseTime,
+        errorCount: healthResult.status === 'error' ? 1 : 0,
+        successRate: healthResult.status === 'healthy' ? 100 : healthResult.status === 'warning' ? 80 : 0,
+        lastError: healthResult.error || undefined
+      };
+    } else {
+      // チェックできなかったエンドポイントはunknownとして扱う
+      return {
+        id: `api-${index + 1}`,
+        path: endpoint.path,
+        method: endpoint.method,
+        description: endpoint.description,
+        status: 'unknown',
+        lastChecked: new Date().toISOString(),
+        responseTime: 0,
+        errorCount: 0,
+        successRate: 0,
+        lastError: undefined
+      };
+    }
   });
 };
 
@@ -246,8 +318,8 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // API一覧データを生成
-    const apiEndpoints = generateMockApiData();
+    // 実際のメトリクスデータを取得
+    const apiEndpoints = await getRealApiMetrics();
 
     // 統計情報を計算
     const stats = {
