@@ -15,7 +15,7 @@ const EXPENSE_KEYWORDS = [
 const NON_JAPANESE_OR_LATIN_CHAR_CLASS = '[^一-龠ぁ-んァ-ンa-zA-Z0-9]';
 const EXPENSE_KEYWORD_PATTERNS = EXPENSE_KEYWORDS.map(keyword => {
   const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(`(?:^|${NON_JAPANESE_OR_LATIN_CHAR_CLASS})${escapedKeyword}(?:${NON_JAPANESE_OR_LATIN_CHAR_CLASS}|$)`);
+  return new RegExp(`${escapedKeyword}`, 'u');
 });
 
 /**
