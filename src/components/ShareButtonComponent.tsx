@@ -6,6 +6,20 @@ interface ShareButtonComponentProps {
   className?: string;
 }
 
+// バージョン紹介文言の配列（コンポーネント外で定義）
+const versionMessages = [
+  `最新バージョン${APP_VERSION}で更新要望・不具合報告機能を追加！`,
+  `v${APP_VERSION}でユーザビリティが大幅に向上しました！`,
+  `新機能満載のv${APP_VERSION}をぜひお試しください！`,
+  `v${APP_VERSION}でエラーハンドリングが改善されました！`,
+  `最新アップデートv${APP_VERSION}でより使いやすく！`,
+  `v${APP_VERSION}で新機能と改善が追加されました！`,
+  `最新版v${APP_VERSION}でパフォーマンスが向上！`,
+  `v${APP_VERSION}でコード品質が大幅に改善されました！`,
+  `新バージョンv${APP_VERSION}で機能が充実！`,
+  `v${APP_VERSION}でユーザーエクスペリエンスが向上！`
+];
+
 const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [randomElements, setRandomElements] = useState(() => generateRandomElements());
@@ -94,7 +108,7 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   useEffect(() => {
     loadStats();
   }, []);
-  
+
   // ランダムな要素を生成する関数
   function generateRandomElements() {
     const adjectives = ['可愛い', '素敵な', '楽しい', '便利な', '効率的な', '魅力的な', '実用的な', '革新的な', '優しい', '親しみやすい', '頼もしい', '面白い', '素晴らしい', '驚きの', '特別な', 'ユニークな'];
@@ -109,12 +123,16 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     const randomFeatures = features.sort(() => 0.5 - Math.random()).slice(0, 3);
     const randomBenefit = benefits[Math.floor(Math.random() * benefits.length)];
     
+    // バージョン紹介文言を動的に生成（メモ化された配列を使用）
+    const randomVersionMessage = versionMessages[Math.floor(Math.random() * versionMessages.length)];
+    
     return {
       adjective: randomAdjective,
       character: randomCharacter,
       activity: randomActivity,
       features: randomFeatures,
-      benefit: randomBenefit
+      benefit: randomBenefit,
+      versionMessage: randomVersionMessage
     };
   }
 
@@ -123,7 +141,9 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
   // 最新の更新履歴を取得
   const getLatestUpdateInfo = () => {
     const latestChangelog = getLatestChangelog();
-    if (!latestChangelog) return '';
+    if (!latestChangelog) {
+      return '';
+    }
     
     const typeLabels = {
       bugfix: "🐛 バグ修正",
@@ -162,17 +182,30 @@ const ShareButtonComponent: React.FC<ShareButtonComponentProps> = ({ className =
     return statsParts.length > 0 ? `\n\n📊 現在の状況: ${statsParts.join('、')}` : '';
   };
   
-  const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！${getLatestUpdateInfo()}${getStatsText()}`;
+  // 動的に変化する部分は都度計算
+  const latestUpdate = getLatestUpdateInfo();
+  const statsText = getStatsText();
+
+  const siteDescription = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${randomElements.features.join('、')}など、${randomElements.benefit}をサポートします。ユーザーから要求があった機能をすぐに実装します！\n\n${randomElements.versionMessage}${latestUpdate}${statsText}`;
   
-  // Twitter用の短縮テキスト（280文字制限を考慮）
-  const twitterText = `${siteTitle}\n\n${siteDescription}\n\n${siteUrl}`;
-  const twitterTextLength = twitterText.length;
+  // Twitter用の短縮テキストを生成する関数
+  const generateTwitterText = () => {
+    const baseText = `${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。`;
+    const versionInfo = `\n\n${randomElements.versionMessage}${latestUpdate}${statsText}`;
+    const fullText = `${siteTitle}\n\n${baseText}${versionInfo}\n\n${siteUrl}`;
+    
+    const maxTwitterLength = 280;
+    if (fullText.length <= maxTwitterLength) {
+      return fullText;
+    }
+    
+    // 文字数制限を超える場合は短縮版を使用
+    // Fallback prioritization: If the character limit is exceeded, omit stats and latest update info, but always keep the version message, as it is the most important update for users.
+    const shortVersionInfo = `\n\n${randomElements.versionMessage}`;
+    return `${siteTitle}\n\n${baseText}${shortVersionInfo}\n\n${siteUrl}`;
+  };
   
-  // 文字数制限をチェックして必要に応じて短縮
-  const maxTwitterLength = 280;
-  const finalTwitterText = twitterTextLength > maxTwitterLength 
-    ? `${siteTitle}\n\n${randomElements.adjective}${randomElements.character}と一緒に${randomElements.activity}ができるWebアプリです。${getLatestUpdateInfo()}${getStatsText()}\n\n${siteUrl}`
-    : twitterText;
+  const finalTwitterText = generateTwitterText();
 
   const shareData = {
     title: siteTitle,
