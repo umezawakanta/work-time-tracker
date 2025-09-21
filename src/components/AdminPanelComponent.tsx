@@ -197,7 +197,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'email' | 'role' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors' | 'testresults' | 'announcements' | 'apilist'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'sourcecode' | 'errorreports' | 'updaterequests' | 'lintererrors' | 'testresults' | 'announcements' | 'apilist' | 'responses'>('users');
   const [errorReports, setErrorReports] = useState<any[]>([]);
   const [errorReportsLoading, setErrorReportsLoading] = useState(false);
   const [errorReportsError, setErrorReportsError] = useState<string | null>(null);
@@ -895,6 +895,14 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
               {apiErrorCount > 0 && (
                 <span className="error-count-badge">{apiErrorCount}</span>
               )}
+            </button>
+            <button
+              className={`admin-tab ${activeTab === 'responses' ? 'active' : ''}`}
+              onClick={() => setActiveTab('responses')}
+              title="返信管理"
+            >
+              <i className="bi bi-reply"></i>
+              返信管理
             </button>
           </div>
 
@@ -1621,39 +1629,39 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                 <ApiListComponent />
               </div>
             )}
+
+            {/* 返信管理タブ */}
+            {activeTab === 'responses' && (
+              <div className="tab-pane">
+                <div className="tab-header">
+                  <h3>
+                    <i className="bi bi-reply"></i>
+                    返信管理
+                  </h3>
+                  <div className="response-counts">
+                    <span className="count-item">
+                      <i className="bi bi-bug"></i>
+                      不具合報告: {errorReports?.filter((report: any) => report.postType === 'error_report').length || 0}件
+                    </span>
+                    <span className="count-item">
+                      <i className="bi bi-lightbulb"></i>
+                      更新要望: {updateRequests?.filter((request: any) => request.postType === 'update_request').length || 0}件
+                    </span>
+                  </div>
+                  <button
+                    className="toggle-response-button"
+                    onClick={() => setShowResponseModal(!showResponseModal)}
+                    title={showResponseModal ? '返信フォームを閉じる' : '返信フォームを開く'}
+                  >
+                    <i className={`bi ${showResponseModal ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
+                    {showResponseModal ? '閉じる' : '開く'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
-
-      {/* 返信ヘッダー */}
-      <div className="response-header">
-        <div className="response-header-content">
-          <div className="response-info">
-            <h3>
-              <i className="bi bi-reply"></i>
-              返信管理
-            </h3>
-            <div className="response-counts">
-              <span className="count-item">
-                <i className="bi bi-bug"></i>
-                不具合報告: {errorReports?.filter((report: any) => report.postType === 'error_report').length || 0}件
-              </span>
-              <span className="count-item">
-                <i className="bi bi-lightbulb"></i>
-                更新要望: {updateRequests?.filter((request: any) => request.postType === 'update_request').length || 0}件
-              </span>
-            </div>
-          </div>
-          <button
-            className="toggle-response-button"
-            onClick={() => setShowResponseModal(!showResponseModal)}
-            title={showResponseModal ? '返信フォームを閉じる' : '返信フォームを開く'}
-          >
-            <i className={`bi ${showResponseModal ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
-            {showResponseModal ? '閉じる' : '開く'}
-          </button>
-        </div>
-      </div>
 
       {/* 返信フォームモーダル */}
       <ResponseFormModal
