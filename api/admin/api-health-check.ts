@@ -45,7 +45,8 @@ const ensureDatabaseConnection = async () => {
 // 実際のAPIエンドポイントのヘルスチェック
 const checkApiHealth = async (endpoint, method) => {
   const startTime = Date.now();
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  // Use the same fallback URL as in api-list.ts for consistency
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.example.com';
   
   // AbortControllerを使用してタイムアウトを設定
   const controller = new AbortController();
