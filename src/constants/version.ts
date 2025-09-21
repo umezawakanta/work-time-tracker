@@ -28,7 +28,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   },
   {
     version: "1.0.6",
-    date: "2025-01-21",
+    date: "2024-12-19",
     changes: [
       "シェア機能にバージョン紹介文言を追加（10種類のランダムメッセージ）",
       "Twitter用短縮テキスト生成ロジックを関数化して可読性を向上",
