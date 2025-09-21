@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -40,7 +41,7 @@ const UserSettingsSchema = new mongoose.Schema({
 
 const UserSettings = mongoose.models.UserSettings || mongoose.model('UserSettings', UserSettingsSchema);
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
     ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin) ? req.headers.origin : 'https://work-time-tracker-five.vercel.app'
@@ -56,17 +57,30 @@ export default async function handler(req, res) {
 
   await connectDB();
 
+  // 認証処理
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({
+      success: false,
+      message: '認証が必要です'
+    });
+  }
+
   try {
+    const token = authHeader.substring(7);
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+    const decoded = jwt.verify(token, jwtSecret);
+    const userId = decoded.userId || decoded.id;
+
+    if (!userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'ユーザーIDが取得できませんでした' 
+      });
+    }
+
     if (req.method === 'GET') {
       // ユーザー設定を取得
-      const { userId } = req.query;
-      
-      if (!userId) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'ユーザーIDが必要です' 
-        });
-      }
 
       let settings = await UserSettings.findOne({ userId });
       
@@ -83,14 +97,7 @@ export default async function handler(req, res) {
 
     } else if (req.method === 'PUT') {
       // ユーザー設定を更新
-      const { userId, featureOrder, hiddenFeatures } = req.body;
-
-      if (!userId) {
-        return res.status(400).json({
-          success: false,
-          message: 'ユーザーIDが必要です'
-        });
-      }
+      const { featureOrder, hiddenFeatures } = req.body;
 
       const updateData = {
         updatedAt: new Date()
