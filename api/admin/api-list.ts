@@ -123,9 +123,6 @@ const checkApiHealth = async (endpoint, method) => {
   const startTime = Date.now();
   const baseUrl = process.env.API_URL || 'http://localhost:3000';
   
-  if (!baseUrl) {
-    throw new Error('Base URL for API health check is not configured. Please set API_URL in your environment or ensure http://localhost:3000 is accessible.');
-  }
   // AbortControllerを使用してタイムアウトを設定
   const { controller, timeoutId } = createHealthCheckController();
   
