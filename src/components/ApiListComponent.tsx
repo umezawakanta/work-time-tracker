@@ -237,7 +237,7 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
           <label>並び順:</label>
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
+            onChange={(e) => setSortBy(e.target.value as 'path' | 'status' | 'lastChecked' | 'errorCount')}
             title="並び順選択"
           >
             <option value="path">パス</option>
