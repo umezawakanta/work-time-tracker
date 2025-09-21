@@ -25,6 +25,7 @@ interface HeaderComponentProps {
   setShowFeatureSettings: (show: boolean) => void;
   loadUserSettings: () => void;
   isTimeTrackingActive: boolean;
+  onUpdateRequestClick: () => void;
 }
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
@@ -41,6 +42,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   setShowFeatureSettings,
   loadUserSettings,
   isTimeTrackingActive,
+  onUpdateRequestClick,
 }) => {
   return (
     <header className="dashboard-header">
@@ -92,9 +94,17 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
         </div>
       </div>
 
-      {/* 右上固定：シェアボタンとログアウトボタン */}
+      {/* 右上固定：シェアボタン、更新要望ボタン、ログアウトボタン */}
       <div className="header-top-right">
         <ShareButtonComponent />
+        <button
+          onClick={onUpdateRequestClick}
+          className="update-request-button"
+          title="更新要望を送信"
+        >
+          <i className="bi bi-lightbulb"></i>
+          <span>更新要望</span>
+        </button>
         <LogoutButtonComponent onLogout={handleLogout} />
       </div>
 

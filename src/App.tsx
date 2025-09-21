@@ -41,6 +41,7 @@ import {
 import LanguageFontSettings from "./components/LanguageFontSettings";
 import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
 import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
+import UpdateRequestModal from "./components/UpdateRequestModal";
 import { setErrorReportCallback, reportApiError } from "./utils/apiClient";
 
 import type {
@@ -93,6 +94,9 @@ function App() {
   const [currentError, setCurrentError] = useState<Error | null>(null);
   const [showSimpleErrorModal, setShowSimpleErrorModal] = useState(false);
   const [errorModalButtonPosition, setErrorModalButtonPosition] = useState<{ x: number; y: number } | undefined>(undefined);
+
+  // 更新要望関連の状態
+  const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false);
 
   // 各機能のローディング状態（LoadingStateManagerで管理）
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
@@ -4205,6 +4209,49 @@ User Agent: ${userAgent}
     }
   };
 
+  // 更新要望送信処理
+  const handleUpdateRequest = async (updateRequest: {
+    title: string;
+    content: string;
+    category: string;
+    priority: string;
+  }) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      
+      // 更新要望を公開メモとして投稿
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: `[更新要望] ${updateRequest.title}`,
+          content: `**カテゴリ:** ${updateRequest.category}\n**優先度:** ${updateRequest.priority}\n\n**詳細内容:**\n${updateRequest.content}`,
+          category: "更新要望",
+          tags: ["更新要望", "改善提案", "フィードバック"],
+          isPublic: true,
+          isFamilyOnly: false,
+          isAdminOnly: false,
+          postType: "update_request"
+        }),
+      });
+
+      if (response.ok) {
+        setMessage("更新要望を送信しました。ありがとうございます。");
+        setShowUpdateRequestModal(false);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "更新要望の送信に失敗しました");
+      }
+    } catch (error) {
+      console.error("更新要望送信エラー:", error);
+      setMessage("更新要望の送信に失敗しました。もう一度お試しください。");
+      throw error;
+    }
+  };
+
   // エラー報告の送信処理
   const handleErrorReport = async (errorInfo: ApiErrorInfo) => {
     try {
@@ -5653,6 +5700,7 @@ User Agent: ${userAgent}
             setShowFeatureSettings={setShowFeatureSettings}
             loadUserSettings={loadUserSettings}
             isTimeTrackingActive={isTimeTrackingActive}
+            onUpdateRequestClick={() => setShowUpdateRequestModal(true)}
           />
 
           {/* バージョン情報 */}
@@ -6411,6 +6459,13 @@ User Agent: ${userAgent}
           onClose={() => setShowSimpleErrorModal(false)}
           onSubmit={handleSimpleErrorReport}
           errorInfo={getErrorInfo(currentError)}
+        />
+
+        {/* 更新要望モーダル */}
+        <UpdateRequestModal
+          isOpen={showUpdateRequestModal}
+          onClose={() => setShowUpdateRequestModal(false)}
+          onSubmit={handleUpdateRequest}
         />
       </div>
     );
