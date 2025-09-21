@@ -7,6 +7,12 @@ const EXPENSE_KEYWORDS = [
   '通信費', '水道光熱費', 'ガソリン代', '駐車場代'
 ];
 
+// 事前にコンパイルした正規表現パターンをキャッシュ
+const EXPENSE_KEYWORD_PATTERNS = EXPENSE_KEYWORDS.map(keyword => {
+  const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`(?:^|[^一-龠ぁ-んァ-ンa-zA-Z0-9])${escapedKeyword}(?:[^一-龠ぁ-んァ-ンa-zA-Z0-9]|$)`);
+});
+
 /**
  * 記録のメモと金額から収入/支出のタイプを判定する
  * @param {Object} record - 記録オブジェクト
@@ -19,14 +25,8 @@ function determineIncomeExpenseType(record) {
   
     // メモの内容から支出を判定
     if (record.notes) {
-      // 支出を示すキーワードをチェック（日本語なので大文字小文字の区別なし）
-      if (EXPENSE_KEYWORDS.some(keyword => {
-        // 正規表現でキーワードが単語境界または前後が非日本語文字の場合のみ一致
-        // 特殊文字をエスケープしてから正規表現を作成
-        const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const pattern = new RegExp(`(?:^|[^一-龠ぁ-んァ-ンa-zA-Z0-9])${escapedKeyword}(?:[^一-龠ぁ-んァ-ンa-zA-Z0-9]|$)`);
-        return pattern.test(record.notes);
-      })) {
+      // 事前にコンパイルした正規表現パターンを使用してキーワードをチェック
+      if (EXPENSE_KEYWORD_PATTERNS.some(pattern => pattern.test(record.notes))) {
         newType = 'expense';
       }
     }
