@@ -41,16 +41,6 @@ export const createUserIdParam = (userId: string | undefined | null, paramName: 
   return { [paramName]: userId };
 };
 
-/**
- * ユーザーIDパラメータを検証し、無効な場合はエラーを投げる
- * @param userId ユーザーID
- * @param paramName パラメータ名（デフォルト: 'userId'）
- * @returns 検証済みのユーザーIDパラメータオブジェクト
- * @throws Error ユーザーIDが無効な場合
- */
-export const createValidatedUserIdParam = (userId: string | undefined | null, paramName: string = 'userId'): Record<string, string> => {
-  return createUserIdParam(userId, paramName);
-};
 
 /**
  * IDパラメータを検証してからURLパラメータに追加する
