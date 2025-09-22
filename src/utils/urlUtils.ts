@@ -36,9 +36,25 @@ export const buildApiUrl = (endpoint: string, params: Record<string, string | nu
  */
 export const createUserIdParam = (userId: string | undefined | null, paramName: string = 'userId'): Record<string, string> => {
   if (!userId || typeof userId !== 'string') {
-    throw new Error('User ID is required but not provided');
+    console.warn('User ID is required but not provided, returning empty object');
+    return {};
   }
   return { [paramName]: userId };
+};
+
+/**
+ * ユーザーIDパラメータを検証し、無効な場合はエラーを投げる
+ * @param userId ユーザーID
+ * @param paramName パラメータ名（デフォルト: 'userId'）
+ * @returns 検証済みのユーザーIDパラメータオブジェクト
+ * @throws Error ユーザーIDが無効な場合
+ */
+export const createValidatedUserIdParam = (userId: string | undefined | null, paramName: string = 'userId'): Record<string, string> => {
+  const userIdParam = createUserIdParam(userId, paramName);
+  if (Object.keys(userIdParam).length === 0) {
+    throw new Error('User ID is required but not provided');
+  }
+  return userIdParam;
 };
 
 /**

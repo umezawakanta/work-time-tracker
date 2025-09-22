@@ -24,7 +24,7 @@ import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './
 import type { ApiErrorInfo } from './utils/apiErrorHandler';
 // Static import for apiFetch - used frequently throughout the application
 import { apiFetch } from './utils/apiClient';
-import { buildApiUrl, createUserIdParam, createIdParam } from './utils/urlUtils';
+import { buildApiUrl, createUserIdParam, createValidatedUserIdParam, createIdParam } from './utils/urlUtils';
 import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
@@ -1967,11 +1967,13 @@ ${errorInfo.stack}
     setDiaryLoading(true);
     try {
       if (!user?.id) {
+        console.warn('User ID not available, skipping work diaries load');
         return;
       }
 
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
-        const url = buildApiUrl('/api/work-records/diary', createUserIdParam(user.id));
+        const userIdParam = createValidatedUserIdParam(user.id);
+        const url = buildApiUrl('/api/work-records/diary', userIdParam);
         return await apiFetch(url, {
           method: "GET",
           headers: createAuthHeaders(token)
@@ -2032,13 +2034,20 @@ ${errorInfo.stack}
 
   const loadWorkDiariesWithUserId = async (userId: string) => {
     try {
+      if (!userId) {
+        console.warn('User ID not provided, skipping work diaries load');
+        return;
+      }
+
       const token = localStorage.getItem('access_token');
       if (!token) {
         console.log('アクセストークンがありません');
         return;
       }
 
-      const response = await fetch(`/api/work-records/diary`, {
+      const userIdParam = createValidatedUserIdParam(userId);
+      const url = buildApiUrl('/api/work-records/diary', userIdParam);
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.0.8";
+export const APP_VERSION = "1.0.9";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,21 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.0.9",
+    date: "2024-12-22",
+    changes: [
+      "work-records/diary APIの400エラーを修正（ログアウト後のログイン時）",
+      "createUserIdParam関数でのuserId検証処理を改善",
+      "JWT認証のセキュリティを強化（トークン検証、有効期限チェック）",
+      "認証の優先順位を修正（JWT認証を優先、フォールバック制限）",
+      "型安全性の向上（JWTPayloadインターフェースの定義）",
+      "コードの重複を解消（createValidatedUserIdParamヘルパー関数）",
+      "APIエンドポイントでの適切なエラーレスポンス（401 Unauthorized）",
+      "ランタイムエラーの防止とセキュリティ向上"
+    ],
+    type: "bugfix"
+  },
   {
     version: "1.0.8",
     date: "2024-12-22",
