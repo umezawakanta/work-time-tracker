@@ -1304,7 +1304,7 @@ ${errorInfo.stack}
           errorMessage.includes('Unauthorized') ||
           errorMessage.includes('404') ||
           errorMessage.includes('Not Found') ||
-          errorMessage.includes('api.github.com') ||
+          /api\.github\.com/.test(errorMessage) ||
           errorMessage.includes('SourceCodeViewer')) {
         
         const errorInfo = {
@@ -1468,7 +1468,7 @@ ${errorInfo.stack}
                              errorMessage.includes('Unauthorized') ||
                              errorMessage.includes('404') ||
                              errorMessage.includes('Not Found') ||
-                             errorMessage.includes('api.github.com') ||
+                             /api\.github\.com/.test(errorMessage) ||
                              errorMessage.includes('SourceCodeViewer');
       
       if (shouldShowModal) {
@@ -4455,7 +4455,7 @@ User Agent: ${userAgent}
                            errorMessage.includes('Unauthorized') ||
                            errorMessage.includes('404') ||
                            errorMessage.includes('Not Found') ||
-                           errorMessage.includes('api.github.com') ||
+                           /api\.github\.com/.test(errorMessage) ||
                            errorMessage.includes('SourceCodeViewer');
     
     if (shouldShowModal) {
