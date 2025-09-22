@@ -1,7 +1,7 @@
 {
   "name": "work-time-tracker",
   "private": true,
-  "version": "1.0.9",
+  "version": "1.0.10",
   "packageManager": "pnpm@10.15.1",
   "engines": {
     "node": ">=20.0.0 <21.0.0",

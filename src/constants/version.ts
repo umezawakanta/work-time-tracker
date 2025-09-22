@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.0.9";
+export const APP_VERSION = "1.0.10";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,19 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.0.10",
+    date: "2024-12-22",
+    changes: [
+      "セキュリティ修正：URL部分文字列サニタイゼーションの問題を解決",
+      "CodeQLのHighレベルセキュリティアラートを修正",
+      "errorMessage.includes('api.github.com')を正規表現に変更",
+      "より安全なURL検証方法を実装",
+      "セキュリティポリシーファイル（SECURITY.md）を追加",
+      "GitHubのセキュリティ機能との連携を強化"
+    ],
+    type: "bugfix"
+  },
   {
     version: "1.0.9",
     date: "2024-12-22",
