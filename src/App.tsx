@@ -1973,9 +1973,6 @@ ${errorInfo.stack}
 
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
         const userIdParam = createUserIdParam(user.id);
-        if (Object.keys(userIdParam).length === 0) {
-          throw new Error('User ID is required but not provided');
-        }
         const url = buildApiUrl('/api/work-records/diary', userIdParam);
         return await apiFetch(url, {
           method: "GET",
