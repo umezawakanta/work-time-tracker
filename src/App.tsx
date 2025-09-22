@@ -24,7 +24,7 @@ import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './
 import type { ApiErrorInfo } from './utils/apiErrorHandler';
 // Static import for apiFetch - used frequently throughout the application
 import { apiFetch } from './utils/apiClient';
-import { buildApiUrl, createUserIdParam, createIdParam } from './utils/urlUtils';
+import { buildApiUrl, createUserIdParam, createValidatedUserIdParam, createIdParam } from './utils/urlUtils';
 import EggTimerComponent from "./components/EggTimerComponent";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
@@ -1972,7 +1972,7 @@ ${errorInfo.stack}
       }
 
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
-        const userIdParam = createUserIdParam(user.id);
+        const userIdParam = createValidatedUserIdParam(user.id);
         const url = buildApiUrl('/api/work-records/diary', userIdParam);
         return await apiFetch(url, {
           method: "GET",
@@ -2045,10 +2045,7 @@ ${errorInfo.stack}
         return;
       }
 
-      const userIdParam = createUserIdParam(userId);
-      if (Object.keys(userIdParam).length === 0) {
-        throw new Error('User ID is required but not provided');
-      }
+      const userIdParam = createValidatedUserIdParam(userId);
       const url = buildApiUrl('/api/work-records/diary', userIdParam);
       const response = await fetch(url, {
         headers: {
