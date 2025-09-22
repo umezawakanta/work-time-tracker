@@ -55,6 +55,13 @@ const verifyJWT = (req: JWTRequest): JWTPayload | null => {
   }
 
   const token = authHeader.substring(7);
+  
+  // トークンの基本検証
+  if (!token || token.length === 0) {
+    console.error('Empty or malformed token');
+    return null;
+  }
+
   try {
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
@@ -67,6 +74,18 @@ const verifyJWT = (req: JWTRequest): JWTPayload | null => {
     // 型安全性のための検証
     if (!decoded || typeof decoded !== 'object' || !decoded.id) {
       console.error('Invalid JWT payload structure');
+      return null;
+    }
+
+    // トークンの有効期限をチェック
+    if (decoded.exp && decoded.exp < Math.floor(Date.now() / 1000)) {
+      console.error('JWT token has expired');
+      return null;
+    }
+
+    // 必須フィールドの検証
+    if (!decoded.email || !decoded.role) {
+      console.error('JWT payload missing required fields');
       return null;
     }
     
@@ -98,21 +117,25 @@ export default async function handler(req, res) {
       // 日記一覧を取得
       const { userId, isPrivate } = req.query;
       
-      // JWT認証からユーザーIDを取得（フォールバック）
-      let actualUserId = userId;
-      if (!actualUserId) {
-        const user = verifyJWT(req);
-        if (user && user.id) {
-          actualUserId = user.id;
-          console.log('User ID obtained from JWT token:', actualUserId);
-        }
+      // セキュリティのため、JWT認証を優先してユーザーIDを取得
+      const user = verifyJWT(req);
+      let actualUserId = null;
+      
+      if (user && user.id) {
+        // JWT認証が成功した場合、JWTのユーザーIDを使用
+        actualUserId = user.id;
+        console.log('User ID obtained from JWT token:', actualUserId);
+      } else if (userId) {
+        // JWT認証が失敗した場合のみ、クエリパラメータをフォールバックとして使用
+        console.warn('JWT authentication failed, falling back to query parameter');
+        actualUserId = userId;
       }
       
       if (!actualUserId) {
-        console.warn('User ID not provided in query parameters or JWT token');
-        return res.status(400).json({ 
+        console.warn('User ID not available from JWT token or query parameters');
+        return res.status(401).json({ 
           success: false, 
-          message: 'ユーザーIDが必要です' 
+          message: '認証が必要です' 
         });
       }
 
@@ -135,14 +158,18 @@ export default async function handler(req, res) {
       // 新しい日記を作成
       const { userId, date, title, content, mood, tags, isPrivate } = req.body;
 
-      // JWT認証からユーザーIDを取得（フォールバック）
-      let actualUserId = userId;
-      if (!actualUserId) {
-        const user = verifyJWT(req);
-        if (user && user.id) {
-          actualUserId = user.id;
-          console.log('User ID obtained from JWT token for POST:', actualUserId);
-        }
+      // セキュリティのため、JWT認証を優先してユーザーIDを取得
+      const user = verifyJWT(req);
+      let actualUserId = null;
+      
+      if (user && user.id) {
+        // JWT認証が成功した場合、JWTのユーザーIDを使用
+        actualUserId = user.id;
+        console.log('User ID obtained from JWT token for POST:', actualUserId);
+      } else if (userId) {
+        // JWT認証が失敗した場合のみ、リクエストボディのユーザーIDをフォールバックとして使用
+        console.warn('JWT authentication failed for POST, falling back to request body');
+        actualUserId = userId;
       }
 
       if (!actualUserId || !date || !title || !content) {
@@ -185,14 +212,18 @@ export default async function handler(req, res) {
         });
       }
 
-      // JWT認証からユーザーIDを取得（フォールバック）
-      let actualUserId = userId;
-      if (!actualUserId) {
-        const user = verifyJWT(req);
-        if (user && user.id) {
-          actualUserId = user.id;
-          console.log('User ID obtained from JWT token for PUT:', actualUserId);
-        }
+      // セキュリティのため、JWT認証を優先してユーザーIDを取得
+      const user = verifyJWT(req);
+      let actualUserId = null;
+      
+      if (user && user.id) {
+        // JWT認証が成功した場合、JWTのユーザーIDを使用
+        actualUserId = user.id;
+        console.log('User ID obtained from JWT token for PUT:', actualUserId);
+      } else if (userId) {
+        // JWT認証が失敗した場合のみ、リクエストボディのユーザーIDをフォールバックとして使用
+        console.warn('JWT authentication failed for PUT, falling back to request body');
+        actualUserId = userId;
       }
 
       const updateData: any = {
@@ -256,14 +287,18 @@ export default async function handler(req, res) {
         });
       }
 
-      // JWT認証からユーザーIDを取得（フォールバック）
-      let actualUserId = userId;
-      if (!actualUserId) {
-        const user = verifyJWT(req);
-        if (user && user.id) {
-          actualUserId = user.id;
-          console.log('User ID obtained from JWT token for DELETE:', actualUserId);
-        }
+      // セキュリティのため、JWT認証を優先してユーザーIDを取得
+      const user = verifyJWT(req);
+      let actualUserId = null;
+      
+      if (user && user.id) {
+        // JWT認証が成功した場合、JWTのユーザーIDを使用
+        actualUserId = user.id;
+        console.log('User ID obtained from JWT token for DELETE:', actualUserId);
+      } else if (userId) {
+        // JWT認証が失敗した場合のみ、クエリパラメータのユーザーIDをフォールバックとして使用
+        console.warn('JWT authentication failed for DELETE, falling back to query parameter');
+        actualUserId = userId;
       }
 
       // ユーザーIDが提供されている場合は、そのユーザーの日記のみ削除可能にする
