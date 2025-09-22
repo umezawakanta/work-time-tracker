@@ -45,7 +45,11 @@ const verifyJWT = (req: JWTRequest) => {
 
   const token = authHeader.substring(7);
   try {
-    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      console.error('JWT_SECRET environment variable is not set. Refusing to verify JWT.');
+      return null;
+    }
     return jwt.verify(token, jwtSecret);
   } catch (error) {
     console.error('JWT verification failed:', error);
