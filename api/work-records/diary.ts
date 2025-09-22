@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
-
 // データベース接続
 const connectDB = async () => {
   try {
