@@ -36,7 +36,8 @@ const WorkDiarySchema = new mongoose.Schema({
 const WorkDiary = mongoose.models.WorkDiary || mongoose.model('WorkDiary', WorkDiarySchema);
 
 // JWT認証ヘルパー関数
-const verifyJWT = (req) => {
+type JWTRequest = { headers: { authorization?: string } };
+const verifyJWT = (req: JWTRequest) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return null;
