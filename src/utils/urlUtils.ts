@@ -57,7 +57,6 @@ export const createValidatedUserIdParam = (userId: string | undefined | null, pa
   return userIdParam;
 };
 
-
 /**
  * IDパラメータを検証してからURLパラメータに追加する
  * @param id ID
