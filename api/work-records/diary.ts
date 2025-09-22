@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
+
 // データベース接続
 const connectDB = async () => {
   try {
@@ -37,7 +38,17 @@ const WorkDiary = mongoose.models.WorkDiary || mongoose.model('WorkDiary', WorkD
 
 // JWT認証ヘルパー関数
 type JWTRequest = { headers: { authorization?: string } };
-const verifyJWT = (req: JWTRequest) => {
+
+interface JWTPayload {
+  id: string;
+  email: string;
+  role: string;
+  isAdmin?: boolean;
+  iat?: number;
+  exp?: number;
+}
+
+const verifyJWT = (req: JWTRequest): JWTPayload | null => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return null;
@@ -50,7 +61,16 @@ const verifyJWT = (req: JWTRequest) => {
       console.error('JWT_SECRET environment variable is not set. Refusing to verify JWT.');
       return null;
     }
-    return jwt.verify(token, jwtSecret);
+    
+    const decoded = jwt.verify(token, jwtSecret) as JWTPayload;
+    
+    // 型安全性のための検証
+    if (!decoded || typeof decoded !== 'object' || !decoded.id) {
+      console.error('Invalid JWT payload structure');
+      return null;
+    }
+    
+    return decoded;
   } catch (error) {
     console.error('JWT verification failed:', error);
     return null;
