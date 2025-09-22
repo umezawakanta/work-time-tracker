@@ -49,11 +49,7 @@ export const createUserIdParam = (userId: string | undefined | null, paramName: 
  * @throws Error ユーザーIDが無効な場合
  */
 export const createValidatedUserIdParam = (userId: string | undefined | null, paramName: string = 'userId'): Record<string, string> => {
-  const userIdParam = createUserIdParam(userId, paramName);
-  if (Object.keys(userIdParam).length === 0) {
-    throw new Error('User ID is required but not provided');
-  }
-  return userIdParam;
+  return createUserIdParam(userId, paramName);
 };
 
 /**
