@@ -132,7 +132,7 @@ export default async function handler(req, res) {
       
       if (!actualUserId) {
         console.warn('User ID not available from JWT token or query parameters');
-        return res.status(401).json({ 
+        return res.status(400).json({ 
           success: false, 
           message: '認証が必要です' 
         });
