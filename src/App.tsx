@@ -2531,15 +2531,20 @@ ${errorInfo.stack}
 
           // サーバーに保存
           try {
-            await fetch("/api/user-settings", {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                userId: user.id,
-                featureOrder: updatedOrder,
-                hiddenFeatures: updatedHidden,
-              }),
+            const result = await executeAuthenticatedRequest(setMessage, async (token) => {
+              const url = buildApiUrl('/api/user-settings', createUserIdParam(user.id));
+              return await apiFetch(url, {
+                method: "PUT",
+                headers: createAuthHeaders(token),
+                body: JSON.stringify({
+                  userId: user.id,
+                  featureOrder: updatedOrder,
+                  hiddenFeatures: updatedHidden,
+                }),
+              });
             });
+
+            if (!result) return; // 認証エラーの場合
           } catch (error) {
             console.error(
               "Failed to update settings with new features:",
@@ -2595,16 +2600,21 @@ ${errorInfo.stack}
     if (!user?.id) return;
 
     try {
-      const response = await fetch("/api/user-settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.id,
-          ...newSettings,
-        }),
+      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
+        const url = buildApiUrl('/api/user-settings', createUserIdParam(user.id));
+        return await apiFetch(url, {
+          method: "PUT",
+          headers: createAuthHeaders(token),
+          body: JSON.stringify({
+            userId: user.id,
+            ...newSettings,
+          }),
+        });
       });
 
-      const data = await response.json();
+      if (!result) return; // 認証エラーの場合
+
+      const data = await result.json();
       if (data.success) {
         setUserSettings(data.settings);
         setMessage("設定が保存されました！");
