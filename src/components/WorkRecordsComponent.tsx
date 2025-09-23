@@ -71,6 +71,7 @@ interface WorkRecordsComponentProps {
   handleUpdateDiary: (e: React.FormEvent) => void;
   handleDeleteIncomeExpenseRecord: (id: string) => void;
   handleDeleteDiary: (id: string) => void;
+  editDiary: (diary: any) => void;
   openDiaryForm: () => void;
   loadMonthlyMemo: () => void;
   saveMonthlyMemo: () => void;
@@ -148,6 +149,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   handleUpdateDiary,
   handleDeleteIncomeExpenseRecord,
   handleDeleteDiary,
+  editDiary,
   openDiaryForm,
   loadMonthlyMemo,
   saveMonthlyMemo,
@@ -669,7 +671,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                   <p><strong>内容:</strong> {selectedRecord.diaryRecord.content}</p>
                   <div className="record-actions">
                     <button
-                      onClick={() => setEditingDiary(selectedRecord.diaryRecord)}
+                      onClick={() => editDiary(selectedRecord.diaryRecord)}
                       className="edit-button"
                     >
                       編集

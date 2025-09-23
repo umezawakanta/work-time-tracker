@@ -6101,6 +6101,7 @@ User Agent: ${userAgent}
                     handleUpdateDiary={handleUpdateDiary}
                     handleDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
                     handleDeleteDiary={handleDeleteDiary}
+                    editDiary={editDiary}
                     openDiaryForm={openDiaryForm}
                     loadMonthlyMemo={loadMonthlyMemo}
                     saveMonthlyMemo={saveMonthlyMemo}
