@@ -169,10 +169,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   useEffect(() => {
     if (selectedDate) {
       const records = getRecordsForDate(selectedDate);
-      if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.diaryRecord) {
+      if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.diaryRecords.length > 0) {
         setSelectedRecord(records);
         // 複数の記録がある場合は、日記を優先表示
-        if (records.diaryRecord) {
+        if (records.diaryRecords.length > 0) {
           setSelectedRecordType("diary");
         } else if (records.incomeRecords.length > 0) {
           setSelectedRecordType("income");
@@ -501,13 +501,19 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                       </div>
 
                       {/* 日記のタイトル表示 */}
-                      {records.diaryRecord && (
+                      {records.diaryRecords && records.diaryRecords.length > 0 && (
                         <div className="diary-title">
-                          <span className="diary-title-text" title={records.diaryRecord.title}>
-                            {records.diaryRecord.title.length > 8 
-                              ? records.diaryRecord.title.substring(0, 8) + '...' 
-                              : records.diaryRecord.title}
-                          </span>
+                          {records.diaryRecords.map((diary: any, index: number) => (
+                            <span 
+                              key={diary._id || index}
+                              className="diary-title-text" 
+                              title={diary.title}
+                            >
+                              {diary.title.length > 8 
+                                ? diary.title.substring(0, 8) + '...' 
+                                : diary.title}
+                            </span>
+                          ))}
                         </div>
                       )}
 
@@ -536,16 +542,19 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                             💸
                           </span>
                         )}
-                        {records.diaryRecord && (
+                        {records.diaryRecords && records.diaryRecords.length > 0 && (
                           <span 
                             className="diary-indicator" 
-                            title="日記"
+                            title={`日記 (${records.diaryRecords.length}件)`}
                             onClick={(e) => {
                               e.stopPropagation();
                               handleRecordClick("diary", date);
                             }}
                           >
                             <i className="bi bi-journal-text"></i>
+                            {records.diaryRecords.length > 1 && (
+                              <span className="diary-count">{records.diaryRecords.length}</span>
+                            )}
                           </span>
                         )}
                       </div>
