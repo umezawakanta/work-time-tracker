@@ -13,6 +13,29 @@ export interface FoodCategory {
   color: string;
 }
 
+// 定数定義
+const IDEAL_BALANCE_RATIOS = {
+  staple: 0.4,
+  side: 0.3,
+  miso: 0.1,
+  meat: 0.1,
+  fish: 0.05,
+  vegetable: 0.05
+} as const;
+
+const MUSICAL_NOTES = {
+  A: 440,
+  C_SHARP: 554.37,
+  E: 659.25
+} as const;
+
+const TIMING_DELAYS = {
+  C_SHARP_OFFSET: 200,
+  E_OFFSET: 400
+} as const;
+
+const PLAYBACK_DURATION = 5000; // 5秒
+
 // 音楽ジャンルの定義
 export interface MusicGenre {
   id: string;
@@ -141,24 +164,14 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     // 音楽を生成
     generateMusic(categoryRatios, balanceScore, genre);
 
-    setTimeout(() => setIsPlaying(false), 5000);
+    setTimeout(() => setIsPlaying(false), PLAYBACK_DURATION);
   };
 
   // バランススコアを計算する関数
   const calculateBalanceScore = (categoryRatios: (FoodCategory & { ratio: number })[]): number => {
-    // 理想的なバランス（主食40%, 副菜30%, その他30%）
-    const idealRatios = {
-      staple: 0.4,
-      side: 0.3,
-      miso: 0.1,
-      meat: 0.1,
-      fish: 0.05,
-      vegetable: 0.05
-    };
-
     let score = 0;
     categoryRatios.forEach(category => {
-      const ideal = idealRatios[category.id as keyof typeof idealRatios] || 0;
+      const ideal = IDEAL_BALANCE_RATIOS[category.id as keyof typeof IDEAL_BALANCE_RATIOS] || 0;
       const actual = category.ratio;
       score += 1 - Math.abs(ideal - actual);
     });
@@ -190,9 +203,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     // バランスが良い場合は追加のハーモニーを演奏
     if (balanceScore > 0.7) {
       setTimeout(() => {
-        playSound(440, 1.0, 0.3); // A音
-        setTimeout(() => playSound(554.37, 1.0, 0.3), 200); // C#音
-        setTimeout(() => playSound(659.25, 1.0, 0.3), 400); // E音
+        playSound(MUSICAL_NOTES.A, 1.0, 0.3); // A音
+        setTimeout(() => playSound(MUSICAL_NOTES.C_SHARP, 1.0, 0.3), TIMING_DELAYS.C_SHARP_OFFSET); // C#音
+        setTimeout(() => playSound(MUSICAL_NOTES.E, 1.0, 0.3), TIMING_DELAYS.E_OFFSET); // E音
       }, 2000);
     }
   };
