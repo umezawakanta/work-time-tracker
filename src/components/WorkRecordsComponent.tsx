@@ -492,7 +492,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                       {/* 日記のタイトル表示 */}
                       {records.diaryRecords && records.diaryRecords.length > 0 && (
                         <div className="diary-title">
-                          {records.diaryRecords.map((diary: any, index: number) => (
+                          {records.diaryRecords.map((diary: WorkDiary, index: number) => (
                             <span 
                               key={diary._id || index}
                               className="diary-title-text" 
