@@ -1991,7 +1991,9 @@ ${errorInfo.stack}
         });
       });
 
-      if (!result) return; // 認証エラーの場合
+      if (!result) {
+        return; // 認証エラーの場合
+      }
 
       const data = await result.json();
       if (data.success) {
@@ -2417,7 +2419,9 @@ ${errorInfo.stack}
         });
       });
 
-      if (!result) return; // 認証エラーの場合
+      if (!result) {
+        return; // 認証エラーの場合
+      }
 
       const data = await result.json();
       if (data.success) {
@@ -2454,7 +2458,9 @@ ${errorInfo.stack}
         });
       });
 
-      if (!result) return; // 認証エラーの場合
+      if (!result) {
+        return; // 認証エラーの場合
+      }
 
       const data = await result.json();
       if (data.success) {
@@ -2492,7 +2498,9 @@ ${errorInfo.stack}
         });
       });
 
-      if (!result) return; // 認証エラーの場合
+      if (!result) {
+        return; // 認証エラーの場合
+      }
 
       const data = await result.json();
       if (data.success) {
@@ -2544,7 +2552,9 @@ ${errorInfo.stack}
               });
             });
 
-            if (!result) return; // 認証エラーの場合
+            if (!result) {
+        return; // 認証エラーの場合
+      }
           } catch (error) {
             console.error(
               "Failed to update settings with new features:",
@@ -2612,7 +2622,9 @@ ${errorInfo.stack}
         });
       });
 
-      if (!result) return; // 認証エラーの場合
+      if (!result) {
+        return; // 認証エラーの場合
+      }
 
       const data = await result.json();
       if (data.success) {
