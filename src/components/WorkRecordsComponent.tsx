@@ -208,16 +208,25 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 指定された日付の記録を取得
   const getRecordsForDate = (date: Date) => {
-    const dateString = date.toISOString().split('T')[0];
-    const incomeRecords = (incomeExpenseRecords || []).filter(record => 
-      new Date(record.date).toISOString().split('T')[0] === dateString && record.type === 'income'
-    );
-    const expenseRecords = (incomeExpenseRecords || []).filter(record => 
-      new Date(record.date).toISOString().split('T')[0] === dateString && record.type === 'expense'
-    );
-    const diaryRecord = (workDiaries || []).find(diary => 
-      new Date(diary.date).toISOString().split('T')[0] === dateString
-    );
+    // 選択された日付をUTCの開始時刻に設定
+    const selectedDateUTC = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const selectedDateUTCStr = selectedDateUTC.toISOString().split("T")[0];
+    
+    const incomeRecords = (incomeExpenseRecords || []).filter(record => {
+      const recordDate = new Date(record.date);
+      const recordDateStr = recordDate.toISOString().split("T")[0];
+      return recordDateStr === selectedDateUTCStr && record.type === 'income';
+    });
+    const expenseRecords = (incomeExpenseRecords || []).filter(record => {
+      const recordDate = new Date(record.date);
+      const recordDateStr = recordDate.toISOString().split("T")[0];
+      return recordDateStr === selectedDateUTCStr && record.type === 'expense';
+    });
+    const diaryRecord = (workDiaries || []).find(diary => {
+      const diaryDate = new Date(diary.date);
+      const diaryDateStr = diaryDate.toISOString().split("T")[0];
+      return diaryDateStr === selectedDateUTCStr;
+    });
     
     return { incomeRecords, expenseRecords, diaryRecord };
   };

@@ -1984,6 +1984,7 @@ ${errorInfo.stack}
 
       const data = await result.json();
       if (data.success) {
+        console.log("Loaded work diaries:", data.diaries);
         setWorkDiaries(data.diaries);
       } else {
         console.error("Failed to load work diaries:", data.message);
@@ -2936,29 +2937,26 @@ ${errorInfo.stack}
   };
 
   const getRecordsForDate = (date: Date) => {
-    // 日本時間での日付文字列を取得
-    const jstDateStr = new Date(date.getTime() + 9 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0];
+    // 選択された日付をUTCの開始時刻に設定
+    const selectedDateUTC = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const selectedDateUTCStr = selectedDateUTC.toISOString().split("T")[0];
 
     const filteredIncomeExpenseRecords = (incomeExpenseRecords || []).filter((record) => {
-      // データベースの日付を日本時間に変換して比較
+      // データベースの日付をUTC日付文字列に変換して比較
       const recordDate = new Date(record.date);
-      const recordJstDateStr = new Date(
-        recordDate.getTime() + 9 * 60 * 60 * 1000
-      )
-        .toISOString()
-        .split("T")[0];
-      return recordJstDateStr === jstDateStr;
+      const recordDateStr = recordDate.toISOString().split("T")[0];
+      return recordDateStr === selectedDateUTCStr;
     });
 
     const filteredDiaries = (workDiaries || []).filter((diary) => {
-      // データベースの日付を日本時間に変換して比較
+      // データベースの日付をUTC日付文字列に変換して比較
       const diaryDate = new Date(diary.date);
-      const diaryJstDateStr = new Date(diaryDate.getTime() + 9 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0];
-      return diaryJstDateStr === jstDateStr;
+      const diaryDateStr = diaryDate.toISOString().split("T")[0];
+      const matches = diaryDateStr === selectedDateUTCStr;
+      if (matches) {
+        console.log("Found matching diary:", diary);
+      }
+      return matches;
     });
 
     return { incomeExpenseRecords: filteredIncomeExpenseRecords, diaries: filteredDiaries };
