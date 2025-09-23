@@ -153,8 +153,57 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     setTimeout(() => setUserMessage(''), duration);
   };
 
-  // 音を生成する関数
-  const playSound = (frequency: number, duration: number, volume: number) => {
+  // 楽器の種類に応じた音を生成する関数
+  const playSound = (frequency: number, duration: number, volume: number, instrument: string) => {
+    if (!audioContextRef.current || !gainNodeRef.current) {
+      return;
+    }
+
+    const { currentTime } = audioContextRef.current;
+
+    // 楽器の種類に応じて複数の音を組み合わせ
+    switch (instrument) {
+      case '🥁 ドラム':
+        // ドラム：低音のキック + 高音のハイハット
+        createOscillator(frequency * 0.3, duration * 0.2, volume * 1.5, 'sawtooth', currentTime);
+        createOscillator(frequency * 2.0, duration * 0.1, volume * 0.8, 'square', currentTime + 0.1);
+        break;
+      case '🎸 ベース':
+        // ベース：低音の基音 + 少し高い倍音
+        createOscillator(frequency * 0.6, duration * 1.8, volume * 0.9, 'triangle', currentTime);
+        createOscillator(frequency * 1.2, duration * 1.5, volume * 0.3, 'sine', currentTime);
+        break;
+      case '🎺 トランペット':
+        // トランペット：明るい音 + 少しの歪み
+        createOscillator(frequency * 1.1, duration * 1.0, volume * 1.2, 'square', currentTime);
+        createOscillator(frequency * 1.3, duration * 0.8, volume * 0.4, 'sawtooth', currentTime + 0.1);
+        break;
+      case '🎸 エレキギター':
+        // エレキギター：歪んだ音 + ハーモニクス
+        createOscillator(frequency * 1.0, duration * 0.8, volume * 1.4, 'sawtooth', currentTime);
+        createOscillator(frequency * 2.0, duration * 0.6, volume * 0.6, 'square', currentTime + 0.05);
+        createOscillator(frequency * 3.0, duration * 0.4, volume * 0.3, 'sine', currentTime + 0.1);
+        break;
+      case '🎹 シンセサイザー':
+        // シンセサイザー：複数の波形を重ねた豊かな音
+        createOscillator(frequency * 1.4, duration * 1.5, volume * 0.8, 'sine', currentTime);
+        createOscillator(frequency * 2.1, duration * 1.3, volume * 0.5, 'triangle', currentTime + 0.05);
+        createOscillator(frequency * 2.8, duration * 1.1, volume * 0.3, 'sine', currentTime + 0.1);
+        break;
+      case '🎹 ピアノ':
+        // ピアノ：基音 + 倍音の組み合わせ
+        createOscillator(frequency * 1.2, duration * 1.2, volume * 1.0, 'sine', currentTime);
+        createOscillator(frequency * 2.4, duration * 0.8, volume * 0.4, 'sine', currentTime + 0.05);
+        createOscillator(frequency * 3.6, duration * 0.6, volume * 0.2, 'sine', currentTime + 0.1);
+        break;
+      default:
+        createOscillator(frequency, duration, volume, 'sine', currentTime);
+        break;
+    }
+  };
+
+  // オシレーターを作成するヘルパー関数
+  const createOscillator = (frequency: number, duration: number, volume: number, waveType: OscillatorType, startTime: number) => {
     if (!audioContextRef.current || !gainNodeRef.current) {
       return;
     }
@@ -165,15 +214,15 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     oscillator.connect(gainNode);
     gainNode.connect(gainNodeRef.current);
 
-    oscillator.frequency.setValueAtTime(frequency, audioContextRef.current.currentTime);
-    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(frequency, startTime);
+    oscillator.type = waveType;
 
-    gainNode.gain.setValueAtTime(0, audioContextRef.current.currentTime);
-    gainNode.gain.linearRampToValueAtTime(volume, audioContextRef.current.currentTime + 0.01);
-    gainNode.gain.linearRampToValueAtTime(0, audioContextRef.current.currentTime + duration);
+    gainNode.gain.setValueAtTime(0, startTime);
+    gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+    gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
 
-    oscillator.start(audioContextRef.current.currentTime);
-    oscillator.stop(audioContextRef.current.currentTime + duration);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration);
   };
 
   // 食事バランスを音に変換する関数
@@ -281,7 +330,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         const volume = category.sound.volume * balanceScore;
 
         setTimeout(() => {
-          playSound(frequency, duration, volume);
+          playSound(frequency, duration, volume, category.instrument);
         }, delay * 1000);
       }
     });
@@ -289,9 +338,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     // バランスが良い場合は追加のハーモニーを演奏
     if (balanceScore > 0.7) {
       setTimeout(() => {
-        playSound(MUSICAL_NOTES.A, 1.0, 0.3); // A音
-        setTimeout(() => playSound(MUSICAL_NOTES.C_SHARP, 1.0, 0.3), TIMING_DELAYS.C_SHARP_OFFSET); // C#音
-        setTimeout(() => playSound(MUSICAL_NOTES.E, 1.0, 0.3), TIMING_DELAYS.E_OFFSET); // E音
+        playSound(MUSICAL_NOTES.A, 1.0, 0.3, '🎹 ピアノ'); // A音
+        setTimeout(() => playSound(MUSICAL_NOTES.C_SHARP, 1.0, 0.3, '🎹 ピアノ'), TIMING_DELAYS.C_SHARP_OFFSET); // C#音
+        setTimeout(() => playSound(MUSICAL_NOTES.E, 1.0, 0.3, '🎹 ピアノ'), TIMING_DELAYS.E_OFFSET); // E音
       }, 2000);
     }
   };
