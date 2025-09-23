@@ -102,8 +102,15 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // オーディオコンテキストの初期化
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext)) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    // TypeScript-safe detection of AudioContext and webkitAudioContext
+    const AudioCtx =
+      typeof window !== 'undefined' && 'AudioContext' in window
+        ? window.AudioContext
+        : typeof window !== 'undefined' && 'webkitAudioContext' in window
+          // @ts-ignore: webkitAudioContext is not in the standard DOM typings
+          ? (window as any).webkitAudioContext
+          : undefined;
+    if (AudioCtx) {
       audioContextRef.current = new AudioCtx();
       gainNodeRef.current = audioContextRef.current.createGain();
       gainNodeRef.current.connect(audioContextRef.current.destination);
