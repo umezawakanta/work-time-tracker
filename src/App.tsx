@@ -1889,7 +1889,7 @@ ${errorInfo.stack}
     setTimeout(() => {
       applyTheme(themeValue);
       // さらに強制的にDOM要素のスタイルを更新
-      const body = document.body;
+      const { body } = document;
       const dashboard = document.querySelector(".dashboard");
       const header = document.querySelector(".dashboard-header");
       const timeSection = document.querySelector(".time-tracking-section");
