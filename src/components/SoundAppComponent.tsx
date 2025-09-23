@@ -18,6 +18,7 @@ export interface FoodCategory {
     volume: number;
   };
   color: string;
+  instrument: string; // 楽器の種類を追加
 }
 
 // 定数定義
@@ -46,6 +47,14 @@ const PLAYBACK_DURATION = 5000; // 5秒
 const TEMPO_RANGE = {
   MIN: 60,
   MAX: 200
+} as const;
+
+const REPEAT_OPTIONS = {
+  NONE: 0,
+  ONCE: 1,
+  TWICE: 2,
+  THREE_TIMES: 3,
+  LOOP: -1
 } as const;
 
 // 音楽ジャンルの定義
@@ -78,14 +87,14 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   setShowSoundApp,
   closeOtherFeatures,
 }) => {
-  // 食事カテゴリの定義
+  // 食事カテゴリの定義（楽器を分かりやすく設定）
   const foodCategories: FoodCategory[] = [
-    { id: 'staple', name: '主食', sound: { frequency: 220, duration: 0.5, volume: 0.7 }, color: '#8B4513' },
-    { id: 'side', name: '副菜', sound: { frequency: 330, duration: 0.4, volume: 0.6 }, color: '#228B22' },
-    { id: 'miso', name: '味噌', sound: { frequency: 440, duration: 0.3, volume: 0.5 }, color: '#D2691E' },
-    { id: 'meat', name: '肉', sound: { frequency: 110, duration: 0.8, volume: 0.9 }, color: '#DC143C' },
-    { id: 'fish', name: '魚', sound: { frequency: 880, duration: 0.6, volume: 0.8 }, color: '#4169E1' },
-    { id: 'vegetable', name: '野菜', sound: { frequency: 660, duration: 0.4, volume: 0.7 }, color: '#32CD32' },
+    { id: 'staple', name: '主食', sound: { frequency: 220, duration: 0.5, volume: 0.7 }, color: '#8B4513', instrument: '🥁 ドラム' },
+    { id: 'side', name: '副菜', sound: { frequency: 330, duration: 0.4, volume: 0.6 }, color: '#228B22', instrument: '🎸 ベース' },
+    { id: 'miso', name: '味噌', sound: { frequency: 440, duration: 0.3, volume: 0.5 }, color: '#D2691E', instrument: '🎺 トランペット' },
+    { id: 'meat', name: '肉', sound: { frequency: 110, duration: 0.8, volume: 0.9 }, color: '#DC143C', instrument: '🎸 エレキギター' },
+    { id: 'fish', name: '魚', sound: { frequency: 880, duration: 0.6, volume: 0.8 }, color: '#4169E1', instrument: '🎹 シンセサイザー' },
+    { id: 'vegetable', name: '野菜', sound: { frequency: 660, duration: 0.4, volume: 0.7 }, color: '#32CD32', instrument: '🎹 ピアノ' },
   ];
 
   // 音楽ジャンルの定義
@@ -103,6 +112,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const [customInstruments, setCustomInstruments] = useState<string[]>(['piano']);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState<string>('');
+  const [repeatMode, setRepeatMode] = useState<number>(REPEAT_OPTIONS.ONCE);
+  const [isLooping, setIsLooping] = useState<boolean>(false);
   const [currentMeal, setCurrentMeal] = useState<MealRecord>({
     id: Date.now().toString(),
     date: new Date().toISOString().split('T')[0],
@@ -124,6 +135,17 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       }
     }
   }, []);
+
+  // バランスバーの幅を設定
+  useEffect(() => {
+    const barFills = document.querySelectorAll('.bar-fill[data-width]');
+    barFills.forEach(bar => {
+      const width = bar.getAttribute('data-width');
+      if (width) {
+        (bar as HTMLElement).style.width = `${width}%`;
+      }
+    });
+  }, [currentMeal]);
 
   // ユーザーメッセージを表示する関数
   const showMessage = (message: string, duration: number = 3000) => {
@@ -156,7 +178,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // 食事バランスを音に変換する関数
   const playMealBalance = () => {
-    if (isPlaying) {
+    if (isPlaying && !isLooping) {
       showMessage('音声を再生中です。しばらくお待ちください。');
       return;
     }
@@ -197,7 +219,30 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         : 'バランスを改善することをお勧めします。';
     showMessage(balanceMessage, 4000);
 
-    setTimeout(() => setIsPlaying(false), PLAYBACK_DURATION);
+    // リピート処理
+    if (repeatMode === REPEAT_OPTIONS.LOOP) {
+      setIsLooping(true);
+      const loopInterval = setInterval(() => {
+        if (!isLooping) {
+          clearInterval(loopInterval);
+          return;
+        }
+        generateMusic(categoryRatios, balanceScore, genre);
+      }, PLAYBACK_DURATION);
+    } else if (repeatMode > 0) {
+      let repeatCount = 0;
+      const repeatInterval = setInterval(() => {
+        repeatCount++;
+        if (repeatCount >= repeatMode) {
+          clearInterval(repeatInterval);
+          setIsPlaying(false);
+          return;
+        }
+        generateMusic(categoryRatios, balanceScore, genre);
+      }, PLAYBACK_DURATION);
+    } else {
+      setTimeout(() => setIsPlaying(false), PLAYBACK_DURATION);
+    }
   };
 
   // IDEAL_BALANCE_RATIOSに存在しないカテゴリIDを処理する関数
@@ -268,6 +313,12 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       ...prev,
       categories: {}
     }));
+  };
+
+  // リピート停止関数
+  const stopRepeat = () => {
+    setIsLooping(false);
+    setIsPlaying(false);
   };
 
   return (
@@ -348,6 +399,43 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
             </div>
           )}
 
+          {/* リピート設定 */}
+          <div className="repeat-settings">
+            <h4>🔄 リピート設定</h4>
+            <div className="repeat-options">
+              <button
+                className={`repeat-button ${repeatMode === REPEAT_OPTIONS.NONE ? 'selected' : ''}`}
+                onClick={() => setRepeatMode(REPEAT_OPTIONS.NONE)}
+              >
+                なし
+              </button>
+              <button
+                className={`repeat-button ${repeatMode === REPEAT_OPTIONS.ONCE ? 'selected' : ''}`}
+                onClick={() => setRepeatMode(REPEAT_OPTIONS.ONCE)}
+              >
+                1回
+              </button>
+              <button
+                className={`repeat-button ${repeatMode === REPEAT_OPTIONS.TWICE ? 'selected' : ''}`}
+                onClick={() => setRepeatMode(REPEAT_OPTIONS.TWICE)}
+              >
+                2回
+              </button>
+              <button
+                className={`repeat-button ${repeatMode === REPEAT_OPTIONS.THREE_TIMES ? 'selected' : ''}`}
+                onClick={() => setRepeatMode(REPEAT_OPTIONS.THREE_TIMES)}
+              >
+                3回
+              </button>
+              <button
+                className={`repeat-button ${repeatMode === REPEAT_OPTIONS.LOOP ? 'selected' : ''}`}
+                onClick={() => setRepeatMode(REPEAT_OPTIONS.LOOP)}
+              >
+                ループ
+              </button>
+            </div>
+          </div>
+
           {/* 食事記録 */}
           <div className="meal-recording">
             <h3>🍽️ 食事記録</h3>
@@ -355,10 +443,13 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
               {foodCategories.map(category => (
                 <div key={category.id} className="category-item">
                   <div 
-                    className="category-color" 
-                    style={{ backgroundColor: category.color }}
+                    className="category-color"
+                    data-color={category.color}
                   ></div>
-                  <span className="category-name">{category.name}</span>
+                  <div className="category-info">
+                    <span className="category-name">{category.name}</span>
+                    <span className="category-instrument">{category.instrument}</span>
+                  </div>
                   <div className="count-controls">
                     <button
                       onClick={() => updateCategoryCount(category.id, (currentMeal.categories[category.id] || 0) - 1)}
@@ -389,15 +480,26 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           {/* 音声再生コントロール */}
           <div className="sound-controls">
             <h3>🎵 音声再生</h3>
-            <button
-              onClick={playMealBalance}
-              disabled={isPlaying || Object.values(currentMeal.categories).every(count => count === 0)}
-              className={`play-button ${isPlaying ? 'playing' : ''}`}
-            >
-              {isPlaying ? '再生中...' : '食事バランスを音で確認'}
-            </button>
+            <div className="play-controls">
+              <button
+                onClick={playMealBalance}
+                disabled={isPlaying || Object.values(currentMeal.categories).every(count => count === 0)}
+                className={`play-button ${isPlaying ? 'playing' : ''}`}
+              >
+                {isPlaying ? '再生中...' : '食事バランスを音で確認'}
+              </button>
+              {isLooping && (
+                <button
+                  onClick={stopRepeat}
+                  className="stop-button"
+                >
+                  停止
+                </button>
+              )}
+            </div>
             <div className="balance-info">
               <p>バランスの良い食事ほど心地よいリズムになります</p>
+              <p>各カテゴリは異なる楽器で表現されます</p>
             </div>
             
             {/* ユーザーメッセージ表示 */}
@@ -424,18 +526,16 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                   <div key={category.id} className="balance-bar">
                     <div className="bar-label">
                       <span 
-                        className="bar-color" 
-                        style={{ backgroundColor: category.color }}
+                        className="bar-color"
+                        data-color={category.color}
                       ></span>
                       {category.name}
                     </div>
                     <div className="bar-container">
                       <div 
-                        className="bar-fill" 
-                        style={{ 
-                          width: `${percentage}%`,
-                          backgroundColor: category.color 
-                        }}
+                        className="bar-fill"
+                        data-width={percentage}
+                        data-color={category.color}
                       ></div>
                       <span className="bar-percentage">{Math.round(percentage)}%</span>
                     </div>
