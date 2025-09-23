@@ -559,6 +559,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           {/* 選択された記録の詳細 */}
           {selectedRecord && (
             <div className="record-details">
+              {console.log("Selected record in render:", selectedRecord)}
               <h3>
                 <i className="bi bi-calendar-check"></i>
                 {selectedDate ? selectedDate.toLocaleDateString('ja-JP', { 
@@ -675,6 +676,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               {/* 日記の表示 */}
               {selectedRecord.diaryRecord && (
                 <div className="diary-record-detail">
+                  {console.log("Rendering diary record:", selectedRecord.diaryRecord)}
                   <h4>
                     <i className="bi bi-journal-text"></i>
                     日記: {selectedRecord.diaryRecord.title}
@@ -699,7 +701,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                       編集
                     </button>
                     <button
-                      onClick={() => handleDeleteDiary(selectedRecord.diaryRecord.id)}
+                      onClick={() => handleDeleteDiary(selectedRecord.diaryRecord._id)}
                       className="delete-button"
                     >
                       削除
