@@ -1984,7 +1984,6 @@ ${errorInfo.stack}
 
       const data = await result.json();
       if (data.success) {
-        console.log("Loaded work diaries:", data.diaries);
         setWorkDiaries(data.diaries);
       } else {
         console.error("Failed to load work diaries:", data.message);
