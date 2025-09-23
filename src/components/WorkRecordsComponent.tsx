@@ -677,7 +677,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     <i className="bi bi-journal-text"></i>
                     日記 ({selectedRecord.diaryRecords.length}件)
                   </h4>
-                  {selectedRecord.diaryRecords.map((diary: any, index: number) => (
+                  {selectedRecord.diaryRecords.map((diary: WorkDiary, index: number) => (
                     <div key={diary._id || index} className="diary-record-detail">
                       <h5>
                         日記: {diary.title}
