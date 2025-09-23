@@ -18,10 +18,23 @@ export interface FoodCategory {
     volume: number;
   };
   color: string;
-  instrument: string; // 楽器の種類を追加
+  instrument: string;
+  // MP3ファイルのパスを追加
+  soundFiles?: {
+    low?: string;
+    mid?: string;
+    high?: string;
+  };
 }
 
-// 定数定義
+// サウンドバッファの型
+interface SoundBuffers {
+  [key: string]: {
+    [pitch: string]: AudioBuffer;
+  };
+}
+
+// 定数定義（既存のものは省略）
 const IDEAL_BALANCE_RATIOS = {
   staple: 0.4,
   side: 0.3,
@@ -31,18 +44,7 @@ const IDEAL_BALANCE_RATIOS = {
   vegetable: 0.05
 } as const;
 
-const MUSICAL_NOTES = {
-  A: 440,
-  C_SHARP: 554.37,
-  E: 659.25
-} as const;
-
-const TIMING_DELAYS = {
-  C_SHARP_OFFSET: 200,
-  E_OFFSET: 400
-} as const;
-
-const PLAYBACK_DURATION = 5000; // 5秒
+const PLAYBACK_DURATION = 5000;
 
 const TEMPO_RANGE = {
   MIN: 60,
@@ -71,7 +73,7 @@ export interface MealRecord {
   id: string;
   date: string;
   categories: {
-    [key: string]: number; // カテゴリID -> 数量
+    [key: string]: number;
   };
   notes?: string;
 }
@@ -80,21 +82,89 @@ interface SoundAppComponentProps {
   showSoundApp: boolean;
   setShowSoundApp: (show: boolean) => void;
   closeOtherFeatures: (activeFeature: string) => void;
+  useRealSounds?: boolean; // 実際の楽器音を使用するかのフラグ
 }
 
 const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   showSoundApp,
   setShowSoundApp,
   closeOtherFeatures,
+  useRealSounds = false, // デフォルトはfalse（オシレーター使用）
 }) => {
-  // 食事カテゴリの定義（楽器を分かりやすく設定）
+  // 食事カテゴリの定義（MP3ファイルパスを追加）
   const foodCategories: FoodCategory[] = [
-    { id: 'staple', name: '主食', sound: { frequency: 220, duration: 0.5, volume: 0.7 }, color: '#8B4513', instrument: '🥁 ドラム' },
-    { id: 'side', name: '副菜', sound: { frequency: 330, duration: 0.4, volume: 0.6 }, color: '#228B22', instrument: '🎸 ベース' },
-    { id: 'miso', name: '味噌', sound: { frequency: 440, duration: 0.3, volume: 0.5 }, color: '#D2691E', instrument: '🎺 トランペット' },
-    { id: 'meat', name: '肉', sound: { frequency: 110, duration: 0.8, volume: 0.9 }, color: '#DC143C', instrument: '🎸 エレキギター' },
-    { id: 'fish', name: '魚', sound: { frequency: 880, duration: 0.6, volume: 0.8 }, color: '#4169E1', instrument: '🎹 シンセサイザー' },
-    { id: 'vegetable', name: '野菜', sound: { frequency: 660, duration: 0.4, volume: 0.7 }, color: '#32CD32', instrument: '🎹 ピアノ' },
+    { 
+      id: 'staple', 
+      name: '主食', 
+      sound: { frequency: 220, duration: 0.5, volume: 0.7 }, 
+      color: '#8B4513', 
+      instrument: '🥁 ドラム',
+      soundFiles: {
+        low: '/sounds/drums/kick.mp3',
+        mid: '/sounds/drums/tom.mp3',
+        high: '/sounds/drums/snare.mp3'
+      }
+    },
+    { 
+      id: 'side', 
+      name: '副菜', 
+      sound: { frequency: 330, duration: 0.4, volume: 0.6 }, 
+      color: '#228B22', 
+      instrument: '🎸 ベース',
+      soundFiles: {
+        low: '/sounds/bass/bass-c2.mp3',
+        mid: '/sounds/bass/bass-e2.mp3',
+        high: '/sounds/bass/bass-g2.mp3'
+      }
+    },
+    { 
+      id: 'miso', 
+      name: '味噌', 
+      sound: { frequency: 440, duration: 0.3, volume: 0.5 }, 
+      color: '#D2691E', 
+      instrument: '🎺 トランペット',
+      soundFiles: {
+        low: '/sounds/trumpet/trumpet-c3.mp3',
+        mid: '/sounds/trumpet/trumpet-e3.mp3',
+        high: '/sounds/trumpet/trumpet-g3.mp3'
+      }
+    },
+    { 
+      id: 'meat', 
+      name: '肉', 
+      sound: { frequency: 110, duration: 0.8, volume: 0.9 }, 
+      color: '#DC143C', 
+      instrument: '🎸 エレキギター',
+      soundFiles: {
+        low: '/sounds/guitar/guitar-e2.mp3',
+        mid: '/sounds/guitar/guitar-a2.mp3',
+        high: '/sounds/guitar/guitar-d3.mp3'
+      }
+    },
+    { 
+      id: 'fish', 
+      name: '魚', 
+      sound: { frequency: 880, duration: 0.6, volume: 0.8 }, 
+      color: '#4169E1', 
+      instrument: '🎹 シンセサイザー',
+      soundFiles: {
+        low: '/sounds/synth/synth-c3.mp3',
+        mid: '/sounds/synth/synth-f3.mp3',
+        high: '/sounds/synth/synth-a3.mp3'
+      }
+    },
+    { 
+      id: 'vegetable', 
+      name: '野菜', 
+      sound: { frequency: 660, duration: 0.4, volume: 0.7 }, 
+      color: '#32CD32', 
+      instrument: '🎹 ピアノ',
+      soundFiles: {
+        low: '/sounds/piano/piano-c3.mp3',
+        mid: '/sounds/piano/piano-e3.mp3',
+        high: '/sounds/piano/piano-g3.mp3'
+      }
+    },
   ];
 
   // 音楽ジャンルの定義
@@ -109,11 +179,12 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   // 状態管理
   const [selectedGenre, setSelectedGenre] = useState<string>('balanced');
   const [customTempo, setCustomTempo] = useState<number>(120);
-  const [customInstruments, setCustomInstruments] = useState<string[]>(['piano']);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState<string>('');
   const [repeatMode, setRepeatMode] = useState<number>(REPEAT_OPTIONS.ONCE);
   const [isLooping, setIsLooping] = useState<boolean>(false);
+  const [soundsLoaded, setSoundsLoaded] = useState<boolean>(false);
+  const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [currentMeal, setCurrentMeal] = useState<MealRecord>({
     id: Date.now().toString(),
     date: new Date().toISOString().split('T')[0],
@@ -123,6 +194,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   // Web Audio API関連
   const audioContextRef = useRef<AudioContext | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
+  const soundBuffersRef = useRef<SoundBuffers>({});
+  const audioPoolRef = useRef<{ [key: string]: HTMLAudioElement[] }>({});
 
   // オーディオコンテキストの初期化
   useEffect(() => {
@@ -133,19 +206,62 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         gainNodeRef.current = audioContextRef.current.createGain();
         gainNodeRef.current.connect(audioContextRef.current.destination);
       }
-    }
-  }, []);
 
-  // バランスバーの幅を設定
-  useEffect(() => {
-    const barFills = document.querySelectorAll('.bar-fill[data-width]');
-    barFills.forEach(bar => {
-      const width = bar.getAttribute('data-width');
-      if (width) {
-        (bar as HTMLElement).style.width = `${width}%`;
+      // 実際の楽器音を使用する場合、サウンドファイルをプリロード
+      if (useRealSounds) {
+        preloadSounds();
       }
-    });
-  }, [currentMeal]);
+    }
+  }, [useRealSounds]);
+
+  // サウンドファイルのプリロード（Web Audio API版）
+  const preloadSounds = async () => {
+    if (!audioContextRef.current) return;
+
+    const totalFiles = foodCategories.reduce((count, category) => {
+      if (category.soundFiles) {
+        return count + Object.keys(category.soundFiles).length;
+      }
+      return count;
+    }, 0);
+
+    let loadedFiles = 0;
+
+    try {
+      for (const category of foodCategories) {
+        if (!category.soundFiles) continue;
+
+        soundBuffersRef.current[category.id] = {};
+        
+        for (const [pitch, path] of Object.entries(category.soundFiles)) {
+          try {
+            const response = await fetch(path);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioContextRef.current!.decodeAudioData(arrayBuffer);
+            
+            soundBuffersRef.current[category.id][pitch] = audioBuffer;
+            loadedFiles++;
+            setLoadingProgress((loadedFiles / totalFiles) * 100);
+          } catch (error) {
+            console.warn(`Failed to load sound: ${path}`, error);
+            // フォールバック用のAudio要素を作成
+            if (!audioPoolRef.current[category.id]) {
+              audioPoolRef.current[category.id] = [];
+            }
+            const audio = new Audio(path);
+            audio.preload = 'auto';
+            audioPoolRef.current[category.id].push(audio);
+          }
+        }
+      }
+      
+      setSoundsLoaded(true);
+      showMessage('楽器音のロードが完了しました！', 2000);
+    } catch (error) {
+      console.error('Sound loading error:', error);
+      showMessage('一部の楽器音のロードに失敗しました。オシレーターモードで動作します。', 4000);
+    }
+  };
 
   // ユーザーメッセージを表示する関数
   const showMessage = (message: string, duration: number = 3000) => {
@@ -153,72 +269,112 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     setTimeout(() => setUserMessage(''), duration);
   };
 
-  // 楽器の種類に応じた音を生成する関数
-  const playSound = (frequency: number, duration: number, volume: number, instrument: string) => {
+  // 実際の楽器音を再生する関数（Web Audio API版）
+  const playRealInstrumentSound = (categoryId: string, pitch: 'low' | 'mid' | 'high', volume: number, startTime: number) => {
+    if (!audioContextRef.current || !gainNodeRef.current) return;
+
+    const buffer = soundBuffersRef.current[categoryId]?.[pitch];
+    if (buffer) {
+      const source = audioContextRef.current.createBufferSource();
+      const gainNode = audioContextRef.current.createGain();
+      
+      source.buffer = buffer;
+      source.connect(gainNode);
+      gainNode.connect(gainNodeRef.current);
+      
+      gainNode.gain.setValueAtTime(volume, startTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 2);
+      
+      source.start(startTime);
+    } else {
+      // フォールバック: Audio要素を使用
+      const audioPool = audioPoolRef.current[categoryId];
+      if (audioPool && audioPool.length > 0) {
+        const audio = audioPool[0].cloneNode() as HTMLAudioElement;
+        audio.volume = volume;
+        audio.play();
+      }
+    }
+  };
+
+  // 音を生成する関数（オシレーター版とMP3版の切り替え）
+  const playSound = (frequency: number, duration: number, volume: number, instrument: string, categoryId?: string) => {
     if (!audioContextRef.current || !gainNodeRef.current) {
       return;
     }
 
     const { currentTime } = audioContextRef.current;
 
-    // 楽器の種類に応じて複数の音を組み合わせ
+    // 実際の楽器音を使用する場合
+    if (useRealSounds && categoryId && soundsLoaded) {
+      // 周波数に基づいてピッチを選択
+      let pitch: 'low' | 'mid' | 'high' = 'mid';
+      if (frequency < 300) pitch = 'low';
+      else if (frequency > 600) pitch = 'high';
+      
+      playRealInstrumentSound(categoryId, pitch, volume, currentTime);
+      return;
+    }
+
+    // オシレーターを使用する場合（既存の実装）
     switch (instrument) {
       case '🥁 ドラム':
-        // ドラム：低音のキック + 高音のハイハット
-        createOscillator(frequency * 0.3, duration * 0.2, volume * 1.5, 'sawtooth', currentTime);
-        createOscillator(frequency * 2.0, duration * 0.1, volume * 0.8, 'square', currentTime + 0.1);
+        createSoftOscillator(frequency * 0.4, duration * 0.3, volume * 0.8, 'sine', currentTime);
+        createSoftOscillator(frequency * 1.5, duration * 0.15, volume * 0.4, 'triangle', currentTime + 0.05);
         break;
       case '🎸 ベース':
-        // ベース：低音の基音 + 少し高い倍音
-        createOscillator(frequency * 0.6, duration * 1.8, volume * 0.9, 'triangle', currentTime);
-        createOscillator(frequency * 1.2, duration * 1.5, volume * 0.3, 'sine', currentTime);
+        createSoftOscillator(frequency * 0.7, duration * 1.2, volume * 0.6, 'sine', currentTime);
+        createSoftOscillator(frequency * 1.4, duration * 0.8, volume * 0.2, 'sine', currentTime + 0.1);
         break;
       case '🎺 トランペット':
-        // トランペット：明るい音 + 少しの歪み
-        createOscillator(frequency * 1.1, duration * 1.0, volume * 1.2, 'square', currentTime);
-        createOscillator(frequency * 1.3, duration * 0.8, volume * 0.4, 'sawtooth', currentTime + 0.1);
+        createSoftOscillator(frequency * 1.0, duration * 0.8, volume * 0.7, 'sine', currentTime);
+        createSoftOscillator(frequency * 1.5, duration * 0.6, volume * 0.3, 'sine', currentTime + 0.05);
         break;
       case '🎸 エレキギター':
-        // エレキギター：歪んだ音 + ハーモニクス
-        createOscillator(frequency * 1.0, duration * 0.8, volume * 1.4, 'sawtooth', currentTime);
-        createOscillator(frequency * 2.0, duration * 0.6, volume * 0.6, 'square', currentTime + 0.05);
-        createOscillator(frequency * 3.0, duration * 0.4, volume * 0.3, 'sine', currentTime + 0.1);
+        createSoftOscillator(frequency * 1.0, duration * 0.6, volume * 0.8, 'sine', currentTime);
+        createSoftOscillator(frequency * 1.5, duration * 0.4, volume * 0.4, 'triangle', currentTime + 0.03);
         break;
       case '🎹 シンセサイザー':
-        // シンセサイザー：複数の波形を重ねた豊かな音
-        createOscillator(frequency * 1.4, duration * 1.5, volume * 0.8, 'sine', currentTime);
-        createOscillator(frequency * 2.1, duration * 1.3, volume * 0.5, 'triangle', currentTime + 0.05);
-        createOscillator(frequency * 2.8, duration * 1.1, volume * 0.3, 'sine', currentTime + 0.1);
+        createSoftOscillator(frequency * 1.0, duration * 1.0, volume * 0.6, 'sine', currentTime);
+        createSoftOscillator(frequency * 1.25, duration * 0.8, volume * 0.3, 'sine', currentTime + 0.02);
+        createSoftOscillator(frequency * 1.5, duration * 0.6, volume * 0.2, 'sine', currentTime + 0.04);
         break;
       case '🎹 ピアノ':
-        // ピアノ：基音 + 倍音の組み合わせ
-        createOscillator(frequency * 1.2, duration * 1.2, volume * 1.0, 'sine', currentTime);
-        createOscillator(frequency * 2.4, duration * 0.8, volume * 0.4, 'sine', currentTime + 0.05);
-        createOscillator(frequency * 3.6, duration * 0.6, volume * 0.2, 'sine', currentTime + 0.1);
+        createSoftOscillator(frequency * 1.0, duration * 0.9, volume * 0.7, 'sine', currentTime);
+        createSoftOscillator(frequency * 2.0, duration * 0.6, volume * 0.3, 'sine', currentTime + 0.02);
+        createSoftOscillator(frequency * 3.0, duration * 0.4, volume * 0.15, 'sine', currentTime + 0.04);
         break;
       default:
-        createOscillator(frequency, duration, volume, 'sine', currentTime);
+        createSoftOscillator(frequency, duration, volume, 'sine', currentTime);
         break;
     }
   };
 
-  // オシレーターを作成するヘルパー関数
-  const createOscillator = (frequency: number, duration: number, volume: number, waveType: OscillatorType, startTime: number) => {
+  // 心地よいオシレーターを作成するヘルパー関数
+  const createSoftOscillator = (frequency: number, duration: number, volume: number, waveType: OscillatorType, startTime: number) => {
     if (!audioContextRef.current || !gainNodeRef.current) {
       return;
     }
 
     const oscillator = audioContextRef.current.createOscillator();
     const gainNode = audioContextRef.current.createGain();
+    const filter = audioContextRef.current.createBiquadFilter();
 
-    oscillator.connect(gainNode);
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(2000, startTime);
+    filter.Q.setValueAtTime(1, startTime);
+
+    oscillator.connect(filter);
+    filter.connect(gainNode);
     gainNode.connect(gainNodeRef.current);
 
     oscillator.frequency.setValueAtTime(frequency, startTime);
     oscillator.type = waveType;
 
     gainNode.gain.setValueAtTime(0, startTime);
-    gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+    gainNode.gain.linearRampToValueAtTime(volume * 0.3, startTime + 0.02);
+    gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.05);
+    gainNode.gain.linearRampToValueAtTime(volume * 0.8, startTime + duration * 0.7);
     gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
 
     oscillator.start(startTime);
@@ -232,43 +388,41 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       return;
     }
 
+    // Web Audio APIの再開（ユーザーインタラクション後）
+    if (audioContextRef.current?.state === 'suspended') {
+      audioContextRef.current.resume();
+    }
+
     setIsPlaying(true);
     const genre = musicGenres.find(g => g.id === selectedGenre);
     if (!genre) {
       setIsPlaying(false);
-      showMessage('音楽ジャンルが見つかりません。ページを再読み込みしてください。', 5000);
+      showMessage('音楽ジャンルが見つかりません。', 5000);
       return;
     }
 
-    // バランス分析
     const totalItems = Object.values(currentMeal.categories).reduce((sum, count) => sum + count, 0);
     if (totalItems === 0) {
       setIsPlaying(false);
-      showMessage('食事を記録してから音声を再生してください。各カテゴリの数量を設定してください。', 5000);
+      showMessage('食事を記録してから音声を再生してください。', 5000);
       return;
     }
 
-    // 各カテゴリの割合を計算
     const categoryRatios = foodCategories.map(category => ({
       ...category,
       ratio: (currentMeal.categories[category.id] || 0) / totalItems
     }));
 
-    // バランススコアを計算（0-1の範囲）
     const balanceScore = calculateBalanceScore(categoryRatios);
-
-    // 音楽を生成
     generateMusic(categoryRatios, balanceScore, genre);
     
-    // 成功メッセージを表示
     const balanceMessage = balanceScore > 0.7 
-      ? '素晴らしいバランスです！心地よいリズムが流れています。' 
+      ? '素晴らしいバランスです！' 
       : balanceScore > 0.4 
-        ? 'バランスが改善できそうです。もう少し調整してみてください。'
+        ? 'バランスが改善できそうです。'
         : 'バランスを改善することをお勧めします。';
     showMessage(balanceMessage, 4000);
 
-    // リピート処理
     if (repeatMode === REPEAT_OPTIONS.LOOP) {
       setIsLooping(true);
       const loopInterval = setInterval(() => {
@@ -294,19 +448,13 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     }
   };
 
-  // IDEAL_BALANCE_RATIOSに存在しないカテゴリIDを処理する関数
-  function handleMissingIdealRatio(categoryId: string): number {
-    console.warn(`Missing ideal balance ratio for category: ${categoryId}`);
-    return 0;
-  }
-
   // バランススコアを計算する関数
   const calculateBalanceScore = (categoryRatios: (FoodCategory & { ratio: number })[]): number => {
     let score = 0;
     categoryRatios.forEach(category => {
       const ideal = category.id in IDEAL_BALANCE_RATIOS
         ? IDEAL_BALANCE_RATIOS[category.id as keyof typeof IDEAL_BALANCE_RATIOS]
-        : handleMissingIdealRatio(category.id);
+        : 0;
       const actual = category.ratio;
       score += 1 - Math.abs(ideal - actual);
     });
@@ -317,31 +465,31 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   // 音楽を生成する関数
   const generateMusic = (categoryRatios: (FoodCategory & { ratio: number })[], balanceScore: number, genre: MusicGenre) => {
     const baseTempo = selectedGenre === 'custom' ? customTempo : genre.baseTempo;
-    const beatDuration = 60 / baseTempo; // 1拍の長さ（秒）
+    const adjustedTempo = Math.max(80, Math.min(140, baseTempo * (0.7 + balanceScore * 0.3)));
+    const adjustedBeatDuration = 60 / adjustedTempo;
 
-    // バランススコアに基づいてテンポを調整
-    const adjustedTempo = baseTempo * (0.5 + balanceScore * 0.5);
+    const sortedCategories = categoryRatios
+      .filter(cat => cat.ratio > 0)
+      .sort((a, b) => b.ratio - a.ratio);
 
-    categoryRatios.forEach((category, index) => {
-      if (category.ratio > 0) {
-        const delay = index * beatDuration * 0.5;
-        const frequency = category.sound.frequency * (0.8 + balanceScore * 0.4);
-        const duration = category.sound.duration * (0.5 + balanceScore * 0.5);
-        const volume = category.sound.volume * balanceScore;
+    sortedCategories.forEach((category, index) => {
+      const delay = index * adjustedBeatDuration * 0.8;
+      const frequency = category.sound.frequency * (0.9 + balanceScore * 0.2);
+      const duration = category.sound.duration * (0.8 + balanceScore * 0.4);
+      const volume = Math.min(0.6, category.sound.volume * (0.5 + balanceScore * 0.5));
 
-        setTimeout(() => {
-          playSound(frequency, duration, volume, category.instrument);
-        }, delay * 1000);
-      }
+      setTimeout(() => {
+        playSound(frequency, duration, volume, category.instrument, category.id);
+      }, delay * 1000);
     });
 
-    // バランスが良い場合は追加のハーモニーを演奏
-    if (balanceScore > 0.7) {
+    if (balanceScore > 0.6) {
+      const harmonyDelay = sortedCategories.length * adjustedBeatDuration * 0.8 + 1000;
       setTimeout(() => {
-        playSound(MUSICAL_NOTES.A, 1.0, 0.3, '🎹 ピアノ'); // A音
-        setTimeout(() => playSound(MUSICAL_NOTES.C_SHARP, 1.0, 0.3, '🎹 ピアノ'), TIMING_DELAYS.C_SHARP_OFFSET); // C#音
-        setTimeout(() => playSound(MUSICAL_NOTES.E, 1.0, 0.3, '🎹 ピアノ'), TIMING_DELAYS.E_OFFSET); // E音
-      }, 2000);
+        playSound(220, 2.0, 0.4, '🎹 ピアノ', 'vegetable');
+        setTimeout(() => playSound(275, 1.8, 0.3, '🎹 ピアノ', 'vegetable'), 200);
+        setTimeout(() => playSound(330, 1.6, 0.25, '🎹 ピアノ', 'vegetable'), 400);
+      }, harmonyDelay);
     }
   };
 
@@ -375,7 +523,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       <div className="section-header">
         <h2>
           <span className="section-icon">🎵</span>
-          音アプリ
+          音アプリ {useRealSounds ? '（リアル楽器モード）' : '（シンセサイザーモード）'}
         </h2>
         <div className="section-controls">
           {showSoundApp ? (
@@ -395,7 +543,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
               className="show-section-button"
               title="セクションを表示"
             >
-              <i className="bi bi-play-fill"></i>
+              ▶
             </button>
           )}
         </div>
@@ -403,9 +551,27 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
       {showSoundApp && (
         <div className="sound-app-content">
+          {/* ローディング表示 */}
+          {useRealSounds && !soundsLoaded && (
+            <div className="loading-overlay">
+              <div className="loading-content">
+                <h3>楽器音をロード中...</h3>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${loadingProgress}%` }}></div>
+                </div>
+                <p>{Math.round(loadingProgress)}%</p>
+              </div>
+            </div>
+          )}
+
           {/* 説明文 */}
           <div className="app-description">
-            <p>自分の調子を音で知れるアプリです。食事のバランスを音で表現し、心地よいリズムで健康状態を確認できます。</p>
+            <p>食事のバランスを音で表現し、心地よいリズムで健康状態を確認できます。</p>
+            {useRealSounds && (
+              <p className="real-sound-notice">
+                🎵 リアル楽器モード: 実際の楽器音を使用しています
+              </p>
+            )}
           </div>
 
           {/* 音楽ジャンル選択 */}
@@ -436,12 +602,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                   min={TEMPO_RANGE.MIN}
                   max={TEMPO_RANGE.MAX}
                   value={customTempo}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value, 10);
-                    if (!isNaN(value) && value >= TEMPO_RANGE.MIN && value <= TEMPO_RANGE.MAX) {
-                      setCustomTempo(value);
-                    }
-                  }}
+                  onChange={(e) => setCustomTempo(parseInt(e.target.value, 10))}
                   aria-label="カスタムテンポ設定"
                 />
               </div>
@@ -452,36 +613,18 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           <div className="repeat-settings">
             <h4>🔄 リピート設定</h4>
             <div className="repeat-options">
-              <button
-                className={`repeat-button ${repeatMode === REPEAT_OPTIONS.NONE ? 'selected' : ''}`}
-                onClick={() => setRepeatMode(REPEAT_OPTIONS.NONE)}
-              >
-                なし
-              </button>
-              <button
-                className={`repeat-button ${repeatMode === REPEAT_OPTIONS.ONCE ? 'selected' : ''}`}
-                onClick={() => setRepeatMode(REPEAT_OPTIONS.ONCE)}
-              >
-                1回
-              </button>
-              <button
-                className={`repeat-button ${repeatMode === REPEAT_OPTIONS.TWICE ? 'selected' : ''}`}
-                onClick={() => setRepeatMode(REPEAT_OPTIONS.TWICE)}
-              >
-                2回
-              </button>
-              <button
-                className={`repeat-button ${repeatMode === REPEAT_OPTIONS.THREE_TIMES ? 'selected' : ''}`}
-                onClick={() => setRepeatMode(REPEAT_OPTIONS.THREE_TIMES)}
-              >
-                3回
-              </button>
-              <button
-                className={`repeat-button ${repeatMode === REPEAT_OPTIONS.LOOP ? 'selected' : ''}`}
-                onClick={() => setRepeatMode(REPEAT_OPTIONS.LOOP)}
-              >
-                ループ
-              </button>
+              {Object.entries(REPEAT_OPTIONS).map(([key, value]) => (
+                <button
+                  key={key}
+                  className={`repeat-button ${repeatMode === value ? 'selected' : ''}`}
+                  onClick={() => setRepeatMode(value)}
+                >
+                  {key === 'NONE' ? 'なし' : 
+                   key === 'ONCE' ? '1回' :
+                   key === 'TWICE' ? '2回' :
+                   key === 'THREE_TIMES' ? '3回' : 'ループ'}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -493,7 +636,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                 <div key={category.id} className="category-item">
                   <div 
                     className="category-color"
-                    data-color={category.color}
+                    style={{ backgroundColor: category.color }}
                   ></div>
                   <div className="category-info">
                     <span className="category-name">{category.name}</span>
@@ -546,16 +689,11 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                 </button>
               )}
             </div>
-            <div className="balance-info">
-              <p>バランスの良い食事ほど心地よいリズムになります</p>
-              <p>各カテゴリは異なる楽器で表現されます</p>
-            </div>
             
             {/* ユーザーメッセージ表示 */}
             {userMessage && (
               <div className="user-message">
                 <div className="message-content">
-                  <i className="bi bi-info-circle"></i>
                   <span>{userMessage}</span>
                 </div>
               </div>
@@ -576,15 +714,17 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                     <div className="bar-label">
                       <span 
                         className="bar-color"
-                        data-color={category.color}
+                        style={{ backgroundColor: category.color }}
                       ></span>
                       {category.name}
                     </div>
                     <div className="bar-container">
                       <div 
                         className="bar-fill"
-                        data-width={percentage}
-                        data-color={category.color}
+                        style={{ 
+                          width: `${percentage}%`,
+                          backgroundColor: category.color 
+                        }}
                       ></div>
                       <span className="bar-percentage">{Math.round(percentage)}%</span>
                     </div>
