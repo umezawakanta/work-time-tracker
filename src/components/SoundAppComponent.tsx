@@ -79,8 +79,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // オーディオコンテキストの初期化
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.AudioContext) {
-      audioContextRef.current = new AudioContext();
+    if (typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext)) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      audioContextRef.current = new AudioCtx();
       gainNodeRef.current = audioContextRef.current.createGain();
       gainNodeRef.current.connect(audioContextRef.current.destination);
     }
