@@ -230,7 +230,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       const recordDateStr = recordDate.toISOString().split("T")[0];
       return recordDateStr === selectedDateUTCStr && record.type === 'expense';
     });
-    const diaryRecord = (workDiaries || []).find(diary => {
+    const diaryRecords = (workDiaries || []).filter(diary => {
       const diaryDate = new Date(diary.date);
       const diaryDateStr = diaryDate.toISOString().split("T")[0];
       const matches = diaryDateStr === selectedDateUTCStr;
@@ -240,8 +240,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       return matches;
     });
     
-    console.log("WorkRecordsComponent - Filtered diaryRecord:", diaryRecord);
-    return { incomeRecords, expenseRecords, diaryRecord };
+    console.log("WorkRecordsComponent - Filtered diaryRecords:", diaryRecords);
+    return { incomeRecords, expenseRecords, diaryRecords };
   };
 
   // 月の統計を計算
@@ -287,10 +287,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
     const records = getRecordsForDate(date);
-    if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.diaryRecord) {
+    if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.diaryRecords.length > 0) {
       setSelectedRecord(records);
       // 複数の記録がある場合は、日記を優先表示
-      if (records.diaryRecord) {
+      if (records.diaryRecords.length > 0) {
         setSelectedRecordType("diary");
       } else if (records.incomeRecords.length > 0) {
         setSelectedRecordType("income");
@@ -312,7 +312,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     } else if (type === "expense" && records.expenseRecords.length > 0) {
       setSelectedRecord(records);
       setSelectedRecordType("expense");
-    } else if (type === "diary" && records.diaryRecord) {
+    } else if (type === "diary" && records.diaryRecords.length > 0) {
       setSelectedRecord(records);
       setSelectedRecordType("diary");
     }
@@ -674,39 +674,46 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               )}
               
               {/* 日記の表示 */}
-              {selectedRecord.diaryRecord && (
-                <div className="diary-record-detail">
-                  {console.log("Rendering diary record:", selectedRecord.diaryRecord)}
+              {selectedRecord.diaryRecords && selectedRecord.diaryRecords.length > 0 && (
+                <div className="diary-records-detail">
                   <h4>
                     <i className="bi bi-journal-text"></i>
-                    日記: {selectedRecord.diaryRecord.title}
-                    <span className="diary-mood">
-                      {selectedRecord.diaryRecord.mood && (
-                        <i className={`bi bi-emoji-${selectedRecord.diaryRecord.mood === '1' ? 'frown' : 
-                          selectedRecord.diaryRecord.mood === '2' ? 'meh' : 
-                          selectedRecord.diaryRecord.mood === '3' ? 'neutral' : 
-                          selectedRecord.diaryRecord.mood === '4' ? 'smile' : 'laughing'}`}></i>
-                      )}
-                    </span>
+                    日記 ({selectedRecord.diaryRecords.length}件)
                   </h4>
-                  <p><strong>タイトル:</strong> {selectedRecord.diaryRecord.title}</p>
-                  <p><strong>日付:</strong> {new Date(selectedRecord.diaryRecord.date).toLocaleDateString()}</p>
-                  <p><strong>気分:</strong> {selectedRecord.diaryRecord.mood || '未設定'}</p>
-                  <p><strong>内容:</strong> {selectedRecord.diaryRecord.content}</p>
-                  <div className="record-actions">
-                    <button
-                      onClick={() => editDiary(selectedRecord.diaryRecord)}
-                      className="edit-button"
-                    >
-                      編集
-                    </button>
-                    <button
-                      onClick={() => handleDeleteDiary(selectedRecord.diaryRecord._id)}
-                      className="delete-button"
-                    >
-                      削除
-                    </button>
-                  </div>
+                  {selectedRecord.diaryRecords.map((diary: any, index: number) => (
+                    <div key={diary._id || index} className="diary-record-detail">
+                      {console.log("Rendering diary record:", diary)}
+                      <h5>
+                        日記: {diary.title}
+                        <span className="diary-mood">
+                          {diary.mood && (
+                            <i className={`bi bi-emoji-${diary.mood === '1' ? 'frown' : 
+                              diary.mood === '2' ? 'meh' : 
+                              diary.mood === '3' ? 'neutral' : 
+                              diary.mood === '4' ? 'smile' : 'laughing'}`}></i>
+                          )}
+                        </span>
+                      </h5>
+                      <p><strong>タイトル:</strong> {diary.title}</p>
+                      <p><strong>日付:</strong> {new Date(diary.date).toLocaleDateString()}</p>
+                      <p><strong>気分:</strong> {diary.mood || '未設定'}</p>
+                      <p><strong>内容:</strong> {diary.content}</p>
+                      <div className="record-actions">
+                        <button
+                          onClick={() => editDiary(diary)}
+                          className="edit-button"
+                        >
+                          編集
+                        </button>
+                        <button
+                          onClick={() => handleDeleteDiary(diary._id)}
+                          className="delete-button"
+                        >
+                          削除
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
