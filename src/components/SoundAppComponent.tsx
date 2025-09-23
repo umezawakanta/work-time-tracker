@@ -184,7 +184,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const calculateBalanceScore = (categoryRatios: (FoodCategory & { ratio: number })[]): number => {
     let score = 0;
     categoryRatios.forEach(category => {
-      const ideal = Object.prototype.hasOwnProperty.call(IDEAL_BALANCE_RATIOS, category.id)
+      const ideal = category.id in IDEAL_BALANCE_RATIOS
         ? IDEAL_BALANCE_RATIOS[category.id as keyof typeof IDEAL_BALANCE_RATIOS]
         : handleMissingIdealRatio(category.id);
       const actual = category.ratio;
