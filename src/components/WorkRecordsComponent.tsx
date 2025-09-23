@@ -691,7 +691,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                   </h4>
                   {selectedRecord.diaryRecords.map((diary: any, index: number) => (
                     <div key={diary._id || index} className="diary-record-detail">
-                      {console.log("Rendering diary record:", diary)}
                       <h5>
                         日記: {diary.title}
                         <span className="diary-mood">
