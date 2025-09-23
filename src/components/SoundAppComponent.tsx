@@ -90,6 +90,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const [customTempo, setCustomTempo] = useState<number>(120);
   const [customInstruments, setCustomInstruments] = useState<string[]>(['piano']);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [userMessage, setUserMessage] = useState<string>('');
   const [currentMeal, setCurrentMeal] = useState<MealRecord>({
     id: Date.now().toString(),
     date: new Date().toISOString().split('T')[0],
@@ -117,6 +118,12 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     }
   }, []);
 
+  // ユーザーメッセージを表示する関数
+  const showMessage = (message: string, duration: number = 3000) => {
+    setUserMessage(message);
+    setTimeout(() => setUserMessage(''), duration);
+  };
+
   // 音を生成する関数
   const playSound = (frequency: number, duration: number, volume: number) => {
     if (!audioContextRef.current || !gainNodeRef.current) {
@@ -143,12 +150,15 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   // 食事バランスを音に変換する関数
   const playMealBalance = () => {
     if (isPlaying) {
+      showMessage('音声を再生中です。しばらくお待ちください。');
       return;
     }
 
     setIsPlaying(true);
     const genre = musicGenres.find(g => g.id === selectedGenre);
     if (!genre) {
+      setIsPlaying(false);
+      showMessage('音楽ジャンルが見つかりません。ページを再読み込みしてください。', 5000);
       return;
     }
 
@@ -156,6 +166,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     const totalItems = Object.values(currentMeal.categories).reduce((sum, count) => sum + count, 0);
     if (totalItems === 0) {
       setIsPlaying(false);
+      showMessage('食事を記録してから音声を再生してください。各カテゴリの数量を設定してください。', 5000);
       return;
     }
 
@@ -170,6 +181,14 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
     // 音楽を生成
     generateMusic(categoryRatios, balanceScore, genre);
+    
+    // 成功メッセージを表示
+    const balanceMessage = balanceScore > 0.7 
+      ? '素晴らしいバランスです！心地よいリズムが流れています。' 
+      : balanceScore > 0.4 
+        ? 'バランスが改善できそうです。もう少し調整してみてください。'
+        : 'バランスを改善することをお勧めします。';
+    showMessage(balanceMessage, 4000);
 
     setTimeout(() => setIsPlaying(false), PLAYBACK_DURATION);
   };
@@ -373,6 +392,16 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
             <div className="balance-info">
               <p>バランスの良い食事ほど心地よいリズムになります</p>
             </div>
+            
+            {/* ユーザーメッセージ表示 */}
+            {userMessage && (
+              <div className="user-message">
+                <div className="message-content">
+                  <i className="bi bi-info-circle"></i>
+                  <span>{userMessage}</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* バランス表示 */}
