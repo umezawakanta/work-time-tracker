@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './SoundAppComponent.css';
 
+// Web Audio APIの型定義を拡張
+declare global {
+  interface Window {
+    webkitAudioContext?: typeof AudioContext;
+  }
+}
+
 // 食事カテゴリの定義
 export interface FoodCategory {
   id: string;
@@ -35,6 +42,11 @@ const TIMING_DELAYS = {
 } as const;
 
 const PLAYBACK_DURATION = 5000; // 5秒
+
+const TEMPO_RANGE = {
+  MIN: 60,
+  MAX: 200
+} as const;
 
 // 音楽ジャンルの定義
 export interface MusicGenre {
@@ -103,18 +115,13 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // オーディオコンテキストの初期化
   useEffect(() => {
-    // TypeScript-safe detection of AudioContext and webkitAudioContext
-    const AudioCtx =
-      typeof window !== 'undefined' && 'AudioContext' in window
-        ? window.AudioContext
-        : typeof window !== 'undefined' && 'webkitAudioContext' in window
-          // @ts-ignore: webkitAudioContext is not in the standard DOM typings
-          ? (window as any).webkitAudioContext
-          : undefined;
-    if (AudioCtx) {
-      audioContextRef.current = new AudioCtx();
-      gainNodeRef.current = audioContextRef.current.createGain();
-      gainNodeRef.current.connect(audioContextRef.current.destination);
+    if (typeof window !== 'undefined') {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        audioContextRef.current = new AudioCtx();
+        gainNodeRef.current = audioContextRef.current.createGain();
+        gainNodeRef.current.connect(audioContextRef.current.destination);
+      }
     }
   }, []);
 
@@ -326,12 +333,12 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                 <label>テンポ: {customTempo} BPM</label>
                 <input
                   type="range"
-                  min="60"
-                  max="200"
+                  min={TEMPO_RANGE.MIN}
+                  max={TEMPO_RANGE.MAX}
                   value={customTempo}
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10);
-                    if (!isNaN(value) && value >= 60 && value <= 200) {
+                    if (!isNaN(value) && value >= TEMPO_RANGE.MIN && value <= TEMPO_RANGE.MAX) {
                       setCustomTempo(value);
                     }
                   }}
