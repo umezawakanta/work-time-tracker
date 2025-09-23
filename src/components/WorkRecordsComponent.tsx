@@ -240,7 +240,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       return matches;
     });
     
-    console.log("WorkRecordsComponent - Filtered diaryRecords:", diaryRecords);
     return { incomeRecords, expenseRecords, diaryRecords };
   };
 
