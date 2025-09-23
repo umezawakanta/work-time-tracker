@@ -174,11 +174,19 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     setTimeout(() => setIsPlaying(false), PLAYBACK_DURATION);
   };
 
+  // IDEAL_BALANCE_RATIOSに存在しないカテゴリIDを処理する関数
+  function handleMissingIdealRatio(categoryId: string): number {
+    console.warn(`Missing ideal balance ratio for category: ${categoryId}`);
+    return 0;
+  }
+
   // バランススコアを計算する関数
   const calculateBalanceScore = (categoryRatios: (FoodCategory & { ratio: number })[]): number => {
     let score = 0;
     categoryRatios.forEach(category => {
-      const ideal = IDEAL_BALANCE_RATIOS[category.id as keyof typeof IDEAL_BALANCE_RATIOS] || 0;
+      const ideal = Object.prototype.hasOwnProperty.call(IDEAL_BALANCE_RATIOS, category.id)
+        ? IDEAL_BALANCE_RATIOS[category.id as keyof typeof IDEAL_BALANCE_RATIOS]
+        : handleMissingIdealRatio(category.id);
       const actual = category.ratio;
       score += 1 - Math.abs(ideal - actual);
     });
