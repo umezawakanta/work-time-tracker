@@ -71,7 +71,7 @@ interface WorkRecordsComponentProps {
   handleUpdateDiary: (e: React.FormEvent) => void;
   handleDeleteIncomeExpenseRecord: (id: string) => void;
   handleDeleteDiary: (id: string) => void;
-  editDiary: (diary: any) => void;
+  editDiary: (diary: WorkDiary) => void;
   openDiaryForm: () => void;
   loadMonthlyMemo: () => void;
   saveMonthlyMemo: () => void;
