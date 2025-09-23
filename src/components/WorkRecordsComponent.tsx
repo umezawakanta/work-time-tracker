@@ -568,7 +568,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           {/* 選択された記録の詳細 */}
           {selectedRecord && (
             <div className="record-details">
-              {console.log("Selected record in render:", selectedRecord)}
+              
               <h3>
                 <i className="bi bi-calendar-check"></i>
                 {selectedDate ? selectedDate.toLocaleDateString('ja-JP', { 
