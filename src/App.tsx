@@ -2940,6 +2940,14 @@ ${errorInfo.stack}
     // 選択された日付をUTCの開始時刻に設定
     const selectedDateUTC = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     const selectedDateUTCStr = selectedDateUTC.toISOString().split("T")[0];
+    
+    console.log("Searching for date:", selectedDateUTCStr);
+    console.log("Available diaries:", workDiaries.map(d => ({
+      id: d._id,
+      title: d.title,
+      date: d.date,
+      dateStr: new Date(d.date).toISOString().split("T")[0]
+    })));
 
     const filteredIncomeExpenseRecords = (incomeExpenseRecords || []).filter((record) => {
       // データベースの日付をUTC日付文字列に変換して比較
@@ -2959,6 +2967,7 @@ ${errorInfo.stack}
       return matches;
     });
 
+    console.log("Filtered diaries:", filteredDiaries);
     return { incomeExpenseRecords: filteredIncomeExpenseRecords, diaries: filteredDiaries };
   };
 
