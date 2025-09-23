@@ -2966,7 +2966,6 @@ ${errorInfo.stack}
       return matches;
     });
 
-    console.log("Filtered diaries:", filteredDiaries);
     return { incomeExpenseRecords: filteredIncomeExpenseRecords, diaries: filteredDiaries };
   };
 
