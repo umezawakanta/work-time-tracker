@@ -2357,6 +2357,7 @@ ${errorInfo.stack}
       const data = await response.json();
       if (data.success) {
         setMessage("日記を更新しました！");
+        // フォームをリセット
         setDiaryDate("");
         setDiaryTitle("");
         setDiaryContent("");
@@ -2381,7 +2382,8 @@ ${errorInfo.stack}
         setNewNextGoal("");
         setEditingDiary(null);
         setShowDiaryForm(false);
-        loadWorkDiaries();
+        // データを再読み込み
+        await loadWorkDiaries();
       } else {
         setMessage(`エラー: ${data.message}`);
       }
@@ -3035,12 +3037,16 @@ ${errorInfo.stack}
   };
 
   const editDiary = (diary: any) => {
-    setDiaryDate(diary.date.split("T")[0]);
-    setDiaryTitle(diary.title);
-    setDiaryContent(diary.content);
-    setDiaryMood(diary.mood);
+    // 日付を正しく処理（タイムゾーンを考慮）
+    const diaryDate = new Date(diary.date);
+    const localDate = new Date(diaryDate.getTime() - diaryDate.getTimezoneOffset() * 60000);
+    setDiaryDate(localDate.toISOString().split("T")[0]);
+    
+    setDiaryTitle(diary.title || "");
+    setDiaryContent(diary.content || "");
+    setDiaryMood(diary.mood || "");
     setDiaryTags(diary.tags ? diary.tags.join(", ") : "");
-    setDiaryIsPrivate(diary.isPrivate);
+    setDiaryIsPrivate(diary.isPrivate || false);
     // 新しい項目の初期値設定
     setDiaryWorkSummary(diary.workSummary || "");
     setDiaryAchievements(diary.achievements || []);
