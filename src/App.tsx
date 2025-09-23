@@ -2357,6 +2357,7 @@ ${errorInfo.stack}
       const data = await response.json();
       if (data.success) {
         setMessage("日記を更新しました！");
+        // フォームをリセット
         setDiaryDate("");
         setDiaryTitle("");
         setDiaryContent("");
@@ -2381,7 +2382,8 @@ ${errorInfo.stack}
         setNewNextGoal("");
         setEditingDiary(null);
         setShowDiaryForm(false);
-        loadWorkDiaries();
+        // データを再読み込み
+        await loadWorkDiaries();
       } else {
         setMessage(`エラー: ${data.message}`);
       }
@@ -2934,29 +2936,24 @@ ${errorInfo.stack}
   };
 
   const getRecordsForDate = (date: Date) => {
-    // 日本時間での日付文字列を取得
-    const jstDateStr = new Date(date.getTime() + 9 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0];
+    // 選択された日付をUTCの開始時刻に設定
+    const selectedDateUTC = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const selectedDateUTCStr = selectedDateUTC.toISOString().split("T")[0];
+    
 
     const filteredIncomeExpenseRecords = (incomeExpenseRecords || []).filter((record) => {
-      // データベースの日付を日本時間に変換して比較
+      // データベースの日付をUTC日付文字列に変換して比較
       const recordDate = new Date(record.date);
-      const recordJstDateStr = new Date(
-        recordDate.getTime() + 9 * 60 * 60 * 1000
-      )
-        .toISOString()
-        .split("T")[0];
-      return recordJstDateStr === jstDateStr;
+      const recordDateStr = recordDate.toISOString().split("T")[0];
+      return recordDateStr === selectedDateUTCStr;
     });
 
     const filteredDiaries = (workDiaries || []).filter((diary) => {
-      // データベースの日付を日本時間に変換して比較
+      // データベースの日付をUTC日付文字列に変換して比較
       const diaryDate = new Date(diary.date);
-      const diaryJstDateStr = new Date(diaryDate.getTime() + 9 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0];
-      return diaryJstDateStr === jstDateStr;
+      const diaryDateStr = diaryDate.toISOString().split("T")[0];
+      const matches = diaryDateStr === selectedDateUTCStr;
+      return matches;
     });
 
     return { incomeExpenseRecords: filteredIncomeExpenseRecords, diaries: filteredDiaries };
@@ -3035,12 +3032,16 @@ ${errorInfo.stack}
   };
 
   const editDiary = (diary: any) => {
-    setDiaryDate(diary.date.split("T")[0]);
-    setDiaryTitle(diary.title);
-    setDiaryContent(diary.content);
-    setDiaryMood(diary.mood);
+    // 日付を正しく処理（タイムゾーンを考慮）
+    const diaryDate = new Date(diary.date);
+    const localDate = new Date(diaryDate.getTime() - diaryDate.getTimezoneOffset() * 60000);
+    setDiaryDate(localDate.toISOString().split("T")[0]);
+    
+    setDiaryTitle(diary.title || "");
+    setDiaryContent(diary.content || "");
+    setDiaryMood(diary.mood || "");
     setDiaryTags(diary.tags ? diary.tags.join(", ") : "");
-    setDiaryIsPrivate(diary.isPrivate);
+    setDiaryIsPrivate(diary.isPrivate || false);
     // 新しい項目の初期値設定
     setDiaryWorkSummary(diary.workSummary || "");
     setDiaryAchievements(diary.achievements || []);
@@ -6101,6 +6102,7 @@ User Agent: ${userAgent}
                     handleUpdateDiary={handleUpdateDiary}
                     handleDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
                     handleDeleteDiary={handleDeleteDiary}
+                    editDiary={editDiary}
                     openDiaryForm={openDiaryForm}
                     loadMonthlyMemo={loadMonthlyMemo}
                     saveMonthlyMemo={saveMonthlyMemo}
