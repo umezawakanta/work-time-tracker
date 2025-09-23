@@ -310,7 +310,12 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                   min="60"
                   max="200"
                   value={customTempo}
-                  onChange={(e) => setCustomTempo(Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    if (!isNaN(value) && value >= 60 && value <= 200) {
+                      setCustomTempo(value);
+                    }
+                  }}
                   aria-label="カスタムテンポ設定"
                 />
               </div>
