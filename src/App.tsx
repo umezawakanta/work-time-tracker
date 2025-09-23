@@ -2940,13 +2940,6 @@ ${errorInfo.stack}
     const selectedDateUTC = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     const selectedDateUTCStr = selectedDateUTC.toISOString().split("T")[0];
     
-    console.log("Searching for date:", selectedDateUTCStr);
-    console.log("Available diaries:", workDiaries.map(d => ({
-      id: d._id,
-      title: d.title,
-      date: d.date,
-      dateStr: new Date(d.date).toISOString().split("T")[0]
-    })));
 
     const filteredIncomeExpenseRecords = (incomeExpenseRecords || []).filter((record) => {
       // データベースの日付をUTC日付文字列に変換して比較
@@ -2960,9 +2953,6 @@ ${errorInfo.stack}
       const diaryDate = new Date(diary.date);
       const diaryDateStr = diaryDate.toISOString().split("T")[0];
       const matches = diaryDateStr === selectedDateUTCStr;
-      if (matches) {
-        console.log("Found matching diary:", diary);
-      }
       return matches;
     });
 

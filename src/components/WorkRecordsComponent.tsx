@@ -212,13 +212,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     const selectedDateUTC = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     const selectedDateUTCStr = selectedDateUTC.toISOString().split("T")[0];
     
-    console.log("WorkRecordsComponent - Searching for date:", selectedDateUTCStr);
-    console.log("WorkRecordsComponent - Available diaries:", workDiaries.map(d => ({
-      id: d._id,
-      title: d.title,
-      date: d.date,
-      dateStr: new Date(d.date).toISOString().split("T")[0]
-    })));
     
     const incomeRecords = (incomeExpenseRecords || []).filter(record => {
       const recordDate = new Date(record.date);
@@ -234,9 +227,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       const diaryDate = new Date(diary.date);
       const diaryDateStr = diaryDate.toISOString().split("T")[0];
       const matches = diaryDateStr === selectedDateUTCStr;
-      if (matches) {
-        console.log("WorkRecordsComponent - Found matching diary:", diary);
-      }
       return matches;
     });
     
@@ -567,7 +557,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           {/* 選択された記録の詳細 */}
           {selectedRecord && (
             <div className="record-details">
-              
               <h3>
                 <i className="bi bi-calendar-check"></i>
                 {selectedDate ? selectedDate.toLocaleDateString('ja-JP', { 
