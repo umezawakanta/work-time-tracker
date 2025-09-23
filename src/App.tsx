@@ -17,6 +17,7 @@ import TimeTrackingComponent from "./components/TimeTrackingComponent";
 import TimersComponent from "./components/TimersComponent";
 import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
+import SoundAppComponent from "./components/SoundAppComponent";
 import NotificationComponent from "./components/NotificationComponent";
 import VersionInfo from "./components/VersionInfo";
 import { ErrorInfo, getErrorInfo, formatErrorInfo, createErrorInfo } from './types/errorTypes';
@@ -330,6 +331,9 @@ function App() {
 
   // お仕事記録の状態
   const [showWorkRecords, setShowWorkRecords] = useState(false);
+  
+  // 音アプリの状態
+  const [showSoundApp, setShowSoundApp] = useState(false);
   const [incomeExpenseRecords, setIncomeExpenseRecords] = useState<IncomeExpenseRecord[]>([]);
   const [workDiaries, setWorkDiaries] = useState<WorkDiary[]>([]);
   const [showIncomeExpenseForm, setShowIncomeExpenseForm] = useState(false);
@@ -840,6 +844,12 @@ function App() {
       description: "自分自身を深く理解するための分析ツール",
       component: null, // 自己分析セクション
     },
+    {
+      id: "sound-app",
+      name: "音アプリ",
+      description: "食事バランスを音で表現するアプリ",
+      component: null, // 音アプリセクション
+    },
   ];
 
   // 機能選択肢の定義
@@ -856,6 +866,7 @@ function App() {
     { value: "work-records", label: "お仕事記録" },
     { value: "timers", label: "タイマー" },
     { value: "self-analysis", label: "じぶん図鑑" },
+    { value: "sound-app", label: "音アプリ" },
     { value: "general", label: "全般" },
     { value: "other", label: "その他" },
   ];
@@ -2713,6 +2724,9 @@ ${errorInfo.stack}
     }
     if (activeFeature !== "self-analysis") {
       setShowSelfAnalysis(false);
+    }
+    if (activeFeature !== "sound-app") {
+      setShowSoundApp(false);
     }
   };
 
@@ -6181,6 +6195,15 @@ User Agent: ${userAgent}
                     calculateProductivityTrend={calculateProductivityTrend as unknown as () => { date: string; workHours: number; dayOfWeek: string; }[]}
                     calculateProductivityStats={calculateProductivityStats}
                     loadTimeEntries={loadTimeEntries}
+                    closeOtherFeatures={closeOtherFeatures}
+                  />
+                );
+              } else if (feature.id === "sound-app") {
+                return (
+                  <SoundAppComponent
+                    key={feature.id}
+                    showSoundApp={showSoundApp}
+                    setShowSoundApp={setShowSoundApp}
                     closeOtherFeatures={closeOtherFeatures}
                   />
                 );
