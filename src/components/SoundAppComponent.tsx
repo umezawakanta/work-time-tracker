@@ -348,25 +348,47 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         notes.push(
           new StaveNote({
             keys: ["b/4"],
-            duration: "w",
+            duration: "wr", // 全休符に変更
           })
         );
       }
 
-      // Voice の作成
-      const voice = new Voice({ numBeats: 4, beatValue: 4 });
-      voice.addTickables(notes);
+      // Voice の作成（エラーハンドリング付き）
+      try {
+        const voice = new Voice({
+          numBeats: 4,
+          beatValue: 4,
+        });
+        voice.setMode(3); // SOFT mode = 3 (エラーを許容)
+        voice.addTickables(notes);
 
-      // フォーマッターで配置
-      const formatter = new Formatter();
-      formatter.joinVoices([voice]).format([voice], 750);
+        // フォーマッターで配置
+        const formatter = new Formatter();
+        formatter.joinVoices([voice]).format([voice], 750);
 
-      // 描画
-      voice.draw(context, stave);
+        // 描画
+        voice.draw(context, stave);
 
-      // ビーム（連桁）の追加
-      const beams = Beam.generateBeams(notes);
-      beams.forEach((beam) => beam.setContext(context).draw());
+        // ビーム（連桁）の追加（8分音符がある場合のみ）
+        const hasEighthNotes = notes.some((note) => note.getDuration() === "8");
+        if (hasEighthNotes) {
+          try {
+            const beams = Beam.generateBeams(notes);
+            beams.forEach((beam) => beam.setContext(context).draw());
+          } catch (beamError) {
+            console.log("Beam generation skipped:", beamError);
+          }
+        }
+      } catch (voiceError) {
+        console.log("Voice error, using simple stave:", voiceError);
+        // エラーの場合は単純に音符を描画
+        notes.forEach((note, index) => {
+          note.setContext(context);
+          note.setStave(stave);
+          note.setX(100 + index * 100); // 手動で位置を設定
+          note.draw();
+        });
+      }
 
       rendererRef.current = renderer;
     } catch (error) {
