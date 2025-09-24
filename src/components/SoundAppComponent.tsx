@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import * as Tone from 'tone';
-import Vex from 'vexflow';
+import { Renderer, Stave, StaveNote, Voice, Formatter, Beam, Accidental } from 'vexflow';
 import './SoundAppComponent.css';
 
 // グローバルでTone.jsの初期化状態を管理
@@ -236,8 +236,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     scoreContainerRef.current.innerHTML = '';
 
     try {
-      const { Renderer, Stave, StaveNote, Voice, Formatter, Beam, Accidental } = Vex.Flow;
-
       // レンダラーの作成
       const renderer = new Renderer(scoreContainerRef.current, Renderer.Backends.SVG);
       renderer.resize(800, 200);
@@ -263,9 +261,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
         // シャープやフラットを追加
         if (note.pitch.includes('#')) {
-          staveNote.addAccidental(0, new Accidental('#'));
+          staveNote.addModifier(new Accidental('#'), 0);
         } else if (note.pitch.includes('b')) {
-          staveNote.addAccidental(0, new Accidental('b'));
+          staveNote.addModifier(new Accidental('b'), 0);
         }
 
         return staveNote;
@@ -280,7 +278,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       }
 
       // Voice の作成
-      const voice = new Voice({ num_beats: 4, beat_value: 4 });
+      const voice = new Voice({ numBeats: 4, beatValue: 4 });
       voice.addTickables(notes);
 
       // フォーマッターで配置
@@ -881,24 +879,36 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
               <h3>🎼 楽譜設定</h3>
               <div className="settings-grid">
                 <div className="setting-item">
-                  <label>楽譜表示</label>
+                  <label htmlFor="score-display-checkbox">楽譜表示</label>
                   <input
+                    id="score-display-checkbox"
                     type="checkbox"
                     checked={showScore}
                     onChange={(e) => setShowScore(e.target.checked)}
+                    aria-label="楽譜の表示切り替え"
                   />
                 </div>
                 <div className="setting-item">
-                  <label>音符の色分け</label>
-                  <select>
+                  <label htmlFor="note-color-select">音符の色分け</label>
+                  <select 
+                    id="note-color-select"
+                    aria-label="音符の色分け設定"
+                  >
                     <option>カテゴリー別</option>
                     <option>楽器別</option>
                     <option>なし</option>
                   </select>
                 </div>
                 <div className="setting-item">
-                  <label>楽譜のサイズ</label>
-                  <input type="range" min="50" max="150" defaultValue="100" />
+                  <label htmlFor="score-size-range">楽譜のサイズ</label>
+                  <input 
+                    id="score-size-range"
+                    type="range" 
+                    min="50" 
+                    max="150" 
+                    defaultValue="100"
+                    aria-label="楽譜のサイズ調整"
+                  />
                 </div>
               </div>
             </div>
@@ -917,25 +927,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           )}
         </div>
       )}
-      
-      <style jsx>{`
-        .score-container .playing {
-          fill: #4CAF50 !important;
-          animation: noteHighlight 0.5s ease;
-        }
-        
-        @keyframes noteHighlight {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.2); }
-          100% { transform: scale(1); }
-        }
-        
-        .note-display {
-          color: #ffeb3b;
-          font-size: 0.9em;
-          margin-left: 5px;
-        }
-      `}</style>
     </div>
   );
 };

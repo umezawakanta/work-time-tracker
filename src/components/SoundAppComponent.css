@@ -1,447 +1,315 @@
-/* 音アプリセクション */
+/* SoundAppComponent.css */
+
+/* 楽譜関連のスタイル */
+.score-container .vf-stavenote.playing {
+  fill: #4caf50 !important;
+  animation: noteHighlight 0.5s ease;
+}
+
+@keyframes noteHighlight {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.note-display {
+  color: #ffeb3b;
+  font-size: 0.9em;
+  margin-left: 5px;
+}
+
+/* 基本レイアウト */
 .sound-app-section {
   margin: 20px 0;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  padding: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  margin-bottom: 20px;
 }
 
 .section-header h2 {
+  color: white;
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 .section-icon {
-  font-size: 1.8rem;
-  animation: pulse 2s infinite;
+  margin-right: 8px;
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-.section-controls button {
+.close-section-button,
+.show-section-button {
+  padding: 8px 16px;
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
+  transition: all 0.3s;
 }
 
-.section-controls button:hover {
+.close-section-button:hover,
+.show-section-button:hover {
   background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
 }
 
-/* 音アプリコンテンツ */
 .sound-app-content {
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.05);
+  color: white;
 }
 
 .app-description {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 15px;
-  border-radius: 8px;
+  text-align: center;
   margin-bottom: 20px;
-  backdrop-filter: blur(5px);
 }
 
-.app-description p {
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.6;
+/* タブ */
+.view-mode-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-/* 音楽ジャンル選択 */
+.view-mode-tabs button {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.view-mode-tabs button.active {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: white;
+}
+
+/* ジャンル選択 */
 .genre-selection {
-  margin-bottom: 30px;
-}
-
-.genre-selection h3 {
-  margin: 0 0 15px 0;
-  font-size: 1.3rem;
-  font-weight: 600;
+  margin-bottom: 20px;
 }
 
 .genre-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .genre-button {
+  padding: 12px;
   background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
-  padding: 15px;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: left;
-  backdrop-filter: blur(5px);
-}
-
-.genre-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s;
+  text-align: center;
 }
 
 .genre-button.selected {
   background: rgba(255, 255, 255, 0.3);
-  border-color: #ffd700;
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  border-color: white;
+  transform: scale(1.05);
 }
 
-.genre-name {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-
-.genre-description {
-  font-size: 0.9rem;
+.genre-button small {
+  display: block;
+  font-size: 0.8em;
+  margin-top: 4px;
   opacity: 0.8;
-}
-
-/* カスタム設定 */
-.custom-settings {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  backdrop-filter: blur(5px);
-}
-
-/* リピート設定 */
-.repeat-settings {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  backdrop-filter: blur(5px);
-}
-
-.repeat-settings h4 {
-  margin: 0 0 15px 0;
-  font-size: 1.1rem;
-}
-
-.repeat-options {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.repeat-button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.repeat-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-}
-
-.repeat-button.selected {
-  background: rgba(255, 215, 0, 0.3);
-  border-color: #ffd700;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-}
-
-.custom-settings h4 {
-  margin: 0 0 15px 0;
-  font-size: 1.1rem;
-}
-
-.setting-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.setting-group label {
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.setting-group input[type="range"] {
-  width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.2);
-  outline: none;
-  -webkit-appearance: none;
-}
-
-.setting-group input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #ffd700;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* 食事記録 */
 .meal-recording {
-  margin-bottom: 30px;
-}
-
-.meal-recording h3 {
-  margin: 0 0 15px 0;
-  font-size: 1.3rem;
-  font-weight: 600;
+  margin-bottom: 20px;
 }
 
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 15px;
-  margin-bottom: 20px;
+  margin: 15px 0;
 }
 
 .category-item {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 15px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  backdrop-filter: blur(5px);
-  transition: all 0.3s ease;
-}
-
-.category-item:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-}
-
-.category-color {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.category-color[data-color="#8B4513"] { background-color: #8B4513; }
-.category-color[data-color="#228B22"] { background-color: #228B22; }
-.category-color[data-color="#D2691E"] { background-color: #D2691E; }
-.category-color[data-color="#DC143C"] { background-color: #DC143C; }
-.category-color[data-color="#4169E1"] { background-color: #4169E1; }
-.category-color[data-color="#32CD32"] { background-color: #32CD32; }
-
-.category-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.category-name {
-  font-weight: 500;
-  font-size: 1rem;
-}
-
-.category-instrument {
-  font-size: 0.8rem;
-  opacity: 0.8;
-  font-style: italic;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
 }
 
 .count-controls {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-left: auto;
 }
 
-.count-button {
+.count-controls button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  font-weight: bold;
-  transition: all 0.2s ease;
 }
 
-.count-button:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
-}
-
-.count-display {
+.count-controls span {
   min-width: 30px;
   text-align: center;
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-weight: bold;
 }
 
-.meal-actions {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-}
-
-.reset-button {
-  background: rgba(255, 99, 99, 0.8);
-  border: 1px solid rgba(255, 99, 99, 0.9);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.reset-button:hover {
-  background: rgba(255, 99, 99, 1);
-  transform: translateY(-2px);
-}
-
-/* 音声再生コントロール */
+/* コントロールボタン */
 .sound-controls {
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-.sound-controls h3 {
-  margin: 0 0 15px 0;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.play-controls {
   display: flex;
+  gap: 10px;
   justify-content: center;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.stop-button {
-  background: rgba(255, 99, 99, 0.8);
-  border: 1px solid rgba(255, 99, 99, 0.9);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.stop-button:hover {
-  background: rgba(255, 99, 99, 1);
-  transform: translateY(-2px);
+  margin: 20px 0;
 }
 
 .play-button {
-  background: linear-gradient(45deg, #ff6b6b, #ffd93d);
-  border: none;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
   color: white;
-  padding: 15px 30px;
-  border-radius: 25px;
-  font-size: 1.1rem;
-  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  min-width: 250px;
-}
-
-.play-button:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s;
 }
 
 .play-button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
 }
 
 .play-button.playing {
-  background: linear-gradient(45deg, #4ecdc4, #44a08d);
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
   animation: pulse 1s infinite;
 }
 
-.balance-info {
-  margin-top: 15px;
-  font-size: 0.9rem;
-  opacity: 0.8;
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
-.balance-info p {
-  margin: 5px 0;
-}
-
-/* ユーザーメッセージ */
-.user-message {
-  margin-top: 15px;
-  animation: slideIn 0.3s ease-out;
-}
-
-.message-content {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+/* 楽譜セクション */
+.score-section {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  padding: 12px 16px;
+}
+
+.score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.score-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.score-controls button {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.score-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 楽譜設定 */
+.score-settings {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.settings-grid {
+  display: grid;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.setting-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  gap: 10px;
 }
 
-.message-content i {
-  color: #ffd700;
-  font-size: 1.1rem;
-  flex-shrink: 0;
+.setting-item label {
+  min-width: 120px;
 }
 
-.message-content span {
-  font-size: 0.9rem;
-  line-height: 1.4;
+.setting-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
 }
 
-@keyframes slideIn {
+.setting-item select {
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 4px;
+  min-width: 150px;
+}
+
+.setting-item select option {
+  background: #667eea;
+  color: white;
+}
+
+.setting-item input[type="range"] {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* メッセージ */
+.user-message {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(-10px);
@@ -451,157 +319,3 @@
     transform: translateY(0);
   }
 }
-
-/* バランス表示 */
-.balance-display {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(5px);
-}
-
-.balance-display h3 {
-  margin: 0 0 20px 0;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.balance-chart {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.balance-bar {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.bar-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 80px;
-  font-weight: 500;
-}
-
-.bar-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.bar-color[data-color="#8B4513"] { background-color: #8B4513; }
-.bar-color[data-color="#228B22"] { background-color: #228B22; }
-.bar-color[data-color="#D2691E"] { background-color: #D2691E; }
-.bar-color[data-color="#DC143C"] { background-color: #DC143C; }
-.bar-color[data-color="#4169E1"] { background-color: #4169E1; }
-.bar-color[data-color="#32CD32"] { background-color: #32CD32; }
-
-.bar-container {
-  flex: 1;
-  position: relative;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.bar-fill {
-  height: 100%;
-  border-radius: 10px;
-  transition: width 0.5s ease;
-  position: relative;
-}
-
-.bar-fill[data-color="#8B4513"] { background-color: #8B4513; }
-.bar-fill[data-color="#228B22"] { background-color: #228B22; }
-.bar-fill[data-color="#D2691E"] { background-color: #D2691E; }
-.bar-fill[data-color="#DC143C"] { background-color: #DC143C; }
-.bar-fill[data-color="#4169E1"] { background-color: #4169E1; }
-.bar-fill[data-color="#32CD32"] { background-color: #32CD32; }
-
-.bar-percentage {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-/* レスポンシブデザイン */
-@media (max-width: 768px) {
-  .sound-app-content {
-    padding: 15px;
-  }
-  
-  .genre-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .category-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .play-controls {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .play-button {
-    min-width: 200px;
-    padding: 12px 25px;
-  }
-  
-  .repeat-options {
-    justify-content: center;
-  }
-  
-  .balance-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  
-  .bar-label {
-    min-width: auto;
-  }
-}
-
-/* ダークモード対応 */
-@media (prefers-color-scheme: dark) {
-  .sound-app-section {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-  }
-  
-  .genre-button,
-  .category-item,
-  .balance-display {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .custom-settings {
-    background: rgba(255, 255, 255, 0.05);
-  }
-}
-
-/* アニメーション */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.sound-app-content > * {
-  animation: fadeIn 0.6s ease-out;
-}
-
-.sound-app-content > *:nth-child(2) { animation-delay: 0.1s; }
-.sound-app-content > *:nth-child(3) { animation-delay: 0.2s; }
-.sound-app-content > *:nth-child(4) { animation-delay: 0.3s; }
-.sound-app-content > *:nth-child(5) { animation-delay: 0.4s; }
