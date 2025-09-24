@@ -4,6 +4,7 @@ import React, {
   useMemo,
   useRef,
   useState,
+  useId,
 } from "react";
 import * as Tone from "tone";
 
@@ -107,6 +108,8 @@ const SoundAppComponent: React.FC = () => {
   const instrumentsRef = useRef<Record<string, any>>({});
   const visualCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number | null>(null);
+
+  const tempoRangeId = "tempo-range"; // or useId();
 
   // 状態
   const [selectedGenreId, setSelectedGenreId] = useState<string>(
@@ -817,14 +820,22 @@ const SoundAppComponent: React.FC = () => {
           </div>
           {selectedGenre.id === "custom" && (
             <div className="mt-3">
-              <label className="text-sm opacity-90">テンポ: {tempo} BPM</label>
+              <label
+                htmlFor={tempoRangeId}
+                id={`${tempoRangeId}-label`}
+                className="text-sm opacity-90"
+              >
+                テンポ: {tempo} BPM
+              </label>
               <input
+                id={tempoRangeId}
                 type="range"
                 min={50}
                 max={220}
                 value={tempo}
                 onChange={(e) => setTempo(Number(e.target.value))}
                 className="w-full"
+                aria-labelledby={`${tempoRangeId}-label`}
               />
               <button
                 className="mt-2 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500"
