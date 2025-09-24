@@ -755,6 +755,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                     max={TEMPO_RANGE.MAX}
                     value={customTempo}
                     onChange={(e) => setCustomTempo(parseInt(e.target.value))}
+                    aria-label="テンポ調整"
                   />
                   <div className="custom-instruments">
                     <h4>楽器選択</h4>
