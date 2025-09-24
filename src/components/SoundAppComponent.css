@@ -1,334 +1,321 @@
-/* 既存のスタイルはSoundAppComponent.cssに含まれています */
+/* SoundAppComponent.css */
 
-/* 🆕 期間別再生機能のスタイル */
-.period-playback-section {
-  margin: 30px 0;
-  padding: 25px;
-  background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(63, 81, 181, 0.1));
-  border-radius: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+/* 楽譜関連のスタイル */
+.score-container .vf-stavenote.playing {
+  fill: #4caf50 !important;
+  animation: noteHighlight 0.5s ease;
 }
 
-.period-playback-section h3 {
-  color: #2196F3;
-  margin-bottom: 20px;
-  font-size: 1.3em;
+@keyframes noteHighlight {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
-/* 期間選択ボタン */
-.period-selection {
-  margin-bottom: 25px;
+.note-display {
+  color: #ffeb3b;
+  font-size: 0.9em;
+  margin-left: 5px;
 }
 
-.period-buttons {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.period-button {
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+/* 基本レイアウト */
+.sound-app-section {
+  margin: 20px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.period-button:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.3);
+.section-header h2 {
+  color: white;
+  margin: 0;
 }
 
-.period-button.selected {
-  background: linear-gradient(135deg, #2196F3, #3F51B5);
-  border-color: #2196F3;
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+.section-icon {
+  margin-right: 8px;
 }
 
-.period-button div {
-  font-size: 16px;
-  font-weight: bold;
+.close-section-button,
+.show-section-button {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
-.period-button small {
-  font-size: 12px;
+.close-section-button:hover,
+.show-section-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.sound-app-content {
+  color: white;
+}
+
+.app-description {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* タブ */
+.view-mode-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.view-mode-tabs button {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.view-mode-tabs button.active {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: white;
+}
+
+/* ジャンル選択 */
+.genre-selection {
+  margin-bottom: 20px;
+}
+
+.genre-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.genre-button {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.genre-button.selected {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: white;
+  transform: scale(1.05);
+}
+
+.genre-button small {
+  display: block;
+  font-size: 0.8em;
+  margin-top: 4px;
   opacity: 0.8;
 }
 
-/* 期間統計 */
-.period-stats {
+/* 食事記録 */
+.meal-recording {
+  margin-bottom: 20px;
+}
+
+.category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 15px 0;
 }
 
-.stat-card {
-  background: rgba(255, 255, 255, 0.08);
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
-  transition: transform 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.stat-card:hover {
-  transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.stat-card h4 {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.stat-value {
-  font-size: 2em;
-  font-weight: bold;
-  color: #4CAF50;
-  margin-bottom: 5px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* 傾向リスト */
-.trend-list {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.trend-item {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 8px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.9);
-  border-left: 3px solid #FFC107;
-}
-
-/* 期間再生ボタン */
-.period-play-button {
-  width: 100%;
-  padding: 20px;
-  background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
-  color: white;
-  border: none;
-  border-radius: 15px;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.period-play-button:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-}
-
-.period-play-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background: linear-gradient(135deg, #666, #999);
-}
-
-.period-play-button.playing {
-  animation: playingGlow 1.5s ease-in-out infinite alternate;
-}
-
-@keyframes playingGlow {
-  0% {
-    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
-  }
-  100% {
-    box-shadow: 0 6px 30px rgba(78, 205, 196, 0.7);
-  }
-}
-
-/* 食事アクション改善 */
-.meal-actions {
+.category-item {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-
-.save-button {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
-}
-
-.save-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
-}
-
-.reset-button {
-  background: linear-gradient(135deg, #f44336, #d32f2f);
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 10px rgba(244, 67, 54, 0.3);
-}
-
-.reset-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
-}
-
-.saved-count {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 14px;
+  gap: 8px;
+  padding: 10px;
   background: rgba(255, 255, 255, 0.1);
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+.count-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-left: auto;
 }
 
-/* 強化されたプレイボタン */
-.play-button {
-  background: linear-gradient(135deg, #9C27B0, #673AB7);
+.count-controls button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2);
   color: white;
-  border: none;
-  padding: 18px 35px;
-  border-radius: 50px;
-  font-size: 18px;
-  font-weight: bold;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  margin-top: 20px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.play-button:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(156, 39, 176, 0.5);
+.count-controls span {
+  min-width: 30px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* コントロールボタン */
+.sound-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.play-button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
 .play-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: linear-gradient(135deg, #666, #888);
 }
 
 .play-button.playing {
-  animation: playingPulse 1s ease-in-out infinite;
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  animation: pulse 1s infinite;
 }
 
-@keyframes playingPulse {
-  0%, 100% {
+@keyframes pulse {
+  0% {
     transform: scale(1);
   }
   50% {
     transform: scale(1.05);
   }
+  100% {
+    transform: scale(1);
+  }
 }
 
-/* メッセージスタイル改善 */
-.user-message {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #FF9800, #F57C00);
+/* 楽譜セクション */
+.score-section {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.score-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.score-controls button {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  padding: 15px 25px;
-  border-radius: 50px;
-  font-weight: bold;
-  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
-  animation: slideInRight 0.3s ease-out, fadeOut 0.5s ease-in 2.5s;
-  animation-fill-mode: both;
-  z-index: 1000;
-  max-width: 300px;
-  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
-@keyframes slideInRight {
+.score-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 楽譜設定 */
+.score-settings {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.settings-grid {
+  display: grid;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.setting-item label {
+  min-width: 120px;
+}
+
+.setting-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+}
+
+.setting-item select {
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 4px;
+  min-width: 150px;
+}
+
+.setting-item select option {
+  background: #667eea;
+  color: white;
+}
+
+.setting-item input[type="range"] {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* メッセージ */
+.user-message {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
   from {
-    transform: translateX(100%);
     opacity: 0;
+    transform: translateY(-10px);
   }
   to {
-    transform: translateX(0);
     opacity: 1;
-  }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-  .period-stats {
-    grid-template-columns: 1fr;
-  }
-  
-  .period-buttons {
-    grid-template-columns: 1fr;
-  }
-  
-  .meal-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .saved-count {
-    margin-left: 0;
-    text-align: center;
-  }
-  
-  .user-message {
-    right: 10px;
-    left: 10px;
-    max-width: none;
-  }
-}
-
-/* ダークモード対応 */
-@media (prefers-color-scheme: dark) {
-  .period-playback-section {
-    background: linear-gradient(135deg, rgba(33, 150, 243, 0.15), rgba(63, 81, 181, 0.15));
-  }
-  
-  .stat-card {
-    background: rgba(255, 255, 255, 0.05);
-  }
-  
-  .trend-item {
-    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(0);
   }
 }
