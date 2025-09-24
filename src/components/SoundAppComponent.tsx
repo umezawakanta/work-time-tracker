@@ -528,6 +528,42 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     }
   }, [getOrCreateInstrument, createInstrumentForGenre]);
 
+  // 和音の定義（3和音）
+  const chordProgressions = {
+    major: [
+      { name: 'C', notes: ['C4', 'E4', 'G4'] },
+      { name: 'F', notes: ['F4', 'A4', 'C5'] },
+      { name: 'G', notes: ['G4', 'B4', 'D5'] },
+      { name: 'Am', notes: ['A4', 'C5', 'E5'] }
+    ],
+    minor: [
+      { name: 'Am', notes: ['A3', 'C4', 'E4'] },
+      { name: 'Dm', notes: ['D4', 'F4', 'A4'] },
+      { name: 'Em', notes: ['E4', 'G4', 'B4'] },
+      { name: 'G', notes: ['G3', 'B3', 'D4'] }
+    ],
+    jazz: [
+      { name: 'CMaj7', notes: ['C4', 'E4', 'G4', 'B4'] },
+      { name: 'Dm7', notes: ['D4', 'F4', 'A4', 'C5'] },
+      { name: 'G7', notes: ['G3', 'B3', 'D4', 'F4'] },
+      { name: 'Am7', notes: ['A3', 'C4', 'E4', 'G4'] }
+    ],
+    japanese: [
+      { name: 'Iyoushi', notes: ['C4', 'D4', 'F4'] },  // 陰旋法風
+      { name: 'Youshi', notes: ['C4', 'E4', 'G4'] },   // 陽旋法風
+      { name: 'Ritsu', notes: ['D4', 'E4', 'A4'] },    // 律旋法風
+      { name: 'Min', notes: ['E4', 'F4', 'B4'] }       // 民謡音階風
+    ]
+  };
+
+  // ジャンルに応じた和音進行を選択
+  const getChordProgression = (genre: string, balanceScore: number) => {
+    if (genre === 'jazz') return chordProgressions.jazz;
+    if (genre === 'japanese') return chordProgressions.japanese;
+    if (genre === 'classical' || balanceScore > 0.7) return chordProgressions.major;
+    return chordProgressions.minor;
+  };
+
   // 音楽を生成
   const generateMusic = useCallback((categoryRatios: any[], balanceScore: number, genre: MusicGenre) => {
     playTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
@@ -539,6 +575,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
     const activeCats = categoryRatios.filter(cat => cat.ratio > 0).sort((a, b) => b.ratio - a.ratio);
 
+    // メロディーラインを生成
     activeCats.forEach((category, index) => {
       const delay = index * beatDuration * 800;
       const frequency = category.sound.frequency * (0.9 + balanceScore * 0.2);
@@ -552,18 +589,64 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       playTimeoutsRef.current.push(timeout);
     });
 
-    if (balanceScore > 0.6) {
-      const harmonyDelay = activeCats.length * beatDuration * 800 + 1000;
-      const timeout = setTimeout(() => {
-        const pianoInst = getOrCreateInstrument('vegetable');
-        if (pianoInst) {
-          try {
-            pianoInst.triggerAttackRelease(['C4', 'E4', 'G4'], '2s');
-          } catch (e) { /* ignore */ }
-        }
-      }, harmonyDelay);
+    // 和音進行を追加（バランスに応じて）
+    const chordProg = getChordProgression(genre.id, balanceScore);
+    
+    if (balanceScore > 0.4) {
+      // バランスが良いほど豊かな和音を追加
+      const harmonyStartDelay = activeCats.length * beatDuration * 800 + 500;
       
-      playTimeoutsRef.current.push(timeout);
+      chordProg.forEach((chord, chordIndex) => {
+        const chordDelay = harmonyStartDelay + (chordIndex * beatDuration * 1000);
+        
+        const timeout = setTimeout(() => {
+          const pianoInst = getOrCreateInstrument('vegetable');
+          if (pianoInst) {
+            try {
+              // 3和音（または4和音）を演奏
+              const chordVolume = balanceScore > 0.7 ? 0.5 : 0.3;
+              pianoInst.volume.value = Math.log10(Math.max(0.001, chordVolume)) * 20;
+              pianoInst.triggerAttackRelease(chord.notes, '1s');
+              
+              // バランスが特に良い場合はアルペジオも追加
+              if (balanceScore > 0.8 && genre.id !== 'rock') {
+                chord.notes.forEach((note, noteIndex) => {
+                  setTimeout(() => {
+                    const synthInst = getOrCreateInstrument('fish');
+                    if (synthInst) {
+                      synthInst.volume.value = -10; // 控えめな音量
+                      synthInst.triggerAttackRelease(note, '0.5s');
+                    }
+                  }, noteIndex * 150);
+                });
+              }
+            } catch (e) { /* ignore */ }
+          }
+        }, chordDelay);
+        
+        playTimeoutsRef.current.push(timeout);
+      });
+    }
+
+    // ベースラインを追加（バランスが良い場合）
+    if (balanceScore > 0.5 && genre.id !== 'ambient') {
+      const bassDelay = activeCats.length * beatDuration * 400;
+      
+      chordProg.forEach((chord, index) => {
+        const timeout = setTimeout(() => {
+          const bassInst = getOrCreateInstrument('side');
+          if (bassInst) {
+            try {
+              // ルート音をベースで演奏
+              const rootNote = chord.notes[0].replace(/[0-9]/, '2'); // オクターブを下げる
+              bassInst.volume.value = -8;
+              bassInst.triggerAttackRelease(rootNote, '0.8s');
+            } catch (e) { /* ignore */ }
+          }
+        }, bassDelay + (index * beatDuration * 1200));
+        
+        playTimeoutsRef.current.push(timeout);
+      });
     }
   }, [playSound, getOrCreateInstrument]);
 
@@ -755,7 +838,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                     max={TEMPO_RANGE.MAX}
                     value={customTempo}
                     onChange={(e) => setCustomTempo(parseInt(e.target.value))}
-                    aria-label="テンポ調整"
                   />
                   <div className="custom-instruments">
                     <h4>楽器選択</h4>
