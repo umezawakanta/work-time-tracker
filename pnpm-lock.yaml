@@ -32,6 +32,9 @@ importers:
       tone:
         specifier: ^15.1.22
         version: 15.1.22
+      vexflow:
+        specifier: ^5.0.0
+        version: 5.0.0
     devDependencies:
       '@types/bcrypt':
         specifier: ^6.0.0
@@ -763,6 +766,9 @@ packages:
     peerDependencies:
       browserslist: '>= 4.21.0'
 
+  vexflow@5.0.0:
+    resolution: {integrity: sha512-rjB7TV4ygKE5Fl3W5OlG+0dHv22CFufUJdMG6oNgvcn0zp34u+sOboZsadQXnF1O3tZ3myXThaUIaLkJlpNM2Q==}
+
   vite@6.3.6:
     resolution: {integrity: sha512-0msEVHJEScQbhkbVTb/4iHZdJ6SXp/AvxL2sjwYQFfBqleHtnCqv1J3sa9zbWz/6kW1m9Tfzn92vW+kZ1WV6QA==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
@@ -1444,6 +1450,8 @@ snapshots:
       browserslist: 4.26.0
       escalade: 3.2.0
       picocolors: 1.1.1
+
+  vexflow@5.0.0: {}
 
   vite@6.3.6(@types/node@22.18.3):
     dependencies:

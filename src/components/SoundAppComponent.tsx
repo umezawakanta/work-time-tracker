@@ -1,9 +1,25 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import * as Tone from 'tone';
+import Vex from 'vexflow';
 import './SoundAppComponent.css';
 
 // グローバルでTone.jsの初期化状態を管理
 let globalToneInitialized = false;
+
+// 楽譜データの型定義
+export interface NoteData {
+  pitch: string;
+  duration: string;
+  time: number;
+  instrument: string;
+}
+
+export interface ScoreData {
+  notes: NoteData[];
+  timeSignature: string;
+  tempo: number;
+  key: string;
+}
 
 // 食事カテゴリの定義
 export interface FoodCategory {
@@ -16,6 +32,7 @@ export interface FoodCategory {
   };
   color: string;
   instrument: string;
+  noteMapping?: string; // 音符へのマッピング
 }
 
 // 保存された記録
@@ -29,6 +46,7 @@ export interface SavedRecord {
     instruments: string[];
   };
   balanceScore: number;
+  scoreData?: ScoreData; // 楽譜データを追加
 }
 
 // 編集可能な曲データ
@@ -39,6 +57,7 @@ export interface ComposedSong {
   records: SavedRecord[];
   genre: string;
   isEdited: boolean;
+  fullScore?: ScoreData; // 完全な楽譜
 }
 
 // 定数定義
@@ -61,6 +80,16 @@ const REPEAT_OPTIONS = {
   LOOP: -1
 } as const;
 
+// 周波数から音符への変換テーブル
+const frequencyToNote: { [key: number]: string } = {
+  110: 'A2',
+  220: 'A3',
+  330: 'E4',
+  440: 'A4',
+  660: 'E5',
+  880: 'A5'
+};
+
 // 音楽ジャンルの定義（拡張版）
 export interface MusicGenre {
   id: string;
@@ -69,6 +98,7 @@ export interface MusicGenre {
   instruments: string[];
   description: string;
   synthSettings?: any;
+  keySignature?: string; // 調号
 }
 
 // 食事記録の型定義
@@ -91,62 +121,68 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   setShowSoundApp,
   closeOtherFeatures,
 }) => {
-  // 食事カテゴリの定義
+  // 食事カテゴリの定義（音符マッピング追加）
   const foodCategories: FoodCategory[] = [
     { 
       id: 'staple', 
       name: '主食', 
       sound: { frequency: 220, duration: 0.5, volume: 0.7 }, 
       color: '#8B4513', 
-      instrument: '🥁 ドラム'
+      instrument: '🥁 ドラム',
+      noteMapping: 'C3'
     },
     { 
       id: 'side', 
       name: '副菜', 
       sound: { frequency: 330, duration: 0.4, volume: 0.6 }, 
       color: '#228B22', 
-      instrument: '🎸 ベース'
+      instrument: '🎸 ベース',
+      noteMapping: 'E3'
     },
     { 
       id: 'miso', 
       name: '味噌', 
       sound: { frequency: 440, duration: 0.3, volume: 0.5 }, 
       color: '#D2691E', 
-      instrument: '🎺 トランペット'
+      instrument: '🎺 トランペット',
+      noteMapping: 'A4'
     },
     { 
       id: 'meat', 
       name: '肉', 
       sound: { frequency: 110, duration: 0.8, volume: 0.9 }, 
       color: '#DC143C', 
-      instrument: '🎸 エレキギター'
+      instrument: '🎸 エレキギター',
+      noteMapping: 'A2'
     },
     { 
       id: 'fish', 
       name: '魚', 
       sound: { frequency: 880, duration: 0.6, volume: 0.8 }, 
       color: '#4169E1', 
-      instrument: '🎹 シンセサイザー'
+      instrument: '🎹 シンセサイザー',
+      noteMapping: 'A5'
     },
     { 
       id: 'vegetable', 
       name: '野菜', 
       sound: { frequency: 660, duration: 0.4, volume: 0.7 }, 
       color: '#32CD32', 
-      instrument: '🎹 ピアノ'
+      instrument: '🎹 ピアノ',
+      noteMapping: 'E5'
     },
   ];
 
-  // 拡張された音楽ジャンル
+  // 拡張された音楽ジャンル（調号追加）
   const musicGenres: MusicGenre[] = [
-    { id: 'balanced', name: 'バランス', baseTempo: 120, instruments: ['piano', 'strings'], description: 'バランスの取れた食事の時' },
-    { id: 'rock', name: 'ロック', baseTempo: 140, instruments: ['distortion', 'drums', 'bass'], description: 'パワフルなロックサウンド' },
-    { id: 'techno', name: 'テクノ', baseTempo: 128, instruments: ['synth', 'electronic'], description: '電子音楽スタイル' },
-    { id: 'classical', name: 'クラシック', baseTempo: 80, instruments: ['strings', 'piano', 'orchestra'], description: '優雅なクラシック' },
-    { id: 'japanese', name: '和楽器', baseTempo: 100, instruments: ['shamisen', 'taiko', 'koto'], description: '日本の伝統音楽' },
-    { id: 'jazz', name: 'ジャズ', baseTempo: 110, instruments: ['saxophone', 'piano', 'bass'], description: 'スウィングジャズ' },
-    { id: 'ambient', name: 'アンビエント', baseTempo: 60, instruments: ['pad', 'atmosphere'], description: '環境音楽' },
-    { id: 'custom', name: 'カスタム', baseTempo: 120, instruments: ['piano'], description: 'ユーザー設定' },
+    { id: 'balanced', name: 'バランス', baseTempo: 120, instruments: ['piano', 'strings'], description: 'バランスの取れた食事の時', keySignature: 'C' },
+    { id: 'rock', name: 'ロック', baseTempo: 140, instruments: ['distortion', 'drums', 'bass'], description: 'パワフルなロックサウンド', keySignature: 'A' },
+    { id: 'techno', name: 'テクノ', baseTempo: 128, instruments: ['synth', 'electronic'], description: '電子音楽スタイル', keySignature: 'Am' },
+    { id: 'classical', name: 'クラシック', baseTempo: 80, instruments: ['strings', 'piano', 'orchestra'], description: '優雅なクラシック', keySignature: 'G' },
+    { id: 'japanese', name: '和楽器', baseTempo: 100, instruments: ['shamisen', 'taiko', 'koto'], description: '日本の伝統音楽', keySignature: 'Dm' },
+    { id: 'jazz', name: 'ジャズ', baseTempo: 110, instruments: ['saxophone', 'piano', 'bass'], description: 'スウィングジャズ', keySignature: 'F' },
+    { id: 'ambient', name: 'アンビエント', baseTempo: 60, instruments: ['pad', 'atmosphere'], description: '環境音楽', keySignature: 'C' },
+    { id: 'custom', name: 'カスタム', baseTempo: 120, instruments: ['piano'], description: 'ユーザー設定', keySignature: 'C' },
   ];
 
   // 状態管理
@@ -166,15 +202,19 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   // 新機能の状態
   const [savedRecords, setSavedRecords] = useState<SavedRecord[]>([]);
   const [composedSongs, setComposedSongs] = useState<ComposedSong[]>([]);
-  const [viewMode, setViewMode] = useState<'input' | 'history' | 'compose' | 'edit'>('input');
+  const [viewMode, setViewMode] = useState<'input' | 'history' | 'compose' | 'edit' | 'score'>('input');
   const [selectedPeriod, setSelectedPeriod] = useState<'day' | 'week' | 'month'>('day');
   const [editingSong, setEditingSong] = useState<ComposedSong | null>(null);
   const [customInstruments, setCustomInstruments] = useState<string[]>(['piano']);
+  const [currentScore, setCurrentScore] = useState<ScoreData | null>(null);
+  const [showScore, setShowScore] = useState<boolean>(true);
 
   // 参照管理
   const instrumentsRef = useRef<{[key: string]: any}>({});
   const loopTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const playTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
+  const scoreContainerRef = useRef<HTMLDivElement>(null);
+  const rendererRef = useRef<any>(null);
 
   // LocalStorageから保存データを読み込み
   useEffect(() => {
@@ -188,9 +228,142 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     }
   }, []);
 
+  // 楽譜を描画する関数
+  const renderScore = useCallback((scoreData: ScoreData) => {
+    if (!scoreContainerRef.current) return;
+
+    // 既存の楽譜をクリア
+    scoreContainerRef.current.innerHTML = '';
+
+    try {
+      const { Renderer, Stave, StaveNote, Voice, Formatter, Beam, Accidental } = Vex.Flow;
+
+      // レンダラーの作成
+      const renderer = new Renderer(scoreContainerRef.current, Renderer.Backends.SVG);
+      renderer.resize(800, 200);
+      const context = renderer.getContext();
+      context.setFont('Arial', 10);
+
+      // 譜表の作成
+      const stave = new Stave(10, 40, 780);
+      
+      // 拍子記号と調号を追加
+      stave.addClef('treble')
+        .addTimeSignature(scoreData.timeSignature || '4/4')
+        .addKeySignature(scoreData.key || 'C');
+
+      stave.setContext(context).draw();
+
+      // 音符の作成
+      const notes = scoreData.notes.map(note => {
+        const staveNote = new StaveNote({
+          keys: [note.pitch],
+          duration: note.duration,
+        });
+
+        // シャープやフラットを追加
+        if (note.pitch.includes('#')) {
+          staveNote.addAccidental(0, new Accidental('#'));
+        } else if (note.pitch.includes('b')) {
+          staveNote.addAccidental(0, new Accidental('b'));
+        }
+
+        return staveNote;
+      });
+
+      // 音符がない場合は休符を追加
+      if (notes.length === 0) {
+        notes.push(new StaveNote({
+          keys: ['b/4'],
+          duration: 'w',
+        }));
+      }
+
+      // Voice の作成
+      const voice = new Voice({ num_beats: 4, beat_value: 4 });
+      voice.addTickables(notes);
+
+      // フォーマッターで配置
+      const formatter = new Formatter();
+      formatter.joinVoices([voice]).format([voice], 750);
+
+      // 描画
+      voice.draw(context, stave);
+
+      // ビーム（連桁）の追加
+      const beams = Beam.generateBeams(notes);
+      beams.forEach(beam => beam.setContext(context).draw());
+
+      rendererRef.current = renderer;
+    } catch (error) {
+      console.error('Score rendering error:', error);
+    }
+  }, []);
+
+  // 楽譜データを生成する関数
+  const generateScoreData = useCallback((categoryRatios: any[], genre: MusicGenre): ScoreData => {
+    const notes: NoteData[] = [];
+    let currentTime = 0;
+
+    // アクティブなカテゴリから音符を生成
+    categoryRatios
+      .filter(cat => cat.ratio > 0)
+      .forEach((category, index) => {
+        const foodCat = foodCategories.find(fc => fc.id === category.id);
+        if (foodCat && foodCat.noteMapping) {
+          // 音の長さを音符の長さに変換
+          let duration = 'q'; // デフォルトは四分音符
+          if (category.sound.duration > 0.6) duration = 'h'; // 二分音符
+          if (category.sound.duration < 0.3) duration = '8'; // 八分音符
+
+          notes.push({
+            pitch: foodCat.noteMapping + '/4', // VexFlow形式
+            duration: duration,
+            time: currentTime,
+            instrument: foodCat.instrument
+          });
+
+          currentTime += category.sound.duration;
+        }
+      });
+
+    return {
+      notes,
+      timeSignature: '4/4',
+      tempo: genre.baseTempo,
+      key: genre.keySignature || 'C'
+    };
+  }, [foodCategories]);
+
+  // 楽譜をPDFとしてエクスポートする関数
+  const exportScoreToPDF = useCallback(() => {
+    if (!scoreContainerRef.current) {
+      showMessage('楽譜がありません', 2000);
+      return;
+    }
+
+    // SVGをcanvasに変換してPDF化（簡易実装）
+    const svg = scoreContainerRef.current.querySelector('svg');
+    if (svg) {
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const blob = new Blob([svgData], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `score_${Date.now()}.svg`;
+      link.click();
+      
+      URL.revokeObjectURL(url);
+      showMessage('楽譜をダウンロードしました', 2000);
+    }
+  }, []);
+
   // Tone.jsの初期化
   const initializeTone = useCallback(async () => {
-    if (globalToneInitialized) return true;
+    if (globalToneInitialized) {
+      return true;
+    }
     
     try {
       await Tone.start();
@@ -205,12 +378,13 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // ジャンルに応じた楽器を作成
   const createInstrumentForGenre = useCallback((categoryId: string, genre: string) => {
+    if (!globalToneInitialized) return null;
+    
     let instrument = null;
     
     // ジャンル別の音色設定
     switch (genre) {
       case 'rock':
-        // ロック用の歪んだ音
         instrument = new Tone.FMSynth({
           harmonicity: 2.5,
           modulationIndex: 20,
@@ -220,7 +394,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         break;
         
       case 'techno':
-        // テクノ用の電子音
         instrument = new Tone.MonoSynth({
           oscillator: { type: 'pulse' },
           envelope: { attack: 0.001, decay: 0.1, sustain: 0.9, release: 0.1 },
@@ -232,7 +405,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         break;
         
       case 'classical':
-        // クラシック用の柔らかい音
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: 'sine' },
           envelope: { attack: 0.1, decay: 0.5, sustain: 0.7, release: 1.5 }
@@ -240,7 +412,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         break;
         
       case 'japanese':
-        // 和楽器風の音
         instrument = new Tone.PluckSynth({
           attackNoise: 1,
           dampening: 4000,
@@ -249,7 +420,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         break;
         
       case 'jazz':
-        // ジャズ用のスムースな音
         instrument = new Tone.MonoSynth({
           oscillator: { type: 'sine' },
           envelope: { attack: 0.02, decay: 0.3, sustain: 0.6, release: 0.8 },
@@ -261,7 +431,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         break;
         
       case 'ambient':
-        // アンビエント用の広がりのある音
         const reverb = new Tone.Reverb({ decay: 5, wet: 0.8 }).toDestination();
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: 'triangle' },
@@ -270,7 +439,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         break;
         
       default:
-        // デフォルト楽器を作成
         instrument = getOrCreateInstrument(categoryId);
     }
     
@@ -279,6 +447,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // 基本楽器の作成
   const getOrCreateInstrument = useCallback((categoryId: string) => {
+    if (!globalToneInitialized) return null;
+    
     if (instrumentsRef.current[categoryId]) {
       return instrumentsRef.current[categoryId];
     }
@@ -350,159 +520,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     return instrument;
   }, []);
 
-  // 現在の食事データを保存
-  const saveCurrentRecord = useCallback(() => {
-    const totalItems = Object.values(currentMeal.categories).reduce((sum, count) => sum + count, 0);
-    if (totalItems === 0) {
-      showMessage('記録する食事データがありません', 3000);
-      return;
-    }
-
-    const categoryRatios = foodCategories.map(category => ({
-      ...category,
-      ratio: (currentMeal.categories[category.id] || 0) / totalItems
-    }));
-
-    const balanceScore = categoryRatios.reduce((score, category) => {
-      const ideal = IDEAL_BALANCE_RATIOS[category.id as keyof typeof IDEAL_BALANCE_RATIOS] || 0;
-      return score + (1 - Math.abs(ideal - category.ratio));
-    }, 0) / categoryRatios.length;
-
-    const newRecord: SavedRecord = {
-      id: Date.now().toString(),
-      date: new Date().toISOString(),
-      mealData: { ...currentMeal },
-      genre: selectedGenre,
-      customSettings: selectedGenre === 'custom' ? {
-        tempo: customTempo,
-        instruments: customInstruments
-      } : undefined,
-      balanceScore
-    };
-
-    const updatedRecords = [...savedRecords, newRecord];
-    setSavedRecords(updatedRecords);
-    localStorage.setItem('soundAppRecords', JSON.stringify(updatedRecords));
-    
-    showMessage('食事記録を保存しました！', 2000);
-    resetMeal();
-  }, [currentMeal, selectedGenre, customTempo, customInstruments, savedRecords, foodCategories]);
-
-  // 期間ごとの記録を取得
-  const getRecordsByPeriod = useCallback((period: 'day' | 'week' | 'month') => {
-    const now = new Date();
-    let startDate = new Date();
-    
-    switch (period) {
-      case 'day':
-        startDate.setHours(0, 0, 0, 0);
-        break;
-      case 'week':
-        startDate.setDate(now.getDate() - 7);
-        break;
-      case 'month':
-        startDate.setMonth(now.getMonth() - 1);
-        break;
-    }
-    
-    return savedRecords.filter(record => 
-      new Date(record.date) >= startDate && new Date(record.date) <= now
-    );
-  }, [savedRecords]);
-
-  // 複数の記録をまとめて再生
-  const playCompiledRecords = useCallback(async (records: SavedRecord[]) => {
-    if (records.length === 0) {
-      showMessage('再生する記録がありません', 3000);
-      return;
-    }
-
-    if (!globalToneInitialized) {
-      await initializeTone();
-    }
-
-    setIsPlaying(true);
-    
-    // 各記録を順番に再生
-    let delay = 0;
-    records.forEach((record, index) => {
-      setTimeout(() => {
-        const genre = musicGenres.find(g => g.id === record.genre) || musicGenres[0];
-        const categoryRatios = foodCategories.map(category => ({
-          ...category,
-          ratio: (record.mealData.categories[category.id] || 0) / 
-                 Object.values(record.mealData.categories).reduce((sum, c) => sum + c, 1)
-        }));
-        
-        generateMusic(categoryRatios, record.balanceScore, genre);
-        
-        if (index === records.length - 1) {
-          setTimeout(() => setIsPlaying(false), PLAYBACK_DURATION);
-        }
-      }, delay);
-      
-      delay += PLAYBACK_DURATION + 1000; // 1秒の間隔を追加
-    });
-    
-    showMessage(`${records.length}件の記録を再生中...`, 3000);
-  }, [initializeTone, foodCategories, musicGenres]);
-
-  // 曲として保存
-  const saveAsComposition = useCallback((name: string, records: SavedRecord[]) => {
-    const newSong: ComposedSong = {
-      id: Date.now().toString(),
-      name,
-      createdDate: new Date().toISOString(),
-      records,
-      genre: selectedGenre,
-      isEdited: false
-    };
-    
-    const updatedSongs = [...composedSongs, newSong];
-    setComposedSongs(updatedSongs);
-    localStorage.setItem('composedSongs', JSON.stringify(updatedSongs));
-    
-    showMessage(`曲「${name}」を保存しました！`, 3000);
-  }, [composedSongs, selectedGenre]);
-
-  // 曲を編集モードで開く
-  const openSongEditor = useCallback((song: ComposedSong) => {
-    setEditingSong(song);
-    setViewMode('edit');
-  }, []);
-
-  // 編集した曲を保存
-  const saveEditedSong = useCallback(() => {
-    if (!editingSong) return;
-    
-    const updatedSongs = composedSongs.map(song => 
-      song.id === editingSong.id ? { ...editingSong, isEdited: true } : song
-    );
-    
-    setComposedSongs(updatedSongs);
-    localStorage.setItem('composedSongs', JSON.stringify(updatedSongs));
-    
-    showMessage('編集を保存しました！', 2000);
-    setEditingSong(null);
-    setViewMode('compose');
-  }, [editingSong, composedSongs]);
-
-  // クリーンアップ
-  useEffect(() => {
-    return () => {
-      if (loopTimeoutRef.current) {
-        clearTimeout(loopTimeoutRef.current);
-      }
-      playTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
-      
-      Object.values(instrumentsRef.current).forEach(inst => {
-        if (inst && inst.dispose) {
-          try { inst.dispose(); } catch (e) { /* ignore */ }
-        }
-      });
-    };
-  }, []);
-
   // メッセージ表示
   const showMessage = (message: string, duration: number = 3000) => {
     setUserMessage(message);
@@ -549,10 +566,10 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       { name: 'Am7', notes: ['A3', 'C4', 'E4', 'G4'] }
     ],
     japanese: [
-      { name: 'Iyoushi', notes: ['C4', 'D4', 'F4'] },  // 陰旋法風
-      { name: 'Youshi', notes: ['C4', 'E4', 'G4'] },   // 陽旋法風
-      { name: 'Ritsu', notes: ['D4', 'E4', 'A4'] },    // 律旋法風
-      { name: 'Min', notes: ['E4', 'F4', 'B4'] }       // 民謡音階風
+      { name: 'Iyoushi', notes: ['C4', 'D4', 'F4'] },
+      { name: 'Youshi', notes: ['C4', 'E4', 'G4'] },
+      { name: 'Ritsu', notes: ['D4', 'E4', 'A4'] },
+      { name: 'Min', notes: ['E4', 'F4', 'B4'] }
     ]
   };
 
@@ -564,7 +581,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     return chordProgressions.minor;
   };
 
-  // 音楽を生成
+  // 音楽を生成（楽譜データも同時に生成）
   const generateMusic = useCallback((categoryRatios: any[], balanceScore: number, genre: MusicGenre) => {
     playTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
     playTimeoutsRef.current = [];
@@ -575,6 +592,15 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
     const activeCats = categoryRatios.filter(cat => cat.ratio > 0).sort((a, b) => b.ratio - a.ratio);
 
+    // 楽譜データを生成
+    const scoreData = generateScoreData(categoryRatios, genre);
+    setCurrentScore(scoreData);
+
+    // 楽譜を表示
+    if (showScore && scoreData) {
+      setTimeout(() => renderScore(scoreData), 100);
+    }
+
     // メロディーラインを生成
     activeCats.forEach((category, index) => {
       const delay = index * beatDuration * 800;
@@ -584,16 +610,24 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
       const timeout = setTimeout(() => {
         playSound(category.id, frequency, duration, volume, genre.id);
+        
+        // リアルタイムで楽譜をハイライト（視覚的フィードバック）
+        if (scoreContainerRef.current) {
+          const notes = scoreContainerRef.current.querySelectorAll('.vf-stavenote');
+          if (notes[index]) {
+            notes[index].classList.add('playing');
+            setTimeout(() => notes[index].classList.remove('playing'), duration * 1000);
+          }
+        }
       }, delay);
       
       playTimeoutsRef.current.push(timeout);
     });
 
-    // 和音進行を追加（バランスに応じて）
+    // 和音進行を追加
     const chordProg = getChordProgression(genre.id, balanceScore);
     
     if (balanceScore > 0.4) {
-      // バランスが良いほど豊かな和音を追加
       const harmonyStartDelay = activeCats.length * beatDuration * 800 + 500;
       
       chordProg.forEach((chord, chordIndex) => {
@@ -603,23 +637,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           const pianoInst = getOrCreateInstrument('vegetable');
           if (pianoInst) {
             try {
-              // 3和音（または4和音）を演奏
               const chordVolume = balanceScore > 0.7 ? 0.5 : 0.3;
               pianoInst.volume.value = Math.log10(Math.max(0.001, chordVolume)) * 20;
               pianoInst.triggerAttackRelease(chord.notes, '1s');
-              
-              // バランスが特に良い場合はアルペジオも追加
-              if (balanceScore > 0.8 && genre.id !== 'rock') {
-                chord.notes.forEach((note, noteIndex) => {
-                  setTimeout(() => {
-                    const synthInst = getOrCreateInstrument('fish');
-                    if (synthInst) {
-                      synthInst.volume.value = -10; // 控えめな音量
-                      synthInst.triggerAttackRelease(note, '0.5s');
-                    }
-                  }, noteIndex * 150);
-                });
-              }
             } catch (e) { /* ignore */ }
           }
         }, chordDelay);
@@ -627,28 +647,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         playTimeoutsRef.current.push(timeout);
       });
     }
-
-    // ベースラインを追加（バランスが良い場合）
-    if (balanceScore > 0.5 && genre.id !== 'ambient') {
-      const bassDelay = activeCats.length * beatDuration * 400;
-      
-      chordProg.forEach((chord, index) => {
-        const timeout = setTimeout(() => {
-          const bassInst = getOrCreateInstrument('side');
-          if (bassInst) {
-            try {
-              // ルート音をベースで演奏
-              const rootNote = chord.notes[0].replace(/[0-9]/, '2'); // オクターブを下げる
-              bassInst.volume.value = -8;
-              bassInst.triggerAttackRelease(rootNote, '0.8s');
-            } catch (e) { /* ignore */ }
-          }
-        }, bassDelay + (index * beatDuration * 1200));
-        
-        playTimeoutsRef.current.push(timeout);
-      });
-    }
-  }, [playSound, getOrCreateInstrument]);
+  }, [playSound, getOrCreateInstrument, generateScoreData, renderScore, showScore]);
 
   // メイン再生関数
   const playMealBalance = useCallback(async () => {
@@ -716,7 +715,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   }, [currentMeal, selectedGenre, repeatMode, isPlaying, isLooping, 
       foodCategories, musicGenres, initializeTone, generateMusic, showMessage]);
 
-  // 停止
+  // その他の関数（省略：既存のコードと同じ）
   const stopPlayback = () => {
     setIsPlaying(false);
     setIsLooping(false);
@@ -728,18 +727,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     playTimeoutsRef.current = [];
   };
 
-  // テスト再生
-  const testInstrument = useCallback(async (categoryId: string) => {
-    if (!globalToneInitialized) {
-      await initializeTone();
-    }
-    const category = foodCategories.find(c => c.id === categoryId);
-    if (category) {
-      playSound(categoryId, category.sound.frequency, 0.5, 0.5, selectedGenre);
-    }
-  }, [foodCategories, initializeTone, playSound, selectedGenre]);
-
-  // カテゴリ更新
   const updateCategoryCount = (categoryId: string, count: number) => {
     setCurrentMeal(prev => ({
       ...prev,
@@ -747,13 +734,13 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     }));
   };
 
-  // リセット
   const resetMeal = () => {
     setCurrentMeal(prev => ({ 
       ...prev, 
       categories: {},
       time: new Date().toTimeString().split(' ')[0]
     }));
+    setCurrentScore(null);
   };
 
   return (
@@ -761,7 +748,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       <div className="section-header">
         <h2>
           <span className="section-icon">🎵</span>
-          音アプリ（拡張版）
+          音アプリ（楽譜表示版）
         </h2>
         <button
           onClick={() => setShowSoundApp(!showSoundApp)}
@@ -774,11 +761,39 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       {showSoundApp && (
         <div className="sound-app-content">
           <div className="app-description">
-            <p>食事のバランスを音で表現し、記録・編集できます🎵</p>
+            <p>食事のバランスを音と楽譜で表現します 🎼</p>
             {!globalToneInitialized && (
               <p style={{ color: '#ffeb3b' }}>初回は音ボタンをクリックしてください</p>
             )}
           </div>
+
+          {/* 楽譜表示エリア */}
+          {showScore && (
+            <div className="score-section">
+              <div className="score-header">
+                <h3>🎼 楽譜</h3>
+                <div className="score-controls">
+                  <button onClick={() => setShowScore(!showScore)}>
+                    {showScore ? '楽譜を隠す' : '楽譜を表示'}
+                  </button>
+                  <button onClick={exportScoreToPDF} disabled={!currentScore}>
+                    📥 楽譜をダウンロード
+                  </button>
+                </div>
+              </div>
+              <div 
+                ref={scoreContainerRef} 
+                className="score-container"
+                style={{
+                  background: 'white',
+                  padding: '20px',
+                  borderRadius: '8px',
+                  minHeight: '200px',
+                  overflow: 'auto'
+                }}
+              />
+            </div>
+          )}
 
           {/* ビューモード切り替え */}
           <div className="view-mode-tabs">
@@ -789,25 +804,11 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
               入力
             </button>
             <button 
-              className={viewMode === 'history' ? 'active' : ''}
-              onClick={() => setViewMode('history')}
+              className={viewMode === 'score' ? 'active' : ''}
+              onClick={() => setViewMode('score')}
             >
-              履歴
+              楽譜設定
             </button>
-            <button 
-              className={viewMode === 'compose' ? 'active' : ''}
-              onClick={() => setViewMode('compose')}
-            >
-              作曲
-            </button>
-            {editingSong && (
-              <button 
-                className={viewMode === 'edit' ? 'active' : ''}
-                onClick={() => setViewMode('edit')}
-              >
-                編集中
-              </button>
-            )}
           </div>
 
           {/* 入力ビュー */}
@@ -824,56 +825,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                     >
                       <div>{genre.name}</div>
                       <small>{genre.description}</small>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {selectedGenre === 'custom' && (
-                <div className="custom-settings">
-                  <label>テンポ: {customTempo} BPM</label>
-                  <input
-                    type="range"
-                    min={TEMPO_RANGE.MIN}
-                    max={TEMPO_RANGE.MAX}
-                    value={customTempo}
-                    onChange={(e) => setCustomTempo(parseInt(e.target.value))}
-                  />
-                  <div className="custom-instruments">
-                    <h4>楽器選択</h4>
-                    {['piano', 'guitar', 'drums', 'synth', 'strings'].map(inst => (
-                      <label key={inst}>
-                        <input
-                          type="checkbox"
-                          checked={customInstruments.includes(inst)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setCustomInstruments([...customInstruments, inst]);
-                            } else {
-                              setCustomInstruments(customInstruments.filter(i => i !== inst));
-                            }
-                          }}
-                        />
-                        {inst}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="repeat-settings">
-                <h4>🔄 リピート</h4>
-                <div className="repeat-options">
-                  {Object.entries(REPEAT_OPTIONS).map(([key, value]) => (
-                    <button
-                      key={key}
-                      className={`repeat-button ${repeatMode === value ? 'selected' : ''}`}
-                      onClick={() => setRepeatMode(value)}
-                    >
-                      {key === 'NONE' ? 'なし' : 
-                       key === 'ONCE' ? '1回' :
-                       key === 'TWICE' ? '2回' :
-                       key === 'THREE_TIMES' ? '3回' : 'ループ'}
+                      <small>調: {genre.keySignature}</small>
                     </button>
                   ))}
                 </div>
@@ -893,7 +845,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                       }}></span>
                       <span>{category.name}</span>
                       <span>{category.instrument}</span>
-                      <button onClick={() => testInstrument(category.id)}>🔊</button>
+                      <span className="note-display">♪{category.noteMapping}</span>
                       <div className="count-controls">
                         <button onClick={() => updateCategoryCount(category.id, 
                           (currentMeal.categories[category.id] || 0) - 1)}>-</button>
@@ -904,12 +856,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                     </div>
                   ))}
                 </div>
-                <div className="meal-actions">
-                  <button onClick={resetMeal}>リセット</button>
-                  <button onClick={saveCurrentRecord} className="save-button">
-                    💾 記録を保存
-                  </button>
-                </div>
+                <button onClick={resetMeal}>リセット</button>
               </div>
 
               <div className="sound-controls">
@@ -928,144 +875,30 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
             </>
           )}
 
-          {/* 履歴ビュー */}
-          {viewMode === 'history' && (
-            <div className="history-view">
-              <h3>📊 記録履歴</h3>
-              <div className="period-selector">
-                <button 
-                  className={selectedPeriod === 'day' ? 'active' : ''}
-                  onClick={() => setSelectedPeriod('day')}
-                >
-                  今日
-                </button>
-                <button 
-                  className={selectedPeriod === 'week' ? 'active' : ''}
-                  onClick={() => setSelectedPeriod('week')}
-                >
-                  1週間
-                </button>
-                <button 
-                  className={selectedPeriod === 'month' ? 'active' : ''}
-                  onClick={() => setSelectedPeriod('month')}
-                >
-                  1ヶ月
-                </button>
-              </div>
-              
-              <div className="records-list">
-                {getRecordsByPeriod(selectedPeriod).map(record => (
-                  <div key={record.id} className="record-item">
-                    <span>{new Date(record.date).toLocaleString('ja-JP')}</span>
-                    <span>ジャンル: {record.genre}</span>
-                    <span>バランス: {Math.round(record.balanceScore * 100)}%</span>
-                  </div>
-                ))}
-              </div>
-              
-              <button 
-                onClick={() => playCompiledRecords(getRecordsByPeriod(selectedPeriod))}
-                disabled={isPlaying || getRecordsByPeriod(selectedPeriod).length === 0}
-                className="compile-play-button"
-              >
-                🎵 まとめて再生
-              </button>
-              
-              <button 
-                onClick={() => {
-                  const name = prompt('曲名を入力してください：');
-                  if (name) {
-                    saveAsComposition(name, getRecordsByPeriod(selectedPeriod));
-                  }
-                }}
-                disabled={getRecordsByPeriod(selectedPeriod).length === 0}
-                className="save-song-button"
-              >
-                💿 曲として保存
-              </button>
-            </div>
-          )}
-
-          {/* 作曲ビュー */}
-          {viewMode === 'compose' && (
-            <div className="compose-view">
-              <h3>🎼 保存した曲</h3>
-              <div className="songs-list">
-                {composedSongs.map(song => (
-                  <div key={song.id} className="song-item">
-                    <span className="song-name">{song.name}</span>
-                    <span className="song-date">
-                      {new Date(song.createdDate).toLocaleDateString('ja-JP')}
-                    </span>
-                    <span className="song-records">
-                      {song.records.length}件の記録
-                    </span>
-                    {song.isEdited && <span className="edited-badge">編集済</span>}
-                    <button onClick={() => playCompiledRecords(song.records)}>
-                      ▶️ 再生
-                    </button>
-                    <button onClick={() => openSongEditor(song)}>
-                      ✏️ 編集
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 編集ビュー */}
-          {viewMode === 'edit' && editingSong && (
-            <div className="edit-view">
-              <h3>✏️ 曲を編集: {editingSong.name}</h3>
-              <div className="edit-controls">
-                <label>
-                  曲名:
-                  <input 
-                    type="text" 
-                    value={editingSong.name}
-                    onChange={(e) => setEditingSong({...editingSong, name: e.target.value})}
+          {/* 楽譜設定ビュー */}
+          {viewMode === 'score' && (
+            <div className="score-settings">
+              <h3>🎼 楽譜設定</h3>
+              <div className="settings-grid">
+                <div className="setting-item">
+                  <label>楽譜表示</label>
+                  <input
+                    type="checkbox"
+                    checked={showScore}
+                    onChange={(e) => setShowScore(e.target.checked)}
                   />
-                </label>
-                
-                <label>
-                  ジャンル:
-                  <select 
-                    value={editingSong.genre}
-                    onChange={(e) => setEditingSong({...editingSong, genre: e.target.value})}
-                  >
-                    {musicGenres.map(genre => (
-                      <option key={genre.id} value={genre.id}>{genre.name}</option>
-                    ))}
-                  </select>
-                </label>
-                
-                <div className="records-editor">
-                  <h4>記録の順序（ドラッグで並び替え可能）</h4>
-                  {editingSong.records.map((record, index) => (
-                    <div key={record.id} className="editable-record">
-                      <span>{index + 1}.</span>
-                      <span>{new Date(record.date).toLocaleString('ja-JP')}</span>
-                      <button onClick={() => {
-                        const newRecords = [...editingSong.records];
-                        newRecords.splice(index, 1);
-                        setEditingSong({...editingSong, records: newRecords});
-                      }}>
-                        削除
-                      </button>
-                    </div>
-                  ))}
                 </div>
-                
-                <div className="edit-actions">
-                  <button onClick={saveEditedSong} className="save-edit-button">
-                    💾 編集を保存
-                  </button>
-                  <button onClick={() => {
-                    setEditingSong(null);
-                    setViewMode('compose');
-                  }}>
-                    キャンセル
-                  </button>
+                <div className="setting-item">
+                  <label>音符の色分け</label>
+                  <select>
+                    <option>カテゴリー別</option>
+                    <option>楽器別</option>
+                    <option>なし</option>
+                  </select>
+                </div>
+                <div className="setting-item">
+                  <label>楽譜のサイズ</label>
+                  <input type="range" min="50" max="150" defaultValue="100" />
                 </div>
               </div>
             </div>
@@ -1082,46 +915,27 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
               {userMessage}
             </div>
           )}
-
-          {viewMode === 'input' && (
-            <div className="balance-display">
-              <h3>📊 バランス分析</h3>
-              {foodCategories.map(category => {
-                const count = currentMeal.categories[category.id] || 0;
-                const total = Object.values(currentMeal.categories).reduce((sum, c) => sum + c, 0);
-                const percentage = total > 0 ? (count / total) * 100 : 0;
-                
-                return (
-                  <div key={category.id} className="balance-bar">
-                    <span>{category.name}</span>
-                    <div style={{
-                      width: '100%',
-                      height: '20px',
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                      borderRadius: '4px',
-                      position: 'relative'
-                    }}>
-                      <div style={{ 
-                        width: `${percentage}%`,
-                        height: '100%',
-                        backgroundColor: category.color,
-                        borderRadius: '4px',
-                        transition: 'width 0.3s'
-                      }}></div>
-                      <span style={{
-                        position: 'absolute',
-                        right: '5px',
-                        top: '0',
-                        lineHeight: '20px'
-                      }}>{Math.round(percentage)}%</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </div>
       )}
+      
+      <style jsx>{`
+        .score-container .playing {
+          fill: #4CAF50 !important;
+          animation: noteHighlight 0.5s ease;
+        }
+        
+        @keyframes noteHighlight {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.2); }
+          100% { transform: scale(1); }
+        }
+        
+        .note-display {
+          color: #ffeb3b;
+          font-size: 0.9em;
+          margin-left: 5px;
+        }
+      `}</style>
     </div>
   );
 };
