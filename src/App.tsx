@@ -5810,11 +5810,6 @@ User Agent: ${userAgent}
             onBugReportClick={() => setShowBugReportModal(true)}
           />
 
-          {/* バージョン情報 */}
-          <div className="version-wrapper">
-            <VersionInfo />
-          </div>
-
           {/* 通知コンポーネント */}
           <div className="notification-wrapper">
             <NotificationComponent 

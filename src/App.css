@@ -9639,18 +9639,3 @@ input:checked + .toggle-slider:before {
     right: 10px;
   }
 }
-
-/* バージョン情報 */
-.version-wrapper {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-}
-
-@media (max-width: 768px) {
-  .version-wrapper {
-    bottom: 10px;
-    right: 10px;
-  }
-}
