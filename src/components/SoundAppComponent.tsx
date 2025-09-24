@@ -35,6 +35,7 @@ export interface MealRecord {
   time?: string;
   categories: { [key: string]: number };
   notes?: string;
+  timestamp: number; // 追加：ソート用
 }
 
 // 音楽ジャンルの定義
@@ -43,6 +44,14 @@ export interface MusicGenre {
   name: string;
   baseTempo: number;
   instruments: string[];
+  description: string;
+}
+
+// 期間選択の型定義
+export interface PeriodOption {
+  id: string;
+  label: string;
+  days: number;
   description: string;
 }
 
@@ -58,6 +67,13 @@ const IDEAL_BALANCE_RATIOS = {
 
 const PLAYBACK_DURATION = 5000;
 const TEMPO_RANGE = { MIN: 60, MAX: 200 } as const;
+
+// 期間オプション
+const PERIOD_OPTIONS: PeriodOption[] = [
+  { id: 'today', label: '今日', days: 1, description: '今日の食事パターン' },
+  { id: 'week', label: '1週間', days: 7, description: '過去1週間の食事傾向' },
+  { id: 'month', label: '1か月', days: 30, description: '過去1か月の栄養バランス' }
+];
 
 interface SoundAppComponentProps {
   showSoundApp: boolean;
@@ -130,14 +146,29 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // 状態管理
   const [selectedGenre, setSelectedGenre] = useState<string>('balanced');
+  const [selectedPeriod, setSelectedPeriod] = useState<string>('today');
   const [customTempo, setCustomTempo] = useState<number>(120);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isPlayingPeriod, setIsPlayingPeriod] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState<string>('');
   const [currentMeal, setCurrentMeal] = useState<MealRecord>({
     id: Date.now().toString(),
     date: new Date().toISOString().split('T')[0],
     time: new Date().toTimeString().split(' ')[0],
-    categories: {}
+    categories: {},
+    timestamp: Date.now()
+  });
+  const [savedMeals, setSavedMeals] = useState<MealRecord[]>([]);
+  const [periodData, setPeriodData] = useState<{
+    totalMeals: number;
+    averageBalance: number;
+    categoryTotals: { [key: string]: number };
+    trends: string[];
+  }>({
+    totalMeals: 0,
+    averageBalance: 0,
+    categoryTotals: {},
+    trends: []
   });
   const [visualizerData, setVisualizerData] = useState<VisualizerData[]>([]);
   const [playingCategory, setPlayingCategory] = useState<string | null>(null);
@@ -148,6 +179,279 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const playTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationFrameRef = useRef<number>();
+
+  // ローカルストレージから食事記録を読み込み
+  useEffect(() => {
+    const saved = localStorage.getItem('mealRecords');
+    if (saved) {
+      try {
+        const meals = JSON.parse(saved);
+        setSavedMeals(meals);
+      } catch (error) {
+        console.error('食事記録の読み込みに失敗:', error);
+      }
+    }
+  }, []);
+
+  // 食事記録をローカルストレージに保存
+  const saveMealRecord = useCallback(() => {
+    const totalItems = Object.values(currentMeal.categories).reduce((sum, count) => sum + count, 0);
+    if (totalItems === 0) {
+      showMessage('食事を記録してから保存してください', 3000);
+      return;
+    }
+
+    const mealToSave = {
+      ...currentMeal,
+      timestamp: Date.now(),
+      id: Date.now().toString()
+    };
+
+    const updatedMeals = [...savedMeals, mealToSave];
+    setSavedMeals(updatedMeals);
+    localStorage.setItem('mealRecords', JSON.stringify(updatedMeals));
+    
+    showMessage('食事記録を保存しました！', 2000);
+    
+    // 新しい記録をリセット
+    setCurrentMeal({
+      id: Date.now().toString(),
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toTimeString().split(' ')[0],
+      categories: {},
+      timestamp: Date.now()
+    });
+  }, [currentMeal, savedMeals]);
+
+  // 期間別データを計算
+  useEffect(() => {
+    const period = PERIOD_OPTIONS.find(p => p.id === selectedPeriod);
+    if (!period) return;
+
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - period.days);
+
+    const periodsRecords = savedMeals.filter(meal => {
+      const mealDate = new Date(meal.timestamp);
+      return mealDate >= startDate && mealDate <= endDate;
+    });
+
+    if (periodsRecords.length === 0) {
+      setPeriodData({
+        totalMeals: 0,
+        averageBalance: 0,
+        categoryTotals: {},
+        trends: ['データがありません']
+      });
+      return;
+    }
+
+    // カテゴリ合計を計算
+    const categoryTotals: { [key: string]: number } = {};
+    let totalBalanceScore = 0;
+
+    periodsRecords.forEach(meal => {
+      Object.entries(meal.categories).forEach(([category, count]) => {
+        categoryTotals[category] = (categoryTotals[category] || 0) + count;
+      });
+
+      // この食事のバランススコアを計算
+      const mealTotal = Object.values(meal.categories).reduce((sum, count) => sum + count, 0);
+      if (mealTotal > 0) {
+        const score = foodCategories.reduce((acc, category) => {
+          const actual = (meal.categories[category.id] || 0) / mealTotal;
+          const ideal = IDEAL_BALANCE_RATIOS[category.id as keyof typeof IDEAL_BALANCE_RATIOS] || 0;
+          return acc + (1 - Math.abs(ideal - actual));
+        }, 0) / foodCategories.length;
+        totalBalanceScore += score;
+      }
+    });
+
+    // 傾向を分析
+    const trends = [];
+    const totalItems = Object.values(categoryTotals).reduce((sum, count) => sum + count, 0);
+    
+    if (totalItems > 0) {
+      const maxCategory = Object.entries(categoryTotals).reduce((max, [cat, count]) => 
+        count > max.count ? { category: cat, count } : max, { category: '', count: 0 });
+      
+      const categoryName = foodCategories.find(c => c.id === maxCategory.category)?.name;
+      trends.push(`${categoryName}が多めの食事パターン`);
+      
+      const avgBalance = totalBalanceScore / periodsRecords.length;
+      if (avgBalance > 0.7) {
+        trends.push('非常にバランスの良い食事を継続中');
+      } else if (avgBalance > 0.4) {
+        trends.push('まあまあバランスの取れた食事');
+      } else {
+        trends.push('バランス改善の余地があります');
+      }
+    }
+
+    setPeriodData({
+      totalMeals: periodsRecords.length,
+      averageBalance: totalBalanceScore / periodsRecords.length,
+      categoryTotals,
+      trends
+    });
+  }, [selectedPeriod, savedMeals, foodCategories]);
+
+  // 楽器を作成
+  const getOrCreateInstrument = useCallback((categoryId: string) => {
+    if (!globalToneInitialized) return null;
+    
+    if (instrumentsRef.current[categoryId]) {
+      return instrumentsRef.current[categoryId];
+    }
+
+    let instrument = null;
+    
+    switch (categoryId) {
+      case 'staple':
+        instrument = new Tone.MembraneSynth().toDestination();
+        break;
+      case 'side':
+        instrument = new Tone.MonoSynth({
+          oscillator: { type: 'sawtooth' }
+        }).toDestination();
+        break;
+      case 'miso':
+        instrument = new Tone.MonoSynth({
+          oscillator: { type: 'square' }
+        }).toDestination();
+        break;
+      case 'meat':
+        instrument = new Tone.FMSynth().toDestination();
+        break;
+      case 'fish':
+        instrument = new Tone.PolySynth(Tone.Synth).toDestination();
+        break;
+      case 'vegetable':
+        instrument = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: 'sine' }
+        }).toDestination();
+        break;
+      case 'harmony':
+        instrument = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: 'triangle' }
+        }).toDestination();
+        break;
+    }
+
+    if (instrument) {
+      instrumentsRef.current[categoryId] = instrument;
+    }
+    
+    return instrument;
+  }, []);
+
+  // 音を再生
+  const playSound = useCallback((categoryId: string, frequency: number, duration: number, volume: number) => {
+    const instrument = getOrCreateInstrument(categoryId);
+    if (!instrument) return;
+
+    try {
+      const volumeDb = Math.log10(Math.max(0.001, volume)) * 20;
+      instrument.volume.value = volumeDb;
+      
+      if (categoryId === 'staple') {
+        instrument.triggerAttackRelease('C2', duration + 's');
+      } else {
+        instrument.triggerAttackRelease(frequency, duration + 's');
+      }
+      
+      // ビジュアライザーを更新
+      setPlayingCategory(categoryId);
+      setTimeout(() => setPlayingCategory(null), duration * 1000);
+    } catch (error) {
+      console.log(`Could not play sound for ${categoryId}`);
+    }
+  }, [getOrCreateInstrument]);
+
+  // 期間用の音楽生成（より複雑なパターン）
+  const generatePeriodMusic = useCallback((categoryRatios: any[], balanceScore: number, genre: MusicGenre, mealCount: number) => {
+    playTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+    playTimeoutsRef.current = [];
+
+    const baseTempo = genre.baseTempo;
+    const adjustedTempo = Math.max(80, Math.min(160, baseTempo * (0.7 + balanceScore * 0.3)));
+    const beatDuration = 60 / adjustedTempo;
+
+    const activeCats = categoryRatios.filter(cat => cat.ratio > 0).sort((a, b) => b.ratio - a.ratio);
+
+    // 期間の特徴を反映したより複雑な音楽パターン
+    activeCats.forEach((category, index) => {
+      // 各カテゴリを複数回再生（食事回数に応じて）
+      const playCount = Math.min(5, Math.ceil(category.ratio * 10));
+      
+      for (let i = 0; i < playCount; i++) {
+        const delay = (index * beatDuration * 800) + (i * beatDuration * 200);
+        const frequency = category.sound.frequency * (0.9 + balanceScore * 0.2);
+        const duration = category.sound.duration * (0.8 + balanceScore * 0.4);
+        const volume = Math.min(0.6, category.sound.volume * (0.3 + balanceScore * 0.4));
+
+        const timeout = setTimeout(() => {
+          playSound(category.id, frequency, duration, volume);
+        }, delay);
+        
+        playTimeoutsRef.current.push(timeout);
+      }
+    });
+
+    // ハーモニーやコード進行を追加（バランスが良い場合）
+    if (balanceScore > 0.6) {
+      const harmonies = [440, 554.37, 659.25]; // Aマジョーコード
+      harmonies.forEach((freq, i) => {
+        const timeout = setTimeout(() => {
+          playSound('harmony', freq, 1.0, 0.3);
+        }, 4000 + (i * 500));
+        
+        playTimeoutsRef.current.push(timeout);
+      });
+    }
+  }, [playSound]);
+
+  // 期間の食事パターンを再生
+  const playPeriodPattern = useCallback(async () => {
+    if (!globalToneInitialized) {
+      const success = await initializeTone();
+      if (!success) {
+        showMessage('音声システムの初期化に失敗しました', 3000);
+        return;
+      }
+    }
+
+    if (isPlayingPeriod) {
+      showMessage('再生中です...', 2000);
+      return;
+    }
+
+    if (periodData.totalMeals === 0) {
+      showMessage('この期間のデータがありません', 3000);
+      return;
+    }
+
+    setIsPlayingPeriod(true);
+    const genre = musicGenres.find(g => g.id === selectedGenre) || musicGenres[0];
+
+    // 期間全体の傾向を音楽で表現
+    const totalItems = Object.values(periodData.categoryTotals).reduce((sum, count) => sum + count, 0);
+    
+    const categoryRatios = foodCategories.map(category => ({
+      ...category,
+      ratio: (periodData.categoryTotals[category.id] || 0) / totalItems
+    }));
+
+    // より長いパターンで再生（期間の特徴を表現）
+    generatePeriodMusic(categoryRatios, periodData.averageBalance, genre, periodData.totalMeals);
+
+    const period = PERIOD_OPTIONS.find(p => p.id === selectedPeriod);
+    const message = `${period?.label}の食事パターンを再生中... (${periodData.totalMeals}回の食事)`;
+    showMessage(message, 8000);
+
+    setTimeout(() => setIsPlayingPeriod(false), 8000);
+  }, [isPlayingPeriod, periodData, selectedGenre, musicGenres, selectedPeriod, foodCategories, generatePeriodMusic]);
 
   // ビジュアライザーデータを更新
   useEffect(() => {
@@ -179,7 +483,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // キャンバスアニメーション
   useEffect(() => {
-    if (!canvasRef.current || !isPlaying) return;
+    if (!canvasRef.current || (!isPlaying && !isPlayingPeriod)) return;
     
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -226,7 +530,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         return particle.life > 0 && particle.y < canvas.height;
       });
       
-      if (isPlaying && particles.length > 0) {
+      if ((isPlaying || isPlayingPeriod) && particles.length > 0) {
         animationFrameRef.current = requestAnimationFrame(animate);
       }
     };
@@ -238,7 +542,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [isPlaying, visualizerData]);
+  }, [isPlaying, isPlayingPeriod, visualizerData]);
 
   // Tone.jsの初期化
   const initializeTone = useCallback(async () => {
@@ -257,78 +561,11 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     }
   }, []);
 
-  // 楽器を作成
-  const getOrCreateInstrument = useCallback((categoryId: string) => {
-    if (!globalToneInitialized) return null;
-    
-    if (instrumentsRef.current[categoryId]) {
-      return instrumentsRef.current[categoryId];
-    }
-
-    let instrument = null;
-    
-    switch (categoryId) {
-      case 'staple':
-        instrument = new Tone.MembraneSynth().toDestination();
-        break;
-      case 'side':
-        instrument = new Tone.MonoSynth({
-          oscillator: { type: 'sawtooth' }
-        }).toDestination();
-        break;
-      case 'miso':
-        instrument = new Tone.MonoSynth({
-          oscillator: { type: 'square' }
-        }).toDestination();
-        break;
-      case 'meat':
-        instrument = new Tone.FMSynth().toDestination();
-        break;
-      case 'fish':
-        instrument = new Tone.PolySynth(Tone.Synth).toDestination();
-        break;
-      case 'vegetable':
-        instrument = new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: 'sine' }
-        }).toDestination();
-        break;
-    }
-
-    if (instrument) {
-      instrumentsRef.current[categoryId] = instrument;
-    }
-    
-    return instrument;
-  }, []);
-
   // メッセージ表示
   const showMessage = (message: string, duration: number = 3000) => {
     setUserMessage(message);
     setTimeout(() => setUserMessage(''), duration);
   };
-
-  // 音を再生
-  const playSound = useCallback((categoryId: string, frequency: number, duration: number, volume: number) => {
-    const instrument = getOrCreateInstrument(categoryId);
-    if (!instrument) return;
-
-    try {
-      const volumeDb = Math.log10(Math.max(0.001, volume)) * 20;
-      instrument.volume.value = volumeDb;
-      
-      if (categoryId === 'staple') {
-        instrument.triggerAttackRelease('C2', duration + 's');
-      } else {
-        instrument.triggerAttackRelease(frequency, duration + 's');
-      }
-      
-      // ビジュアライザーを更新
-      setPlayingCategory(categoryId);
-      setTimeout(() => setPlayingCategory(null), duration * 1000);
-    } catch (error) {
-      console.log(`Could not play sound for ${categoryId}`);
-    }
-  }, [getOrCreateInstrument]);
 
   // 音楽を生成
   const generateMusic = useCallback((categoryRatios: any[], balanceScore: number, genre: MusicGenre) => {
@@ -409,7 +646,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     setCurrentMeal(prev => ({ 
       ...prev, 
       categories: {},
-      time: new Date().toTimeString().split(' ')[0]
+      time: new Date().toTimeString().split(' ')[0],
+      timestamp: Date.now()
     }));
   };
 
@@ -418,7 +656,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       <div className="section-header">
         <h2>
           <span className="section-icon">🎵</span>
-          音アプリ（ビジュアライザー版）
+          音アプリ（記録再生機能付き）
         </h2>
         <button
           onClick={() => setShowSoundApp(!showSoundApp)}
@@ -431,10 +669,59 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       {showSoundApp && (
         <div className="sound-app-content">
           <div className="app-description">
-            <p>食事のバランスを音と色で表現します 🎨</p>
+            <p>食事のバランスを音と色で表現し、期間別の食事パターンを再生できます 🎨</p>
             {!globalToneInitialized && (
               <p style={{ color: '#ffeb3b' }}>初回は再生ボタンをクリックしてください</p>
             )}
+          </div>
+
+          {/* 🆕 期間別再生セクション */}
+          <div className="period-playback-section">
+            <h3>📅 記録の再生機能</h3>
+            
+            <div className="period-selection">
+              <div className="period-buttons">
+                {PERIOD_OPTIONS.map(period => (
+                  <button
+                    key={period.id}
+                    className={`period-button ${selectedPeriod === period.id ? 'selected' : ''}`}
+                    onClick={() => setSelectedPeriod(period.id)}
+                  >
+                    <div>{period.label}</div>
+                    <small>{period.description}</small>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="period-stats">
+              <div className="stat-card">
+                <h4>食事回数</h4>
+                <div className="stat-value">{periodData.totalMeals}回</div>
+              </div>
+              <div className="stat-card">
+                <h4>平均バランス</h4>
+                <div className="stat-value">{Math.round(periodData.averageBalance * 100)}%</div>
+              </div>
+              <div className="stat-card">
+                <h4>傾向</h4>
+                <div className="trend-list">
+                  {periodData.trends.map((trend, index) => (
+                    <div key={index} className="trend-item">{trend}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={playPeriodPattern}
+              disabled={isPlayingPeriod || periodData.totalMeals === 0}
+              className={`period-play-button ${isPlayingPeriod ? 'playing' : ''}`}
+            >
+              {isPlayingPeriod ? '🎵 期間パターン再生中...' : 
+               periodData.totalMeals === 0 ? 'データなし' : 
+               `🎵 ${PERIOD_OPTIONS.find(p => p.id === selectedPeriod)?.label}のパターンを聞く`}
+            </button>
           </div>
 
           {/* ビジュアライザー表示エリア */}
@@ -540,7 +827,15 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                 </div>
               ))}
             </div>
-            <button onClick={resetMeal} className="reset-button">リセット</button>
+            <div className="meal-actions">
+              <button onClick={saveMealRecord} className="save-button">
+                💾 記録を保存
+              </button>
+              <button onClick={resetMeal} className="reset-button">リセット</button>
+              <div className="saved-count">
+                保存済み: {savedMeals.length}回の食事
+              </div>
+            </div>
           </div>
 
           {/* コントロール */}
@@ -551,7 +846,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
               className={`play-button ${isPlaying ? 'playing' : ''}`}
             >
               {!globalToneInitialized ? '🎵 クリックして起動' :
-               isPlaying ? '再生中...' : '再生'}
+               isPlaying ? '今の食事を再生中...' : '今の食事を聞く'}
             </button>
           </div>
 
