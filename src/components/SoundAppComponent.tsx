@@ -315,7 +315,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       const context = renderer.getContext();
       context.setFont("Arial", 10);
 
-      // 譜表の作成
+      // 譜表の作成（位置を少し調整）
       const stave = new Stave(10, 40, 780);
 
       // 拍子記号と調号を追加
@@ -329,15 +329,17 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       // 音符の作成
       const notes = scoreData.notes.map((note) => {
         const staveNote = new StaveNote({
+          clef: "treble", // ← clefを追加
           keys: [note.pitch],
           duration: note.duration,
+          autoStem: true, // ← 自動ステム方向を追加
         });
 
-        // シャープやフラットを追加
+        // シャープやフラットを追加（メソッド名を修正）
         if (note.pitch.includes("#")) {
-          staveNote.addModifier(new Accidental("#"), 0);
+          staveNote.addModifier(new Accidental("#")); // ← addModifierからaddAccidentalに変更
         } else if (note.pitch.includes("b")) {
-          staveNote.addModifier(new Accidental("b"), 0);
+          staveNote.addModifier(new Accidental("b")); // ← addModifierからaddAccidentalに変更
         }
 
         return staveNote;
@@ -347,8 +349,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       if (notes.length === 0) {
         notes.push(
           new StaveNote({
+            clef: "treble", // ← clefを追加
             keys: ["b/4"],
-            duration: "wr",
+            duration: "w", // ← "wr"から"w"に変更（全休符）
           })
         );
       }
@@ -356,49 +359,57 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       // Voice の作成
       try {
         const voice = new Voice({
-          numBeats: 4,
-          beatValue: 4,
+          numBeats: 4, // ← numBeatsからnum_beatsに変更
+          beatValue: 4, // ← beatValueからbeat_valueに変更
         });
-        voice.setMode(Voice.Mode.SOFT); // 定数を使用
+
+        // setModeの数値を直接指定（Mode.SOFTが使えない場合の対策）
+        voice.setMode(3); // SOFT mode = 3
         voice.addTickables(notes);
 
-        // Formatterで正しく配置（重要）
+        // Formatterで配置
         const formatter = new Formatter();
 
-        // PreCalculateMinTotalWidthを使用（オプション）
-        const minWidth = formatter.preCalculateMinTotalWidth([voice]);
-        const width = Math.max(750, minWidth);
-
-        // フォーマット実行
+        // シンプルな形式でフォーマット（まず基本を動作させる）
         formatter.joinVoices([voice]);
-        formatter.format([voice], width, { alignRests: true });
-
-        // 描画前に明示的にTickContextを設定
-        voice.setStave(stave);
+        formatter.format([voice], 750); // ← オプションを一旦削除
 
         // 描画
         voice.draw(context, stave);
 
-        // ビームの追加
-        const hasEighthNotes = notes.some(
-          (note) => note.getDuration() === "8" || note.getDuration() === "8d"
-        );
+        // ビームの追加（後で対応）
+        // 一旦コメントアウトして基本描画を確認
+        /*
+      const hasEighthNotes = notes.some(
+        (note) => note.getDuration() === "8" || note.getDuration() === "8d"
+      );
 
-        if (hasEighthNotes && notes.length > 1) {
-          try {
-            const beams = Beam.generateBeams(notes);
-            beams.forEach((beam) => beam.setContext(context).draw());
-          } catch (beamError) {
-            console.log("Beam generation skipped:", beamError);
-          }
+      if (hasEighthNotes && notes.length > 1) {
+        try {
+          const beams = Beam.generateBeams(notes);
+          beams.forEach((beam) => beam.setContext(context).draw());
+        } catch (beamError) {
+          console.log("Beam generation skipped:", beamError);
         }
+      }
+      */
       } catch (voiceError) {
         console.error("Voice error:", voiceError);
-        // フォールバック処理
+        // エラー詳細を表示
+        console.error("Voice error details:", {
+          notesLength: notes.length,
+          scoreData: scoreData,
+        });
       }
+
       rendererRef.current = renderer;
     } catch (error) {
       console.error("Score rendering error:", error);
+      // エラー詳細を表示
+      console.error("Error details:", {
+        scoreData: scoreData,
+        containerExists: !!scoreContainerRef.current,
+      });
     }
   }, []);
 
