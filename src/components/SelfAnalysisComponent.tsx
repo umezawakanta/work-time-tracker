@@ -302,7 +302,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   };
 
   const getAverageMood = () => {
-    if (moodLogs.length === 0) return 0;
+    if (moodLogs.length === 0) {
+      return 0;
+    }
     return moodLogs.reduce((sum, log) => sum + (log.mood || 0), 0) / moodLogs.length;
   };
 
