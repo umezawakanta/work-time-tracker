@@ -156,6 +156,7 @@ export const useUIState = () => {
 
   // 他の機能を閉じる
   const closeOtherFeatures = (activeFeature: string) => {
+    console.log('useUIState - closeOtherFeatures called with:', activeFeature);
     setShowCharacterHome(activeFeature === FEATURE_IDS.CHARACTER_HOME);
     setShowProjects(activeFeature === FEATURE_IDS.PROJECTS);
     setShowCookingTimer(activeFeature === FEATURE_IDS.COOKING_TIMER);
@@ -174,6 +175,7 @@ export const useUIState = () => {
     setShowThemeSettings(activeFeature === FEATURE_IDS.THEME_SETTINGS);
     setShowFontSettings(activeFeature === FEATURE_IDS.FONT_SETTINGS);
     setShowFeatureSettings(activeFeature === FEATURE_IDS.FEATURE_SETTINGS);
+    console.log('useUIState - Theme settings will be:', activeFeature === FEATURE_IDS.THEME_SETTINGS);
   };
 
   // テーマ適用

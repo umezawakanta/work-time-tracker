@@ -102,8 +102,12 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             onCharacterHomeToggle={handleCharacterHomeToggle}
             showThemeSettings={showThemeSettings}
             onThemeSettingsToggle={() => {
+              console.log('HeaderComponent - Theme settings button clicked');
               if (closeOtherFeatures) {
+                console.log('HeaderComponent - Calling closeOtherFeatures with theme-settings');
                 closeOtherFeatures("theme-settings");
+              } else {
+                console.log('HeaderComponent - closeOtherFeatures is not available');
               }
             }}
             showFontSettings={showFontSettings}

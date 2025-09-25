@@ -248,8 +248,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       showSoundApp,
       showNotifications,
       showVersionInfo,
+      showThemeSettings,
+      showFontSettings,
+      showFeatureSettings,
     });
-  }, [user, isLoggedIn, showCharacterHome, showProjects, showCookingTimer, showSelfAnalysis, showBookshelf, showMemos, showReports, showAdminPanel, showTimeTracking, showTimers, showPublicMemos, showWorkRecords, showSoundApp, showNotifications, showVersionInfo]);
+  }, [user, isLoggedIn, showCharacterHome, showProjects, showCookingTimer, showSelfAnalysis, showBookshelf, showMemos, showReports, showAdminPanel, showTimeTracking, showTimers, showPublicMemos, showWorkRecords, showSoundApp, showNotifications, showVersionInfo, showThemeSettings, showFontSettings, showFeatureSettings]);
 
   // 認証されていない場合は何も表示しない
   if (!isLoggedIn || !user) {
