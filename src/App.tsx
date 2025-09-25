@@ -2518,7 +2518,7 @@ ${errorInfo.stack}
 
       const data = await result.json();
       if (data.success) {
-        const settings = data.settings;
+        const { settings } = data;
 
         // 新しい機能を追加（既存の設定を保持）
         const currentFeatureIds = features.map((f) => f.id);
