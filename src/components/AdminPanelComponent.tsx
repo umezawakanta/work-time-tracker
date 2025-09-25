@@ -610,7 +610,9 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   const loadApiErrorCount = async () => {
     try {
       const token = getAuthToken((message) => console.error(message));
-      if (!token) return;
+      if (!token) {
+        return;
+      }
       
       const response = await fetch('/api/admin/api-list', {
         headers: {
