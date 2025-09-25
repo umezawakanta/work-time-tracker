@@ -69,6 +69,21 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
   timerSettings,
 }) => {
   const [eggTimerInterval, setEggTimerIntervalLocal] = useState<NodeJS.Timeout | null>(null);
+  const [localEggTimerTime, setLocalEggTimerTime] = useState(eggTimerTime);
+
+  // 親の状態と同期
+  useEffect(() => {
+    setLocalEggTimerTime(eggTimerTime);
+  }, [eggTimerTime]);
+
+  // プログレスバーの更新
+  useEffect(() => {
+    const progressBar = document.querySelector('.progress-bar') as HTMLElement;
+    if (progressBar) {
+      const progress = ((eggTimerOriginalTime - localEggTimerTime) / eggTimerOriginalTime) * 100;
+      progressBar.style.width = `${Math.max(0, Math.min(100, progress))}%`;
+    }
+  }, [localEggTimerTime, eggTimerOriginalTime]);
 
   // タイマーの開始
   const startEggTimer = () => {
@@ -88,7 +103,7 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
     setEggTimerPhaseName('加熱中');
 
     const interval = setInterval(() => {
-      setEggTimerTime((prevTime) => {
+      setLocalEggTimerTime((prevTime) => {
         if (prevTime <= 1) {
           // タイマー終了
           clearInterval(interval);
@@ -162,7 +177,7 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
     }
 
     const interval = setInterval(() => {
-      setEggTimerTime((prevTime) => {
+      setLocalEggTimerTime((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(interval);
           setEggTimerIntervalLocal(null);
@@ -292,7 +307,7 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
 
       <div className="egg-timer-display">
         <div className="timer-time">
-          {formatTime(eggTimerTime)}
+          {formatTime(localEggTimerTime)}
         </div>
         <div className="timer-phase">
           {eggTimerPhaseName}: {formatTime(eggTimerPhaseTime)}
@@ -300,9 +315,7 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
         <div className="timer-progress">
           <div 
             className="progress-bar"
-            style={{
-              '--progress': ((eggTimerOriginalTime - eggTimerTime) / eggTimerOriginalTime) * 100
-            } as React.CSSProperties}
+            data-progress={((eggTimerOriginalTime - localEggTimerTime) / eggTimerOriginalTime) * 100}
           />
         </div>
       </div>

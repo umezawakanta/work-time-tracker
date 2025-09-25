@@ -85,21 +85,9 @@
   height: 100%;
   background: linear-gradient(90deg, #fff, #ffeb3b);
   border-radius: 4px;
+  width: 0%;
   transition: width 1s ease;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  width: 0%;
-}
-
-.progress-bar[data-progress] {
-  width: calc(var(--progress, 0) * 1%);
-}
-
-.progress-bar[data-progress="0"] {
-  width: 0%;
-}
-
-.progress-bar[data-progress="100"] {
-  width: 100%;
 }
 
 .egg-timer-controls {
