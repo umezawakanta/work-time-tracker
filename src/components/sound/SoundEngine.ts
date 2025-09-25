@@ -256,7 +256,7 @@ export const playSound = async (
       try {
         note = Tone.Frequency(frequency, "hz").toNote();
       } catch (freqError) {
-        throw new Error("Invalid frequency for musical note conversion");
+        throw new Error("音階への変換に無効な周波数が指定されました");
       }
       instrument.triggerAttackRelease(note, duration + "s");
     }
