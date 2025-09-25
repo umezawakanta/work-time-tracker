@@ -949,13 +949,18 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         .filter((cat) => cat.ratio > 0)
         .sort((a, b) => b.ratio - a.ratio);
 
-      // 楽譜データを生成
-      const scoreData = generateScoreData(categoryRatios, genre);
-      setCurrentScore(scoreData);
+      // 楽譜データを生成（明和電機風の場合はスキップ）
+      if (genre.id !== "meiwa") {
+        const scoreData = generateScoreData(categoryRatios, genre);
+        setCurrentScore(scoreData);
 
-      // 楽譜を表示
-      if (showScore && scoreData) {
-        setTimeout(() => renderScore(scoreData), 100);
+        // 楽譜を表示
+        if (showScore && scoreData) {
+          setTimeout(() => renderScore(scoreData), 100);
+        }
+      } else {
+        // 明和電機風の場合は楽譜を非表示
+        setCurrentScore(null);
       }
 
       // 明和電機風の8bitメロディー生成
@@ -968,11 +973,28 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           const delay = index * beatDuration * 200; // より速いテンポ
           const note = melodyNotes[noteIndex % melodyNotes.length];
           const frequency = Tone.Frequency(note).toFrequency();
-          const duration = 0.1; // 短いビープ音
-          const volume = 0.8;
+          const duration = 0.05; // より短いビープ音
+          const volume = 0.9;
 
           const timeout = setTimeout(() => {
             playSound("staple", frequency, duration, volume, genre.id);
+          }, delay);
+
+          playTimeoutsRef.current.push(timeout);
+        });
+
+        // 明和電機風のリズムパターンを追加
+        const rhythmPattern = [0, 0, 1, 0, 2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 1, 0];
+        rhythmPattern.forEach((patternIndex, index) => {
+          const delay = index * beatDuration * 100; // より速いリズム
+          const rhythmNotes = ["C3", "E3", "G3"];
+          const note = rhythmNotes[patternIndex];
+          const frequency = Tone.Frequency(note).toFrequency();
+          const duration = 0.02; // 非常に短いビープ音
+          const volume = 0.6;
+
+          const timeout = setTimeout(() => {
+            playSound("side", frequency, duration, volume, genre.id);
           }, delay);
 
           playTimeoutsRef.current.push(timeout);
