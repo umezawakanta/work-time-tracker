@@ -72,9 +72,9 @@ export const generateMeiwaRhythm = (
       baseFrequency;
     const duration = 0.05; // 短い8bit風の音
     
-    setTimeout(() => {
-      playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
-    }, delay);
+        setTimeout(async () => {
+          await playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
+        }, delay);
   });
 };
 

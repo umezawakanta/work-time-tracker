@@ -205,7 +205,7 @@ export const initializeTone = async (): Promise<boolean> => {
 };
 
 // 音を再生
-export const playSound = (
+export const playSound = async (
   categoryId: string,
   frequency: number,
   duration: number,
@@ -218,6 +218,17 @@ export const playSound = (
   if (!globalToneInitialized) {
     console.warn("Tone.js not initialized, skipping sound playback");
     return;
+  }
+
+  // AudioContextが停止している場合は再開を試行
+  if (Tone.context.state === 'suspended') {
+    try {
+      await Tone.context.resume();
+      console.log("AudioContext resumed successfully");
+    } catch (error) {
+      console.warn("Failed to resume AudioContext:", error);
+      return;
+    }
   }
 
   try {

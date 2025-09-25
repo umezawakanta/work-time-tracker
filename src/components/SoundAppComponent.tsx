@@ -455,8 +455,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // 音を再生する関数（SoundEngineからインポート済み）
   const playSoundCallback = useCallback(
-    (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => {
-      playSound(
+    async (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => {
+      await playSound(
         categoryId,
         frequency,
         duration,
@@ -513,8 +513,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           const frequency = Tone.Frequency(pattern.note).toFrequency();
           const duration = 0.1;
           
-          const timeout = setTimeout(() => {
-            playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
+          const timeout = setTimeout(async () => {
+            await playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
           }, delay);
 
           playTimeoutsRef.current.push(timeout);
@@ -534,8 +534,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         const frequency = Tone.Frequency(pattern.note).toFrequency();
         const duration = 0.08; // 短い8bit風の音
         
-        const timeout = setTimeout(() => {
-          playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
+        const timeout = setTimeout(async () => {
+          await playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
         }, delay);
 
         playTimeoutsRef.current.push(timeout);
