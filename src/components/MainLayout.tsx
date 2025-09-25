@@ -17,6 +17,8 @@ import WorkRecordsComponent from './WorkRecordsComponent';
 import SoundAppComponent from './SoundAppComponent';
 import NotificationComponent from './NotificationComponent';
 import VersionInfo from './VersionInfo';
+import UpdateRequestModal from './UpdateRequestModal';
+import BugReportModal from './BugReportModal';
 import { User } from '../types';
 
 interface MainLayoutProps {
@@ -66,6 +68,8 @@ interface MainLayoutProps {
   setShowUpdateRequestModal: (show: boolean) => void;
   // その他の関数
   closeOtherFeatures: (activeFeature: string) => void;
+  onUpdateRequestSubmit: (updateRequest: { title: string; content: string; priority: string; category: string }) => Promise<void>;
+  onBugReportSubmit: (bugReport: { title: string; content: string; severity: string; category: string }) => Promise<void>;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({
@@ -112,6 +116,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   setShowBugReportModal,
   setShowUpdateRequestModal,
   closeOtherFeatures,
+  onUpdateRequestSubmit,
+  onBugReportSubmit,
 }) => {
   // CookingTimerSection の状態管理
   const [selectedRecipe, setSelectedRecipe] = React.useState("boiled-egg");
@@ -771,57 +777,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           </div>
         )}
 
-        {showBugReportModal && (
-          <div className="bug-report-modal">
-            <div className="modal-overlay" onClick={() => setShowBugReportModal(false)}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                  <h3>🐛 不具合報告</h3>
-                  <button 
-                    className="close-button"
-                    onClick={() => setShowBugReportModal(false)}
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div className="modal-body">
-                  <p>不具合を発見された場合は、以下の方法でお知らせください：</p>
-                  <ul>
-                    <li>公開メモ機能で「不具合報告」カテゴリで投稿</li>
-                    <li>管理者に直接連絡</li>
-                  </ul>
-                  <p>報告いただいた内容は開発の参考にさせていただきます。</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <UpdateRequestModal
+          isOpen={showUpdateRequestModal}
+          onClose={() => setShowUpdateRequestModal(false)}
+          onSubmit={onUpdateRequestSubmit}
+        />
 
-        {showUpdateRequestModal && (
-          <div className="update-request-modal">
-            <div className="modal-overlay" onClick={() => setShowUpdateRequestModal(false)}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                  <h3>💡 更新要望</h3>
-                  <button 
-                    className="close-button"
-                    onClick={() => setShowUpdateRequestModal(false)}
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div className="modal-body">
-                  <p>新機能の要望や改善提案は、以下の方法でお知らせください：</p>
-                  <ul>
-                    <li>公開メモ機能で「更新要望」カテゴリで投稿</li>
-                    <li>管理者に直接連絡</li>
-                  </ul>
-                  <p>いただいたご要望は今後の開発に反映させていただきます。</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <BugReportModal
+          isOpen={showBugReportModal}
+          onClose={() => setShowBugReportModal(false)}
+          onSubmit={onBugReportSubmit}
+        />
       </main>
       </div>
     </>

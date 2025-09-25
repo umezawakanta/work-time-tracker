@@ -6,10 +6,10 @@ import { useAuth } from "./hooks/useAuth";
 import { useErrorHandling } from "./hooks/useErrorHandling";
 import { useDataFetching } from "./hooks/useDataFetching";
 import { useUIState } from "./hooks/useUIState";
-import { LoadingStateProvider } from "./components/LoadingStateManager";
-import { TimeTrackingStateProvider } from "./components/TimeTrackingStateManager";
-import { TimerPresetProvider } from "./components/TimerPresetManager";
-import { MoodLogProvider } from "./components/MoodLogManager";
+import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
+import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
+import { TimerPresetProvider, useTimerPresetState } from "./components/TimerPresetManager";
+import { MoodLogProvider, useMoodLogState, useMoodLogHelpers } from "./components/MoodLogManager";
 import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
 import UpdateRequestModal from "./components/UpdateRequestModal";
 import BugReportModal from "./components/BugReportModal";
@@ -18,6 +18,20 @@ import { setErrorReportCallback } from "./utils/apiClient";
 function App() {
   // エラーハンドリングの追加
   const [appError, setAppError] = useState<Error | null>(null);
+
+  // ローディング状態の管理
+  const loadingState = useLoadingState();
+  
+  // 時間記録状態の管理
+  const timeTrackingState = useTimeTrackingState();
+  const timeTrackingHelpers = useTimeTrackingHelpers();
+  
+  // タイマープリセット状態の管理
+  const timerPresetState = useTimerPresetState();
+  
+  // 感情ログ状態の管理
+  const moodLogState = useMoodLogState();
+  const moodLogHelpers = useMoodLogHelpers();
 
   // カスタムフックの使用
   const auth = useAuth();
@@ -128,6 +142,30 @@ function App() {
     setErrorReportCallback(errorHandling.handleApiErrorReport);
   }, [errorHandling.handleApiErrorReport]);
 
+  // 更新要望のハンドラー
+  const handleUpdateRequest = async (updateRequest: { title: string; content: string; priority: string; category: string }) => {
+    console.log('App.tsx - Update request submitted:', updateRequest);
+    // ここで更新要望をAPIに送信する処理を実装
+    try {
+      // API呼び出しの実装
+      console.log('Update request sent successfully');
+    } catch (error) {
+      console.error('Failed to send update request:', error);
+    }
+  };
+
+  // 不具合報告のハンドラー
+  const handleBugReport = async (bugReport: { title: string; content: string; severity: string; category: string }) => {
+    console.log('App.tsx - Bug report submitted:', bugReport);
+    // ここで不具合報告をAPIに送信する処理を実装
+    try {
+      // API呼び出しの実装
+      console.log('Bug report sent successfully');
+    } catch (error) {
+      console.error('Failed to send bug report:', error);
+    }
+  };
+
   // アプリエラーが発生した場合
   if (appError) {
     return (
@@ -221,6 +259,8 @@ function App() {
         setShowBugReportModal={uiState.setShowBugReportModal}
         setShowUpdateRequestModal={uiState.setShowUpdateRequestModal}
         closeOtherFeatures={uiState.closeOtherFeatures}
+        onUpdateRequestSubmit={handleUpdateRequest}
+        onBugReportSubmit={handleBugReport}
       />
 
       {/* エラーモーダル */}
