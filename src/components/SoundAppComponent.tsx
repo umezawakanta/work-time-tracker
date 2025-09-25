@@ -353,7 +353,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           new StaveNote({
             clef: "treble", // ← clefを追加
             keys: ["b/4"],
-            duration: "w", // ← "wr"から"w"に変更（全休符）
+            duration: "w",
           })
         );
       }
