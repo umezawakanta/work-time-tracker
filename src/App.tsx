@@ -2076,10 +2076,7 @@ ${errorInfo.stack}
   };
 
   // 時間記録の履歴を取得（TimeTrackingStateManagerで管理）
-  const { loadTimeEntries } = timeTrackingHelpers;
-
-  // 時間記録データからカテゴリ別の時間を計算（TimeTrackingStateManagerで管理）
-  const { calculateTimeBreakdown } = timeTrackingHelpers;
+  const { loadTimeEntries, calculateTimeBreakdown } = timeTrackingHelpers;
 
   // 過去7日間の生産性データを計算（TimeTrackingStateManagerで管理）
   const calculateProductivityTrend = timeTrackingHelpers.calculateProductivityTrend;
