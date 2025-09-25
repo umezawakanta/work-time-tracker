@@ -1163,34 +1163,6 @@ function App() {
 
 
 
-  const playBeepSound = (audioContext: AudioContext) => {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    // ビープ音: 短い連続音
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.1);
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.3);
-
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime + 0.1);
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + 0.15);
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime + 0.25);
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + 0.3);
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime + 0.4);
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + 0.45);
-    gainNode.gain.exponentialRampToValueAtTime(
-      0.01,
-      audioContext.currentTime + 0.6
-    );
-
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.6);
-  };
 
   const playAlarmSound = (audioContext: AudioContext) => {
     const oscillator = audioContext.createOscillator();
