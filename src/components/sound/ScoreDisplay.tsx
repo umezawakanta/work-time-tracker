@@ -123,7 +123,7 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
           new StaveNote({
             clef: "treble", // ← clefを追加
             keys: ["b/4"],
-            duration: "w",
+            duration: "wr",
           })
         );
       }
