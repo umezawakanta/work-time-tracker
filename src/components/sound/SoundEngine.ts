@@ -308,7 +308,7 @@ export const playSound = async (
     const noteToPlay = getNoteForCategory(categoryId, genre, frequency);
     instrument.triggerAttackRelease(noteToPlay, duration + "s");
   } catch (error) {
-    console.log(`Could not play sound for ${categoryId}:`, error);
+    console.error(`Could not play sound for ${categoryId}:`, error);
   }
 };
 

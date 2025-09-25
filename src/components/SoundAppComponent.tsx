@@ -17,9 +17,15 @@ import { ScoreData } from "./sound/ScoreDisplay";
 import { MusicGenre, Instrument } from "./sound/types";
 import { ensureAudioContextReady } from "./sound/AudioContextUtils";
 
+/**
+ * Props for the SoundAppComponent
+ */
 interface SoundAppComponentProps {
+  /** Whether the sound app section is currently visible */
   showSoundApp: boolean;
+  /** Function to toggle the visibility of the sound app section */
   setShowSoundApp: (show: boolean) => void;
+  /** Function to close other features when this one is activated */
   closeOtherFeatures: (activeFeature: string) => void;
 }
 

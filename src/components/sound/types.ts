@@ -1,5 +1,34 @@
-import { MealRecord, FoodCategory } from "./MealRecording.types";
-import { ScoreData } from "./ScoreDisplay.types";
+// Local type definitions
+export interface MealRecord {
+  id: string;
+  date: string;
+  categories: { [key: string]: number };
+  notes?: string;
+}
+
+export interface FoodCategory {
+  id: string;
+  name: string;
+  sound: {
+    frequency: number;
+    duration: number;
+    volume: number;
+  };
+  color: string;
+  instrument: string;
+  noteMapping: string;
+}
+
+export interface ScoreData {
+  notes: Array<{
+    pitch: string;
+    duration: string;
+    time: number;
+    instrument: string;
+  }>;
+  timeSignature?: string;
+  key?: string;
+}
 
 // Saved records
 export interface SavedRecord {

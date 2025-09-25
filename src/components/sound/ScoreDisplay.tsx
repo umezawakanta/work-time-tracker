@@ -100,7 +100,7 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
       const notes = scoreData.notes.map((note) => {
         // VexFlowは大文字の音名を期待（C/4, F#/3形式）
         const vfPitch = note.pitch && note.pitch.includes('/') 
-          ? note.pitch.replace(/^([a-g])/, (_, p1) => p1.toUpperCase())
+          ? note.pitch.replace(/^([a-g])/i, (_, p1) => p1.toUpperCase())
           : "C/4"; // デフォルト値
         const staveNote = new StaveNote({
           clef: "treble",

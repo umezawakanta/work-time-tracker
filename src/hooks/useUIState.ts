@@ -4,6 +4,25 @@ import { AUTH_CONSTANTS } from '../constants/auth';
 import { availableThemes } from '../constants/themes';
 import { availableFonts, FontSettings, DEFAULT_FONT_SETTINGS } from '../constants/fonts';
 
+// 機能ID定数
+export const FEATURE_IDS = {
+  CHARACTER_HOME: 'character-home',
+  PROJECTS: 'projects',
+  COOKING_TIMER: 'cooking-timer',
+  SELF_ANALYSIS: 'self-analysis',
+  BOOKSHELF: 'bookshelf',
+  MEMOS: 'memos',
+  REPORTS: 'reports',
+  ADMIN_PANEL: 'admin-panel',
+  TIME_TRACKING: 'time-tracking',
+  TIMERS: 'timers',
+  PUBLIC_MEMOS: 'public-memos',
+  WORK_RECORDS: 'work-records',
+  SOUND_APP: 'sound-app',
+  NOTIFICATIONS: 'notifications',
+  VERSION_INFO: 'version-info',
+} as const;
+
 export const useUIState = () => {
   // 機能表示状態
   const [showCharacterHome, setShowCharacterHome] = useState(false);
@@ -60,7 +79,7 @@ export const useUIState = () => {
       'timers',
       'public-memos',
       'work-records',
-      'sound-app',
+      FEATURE_IDS.SOUND_APP,
       'notifications',
       'version-info',
     ],
@@ -76,7 +95,7 @@ export const useUIState = () => {
       'timers',
       'public-memos',
       'work-records',
-      'sound-app',
+      FEATURE_IDS.SOUND_APP,
       'notifications',
       'version-info',
     ],
@@ -126,21 +145,21 @@ export const useUIState = () => {
 
   // 他の機能を閉じる
   const closeOtherFeatures = (activeFeature: string) => {
-    setShowCharacterHome(activeFeature === 'character-home');
-    setShowProjects(activeFeature === 'projects');
-    setShowCookingTimer(activeFeature === 'cooking-timer');
-    setShowSelfAnalysis(activeFeature === 'self-analysis');
-    setShowBookshelf(activeFeature === 'bookshelf');
-    setShowMemos(activeFeature === 'memos');
-    setShowReports(activeFeature === 'reports');
-    setShowAdminPanel(activeFeature === 'admin-panel');
-    setShowTimeTracking(activeFeature === 'time-tracking');
-    setShowTimers(activeFeature === 'timers');
-    setShowPublicMemos(activeFeature === 'public-memos');
-    setShowWorkRecords(activeFeature === 'work-records');
-    setShowSoundApp(activeFeature === 'sound-app');
-    setShowNotifications(activeFeature === 'notifications');
-    setShowVersionInfo(activeFeature === 'version-info');
+    setShowCharacterHome(activeFeature === FEATURE_IDS.CHARACTER_HOME);
+    setShowProjects(activeFeature === FEATURE_IDS.PROJECTS);
+    setShowCookingTimer(activeFeature === FEATURE_IDS.COOKING_TIMER);
+    setShowSelfAnalysis(activeFeature === FEATURE_IDS.SELF_ANALYSIS);
+    setShowBookshelf(activeFeature === FEATURE_IDS.BOOKSHELF);
+    setShowMemos(activeFeature === FEATURE_IDS.MEMOS);
+    setShowReports(activeFeature === FEATURE_IDS.REPORTS);
+    setShowAdminPanel(activeFeature === FEATURE_IDS.ADMIN_PANEL);
+    setShowTimeTracking(activeFeature === FEATURE_IDS.TIME_TRACKING);
+    setShowTimers(activeFeature === FEATURE_IDS.TIMERS);
+    setShowPublicMemos(activeFeature === FEATURE_IDS.PUBLIC_MEMOS);
+    setShowWorkRecords(activeFeature === FEATURE_IDS.WORK_RECORDS);
+    setShowSoundApp(activeFeature === FEATURE_IDS.SOUND_APP);
+    setShowNotifications(activeFeature === FEATURE_IDS.NOTIFICATIONS);
+    setShowVersionInfo(activeFeature === FEATURE_IDS.VERSION_INFO);
   };
 
   // テーマ適用
