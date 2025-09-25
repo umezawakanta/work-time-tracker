@@ -195,7 +195,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     productiveDays: 0,
     productivityRate: 0
   });
-  const loadTimeEntries = () => {};
 
   // CookingTimerSection の関数
   const sendNotification = (title: string, body: string, icon?: string) => {
