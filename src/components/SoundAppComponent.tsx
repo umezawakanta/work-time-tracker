@@ -364,7 +364,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
         // setMode: SOFT モード（公式enumを使用）
         // @ts-ignore - 型定義にModeがない環境への対応
-        voice.setMode((Voice as any).Mode ? (Voice as any).Mode.SOFT : 3);
+        const VOICE_MODE_SOFT = (Voice as any).Mode ? (Voice as any).Mode.SOFT : 3;
+        voice.setMode(VOICE_MODE_SOFT);
         voice.addTickables(notes);
 
         // Formatterで配置
