@@ -840,7 +840,7 @@ function App() {
     setEggTimerActive(false);
     setEggTimerPaused(false);
     setEggTimerTime(0);
-    setEggTimerPhase(0);
+    setEggTimerPhase("heating");
     setEggTimerPhaseTime(0);
     setEggTimerPhaseName("");
   };
