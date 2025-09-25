@@ -403,6 +403,7 @@
   background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
   border-radius: 4px;
   transition: width 0.3s ease;
+  width: attr(data-percentage %);
 }
 
 .factor-fill.stress {
@@ -509,6 +510,7 @@
   background: linear-gradient(90deg, var(--primary-color, #3b82f6), var(--primary-light, #60a5fa));
   border-radius: 4px;
   transition: width 0.3s ease;
+  width: attr(data-percentage %);
 }
 
 .time-value {
@@ -674,6 +676,7 @@
   top: -5px;
   font-size: 1.5rem;
   transform: translateX(-50%);
+  left: attr(data-position %);
 }
 
 .scale-line {
@@ -1816,6 +1819,7 @@
   min-height: 4px;
   transition: all 0.3s ease;
   cursor: pointer;
+  height: attr(data-height %);
 }
 
 .bar-fill:hover {
