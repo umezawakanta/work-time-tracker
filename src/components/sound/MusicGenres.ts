@@ -1,4 +1,4 @@
-import { MusicGenre } from './GenreSelector';
+import { MusicGenre } from './types';
 
 export const musicGenres: MusicGenre[] = [
   {

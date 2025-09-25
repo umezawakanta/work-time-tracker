@@ -8,6 +8,7 @@ import {
   Accidental,
 } from "vexflow";
 import { SUPPORTED_KEY_SIGNATURES, type KeySignature } from "./MusicConstants";
+import { CategoryRatio, MusicGenre } from "./types";
 
 export interface NoteData {
   pitch: string;
@@ -173,7 +174,7 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
 
   // 楽譜データを生成する関数
   const generateScoreData = useCallback(
-    (categoryRatios: any[], genre: any): ScoreData => {
+    (categoryRatios: CategoryRatio[], genre: MusicGenre): ScoreData => {
       const notes: NoteData[] = [];
       let currentTime = 0;
 

@@ -2,14 +2,14 @@ import * as Tone from "tone";
 import { playSound } from "./SoundEngine";
 import { generateMeiwaRhythm } from "./MeiwaSoundGenerator";
 import { IDEAL_BALANCE_RATIOS } from "./constants";
-import { MusicGenre } from "./GenreSelector";
+import { MusicGenre, CategoryRatio } from "./types";
 
 export const generateMusic = async (
-  categoryRatios: any[],
+  categoryRatios: CategoryRatio[],
   balanceScore: number,
   genre: MusicGenre,
   playSoundCallback: typeof playSound,
-  generateMeiwaRhythmCallback: (beatDuration: number, categoryRatios: any[]) => void
+  generateMeiwaRhythmCallback: (beatDuration: number, categoryRatios: CategoryRatio[]) => void
 ) => {
   // 明和電機風の固定テンポ（120 BPM）
   const adjustedTempo = 120;

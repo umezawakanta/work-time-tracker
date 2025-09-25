@@ -1,10 +1,11 @@
 import * as Tone from "tone";
 import { playSound } from "./SoundEngine";
+import { CategoryRatio, RhythmPattern } from "./types";
 
 // 明和電機風の8bitリズムパターンを生成（音の重ね合わせ対応）
 export const generateMeiwaRhythm = (
   beatDuration: number, 
-  categoryRatios: any[], 
+  categoryRatios: CategoryRatio[], 
   playSoundCallback: (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => Promise<void>
 ) => {
   const activeCats = categoryRatios
@@ -12,7 +13,7 @@ export const generateMeiwaRhythm = (
     .sort((a, b) => b.ratio - a.ratio);
 
   // 8bit風のドラムパターン（16分音符ベース）
-  const drumPattern = [
+  const drumPattern: RhythmPattern[] = [
     { time: 0, note: "C2", category: "staple", volume: 0.8 },
     { time: 4, note: "C2", category: "staple", volume: 0.6 },
     { time: 8, note: "E2", category: "side", volume: 0.4 },
@@ -68,8 +69,8 @@ export const generateMeiwaRhythm = (
   [...drumPattern, ...melodyPattern, ...bassPattern, ...layeredPattern].forEach((pattern) => {
     const delay = pattern.time * beatDuration * 0.25 / 1000; // convert ms to seconds for Tone.Transport
     const baseFrequency = Tone.Frequency(pattern.note).toFrequency();
-    const frequency = 'detune' in pattern && pattern.detune ? 
-      baseFrequency * Math.pow(2, (pattern.detune as number) / 1200) : // セント単位のデチューン
+    const frequency = pattern.detune ? 
+      baseFrequency * Math.pow(2, pattern.detune / 1200) : // セント単位のデチューン
       baseFrequency;
     const duration = 0.05; // 短い8bit風の音
 

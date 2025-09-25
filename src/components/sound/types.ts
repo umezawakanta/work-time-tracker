@@ -77,3 +77,52 @@ export const foodCategories: FoodCategory[] = [
     noteMapping: "E/5", // VexFlow format (uppercase)
   },
 ];
+
+// Category ratio interface
+export interface CategoryRatio {
+  id: string;
+  name: string;
+  ratio: number;
+  category: string;
+  volume: number;
+  note: string;
+  detune?: number; // Optional detune in cents
+}
+
+// Music genre interface
+export interface MusicGenre {
+  id: string;
+  name: string;
+  baseTempo: number;
+  instruments: string[];
+  description: string;
+  keySignature: string;
+}
+
+// Instrument interface
+export interface Instrument {
+  triggerAttackRelease: (note: string, duration: string) => void;
+  volume: {
+    value: number;
+  };
+  connect?: (destination: any) => void;
+  toDestination?: () => void;
+}
+
+// Error interface for better error handling
+export interface AppError {
+  code: string;
+  message: string;
+  details?: string;
+  timestamp: string;
+  userAgent: string;
+}
+
+// Pattern interface for rhythm generation
+export interface RhythmPattern {
+  time: number;
+  note: string;
+  category: string;
+  volume: number;
+  detune?: number;
+}

@@ -1,14 +1,5 @@
 import React from "react";
-
-export interface MusicGenre {
-  id: string;
-  name: string;
-  baseTempo: number;
-  instruments: string[];
-  description: string;
-  synthSettings?: any;
-  keySignature?: string;
-}
+import { MusicGenre } from "./types";
 
 interface GenreSelectorProps {
   musicGenres: MusicGenre[];

@@ -14,7 +14,7 @@ import { createInitialMeal } from "./sound/MealLogic";
 import { REPEAT_OPTIONS } from "./sound/constants";
 import { MealRecord } from "./sound/MealRecording";
 import { ScoreData } from "./sound/ScoreDisplay";
-import { MusicGenre } from "./sound/GenreSelector";
+import { MusicGenre, Instrument } from "./sound/types";
 import { ensureAudioContextReady } from "./sound/AudioContextUtils";
 
 interface SoundAppComponentProps {
@@ -41,7 +41,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const [showScore, setShowScore] = useState<boolean>(true);
 
   // 参照管理
-  const instrumentsRef = useRef<{ [key: string]: any }>({});
+  const instrumentsRef = useRef<{ [key: string]: Instrument }>({});
   const playTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
 
   // メッセージ表示

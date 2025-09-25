@@ -1,4 +1,19 @@
 import { useState } from 'react';
+
+// Error types for better error handling
+interface ErrorReport {
+  title: string;
+  content: string;
+  errorDetails: string;
+  userAgent: string;
+  timestamp: string;
+}
+
+interface ApiError {
+  code: string;
+  message: string;
+  details?: string;
+}
 import { ErrorInfo } from '../types/errorTypes';
 import { ApiErrorInfo } from '../utils/apiErrorHandler';
 
@@ -21,13 +36,7 @@ export const useErrorHandling = () => {
     setShowErrorModal(true);
   };
 
-  const handleSimpleErrorReport = async (report: {
-    title: string;
-    content: string;
-    errorDetails: string;
-    userAgent: string;
-    timestamp: string;
-  }) => {
+  const handleSimpleErrorReport = async (report: ErrorReport) => {
     try {
       const response = await fetch('/api/error-reports', {
         method: 'POST',
@@ -41,7 +50,12 @@ export const useErrorHandling = () => {
         console.log('Error report submitted successfully');
         setShowSimpleErrorModal(false);
       } else {
-        console.error('Failed to submit error report');
+        const errorData: ApiError = await response.json().catch(() => ({
+          code: 'SUBMISSION_FAILED',
+          message: 'Error report submission failed',
+          details: `HTTP ${response.status}: ${response.statusText}`
+        }));
+        throw new Error(`Failed to submit error report: ${errorData.message}`);
       }
     } catch (error) {
       console.error('Error submitting report:', error);
