@@ -1,4 +1,5 @@
 import React from "react";
+import * as Tone from "tone";
 
 interface SoundControlsProps {
   isPlaying: boolean;
@@ -17,8 +18,25 @@ const SoundControls: React.FC<SoundControlsProps> = ({
   onStop,
   disabled,
 }) => {
+  // AudioContextの状態を取得
+  const getAudioContextStatus = () => {
+    if (!globalToneInitialized) {
+      return "未初期化";
+    }
+    try {
+      return Tone.context.state;
+    } catch (error) {
+      return "エラー";
+    }
+  };
+
+  const audioContextStatus = getAudioContextStatus();
+
   return (
     <div className="sound-controls">
+      <div className="audio-status">
+        <small>AudioContext: {audioContextStatus}</small>
+      </div>
       <button
         onClick={onPlay}
         disabled={disabled}

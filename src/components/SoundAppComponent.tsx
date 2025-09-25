@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import * as Tone from "tone";
 import "./SoundAppComponent.css";
 
 // サブコンポーネントのインポート
@@ -69,6 +70,17 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   // 音を再生する関数
   const playSoundCallback = useCallback(
     async (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => {
+      // AudioContextの状態を確認
+      if (Tone.context.state === 'suspended') {
+        try {
+          await Tone.context.resume();
+          console.log("AudioContext resumed before sound playback");
+        } catch (error) {
+          console.error("Failed to resume AudioContext:", error);
+          return;
+        }
+      }
+
       await playSound(
         categoryId,
         frequency,

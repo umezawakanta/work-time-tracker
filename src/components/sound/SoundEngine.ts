@@ -194,6 +194,12 @@ export const initializeTone = async (): Promise<boolean> => {
   }
 
   try {
+    // AudioContextの状態を確認
+    if (Tone.context.state === 'suspended') {
+      console.log("AudioContext is suspended, attempting to resume...");
+      await Tone.context.resume();
+    }
+    
     await Tone.start();
     console.log("Tone.js started successfully");
     globalToneInitialized = true;
@@ -220,16 +226,17 @@ export const playSound = async (
     return;
   }
 
-  // AudioContextが停止している場合は再開を試行
+  // AudioContextの状態を確認し、必要に応じて再開
   if (Tone.context.state === 'suspended') {
     try {
       await Tone.context.resume();
-      console.log("AudioContext resumed successfully");
+      console.log("AudioContext resumed for sound playback");
     } catch (error) {
-      console.warn("Failed to resume AudioContext:", error);
+      console.error("Failed to resume AudioContext:", error);
       return;
     }
   }
+
 
   try {
     const instrument = genre && createInstrumentForGenre
