@@ -472,9 +472,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       </div>
 
       <main className="dashboard-main">
-        {getVisibleFeatures().map((feature) => {
-          if (feature.id === "character-home" && showCharacterHome) {
-            return (
+        {showCharacterHome && (
           <CharacterHome
             showCharacterHome={showCharacterHome}
             setShowCharacterHome={setShowCharacterHome}
