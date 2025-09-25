@@ -711,7 +711,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           try {
             note = Tone.Frequency(frequency, "hz").toNote();
           } catch (freqError) {
-            throw new Error(`Failed to convert frequency ${frequency} Hz to a musical note: ${freqError}`);
+            throw new Error(`Failed to convert frequency ${frequency} Hz to a musical note: ${freqError.message}`);
           }
           instrument.triggerAttackRelease(note, duration + "s");
         }
