@@ -300,7 +300,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // 楽譜を描画する関数
   const renderScore = useCallback((scoreData: ScoreData) => {
-    if (!scoreContainerRef.current) return;
+    if (!scoreContainerRef.current) {
+      return;
+    }
 
     // 既存の楽譜をクリア
     scoreContainerRef.current.innerHTML = "";
@@ -427,8 +429,12 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           if (foodCat && foodCat.noteMapping) {
             // 音の長さを音符の長さに変換
             let duration = "q"; // デフォルトは四分音符
-            if (category.sound.duration > 0.6) duration = "h"; // 二分音符
-            if (category.sound.duration < 0.3) duration = "8"; // 八分音符
+            if (category.sound.duration > 0.6) {
+              duration = "h"; // 二分音符
+            }
+            if (category.sound.duration < 0.3) {
+              duration = "8"; // 八分音符
+            }
 
             notes.push({
               pitch: foodCat.noteMapping, // すでに正しいVexFlow形式
@@ -583,7 +589,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // 基本楽器の作成
   const getOrCreateInstrument = useCallback((categoryId: string) => {
-    if (!globalToneInitialized) return null;
+    if (!globalToneInitialized) {
+      return null;
+    }
 
     if (instrumentsRef.current[categoryId]) {
       return instrumentsRef.current[categoryId];
@@ -687,7 +695,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       const instrument = genre
         ? createInstrumentForGenre(categoryId, genre)
         : getOrCreateInstrument(categoryId);
-      if (!instrument) return;
+      if (!instrument) {
+        return;
+      }
 
       try {
         const volumeDb = Math.log10(Math.max(0.001, volume)) * 20;
@@ -735,10 +745,15 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // ジャンルに応じた和音進行を選択
   const getChordProgression = (genre: string, balanceScore: number) => {
-    if (genre === "jazz") return chordProgressions.jazz;
-    if (genre === "japanese") return chordProgressions.japanese;
-    if (genre === "classical" || balanceScore > 0.7)
+    if (genre === "jazz") {
+      return chordProgressions.jazz;
+    }
+    if (genre === "japanese") {
+      return chordProgressions.japanese;
+    }
+    if (genre === "classical" || balanceScore > 0.7) {
       return chordProgressions.major;
+    }
     return chordProgressions.minor;
   };
 
