@@ -88,6 +88,9 @@ const REPEAT_OPTIONS = {
   LOOP: -1,
 } as const;
 
+// VexFlow調号検証用の正規表現パターン
+const VEXFLOW_KEY_SIGNATURE_PATTERN = /^(?:[A-G])(b|#)?m?$/i;
+
 // 周波数→音名の手動マップは未使用のため削除（Tone.Frequencyで変換）
 
 // 音楽ジャンルの定義（拡張版）
@@ -313,7 +316,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       const stave = new Stave(10, 40, 780);
 
       // 拍子記号と調号を追加（VexFlowが解釈できない場合はCにフォールバック）
-      const keyForVexflow = /^(?:[A-G])(b|#)?m?$/i.test(scoreData.key || "")
+      const keyForVexflow = VEXFLOW_KEY_SIGNATURE_PATTERN.test(scoreData.key || "")
         ? scoreData.key
         : "C";
       stave
