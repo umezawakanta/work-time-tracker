@@ -2183,7 +2183,9 @@ ${errorInfo.stack}
 
   const handleUpdateIncomeExpenseRecord = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id || !editingIncomeExpenseRecord) return;
+    if (!user?.id || !editingIncomeExpenseRecord) {
+      return;
+    }
 
     try {
       // 入力値の検証
