@@ -1377,6 +1377,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 closeOtherFeatures={closeOtherFeatures}
                 incomeExpenseRecords={[]}
                 workDiaries={[]}
+                incomeExpenseLoading={false}
+                diaryLoading={false}
+                workRecordsLoading={false}
                 showIncomeExpenseForm={showIncomeExpenseForm}
                 setShowIncomeExpenseForm={setShowIncomeExpenseForm}
                 showDiaryForm={showDiaryForm}
@@ -1424,6 +1427,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 handleUpdateDiary={() => {}}
                 handleDeleteIncomeExpenseRecord={() => {}}
                 handleDeleteDiary={() => {}}
+                editDiary={() => {}}
                 showCalendar={showCalendar}
                 setShowCalendar={setShowCalendar}
                 currentMonth={currentMonth}
