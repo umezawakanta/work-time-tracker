@@ -168,15 +168,12 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     try {
       showMessage("音アプリを初期化中...", 1000);
       
-      const isReady = await ensureAudioContextReady();
-      if (!isReady) {
-        showMessage("AudioContextの初期化に失敗しました", 3000);
-        return;
-      }
-
+      // 少し待機してから初期化を開始
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const initialized = await initializeTone();
       if (!initialized) {
-        showMessage("Tone.jsの初期化に失敗しました。ページを再読み込みしてください。", 3000);
+        showMessage("Tone.jsの初期化に失敗しました。もう一度お試しください。", 3000);
         return;
       }
 
@@ -188,7 +185,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       }
     } catch (error) {
       console.error("Initialization error:", error);
-      showMessage("初期化中にエラーが発生しました。ページを再読み込みしてください。", 3000);
+      showMessage("初期化中にエラーが発生しました。もう一度お試しください。", 3000);
     }
   };
 

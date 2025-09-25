@@ -7,17 +7,27 @@ import * as Tone from "tone";
 export const ensureAudioContextReady = async (): Promise<boolean> => {
   try {
     // AudioContextの状態を確認
-    if (Tone.context.state === 'suspended') {
+    const currentState = Tone.context.state;
+    console.log(`Current AudioContext state: ${currentState}`);
+    
+    if (currentState === 'suspended') {
       console.log("AudioContext is suspended, attempting to resume...");
       await Tone.context.resume();
+    } else if (currentState === 'closed') {
+      console.log("AudioContext is closed, creating new context...");
+      // 新しいAudioContextを作成
+      const newContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      // Tone.jsのコンテキストを更新
+      Tone.setContext(newContext);
     }
     
     // AudioContextが正常に動作しているか確認
-    if (Tone.context.state === 'running') {
+    const finalState = Tone.context.state;
+    if (finalState === 'running') {
       console.log("AudioContext is ready");
       return true;
     } else {
-      console.warn(`AudioContext state: ${Tone.context.state}`);
+      console.warn(`AudioContext final state: ${finalState}`);
       return false;
     }
   } catch (error) {

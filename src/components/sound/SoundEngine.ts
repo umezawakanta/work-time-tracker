@@ -4,6 +4,16 @@ import { ensureAudioContextReady } from "./AudioContextUtils";
 // グローバルでTone.jsの初期化状態を管理
 let globalToneInitialized = false;
 let toneInitializationPromise: Promise<boolean> | null = null;
+let isInitializing = false;
+
+// Tone.jsの自動初期化を防ぐ
+try {
+  if (Tone.context.state !== 'closed') {
+    Tone.context.dispose();
+  }
+} catch (error) {
+  console.log("Tone.js context already disposed or not initialized");
+}
 
 // カテゴリに応じた音符を取得する関数
 const getNoteForCategory = (categoryId: string, genre?: string, frequency?: number): string => {
@@ -237,19 +247,24 @@ export const initializeTone = async (): Promise<boolean> => {
     return toneInitializationPromise;
   }
 
+  // 初期化中フラグを設定
+  if (isInitializing) {
+    return false;
+  }
+
+  isInitializing = true;
+
   toneInitializationPromise = (async () => {
     try {
-      // ユーザージェスチャーが必要なため、AudioContextの状態を確認
-      if (Tone.context.state === 'suspended') {
-        console.log("AudioContext is suspended, attempting to resume...");
-        await Tone.context.resume();
+      // まずAudioContextを確実に準備
+      const audioReady = await ensureAudioContextReady();
+      if (!audioReady) {
+        throw new Error("AudioContext is not ready");
       }
-      
-      // Tone.start()を呼び出す前に、AudioContextが既に開始されているか確認
-      if (Tone.context.state !== 'running') {
-        console.log("AudioContext is not running, starting Tone.js...");
-        await Tone.start();
-      }
+
+      // Tone.jsを明示的に開始
+      console.log("Starting Tone.js...");
+      await Tone.start();
       
       console.log("Tone.js started successfully");
       globalToneInitialized = true;
@@ -260,6 +275,7 @@ export const initializeTone = async (): Promise<boolean> => {
       return false;
     } finally {
       toneInitializationPromise = null;
+      isInitializing = false;
     }
   })();
 
