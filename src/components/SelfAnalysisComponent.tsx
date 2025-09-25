@@ -241,7 +241,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   };
 
   const addActivity = () => {
-    if (!newActivity.trim()) return;
+    if (!newActivity.trim()) {
+      return;
+    }
     setMoodForm((prev) => ({
       ...prev,
       activities: [...prev.activities, newActivity.trim()],
