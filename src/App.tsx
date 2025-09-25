@@ -1188,27 +1188,6 @@ function App() {
     }
   };
 
-  const startSoundLoop = (soundType: "bell" | "chime" | "beep" | "alarm") => {
-    if (soundLoopInterval) {
-      clearInterval(soundLoopInterval);
-    }
-
-    const interval = setInterval(() => {
-      playEggTimerSound();
-    }, 2000);
-
-    setSoundLoopInterval(interval);
-    setIsSoundPlaying(true);
-  };
-
-  const stopSoundLoop = () => {
-    if (soundLoopInterval) {
-      clearInterval(soundLoopInterval);
-      setSoundLoopInterval(null);
-    }
-    setIsSoundPlaying(false);
-  };
-
   // 時間フォーマット関数
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -1514,7 +1493,6 @@ function App() {
       newNextGoal={newNextGoal}
       setNewNextGoal={setNewNextGoal}
       // メモ関連の状態
-      showMemos={uiState.showMemos}
       setShowMemos={uiState.setShowMemos}
       showMemoForm={showMemoForm}
       setShowMemoForm={setShowMemoForm}
@@ -1539,7 +1517,6 @@ function App() {
       selectedMemoCategory={selectedMemoCategory}
       setSelectedMemoCategory={setSelectedMemoCategory}
       // 公開メモ関連の状態
-      showPublicMemos={uiState.showPublicMemos}
       setShowPublicMemos={uiState.setShowPublicMemos}
       publicMemoSearchTerm={publicMemoSearchTerm}
       setPublicMemoSearchTerm={setPublicMemoSearchTerm}
@@ -1559,7 +1536,6 @@ function App() {
       editReplyContent={editReplyContent}
       setEditReplyContent={setEditReplyContent}
       // 本棚関連の状態
-      showBookshelf={uiState.showBookshelf}
       setShowBookshelf={uiState.setShowBookshelf}
       showBookForm={showBookForm}
       setShowBookForm={setShowBookForm}
@@ -1641,13 +1617,10 @@ function App() {
       setShowProjects={uiState.setShowProjects}
       setShowCookingTimer={uiState.setShowCookingTimer}
       setShowSelfAnalysis={uiState.setShowSelfAnalysis}
-      setShowBookshelf={uiState.setShowBookshelf}
-      setShowMemos={uiState.setShowMemos}
       setShowReports={uiState.setShowReports}
       setShowAdminPanel={uiState.setShowAdminPanel}
       setShowTimeTracking={uiState.setShowTimeTracking}
       setShowTimers={uiState.setShowTimers}
-      setShowPublicMemos={uiState.setShowPublicMemos}
       setShowWorkRecords={uiState.setShowWorkRecords}
       setShowSoundApp={uiState.setShowSoundApp}
       setShowNotifications={uiState.setShowNotifications}
@@ -1702,7 +1675,6 @@ function App() {
       getReadingProgress={getReadingProgress}
       handleCreateMemo={handleCreateMemo}
       // タイマー関連のプロパティ
-      showTimers={uiState.showTimers}
       setShowTimers={uiState.setShowTimers}
       customTimerActive={customTimerActive}
       setCustomTimerActive={setCustomTimerActive}

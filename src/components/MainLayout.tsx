@@ -178,8 +178,8 @@ interface MainLayoutProps {
   // 料理タイマー関連の状態
   selectedRecipe: string;
   setSelectedRecipe: (recipe: string) => void;
-  selectedEggType: string;
-  setSelectedEggType: (type: string) => void;
+  selectedEggType: "soft" | "medium" | "hard";
+  setSelectedEggType: (type: "soft" | "medium" | "hard") => void;
   eggTimerActive: boolean;
   setEggTimerActive: (active: boolean) => void;
   eggTimerPaused: boolean;
@@ -188,12 +188,12 @@ interface MainLayoutProps {
   setEggTimerTime: (time: number) => void;
   eggTimerInterval: NodeJS.Timeout | null;
   setEggTimerInterval: (interval: NodeJS.Timeout | null) => void;
-  eggTimerSound: string;
-  setEggTimerSound: (sound: string) => void;
+  eggTimerSound: "bell" | "chime" | "beep" | "alarm";
+  setEggTimerSound: (sound: "bell" | "chime" | "beep" | "alarm") => void;
   eggTimerOriginalTime: number;
   setEggTimerOriginalTime: (time: number) => void;
-  eggTimerPhase: number;
-  setEggTimerPhase: (phase: number) => void;
+  eggTimerPhase: "heating" | "boiling" | "cooking";
+  setEggTimerPhase: (phase: "heating" | "boiling" | "cooking") => void;
   eggTimerPhaseTime: number;
   setEggTimerPhaseTime: (time: number) => void;
   eggTimerPhaseName: string;
